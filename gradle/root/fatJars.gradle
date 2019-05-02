@@ -12,17 +12,15 @@ buildscript {
     }
 }
 
-if (name != "thredds") {
+if (name != "netcdf-java") {
     throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
 configurations {
     ncIdv
-    tdmFat
     netcdfAll
     toolsUI
     dap4lib
-    d4ts
 }
 
 dependencies {
@@ -36,8 +34,6 @@ dependencies {
     ncIdv project(':httpservices')
     ncIdv project(':legacy')
 
-    tdmFat project(':tdm')
-    
     netcdfAll project(":cdm")
     netcdfAll project(":clcommon")
     netcdfAll project(":bufr")
@@ -52,8 +48,6 @@ dependencies {
     dap4lib project(':dap4:d4core')
     dap4lib project(':dap4:d4lib')
     dap4lib libraries["logback-classic"]
-    
-    d4ts project(':dap4:d4ts')
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -76,15 +70,6 @@ fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
     exclude 'visad/**'
     
     manifest.attributes 'Implementation-Title': 'ncIdv Module'
-}
-
-fatJarTasks << tasks.create(name: 'buildTdmFat', type: ShadowJar) {
-    baseName = 'tdmFat'
-    configurations = [project.configurations.tdmFat]
-    
-    doFirst {
-        manifest.attributes project(':tdm').tasks.jar.manifest.attributes
-    }
 }
 
 fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
@@ -111,15 +96,6 @@ fatJarTasks << tasks.create(name: 'buildDap4Lib', type: ShadowJar) {
     
     doFirst {
         manifest.attributes project(':dap4:d4lib').tasks.jar.manifest.attributes
-    }
-}
-
-fatJarTasks << tasks.create(name: 'buildD4TS', type: ShadowJar) {
-    baseName = 'd4ts'
-    configurations = [project.configurations.d4ts]
-    
-    doFirst {
-        manifest.attributes project(':dap4:d4ts').tasks.jar.manifest.attributes
     }
 }
 
@@ -151,25 +127,13 @@ configure(fatJarTasks) {
     mergeServiceFiles()
 }
 
-// Exclude *.xml files from all fat jars except tdmFat; we need tdm's log4j2.xml to be included.
-configure(fatJarTasks - buildTdmFat) {
-    exclude '*.xml'
-}
-
-// Exclude *.xml files from all fat jars except tdmFat; we need tdm's log4j2.xml to be included.
-configure(fatJarTasks - buildTdmFat) {
-    exclude '*.xml'
-}
-
 // See: https://docs.gradle.org/current/userguide/standard_plugins.html#sec:base_plugins
 apply plugin: 'base'
 
 // The base-plugin's "assemble" task automatically creates all artifacts added to the "archives" configuration.
 artifacts {
     archives buildNcIdv
-    archives buildTdmFat
     archives buildNetcdfAll
     archives buildToolsUI
     archives buildDap4Lib
-    archives buildD4TS
 }

@@ -42,8 +42,7 @@ allprojects {
 }
 
 // Matches Maven's "project.description".
-description = "The Unidata THREDDS project includes the netCDF-Java library (aka CDM) " +
-        "and the THREDDS Data Server (TDS)."
+description = "The Unidata netCDF-Java library (aka CDM) "
 
 import java.text.SimpleDateFormat
 
@@ -54,7 +53,7 @@ import java.text.SimpleDateFormat
 // Otherwise, only the one specific ExtraPropertiesExtension will be searched.
 ext {
     // Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
-    title = "Parent THREDDS and CDM modules"
+    title = "CDM modules"
 
     // Matches Maven's "project.organization.name". Used in MANIFEST.MF for "Implementation-Vendor".
     vendor = "UCAR/Unidata"
@@ -69,8 +68,7 @@ ext {
     javaProjects = subprojects.findAll { it.plugins.withType(JavaPlugin) }
     
     internalProjects = subprojects.findAll { it.path in [
-            ':dap4', ':dap4:d4tests', ':dap4:d4ts', ':opendap:dtswar',
-            ':docs', ':it', ':cdm-test', ':testUtil'
+            ':dap4', ':opendap:dtswar', ':docs', ':cdm-test', ':testUtil'
     ] }
     
     publishedProjects = subprojects - internalProjects
