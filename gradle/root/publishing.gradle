@@ -1,4 +1,4 @@
-if (name != "thredds") {
+if (name != "netcdf-java") {
     throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
