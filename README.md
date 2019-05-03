@@ -1,39 +1,8 @@
-![THREDDS icon](http://www.unidata.ucar.edu/images/logos/netcdfjava_tds_150x150.png)
+![netcdf-java icon](https://www.unidata.ucar.edu/images/logos/cdm_netcdfjava-150x150.png)
 <br>
 <br>
-[![Travis Build Status](https://secure.travis-ci.org/Unidata/thredds.svg?branch=master)](http://travis-ci.org/Unidata/thredds)
-[![Coverage Status](https://coveralls.io/repos/github/Unidata/thredds/badge.svg?branch=origin%2F5.0.0)](https://coveralls.io/github/Unidata/thredds?branch=origin%2F5.0.0)
 
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=thredds)
-
-# Unidata's THREDDS Project
-
-The THREDDS project is developing middleware to bridge the gap between data
-providers and data users. The goal is to simplify the discovery and use of
-scientific data and to allow scientific publications and educational materials
-to reference scientific data. The mission of THREDDS is for students, educators
-and researchers to publish, contribute, find, and interact with data relating
-to the Earth system in a convenient, effective, and integrated fashion.
-
-The THREDDS project consists mainly of two software packages and two related
-XML encodings:
-
-* the netCDF-Java/CDM library;
-* the NetCDF Markup Language (NcML);
-* the THREDDS Data Server (TDS); and
-* the THREDDS Catalog specification.
-
-More details on each of these can be found below.
-
-The latest released and snapshot software artifacts (.jar and .war files e.g.)
-are available from Unidata's Maven repositories
-
-* https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases
-* https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-snapshots
-
-To build the software yourself, follow [this tutorial](https://docs.unidata.ucar.edu/thredds/5.0.0-SNAPSHOT/userguide/building_from_source.html).
-
-## netCDF-Java/CDM
+# netCDF-Java/CDM
 
 The netCDF Java library provides an interface for scientific data access. It can be
 used to read scientific data from a variety of file formats including netCDF, HDF,
@@ -87,34 +56,6 @@ For more information about NcML, see the NcML web page at
 
 http://www.unidata.ucar.edu/software/netcdf/ncml/
 
-## THREDDS Data Server (TDS)
-
-The THREDDS Data Server (TDS) provides metadata and data access to scientific
-datasets. Datasets can be served through OPeNDAP, OGC's WMS and WCS, HTTP, and other
-remote data access protocols. It can be configured to aggregate a collection of
-datasets so the collection is seen as a single dataset when viewed through the
-various data access protocols. The TDS is a server-based system that can be easily
-installed in any servlet container such as Apache Tomcat.
-
-For more information about the TDS, see the TDS web page at
-
-* http://www.unidata.ucar.edu/software/tds/
-
-You can obtain a copy of the latest released version of TDS software from
-
-* http://www.unidata.ucar.edu/downloads/thredds/
-
-A mailing list, thredds@unidata.ucar.edu, exists for discussion of the TDS and
-THREDDS catalogs including announcements about TDS bugs, fixes, enhancements,
-and releases. For information about how to subscribe, see the
-"Subscribe" link on this page
-
-* http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/
-
-We appreciate feedback from users of this package. Please send comments,
-suggestions, and bug reports to <support-thredds@unidata.ucar.edu>.
-Please identify the version of the package.
-
 ## THREDDS Catalogs
 
 THREDDS Catalogs can be thought of as representing logical directories of on-line
@@ -128,8 +69,7 @@ THREDDS Catalog documentation (including the specification) is available at
 
 ## Licensing
 
-Copyright and licensing information can be found [here](http://www.unidata.ucar.edu/software/netcdf/copyright.html),
-as well as in the `LICENSE.txt` file accompanying the software.
+netCDF-Java is released under the BSD-3 licence, which can be found can be found [here](https://github.com/Unidata/netcdf-java/blob/master/LICENSE).
 
 Furthermore, this project includes code from third-party open-source software components:
 * [Gretty](https://github.com/akhikhl/gretty): for details, see `buildSrc/README.md`
@@ -137,3 +77,14 @@ Furthermore, this project includes code from third-party open-source software co
 * [JUnit](https://github.com/junit-team/junit4): for details, see `testUtil/README.md`
 
 Each of these software components have their own license. Please see `docs/src/private/licenses/third-party/`.
+
+## How to use
+
+The latest released and snapshot software artifacts (e.g. .jar files)
+are available from Unidata's Nexus repository:
+
+* https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-all
+
+To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0.0/userguide/building_from_source.html).
+
+To use the netCDF-Java library as a depenency using maven or gradle, follow [these instructions](https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/BuildDependencies.html).
