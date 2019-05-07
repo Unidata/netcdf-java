@@ -141,14 +141,14 @@ task publishUserGuide(type: PublishToRawRepoTask, dependsOn: buildUserGuide) {
     description = "Publish user guide to Nexus."
 
     srcFile = userGuideDestDir
-    destPath = "$version/userguide/"
+    destPath = "netcdf-java/$project.docVersion/userguide/"
 }
 
 task publishJavadocCdm(type: PublishToRawRepoTask, dependsOn: buildJavadocCdm) {
     description = "Publish Javadoc for the CDM subproject to Nexus."
     
     srcFile = tasks.buildJavadocCdm.destinationDir
-    destPath = "$version/javadoc/"
+    destPath = "netcdf-java/$project.docVersion/javadoc/"
 }
 
 gradle.projectsEvaluated {
