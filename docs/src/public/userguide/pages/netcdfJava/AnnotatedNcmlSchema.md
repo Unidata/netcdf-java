@@ -6,5 +6,4 @@ toc: false
 permalink: ncj_annotated_ncml_schema.html
 ---
 
-{% capture rmd %}{% includefile pages/netcdfJava/AnnotatedNcmlSchema.inc %}{% endcapture %}
-{{ rmd | liquify | markdownify }}
+{% include image.html file="sl_website-under-construction.jpeg" alt="Under Construction" caption="Under Construction" %}
