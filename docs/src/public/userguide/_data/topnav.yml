@@ -21,13 +21,10 @@ topnav_dropdowns:
     - title: Tutorial
       folderitems:
         - title: THREDDS Data Server Tutorial
-          url: tds_tutorial_index.html
+          external_url: https://docs.unidata.ucar.edu/thredds/5.0.0-SNAPSHOT/userguide/tds_tutorial_index.html
         - title: netCDF-Java Tutorial
           url: /netcdf_java_tutorial_index.html
-    - title: Workshops
-      folderitems:
-        - title: 2018 Unidata Workshop
-          url: workshop2018.html
+
     - title: External Docs
       folderitems:
         - title: netCDF-Java public javadocs
