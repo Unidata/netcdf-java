@@ -6,4 +6,4 @@ permalink: netcdf_java_tutorial_index.html
 toc: false
 ---
 
-oh hai!
+Landing page...need something like https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm
