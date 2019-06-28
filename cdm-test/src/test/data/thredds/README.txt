@@ -1,0 +1,1 @@
+The public directory contains data from tds.content.root.path/thredds/public that is used in cdm-test.

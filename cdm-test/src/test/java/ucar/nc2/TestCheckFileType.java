@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsContentRoot;
 
@@ -42,9 +43,6 @@ public class TestCheckFileType extends UnitTestCommon
         return result;
     }
 
-
-    protected String tdsContentRootPath = null;
-
     @Before
     public void setup()
     {
@@ -53,8 +51,6 @@ public class TestCheckFileType extends UnitTestCommon
         // We're using @Before because it shows these tests as being ignored.
         // @BeforeClass shows them as *non-existent*, which is not what we want.
         Assert.assertTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
-        tdsContentRootPath = System.getProperty("tds.content.root.path");
-        Assert.assertTrue("tds.content.root.path not defined", tdsContentRootPath != null);
     }
 
     @After
@@ -73,7 +69,7 @@ public class TestCheckFileType extends UnitTestCommon
     public void testCheckFileType()
             throws Exception
     {
-        String location = canonjoin(tdsContentRootPath, canonjoin(PREFIX, filename));
+        String location = canonjoin(TestDir.cdmTestDataDir, canonjoin(PREFIX, filename));
         try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
             // Verify type
             int found = NCheader.checkFileType(raf);
