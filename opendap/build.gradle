@@ -30,8 +30,7 @@ dependencies {
     testCompile libraries["JUnitParams"]
 }
 
-gretty {
-    overlayAndApplyConfigOf ':opendap:dtswar'
-    
-    integrationTestTask = 'test'
+test {
+    dependsOn("farmBeforeIntegrationTest")
+    finalizedBy("farmAfterIntegrationTest")
 }

@@ -67,16 +67,15 @@ libraries["jruby-gradle-plugin"] = "com.github.jruby-gradle:jruby-gradle-plugin:
 
 versions["spring"] = "4.3.20.RELEASE"
 
-//libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
-
+// d4test and ui(?)
 libraries["spring-context"] = "org.springframework:spring-context:${versions["spring"]}"
 
-//libraries["spring-beans"] = "org.springframework:spring-beans:${versions["spring"]}"
-//
-//libraries["spring-web"] = "org.springframework:spring-web:${versions["spring"]}"
-//
-//libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spring"]}"
-//
+// d4test
+libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
+libraries["spring-beans"] = "org.springframework:spring-beans:${versions["spring"]}"
+libraries["spring-web"] = "org.springframework:spring-web:${versions["spring"]}"
+libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spring"]}"
+
 //////////////////////////////////////////// Spring security //////////////////////////////////////////
 //
 //versions["spring-security"] = "4.2.12.RELEASE"
@@ -119,11 +118,14 @@ libraries["logback-classic"] = "ch.qos.logback:logback-classic:1.2.3"
 
 //////////////////////////////////////////// Testing //////////////////////////////////////////
 
+// d4tests
+libraries["spring-test"] = "org.springframework:spring-test:${versions["spring"]}"
+
 libraries["junit"] = "junit:junit:4.12"
 
 libraries["JUnitParams"] = "pl.pragmatists:JUnitParams:1.0.5"
 
-//libraries["spring-test"] = "org.springframework:spring-test:${versions["spring"]}"
+
 //
 //libraries["hamcrest-core"] = "org.hamcrest:hamcrest-core:1.3"
 
