@@ -21,11 +21,3 @@ dependencies {
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-web"]
 }
-
-// This will be used by :dtswar, :opendap, and :httpservices.
-ext.grettyConfig = {
-    httpPort = 8082
-    contextPath = '/dts'
-}
-
-gretty grettyConfig

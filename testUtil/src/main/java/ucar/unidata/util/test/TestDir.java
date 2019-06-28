@@ -87,13 +87,13 @@ public class TestDir {
 
   static public String dap2TestServerPropName = "dts";
 
-  static public String dap2TestServer = "localhost:8082";
+  static public String dap2TestServer = "localhost:8080";
 
   // DAP4 Test server (for testing)
 
   static public String dap4TestServerPropName = "d4ts";
 
-  static public String dap4TestServer = "localhost:8083";
+  static public String dap4TestServer = "localhost:8080";
 
   //////////////////////////////////////////////////
 

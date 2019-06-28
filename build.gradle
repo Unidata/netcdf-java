@@ -69,8 +69,7 @@ ext {
     javaProjects = subprojects.findAll { it.plugins.withType(JavaPlugin) }
     
     internalProjects = subprojects.findAll { it.path in [
-            ':dap4', ':dap4:d4tests', ':opendap:dtswar',
-            ':docs', ':cdm-test', ':testUtil'
+            ':dap4', ':dap4:d4tests', ':docs', ':cdm-test', ':testUtil'
     ] }
     
     publishedProjects = subprojects - internalProjects
