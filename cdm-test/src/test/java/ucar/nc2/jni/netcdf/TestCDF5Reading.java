@@ -13,6 +13,7 @@ import ucar.ma2.MAMath;
 import ucar.nc2.*;
 import ucar.nc2.iosp.NCheader;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsContentRoot;
 
@@ -35,8 +36,6 @@ public class TestCDF5Reading extends UnitTestCommon
         BASELINE.set(2,Float.NEGATIVE_INFINITY);
     }
 
-    protected String tdsContentRootPath = null;
-
     @Before
     public void setup()
     {
@@ -44,15 +43,13 @@ public class TestCDF5Reading extends UnitTestCommon
         // We're using @Before because it shows these tests as being ignored.
         // @BeforeClass shows them as *non-existent*, which is not what we want.
         Assert.assertTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
-        tdsContentRootPath = System.getProperty("tds.content.root.path");
-        Assert.assertTrue("tds.content.root.path not defined", tdsContentRootPath != null);
     }
 
     @Test
     public void testReadSubsection()
             throws IOException, InvalidRangeException
     {
-        String location = canonjoin(tdsContentRootPath,"thredds/public/testdata/nc_test_cdf5.nc");
+        String location = canonjoin(TestDir.cdmTestDataDir,"thredds/public/testdata/nc_test_cdf5.nc");
         try (RandomAccessFile raf  = RandomAccessFile.acquire(location)) {
             // Verify that this is a netcdf-5 file
             int format = NCheader.checkFileType(raf);
