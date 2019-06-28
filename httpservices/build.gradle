@@ -18,9 +18,7 @@ dependencies {
     testRuntime libraries["logback-classic"]
 }
 
-gretty {
-    // We're going to simply use dtswar as an endpoint for our HTTP tests.
-    overlayAndApplyConfigOf ':opendap:dtswar'
-    
-    integrationTestTask = 'test'
+test {
+    dependsOn("farmBeforeIntegrationTest")
+    finalizedBy("farmAfterIntegrationTest")
 }

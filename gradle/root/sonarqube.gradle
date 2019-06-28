@@ -99,50 +99,6 @@ gradle.projectsEvaluated {
         }
     }
     
-    /*
-     * :opendap is a module with both source code and a child module. Due to SONARGRADL-5, it will not be analyzed by
-     * Sonar. Again, only "leaf" modules are allowed to have source code. So, if we want both :opendap and
-     * :opendap:dtswar to be analyzed, we must merge them together into one leaf module.
-     *
-     * We do this by assigning all of dtswar's sources, binaries, and libraries to opendap, and then setting dtswar's
-     * "skipProject" property to "true". This effectively deletes dtswar from the the module structure, leaving
-     * opendap as a leaf.
-     */
-    project(":opendap") {
-        sonarqube {
-            properties {
-                // Due to the deferred evaluation of this SonarQubeProperties Action (see https://goo.gl/skuBHE),
-                // many of dtswar's Sonar properties (such as ":opendap:dtswar.sonar.sources") aren't available here.
-                // So, we have to come up with those values ourselves. See https://goo.gl/sAKb3j
-                SourceSetContainer dtswarSourceSets = rootProject.project(":opendap:dtswar").sourceSets
-    
-                // Merge dtswar's source code into opendap's source code.
-                def sources = files(properties["sonar.sources"] ?: [],
-                        dtswarSourceSets.main.allSource.srcDirs ?: [], // :opendap:dtswar.sonar.sources
-                        dtswarSourceSets.test.allSource.srcDirs ?: []  // :opendap:dtswar.sonar.tests
-                ).flatten()
-                properties["sonar.sources"] = nukeDupesAndNonExistent(sources)
-    
-                // Merge dtswar's binaries into opendap's binaries.
-                def binaries = files(properties["sonar.java.binaries"] ?: [],
-                        dtswarSourceSets.main.output.classesDir ?: [], // :opendap:dtswar.sonar.java.binaries
-                        dtswarSourceSets.test.output.classesDir ?: []  // :opendap:dtswar.sonar.java.test.binaries
-                ).flatten()
-                properties["sonar.java.binaries"] = nukeDupesAndNonExistent(binaries)
-    
-                // Merge dtswar's libraries into opendap's libraries.
-                def libraries = files(properties["sonar.java.libraries"] ?: [],
-                        dtswarSourceSets.main.compileClasspath ?: [], // :opendap:dtswar.sonar.java.libraries
-                        dtswarSourceSets.test.compileClasspath ?: []  // :opendap:dtswar.sonar.java.test.libraries
-                ).flatten()
-                properties["sonar.java.libraries"] = nukeDupesAndNonExistent(libraries)
-            }
-        }
-    }
-    
-    // Causes :opendap to become a leaf module.
-    project(":opendap:dtswar").sonarqube.skipProject = true
-    
     boolean debug = false
     
     tasks.sonarqube {
