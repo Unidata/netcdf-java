@@ -31,7 +31,7 @@ public class TestRemoteCoverage {
   @Test
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteCoverage() throws Exception {
-    String ds = "http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/latest.xml";
+    String ds = "https://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/latest.xml";
 
     try (DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null)) {
       logger.debug("result errlog = {}", result.errLog);
