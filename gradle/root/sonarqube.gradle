@@ -14,14 +14,14 @@ gradle.projectsEvaluated {
         properties {
             // Global properties. See http://docs.sonarqube.org/display/SONAR/Analysis+Parameters
             properties["sonar.verbose"] = "false"
-            properties["sonar.projectKey"] = "thredds"
+            properties["sonar.projectKey"] = "netcdf-java"
             properties["sonar.host.url"] = "https://sonarcloud.io"
             // Defer invocation of getPropertyOrFailBuild() until the execution phase, using lazy GStrings.
             properties["sonar.login"] = "${-> getPropertyOrFailBuild SONARQUBE_USER_TOKEN_KEY}"
             
             /*
              * We want to analyze the code in :buildSrc. Unfortunately, that's doesn't happen by default with the
-             * application of the Sonar plugin because :buildSrc isn't technically part of thredds (Gradle considers
+             * application of the Sonar plugin because :buildSrc isn't technically part of netcdf-java (Gradle considers
              * it a completely separate build). Therefore, sonar isn't including it in the "sonar.modules" property.
              *
              * Why not just manually edit "sonar.modules" to include :buildSrc? Because the plugin overwrites anything
@@ -30,7 +30,7 @@ gradle.projectsEvaluated {
              *
              * So, given that we can't easily influence the value of the "sonar.modules" property (we'd need to
              * physically create another subproject in the Gradle build), the other option is to assign buildSrc's code
-             * to an existing (Sonar) module. "thredds" (the root project) seems the natural choice, and that's what
+             * to an existing (Sonar) module. "netcdf-java" (the root project) seems the natural choice, and that's what
              * we're trying to do here. Unfortunately, this fails with an error:
              *     A multi-module project can't have source folders, so
              *     '/Users/cwardgar/dev/projects/thredds/buildSrc/src' won't be used for the analysis.
@@ -94,7 +94,7 @@ gradle.projectsEvaluated {
                                       properties["sonar.java.test.libraries"] ?: []).flatten()
                 properties["sonar.java.libraries"] = nukeDupesAndNonExistent(libraries)
                 properties["sonar.java.test.libraries"] = ""
-                properties["sonar.branch.name"] = "5.0.0"
+                properties["sonar.branch.name"] = "master"
             }
         }
     }

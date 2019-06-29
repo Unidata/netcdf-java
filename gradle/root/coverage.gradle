@@ -87,7 +87,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
         }
         
         doLast {
-            println "The latest Coveralls report can be found at https://coveralls.io/github/Unidata/thredds"
+            println "The latest Coveralls report can be found at https://coveralls.io/github/Unidata/netcdf-java"
         }
     }
 }
