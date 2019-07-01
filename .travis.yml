@@ -32,6 +32,12 @@ addons:
       - $TEST_REPORT_DIR
       - $TDS_LOGS_DIR
     target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
+  sonarcloud:
+    organization: "unidata_org"
+    token:
+      secure: $SONAR_TOKEN # Set in travis-ci.org dashboard
+    branches:
+      - master
 
 jdk:
   - openjdk8

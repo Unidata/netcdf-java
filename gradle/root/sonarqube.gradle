@@ -14,7 +14,7 @@ gradle.projectsEvaluated {
         properties {
             // Global properties. See http://docs.sonarqube.org/display/SONAR/Analysis+Parameters
             properties["sonar.verbose"] = "false"
-            properties["sonar.projectKey"] = "netcdf-java"
+            properties["sonar.projectKey"] = "edu.ucar.unidata:ncj"
             properties["sonar.host.url"] = "https://sonarcloud.io"
             // Defer invocation of getPropertyOrFailBuild() until the execution phase, using lazy GStrings.
             properties["sonar.login"] = "${-> getPropertyOrFailBuild SONARQUBE_USER_TOKEN_KEY}"
