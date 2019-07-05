@@ -54,55 +54,47 @@ The XML Schema:
  * @since Jan 19, 2010
  */
 public interface CollectionManager extends MCollection {
-
-  /* public enum Force {always,  // force new index
-                     test,    // test if new index is needed
-                     nocheck, // if index exists, use it
-                     never }  // only use existing  */
-
-
-
   /**
    * static means doesnt need to be monitored for changes; can be externally triggered, or read in at startup.
    * true if no recheckAfter and no update.rescan
    * @return if static
    */
-  public boolean isStatic();
+  boolean isStatic();
 
   /**
    * Get the last time scanned
    *
    * @return msecs since 1970
    */
-  public long getLastScanned();
+  long getLastScanned();
 
   /**
    * Get the last time the collection changed
    *
    * @return msecs since 1970
    */
-  public long getLastChanged();
+  long getLastChanged();
 
   /**
    * Get how often to rescan
    *
    * @return time duration of rescan period, or null if none.
    */
-  public TimeDuration getRecheck();
+  TimeDuration getRecheck();
 
   /**
    * Compute whether rescan is needed, based on getRecheck(), and the LastScanned value.
    *
    * @return true if rescan is needed.
    */
-  public boolean isScanNeeded();
+  boolean isScanNeeded();
 
   /**
    * If isScanNeeded(), do a scan. Do not send an event.
    * @return true if scan was done, and anything changed.
    * @throws IOException on io error
    */
-  public boolean scanIfNeeded() throws IOException;
+  boolean scanIfNeeded() throws IOException;
 
   /**
    * Scan the collection. Files may have been deleted or added since last time.
@@ -113,35 +105,33 @@ public interface CollectionManager extends MCollection {
    * @return true if anything actually changed.
    * @throws IOException on I/O error
    */
-  public boolean scan(boolean sendEvent) throws IOException;
-
-  ////////////////////////////////////////////////////
-  // set Strategy for checking if MFile has changed
-
-  public interface ChangeChecker {
-    boolean hasChangedSince(MFile file, long when);
-    boolean hasntChangedSince(MFile file, long when);
-  }
-
-  ///////////////////////////////////////////////////////////
+  boolean scan(boolean sendEvent) throws IOException;
 
   /**
    * Register to get Trigger events
    * @param l listener
    */
-  public void addEventListener(TriggerListener l);
-  public void removeEventListener(TriggerListener l);
+  void addEventListener(TriggerListener l);
+  void removeEventListener(TriggerListener l);
+
+  ////////////////////////////////////////////////////
+  // set Strategy for checking if MFile has changed
+
+  interface ChangeChecker {
+    boolean hasChangedSince(MFile file, long when);
+    boolean hasntChangedSince(MFile file, long when);
+  }
 
   /**
    * A TriggerEvent.proto is sent if protoDataset.change = "cron" has been specified
    * A TriggerEvent.update is sent if a scan has happened and a change in the list of MFiles has occurred,
    *  or an MFile has been updated
    */
-  public static interface TriggerListener {
-    public void handleCollectionEvent(TriggerEvent event);
+  interface TriggerListener {
+    void handleCollectionEvent(TriggerEvent event);
   }
 
-  public class TriggerEvent extends java.util.EventObject {
+  class TriggerEvent extends java.util.EventObject {
      private final CollectionUpdateType type;
 
      TriggerEvent(Object source, CollectionUpdateType type) {

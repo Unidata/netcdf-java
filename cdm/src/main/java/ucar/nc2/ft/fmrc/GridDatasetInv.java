@@ -5,7 +5,10 @@
 
 package ucar.nc2.ft.fmrc;
 
-import thredds.inventory.CollectionManagerAbstract;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import thredds.inventory.MCollection;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -34,13 +37,12 @@ import org.jdom2.input.SAXBuilder;
 import thredds.inventory.MFile;
 
 /**
- * The data inventory of one GridDataset.
- * Track grids, time, vert, ens coordinates.
- * Grids are grouped by the time coordinated that they use.
- * Provides serialization to/from XML.
- * Uses dense time, vert coordinates - just the ones that are in the file.
+ * The data inventory of one GridDataset. Track grids, time, vert, ens coordinates. Grids are
+ * grouped by the time coordinated that they use. Provides serialization to/from XML. Uses dense
+ * time, vert coordinates - just the ones that are in the file.
  *
- * This replaces the older ucar.nc2.dt.fmrc.ForecastModelRunInventory, gets rid of the definition files.
+ * This replaces the older ucar.nc2.dt.fmrc.ForecastModelRunInventory, gets rid of the definition
+ * files.
  *
  * Not sure if the vert coords will ever be different across the time coords.
  *
@@ -52,64 +54,58 @@ import thredds.inventory.MFile;
  * @since Jan 11, 2010
  */
 public class GridDatasetInv {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
+
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory
+      .getLogger(GridDatasetInv.class);
   static private final int REQ_VERSION = 2; // minimum required version, else regenerate XML
   static private final int CURR_VERSION = 2;  // current version
-  
+
+  // Cache the GridDatasetInv directly, not persisted to disk.
+  // TODO: Add persistence if thats shown to be needed.
+  static private Cache<String, GridDatasetInv> cache = CacheBuilder.newBuilder().maximumSize(100)
+      .build();
+
   static private boolean debug = false;  // current version
 
   public static GridDatasetInv open(MCollection cm, MFile mfile, Element ncml) throws IOException {
-    // do we already have it ?
-    byte[] xmlBytes = ((CollectionManagerAbstract)cm).getMetadata(mfile, "fmrInv.xml");  // LOOK should we keep this functionality ??
-    if (xmlBytes != null) {
-      if (logger.isDebugEnabled()) logger.debug(" got xmlFile in cache ="+ mfile.getPath()+ " size = "+xmlBytes.length);
-      if (xmlBytes.length < 300) {
-        logger.warn(" xmlFile in cache only has nbytes ="+ xmlBytes.length+"; will reread");
-        // drop through and regenerate
-      } else {
-        GridDatasetInv inv = readXML(xmlBytes);
+    try {
+      return cache.get(mfile.getPath() + "#fmrInv.xml", new GenerateInv(cm, mfile, ncml));
+    } catch (ExecutionException e) {
+      throw new IOException("Cache failed", e);
+    }
+  }
 
-        // check if version required regen
-        if (inv.version >= REQ_VERSION) {
-          // check if file has changed
-          long fileModifiedSecs = mfile.getLastModified() / 1000; // ignore msecs
-          long xmlModifiedSecs = inv.getLastModified() / 1000; // ignore msecs
-          if (xmlModifiedSecs >= fileModifiedSecs) { // LOOK if fileDate is -1, will always succeed
-            if (logger.isDebugEnabled()) logger.debug(" cache ok "+new Date(inv.getLastModified())+" >= "+new Date(mfile.getLastModified())+" for " + mfile.getName());
-            return inv; // ok, use it
-          } else {
-            if (logger.isInfoEnabled()) logger.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified())+" for " + mfile.getName());
-          }
-        } else {
-          if (logger.isInfoEnabled()) logger.info(" version needs upgrade "+inv.version+" < "+REQ_VERSION +" for " + mfile.getName());
-        }
-      }
+  private static class GenerateInv implements Callable<GridDatasetInv> {
+    private final MCollection cm;
+    private final MFile mfile;
+    private final Element ncml;
+
+    GenerateInv(MCollection cm, MFile mfile, Element ncml) {
+      this.cm = cm;
+      this.mfile = mfile;
+      this.ncml = ncml;
     }
 
-    // generate it and save it
-    GridDataset gds = null;
-    try {
-      if (ncml == null) {
-        gds = GridDataset.open( mfile.getPath());
+    @Override
+    public GridDatasetInv call() throws Exception {
+      GridDataset gds = null;
+      try {
+        if (ncml == null) {
+          gds = GridDataset.open(mfile.getPath());
 
-      } else {
-        NetcdfFile nc = NetcdfDataset.acquireFile(new DatasetUrl(null, mfile.getPath()), null);
-        NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
-        ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
-        gds = new GridDataset(ncd);
+        } else {
+          NetcdfFile nc = NetcdfDataset.acquireFile(new DatasetUrl(null, mfile.getPath()), null);
+          NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
+          ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
+          gds = new GridDataset(ncd);
+        }
+
+        return new GridDatasetInv(gds, cm.extractDate(mfile));
+      } finally {
+        if (gds != null) {
+          gds.close();
+        }
       }
-
-      // System.out.println("gds dataset= "+ gds.getNetcdfDataset());
-
-      GridDatasetInv inv = new GridDatasetInv(gds, cm.extractDate(mfile));
-      String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
-      ((CollectionManagerAbstract)cm).putMetadata(mfile, "fmrInv.xml", xmlString.getBytes(CDM.utf8Charset));
-      if (logger.isDebugEnabled()) logger.debug(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
-      if (debug) System.out.printf(" added xmlFile %s.fmrInv.xml to cache%n", mfile.getPath());
-      // System.out.println("new xmlBytes= "+ xmlString);
-      return inv;
-    } finally {
-      if (gds != null) gds.close();
     }
   }
 
@@ -134,22 +130,18 @@ public class GridDatasetInv {
     NetcdfFile ncfile = gds.getNetcdfFile();
     if (ncfile != null && this.runDate == null) {
       runTimeString = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelBaseDate, null);
-      if (runTimeString == null)
+      if (runTimeString == null) {
         runTimeString = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
+      }
 
       if (runTimeString != null) {
         this.runDate = DateUnit.parseCalendarDate(runTimeString);
-         if (this.runDate == null) {
-           logger.warn("GridDatasetInv rundate not ISO date string ({}) file={}", runTimeString, location);
-           //throw new IllegalArgumentException(_Coordinate.ModelRunDate + " must be ISO date string " + runTime);
-         }
       }
 
       if (this.runDate == null) {
         this.runDate = gds.getCalendarDateStart(); // LOOK not really right
-        logger.warn("GridDatasetInv using gds.getStartDate() for run date = {}", runTimeString, location);
-        //log.error("GridDatasetInv missing rundate in file=" + location);
-        //throw new IllegalArgumentException("File must have " + _Coordinate.ModelBaseDate + " or " + _Coordinate.ModelRunDate + " attribute ");
+        logger.warn("GridDatasetInv using gds.getStartDate() for run date = {}", runTimeString,
+            location);
       }
     }
 
@@ -172,16 +164,10 @@ public class GridDatasetInv {
         grid.tc = tc;
       }
 
-     CoordinateAxis1D vaxis = gcs.getVerticalAxis();
+      CoordinateAxis1D vaxis = gcs.getVerticalAxis();
       if (vaxis != null) {
         grid.vc = getVertCoordinate(vaxis);
       }
-
-     /* not yet
-     CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
-     if (eaxis != null) {
-       grid.ec = getEnsCoordinate(eaxis);
-     } */
 
     }
 
@@ -224,7 +210,8 @@ public class GridDatasetInv {
   }
 
   /**
-   * Get a list of unique TimeCoords, which contain the list of variables that all use that TimeCoord.
+   * Get a list of unique TimeCoords, which contain the list of variables that all use that
+   * TimeCoord.
    *
    * @return list of TimeCoord
    */
@@ -245,8 +232,9 @@ public class GridDatasetInv {
     for (TimeCoord tc : times) {
       List<Grid> grids = tc.getGridInventory();
       for (Grid g : grids) {
-        if (g.name.equals(name))
+        if (g.name.equals(name)) {
           return g;
+        }
       }
     }
     return null;
@@ -257,15 +245,17 @@ public class GridDatasetInv {
   private TimeCoord getTimeCoordinate(CoordinateAxis1DTime axis) {
     // check for same axis
     for (TimeCoord tc : times) {
-      if (tc.getAxisName().equals(axis.getFullName()))
+      if (tc.getAxisName().equals(axis.getFullName())) {
         return tc;
+      }
     }
 
     // check for same offsets
     TimeCoord want = new TimeCoord(runDate, axis);
     for (TimeCoord tc : times) {
-      if ((tc.equalsData(want)))
+      if ((tc.equalsData(want))) {
         return tc;
+      }
     }
 
     // its a new one
@@ -283,6 +273,7 @@ public class GridDatasetInv {
    * A Grid variable has a name, timeCoord and optionally a Vertical and Ensemble Coordinate
    */
   public class Grid implements Comparable {
+
     final String name;
     TimeCoord tc = null; // time coordinates reletive to getRunDate()
     EnsCoord ec = null; // optional
@@ -292,12 +283,16 @@ public class GridDatasetInv {
       this.name = name;
     }
 
-    public String getName() { return name; }
+    public String getName() {
+      return name;
+    }
 
-    public String getLocation() { return location; }
+    public String getLocation() {
+      return location;
+    }
 
     public String getTimeCoordName() {
-      return  (tc == null) ? "" : tc.getName();
+      return (tc == null) ? "" : tc.getName();
     }
 
     public String getVertCoordName() {
@@ -314,20 +309,9 @@ public class GridDatasetInv {
       return ntimes * getVertCoordLength();
     }
 
-    public String toString() { return name; }
-
-   /*  public String showCount() {
-      int ntimes = tc.getOffsetHours().length;
-      int nverts = getVertCoordLength();
-      return countTotal()+" ("+ntimes+" x "+nverts+") " + tc;
+    public String toString() {
+      return name;
     }
-
-    public boolean hasOffset(double want) {
-      for (double got : tc.getOffsetHours() ) {
-        if (Misc.nearlyEquals(want, got)) return true;
-      }
-      return false;
-    } */
 
     public int getVertCoordLength() {
       return (vc == null) ? 1 : vc.getValues1().length;
@@ -337,57 +321,37 @@ public class GridDatasetInv {
       return tc;
     }
 
-    public GridDatasetInv getFile() { return GridDatasetInv.this; }
-
-   /*  public int countInventory(double hourOffset) {
-      int timeIndex = tc.findIndex(hourOffset);
-      if (timeIndex < 0)
-        return 0;
-
-      return getVertCoordLength();
-    } */
-
-    /*
-     * Get inventory as an array of vert coords, at a particular time coord = hourOffset
-     *
-     * @param hourOffset : may or may not be in the list of time coords
-     * @return array of vert coords. NaN = missing; -0.0 = surface.
-     *
-    public double[] getVertCoords(double hourOffset) {
-
-      int timeIndex = tc.findIndex(hourOffset);
-      if (timeIndex < 0)
-        return new double[0]; // if not in list of time coordinates, then entire inventory is missing
-
-      if (vc == null) {
-        double[] result = new double[1]; // if 2D return -0.0
-        result[0] = -0.0;
-        return result;
-      }
-
-      return vc.getValues1().clone();
-    } */
+    public GridDatasetInv getFile() {
+      return GridDatasetInv.this;
+    }
   }
 
   //////////////////////////////////////////////////////
 
   private VertCoord getVertCoordinate(int wantId) {
-    if (wantId < 0) return null;
+    if (wantId < 0) {
+      return null;
+    }
     for (VertCoord vc : vaxes) {
-      if (vc.getId() == wantId)
+      if (vc.getId() == wantId) {
         return vc;
+      }
     }
     return null;
   }
 
   private VertCoord getVertCoordinate(CoordinateAxis1D axis) {
     for (VertCoord vc : vaxes) {
-      if (vc.getName().equals(axis.getFullName())) return vc;
+      if (vc.getName().equals(axis.getFullName())) {
+        return vc;
+      }
     }
 
     VertCoord want = new VertCoord(axis);
     for (VertCoord vc : vaxes) {
-      if ((vc.equalsData(want))) return vc;
+      if ((vc.equalsData(want))) {
+        return vc;
+      }
     }
 
     // its a new one
@@ -398,45 +362,18 @@ public class GridDatasetInv {
   //////////////////////////////////////////////////////
 
   private EnsCoord getEnsCoordinate(int ens_id) {
-    if (ens_id < 0) return null;
+    if (ens_id < 0) {
+      return null;
+    }
     for (EnsCoord ec : eaxes) {
-      if ((ec.getId() == ens_id))
+      if ((ec.getId() == ens_id)) {
         return ec;
+      }
     }
     return null;
   }
 
   //////////////////////////////////////////////////////////////
-
-  /**
-   * Write the XML representation to a local file.
-   *
-   * @param filename wite to this local file
-   * @throws IOException on io error
-   *
-  public void writeXML(String filename) throws IOException {
-    OutputStream out = new BufferedOutputStream(new FileOutputStream(filename));
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(writeDocument(), out);
-    out.close();
-  }
-
-  /**
-   * Write the XML representaion to an OutputStream.
-   *
-   * @param out write to this OutputStream
-   * @throws IOException on io error
-   *
-  public void writeXML(OutputStream out) throws IOException {
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(writeDocument(), out);
-  }
-
-  public void writeXML(File f) throws IOException {
-    FileOutputStream out = new FileOutputStream(f);
-    writeXML(out);
-    out.close();
-  }  */
 
   /**
    * Write the XML representation to a String.
@@ -472,14 +409,17 @@ public class GridDatasetInv {
       rootElem.addContent(vcElem);
       vcElem.setAttribute("id", Integer.toString(vc.getId()));
       vcElem.setAttribute("name", vc.getName());
-      if (vc.getUnits() != null)
+      if (vc.getUnits() != null) {
         vcElem.setAttribute(CDM.UNITS, vc.getUnits());
+      }
 
       StringBuilder sbuff = new StringBuilder();
       double[] values1 = vc.getValues1();
       double[] values2 = vc.getValues2();
       for (int j = 0; j < values1.length; j++) {
-        if (j > 0) sbuff.append(" ");
+        if (j > 0) {
+          sbuff.append(" ");
+        }
         sbuff.append(Double.toString(values1[j]));
         if (values2 != null) {
           sbuff.append(",");
@@ -503,12 +443,14 @@ public class GridDatasetInv {
       if (tc.isInterval()) {
         double[] bound1 = tc.getBound1();
         double[] bound2 = tc.getBound2();
-        for (int j = 0; j < bound1.length; j++)
+        for (int j = 0; j < bound1.length; j++) {
           sbuff.format((Locale) null, "%f %f,", bound1[j], bound2[j]);
+        }
 
       } else {
-        for (double offset : tc.getOffsetTimes())
+        for (double offset : tc.getOffsetTimes()) {
           sbuff.format((Locale) null, "%f,", offset);
+        }
       }
       timeElement.addContent(sbuff.toString());
 
@@ -518,10 +460,12 @@ public class GridDatasetInv {
         Element varElem = new Element("grid");
         timeElement.addContent(varElem);
         varElem.setAttribute("name", grid.name);
-        if (grid.ec != null)
+        if (grid.ec != null) {
           varElem.setAttribute("ens_id", Integer.toString(grid.ec.getId()));
-        if (grid.vc != null)
+        }
+        if (grid.vc != null) {
           varElem.setAttribute("vert_id", Integer.toString(grid.vc.getId()));
+        }
       }
     }
 
@@ -549,14 +493,18 @@ public class GridDatasetInv {
     GridDatasetInv fmr = new GridDatasetInv();
     fmr.runTimeString = rootElem.getAttributeValue("runTime");
     fmr.location = rootElem.getAttributeValue("location");
-    if (fmr.location == null)
+    if (fmr.location == null) {
       fmr.location = rootElem.getAttributeValue("name"); // old way
+    }
     String lastModifiedS = rootElem.getAttributeValue("lastModified");
-    if (lastModifiedS != null)
+    if (lastModifiedS != null) {
       fmr.lastModified = CalendarDateFormatter.isoStringToDate(lastModifiedS);
+    }
     String version = rootElem.getAttributeValue("version");
     fmr.version = (version == null) ? 0 : Integer.parseInt(version);
-    if (fmr.version < REQ_VERSION) return fmr;
+    if (fmr.version < REQ_VERSION) {
+      return fmr;
+    }
 
     fmr.runDate = DateUnit.parseCalendarDate(fmr.runTimeString);
 
@@ -564,7 +512,7 @@ public class GridDatasetInv {
     for (Element vertElem : vList) {
       VertCoord vc = new VertCoord();
       fmr.vaxes.add(vc);
-      vc.setId( Integer.parseInt(vertElem.getAttributeValue("id")));
+      vc.setId(Integer.parseInt(vertElem.getAttributeValue("id")));
       vc.setName(vertElem.getAttributeValue("name"));
       vc.setUnits(vertElem.getAttributeValue(CDM.UNITS));
 
@@ -578,11 +526,12 @@ public class GridDatasetInv {
       while (stoke.hasMoreTokens()) {
         String toke = stoke.nextToken();
         int pos = toke.indexOf(',');
-        if (pos < 0)
+        if (pos < 0) {
           values1[count] = Double.parseDouble(toke);
-        else {
-          if (values2 == null)
+        } else {
+          if (values2 == null) {
             values2 = new double[n];
+          }
           String val1 = toke.substring(0, pos);
           String val2 = toke.substring(pos + 1);
           values1[count] = Double.parseDouble(val1);
@@ -623,8 +572,9 @@ public class GridDatasetInv {
         int n = value.length;
         double[] offsets = new double[n];
         int count = 0;
-        for (String v : value)
+        for (String v : value) {
           offsets[count++] = Double.parseDouble(v);
+        }
         tc.setOffsetTimes(offsets);
       }
 
@@ -632,10 +582,12 @@ public class GridDatasetInv {
       List<Element> varList = timeElem.getChildren("grid");
       for (Element vElem : varList) {
         Grid grid = fmr.makeGrid(vElem.getAttributeValue("name"));
-        if (vElem.getAttributeValue("ens_id") != null)
-          grid.ec = fmr.getEnsCoordinate( Integer.parseInt(vElem.getAttributeValue("ens_id")));
-        if (vElem.getAttributeValue("vert_id") != null)
-          grid.vc = fmr.getVertCoordinate( Integer.parseInt(vElem.getAttributeValue("vert_id")));
+        if (vElem.getAttributeValue("ens_id") != null) {
+          grid.ec = fmr.getEnsCoordinate(Integer.parseInt(vElem.getAttributeValue("ens_id")));
+        }
+        if (vElem.getAttributeValue("vert_id") != null) {
+          grid.vc = fmr.getVertCoordinate(Integer.parseInt(vElem.getAttributeValue("vert_id")));
+        }
         tc.addGridInventory(grid);
         grid.tc = tc;
       }
@@ -647,8 +599,9 @@ public class GridDatasetInv {
   public static void main(String[] args) {
     String values = "1,2,3,4";
     String[] value = values.split("[,]");
-    for (String s : value)
+    for (String s : value) {
       System.out.printf("%s%n", s);
+    }
   }
 
 }
