@@ -5,7 +5,6 @@
 
 package ucar.nc2.ui;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.inventory.bdb.MetadataManager;
@@ -1133,7 +1132,7 @@ public class ToolsUI extends JPanel {
   /**
    *
    */
-  public void openWMSDataset(String datasetName) {
+  private void openWMSDataset(String datasetName) {
     makeComponent(ftTabPane, "WMS");
     wmsPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
@@ -1518,8 +1517,6 @@ public class ToolsUI extends JPanel {
    *
    */
   public static void main(String[] args) {
-    final long start = System.currentTimeMillis();
-
     if (debugListen) {
       System.out.println("Arguments:");
       for (final String arg : args) {
@@ -1573,16 +1570,6 @@ public class ToolsUI extends JPanel {
         System.out.println(" " + arg);
       }
       HTTPSession.setInterceptors(true);
-    }
-
-    // spring initialization
-    // is spring used by ToolsUI for anything? is this necessary?
-    try {
-      ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(
-          "classpath:resources/ui/spring/application-config.xml");
-    } catch (Exception exc) {
-      log.error("failed creating spring context: {}", exc.toString());
-      System.exit(1);
     }
 
     // look for command-line arguments

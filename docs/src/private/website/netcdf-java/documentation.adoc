@@ -192,7 +192,6 @@ http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_
 * http://www.jpeg.org/jpeg2000/[JPEG2000] library for decoding GRIB2 files
 * https://code.google.com/p/protobuf/[Protocol Buffers] from Google for fast object serialization
 * http://www.slf4j.org/[Simple Logging Facade for Java] (SLF4J) for logging
-* http://www.springframework.org/[Spring] lightweight application framework. Used in ToolsUI application.
 * http://www.ssec.wisc.edu/%7Ebillh/visad.html[VisAD] for reading McIDAS AREA files.
 
 === Applications using the Netcdf-Java library (partial list):
