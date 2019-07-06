@@ -9,6 +9,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.inventory.MCollection;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -38,25 +40,17 @@ import thredds.inventory.MFile;
 
 /**
  * The data inventory of one GridDataset. Track grids, time, vert, ens coordinates. Grids are
- * grouped by the time coordinated that they use. Provides serialization to/from XML. Uses dense
- * time, vert coordinates - just the ones that are in the file.
+ * grouped by the time coordinated that they use. Uses dense time, vert coordinates - just the ones that are in the file.
  *
- * This replaces the older ucar.nc2.dt.fmrc.ForecastModelRunInventory, gets rid of the definition
- * files.
- *
- * Not sure if the vert coords will ever be different across the time coords.
+ * Note: Not sure if the vert coords will ever be different across the time coords.
  *
  * Should be immutable, once the file is finished writing.
- *
- * Maybe will go away
  *
  * @author caron
  * @since Jan 11, 2010
  */
 public class GridDatasetInv {
-
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory
-      .getLogger(GridDatasetInv.class);
+  static private final Logger logger = LoggerFactory.getLogger(GridDatasetInv.class);
   static private final int REQ_VERSION = 2; // minimum required version, else regenerate XML
   static private final int CURR_VERSION = 2;  // current version
 
@@ -64,8 +58,6 @@ public class GridDatasetInv {
   // TODO: Add persistence if thats shown to be needed.
   static private Cache<String, GridDatasetInv> cache = CacheBuilder.newBuilder().maximumSize(100)
       .build();
-
-  static private boolean debug = false;  // current version
 
   public static GridDatasetInv open(MCollection cm, MFile mfile, Element ncml) throws IOException {
     try {
@@ -240,8 +232,6 @@ public class GridDatasetInv {
     return null;
   }
 
-  /////////////////////////////////////////////////////////////////////////
-
   private TimeCoord getTimeCoordinate(CoordinateAxis1DTime axis) {
     // check for same axis
     for (TimeCoord tc : times) {
@@ -263,17 +253,14 @@ public class GridDatasetInv {
     return want;
   }
 
-  Grid makeGrid(String gridName) {
+  private Grid makeGrid(String gridName) {
     return new Grid(gridName);
   }
-
-  //////////////////////////////////////////////////////
 
   /**
    * A Grid variable has a name, timeCoord and optionally a Vertical and Ensemble Coordinate
    */
   public class Grid implements Comparable {
-
     final String name;
     TimeCoord tc = null; // time coordinates reletive to getRunDate()
     EnsCoord ec = null; // optional
@@ -326,8 +313,6 @@ public class GridDatasetInv {
     }
   }
 
-  //////////////////////////////////////////////////////
-
   private VertCoord getVertCoordinate(int wantId) {
     if (wantId < 0) {
       return null;
@@ -358,8 +343,6 @@ public class GridDatasetInv {
     vaxes.add(want);
     return want;
   }
-
-  //////////////////////////////////////////////////////
 
   private EnsCoord getEnsCoordinate(int ens_id) {
     if (ens_id < 0) {
@@ -594,14 +577,6 @@ public class GridDatasetInv {
     }
 
     return fmr;
-  }
-
-  public static void main(String[] args) {
-    String values = "1,2,3,4";
-    String[] value = values.split("[,]");
-    for (String s : value) {
-      System.out.printf("%s%n", s);
-    }
   }
 
 }
