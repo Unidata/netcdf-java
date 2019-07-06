@@ -103,7 +103,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
       return new CoordinateTime2D(code, timeUnit, allVals, runtime, maxCoord, times, null);
 
     List<Coordinate> regCoords = testIsRegular();
-    if (regCoords.isEmpty())
+    if (!regCoords.isEmpty())
       return new CoordinateTime2D(code, timeUnit, allVals, runtime, regCoords, times, null);
 
     return new CoordinateTime2D(code, timeUnit, allVals, runtime, times, null);

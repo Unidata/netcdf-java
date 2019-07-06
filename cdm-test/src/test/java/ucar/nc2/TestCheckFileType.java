@@ -2,6 +2,7 @@ package ucar.nc2;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,60 +26,55 @@ import java.util.List;
  */
 @Category(NeedsContentRoot.class)
 @RunWith(Parameterized.class)
-public class TestCheckFileType extends UnitTestCommon
-{
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    static final String PREFIX = "thredds/public/testdata/";
+public class TestCheckFileType extends UnitTestCommon {
 
-    @Parameterized.Parameters(name = "{1}")
-    static public List<Object[]>
-    getTestParameters()
-    {
-        List<Object[]> result = new ArrayList<>();
-        result.add(new Object[]{NCheader.NC_FORMAT_NETCDF3, "testData.nc"});
-        result.add(new Object[]{NCheader.NC_FORMAT_64BIT_OFFSET, "nc_test_cdf2.nc"});
-        result.add(new Object[]{NCheader.NC_FORMAT_64BIT_DATA, "nc_test_cdf5.nc"});
-        result.add(new Object[]{NCheader.NC_FORMAT_HDF5, "group.test2.nc"});  // aka netcdf4
-        result.add(new Object[]{NCheader.NC_FORMAT_HDF4, "nc_test_hdf4.hdf4"});
-        return result;
+  private static final Logger logger = LoggerFactory
+      .getLogger(MethodHandles.lookup().lookupClass());
+  static final String PREFIX = "thredds/public/testdata/";
+
+  @Parameterized.Parameters(name = "{1}")
+  static public List<Object[]>
+  getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
+    result.add(new Object[]{NCheader.NC_FORMAT_NETCDF3, "testData.nc"});
+    result.add(new Object[]{NCheader.NC_FORMAT_64BIT_OFFSET, "nc_test_cdf2.nc"});
+    result.add(new Object[]{NCheader.NC_FORMAT_64BIT_DATA, "nc_test_cdf5.nc"});
+    result.add(new Object[]{NCheader.NC_FORMAT_HDF5, "group.test2.nc"});  // aka netcdf4
+    result.add(new Object[]{NCheader.NC_FORMAT_HDF4, "nc_test_hdf4.hdf4"});
+    return result;
+  }
+
+  @Before
+  public void setLibrary() {
+    // Ignore this class's tests if NetCDF-4 isn't present.
+    // We're using @Before because it shows these tests as being ignored.
+    // @BeforeClass shows them as *non-existent*, which is not what we want.
+    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+  }
+
+  @After
+  public void cleanup() {
+    super.unbindstd();
+  }
+
+  @Parameterized.Parameter(0)
+  public int kind;
+
+  @Parameterized.Parameter(1)
+  public String filename;
+
+  @Test
+  public void testCheckFileType() throws Exception {
+    String location = canonjoin(TestDir.cdmTestDataDir, canonjoin(PREFIX, filename));
+    try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
+      // Verify type
+      int found = NCheader.checkFileType(raf);
+      String foundname = NCheader.formatName(found);
+      String kindname = NCheader.formatName(kind);
+      System.err.println("Testing format: " + kindname);
+      Assert.assertTrue(String.format("***Fail: expected=%s found=%s%n", kindname, foundname),
+          kind == found);
     }
-
-    @Before
-    public void setup()
-    {
-        super.bindstd();
-        // Ignore this class's tests if NetCDF-4 isn't present.
-        // We're using @Before because it shows these tests as being ignored.
-        // @BeforeClass shows them as *non-existent*, which is not what we want.
-        Assert.assertTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
-    }
-
-    @After
-    public void cleanup()
-    {
-        super.unbindstd();
-    }
-
-    @Parameterized.Parameter(0)
-    public int kind;
-
-    @Parameterized.Parameter(1)
-    public String filename;
-
-    @Test
-    public void testCheckFileType()
-            throws Exception
-    {
-        String location = canonjoin(TestDir.cdmTestDataDir, canonjoin(PREFIX, filename));
-        try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
-            // Verify type
-            int found = NCheader.checkFileType(raf);
-            String foundname = NCheader.formatName(found);
-            String kindname = NCheader.formatName(kind);
-            System.err.println("Testing format: " + kindname);
-            Assert.assertTrue(String.format("***Fail: expected=%s found=%s%n", kindname, foundname),
-                    kind == found);
-        }
-    }
+  }
 
 }
