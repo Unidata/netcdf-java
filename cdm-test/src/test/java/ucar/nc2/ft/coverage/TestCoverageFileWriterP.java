@@ -18,6 +18,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.Optional;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -77,6 +78,10 @@ public class TestCoverageFileWriterP {
 
   @Test
   public void writeTestFile() throws IOException, InvalidRangeException {
+    // skip test requiring netcdf4 if not present.
+    if (version.useJniIosp() && !Nc4Iosp.isClibraryPresent()) {
+      return;
+    }
     System.out.printf("Test Dataset %s type %s%n", endpoint, type);
     File tempFile = tempFolder.newFile();
     System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
