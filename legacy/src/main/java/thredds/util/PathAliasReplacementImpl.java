@@ -4,12 +4,9 @@
  */
 package thredds.util;
 
-//import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * PathAliasReplacement where alias must be at the start of the path.
