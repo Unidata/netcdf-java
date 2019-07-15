@@ -241,7 +241,7 @@ public class RotatedPole extends ProjectionImpl {
       destPoint.set(lat, lon);
     }
 
-    log.debug ("Proj= " + ppt+" latlon= " + destPoint);
+    log.debug ("Proj= " + ppt + ", latlon= " + destPoint);
 
     return destPoint;
   }
