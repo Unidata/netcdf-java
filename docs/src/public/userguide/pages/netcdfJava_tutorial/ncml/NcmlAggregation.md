@@ -3,7 +3,7 @@ title: NcML Aggregation
 last_updated: 2018-04-02
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
-permalink: ncj_ncml_aggregation.html
+permalink: ncml_aggregation.html
 ---
 
 ## Introduction
@@ -577,5 +577,5 @@ One can nest netcdf elements in aggregation, for example:
 ~~~
 
 {%include note.html content="
-For more details on NcML, see the [NcML Annotated Schema](ncj_annotated_ncml_schema.html).
+For more details on NcML, see the [NcML Annotated Schema](annotated_ncml_schema.html).
 " %}

@@ -3,7 +3,7 @@ title: Basic NcML Tutorial
 last_updated: 2018-04-02
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
-permalink: ncj_basic_ncml_tutorial.html
+permalink: basic_ncml_tutorial.html
 ---
 
 ## Introduction
@@ -279,5 +279,5 @@ ncfileIn.close();
 
 
 {%include note.html content="
-For more details on NcML, see the [NcML Annotated Schema](ncj_annotated_ncml_schema.html).
+For more details on NcML, see the [NcML Annotated Schema](annotated_ncml_schema.html).
 " %}

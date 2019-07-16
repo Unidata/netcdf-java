@@ -3,7 +3,7 @@
 
 entries:
 - title: Sidebar
-  product: netCDF-Java Tutorial
+  product: netCDF-Java Tutorial and Reference Documentation
   version: 5.0.0
   folders:
 
@@ -31,194 +31,214 @@ entries:
       url: /building_from_source.html
       output: web, pdf
 
-#  - title: Working with CDM datasets
-#    output: web, pdf
-#    folderitems:
-#    - title: NetcdfFile - reading CDM files
-#      url:
-#      output: web, pdf
-#
-#    - title: NetcdfDataset - enahnced files, coordinate systems
-#      url:
-#      output: web, pdf
-#
-#    - title: NetcdfFileWriteable - writing netCDF-3 Files (CDM 4.2)
-#      url:
-#      output: web, pdf
-#
-#    - title: writing netCDF-3 and netCDF-4 Files (CDM 4.3+)
-#      url:
-#      output: web, pdf
-#
+  - title: Working with CDM datasets
+    output: web, pdf
+    folderitems:
+    - title: NetcdfFile - reading CDM files
+      url: /reading_cdm.html
+      output: web, pdf
+
+    - title: NetcdfDataset - enahnced files, coordinate systems
+      url: /netcdf_dataset.html
+      output: web, pdf
+
+    - title: writing netCDF-3 and netCDF-4 Files (CDM 4.3+)
+      url:  /writing_netcdf.html
+      output: web, pdf
+
   - title: NcML
     output: web, pdf
     folderitems:
     - title: Modifying existing files
-      url: /ncj_basic_ncml_tutorial.html
+      url: /basic_ncml_tutorial.html
       output: web, pdf
 
     - title: Aggregation
-      url: /ncj_ncml_aggregation.html
+      url: /ncml_aggregation.html
       output: web, pdf
-#
-#  - title: Writing an I/O Service Provider
-#    output: web, pdf
-#    folderitems:
-#    - title: Implementing an IOSP - Overview
-#      url:
-#      output: web, pdf
-#
-#    - title: Example - Lightning data
-#      url:
-#      output: web, pdf
-#
-#    - title: Example - DMSP data
-#      url:
-#      output: web, pdf
-#
-#    - title: IOSP details
-#      url:
-#      output: web, pdf
-#
-#    - title: Other Classes Needed when writing an IOSP
-#      url:
-#      output: web, pdf
-#
-#  - title: Coordinate Systems
-#    output: web, pdf
-#    folderitems:
-#    - title: _Coordinate Attribute Examples
-#      url:
-#      output: web, pdf
-#
-#    - title: Coordinate System Builder
-#      url:
-#      output: web, pdf
-#
-#    - title: Coordinate Transforms - Projections and Vertical Transforms
-#      url:
-#      output: web, pdf
-#
-#  - title: Scientific Feature Types
-#    output: web, pdf
-#    folderitems:
-#    - title: Feature Dataset Overview
-#      url:
-#      output: web, pdf
-#
+
+  - title: Writing an I/O Service Provider
+    output: web, pdf
+    folderitems:
+    - title: Implementing an IOSP - Overview
+      url: /writing_iosp.html
+      output: web, pdf
+
+    - title: Example - Lightning data
+      url: /lightning_example.html
+      output: web, pdf
+
+    - title: Example - DMSP data
+      url: /dmsp_example.html
+      output: web, pdf
+
+    - title: IOSP details
+      url: /iosp_details.html
+      output: web, pdf
+
+    - title: Other Classes Needed when writing an IOSP
+      url: /other_classes.html
+      output: web, pdf
+
+  - title: Coordinate Systems
+    output: web, pdf
+    folderitems:
+    - title: _Coordinate Attribute Examples
+      url: /coord_attribute_ex.html
+      output: web, pdf
+
+    - title: Coordinate System Builder
+      url: /coord_system_builder.html
+      output: web, pdf
+
+    - title: Coordinate Transforms - Projections and Vertical Transforms
+      url: /coord_transform.html
+      output: web, pdf
+
+  - title: Scientific Feature Types
+    output: web, pdf
+    folderitems:
+    - title: Feature Dataset Overview
+      url: /feature_types.html
+      output: web, pdf
+
     - title: Grid Datasets
-      url: /ncj_grid_data_type.html
+      url: /grid_datasets.html
       output: web, pdf
-#
-#    - title: Radial Datatype
-#      url:
-#      output: web, pdf
-#
-#    - title: Point Feature Datasets (aka Discrete Sampling Geometry datasets)
-#      url:
-#      output: web, pdf
-#
-#  - title: Runtime Loading
-#    output: web, pdf
-#    folderitems:
-#    - title: Summary
-#      url:
-#      output: web, pdf
-#
-#  - title: Reference Docs
-#    output: web, pdf
-#    folderitems:
-#    - title: CDM Utility Programs
-#      url:
-#      output: web, pdf
-#
-#    - title: Cookbook Examples
-#      url:
-#      output: web, pdf
-#
-#    - title: netCDF-Java and TDS Doc Guide
-#      url: /doc_guide.html
-#      output: web, pdf
-#
+
+    - title: Radial Datasets
+      url: /radial_datasets.html
+      output: web, pdf
+
+    - title: Point Feature Datasets (aka Discrete Sampling Geometry datasets)
+      url: /point_feature_datasets.html
+      output: web, pdf
+
+  - title: Runtime Loading
+    output: web, pdf
+    folderitems:
+    - title: Summary
+      url: /runtime_loading.html
+      output: web, pdf
+
   - title: netCDF-Java Reference Docs
     output: web, pdf
     folderitems:
-#    - title: ArrayStructures
-#      url:
-#      output: web, pdf
-#
-#    - title: BUFR Files
-#      url: 
-#      output: web, pdf
-    - title: netCDF-Java and TDS Doc Guide
-      url: /ncj_doc_guide.html
-      output: web, pdf
-      
-    - title: NcML Overview
-      url: /ncml_overview.html
-      output: web, pdf
-      
-    - title: Annotated Schema for NcML
-      url: /ncj_annotated_ncml_schema.html
+
+    - title: ArrayStructures
+      url: /arraystructures_ref.html
       output: web, pdf
 
-    - title: NcML Cookbook
-      url: /ncj_ncml_cookbook.html
+    - title: BUFR Files
+      url: /bufr_processing.html
       output: web, pdf
 
-    - title: Dataset URLs
-      url: /ncj_dataset_urls.html
-      output: web, pdf
-
-    - title: Read over HTTP
-      url: /ncj_read_over_http.html
+    - title: BUFR Tables
+      url: /bufr_tables.html
       output: web, pdf
 
     - title: CDM File Types
-      url: /ncj_file_types.html
+      url: /file_types.html
       output: web, pdf
 
     - title: CDM Disk Caching
-      url: /ncj_disk_caching.html
+      url: /disk_caching.html
       output: web, pdf
 
     - title: CDMRemote
-      url: /ncj_cdmremote.html
+      url: /cdmremote.html
       output: web, pdf
 
     - title: CDM Feature Datasets
-      url: /ncj_feature_datasets.html
+      url: /feature_datasets.html
       output: web, pdf
 
     - title: CDMRemote Feature Datasets
-      url: /ncj_cdmremote_feature_datasets.html
+      url: /cdmremote_feature_datasets.html
       output: web, pdf
 
-    - title: ToolsUI Reference
-      url: /toolsUI_ref.html
-      output: web, pdf
-
-    - title: Feature Datasets Reference
-      url: /feature_datasets_ref.html
-      output: web, pdf
-
-    - title: PointFeature Reference
-      url: /pointfeature_ref.html
+    - title: CDM Utility Programs
+      url: /cdm_utility_programs.html
       output: web, pdf
 
     - title: CF DSG Encoding Table
       url: /cf_dsg_encoding_ref.html
       output: web, pdf
 
-    - title: ArrayStructures
-      url: /arraystructures_ref.html
+    - title: Coordinate Attribute Convention
+      url: /coord_attr_conv.html
+      output: web, pdf
+
+    - title: Coverage Feature Reference
+      url: /coverage_feature.html
+      output: web, pdf
+
+    - title: Dataset URLs
+      url: /dataset_urls.html
+      output: web, pdf
+
+    - title: Feature Datasets Reference
+      url: /feature_types.html
+      output: web, pdf
+
+    - title: Frequently Asked Questions
+      url: /faq.html
+      output: web, pdf
+
+    - title: GRIB Files in CDM
+      url: /grib_files_cdm.html
+      output: web, pdf
+
+    - title: GRIB Tables in CDM
+      url: /grib_tables.html
+      output: web, pdf
+
+    - title: NcML Overview
+      url: /ncml_overview.html
+      output: web, pdf
+
+    - title: NcML Cookbook
+      url: /ncml_cookbook.html
+      output: web, pdf
+
+    - title: Annotated Schema for NcML
+      url: /annotated_ncml_schema.html
+      output: web, pdf
+
+    - title: NC Stream
+      url: /ncstream.html
+      output: web, pdf
+
+    - title: NC Stream Grammar
+      url: /ncstream_grammar.html
+      output: web, pdf
+
+    - title: netCDF-Java and TDS Doc Guide
+      url: /doc_guide.html
+      output: web, pdf
+
+    - title: NetCDF Subset Service
+      url: subset_service.html
       output: web, pdf
 
     - title: netCDF C Library
       url: /netcdf4_c_library.html
       output: web, pdf
 
-    - title: CDM Utility Programs
-      url: /cdm_utility_programs.html
+    - title: PointFeature Reference
+      url: /pointfeature_ref.html
       output: web, pdf
+
+    - title: Read CDM files over HTTP
+      url: /read_over_http.html
+      output: web, pdf
+
+    - title: Standard Horizontal Coordinate Transforms
+      url: /std_horizonal_coord_transforms.html
+      output: web, pdf
+
+    - title: ToolsUI Reference
+      url: /toolsUI_ref.html
+      output: web, pdf
+
 

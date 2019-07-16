@@ -3,7 +3,7 @@ title: Read over HTTP
 last_updated: 2018-10-10
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
-permalink: ncj_read_over_http.html
+permalink: read_over_http.html
 ---
 
 ## Remote CDM files from an HTTP Server
