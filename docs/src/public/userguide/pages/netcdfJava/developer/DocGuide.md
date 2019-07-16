@@ -3,7 +3,7 @@ title: Documentation Guide
 last_updated: 2018-04-02
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
-permalink: ncj_doc_guide.html
+permalink: doc_guide.html
 ---
 
 ## Working with the Docs
@@ -56,14 +56,14 @@ Note that these errors are often cryptic, so it is a good idea to save and force
 Jekyll uses kramdown, which is a superset of Markdown.
 General kramdown syntax can be found here:
 
-<https://kramdown.gettalong.org/syntax.html>){:target="_blank"}
+<https://kramdown.gettalong.org/syntax.html>{:target="_blank"}
 
 ## Documentation Theme for Jekyll
 
 We use the Documentation Theme for Jekyll.
 Information on how the theme works can be found here:
 
-<http://idratherbewriting.com/documentation-theme-jekyll/index.html>){:target="_blank"}
+<http://idratherbewriting.com/documentation-theme-jekyll/index.html>{:target="_blank"}
 
 ## Front Matter
 
@@ -333,7 +333,7 @@ title: Documentation Guide
 last_updated: 2017-02-17
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
-permalink: ncj_doc_guide.html
+permalink: doc_guide.html
 ---
 {% raw %}
 {% capture rmd %}{% includefile pages/netcdfJava/developer/DocGuide.inc %}{% endcapture %}

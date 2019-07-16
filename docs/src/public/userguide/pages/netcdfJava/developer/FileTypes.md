@@ -3,7 +3,7 @@ title: CDM File Types
 last_updated: 2018-10-10
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
-permalink: ncj_file_types.html
+permalink: file_types.html
 ---
 
 The NetCDF-Java/CDM library provides a uniform API to many different scientific file formats and remote access protocols.
