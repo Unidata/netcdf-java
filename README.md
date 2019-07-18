@@ -17,7 +17,7 @@ For more information about netCDF-Java/CDM, see the netCDF-Java web page at
 
 and the CDM web page at
 
-http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html
+https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0/userguide/common_data_model_overview.html
 
 You can obtain a copy of the latest released version of netCDF-Java software
 from
@@ -26,7 +26,7 @@ from
 
 More documentation can be found at
 
-* http://www.unidata.ucar.edu/software/netcdf-java/documentation.htm
+* https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0.0/userguide/index.html
 
 A mailing list, netcdf-java@unidata.ucar.edu, exists for discussion of all
 things netCDF-Java/CDM including announcements about netCDF-Java/CDM bugs,
@@ -54,7 +54,7 @@ tools, support these features of NcML
 
 For more information about NcML, see the NcML web page at
 
-http://www.unidata.ucar.edu/software/netcdf/ncml/
+https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0/userguide/ncml_overview.html
 
 ## THREDDS Catalogs
 
@@ -85,6 +85,6 @@ are available from Unidata's Nexus repository:
 
 * https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-all
 
-To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0.0/userguide/building_from_source.html).
+To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0/userguide/building_from_source.html).
 
 To use the netCDF-Java library as a depenency using maven or gradle, follow [these instructions](https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/BuildDependencies.html).
