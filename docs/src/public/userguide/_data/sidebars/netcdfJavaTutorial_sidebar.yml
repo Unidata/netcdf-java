@@ -257,4 +257,6 @@ entries:
       url: /toolsUI_ref.html
       output: web, pdf
 
-
+    - title: 5.0 Changes
+      url: /upgrade_to_5.html
+      output: web, pdf
