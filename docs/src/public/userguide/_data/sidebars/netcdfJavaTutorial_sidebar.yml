@@ -27,6 +27,14 @@ entries:
       url: /common_data_model_overview.html
       output: web, pdf
 
+    - title: CDM Data Types
+      url: /cdm_datatypes.html
+      output: web, pdf
+
+    - title: CDM Object Names
+      url: / cdm_objectnames.html
+      output: web, pdf
+
     - title: Building from Source
       url: /building_from_source.html
       output: web, pdf
@@ -155,6 +163,14 @@ entries:
 
     - title: CDMRemote Feature Datasets
       url: /cdmremote_feature_datasets.html
+      output: web, pdf
+
+    - title: CDM to NetCDF Mapping
+      url: /cdm_netcdf_mapping.html
+      output: web, pdf
+
+    - title: NetCDF4 Compound Attributes
+      url: /cdm_netcdf_mapping.html
       output: web, pdf
 
     - title: CDM Utility Programs

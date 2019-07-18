@@ -5,15 +5,15 @@ sidebar: netcdfJavaTutorial_sidebar
 permalink: common_data_model_overview.html
 toc: false
 ---
-## Unidiata's Common Data Model Version 4
+## Unidiata's Common Data Model Version 4file formats
 
-Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model\" target="_blank">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org/OPeNDAP" target="_blank">OPeNDAP</a>, and <a href="http://www.hdfgroup.org/products/hdf5/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/FileTypes.html">Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model\" target="_blank">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org/OPeNDAP" target="_blank">OPeNDAP</a>, and <a href="http://www.hdfgroup.org/products/hdf5/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/FileTypes.html" target="_blank">file formats</a> besides netCDF. We call these CDM files, a shorthand for files that can be read by the NetCDF Java library and accessed through the CDM data model.
+Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many file types. Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many [file formats](/file_types.html) besides netCDF. We call these CDM files, a shorthand for files that can be read by the NetCDF Java library and accessed through the CDM data model.
 
 The Common Data Model has three layers, which build on top of each other to add successively richer semantics:
 
-1.  The <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/index.html#dataAccess" target="_blank"> data access layer </a>, also known as the <b>_syntactic layer_</b>, handles data reading and writing.
-2.  The <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/index.html#CoordSys" target="_blank">coordinate system</a> layer identifies the coordinates of the data arrays. Coordinates are a completely general concept for scientific data; we also identify specialized <b>_georeferencing coordinate systems_</b>, which are important to the Earth Science community.
-3.  The <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/index.html#ScientificFeatureTypes" target="_blank"> scientific feature type</a> layer identifies specific types of data, such as grids, radial, and point data, adding specialized methods for each kind of data.
+1. The [Data Access Layer ](#data-access-layer-object-model), also known as the <b>_syntactic layer_</b>, handles data reading and writing.
+2. The [Coordinate System ](#coordinate-system-object-model) layer identifies the coordinates of the data arrays. Coordinates are a completely general concept for scientific data; we also identify specialized <b>_georeferencing coordinate systems_</b>, which are important to the Earth Science community.
+3. The [Scientific Feature Types](#scientific-feature-types) layer identifies specific types of data, such as grids, radial, and point data, adding specialized methods for each kind of data.
 
 
 ## Data Access Layer Object Model
@@ -40,7 +40,7 @@ An <b>_Array_</b> contains the actual data for a Variable after it is read from 
 
 An <b>_ArrayStructure_</b> is a subclass of Array that holds the data for Structure Variables. Essentially it is an array of <b>_StructureData_</b> objects.
 
-<a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/DataType.html" target="_blank">DataType</a> describes the possible types of data:
+[CDM Datatypes](/cdm_datatypes.html){:target="_blank"} describes in detail the possible types of data:
 
 The primitive numeric types are byte, short, int, long, float and double. The integer types (8-bit byte, 16-bit short, 32-bit int, 64-bit long) may be signed or unsigned. Variable and Array objects have isUnsigned() methods to indicate, and conversion to wider types is correctly done.
 
@@ -52,11 +52,11 @@ The primitive numeric types are byte, short, int, long, float and double. The in
 
 * An opaque type stores uninterpreted blobs of bytes. The length of the blob is not known until it is read. An array of opaque objects may have different lengths for each of the blobs.
 
-An Object name refers to the name of a Group, Dimension, Variable, Attribute, or EnumTypedef. An object name is a String, a variable length array of Unicode characters. The <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/Identifiers.html" target="_blank">set of allowed characters</a> is still being considered.
+An Object name refers to the name of a Group, Dimension, Variable, Attribute, or EnumTypedef. An object name is a String, a variable length array of Unicode characters. The [set of allowed characters](/cdm_objectnames.html) is still being considered.
 
 ### Comparision to netCDF-4
 
-The CDM data model is close to, but not identical with the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Format.html" target="_blank">netCDF-4 data model</a> (informal <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html" target="_blank">UML)</a>. However there is a complete 2-way mapping between the two models. In the CDM:
+The CDM data model is close to, but not identical with the <a href="https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_data_model.html" target="_blank">netCDF-4 data model</a> <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html" target="_blank">(informal UML)</a>. However there is a complete 2-way mapping between the two models. In the CDM:
 
 Non-shared dimensions are allowed, but netCDF-4 does not support these.
 * An attribute type may only be a scalar or 1D array of byte, short, int, long, float, double, or String.
@@ -69,17 +69,20 @@ Non-shared dimensions are allowed, but netCDF-4 does not support these.
     * A NetCDF-4 Vlen is mapped to a CDM variable length Dimension.
     * A NetCDF-4 Opaque type is a CDM opaque type, but the length of the data cannot be found until you read the variable.
     
-See <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/Netcdf4.html" target="_blank">here</a> for detailed mapping between the NetCDF-4 and CDM data models.
+See [CDM to NetCDF mapping](/cdm_netcdf_mapping.html) for detailed mapping between the NetCDF-4 and CDM data models.
 
 ### Comparision to OPeNDAP (DAP 2)
+
 * OPeNDAP allows nested attributes, but in the CDM, attributes may only be a scalar or 1D array of byte, short, int, long, float, double, or String.
 * OPeNDAP does not have these data types: signed byte, char, long, opaque, enum.
 * OPeNDAP does not have shared dimensions. These can be approximated by map vectors in Grid datatypes, but one cannot share dimensions across Grids, or between Arrays.
 * OPeNDAP does not support Groups.
 * OPeNDAP Sequences map to CDM Sequences, but CDM does not support relational constraints at this layer.
 See <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/Opendap.html" target="_blank">here</a> for more details on OPeNDAP processing.
+file formats
 
 ### Comparision to HDF-5
+
 As of version 4.1, the CDM can read all versions of HDF5 through version 1.8.4, except for the following HDF5 features:
 
 * SZIP compression. The <a href="http://www.hdfgroup.org/doc_resource/SZIP/" target="_blank">SZIP library</a> is proprietary and does not have a Java implementation. Its not clear if we can even legally write one if we wanted to.
@@ -90,7 +93,7 @@ As of version 4.1, the CDM can read all versions of HDF5 through version 1.8.4, 
 
 ## Coordinate System Object Model
 
-{% include image.html file="netcdf-java/tutorial/CoordSys.png" alt="Coord Sys Object Model" caption="" %}
+{% include image.html file="netcdf-java/tutorial/coordsystems/CoordSys.png" alt="Coord Sys Object Model" caption="" %}
 
 A <b>_Variable_</b> can have zero or more Coordinate Systems containing one or more CoordinateAxis. A CoordinateAxis can only be part of a Variable's CoordinateSystem if the CoordinateAxis' set of Dimensions is a subset of the Variable's set of Dimensions. This ensures that every data point in the Variable has a corresponding coordinate value for each of the CoordinateAxis in the CoordinateSystem.
 
@@ -149,10 +152,11 @@ NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis 
   float lon(y,x);
   float temperature(y,x);
     temperature:coordinates="lat lon";
-~~~    
+~~~
+    
 Note that in this example, there is no CoordinateSystem object, so the same list has to be added to each Variable, and any CoordinateTransform specifications also have to be added to each Variable. However, the common case is that all the Variables in a dataset use the same Coordinate System.
 
-The <b>_ucar.nc2.dataset_</b> layer reads various Conventions and extracts the Coordinate Systems using the CoordSysBuilder framework. We often use a set of internal attributes called the <A href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/CoordinateAttributes.html" target="_blank">underscore Coordinate</a> attributes as a way to standardize the Coordinate Systems infomation. Although these may work when working with Unidata software, we do not recommend them as a substitute for conventions such as CF.
+The <b>_ucar.nc2.dataset_</b> layer reads various Conventions and extracts the Coordinate Systems using the CoordSysBuilder framework. We often use a set of internal attributes called the [Underscore Coordinate](/coord_attr_conv.html) attributes as a way to standardize the Coordinate Systems information. Although these may work when working with Unidata software, we do not recommend them as a substitute for conventions such as CF.
 
 ## Scientific Feature Types
 
@@ -162,8 +166,6 @@ With these Feature Types objects, mapping into other data models like ISO/OGC be
 
 Feature Type definitions, APIU, and encodings are still being developed, so applications using these must be able to evolve along with the APIs.
 
-* <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html" target="_blank">FeatureDataset APIs</a>
-* <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/PointFeatures.html" target="_blank">Point Feature APIs</a>
-* CF Discrete Sampling Geometries conventions (final) <a href="http://www.unidata.ucar.edu/staff/caron/public/CFch9-may10.pdf" target="_blank">pdf</a> (May 2012)
-* CDM Feature Types draft <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/CDMfeatures.doc" target="_blank">doc</a>
-* CDM Point Feature Types draft <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/CDMpoints.doc" target="_blank">doc</a>
+* [Feature Dataset API](/feature_types.html)
+* [CDM Point Feature Types](/pointfeature_ref.html)
+* <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/CDMfeatures.doc" target="_blank">CDM Feature Types-draft</a>
