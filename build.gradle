@@ -36,6 +36,8 @@ allprojects {
     // Matches Maven's "project.groupId". Used in MANIFEST.MF for "Implementation-Vendor-Id".
     group = "edu.ucar"
     // Matches Maven's "project.version". Used in MANIFEST.MF for "Implementation-Version".
+    // We try to follow semantic versioning, and thus we use <major>.<minor>.<patch>-<prerelease version>
+    // <prerelease version> may be SNAPSHOT, alphax, betax, etc.
     version = '5.0.0-SNAPSHOT'
     // Eventually, we'll stop appending "SNAPSHOT" to our versions and just use this.
     status = 'development'
@@ -58,7 +60,21 @@ ext {
     // Matches Maven's "project.organization.name". Used in MANIFEST.MF for "Implementation-Vendor".
     vendor = "UCAR/Unidata"
 
-    docVersion = "$version".split("-")[0]
+    // It makes sense to publish major.minor versions of the docs, as
+    // any patch bumps should be backwards compatible bug fixes only
+    // To do this, we need to make a special "doc version" string.
+    // First, drop any dangling snapshot, alpha, beta tags
+    cleanVersion = "$version".split("-")[0]
+
+    // tokenize version on the '.' character, which gives us a list of [major, minor, patch]
+    docVersionParts = cleanVersion.tokenize('.')
+
+    // we should always have a major, minor, and patch value in our version
+    assert docVersionParts.size == 3
+
+    // keep major and minor parts of the version and use those to version the docs
+    docVersion = docVersionParts[0] + "." + docVersionParts[1]
+    
     // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
     url = "https://docs.unidata.ucar.edu/thredds/netcdf-java/$docVersion/userguide/index.html"
 
