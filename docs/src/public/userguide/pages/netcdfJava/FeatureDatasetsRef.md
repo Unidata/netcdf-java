@@ -1,5 +1,5 @@
 ---
-title: Feature Datasets
+title: Feature Datasets Reference
 last_updated: 2018-10-20
 sidebar: tdsTutorial_sidebar
 toc: false
