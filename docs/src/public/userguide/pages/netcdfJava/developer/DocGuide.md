@@ -139,7 +139,7 @@ General format is:
 [text of link](url){:target="_blank"}
 ~~~
 
-When linking between markdown files, the `url` will be the permalink defined in the front matter of the markdown file you wish to link to (need to include a leading `/`).
+When linking between markdown files, the `url` will be the permalink defined in the front matter of the markdown file you wish to link to (do not include a leading `/`).
 
 ## highlight blocks
 

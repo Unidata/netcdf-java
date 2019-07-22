@@ -85,7 +85,7 @@ public class MyIosp extends ucar.nc2.iosp.AbstractIOServiceProvider {
 2. You will then be called again with the same file, and an empty NetcdfFile object, which you will populate. If you need to do a lot of I/O, you should periodically check <b>cancelTask.isCancel()</b>, and if its true, return immediately. This allows users to cancel the opening of a dataset if its taking too long.
 3. Data will be read from Variable through this call. The section defines the requested data subset.
 4. Release all resources, for example, by calling <b>RandomAccessFile.close()</b>.
-5. You must give your IOSP a unique id. See <a href="/file_types.html">CDM File Types</a>.
+5. You must give your IOSP a unique id. See <a href="file_types.html">CDM File Types</a>.
 6. If you use Structures, data for Variables that are members of Structures are read through this method. If you dont override, the default implementation in <b>AbstractIOServiceProvider</b> is used. Override in order to improve performance
 7. If any of your top level variables (not inside of a Structure) are Sequences, this is how the data in them will be accessed, and you must implement it.
 8. If the file may change since it was opened, you may optionally implement this routine. The changes must not affect any of the structural metadata. For example, in the NetCDF-3 IOSP, we check to see if the record dimension has grown.
