@@ -8,7 +8,7 @@ toc: false
 
 ## NetCDF File Writing (version 4.3+)
 
-CDM version 4.3 and above allows you to programatically create, edit, and add data to netCDF-3 and netCDF-4 files, using NetcdfFileWriter or the FileWriter2 class. If you just want to copy an existing CDM dataset, you can use the <a href="cdm_utility_programs.html#nccopy">CDM nccopy application</a>. By combining nccopy and NcML, you can copy just parts of an existing dataset, as well as <a href="/ncml_overview.html" >make modifications to it with NcML</a>.
+CDM version 4.3 and above allows you to programatically create, edit, and add data to netCDF-3 and netCDF-4 files, using NetcdfFileWriter or the FileWriter2 class. If you just want to copy an existing CDM dataset, you can use the <a href="cdm_utility_programs.html#nccopy">CDM nccopy application</a>. By combining nccopy and NcML, you can copy just parts of an existing dataset, as well as <a href="ncml_overview.html" >make modifications to it with NcML</a>.
 
 Writing netCDF-4 files requires that you install the <a href="netcdf4_c_library.html">netCDF-4 C library</a> on your machine.
 

@@ -51,9 +51,9 @@ where the x,y values in this equation are the ones that you put into the x and y
 
 #### Resources
 
-* Standard vertical transforms are documented on this page. You can also [implement your own](/coord_system_builder.html).
-* You may also be interested in [Standard Vertical Coordinate Transforms](/std_vertical_coord_transforms.html).
-* The [CDM _Coordinate Conventions](/coord_attr_conv.html)
+* Standard vertical transforms are documented on this page. You can also [implement your own](coord_system_builder.html).
+* You may also be interested in [Standard Vertical Coordinate Transforms](std_vertical_coord_transforms.html).
+* The [CDM _Coordinate Conventions](coord_attr_conv.html)
 
 ### Standard Horizontal Transforms (Projections)
 

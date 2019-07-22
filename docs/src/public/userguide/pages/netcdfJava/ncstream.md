@@ -36,10 +36,10 @@ We don't use protobuf messages for the data, since protobuf messages are built i
 
 Variable length datatypes like String and Opaque use the vdataMessage for data transfer. First the number of objects is written, then each object, preceded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes.
 
-Ncstream implements the full [CDM data model](/common_data_model_overview.html).
+Ncstream implements the full [CDM data model](common_data_model_overview.html).
 
 See also:
 
 [ncstream grammar](ncstream_grammar.html)
 
-[CDM Remote Web service](/cdmremote.html)
+[CDM Remote Web service](cdmremote.html)
