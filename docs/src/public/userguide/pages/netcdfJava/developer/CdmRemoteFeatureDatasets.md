@@ -8,7 +8,7 @@ permalink: cdmremote_feature_datasets.html
 
 ### CDM Remote Web Service
 
-[CDM Remote](#/cdmremote.html) is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. An experimental python client is under development. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are two levels of services:
+[CDM Remote](cdmremote.html) is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. An experimental python client is under development. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are two levels of services:
 
 1. CDM Remote provides index subsetting on remote CDM datasets, with the same functionality that NetcdfFile provides for CDM local datasets and DODSNetcdfFile provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.
 
