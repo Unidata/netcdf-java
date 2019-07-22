@@ -7,7 +7,6 @@ package ucar.nc2.ui;
 
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
-import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.catalog.ThreddsUI;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPSession;
@@ -121,7 +120,6 @@ public class ToolsUI extends JPanel {
   private DirectoryPartitionPanel dirPartPanel;
   private FeatureScanOpPanel ftPanel;
   private FmrcPanel fmrcPanel;
-  private FmrcCollectionPanel fmrcCollectionPanel;
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
   private GribCodePanel gribCodePanel;
@@ -569,12 +567,6 @@ public class ToolsUI extends JPanel {
         c = fmrcPanel;
         break;
 
-      case "Collections":
-        fmrcCollectionPanel = new FmrcCollectionPanel(
-            (PreferencesExt) mainPrefs.node("collections"));
-        c = fmrcCollectionPanel;
-        break;
-
       case "NCDump":
         ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
         c = ncdumpPanel;
@@ -768,10 +760,6 @@ public class ToolsUI extends JPanel {
     }
     if (bufrCdmIndexPanel != null) {
       bufrCdmIndexPanel.save();
-    }
-    //if (gribCdmIndexPanel != null) gribCdmIndexPanel.save();
-    if (fmrcCollectionPanel != null) {
-      fmrcCollectionPanel.save();
     }
     if (fcPanel != null) {
       fcPanel.save();
@@ -1398,7 +1386,6 @@ public class ToolsUI extends JPanel {
     }
     FileCache.shutdown();           // shutdown threads
     DiskCache2.exit();              // shutdown threads
-    MetadataManager.closeAll();     // shutdown bdb
   }
 
   /**
@@ -1636,13 +1623,6 @@ public class ToolsUI extends JPanel {
 
     // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
-
-    try {
-      // MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
-      thredds.inventory.CollectionManagerAbstract.setMetadataStore(MetadataManager.getFactory());
-    } catch (Exception exc) {
-      log.error("CdmInit: Failed CollectionManagerAbstract.setMetadataStore - {}", exc.toString());
-    }
 
     // open dap initializations
     DODSNetcdfFile.setAllowCompression(true);

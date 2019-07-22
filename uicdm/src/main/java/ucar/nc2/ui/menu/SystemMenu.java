@@ -5,7 +5,8 @@
 
 package ucar.nc2.ui.menu;
 
-import thredds.inventory.bdb.MetadataManager;
+import com.google.common.collect.ImmutableList;
+import java.util.Set;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
@@ -14,40 +15,20 @@ import ucar.ui.widget.PLAF;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Properties;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 
-/**
- *
- */
 public class SystemMenu extends JMenu {
-
     private ToolsUI toolsui;
+    private static boolean isCacheInit;
 
-    static boolean isCacheInit;
-
-/**
- *
- */
     public SystemMenu(final ToolsUI tui) {
         super("System");
         setMnemonic('S');
 
         this.toolsui = tui;
-
-        // Add the items
-        final AbstractAction act = new AbstractAction() {
-            public void actionPerformed(final ActionEvent e) {
-                MetadataManager.closeAll(); // shutdown bdb
-            }
-        };
-        BAMutil.setActionProperties(act, null, "Close BDB database", false, 'S', -1);
-        BAMutil.addActionToMenu(this, act);
 
         final AbstractAction clearHttpStateAction = new AbstractAction() {
             public void actionPerformed(final ActionEvent e) {
@@ -136,9 +117,8 @@ public class SystemMenu extends JMenu {
             public void actionPerformed(final ActionEvent e) {
                 toolsui.getDatasetViewerPanel().setText("System Properties\n");
                 final Properties sysp = System.getProperties();
-                final Enumeration eprops = sysp.propertyNames();
-                final ArrayList<String> list = Collections.list(eprops);
-                Collections.sort(list);
+                final Set<String> eprops = sysp.stringPropertyNames();
+                final ImmutableList<String> list = ImmutableList.copyOf(eprops);
 
                 for (Object aList : list) {
                     final String name = (String) aList;
@@ -163,9 +143,6 @@ public class SystemMenu extends JMenu {
         BAMutil.addActionToMenu(this, exitAction);
     }
 
-/**
- *
- */
     private void addPlafSubmenu() {
         final JMenu plafMenu = new JMenu("Look and Feel");
         plafMenu.setMnemonic('L');
