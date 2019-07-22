@@ -20,7 +20,7 @@ toc: false
 
 ### Miscellaneous
 
-* <a href="/building_from_source.html" target="_blank">How do I build from source or contribute to the NetCDF Java Library?</a>
+* <a href="building_from_source.html" target="_blank">How do I build from source or contribute to the NetCDF Java Library?</a>
 
 ### Arrays
 #### Q: I want to read data from a NetcdfFile and use another package to process the results, which doesn't use ucar.ma2.Array. How can I get the data out of the Array object most efficiently?
@@ -83,7 +83,7 @@ The main reason to use object caching is in a high performance server applicatio
 
 Q: How do I control where temporary files are placed (Disk Caching)?
 
-See [Disk Caching](/disk_caching.html).
+See [Disk Caching](disk_caching.html).
 
 ### I/O Service Provider
 
@@ -93,7 +93,7 @@ An <b>_I/O Service Provider (IOSP)_</b> is a Java class that implements the <b>_
 
 #### Q: I have lots of data in a proprietary format. How do I read it into the CDM?
 
-You write a class that implements the IO Service Provider interface, typically by subclassing ucar.nc2.iosp.AbstractIOServiceProvider. See section 4 of the [tutorial](/common_data_model_overview.html).
+You write a class that implements the IO Service Provider interface, typically by subclassing ucar.nc2.iosp.AbstractIOServiceProvider. See section 4 of the [tutorial](common_data_model_overview.html).
 
 #### Q: I want to create a NetcdfFile from some other source than a file. But an IOSP is designed to get data from a RandomAccessFile. So what do I do?
 
@@ -155,7 +155,7 @@ Generally its much easier to debug NcML outside of the TDS. Here are some guidel
     4. Make sure the referenced datasets are available. If its an aggregation, a simple thing to do is to copy two or more of the files and put them in the same directory as test.ncml. Use a scan element or explicitly list them in a <netcdf> element, with the location attribute being the relative path name.
     
 2. Open test.ncml in the viewer tab of ToolsUI, to check for NcML errors. You now see directly what the modified dataset looks like. Modify test.ncml and re-open it until you get it right. The NcML tab allows you to edit and save the NcML file, but it is a very primitive editor.
-3. If its a grid dataset,open it in the FeatureTypes/Grid tab to make sure you see grids, to check for complete coordinate system. If you don't see the grids you expect, the CoordSys tab might be helpful. It takes some expertise to understand how [Coordinate systems work](/common_data_model_overview.html). When all else fails, follow the <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html"> CF specification</a>.
+3. If its a grid dataset,open it in the FeatureTypes/Grid tab to make sure you see grids, to check for complete coordinate system. If you don't see the grids you expect, the CoordSys tab might be helpful. It takes some expertise to understand how [Coordinate systems work](common_data_model_overview.html). When all else fails, follow the <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html"> CF specification</a>.
 4. If its an aggregation, the NcML/Aggregation tab will show you the individual file in the aggregation.
 5. If its an FMRC aggregation, the Fmrc/FmrcImpl tab will show you the various datasets found.
 6. Once things are working correctly, put your changes back into TDS catalog and restart the server
@@ -216,9 +216,9 @@ See [File Types])/common_data_model_overview.html).
 
 #### Q: How do I read a file of type X?
 
-In general, you [open any CDM file](/common_data_model_overview.html) in the same way, and access it through the [extended netCDF data model(/common_data_model_overview.html#data-access-layer-object-model). The whole point of the CDM is to hide the details of the file format. However, some file type may require special handling:
+In general, you [open any CDM file](common_data_model_overview.html) in the same way, and access it through the [extended netCDF data model(/common_data_model_overview.html#data-access-layer-object-model). The whole point of the CDM is to hide the details of the file format. However, some file type may require special handling:
 
-GRIB and BUFR files may require special tables that the CDM doesn't have. Open the file as above and see 1) if you get any error messages, 2) if any of the variables have "Unknown" in their name, and 3) if the data looks wrong. If any of those happen, prepare to enter [GRIB table hell realm](/grib_tables.html). (BUFR is arguably worse, but there's nothing yet that you can do about it).
+GRIB and BUFR files may require special tables that the CDM doesn't have. Open the file as above and see 1) if you get any error messages, 2) if any of the variables have "Unknown" in their name, and 3) if the data looks wrong. If any of those happen, prepare to enter [GRIB table hell realm](grib_tables.html). (BUFR is arguably worse, but there's nothing yet that you can do about it).
 
 #### Q: Can files be compressed and still be read? How does that work?
 
@@ -237,9 +237,9 @@ The netCDF-Java library will uncompress/unzip and write a new file without the s
 ### Writing
 #### Q: Ok, so you read a lot of files, what about writing?
 
-Netcdf-Java library supports writing netCDF-3 file format using the [classic data model]. Writing to the netCDF-4 file format is supported using a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the [netCDF C library]( /netcdf4_c_library.html). Writing the full [CDM data model](/common_data_model_overview.html) is in beta, as of version 4.5. See:
+Netcdf-Java library supports writing netCDF-3 file format using the [classic data model]. Writing to the netCDF-4 file format is supported using a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the [netCDF C library]( /netcdf4_c_library.html). Writing the full [CDM data model](common_data_model_overview.html) is in beta, as of version 4.5. See:
 
-* Program with complete control: <b>_ucar.nc2.NetcdfFileWriter_</b> javadoc and [NetCDF File Writing tutorial](/writing_netcdf.html).
+* Program with complete control: <b>_ucar.nc2.NetcdfFileWriter_</b> javadoc and [NetCDF File Writing tutorial](writing_netcdf.html).
 * Copy complete files from a program: <b>_ucar.nc2.FileWriter2_</b> writes CDM files to netCDF-3 or netCDF-4 format.
 * Command line file copying: See here for details.
 
@@ -247,13 +247,13 @@ Netcdf-Java library supports writing netCDF-3 file format using the [classic dat
 
 The netCDF-4 file format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. NetCDF adds shared dimensions, so it is unfortunately not a strict subset of HDF5. Gory details are here:  <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">Part 1</a>, <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2">Part 2</a>, <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.
 
-HDF5 is a very complicated format, and we do not plan to write a pure Java version for writing netCDF4 files (we do have a pure Java version for reading both HDF5 and netCDF-4). You must use the JNI interface to the [netCDF C library](/netcdf4_c_library.html).
+HDF5 is a very complicated format, and we do not plan to write a pure Java version for writing netCDF4 files (we do have a pure Java version for reading both HDF5 and netCDF-4). You must use the JNI interface to the [netCDF C library](netcdf4_c_library.html).
 
 #### Q: Can I stream a NetcdfFile object to a client?
 
 NetCDF is a random access format, so streaming is not possible in general. The way to do this is to write to a disk file (so that you have a random access file), using <b>_ucar.nc2.FileWriter2_</b>, then copy the file to the client. For performance, you can try copying to a solid state disk.
 
-We are working on an experimental streaming format for NetCDF, called [ncstream](/ncstream.html), and a remote access protocol called [CdmRemote](cdmremote.html). These are fully functional as of CDM version 4.2, but are still evolving and should only be used if you can tolerate non-stable APIs and formats.
+We are working on an experimental streaming format for NetCDF, called [ncstream](ncstream.html), and a remote access protocol called [CdmRemote](cdmremote.html). These are fully functional as of CDM version 4.2, but are still evolving and should only be used if you can tolerate non-stable APIs and formats.
 
 #### Q: What kind of information should I put into my netCDF file to help others read it?
 
@@ -331,7 +331,7 @@ NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
 
 #### Q: I want to convert a GRIB file to netCDF. How do I do that?
 
-If you are converting the entire file, you can do it on the [command line](/cdm_utility_programs.html#nccopy).
+If you are converting the entire file, you can do it on the [command line](cdm_utility_programs.html#nccopy).
 
 You can do it from a Java program like this:
 
@@ -352,4 +352,4 @@ void convert(String datasetIn, String filenameOut, boolean wantNetcdf4) throws I
    ncfileIn.close();
 ~~~
 
-Note that this can be used for any classic model CDM dataset, not just GRIB. So _datasetIn_ above can refer to an NcML file, an OPeNDAP URL, any of these [File Types](/file_types.html), etc. See [here](/dataset_urls.html) for more details.
+Note that this can be used for any classic model CDM dataset, not just GRIB. So _datasetIn_ above can refer to an NcML file, an OPeNDAP URL, any of these [File Types](file_types.html), etc. See [here](dataset_urls.html) for more details.

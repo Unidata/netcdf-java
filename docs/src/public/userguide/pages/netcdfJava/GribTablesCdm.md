@@ -74,7 +74,7 @@ You can view all the standard tables used by the CDM in ToolsUI, using the <b>_I
 7. If <b>_strictMode_</b> is on, then
 * If (param < 128 and version < 128) the default table is <b>_always_</b> used.
 * If (param > 127 or version > 127) a table must be found for all parameters, or else the file will fail to open.
-8. You can set strictMode programatically via <b>_ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true)_</b>; or in the [RunTime configuration file](/runtime_loading.html){:target="_blank"} by adding
+8. You can set strictMode programatically via <b>_ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true)_</b>; or in the [RunTime configuration file](runtime_loading.html){:target="_blank"} by adding
 
 ~~~
 <grib1Table strict="true"/>
@@ -95,7 +95,7 @@ A <b>_file starting with "table_2_" or "local_table_2_"_</b>: the format the <a 
 #### Adding to the standard table mapping
 When the CDM does not have a table for a center, subcenter and table version that a GRIB file uses, you must track down the corrrect table and add it to the CDM at runtime. (Also, send it to us so we can include it in the next release). To add a table at runtime:
 
-1. Use [Runtime Loading](/runtime_loading.html){:target="_blank"} to add your own table programmatically within your application, or by using the Runtime configuration file.
+1. Use [Runtime Loading](runtime_loading.html){:target="_blank"} to add your own table programmatically within your application, or by using the Runtime configuration file.
 2. Tables that are added at runtime take precedence over the standard tables, and are searched first in the order of being added. However, the default WMO table cannot be overidden.
 3. Parameters that are not present in your table are taken from the default WMO table, if they exist. Unless <b>_strictMode_</b> is on, your table may override entries in the default table.
 4. If a parameter is not found then "Unknown Parameter center-subcenter-version-param" is used as the name, and an empty string for the units.

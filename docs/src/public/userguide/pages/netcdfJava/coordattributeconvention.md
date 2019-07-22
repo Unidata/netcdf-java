@@ -35,7 +35,7 @@ _Coordinate [Attribute Examples](coord_attribute_ex.html){:target="_blank"}
 
 ### Summary of the CDM _Coordinate Conventions:
 
-A Transform is defined by creating a Coordinate Transform Variable [Example](/coord_attribute_ex.html#example-4-adding-coordinate-transforms) and [Reference](#_coordinate-attribute-convention-reference). The attributes of the Coordinate Transform Variable become the parameters of the transform. A variable is a Coordinate Transform Variable if one (or both) of these is true:
+A Transform is defined by creating a Coordinate Transform Variable [Example](coord_attribute_ex.html#example-4-adding-coordinate-transforms) and [Reference](#_coordinate-attribute-convention-reference). The attributes of the Coordinate Transform Variable become the parameters of the transform. A variable is a Coordinate Transform Variable if one (or both) of these is true:
 
 1. It has a <b>__CoordinateTransformType_</b>_ or </b>__CoordinateAxisTypes attribute_</b>.
 2. It is listed in a <b>__CoordinateTransforms_</b> attribute from any variable in the file.
@@ -148,7 +148,7 @@ The attribute value must be a space-separated list of names of Coordinate Transf
  LambertProjection:latitude_of_projection_origin = 25.0;
 ~~~
 
-This is a general mechanism for any transformation a file writer wants to define. The nj22 library has a [set of transforms that it recognizes](/std_horizonal_coord_transforms.html), mostly based on the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1 conventions</a>. Attributes should be String, integer, or double valued.
+This is a general mechanism for any transformation a file writer wants to define. The nj22 library has a [set of transforms that it recognizes](std_horizonal_coord_transforms.html), mostly based on the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1 conventions</a>. Attributes should be String, integer, or double valued.
 
 
 #### _CoordinateTransformType
