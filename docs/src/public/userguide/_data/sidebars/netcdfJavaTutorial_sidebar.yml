@@ -23,6 +23,11 @@ entries:
   - title: Overview
     output: web, pdf
     folderitems:
+
+    - title: NetCDF-Java Overview
+      url: /netcdf_java_tutorial_index.html
+      output: web, pdf
+
     - title: The Common Data Model
       url: /common_data_model_overview.html
       output: web, pdf
@@ -37,6 +42,10 @@ entries:
 
     - title: Building from Source
       url: /building_from_source.html
+      output: web, pdf
+
+    - title: Using netCDF-Java Maven Artifacts
+      url: /using_netcdf_java_artifacts.html
       output: web, pdf
 
   - title: Working with CDM datasets
