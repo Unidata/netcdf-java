@@ -318,7 +318,7 @@ The additional code in the <b>open()</b> method looks like this :
 2. We add some global attributes identifying the Convention, the datatype, and which dimension to use to find the observations.
 3. The Point data type also requires that the time range and lat/lon bounding box be specified as shown in global attributes.
 
-We now have not only a working IOSP, but a PointObsDataset that can be displayed and georeferenced! Working source code for this example is {% include link_file.html file="/netcdfJava_tutorial/writingiosp/UspLightning1.java" text="here" %}. Modify the main program to point to the {% include link_file.html file="/netcdfJava_tutorial/writingiosp/lightningData.txt" text="data file" %}, and try running it. Note that you need to load your [class at runtime ](runtime_loading.html){:target="_blank"}, for example by calling:
+We now have not only a working IOSP, but a PointObsDataset that can be displayed and georeferenced! Working source code for this example is {% include link_file.html file="/netcdfJava_tutorial/writingiosp/UspLightning1.java" text="here" %}. Modify the main program to point to the {% include link_file.html file="/netcdfJava_tutorial/writingiosp/lightningData.txt" text="data file" %}, and try running it. Note that you need to load your [class at runtime ](runtime_loading.html), for example by calling:
 
 ~~~
    NetcdfFile.registerIOProvider(UspLightning.class);

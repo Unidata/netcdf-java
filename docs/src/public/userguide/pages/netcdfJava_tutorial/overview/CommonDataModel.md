@@ -40,7 +40,7 @@ An <b>_Array_</b> contains the actual data for a Variable after it is read from 
 
 An <b>_ArrayStructure_</b> is a subclass of Array that holds the data for Structure Variables. Essentially it is an array of <b>_StructureData_</b> objects.
 
-[CDM Datatypes](cdm_datatypes.html){:target="_blank"} describes in detail the possible types of data:
+[CDM Datatypes](cdm_datatypes.html) describes in detail the possible types of data:
 
 The primitive numeric types are byte, short, int, long, float and double. The integer types (8-bit byte, 16-bit short, 32-bit int, 64-bit long) may be signed or unsigned. Variable and Array objects have isUnsigned() methods to indicate, and conversion to wider types is correctly done.
 

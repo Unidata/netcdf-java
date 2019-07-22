@@ -140,6 +140,7 @@ General format is:
 ~~~
 
 When linking between markdown files, the `url` will be the permalink defined in the front matter of the markdown file you wish to link to (do not include a leading `/`).
+Also, when linking between markdown files, drop the `{:target="_blank"}` markup, as we want pages of the tutorial to open in the same window.
 
 ## highlight blocks
 

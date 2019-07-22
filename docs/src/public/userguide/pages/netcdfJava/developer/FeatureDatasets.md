@@ -91,7 +91,7 @@ FeatureDataset FeatureDatasetFactoryManager.open( FeatureType want, String endpo
     ucar.nc2.util.CancelTask task, java.util.Formatter errlog);
 ~~~
 
-where endpoint is a remote dataset represented as a URL (eg using <b>_cdmrFeature_</b>, <b>_cdmremote_</b>, or <b>_OPeNDAP_</b> protocols) or a local file pathname (see [here](dataset_urls.html){:target="_blank"} for details).
+where endpoint is a remote dataset represented as a URL (eg using <b>_cdmrFeature_</b>, <b>_cdmremote_</b>, or <b>_OPeNDAP_</b> protocols) or a local file pathname (see [here](dataset_urls.html) for details).
 
 or if you already have an opened NetcdfDataset:
 
@@ -177,11 +177,11 @@ The catalog API is significantly changed in version 5.0.
 ### Resources
 [Point Dataset](pointfeature_ref.html){:target="_blank"}: Discrete Sampling Geometry (DSG) datasets 
 
-[Coverage Dataset](coverages.html){:target="_blank"}: Data in a multidimensional grid, eg model output, satellite data
+[Coverage Dataset](coverages.html): Data in a multidimensional grid, eg model output, satellite data
 
-[Forecast Model Run Collection (FMRC)](runtime_loading.html){:target="_blank"}: Gridded data with two time coordinates, Run Time (aka Reference Time) and Forecast Time (aka Valid Time)
+[Forecast Model Run Collection (FMRC)](runtime_loading.html): Gridded data with two time coordinates, Run Time (aka Reference Time) and Forecast Time (aka Valid Time)
 
-[Radial Dataset](radial_datasets.html){:target="_blank"}: uses polar coordinates (elevation, azimuth, distance), for example scanning radars, lidars.
+[Radial Dataset](radial_datasets.html): uses polar coordinates (elevation, azimuth, distance), for example scanning radars, lidars.
 
 
 

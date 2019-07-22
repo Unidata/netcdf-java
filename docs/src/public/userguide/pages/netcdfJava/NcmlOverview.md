@@ -12,7 +12,7 @@ NcML is similar to the netCDF [CDL](https://www.unidata.ucar.edu/software/netcdf
 
 NcML development is happening on two fronts:
 
-1. [NcML-2.2](#ncml-22) as implemented by the [NetCDF-Java library](http://www.unidata.ucar.edu/software/netcdf-java/index.html){:target="_blank"}.
+1. [NcML-2.2](#ncml-22) as implemented by the [NetCDF-Java library](https://www.unidata.ucar.edu/software/netcdf-java/index.html){:target="_blank"}.
 2. [ncML-Gml](https://www.researchgate.net/publication/221646728_NcML-GML_Encoding_NetCDF_Datasets_Using_GML){:target="_blank"} is an extension of ncML core schema, based on GML grammar.
    It uses both NcML and [GML](http://en.wikipedia.org/wiki/Geography_Markup_Language){:target="_blank"} to create a bridge to GIS Systems.
    This work is led by Stefano Nativi at the [Università degli Studi di Firenze](https://www.unifi.it/){:target="_blank"}.

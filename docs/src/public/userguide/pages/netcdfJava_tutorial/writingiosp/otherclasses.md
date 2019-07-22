@@ -182,7 +182,7 @@ The type specific Arrays are: <b>_ArrayBoolean, ArrayByte, ArrayChar, ArrayDoubl
 
 Each of these have rank specific subtypes rank 0 through rank 7, so for example <b>_ArrayDouble.D0, ArrayDouble.D1, ArrayDouble.D2, ArrayDouble.D3, ArrayDouble.D4, ArrayDouble.D5, ArrayDouble.D6, ArrayDouble.D7_</b>.
 
-There is also ArrayStructure, but this is handled different from the numeric and String types. See [ArrayStructures](arraystructures_ref.html){:target="_blank"}.
+There is also ArrayStructure, but this is handled different from the numeric and String types. See [ArrayStructures](arraystructures_ref.html).
 
 ### ucar.ma2.DataType
 
