@@ -8,7 +8,7 @@ toc: false
  
 {% include image.html file="netcdf-java/tutorial/coordsystems/CoordSys.png" alt="Coordinate Systems UML" caption="Coordinate Systems UML" %}
 
-For an overview, see: [CDM Object Model]( /common_data_model_overview.html){:target="_blank"}. The Coordinate Axes for a Variable must use a subset of the Variables's dimensions.
+For an overview, see: [CDM Object Model]( /common_data_model_overview.html). The Coordinate Axes for a Variable must use a subset of the Variables's dimensions.
 
 ## Goals of _Coordinate Attribute Convention
 
@@ -25,7 +25,7 @@ For an overview, see: [CDM Object Model]( /common_data_model_overview.html){:tar
 
 ### See also :
 
-_Coordinate [Attribute Examples](coord_attribute_ex.html){:target="_blank"}
+_Coordinate [Attribute Examples](coord_attribute_ex.html)
 
 ### Contents
 

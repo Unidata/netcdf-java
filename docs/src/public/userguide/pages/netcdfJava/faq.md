@@ -20,7 +20,7 @@ toc: false
 
 ### Miscellaneous
 
-* <a href="building_from_source.html" target="_blank">How do I build from source or contribute to the NetCDF Java Library?</a>
+* <a href="building_from_source.html">How do I build from source or contribute to the NetCDF Java Library?</a>
 
 ### Arrays
 #### Q: I want to read data from a NetcdfFile and use another package to process the results, which doesn't use ucar.ma2.Array. How can I get the data out of the Array object most efficiently?

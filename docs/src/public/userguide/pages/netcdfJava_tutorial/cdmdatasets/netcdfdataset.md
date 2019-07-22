@@ -40,7 +40,7 @@ The preferred way to open a NetcdfFile is through the </b>_NetcdfDataset.openFil
 NetcdfDataset.openFile does the following:
 
 * Opens an OPeNDAP remote dataset, if the location is a URL that starts with <b>_http:_</b> , <b>_dods:_</b> or <b>_dap4:_</b> (version 4.4+)
-* Opens a <a href=" " target="_blank">CdmRemote</a> dataset, if the location is a URL that starts with <b>_cdmremote_</b>:
+* Opens a <a href="cdmremote.html">CdmRemote</a> dataset, if the location is a URL that starts with <b>_cdmremote_</b>:
 * Opens a THREDDS dataset, if the location look like <b>_thredds:<catalog>#<datasetId>_</b>
 * Opens an NcML dataset, if the location ends with <b>_.xml_</b> or <b>_.ncml_</b> , or its a URL starting with <b>_ncmdl_</b>: (version 4.4+)
 * Otherwise, it calls <b>_NetcdfFile.open_</b>, which handles local file or HTTP access to any CDM file.
