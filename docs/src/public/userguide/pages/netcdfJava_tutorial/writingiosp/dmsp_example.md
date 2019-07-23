@@ -127,7 +127,7 @@ The variables above are not enough for existing coordinate axes conventions. So,
 #### Sample DMSP OIS Dataset 
 
 Look at structure of the example dataset in ToolsUI:
-* Start ToolsUI (webstart)
+* Start ToolsUI
 * In Viewer, open "/data/nj22/dmsp/F14200307192230.n.OIS"
 * Select "infraredImagery" variable, then right-click, then select "Ncdump Data".
 * Click on "Image".
