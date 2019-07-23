@@ -1,6 +1,6 @@
 ---
-title: Coordinate Attribute Examples
-last_updated: 2019-06-27
+title: Coordinate Transforms
+last_updated: 2019-07-23
 sidebar: netcdfJavaTutorial_sidebar
 permalink: coord_transform.html
 toc: false
@@ -14,7 +14,7 @@ A <b>_Coordinate Transform_</b> represents a mathematical function that transfor
 
 A <b>_Coordinate System_</b> may have 0 or more <b>_Coordinate Transforms_</b>, each of which is either a <b>_ProjectionCT_</b> containing a <b>_ucar.unidata.geoloc.Projection_</b> or a <b>_VerticalCT_</b> containing a <b>_ucar.unidata.geoloc.vertical.VerticalTransform_</b>:
 
-{% include image.html file="netcdf-java/tutorial/CoordSys.png" alt="Coord Sys Object Model" caption="" %}
+{% include image.html file="netcdf-java/tutorial/coordsystems/CoordSys.png" alt="Coord Sys Object Model" caption="" %}
 
 The Netcdf-Java library implements a standard set of <b>_ucar.unidata.geoloc.Projection_</b> and <b>_ucar.unidata.geoloc.vertical.VerticalTransform_</b> classes, following the specifications of the <a href="http://cfconventions.org/" target="_blank">CF-1.0 Conventions</a>.
 
