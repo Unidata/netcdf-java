@@ -1,6 +1,6 @@
 ---
-title: Coordinate Attribute Examples
-last_updated: 2019-06-27
+title: Coordinate System Builder
+last_updated: 2019-07-22
 sidebar: netcdfJavaTutorial_sidebar
 permalink: coord_system_builder.html
 toc: false

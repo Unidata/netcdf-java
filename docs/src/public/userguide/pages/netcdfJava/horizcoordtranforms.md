@@ -1,6 +1,6 @@
 ---
 title: Standard Horizontal Coordinate Transforms 
-last_updated: 2019-06-27
+last_updated: 2019-07-23
 sidebar: netcdfJavaTutorial_sidebar 
 permalink: std_horizonal_coord_transforms.html
 toc: false
@@ -51,7 +51,7 @@ where the x,y values in this equation are the ones that you put into the x and y
 
 #### Resources
 
-* Standard vertical transforms are documented on this page. You can also [implement your own](coord_system_builder.html).
+* Standard horizontal transforms are documented on this page. You can also [implement your own](coord_system_builder.html).
 * You may also be interested in [Standard Vertical Coordinate Transforms](std_vertical_coord_transforms.html).
 * The [CDM _Coordinate Conventions](coord_attr_conv.html)
 
