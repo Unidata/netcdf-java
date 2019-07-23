@@ -1,21 +1,14 @@
 ---
-title: Upgrading to CDM / TDS version 5
-last_updated: 2018-04-02
-sidebar: tdsTutorial_sidebar
+title: Upgrading to netCDF-Java version 5.0
+last_updated: 2019-07-23
+sidebar: netcdfJavaTutorial_sidebar
 toc: false
-permalink: upgrade_to_5.html
+permalink: upgrade_to_50.html
 ---
 
 ## Requirements
 
-* Java 8 is now required
-* Tomcat 8 (servlet 3.1)
-* On the command line when starting up Tomcat/TDS, you must specify `-Dtds.content.root.path=<content root>` where `<content root>` points to the top of the content directory.
-  Note that this is `${tomcat_home}/content/`, not`${tomcat_home}/content/thredds/`. Don't forget the trailing slash. For example:
-
-  ~~~bash
-  -Dtds.content.root.path=/opt/tomcat-home/content/
-  ~~~
+* Java 8 or later is required
 
 ## Overview
 
@@ -23,6 +16,9 @@ A number of API enhancements have been made to take advantage of evolution in th
 The use of these make code simpler and more reliable.
 
 Deprecated classes and methods have been removed, and the module structure and third-party jar use has been improved.
+
+Java WebStart has been deprecated as of [Java 9](https://www.oracle.com/technetwork/java/javase/9-deprecated-features-3745636.html#JDK-8184998){:target="_blank"}.
+As such, we no longer utilize WebStart.
 
 ## netCDF-Java API Changes
 
@@ -223,196 +219,3 @@ shared and allowing them to be private is confusing and error-prone.
 * TDS and CDM now use `thredds.server.catalog` and `thredds.client.catalog`. The APIs are different, but with equivalent functionality to thredds.catalog.
 * `thredds.client.DatasetNode` now has `getDatasetsLogical()` and `getDatasetsLocal()` that does or does not dereference a `CatalogRef`, respectively.
   You can also use `getDatasets()` which includes a dereferenced catalog if it has already been read.
-
-
-## TDS Data Services
-
-### Netcdf Subset Service (NCSS)
-
-NCSS queries and responses have been improved and clarified.
-Generally the previous queries are backwards compatible. See [NCSS Reference](netcdf_subset_service_ref.html) for details.
-
-New functionality:
-* 2D time can now be handled for gridded datasets, with addition of `runtime` and `timeOffset` parameters.
-* Handling of interval coordinates has been clarified.
-* Use `ensCoord` to select an ensemble member.
-
-Minor syntax changes:
-* Use `time=all` instead of `temporal=all`
-* For station datasets, `subset=stns` or `subset=bb` is not needed.
-  Just define `stns` or a bounding box.
-
-
-### CdmrFeature Service
-
-A new TDS service has been added for remote access to CDM Feature Datasets.
-
-* Initial implementation for Coverage (Grid, FMRC, Swath) datasets, based on the new Coverage implementation in `ucar.nc2.ft2.coverage`.
-* Target is a python client that has full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.
-* Compatible / integrated with the Netcdf Subset Service (NCSS), using the same web API.
-
-### `ThreddsConfig.xml`
-
-You no longer turn catalog caching on or off, but you can control how many catalogs are cached (see
-[here](tds_config_ref.html) for the new syntax).
-
-The following is no longer used:
-
-~~~xml
-<Catalog>
-  <cache>false</cache>
-</Catalog>
-~~~
-
-* By default, most services are enabled, but may still be turned off in `threddsConfig.xml`.
-
-## Catalogs
-
-### Catalog Schema changes
-
-Schema version is now `1.2`.
-
-### Client Catalogs
-
-* `<service>` elements may not be nested inside of `<dataset>` elements, they must be directly contained in the `<catalog>` element.
-
-### Server Configuration Catalogs
-
-* The `<catalogScan>` element is now available, which scans a directory for catalog files (any file ending in xml)
-* The `<datasetFmrc>` element is no longer supported
-* `<datasetRoot>` elements may not be contained inside of *service* elements, they must be directly contained in the `<catalog>` element
-* `<service>` elements may not be nested inside of `<dataset>` elements, they must be directly contained in the `<catalog>` element.
-* `<service>` elements no longer need to be explicitly defined in each config catalog, but may reference user defined global services
-* If the `datatype/featureType` is defined for a dataset, then the `<service>` element may be omitted, and the default set of services for that `datatype` will be used.
-* The `expires` attribute is no longer used.
-
-### Viewers
-
-* `thredds.servlet.Viewer` has `InvDatasetImpl` changed to `Dataset`
-* `thredds.servlet.ViewerLinkProvider` has `InvDatasetImpl` changed to `Dataset`
-* `thredds.server.viewer.dataservice.ViewerService` has `InvDatasetImpl` changed to `Dataset`
-
-### DatasetScan
-
-* `addID` is no longer needed, ids are always added
-* `addDatasetSize` is no longer needed, the dataset size is always added
-* With `addLatest`, the `service` name is no longer used, it is always `Resolver`, and the correct service is automatically added.
-  Use `addLatest` attribute for simple case.
-* `fileSort`: by default, datasets at each collection level are listed in increasing order by filename.
-  To change to decreasing order, use the [fileSort](tds_dataset_scan_ref.html#filesSort,filesSort) element.
-* `sort`: deprecated in favor of `filesSort`
-* User pluggable classes implementing `UserImplType` (`crawlableDatasetImpl`, `crawlableDatasetFilterImpl`, `crawlableDatasetLabelerImpl`,
-`crawlableDatasetSorterImpl`) are no longer supported. (This was never officially released or documented).
-* `DatasetScan` details are [here](server_side_catalog_specification.html)
-
-### Standard Services
-
-* The TDS provides standard service elements, which know which services are appropriate for each Feature Type.
-* User defined services in the root catalog are global and can be referenced by name in any other config catalog.
-* User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
-* All services are enabled unless explicitly disabled
-** Except for remote catalog services
-* Standard service details are [here](services_ref.html))
-
-### FeatureCollections
-
-* The [update](feature_collections_ref.html#update) element default is now `startup="never"`, meaning do not update collection on startup, and use existing indices when the collection is accessed.
-* The [fileSort](tds_dataset_scan_ref.html#filesSort,filesSort) element is now inside the `featureCollection` itself, so it can be processed uniformly for all types of feature collections.
-  When a collection shows a list of files, the files will be sorted by increasing name.
-  To use a decreasing sort, use the element `<filesSort increasing="false" />` inside the `featureCollection` element.
-  This supersedes the old way of placing that element in the `<gribConfig>` element, or the older verbose `lexigraphicByName` element:
-
-  ~~~xml
-    <filesSort>
-      <lexigraphicByName increasing="false" />  // deprecated
-    </filesSort>
-  ~~~
-
-* Feature Collection details are [here](feature_collections_ref.html)
-
-### Recommendations for 5.0 catalogs
-
-* Put all `<datasetRoot>` elements in root catalog.
-* Put all `<catalogScan>` elements in root catalog.
-* Use `StandardServices` when possible.
-  Annotate your datasets with `featureType` / `dataType`.
-* Put all user-defined `<service>` elements in root catalog.
-* Only use user-defined `<service>` elements in non-root catalogs when they are experimental or truly a special case.
-
-### Recommendations for ESGF
-
-You must determine the number of datasets that are contained in all of your catalogs.
-To get a report, enable [Remote Management](remote_management_ref.html), and from https://server/thredds/admin/debug, select "Make Catalog Report".
-This may take 5-20 minutes, depending on the numbers of catalogs.
-
-Add the [<ConfigCatalog>](tds_config_ref.html#configuration-catalog) element to `threddsConfig.xml`:
-
-~~~xml
-<ConfigCatalog>
-  <keepInMemory>100</keepInMemory>
-  <reread>check</reread>
-  <dir>/tomcat_home/content/thredds/cache/catalog/</dir>
-  <maxDatasets>1000000</maxDatasets>
-</ConfigCatalog>
-~~~
-
-where:
-
-* `keepInMemory`: using the default value of 100 is probably good enough.
-* `reread`: use value of _check_ to only read changed catalogs when restarting TDS.
-* `dir` is where the catalog cache files are kept.
-  Use the default directory (or symlink to another place) unless you have a good reason to change.
-* `maxDatasets`: this is the number you found in step 1.
-  Typical values for ESGF are 1 - 7 million.
-  This is a maximum, so its ok to make it bigger than you need.
-
-Here are some additional, optional changes you can make to increase maintainability:
-
-1. Place all `datasetRoot` elements in the top catalog
-2. Place all `service` elements in the root catalog (_catalog.xml_).
-   These can be referenced from any catalog.
-3. Remove `<service>` elements from non-root catalogs.
-4. Add a [catalogScan](server_side_catalog_specification.html#catalogScan) element to the root catalog, replacing the list of catalogRefs listing all the other catalogs.
-* This assumes that other catalogs live in a subdirectory under the root, for example `${tds.content.root.path}/thredds/esgcet/**`.
-
-  For example:
-
-  ~~~xml
-  <?xml version='1.0' encoding='UTF-8'?>
-  <catalog name="ESGF Master Catalog" version="1.2"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
-        xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-        xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd">
-
-    <datasetRoot location="/esg/data" path="esg_testroot"/>
-    <datasetRoot location="/esg/arc/data/" path="esg_obs4MIPs"/>
-    <datasetRoot location="/esg/cordex/data/" path="esg_cordex"/>
-    <datasetRoot location="/esg/specs/data/" path="esg_specs"/>
-
-    <service base="/thredds/dodsC/" desc="OpenDAP" name="gridded" serviceType="OpenDAP">
-      <property name="requires_authorization" value="false"/>
-      <property name="application" value="Web Browser"/>
-    </service>
-
-    <service base="" name="fileservice" serviceType="Compound">
-      <service base="/thredds/fileServer/" desc="HTTPServer" name="HTTPServer" serviceType="HTTPServer">
-        <property name="requires_authorization" value="true"/>
-        <property name="application" value="Web Browser"/>
-        <property name="application" value="Web Script"/>
-      </service>
-
-      <service base="gsiftp://cmip-bdm1.badc.rl.ac.uk/" desc="GridFTP" name="GridFTPServer" serviceType="GridFTP">
-        <property name="requires_authorization" value="true"/>
-        <property name="application" value="DataMover-Lite"/>
-      </service>
-
-      <service base="/thredds/dodsC/" desc="OpenDAP" name="OpenDAPFiles" serviceType="OpenDAP">
-        <property name="requires_authorization" value="false"/>
-        <property name="application" value="Web Browser"/>
-      </service>
-    </service>
-
-    <catalogScan name="ESGF catalogs" path="esgcet" location="esgcet" />
-
-  </catalog>
-  ~~~
