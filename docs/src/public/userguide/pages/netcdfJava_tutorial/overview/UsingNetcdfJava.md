@@ -1,6 +1,6 @@
 ---
 title: Using netCDF-Java Maven Artifacts
-last_updated: 2019-07-22
+last_updated: 2019-07-23
 sidebar: netcdfJavaTutorial_sidebar
 permalink: using_netcdf_java_artifacts.html
 toc: false
@@ -8,7 +8,7 @@ toc: false
 
 ## Using netCDF-Java Maven Artifacts
 
-We make the NetCDF-Java library available as Maven artifacts.
+We make the netCDF-Java library available as Maven artifacts.
 To use them in your build, you need to add the Unidata Releases repository:
 
 ~~~xml
@@ -20,6 +20,9 @@ To use them in your build, you need to add the Unidata Releases repository:
         <url>https://artifacts.unidata.ucar.edu/repository/unidata-all/</url>
     </repository>
 </repositories>
+~~~
+
+~~~groovy
 // In Gradle
 repositories {
     maven {
