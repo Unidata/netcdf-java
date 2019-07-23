@@ -7,7 +7,7 @@ toc: false
 ---
 ## Tutorial: Working with NetcdfFile
 
-A <b>_NetcdfFile_</b> provides read-only access to datasets through the netCDF API (to write data, use <b>_NetcdfFileWriteable_</b>). Use the static <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/tutorial/NetcdfDataset.html" target="_blank">NetcdfFile</a>.open methods to open a netCDF file, an HDF5 file, or any other file which has an IOServiceProvider implementation that can read the file with the NetCDF API. Use NetcdfDataset.open for more general reading capabilities, including <b>_OPeNDAP</b>_, <b>_NcML</b>_, and <b>_THREDDS datasets</b>_.
+A <b>_NetcdfFile_</b> provides read-only access to datasets through the netCDF API (to write data, use <b>_NetcdfFileWriteable_</b>). Use the static <a href="netcdf_dataset.html">NetcdfFile</a>.open methods to open a netCDF file, an HDF5 file, or any other file which has an IOServiceProvider implementation that can read the file with the NetCDF API. Use NetcdfDataset.open for more general reading capabilities, including <b>_OPeNDAP</b>_, <b>_NcML</b>_, and <b>_THREDDS datasets</b>_.
 
 ## Opening a NetcdfFile
 
@@ -32,15 +32,15 @@ A simple way to open a NetcdfFile:
 
 There is some boilerplate overhead in handling possible IOExceptions and ensuring that the file is properly closed, but these are very important when creating robust applications.
 
-The <b>_NetcdfFile_</b> class will open local files for which an <b>_IOServiceProvider_</b> implementation exists. The current set of files that can be opened by the CDM are <a href=" https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/FileTypes.html" target="_blank">here</a>.
+The <b>_NetcdfFile_</b> class will open local files for which an <b>_IOServiceProvider_</b> implementation exists. The current set of files that can be opened by the CDM are <a href="file_types.html">here</a>.
 
 When you open any of these files, the IOSP populates the <b>_NetcdfFile_</b> with a set of <b>_Variable_</b>, <b>_Dimension_</b>, Attribute_</b>, and possibly <b>_Group_</b>, <b>_Structure_</b>, and <b>_EnumTypedef_</b> objects that describe what data is available for reading from the file. These objects are called the <b>_structural metadata_</b> of the dataset, and they are read into memory at the time the file is opened. The data itself is not read until requested.
 
-If NetcdfFile.open_</b> is given a filename that ends with "<b>_.Z_</b>", "<b>_.zip_</b>", "<b>_.gzip_</b>", "<b>_.gz_</b>", or "<b>_.bz2_</b>", it will uncompress the file before opening, preferably in the same directory as the original file. See <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/tutorial/NetcdfFile.html#DiskCache" target="_blank">DiskCache</a> for more details.
+If NetcdfFile.open_</b> is given a filename that ends with "<b>_.Z_</b>", "<b>_.zip_</b>", "<b>_.gzip_</b>", "<b>_.gz_</b>", or "<b>_.bz2_</b>", it will uncompress the file before opening, preferably in the same directory as the original file. See <a href="#writing-temporary-files-to-the-disk-cache">DiskCache</a> for more details.
  
 #### Using ToolsUI to browse the metadata of a dataset
 
-The NetCDF Tools User Interface (aka ToolsUI) is a program for browsing and debugging NetCDF files. You can start it from the command line, or launch it from <a href="http://www.unidata.ucar.edu/software/netcdf-java/current/webstart/netCDFtools.jnlp" target="_blank">webstart</a>.
+The NetCDF Tools User Interface (aka ToolsUI) is a program for browsing and debugging NetCDF files. You can start it from the command line.
 
 {% include image.html file="netcdf-java/tutorial/cdmdatasets/ToolsUIViewer.jpg" alt="Tools UI Viewer" caption="" %}
 

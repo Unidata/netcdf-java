@@ -25,7 +25,7 @@ Write a class that implements <b>_ucar.unidata.geoloc.Projection_</b> or ucar.un
 Write a class that implements <b>_ucar.nc2.dataset.CoordTransBuilderIF_</b>, by subclassing ucar.nc2.dataset.transform.AbstractCoordTransBuilder.
 Add these classes to your classpath.
 From your application, call <b>_ucar.nc2.dataset.CoordTransBuilder.registerTransform( String transformName, Class c)_</b>.
-The <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/tutorial/CoordSysBuilder.html#CoordTrans" target="_blank">Coordinate System Builder</a> for your dataset must recognize the transform and add it to the coordinate system. If you use the CF-1.0 or the _Coordinate Conventions, this means that the dataset must contain a Coordinate Transform Variable that contains the parameters of the transform
+The <a href="coord_system_builder.html#creating-coordinate-transformations">Coordinate System Builder</a> for your dataset must recognize the transform and add it to the coordinate system. If you use the CF-1.0 or the _Coordinate Conventions, this means that the dataset must contain a Coordinate Transform Variable that contains the parameters of the transform
 The classes that you will use are shown in the following diagram, which has an example of both a Projection ( LambertConformal) and a Vertical Transform (OceanSigma).
 
 {% include image.html file="netcdf-java/tutorial/CoordTransforms.png" alt="Coordinate Transforms" caption="" %}

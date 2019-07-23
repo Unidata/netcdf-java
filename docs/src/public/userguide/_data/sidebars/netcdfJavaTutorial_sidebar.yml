@@ -178,6 +178,10 @@ entries:
       url: /cdm_netcdf_mapping.html
       output: web, pdf
 
+    - title: CDM - OPeNDAP Interface
+      url: /cdm_opendap_interface.html
+      output: web, pdf
+
     - title: NetCDF4 Compound Attributes
       url: /cdm_netcdf_mapping.html
       output: web, pdf
