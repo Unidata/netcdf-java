@@ -38,7 +38,7 @@ where:
   
 * Request parameter values are case-insensitive
 * The var parameter is only used for data requests (req=data)
-* The variable names are case-sensitive and must be <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/Identifiers.html#cdmremote"> backslash-escaped</a>
+* The variable names are case-sensitive and must be <a href="cdm_objectnames.html#cdmremote"> backslash-escaped</a>
 * Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
 * Optional components are enclosed between square braces '[' and ']'.
 
@@ -54,7 +54,7 @@ Example service requests are:
 |http://server:8080/thredds/cdmremote/data.nc?req=data&var=Temp(0:99:10,0:127,:);lat;lon | 	data ncstream message
 
 * Data request uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.
-* Variable names are case-sensitive and must be <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/Identifiers.html#cdmremote"> backslash-escaped</a>
+* Variable names are case-sensitive and must be <a href="cdm_objectnames.html#cdmremote"> backslash-escaped</a>
 * Capabilities response indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. TBD.
 * The protobuf messages are defined by <b>_thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto_</b>.
 

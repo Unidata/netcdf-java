@@ -12,7 +12,7 @@ In order to use a dataset at the scientific datatype layer, the dataset's coordi
 
 {% include image.html file="netcdf-java/tutorial/coordsystems/CoordSys.png" alt="Coord Sys Object Model" caption="" %}
 
-For more details, see the <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/index.html" target="_blank">CDM Object Model</a>.
+For more details, see the <a href="common_data_model_overview.html">CDM Object Model</a>.
 
 A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html" target="_blank">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define and document a new Convention in collaboration with others with similar needs. If you do so, read <a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html" target="_blank">Writing NetCDF Files: Best Practices</a>, look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html" target="_blank">NetCDF Conventions page</a>.
 
@@ -68,7 +68,7 @@ public interface CoordSysBuilderIF {
 
 You can override the <b>_buildCoordinateSystems()_</b> method and completely build the coordinate system objects yourself. However, its usually easier to take advantage of the code in the <b>_CoordSysBuilder_</b> superclass, which translates standard <b>__Coordinate attributes_</b> into coordinate system objects. The job of the subclass may then reduce to adding these _Coordinate attributes to the file in the <b>_augmentDataset()_</b> method. The subclass may also need to create and add new Coordinate Variables to the file, and/or to create Coordinate Transforms. Examples of existing <b>_CoordSysBuilder_</b> subclasses are in the <b>_ucar.nc2.dataset.conv_<b> package.
 
-The <b>_ucar.nc2.dataset.CoordSysBuilder_</b> class uses the " <b>__Coordinate attributes_</b>" ("underscore Coordinate attributes", described fully <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/CoordinateAttributes.html " target="_blank">here</a>) to create Coordinate System objects. An attribute that starts with an underscore is a "system attribute", which usually implies some special processing or behavior within the NetCDF library (both C and Java).
+The <b>_ucar.nc2.dataset.CoordSysBuilder_</b> class uses the " <b>__Coordinate attributes_</b>" ("underscore Coordinate attributes", described fully <a href="coord_attr_conv.html">here</a>) to create Coordinate System objects. An attribute that starts with an underscore is a "system attribute", which usually implies some special processing or behavior within the NetCDF library (both C and Java).
 
 If you are subclassing ucar.nc2.dataset.CoordSysBuilder, you can ignore the <b>_setConventionUsed_</b> and <b>_addUserAdvice_</b> methods and let the superclass handle them. If not, you can just implement dummy methods.
 
@@ -104,7 +104,7 @@ For the simple case where you only need to add attributes to the file, you might
   }
 ~~~
   
-You may find it easier to do the same thing using an <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/" target="_blank">NcML</a> file, for example:
+You may find it easier to do the same thing using an <a href="ncml_overview.html">NcML</a> file, for example:
 
 ~~~
   protected void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
@@ -266,7 +266,7 @@ protected AxisType getAxisType( NetcdfDataset ncDataset, VariableEnhanced v) {
 
 A more complex task is to create Coordinate Transforms, which map your coordinates to reference coordinates, such as lat/lon. A Coordinate Transform is typically represented by a <b>_Coordinate Transform Variable_</b>, which may be a dummy variable (ie has no data in it), and whose attributes document the meaning and specify any needed parameters for it. You can create arbitrary transforms by creating <b>_ucar.nc2.dataset.CoordinateTransform_</b> objects, which your code will have access to when it opens a NetcdfDataset.
 
-However, for your Transform to be used by the Netcdf Java library and standard applications built on top of it, the <b>_CoordinateTransform_</b> must have a reference to a <b>_ucar.unidata.geoloc.Projection_</b> or a <b>_ucar.unidata.geoloc.vertical.VerticalTransform_</b> object which knows how to do the actual mathematical transformation. The Netcdf-Java library has a number of these, mostly following the CF-1.0 specification (Appendix F for projections, Appendix D for vertical transforms). You can also <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/tutorial/CoordTransBuilder.html" target="_blank">write your own implementation</a> and add them at run time.
+However, for your Transform to be used by the Netcdf Java library and standard applications built on top of it, the <b>_CoordinateTransform_</b> must have a reference to a <b>_ucar.unidata.geoloc.Projection_</b> or a <b>_ucar.unidata.geoloc.vertical.VerticalTransform_</b> object which knows how to do the actual mathematical transformation. The Netcdf-Java library has a number of these, mostly following the CF-1.0 specification (Appendix F for projections, Appendix D for vertical transforms). You can also <a href="coord_transform.html">write your own implementation</a> and add them at run time.
 
 For this lesson, we will concentrate on what your CoordSysBuilder needs to do to use an existing standard or user written Projection or VerticalTransform class.
 

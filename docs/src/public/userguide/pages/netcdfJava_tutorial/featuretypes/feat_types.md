@@ -81,7 +81,7 @@ The general way to open a FeatureDataset is by calling <b>_FeatureDatasetFactory
   FeatureDataset FeatureDatasetFactoryManager.open( FeatureType type, String location, ucar.nc2.util.CancelTask task, java.util.Formatter errlog);
 ~~~
 
-where location is a URL (eg OPeNDAP or cdmremote) or a local file pathname (see <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/DatasetUrls.html#FeatureDataset" target="_blank">here</a> for details).
+where location is a URL (eg OPeNDAP or cdmremote) or a local file pathname (see <a href="dataset_urls.html#ucarnc2ftfeaturedatasetfactorymanageropen">here</a> for details).
 
 
 or if you already have an opened NetcdfDataset:
@@ -207,6 +207,6 @@ void process(FeatureDatasetPoint fdpoint) {
 
 ### Processing Feature Datasets
 
-* <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/tutorial/GridDatatype.html" target="_blank">Grid Dataset</a> : data is in a multidimensional grid with seperable coordinates, eg model output, geosynchronous satellite data.
-* <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/tutorial/RadialDatatype.html" target="_blank">Radial Dataset</a> : uses polar coordinates (elevation, azimuth, distance), for example scanning radars, lidars.
-* <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/PointFeatures.html" target="_blank">Point Dataset</a> : Points, Station Time Series, Profiles, Trajectories and Sections.
+* [Grid Dataset](grid_datasets.html): data is in a multidimensional grid with seperable coordinates, eg model output, geosynchronous satellite data.
+* [Radial Dataset](radial_datasets.html): uses polar coordinates (elevation, azimuth, distance), for example scanning radars, lidars.
+* [Point Dataset](point_feature_datasets.html): Points, Station Time Series, Profiles, Trajectories and Sections.

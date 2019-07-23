@@ -97,7 +97,8 @@ When the CDM does not have a table for a center, subcenter and table version tha
 
 1. Use [Runtime Loading](runtime_loading.html) to add your own table programmatically within your application, or by using the Runtime configuration file.
 2. Tables that are added at runtime take precedence over the standard tables, and are searched first in the order of being added. However, the default WMO table cannot be overidden.
-3. Parameters that are not present in your table are taken from the default WMO table, if they exist. Unless <b>_strictMode_</b> is on, your table may override entries in the default table.
+3. Parameters that are not present in your table are taken from the default WMO table, if they exist.
+   <a name="strict"></a>Unless <b>_strictMode_</b> is on, your table may override entries in the default table.
 4. If a parameter is not found then "Unknown Parameter center-subcenter-version-param" is used as the name, and an empty string for the units.
 
 #### Specifying a table for a particular dataset

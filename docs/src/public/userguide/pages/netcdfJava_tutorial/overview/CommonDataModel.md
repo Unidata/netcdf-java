@@ -78,7 +78,7 @@ See [CDM to NetCDF mapping](cdm_netcdf_mapping.html) for detailed mapping betwee
 * OPeNDAP does not have shared dimensions. These can be approximated by map vectors in Grid datatypes, but one cannot share dimensions across Grids, or between Arrays.
 * OPeNDAP does not support Groups.
 * OPeNDAP Sequences map to CDM Sequences, but CDM does not support relational constraints at this layer.
-See <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/Opendap.html" target="_blank">here</a> for more details on OPeNDAP processing.
+See <a href="cdm_opendap_interface.html">here</a> for more details on OPeNDAP processing.
 file formats
 
 ### Comparision to HDF-5
@@ -168,4 +168,4 @@ Feature Type definitions, APIU, and encodings are still being developed, so appl
 
 * [Feature Dataset API](feature_types.html)
 * [CDM Point Feature Types](pointfeature_ref.html)
-* <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/CDMfeatures.doc" target="_blank">CDM Feature Types-draft</a>
+* {% include link_file.html file="netcdf-java/cdm/CDMfeatures.doc" text="CDM Feature Types-draft" %}

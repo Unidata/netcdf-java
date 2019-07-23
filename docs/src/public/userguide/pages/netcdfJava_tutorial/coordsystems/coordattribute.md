@@ -10,8 +10,8 @@ toc: false
 {% include image.html file="netcdf-java/tutorial/CoordSys.png" alt="Coord Sys Object Model" caption="Coordinate Systems UML" %}
 
 ### See Also:
-* <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/index.html" target="_blank">CDM Object Model</a>
-* _Coordinate Attribute <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/CoordinateAttributes.html" target="_blank">Reference</a>
+* <a href="common_data_model_overview.html">CDM Object Model</a>
+* _Coordinate Attribute <a href="coord_attr_conv.html">Reference</a>
 
 ### Contents
 
@@ -456,7 +456,7 @@ You can use a CF grid mapping or dimensionless vertical coordinate as a transfor
   lev:standard_name = "atmosphere_sigma_coordinate" ;
   lev:formula_terms = "sigma: lev ps: PS ptop: PTOP" ;
 ~~~
-Generally the set of valid transforms are not specified by this <b>__Coordinates_</b> Convention. The <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/StandardCoordinateTransforms.html" target="_blank">transforms that the nj22 library recognizes</a> come from the CF grid mappings and vertical transforms, so these are recommended, when possible, for the actual transform content.
+Generally the set of valid transforms are not specified by this <b>__Coordinates_</b> Convention. The <a href="std_horizonal_coord_transforms.html">transforms that the nj22 library recognizes</a> come from the CF grid mappings and vertical transforms, so these are recommended, when possible, for the actual transform content.
 
 It is often convenient to define the Coordinate Transform Variable and have it point to the Coordinate Systems that use it. For this purpose, you can use the <b>__CoordinateSystems</b> attribute on a Coordinate Transform Variable. You also need to add the <b>__CoordinateTransformType_</b> attribute to make sure it is interpreted as a Coordinate Transform variable instead of a data variable.
 ~~~

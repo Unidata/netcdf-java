@@ -49,20 +49,20 @@ ucar.grib.grib2.ParameterTable.addParametersUser( String filename);
 ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTable(int center, int subcenter, int tableVersion, String tableFilename);
 ~~~
 This registers a single table for the given center/subcenter/version.
-See <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/GribTables.html" target="_blank">GribTables</a> for more information about parameter tables.
+See <a href="grib_tables.html">GribTables</a> for more information about parameter tables.
 GRIB2 table handling is still being developed.
 Register a GRIB1 lookup table (4.3):
  ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTableLookup(String lookupFilename);
 
 This registers one or more tables for different center/subcenter/versions.
-See <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/GribTables.html" target="_blank">GribTables</a> for more information about lookup tables.
+See <a href="grib_tables.html">GribTables</a> for more information about lookup tables.
 GRIB2 table handling is still being developed.
 
 ### Register a BUFR Table lookup:
 ~~~
 ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile( String filename) throws throws FileNotFoundException;
 ~~~
-The file must be a <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/BufrTables.html" target="_blank">BUFR table lookup file</a>.
+The file must be a <a href="bufr_tables.html">BUFR table lookup file</a>.
 
 ## Runtime Configuration
 
@@ -95,13 +95,13 @@ The configuration file looks like this:
 2. Loads a <b>_CoordSysBuilderIF_</b> with the given class name, which looks for the given <b>_Convention_</b> attribute value.
 3. Loads a <b>_CoordTransBuilderIF_</b> with the given class name, which looks for the given <b>_transformName_</b> in the dataset. The type must be vertical or projection.
 4. Loads a <b>_FeatureDatasetFactory_</b> with the given class name which open <b>_FeatureDatasets_</b> of the given featureType.
-5. Load a <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/GribTables.html" target="_blank">GRIB-1 parameter table</a> (as of version 4.3)
-6. Load a <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/GribTables.html" target="_blank">GRIB-1 parameter table lookup</a> (as of version 4.3)
-7. Load a <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/GribTables.html" target="_blank">GRIB-1 parameter lookup table</a> (versions < 4.3, deprecated)
-8. Load a <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/GribTables.html" target="_blank">GRIB-2 parameter lookup table</a> (versions < 4.3, deprecated)
-9. Load a <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/BufrTables.html" target="_blank">BUFR table lookup</a> file.
-10. Turn <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/formats/GribTables.html#strict" target="_blank">strict GRIB1 table handling</a> off.
-11. Configure how the <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/netcdf4Clibrary.html" target="_blank">NetCDF-4 C library</a> is discovered and used.
+5. Load a <a href="grib_tables.html">GRIB-1 parameter table</a> (as of version 4.3)
+6. Load a <a href="grib_tables.html">GRIB-1 parameter table lookup</a> (as of version 4.3)
+7. Load a <a href="grib_tables.html">GRIB-1 parameter lookup table</a> (versions < 4.3, deprecated)
+8. Load a <a href="grib_tables.html">GRIB-2 parameter lookup table</a> (versions < 4.3, deprecated)
+9. Load a <a href="bufr_tables.html">BUFR table lookup</a> file.
+10. Turn <a href="grib_tables.html#strict">strict GRIB1 table handling</a> off.
+11. Configure how the <a href="netcdf4_c_library.html">NetCDF-4 C library</a> is discovered and used.
     * <b>_libraryPath_</b>: The directory in which the native library is installed.
     * <b>_libraryName_</b>: The name of the native library. This will be used to locate the proper .DLL, .SO, or .DYLIB file within the <b>_libraryPath_</b> directory.
     * <b>_useForReading_</b>: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is responsible for reading them. However, if this property is set to true, then it will be used for reading NetCDF-4 (and HDF5) files as well.
