@@ -1,7 +1,7 @@
 ---
 title: Coverage Datasets
 last_updated: 2018-04-02
-sidebar: tdsTutorial_sidebar
+sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: coverage_feature.html
 ---

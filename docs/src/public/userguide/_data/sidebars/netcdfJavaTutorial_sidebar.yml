@@ -271,5 +271,5 @@ entries:
       output: web, pdf
 
     - title: 5.0 Changes
-      url: /upgrade_to_5.html
+      url: /upgrade_to_50.html
       output: web, pdf
