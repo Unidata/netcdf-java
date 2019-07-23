@@ -1,6 +1,6 @@
 ---
 title: Runtime Loading
-last_updated: 2019-06-27
+last_updated: 2019-07-22
 sidebar: netcdfJavaTutorial_sidebar
 permalink: runtime_loading.html
 toc: false

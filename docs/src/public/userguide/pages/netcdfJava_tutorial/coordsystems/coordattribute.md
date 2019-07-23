@@ -1,6 +1,6 @@
 ---
 title: Coordinate Attribute Examples
-last_updated: 2019-06-27
+last_updated: 2019-07-22
 sidebar: netcdfJavaTutorial_sidebar
 permalink: coord_attribute_ex.html
 toc: false

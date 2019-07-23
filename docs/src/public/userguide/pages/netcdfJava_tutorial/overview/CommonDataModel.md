@@ -1,6 +1,6 @@
 ---
 title: The Common Data Model
-last_updated: 2019-06-27
+last_updated: 2019-07-22
 sidebar: netcdfJavaTutorial_sidebar 
 permalink: common_data_model_overview.html
 toc: false

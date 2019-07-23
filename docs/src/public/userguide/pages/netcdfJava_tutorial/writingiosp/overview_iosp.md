@@ -1,6 +1,6 @@
 ---
-title: Coordinate Attribute Examples
-last_updated: 2019-06-27
+title: Writing an IOSP - Overview
+last_updated: 2019-07-23
 sidebar: netcdfJavaTutorial_sidebar
 permalink: writing_iosp.html
 toc: false

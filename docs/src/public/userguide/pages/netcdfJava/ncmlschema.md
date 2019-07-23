@@ -1,6 +1,6 @@
 ---
 title: Annotated Schema for NcML
-last_updated: 2019-07-11
+last_updated: 2019-07-22
 sidebar: netcdfJavaTutorial_sidebar 
 permalink: annotated_ncml_schema.html
 toc: false

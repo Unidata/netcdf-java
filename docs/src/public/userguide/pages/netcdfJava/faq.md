@@ -1,6 +1,6 @@
 ---
 title: Frequently Asked Questions
-last_updated: 2019-07-10
+last_updated: 2019-07-22
 sidebar: netcdfJavaTutorial_sidebar 
 permalink: faq.html
 toc: false

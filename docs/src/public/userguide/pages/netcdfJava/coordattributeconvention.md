@@ -1,6 +1,6 @@
 ---
 title: _Coordinate Attribute Convention Reference 
-last_updated: 2019-06-27
+last_updated: 2019-07-22
 sidebar: netcdfJavaTutorial_sidebar 
 permalink: coord_attr_conv.html
 toc: false
