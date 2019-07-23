@@ -14,23 +14,22 @@ topnav_dropdowns:
       folderitems:
         - title: netCDF-Java Github Repo
           external_url: https://github.com/Unidata/netcdf-java
-        - title: netCDF-Java Github Repo
+        - title: THREDDS Data Server Github Repo
           external_url: https://github.com/Unidata/tds
         - title: Rosetta Github Repo
           external_url: https://github.com/Unidata/Rosetta
         - title: Siphon Github Repo
           external_url: https://github.com/Unidata/siphon
-    - title: Tutorial
+
+    - title: Javadocs
       folderitems:
-        - title: THREDDS Data Server Tutorial
-          external_url: https://docs.unidata.ucar.edu/thredds/tds/5.0/userguide/tds_tutorial_index.html
-        - title: netCDF-Java Tutorial
-          url: /netcdf_java_tutorial_index.html
+        - title: netCDF-Java Public Javadocs
+          external_url: https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0/javadoc/
 
     - title: External Docs
       folderitems:
-        - title: netCDF-Java public javadocs
-          external_url: https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0/javadoc/
+        - title: THREDDS Data Server
+          external_url: https://docs.unidata.ucar.edu/thredds/tds/5.0/userguide/index.html
         - title: Rosetta
           external_url: https://www.unidata.ucar.edu/software/rosetta/docs/
         - title: Siphon
