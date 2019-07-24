@@ -12,4 +12,4 @@ netCDF-Java and THREDDS Data Server Docs
 * TDS
     * [Updating to 5.0](tds//UpgradingTo5.adoc)
     * [Cdmr Feature Parameters](tds/reference/services/CdmrfParams.adoc)
-* [netCDF-Java Javadocs](http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/javadoc/index.html)
+* [netCDF-Java Javadocs](https://docs.unidata.ucar.edu/netcdf-java/5.0/javadoc/)

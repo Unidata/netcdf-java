@@ -521,7 +521,7 @@ You indicate how often the directories should be re-scanned using the `recheckEv
 </netcdf>
 ~~~
 
-The value of `recheckEvery` must be a [udunit](http://www.unidata.ucar.edu/software/udunits/){:target="_blank"} time unit, e.g. units of sec, min, hour, day.
+The value of `recheckEvery` must be a [udunit](https://www.unidata.ucar.edu/software/udunits/){:target="_blank"} time unit, e.g. units of sec, min, hour, day.
 If you do not specify a `recheckEvery` attribute, the collection will be assumed to be non-changing.
 
 When using the scan element on directories whose contents may change, you must use a `recheckEvery` attribute.
