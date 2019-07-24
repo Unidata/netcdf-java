@@ -7,7 +7,7 @@ toc: false
 ---
 
 Welcome to the netCDF-Java tutorial.
-The netCDF-Java Library is a Java interface to [netCDF files](http://www.unidata.ucar.edu/software/netcdf/index.html){:target="_blank"}, as well as to many other types of [scientific data formats](file_types.html).
+The netCDF-Java Library is a Java interface to [netCDF files](https://www.unidata.ucar.edu/software/netcdf/index.html){:target="_blank"}, as well as to many other types of [scientific data formats](file_types.html).
 
 The library is freely available and the source code is released under the [BSD-3 license](https://github.com/Unidata/netcdf-java/blob/master/LICENSE){:target="_blank"}.
 Previous versions used the (MIT-style) netCDF C library license, and before that, the GNU Lesser General Public License (LGPL).
