@@ -25,7 +25,7 @@ entries:
     folderitems:
 
     - title: NetCDF-Java Overview
-      url: /netcdf_java_tutorial_index.html
+      url: /index.html
       output: web, pdf
 
     - title: The Common Data Model
