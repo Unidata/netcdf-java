@@ -83,3 +83,7 @@ The latest released and snapshot software artifacts (e.g. .jar files) are availa
 To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/netcdf-java/5.0/userguide/building_from_source.html).
 
 To use the netCDF-Java library as a dependency using maven or gradle, follow [these instructions](https://docs.unidata.ucar.edu/netcdf-java/5.0/userguide/using_netcdf_java_artifacts.html).
+
+## Previous releases
+
+Prior to `v5.0.0`, the netCDF-Java/CDM library and the THREDDS Data Server (TDS) have been built and released together. Starting with version 5, these two packages have been decoupled, allowing new features or bug fixes to be implemented in each package separately, and released independently. Releases prior to `v5.0.0` were managed at <https://github.com/unidata/thredds>, which holds the combined code based used by `v4.6` and earlier.
