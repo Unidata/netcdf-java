@@ -27,6 +27,7 @@ ToolUI is a GUI interface to much of the functionality in the CDM library.
 You may also use a specialized XML editor like Oxygen or XML Spy, or an IDE like IntelliJ, Eclipse, or NetBeans that have context-sensitive XML editing.
 
 For these exercises, you should run ToolsUI locally from the jar.
+For information regarding where to get ToolsUI or how to run it locally, please see the [ToolsUI Reference Guide](toolsui_ref.html#download-and-run-locally)
 
 Use the ToolsUI _NcML Tab_ to generate NcML from the CDM file by entering the the URL of a local or remote CDM dataset, or browse to a local file. 
 The NcML of the dataset is generated and displayed:
@@ -34,6 +35,11 @@ The NcML of the dataset is generated and displayed:
 {% include image.html file="netcdf-java/tutorial/basic_ncml/ncmlTab.png" alt="NcML tab" caption="" %}
 
 Entering a file that ends with **xml** or **ncml** simply displays the NcML file directly.
+
+{%include note.html content="
+Depending on the Look and Feel chosen by toolsUI on startup (based on your OS), you may need to scroll through the tab elements to see certain tabs.
+This is the case for accessing the NcML tab on MacOS when the toolsUI window is on the smaller side.
+" %}
 
 ### Exercise 1. Working with NcML files in ToolsUI
 Download {% include link_file.html file="netcdfJava_tutorial/ncml/basic_ncml/example1.nc" text="example1.nc" %} and {% include link_file.html file="netcdfJava_tutorial/ncml/basic_ncml/exercise1.ncml" text="exercise1.ncml" %} and place them in the same directory. 

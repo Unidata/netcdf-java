@@ -267,7 +267,7 @@ entries:
       output: web, pdf
 
     - title: ToolsUI Reference
-      url: /toolsUI_ref.html
+      url: /toolsui_ref.html
       output: web, pdf
 
     - title: 5.0 Changes
