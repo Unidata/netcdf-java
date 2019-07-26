@@ -1,4 +1,4 @@
-## Making a release for CDM/TDS using Gradle
+## Making a release for netCDF-java using Gradle
 
 First, ensure the last run of master on Jenkins looks good:
  * no open CVEs
@@ -43,7 +43,7 @@ If so, you can skip to step 4.
     - As long as we don't make it to the artifact publishing step, we can always fix any issues by squashing new commits and pushing to the branch on Unidata/netcdf-java
 
 1. Update Unidata download page
-    - check http://www.unidata.ucar.edu/downloads/netcdf0java/index.jsp
+    - check https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
       * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
 
 1. Prepare for next round of development.
@@ -81,17 +81,17 @@ If so, you can skip to step 4.
     - If we need to do a security update on a previous minor release, we'll create a new branch from the committed tag and work from that, ultimately following the instructions above when we're done.
 
 1. Create a release on GitHub using the tag you just pushed.
-    - Example: https://github.com/Unidata/thredds/releases/tag/v5.0.0
+    - Example: https://github.com/Unidata/netcdf-java/releases/tag/v5.0.0
     - To help create the changelog, examine the pull requests on GitHub. For example, this URL shows all PRs that
       have been merged into `master` since 2016-02-12:
-      https://github.com/Unidata/thredds/pulls?q=base%3Amaster+merged%3A%3E%3D2016-02-12
+      https://github.com/Unidata/netcdf-java/pulls?q=base%3Amaster+merged%3A%3E%3D2016-02-12
 
 1. Make blog post for the release.
-    - Example: http://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds4
+    - Example: https://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds4
     - Best to leave it relatively short and just link to the GitHub release.
 
-1. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu and thredds@unidata.ucar.edu
-    - Example: http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00000.html
+1. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu
+    - Example: https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00000.html
     - Best to leave it relatively short and just link to the GitHub release.
 
-**Note 1**: In the future, we could be performing even more, if not all, of these steps from Jenkins.
+**Note 2**: In the future, we could be performing even more, if not all, of these steps from Jenkins.
