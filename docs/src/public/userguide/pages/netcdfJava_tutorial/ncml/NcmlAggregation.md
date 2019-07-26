@@ -44,6 +44,11 @@ Go to the NcML/Aggregation Tab of ToolsUI and cut and paste the full path of the
 
 {% include image.html file="netcdf-java/tutorial/aggregation/aggUnionSimple.png" alt="ToolsUI NcML Agg Panel - union" caption="" %}
 
+{%include note.html content="
+Depending on the Look and Feel chosen by toolsUI on startup (based on your OS), you may need to scroll through the tab elements to see certain tabs.
+This is the case for accessing the NcML tab on MacOS when the toolsUI window is on the smaller side.
+" %}
+
 The files that comprise the aggregation are listed in the top table, various information about the aggregation is listed in the lower pane.
 Select one of the files, and right click to bring up the context menu.
 Choose **Open as NetCDF File** so that you can look at the contents of that file.
