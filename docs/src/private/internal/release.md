@@ -39,12 +39,12 @@ If so, you can skip to step 4.
     - Go to netcdf-java-release project
     - Edit the settings to point to the ${releaseVersion} branch on github
     - Run project
-    - Check artifacts at https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases
+    - Check artifacts at https://artifacts.unidata.ucar.edu/#browse/browse:unidata-all
     - As long as we don't make it to the artifact publishing step, we can always fix any issues by squashing new commits and pushing to the branch on Unidata/netcdf-java
 
 1. Update Unidata download page
-    - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
-      * modify `www:/content/downloads/netcdf/netcdf-java-4/toc.xml` as needed
+    - check http://www.unidata.ucar.edu/downloads/netcdf0java/index.jsp
+      * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
 
 1. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
@@ -94,4 +94,4 @@ If so, you can skip to step 4.
     - Example: http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00000.html
     - Best to leave it relatively short and just link to the GitHub release.
 
-**Note 2**: In the future, we should be performing many (all?) of these steps from Jenkins, not our local machine.
+**Note 1**: In the future, we could be performing even more, if not all, of these steps from Jenkins.
