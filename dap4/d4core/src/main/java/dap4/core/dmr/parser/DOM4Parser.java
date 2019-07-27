@@ -8,6 +8,7 @@ import dap4.core.util.DapException;
 import dap4.core.util.DapSort;
 import dap4.core.util.DapUtil;
 import dap4.core.util.Escape;
+import javax.xml.XMLConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -208,6 +209,7 @@ public class DOM4Parser implements Dap4Parser
     {
         try {
             DocumentBuilderFactory domfactory = DocumentBuilderFactory.newInstance();
+            domfactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder dombuilder = domfactory.newDocumentBuilder();
             StringReader rdr = new StringReader(input);
             InputSource src = new InputSource(rdr);
