@@ -669,11 +669,10 @@ public class Level2VolumeScan {
   }
 
   /**
-   * Write equivilent uncompressed version of the file.
+   * Write equivilent uncompressed version of the inputRaf.
    *
    * @param inputRaf file to uncompress
    * @param ufilename write to this file
-   * @return raf of uncompressed file
    * @throws IOException on read error
    */
   private void uncompress(RandomAccessFile inputRaf, String ufilename)
@@ -773,19 +772,9 @@ public class Level2VolumeScan {
         }
       }
 
-      outputRaf.flush();
-
     } finally {
       if (lock != null) {
         lock.release();
-      }
-
-      // dont leave bad files around
-      File ufile = new File(ufilename);
-      if (ufile.exists()) {
-        if (!ufile.delete()) {
-          log.warn("failed to delete uncompressed file (IOException)" + ufilename);
-        }
       }
     } // try-with-resource
 
