@@ -3,6 +3,7 @@
 
 package dap4.core.dmr.parser.bison;
 
+import javax.xml.XMLConstants;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -84,6 +85,7 @@ abstract public class SaxEventHandler extends DefaultHandler
         // Create the sax parser that will drive us with events
         try {
             spf = SAXParserFactory.newInstance();
+            spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             spf.setValidating(false);
             spf.setNamespaceAware(true);
             spf.setFeature(LOAD_EXTERNAL_DTD, false);

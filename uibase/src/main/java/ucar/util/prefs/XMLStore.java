@@ -6,6 +6,7 @@
 package ucar.util.prefs;
 
 import java.nio.charset.StandardCharsets;
+import javax.xml.XMLConstants;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -162,9 +163,10 @@ public class XMLStore {
       InputStream convertIS = convert2XmlDecoder(objIS);
       objIS.close();
 
-      // get a SAX parser from JAXP layer
-      SAXParserFactory factory = SAXParserFactory.newInstance();
       try {
+        // get a SAX parser from JAXP layer
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         SAXParser saxParser = factory.newSAXParser();
         MySaxHandler handler = new MySaxHandler( convertIS);
 
@@ -186,7 +188,7 @@ public class XMLStore {
 
       }
 
-        primIS.close();
+      primIS.close();
       convertIS.close();
     }
 
