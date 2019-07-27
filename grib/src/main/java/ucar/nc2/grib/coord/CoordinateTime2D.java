@@ -498,7 +498,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       valueWithOffset = value.time + offset;
     }
     int result = time.getIndex(valueWithOffset);
-    if (Grib.debugRead) logger.debug("  matchTimeCoordinate value wanted = (%s) valueWithOffset=%s result=%d %n", value, valueWithOffset, result);
+    if (Grib.debugRead)
+      logger.debug(String.format("  matchTimeCoordinate value wanted = (%s) valueWithOffset=%s result=%d %n", value, valueWithOffset, result));
 
     return result;
   }
@@ -610,8 +611,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       int nPerRun = 0;
       for (Map.Entry<Integer, CoordinateTimeAbstract> entry : regTimes.entrySet())
         nPerRun += entry.getValue().getNCoords();
-      result[0] = timeIdx / nPerRun;
-      result[1] = timeIdx % nPerRun;
+      if (nPerRun > 0) {
+        result[0] = timeIdx / nPerRun;
+        result[1] = timeIdx % nPerRun;
+      }
       return result;
 
     } else {

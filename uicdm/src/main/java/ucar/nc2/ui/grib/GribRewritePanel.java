@@ -191,7 +191,7 @@ public class GribRewritePanel extends JPanel {
       ratio += bean.getNrecords() * bean.getRatio();
     }
 
-    double weightedAvg =  ratio / totalRecords;
+    double weightedAvg = (totalRecords == 0.0) ? 0.0 : ratio / totalRecords;
     if (what != null) f.format("%n%s%n", what);
     f.format("Weighted average ratio = %f%n", weightedAvg);
     f.format("Total # grib records = %f%n", totalRecords);
