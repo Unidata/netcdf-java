@@ -679,9 +679,11 @@ public class Level2VolumeScan {
       throws IOException {
 
     FileLock lock = null;
+    boolean needsDelete = false;
     try (RandomAccessFile outputRaf = new RandomAccessFile(ufilename, "rw")) {
 
       while (true) { // loop waiting for the lock
+        // an error here doesnt need to delete the uncompressed file.
         try {
           lock = outputRaf.getRandomAccessFile().getChannel().lock(0, 1, false);
           break;
@@ -693,6 +695,9 @@ public class Level2VolumeScan {
           }
         }
       }
+
+      //otherwise an error means we should delete the uncompressed file.
+      needsDelete = true;
 
       inputRaf.seek(0);
       byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
@@ -759,7 +764,7 @@ public class Level2VolumeScan {
             System.arraycopy(ubuff, 0, obuff, total, nread);
             total += nread;
           }
-          if (obuff.length >= 0) {
+          if (total >= 0) {
             outputRaf.write(obuff, 0, total);
           }
         } catch (BZip2ReadException ioe) {
@@ -771,7 +776,16 @@ public class Level2VolumeScan {
               + outputRaf.getFilePointer());
         }
       }
-
+    } catch (Throwable t) {
+      if (needsDelete) {
+        // dont leave bad files around
+        File ufile = new File(ufilename);
+        if (ufile.exists()) {
+          if (!ufile.delete())
+            log.warn("failed to delete bad uncompressed file (IOException)" + ufilename);
+        }
+      }
+      throw t;
     } finally {
       if (lock != null) {
         lock.release();
