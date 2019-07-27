@@ -26,11 +26,12 @@ import java.util.Random;
  * @since 3/14/2015
  */
 public class CrawlingUtils {
+  private static Random random = new Random();
 
   // read a 2D slice out all the variables in the dataset, report stats
   // Its a Runnable, so you can put it into a Thread for mulithreaded testing
   public static class TDSdatasetReader implements Runnable {
-    private boolean showDetail = false;
+    private boolean showDetail;
     private String who;
     private String datasetUrl;
     private CancelTask cancel;
@@ -53,7 +54,7 @@ public class CrawlingUtils {
           long took = System.currentTimeMillis() - start;
 
           long size = result.getSize();
-          double rate = (took == 0) ? 0.0 : size / took / 1000.0;
+          double rate = (took == 0) ? 0.0 : (double) size / took / 1000.0;
           if (showDetail) System.out.printf(" took= %d msecs rate= %f MB/sec%n", took, rate);
           total += size;
           time += took;
@@ -62,7 +63,7 @@ public class CrawlingUtils {
         }
 
         double totald = total / (1000. * 1000.);
-        double rate = (time == 0) ? 0 : total / time / 1000.0;
+        double rate = (time == 0) ? 0 : (double) total / time / 1000.0;
 
         System.out.printf("%n%s%n", ncfile.getLocation());
         System.out.printf(" took= %f secs rate= %f MB/sec%n", totald, rate);
@@ -84,10 +85,9 @@ public class CrawlingUtils {
         int rank = v.getRank();
         List<Range> ranges = new ArrayList<>();
         int i = 0;
-        Random r = new Random();
         for (Dimension dim : v.getDimensions()) {
           if (i < rank - 2) {
-            int first = r.nextInt(dim.getLength());
+            int first = random.nextInt(dim.getLength());
             ranges.add(new Range(first, first));
           } else {
             ranges.add(new Range(0, dim.getLength() - 1));

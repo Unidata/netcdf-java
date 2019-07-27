@@ -31,13 +31,8 @@ public class GaussianLatitudes {
     return glats;
   }
 
-  // all these have size nlat
-  public final double[] cosc; // cos(colatitude) or sin(latitude)
-  public final double[] colat; // the colatitudes in radians
   public final double[] gaussw; // the Gaussian weights
   public final double[] latd; // the latitudes in degrees
-  public final double[] sinc; // sin(colatitude) or cos(latitude)
-  public final double[] wos2; // Gaussian weight over sin**2(colatitude)
 
   /**
    * Constructor
@@ -48,12 +43,17 @@ public class GaussianLatitudes {
 
     // the number of latitudes between pole and equator
     int  nzero = nlat/2;
-    cosc = new double[nlat];
-    colat = new double[nlat];
+    // all these have size nlat
+    // cos(colatitude) or sin(latitude)
+    double[] cosc = new double[nlat];
+    // the colatitudes in radians
+    double[] colat = new double[nlat];
     gaussw = new double[nlat];
     latd = new double[nlat];
-    sinc = new double[nlat];
-    wos2 = new double[nlat];
+    // sin(colatitude) or cos(latitude)
+    double[] sinc = new double[nlat];
+    // Gaussian weight over sin**2(colatitude)
+    double[] wos2 = new double[nlat];
 
     /* set first guess for cos(colat)
       PI = 3.141592653589793
@@ -90,7 +90,8 @@ public class GaussianLatitudes {
 
       double GM = lgord( cosc[i], nlat-1);
       double GP = lgord( cosc[i], nlat+1);
-      double GT = (cosc[i]*cosc[i]-1.0) / (A*GP-B*GM);
+      double denom = A*GP-B*GM;
+      double GT = (denom == 0.0) ? 0.0 : (cosc[i]* cosc[i]-1.0) / denom;
 
       /* -update the estimate of the root
          DELTA   = G*GT
@@ -113,10 +114,10 @@ public class GaussianLatitudes {
          CALL LGORD( D, COSC(I), NLAT-1 )
          D      = D*D*FI*FI
          GWT(I) = C *( FI-0.5 ) / D */
-      double C = 2.0 *( 1.0-cosc[i]*cosc[i] );
+      double C = 2.0 *( 1.0- cosc[i]* cosc[i] );
       double D = lgord( cosc[i], nlat-1 );
       D = D * D * FI * FI;
-      gaussw[i] = C *( FI-0.5 ) / D;
+      gaussw[i] = (D == 0.0) ? 0.0 : C *( FI-0.5 ) / D;
     }
 
     /* C    -determine the colatitudes and sin(colat) and weights over sin**2
@@ -150,8 +151,8 @@ public class GaussianLatitudes {
       cosc[next] = 0.0;
       double C = 2.0;
       double D = lgord(cosc[next], nlat-1);
-      D       = D*D*FI*FI;
-      gaussw[next] = C *( FI-0.5 ) / D;
+      D = D*D*FI*FI;
+      gaussw[next] = (D == 0.0) ? 0.0 : C *( FI-0.5 ) / D;
       colat[next] = Math.PI*0.5;
       sinc[next] = 1.0;
       wos2[next] = gaussw[next];
@@ -169,7 +170,7 @@ public class GaussianLatitudes {
     for (int i=next; i<nlat; i++) {
          cosc[i] =-cosc[nlat-i-1];
          gaussw[i] = gaussw[nlat-i-1];
-         colat[i] = Math.PI-colat[nlat-i-1];
+         colat[i] = Math.PI- colat[nlat-i-1];
          sinc[i] = sinc[nlat-i-1];
          wos2[i] = wos2[nlat-i-1];
     }
