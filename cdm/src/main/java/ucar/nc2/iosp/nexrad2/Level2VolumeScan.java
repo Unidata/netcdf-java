@@ -153,7 +153,9 @@ public class Level2VolumeScan {
         } else {
           try {
             // nope, gotta uncompress it
-            uraf = uncompress(raf, uncompressedFile.getPath());
+            uncompress(raf, uncompressedFile.getPath());
+            // reopen in read only mode.
+            uraf = new RandomAccessFile(uncompressedFile.getPath(), "r");
             if (log.isDebugEnabled()) {
               log.debug("made uncompressed file= " + uncompressedFile.getPath());
             }
@@ -674,7 +676,7 @@ public class Level2VolumeScan {
    * @return raf of uncompressed file
    * @throws IOException on read error
    */
-  private RandomAccessFile uncompress(RandomAccessFile inputRaf, String ufilename)
+  private void uncompress(RandomAccessFile inputRaf, String ufilename)
       throws IOException {
 
     FileLock lock = null;
@@ -772,7 +774,6 @@ public class Level2VolumeScan {
       }
 
       outputRaf.flush();
-      return outputRaf;
 
     } finally {
       if (lock != null) {
