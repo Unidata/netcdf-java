@@ -30,9 +30,6 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 
 import javax.annotation.concurrent.ThreadSafe;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.print.attribute.UnmodifiableSetException;
 import java.io.*;
 import java.net.URI;
@@ -175,10 +172,6 @@ public class HTTPSession implements Closeable
     static final String DCONNTIMEOUT = "tds.http.conntimeout";
     static final String DSOTIMEOUT = "tds.http.sotimeout";
     static final String DMAXCONNS = "tds.http.maxconns";
-
-    //////////////////////////////////////////////////////////////////////////
-
-    static final boolean IGNORECERTS = false;
 
     //////////////////////////////////////////////////////////////////////////
     // Type Declaration(s)
@@ -563,41 +556,16 @@ public class HTTPSession implements Closeable
         SSLConnectionSocketFactory globalsslfactory;
         try {
             // set up the context
-            SSLContext scxt = null;
-            if(IGNORECERTS) {
-                scxt = SSLContext.getInstance("TLS");
-                TrustManager[] trust_mgr = new TrustManager[]{
-                        new X509TrustManager()
-                        {
-                            public X509Certificate[] getAcceptedIssuers()
-                            {
-                                return null;
-                            }
-
-                            public void checkClientTrusted(X509Certificate[] certs, String t)
-                            {
-                            }
-
-                            public void checkServerTrusted(X509Certificate[] certs, String t)
-                            {
-                            }
-                        }};
-                scxt.init(null,               // key manager
-                        trust_mgr,          // trust manager
-                        new SecureRandom()); // random number generator
-            } else {
-                SSLContextBuilder sslbuilder = SSLContexts.custom();
-                TrustStrategy strat = new LooseTrustStrategy();
-                if(truststore != null)
-                    sslbuilder.loadTrustMaterial(truststore, strat);
-                else
-                    sslbuilder.loadTrustMaterial(strat);
-                sslbuilder.loadTrustMaterial(truststore, new LooseTrustStrategy());
-                if(keystore != null)
-                    sslbuilder.loadKeyMaterial(keystore, keypassword.toCharArray());
-                scxt = sslbuilder.build();
-            }
-            globalsslfactory = new SSLConnectionSocketFactory(scxt, new NoopHostnameVerifier());
+            SSLContextBuilder sslbuilder = SSLContexts.custom();
+            TrustStrategy strat = new LooseTrustStrategy();
+            if(truststore != null)
+                sslbuilder.loadTrustMaterial(truststore, strat);
+            else
+                sslbuilder.loadTrustMaterial(strat);
+            sslbuilder.loadTrustMaterial(truststore, new LooseTrustStrategy());
+            if(keystore != null)
+                sslbuilder.loadKeyMaterial(keystore, keypassword.toCharArray());
+            globalsslfactory = new SSLConnectionSocketFactory(sslbuilder.build(), new NoopHostnameVerifier());
         } catch (KeyStoreException
                 | NoSuchAlgorithmException
                 | KeyManagementException
