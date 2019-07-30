@@ -459,6 +459,11 @@ ul#mysidebar {
   padding-left: 10px;
 }
 
+.nav.affix {
+  /* DD note: bootstrap.css sets this to fixed, which causes the menu to extend below the footer */
+  position:unset;
+}
+
 
 /* end sidebar */
 
