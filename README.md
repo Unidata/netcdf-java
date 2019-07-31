@@ -16,7 +16,7 @@ For more information about netCDF-Java/CDM, see the netCDF-Java web page at
 
 and the CDM web page at
 
-https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0/userguide/common_data_model_overview.html
+https://docs.unidata.ucar.edu/netcdf-java/5.0/userguide/common_data_model_overview.html
 
 You can obtain a copy of the latest released version of netCDF-Java software from
 
@@ -24,7 +24,7 @@ You can obtain a copy of the latest released version of netCDF-Java software fro
 
 More documentation can be found at
 
-* https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0.0/userguide/index.html
+* https://docs.unidata.ucar.edu/netcdf-java/5.0/userguide/index.html
 
 A mailing list, netcdf-java@unidata.ucar.edu, exists for discussion of all things netCDF-Java/CDM including announcements about netCDF-Java/CDM bugs, fixes, enhancements, and releases.
 For information about how to subscribe, see the "Subscribe" link on this page
@@ -78,7 +78,7 @@ Each of these software components have their own license. Please see `docs/src/p
 
 The latest released and snapshot software artifacts (e.g. .jar files) are available from Unidata's Nexus repository:
 
-* https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-all
+* https://artifacts.unidata.ucar.edu/#browse/browse:unidata-all
 
 To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/netcdf-java/5.0/userguide/building_from_source.html).
 
