@@ -5,19 +5,28 @@
 
 package ucar.nc2.iosp.nexrad2;
 
-import static ucar.nc2.iosp.nexrad2.Level2Record.REFLECTIVITY_HIGH;
-import static ucar.nc2.iosp.nexrad2.Level2Record.VELOCITY_HIGH;
-
-import java.io.*;
-import java.util.*;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
-
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
+import ucar.unidata.io.bzip2.CBZip2InputStream;
+
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static ucar.nc2.iosp.nexrad2.Level2Record.REFLECTIVITY_HIGH;
+import static ucar.nc2.iosp.nexrad2.Level2Record.VELOCITY_HIGH;
 
 /**
  * This class reads a NEXRAD level II data file. It can handle NCDC archives (ARCHIVE2), as well as
@@ -786,12 +795,7 @@ public class Level2VolumeScan {
         }
       }
       throw t;
-    } finally {
-      if (lock != null) {
-        lock.release();
-      }
-    } // try-with-resource
-
+    }  // try-with-resource
   }
 
   // check if compressed file seems ok
