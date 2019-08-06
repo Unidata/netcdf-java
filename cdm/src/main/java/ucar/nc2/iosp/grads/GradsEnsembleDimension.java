@@ -3,9 +3,6 @@
  * See LICENSE for license information.
  */
 
-/**
- *
- */
 package ucar.nc2.iosp.grads;
 
 

@@ -259,7 +259,7 @@ public class NcStreamReader {
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public StructureData next() {
       count++;
       return curr;
     }

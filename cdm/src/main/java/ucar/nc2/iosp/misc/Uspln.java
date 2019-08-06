@@ -254,7 +254,7 @@ public class Uspln extends AbstractLightningIOSP {
 
     v = makeLightningVariable(ncfile, null, seq, SIGNAL, DataType.FLOAT,
             "", "signed peak amplitude (signal strength)", null, "kAmps", null);
-    v.addAttribute(new Attribute(CDM.MISSING_VALUE, new Double(999)));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999d));
     seq.addMemberVariable(v);
 
     if (isExtended) {  // extended
@@ -427,14 +427,14 @@ public class Uspln extends AbstractLightningIOSP {
         time_max = Math.max(time_max, s.secs);
       }
 
-      offsetList.add(new Long(offset));
+      offsetList.add(offset);
       count++;
     }
 
     offsets = new long[count];
     for (int i = 0; i < offsetList.size(); i++) {
       Long off = (Long) offsetList.get(i);
-      offsets[i] = off.longValue();
+      offsets[i] = off;
     }
 
     //System.out.println("processed " + count + " records");
@@ -451,11 +451,10 @@ public class Uspln extends AbstractLightningIOSP {
    *                Note: no nulls allowed. IOSP may not modify.
    * @return the requested data in a memory-resident Array
    * @throws IOException           if read error
-   * @throws InvalidRangeException if invalid section
    * @see ucar.ma2.Range
    */
   public Array readData(Variable v2, Section section)
-          throws IOException, InvalidRangeException {
+          throws IOException {
     return new ArraySequence(sm, getStructureIterator(null, 0), nelems);
   }
 
@@ -519,7 +518,7 @@ public class Uspln extends AbstractLightningIOSP {
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public StructureData next() {
       numFlashes++;
       return asbb.getStructureData(0);
     }

@@ -84,8 +84,6 @@ public abstract class CFPointWriter implements Closeable {
    * @param fileOut  write to the is file
    * @param config  configuration
    * @return  count of number of pointFeatures written.
-   *
-   * @throws IOException
    */
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, CFPointWriterConfig config) throws IOException {
 
@@ -361,7 +359,6 @@ public abstract class CFPointWriter implements Closeable {
    * @param fileOut             name of the output file
    * @param atts                global attributes to be added
    * @param config              configure
-   * @throws IOException
    */
   protected CFPointWriter(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
                           CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
@@ -545,7 +542,7 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   // added as members of the given structure
-  protected void addCoordinatesExtended(Structure parent, List<VariableSimpleIF> coords) throws IOException {
+  protected void addCoordinatesExtended(Structure parent, List<VariableSimpleIF> coords) {
     for (VariableSimpleIF vs : coords) {
       String dims = Dimension.makeDimensionsString(vs.getDimensions());
       Variable member = writer.addStructureMember(parent, vs.getShortName(), vs.getDataType(), dims);
@@ -614,7 +611,7 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   // add variables to the record structure
-  protected void addDataVariablesExtended(StructureData obsData, String coordVars) throws IOException {
+  protected void addDataVariablesExtended(StructureData obsData, String coordVars) {
 
     for (StructureMembers.Member m : obsData.getMembers()) {
       VariableSimpleIF oldVar = getDataVar(m.getName());
@@ -649,7 +646,7 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   // classic model: no private dimensions
-  protected void addDimensionsClassic(List<? extends VariableSimpleIF> vars, Map<String, Dimension> dimMap) throws IOException {
+  protected void addDimensionsClassic(List<? extends VariableSimpleIF> vars, Map<String, Dimension> dimMap) {
     Set<Dimension> oldDims = new HashSet<>(20);
 
     // find all dimensions needed by these variables
@@ -670,7 +667,7 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  protected List<Dimension> makeDimensionList(Map<String, Dimension> dimMap, List<Dimension> oldDims) throws IOException {
+  protected List<Dimension> makeDimensionList(Map<String, Dimension> dimMap, List<Dimension> oldDims) {
     List<Dimension> result = new ArrayList<>();
 
     // find all dimensions needed by the coord variables

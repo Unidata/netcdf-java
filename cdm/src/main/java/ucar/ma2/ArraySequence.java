@@ -356,7 +356,7 @@ public class ArraySequence extends ArrayStructure {
 
   @Override
   public String toString() {
-    return "seq n=" + Integer.toString(nelems);
+    return "seq n=" + nelems;
   }
 
   @Override

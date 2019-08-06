@@ -29,7 +29,7 @@ public class PointIteratorStream extends PointIteratorAbstract {
   private PointFeature pf;
   private boolean finished = false;
 
-  PointIteratorStream(DsgCollectionImpl dsg, InputStream in, FeatureMaker featureMaker) throws IOException {
+  PointIteratorStream(DsgCollectionImpl dsg, InputStream in, FeatureMaker featureMaker) {
     this.dsg = dsg;
     this.in = in;
     this.featureMaker = featureMaker;

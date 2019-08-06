@@ -6,14 +6,12 @@ package ucar.nc2.dt.radial;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
-import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -28,7 +26,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
   DateFormatter formatter = new DateFormatter();
 
   /////////////////////////////////////////////////
-  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ncd.findAttValueIgnoreCase(null, "Format", null);
@@ -38,7 +36,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     return null;
   }
 
-  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) {
     return new UF2RadialAdapter(ncd);
   }
 
@@ -87,15 +85,15 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
 
   double getMaximumRadialDist() {
     double maxdist = 0.0;
-    Iterator iter = dataVariables.iterator();
 
-    while (iter.hasNext()) {
-        RadialDatasetSweep.RadialVariable rv = (RadialDatasetSweep.RadialVariable) iter.next();
-        RadialDatasetSweep.Sweep sp = rv.getSweep(0);
-        double dist = sp.getGateNumber() * sp.getGateSize();
+    for (VariableSimpleIF dataVariable : dataVariables) {
+      RadialVariable rv = (RadialVariable) dataVariable;
+      Sweep sp = rv.getSweep(0);
+      double dist = sp.getGateNumber() * sp.getGateSize();
 
-        if (dist > maxdist)
-          maxdist = dist;
+      if (dist > maxdist) {
+        maxdist = dist;
+      }
     }
 
     return maxdist;
@@ -161,11 +159,11 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
 
   protected void setTimeUnits() throws Exception {
     List axes = ds.getCoordinateAxes();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis = (CoordinateAxis) axes.get(i);
+    for (Object axe : axes) {
+      CoordinateAxis axis = (CoordinateAxis) axe;
       if (axis.getAxisType() == AxisType.Time) {
         String units = axis.getUnitsString();
-        dateUnits =  new DateUnit(units);
+        dateUnits = new DateUnit(units);
         calDateUnits = CalendarDateUnit.of(null, units);
         return;
       }
@@ -191,11 +189,10 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
 
   public void clearDatasetMemory() {
       List  rvars = getDataVariables();
-      Iterator iter = rvars.iterator();
-      while (iter.hasNext()) {
-          RadialDatasetSweep.RadialVariable radVar = (RadialDatasetSweep.RadialVariable)iter.next();
-          radVar.clearVariableMemory();
-      }
+    for (Object rvar : rvars) {
+      RadialVariable radVar = (RadialVariable) rvar;
+      radVar.clearVariableMemory();
+    }
   }
 
 

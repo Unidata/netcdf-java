@@ -6,7 +6,6 @@ package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
 
 import ucar.nc2.dataset.*;
 

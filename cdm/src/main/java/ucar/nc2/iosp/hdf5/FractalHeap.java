@@ -221,7 +221,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     int offset; // This field is the offset of the object in the heap.
     int size;   // This field is the length of the object in the heap
 
-    DHeapId(byte[] heapId) throws IOException {
+    DHeapId(byte[] heapId) {
       type = (heapId[0] & 0x30) >> 4;
 
       if (type == 0) {

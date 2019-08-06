@@ -27,7 +27,7 @@ public class EpicInsitu extends ucar.nc2.dataset.CoordSysBuilder {
     this.conventionName = "EpicInsitu";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
     List<Variable> vars = ds.getVariables();
     findAxes(vars);
     ds.finish();

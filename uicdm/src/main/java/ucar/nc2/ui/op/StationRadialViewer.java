@@ -33,7 +33,6 @@ import javax.swing.JSplitPane;
  *
  * @author caron
  */
-
 public class StationRadialViewer extends JPanel {
   private PreferencesExt prefs;
 
@@ -48,9 +47,7 @@ public class StationRadialViewer extends JPanel {
   private boolean eventsOK = true;
   private boolean debugStationRegionSelect = false, debugStationDatsets = false, debugQuery = false;
 
-/**
- *
- */
+
   public StationRadialViewer(PreferencesExt prefs) {
     this.prefs = prefs;
 
@@ -95,9 +92,6 @@ public class StationRadialViewer extends JPanel {
     add(splitV, BorderLayout.CENTER);
   }
 
-/**
- *
- */
   public void setDataset(FeatureDataset dataset) {
     this.sds = (StationRadialDataset) dataset;
 
@@ -109,43 +103,24 @@ public class StationRadialViewer extends JPanel {
       chooser.setDateRange( new DateRange( startDate.toDate(), endDate.toDate()));
 
     List<StationBean> stationBeans = new ArrayList<>();
-      try {
-        List<Station> stations = sds.getStations();
-        if (stations == null) return;
+    List<Station> stations = sds.getStations();
+    if (stations == null) return;
 
-        for (Station station : stations)
-          stationBeans.add(new StationBean(station));
-
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
-        return;
-      }
+    for (Station station : stations)
+      stationBeans.add(new StationBean(station));
 
     stnTable.setBeans( stationBeans);
     chooser.setStations( stationBeans);
     rdTable.clear();
   }
 
-/**
- *
- */
   public void setStation(StationBean sb) {
-    try {
-      RadialDatasetSweep rsds = sds.getRadarDataset(sb.getName(), new Date()); // LOOK kludge - should show all possibilities
-      rdTable.setDataset( rsds);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    RadialDatasetSweep rsds = sds.getRadarDataset(sb.getName(), new Date()); // LOOK kludge - should show all possibilities
+    rdTable.setDataset( rsds);
   }
 
-/**
- *
- */
   public PreferencesExt getPrefs() { return prefs; }
 
-/**
- *
- */
   public void save() {
    stnTable.saveState(false);
    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
@@ -154,9 +129,6 @@ public class StationRadialViewer extends JPanel {
    //rdTable.saveState();
   }
 
-/**
- *
- */
   public class StationBean implements Station {
     private Station s;
 

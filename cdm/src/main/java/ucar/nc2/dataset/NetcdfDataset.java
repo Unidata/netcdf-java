@@ -1101,7 +1101,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param os  write to this Output Stream.
    * @param uri use this for the url attribute; if null use getLocation().
-   * @throws IOException
    */
   @Override
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
@@ -1243,8 +1242,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Sort Variables, CoordAxes by name.
    */
   public void sort() {
-    Collections.sort(variables, new VariableComparator());
-    Collections.sort(coordAxes, new VariableComparator());
+    variables.sort(new VariableComparator());
+    coordAxes.sort(new VariableComparator());
   }
 
   // sort by coord sys, then name
@@ -1398,9 +1397,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param want enhancements wanted
    * @return true if wanted enhancement is not done
-   * @throws java.io.IOException on error
    */
-  public boolean enhanceNeeded(Set<Enhance> want) throws IOException {
+  public boolean enhanceNeeded(Set<Enhance> want) {
     if (want == null) return false;
     for (Enhance mode : want) {
       if (!this.enhanceMode.contains(mode)) return true;

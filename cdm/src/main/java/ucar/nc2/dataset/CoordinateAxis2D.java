@@ -360,7 +360,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return new CoordinateAxisTimeHelper(getCalendarFromAttribute(), getUnitsString());
   }
 
-  public int findTimeIndexFromCalendarDate(int run_idx, CalendarDate want) throws IOException, InvalidRangeException {
+  public int findTimeIndexFromCalendarDate(int run_idx, CalendarDate want) {
     CoordinateAxisTimeHelper helper = getCoordinateAxisTimeHelper();
     double wantOffset = helper.offsetFromRefDate(want);
 

@@ -6,12 +6,9 @@
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.filesystem.MFileOS;
-import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,7 +34,7 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
     this.partIndexFiles = partFiles;
   }
 
-  public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException {
+  public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) {
     return new PartIterator();
   }
 
@@ -78,12 +75,12 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
   public void close() { }
 
   @Override
-  public Iterable<MFile> getFilesSorted() throws IOException {
+  public Iterable<MFile> getFilesSorted() {
     return null;
   }
 
   @Override
-  public CloseableIterator<MFile> getFileIterator() throws IOException {
+  public CloseableIterator<MFile> getFileIterator() {
     return null;
   }
 

@@ -4,6 +4,7 @@
  */
 package thredds.client.catalog;
 
+import java.util.Objects;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
@@ -123,9 +124,9 @@ public class Access {                 // (5)
     Access access = (Access) o;
 
     if (dataSize != access.dataSize) return false;
-    if (dataFormatS != null ? !dataFormatS.equals(access.dataFormatS) : access.dataFormatS != null) return false;
-    if (service != null ? !service.equals(access.service) : access.service != null) return false;
-    if (urlPath != null ? !urlPath.equals(access.urlPath) : access.urlPath != null) return false;
+    if (!Objects.equals(dataFormatS, access.dataFormatS)) return false;
+    if (!Objects.equals(service, access.service)) return false;
+    if (!Objects.equals(urlPath, access.urlPath)) return false;
 
     return true;
   }

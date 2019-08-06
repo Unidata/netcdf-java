@@ -97,7 +97,7 @@ public class CatalogBuilder {
     return fatalError ? null : makeCatalog();
   }
 
-  public Catalog buildFromJdom(Element root, URI docBaseUri) throws IOException {
+  public Catalog buildFromJdom(Element root, URI docBaseUri) {
     this.baseURI = docBaseUri;
     readCatalog(root);
     return fatalError ? null : makeCatalog();
@@ -294,7 +294,7 @@ public class CatalogBuilder {
     }
   }  */
 
-  private void readXML(String location) throws IOException {
+  private void readXML(String location) {
      try {
        SAXBuilder saxBuilder = new SAXBuilder();
        Document jdomDoc = saxBuilder.build(location);
@@ -310,7 +310,7 @@ public class CatalogBuilder {
      }
    }
 
-  private void readXML(URI uri) throws IOException {
+  private void readXML(URI uri) {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
       Document jdomDoc = saxBuilder.build(uri.toURL());
@@ -326,7 +326,7 @@ public class CatalogBuilder {
     }
   }
 
-  private void readXMLfromString(String catalogAsString) throws IOException {
+  private void readXMLfromString(String catalogAsString) {
     try {
       StringReader in = new StringReader(catalogAsString);
       SAXBuilder saxBuilder = new SAXBuilder();    // LOOK non-validating
@@ -343,7 +343,7 @@ public class CatalogBuilder {
     }
   }
 
-  private void readXML(InputStream stream) throws IOException {
+  private void readXML(InputStream stream) {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
       Document jdomDoc = saxBuilder.build(stream);

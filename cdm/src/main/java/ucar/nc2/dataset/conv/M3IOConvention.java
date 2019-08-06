@@ -319,7 +319,7 @@ public class M3IOConvention extends CoordSysBuilder {
     if (Double.isNaN(lont))
       lont = findAttributeDouble(ds, "P_BET");
 
-    /**
+    /*
      * Construct a Stereographic Projection.
      * @param latt tangent point of projection, also origin of projecion coord system
      * @param lont tangent point of projection, also origin of projecion coord system
@@ -339,7 +339,7 @@ public class M3IOConvention extends CoordSysBuilder {
     if (Double.isNaN(tangentLon))
       tangentLon = findAttributeDouble(ds, "P_BET");
 
-    /**
+    /*
      * Construct a TransverseMercator Projection.
      * @param lat0 origin of projection coord system is at (lat0, tangentLon)
      * @param tangentLon longitude that the cylinder is tangent at ("central meridian")
@@ -362,7 +362,7 @@ public class M3IOConvention extends CoordSysBuilder {
     //double lon0 = findAttributeDouble( "X_CENT");
     //double lat0 = findAttributeDouble( "Y_CENT");
 
-    /**
+    /*
      * Construct a UTM Projection.
      * @param zone - UTM zone
      * @param if ycent < 0, then isNorth = False

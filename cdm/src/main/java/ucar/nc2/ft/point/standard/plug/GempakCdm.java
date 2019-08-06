@@ -70,7 +70,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
   }
 
-  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
     final boolean needFinish = false;
 
     // find lat coord
@@ -190,7 +190,7 @@ public class GempakCdm extends TableConfigurerImpl {
     return stnTable;
   }
 
-  protected TableConfig getStationAsPointConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+  protected TableConfig getStationAsPointConfig(NetcdfDataset ds, Formatter errlog) {
     final boolean needFinish = false;
 
     // find lat coord
@@ -256,7 +256,7 @@ public class GempakCdm extends TableConfigurerImpl {
     if (alt != null)
        obs.elev = alt.getFullName();
 
-    List<String> vars = new ArrayList<String>(30);
+    List<String> vars = new ArrayList<>(30);
     for (Variable v : ds.getVariables()) {
       if ((v.getDimension(0) == stationDim) &&
           ((v.getRank() == 1) || ((v.getRank() == 2) && (v.getDataType() == DataType.CHAR)))) 
@@ -320,7 +320,7 @@ public class GempakCdm extends TableConfigurerImpl {
     return stnTable;
   }
 
-  protected TableConfig makeStationTable(NetcdfDataset ds, Formatter errlog) throws IOException {
+  protected TableConfig makeStationTable(NetcdfDataset ds, Formatter errlog) {
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     if (lat == null) {

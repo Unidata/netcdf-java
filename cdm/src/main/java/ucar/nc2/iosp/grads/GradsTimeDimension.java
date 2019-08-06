@@ -3,9 +3,6 @@
  * See LICENSE for license information.
  */
 
-/**
- *
- */
 package ucar.nc2.iosp.grads;
 
 
@@ -132,9 +129,9 @@ public class GradsTimeDimension extends GradsDimension {
         double[] vals    = new double[getSize()];
         String   tstart  = levels.get(0).trim().toLowerCase();
         String   pattern = null;
-        if (tstart.indexOf(":") >= 0) {                     // HH:mmZddMMMyyyy
+        if (tstart.contains(":")) {                     // HH:mmZddMMMyyyy
             pattern = dateFormats[0];
-        } else if (tstart.indexOf("z") >= 0) {              // mmZddMMMyyyy
+        } else if (tstart.contains("z")) {              // mmZddMMMyyyy
             pattern = dateFormats[1];
         } else if (Character.isLetter(tstart.charAt(0))) {  // MMMyyyy
             pattern = dateFormats[3];
@@ -245,181 +242,181 @@ public class GradsTimeDimension extends GradsDimension {
         String format;
         while (hasTimeTemplate(retString)) {
             // initial time
-            if (retString.indexOf("%ix1") >= 0) {
+            if (retString.contains("%ix1")) {
                 retString = retString.replaceAll("%ix1",
                         String.format("%d", initialTime.year / 10));
             }
-            if (retString.indexOf("%ix3") >= 0) {
+            if (retString.contains("%ix3")) {
                 retString = retString.replaceAll("%ix3",
                         String.format("%03d", initialTime.year / 10));
             }
-            if (retString.indexOf("%iy2") >= 0) {
+            if (retString.contains("%iy2")) {
                 int cent = initialTime.year / 100;
                 int val  = initialTime.year - cent * 100;
                 retString = retString.replaceAll("%iy2",
                         String.format("%02d", val));
             }
-            if (retString.indexOf("%iy4") >= 0) {
+            if (retString.contains("%iy4")) {
                 retString = retString.replaceAll("%iy4",
                         String.format("%d", initialTime.year));
             }
-            if (retString.indexOf("%im1") >= 0) {
+            if (retString.contains("%im1")) {
                 retString = retString.replaceAll("%im1",
                         String.format("%d", initialTime.month));
             }
-            if (retString.indexOf("%im2") >= 0) {
+            if (retString.contains("%im2")) {
                 retString = retString.replaceAll("%im2",
                         String.format("%02d", initialTime.month));
             }
-            if (retString.indexOf("%imc") >= 0) {
+            if (retString.contains("%imc")) {
                 retString = retString.replaceAll("%imc",
                         GradsTimeStruct.months[initialTime.month - 1]);
             }
-            if (retString.indexOf("%id1") >= 0) {
+            if (retString.contains("%id1")) {
                 retString = retString.replaceAll("%id1",
                         String.format("%d", initialTime.day));
             }
-            if (retString.indexOf("%id2") >= 0) {
+            if (retString.contains("%id2")) {
                 retString = retString.replaceAll("%id2",
                         String.format("%02d", initialTime.day));
             }
-            if (retString.indexOf("%ih1") >= 0) {
+            if (retString.contains("%ih1")) {
                 retString = retString.replaceAll("%ih1",
                         String.format("%d", initialTime.hour));
             }
-            if (retString.indexOf("%ih2") >= 0) {
+            if (retString.contains("%ih2")) {
                 retString = retString.replaceAll("%ih2",
                         String.format("%02d", initialTime.hour));
             }
-            if (retString.indexOf("%ih3") >= 0) {
+            if (retString.contains("%ih3")) {
                 retString = retString.replaceAll("%ih3",
                         String.format("%03d", initialTime.hour));
             }
-            if (retString.indexOf("%in2") >= 0) {
+            if (retString.contains("%in2")) {
                 retString = retString.replaceAll("%in2",
                         String.format("%02d", initialTime.minute));
             }
             // any time
             // decade
-            if (retString.indexOf("%x1") >= 0) {
+            if (retString.contains("%x1")) {
                 retString = retString.replaceAll("%x1",
                         String.format("%d", ts.year / 10));
             }
-            if (retString.indexOf("%x3") >= 0) {
+            if (retString.contains("%x3")) {
                 retString = retString.replaceAll("%x3",
                         String.format("%03d", ts.year / 10));
             }
             // year
-            if (retString.indexOf("%y2") >= 0) {
+            if (retString.contains("%y2")) {
                 int cent = ts.year / 100;
                 int val  = ts.year - cent * 100;
                 retString = retString.replaceAll("%y2",
                         String.format("%02d", val));
             }
-            if (retString.indexOf("%y4") >= 0) {
+            if (retString.contains("%y4")) {
                 retString = retString.replaceAll("%y4",
                         String.format("%d", ts.year));
             }
             // month
-            if (retString.indexOf("%m1") >= 0) {
+            if (retString.contains("%m1")) {
                 retString = retString.replaceAll("%m1",
                         String.format("%d", ts.month));
             }
-            if (retString.indexOf("%m2") >= 0) {
+            if (retString.contains("%m2")) {
                 retString = retString.replaceAll("%m2",
                         String.format("%02d", ts.month));
             }
-            if (retString.indexOf("%mc") >= 0) {
+            if (retString.contains("%mc")) {
                 retString = retString.replaceAll("%mc",
                         GradsTimeStruct.months[ts.month - 1]);
             }
             // day
-            if (retString.indexOf("%d1") >= 0) {
+            if (retString.contains("%d1")) {
                 retString = retString.replaceAll("%d1",
                         String.format("%d", ts.day));
             }
-            if (retString.indexOf("%d2") >= 0) {
+            if (retString.contains("%d2")) {
                 retString = retString.replaceAll("%d2",
                         String.format("%02d", ts.day));
             }
             // hour
-            if (retString.indexOf("%h1") >= 0) {
+            if (retString.contains("%h1")) {
                 retString = retString.replaceAll("%h1",
                         String.format("%d", ts.hour));
             }
-            if (retString.indexOf("%h2") >= 0) {
+            if (retString.contains("%h2")) {
                 retString = retString.replaceAll("%h2",
                         String.format("%02d", ts.hour));
             }
-            if (retString.indexOf("%h3") >= 0) {
+            if (retString.contains("%h3")) {
                 retString = retString.replaceAll("%h3",
                         String.format("%03d", ts.hour));
             }
             // minute
-            if (retString.indexOf("%n2") >= 0) {
+            if (retString.contains("%n2")) {
                 retString = retString.replaceAll("%n2",
                         String.format("%02d", ts.minute));
             }
             // julian day
-            if (retString.indexOf("%j3") >= 0) {
+            if (retString.contains("%j3")) {
                 retString = retString.replaceAll("%j3",
                         String.format("%03d", ts.jday));
             }
             // time index (1 based)
-            if (retString.indexOf("%t1") >= 0) {
+            if (retString.contains("%t1")) {
                 retString = retString.replaceAll("%t1",
                         String.format("%d", timeIndex + 1));
             }
-            if (retString.indexOf("%t2") >= 0) {
+            if (retString.contains("%t2")) {
                 retString = retString.replaceAll("%t2",
                         String.format("%02d", timeIndex + 1));
             }
-            if (retString.indexOf("%t3") >= 0) {
+            if (retString.contains("%t3")) {
                 retString = retString.replaceAll("%t3",
                         String.format("%03d", timeIndex + 1));
             }
-            if (retString.indexOf("%t4") >= 0) {
+            if (retString.contains("%t4")) {
                 retString = retString.replaceAll("%t4",
                         String.format("%04d", timeIndex + 1));
             }
-            if (retString.indexOf("%t5") >= 0) {
+            if (retString.contains("%t5")) {
                 retString = retString.replaceAll("%t5",
                         String.format("%05d", timeIndex + 1));
             }
-            if (retString.indexOf("%t6") >= 0) {
+            if (retString.contains("%t6")) {
                 retString = retString.replaceAll("%t6",
                         String.format("%06d", timeIndex + 1));
             }
             // time index (0 based)
-            if (retString.indexOf("%tm1") >= 0) {
+            if (retString.contains("%tm1")) {
                 retString = retString.replaceAll("%tm1",
                         String.format("%d", timeIndex));
             }
-            if (retString.indexOf("%tm2") >= 0) {
+            if (retString.contains("%tm2")) {
                 retString = retString.replaceAll("%tm2",
                         String.format("%02d", timeIndex));
             }
-            if (retString.indexOf("%tm3") >= 0) {
+            if (retString.contains("%tm3")) {
                 retString = retString.replaceAll("%tm3",
                         String.format("%03d", timeIndex));
             }
-            if (retString.indexOf("%tm4") >= 0) {
+            if (retString.contains("%tm4")) {
                 retString = retString.replaceAll("%tm4",
                         String.format("%04d", timeIndex));
             }
-            if (retString.indexOf("%tm5") >= 0) {
+            if (retString.contains("%tm5")) {
                 retString = retString.replaceAll("%tm5",
                         String.format("%05d", timeIndex));
             }
-            if (retString.indexOf("%tm6") >= 0) {
+            if (retString.contains("%tm6")) {
                 retString = retString.replaceAll("%tm6",
                         String.format("%06d", timeIndex));
             }
             // forecast hours
-            if (retString.indexOf("%f") >= 0) {
+            if (retString.contains("%f")) {
                 int mins = (int) getValues()[timeIndex] * 60;
                 int tdif;
-                if (retString.indexOf("%f2") >= 0) {
+                if (retString.contains("%f2")) {
                     format = "%02d";
                     tdif   = mins / 60;
                     if (tdif > 99) {
@@ -428,7 +425,7 @@ public class GradsTimeDimension extends GradsDimension {
                     retString = retString.replaceAll("%f2",
                             String.format(format, tdif));
                 }
-                if (retString.indexOf("%f3") >= 0) {
+                if (retString.contains("%f3")) {
                     format = "%03d";
                     tdif   = mins / 60;
                     if (tdif > 999) {
@@ -437,7 +434,7 @@ public class GradsTimeDimension extends GradsDimension {
                     retString = retString.replaceAll("%f3",
                             String.format(format, tdif));
                 }
-                if (retString.indexOf("%fn2") >= 0) {
+                if (retString.contains("%fn2")) {
                     format = "%02d";
                     if (mins > 99) {
                         format = "%d";
@@ -445,7 +442,7 @@ public class GradsTimeDimension extends GradsDimension {
                     retString = retString.replaceAll("%fn2",
                             String.format(format, mins));
                 }
-                if (retString.indexOf("%fhn2") >= 0) {
+                if (retString.contains("%fhn2")) {
                     tdif = mins;
                     int hrs = tdif / 60;
                     int mns = tdif - (hrs * 60);
@@ -456,7 +453,7 @@ public class GradsTimeDimension extends GradsDimension {
                     retString = retString.replaceAll("%fhn2",
                             String.format(format, hrs, mns));
                 }
-                if (retString.indexOf("%fdhn2") >= 0) {
+                if (retString.contains("%fdhn2")) {
                     tdif = mins;
                     int dys = tdif / 1440;
                     int hrs = (tdif - (dys * 1440)) / 60;
@@ -480,11 +477,11 @@ public class GradsTimeDimension extends GradsDimension {
      * @return true if it does
      */
     public static boolean hasTimeTemplate(String template) {
-        for (int i = 0; i < timeTemplates.length; i++) {
-            if (template.indexOf(timeTemplates[i]) >= 0) {
-                return true;
-            }
+      for (String timeTemplate : timeTemplates) {
+        if (template.contains(timeTemplate)) {
+          return true;
         }
+      }
         return false;
     }
 

@@ -9,7 +9,6 @@ package ucar.nc2.dt.radial;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.units.DateUnit;
@@ -33,7 +32,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
   float ranv, cellv, angv, nyqv, rangv, contv, rgainv, bwidthv;
 
   /////////////////////////////////////////////////
-  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ncd.findAttValueIgnoreCase(null, "Format", null);
@@ -44,7 +43,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     return null;
   }
 
-  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) {
     return new Dorade2RadialAdapter(ncd);
   }
 
@@ -171,8 +170,8 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
   protected void setTimeUnits() throws Exception {
     List axes = ncd.getCoordinateAxes();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis = (CoordinateAxis) axes.get(i);
+    for (Object axe : axes) {
+      CoordinateAxis axis = (CoordinateAxis) axe;
       if (axis.getAxisType() == AxisType.Time) {
         String units = axis.getUnitsString();
         dateUnits = new DateUnit(units);
@@ -197,9 +196,8 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
   public void clearDatasetMemory() {
     List rvars = getDataVariables();
-    Iterator iter = rvars.iterator();
-    while (iter.hasNext()) {
-      RadialVariable radVar = (RadialVariable) iter.next();
+    for (Object rvar : rvars) {
+      RadialVariable radVar = (RadialVariable) rvar;
       radVar.clearVariableMemory();
     }
   }

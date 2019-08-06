@@ -51,7 +51,7 @@ public class Suomi extends CoordSysBuilder {
     this.conventionName = "Suomi";
   }
 
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
     String start_date = ds.findAttValueIgnoreCase(null, "start_date", null);
     if (start_date == null) return;
 

@@ -117,7 +117,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   @Override
-  protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
+  protected Array readData(ucar.nc2.Variable v, Section section) throws IOException {
     //if (unlocked)
     //  throw new IllegalStateException("File is unlocked - cannot use");
 
@@ -186,7 +186,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return (content == null) ? status + " " + path : status + " " + path +"\n "+content;
   }
 
-  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
     try {
       InputStream is = sendQuery(httpClient, remoteURI, s.getFullNameEscaped());
       NcStreamReader reader = new NcStreamReader();
@@ -300,7 +300,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   @Override
-  public synchronized void close() throws java.io.IOException {
+  public synchronized void close() {
     if (httpClient != null) httpClient.close();
   }
 

@@ -8,7 +8,6 @@ package ucar.nc2.iosp.cinrad;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
 
 import java.io.*;
@@ -157,8 +156,8 @@ public class Cinrad2VolumeScan {
         sweepN = r.sweepN;
         recordNum = r.recordNum;
         //sums = Arrays.stream(recordNum).sum();
-        for (int i = 0; i < recordNum.length; i++) {
-          sums = sums + recordNum[i];
+        for (int value : recordNum) {
+          sums = sums + value;
         }
       }
       if (showData) r.dump2(System.out);
@@ -239,9 +238,9 @@ public class Cinrad2VolumeScan {
 
     // now group by elevation_num
     HashMap groupHash = new HashMap(600);
-    for (int i = 0; i < scans.size(); i++) {
-      Cinrad2Record record = (Cinrad2Record) scans.get(i);
-      Integer groupNo = new Integer(record.elevation_num);
+    for (Object scan : scans) {
+      Cinrad2Record record = (Cinrad2Record) scan;
+      Integer groupNo = (int) record.elevation_num;
 
       ArrayList group = (ArrayList) groupHash.get(groupNo);
       if (null == group) {
@@ -254,24 +253,25 @@ public class Cinrad2VolumeScan {
 
     // sort the groups by elevation_num
     ArrayList groups = new ArrayList(groupHash.values());
-    Collections.sort(groups, new GroupComparator());
+    groups.sort(new GroupComparator());
 
     // use the maximum radials
-    for (int i = 0; i < groups.size(); i++) {
-      ArrayList group = (ArrayList) groups.get(i);
+    for (Object value : groups) {
+      ArrayList group = (ArrayList) value;
       max_radials = Math.max(max_radials, group.size());
       min_radials = Math.min(min_radials, group.size());
       testScan(name, group);
     }
     if (debugRadials) {
       System.out.println(name + " min_radials= " + min_radials + " max_radials= " + max_radials);
-      for (int i = 0; i < groups.size(); i++) {
-        ArrayList group = (ArrayList) groups.get(i);
+      for (Object o : groups) {
+        ArrayList group = (ArrayList) o;
         Cinrad2Record lastr = (Cinrad2Record) group.get(0);
         for (int j = 1; j < group.size(); j++) {
           Cinrad2Record r = (Cinrad2Record) group.get(j);
-          if (r.data_msecs < lastr.data_msecs)
+          if (r.data_msecs < lastr.data_msecs) {
             System.out.println(" out of order " + j);
+          }
           lastr = r;
         }
       }
@@ -321,8 +321,8 @@ public class Cinrad2VolumeScan {
     for (int i = 0; i < MAX_RADIAL; i++)
       radial[i] = 0;
 
-    for (int i = 0; i < group.size(); i++) {
-      Cinrad2Record r = (Cinrad2Record) group.get(i);
+    for (Object o : group) {
+      Cinrad2Record r = (Cinrad2Record) o;
 
       /* this appears to be common - seems to be ok, we put missing values in 
       if (r.getGateCount(datatype) != first.getGateCount(datatype)) {
@@ -332,24 +332,33 @@ public class Cinrad2VolumeScan {
       } */
 
       if (r.getGateSize(datatype) != first.getGateSize(datatype)) {
-        log.warn(raf.getLocation() + " different gate size (" + r.getGateSize(datatype) + ") in record " + name + " " + r);
+        log.warn(
+            raf.getLocation() + " different gate size (" + r.getGateSize(datatype) + ") in record "
+                + name + " " + r);
         ok = false;
       }
       if (r.getGateStart(datatype) != first.getGateStart(datatype)) {
-        log.warn(raf.getLocation() + " different gate start (" + r.getGateStart(datatype) + ") in record " + name + " " + r);
+        log.warn(raf.getLocation() + " different gate start (" + r.getGateStart(datatype)
+            + ") in record " + name + " " + r);
         ok = false;
       }
       if (r.resolution != first.resolution) {
-        log.warn(raf.getLocation() + " different resolution (" + r.resolution + ") in record " + name + " " + r);
+        log.warn(
+            raf.getLocation() + " different resolution (" + r.resolution + ") in record " + name
+                + " " + r);
         ok = false;
       }
 
       if ((r.radial_num < 0) || (r.radial_num > MAX_RADIAL)) {
-        log.info(raf.getLocation() + " radial out of range= " + r.radial_num + " in record " + name + " " + r);
+        log.info(
+            raf.getLocation() + " radial out of range= " + r.radial_num + " in record " + name + " "
+                + r);
         continue;
       }
       if (radial[r.radial_num] > 0) {
-        log.warn(raf.getLocation() + " duplicate radial = " + r.radial_num + " in record " + name + " " + r);
+        log.warn(
+            raf.getLocation() + " duplicate radial = " + r.radial_num + " in record " + name + " "
+                + r);
         ok = false;
       }
       radial[r.radial_num] = r.recno + 1;
@@ -533,7 +542,6 @@ public class Cinrad2VolumeScan {
    * @param raf2      file to uncompress
    * @param ufilename write to this file
    * @return raf of uncompressed file
-   * @throws IOException
    */
   private RandomAccessFile uncompress(RandomAccessFile raf2, String ufilename, boolean debug) throws IOException {
     raf2.seek(0);

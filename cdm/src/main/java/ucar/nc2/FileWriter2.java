@@ -93,9 +93,8 @@ public class FileWriter2 {
    * Use addVariable() to load in variables, then this.write().
    *
    * @param fileWriter this encapsolates new file.
-   * @throws IOException on read/write error
    */
-  public FileWriter2(NetcdfFileWriter fileWriter) throws IOException {
+  public FileWriter2(NetcdfFileWriter fileWriter) {
     this.fileIn = null;
     this.writer = fileWriter;
     this.version = fileWriter.getVersion();
@@ -152,7 +151,6 @@ public class FileWriter2 {
    * Write the input file to the output file.
    * @param cancel  allow user to cancel; may be null.
    * @return the open output file.
-   * @throws IOException
    */
   public NetcdfFile write(CancelTask cancel) throws IOException {
 
@@ -257,7 +255,7 @@ public class FileWriter2 {
     }
   }
 
-  private void addGroupExtended(Group newParent, Group oldGroup) throws IOException {
+  private void addGroupExtended(Group newParent, Group oldGroup) {
     Group newGroup = writer.addGroup(newParent, oldGroup.getShortName());
 
     // attributes

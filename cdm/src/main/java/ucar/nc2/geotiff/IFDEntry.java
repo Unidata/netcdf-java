@@ -4,9 +4,6 @@
  */
 package ucar.nc2.geotiff;
 
-import ucar.nc2.constants.CDM;
-
-import java.io.*;
 import java.util.*;
 
 /**

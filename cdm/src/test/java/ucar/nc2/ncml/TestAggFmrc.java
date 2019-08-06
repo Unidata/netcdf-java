@@ -183,18 +183,14 @@ public class TestAggFmrc {
   @Test
   public void FmrcRunDates() {
 
-    try {
-      List<CalendarDate> scanRunTimes = fmrcScan.getRunDates();
-      List<CalendarDate> explicitRunTimes = fmrcExplicit.getRunDates();
+    List<CalendarDate> scanRunTimes = fmrcScan.getRunDates();
+    List<CalendarDate> explicitRunTimes = fmrcExplicit.getRunDates();
 
-      Assert.assertEquals(scanRunTimes.size(), 3);
-      Assert.assertEquals(explicitRunTimes.size(), scanRunTimes.size());
+    Assert.assertEquals(scanRunTimes.size(), 3);
+    Assert.assertEquals(explicitRunTimes.size(), scanRunTimes.size());
 
-      for (int i = 0; i < scanRunTimes.size(); i++) {
-        Assert.assertTrue(explicitRunTimes.get(i).equals(scanRunTimes.get(i)));
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
+    for (int i = 0; i < scanRunTimes.size(); i++) {
+      Assert.assertTrue(explicitRunTimes.get(i).equals(scanRunTimes.get(i)));
     }
 
   }
@@ -202,29 +198,21 @@ public class TestAggFmrc {
   @Test
   public void FmrcForecastDates() {
 
-    try {
-      List<CalendarDate> scanForecastTimes = fmrcScan.getForecastDates();
-      List<CalendarDate> explicitForecastTimes = fmrcExplicit.getForecastDates();
+    List<CalendarDate> scanForecastTimes = fmrcScan.getForecastDates();
+    List<CalendarDate> explicitForecastTimes = fmrcExplicit.getForecastDates();
 
-      Assert.assertEquals(scanForecastTimes.size(), scanForecastTimes.size());
-      Assert.assertEquals(explicitForecastTimes.size(), 24);
+    Assert.assertEquals(scanForecastTimes.size(), scanForecastTimes.size());
+    Assert.assertEquals(explicitForecastTimes.size(), 24);
 
-      for (int i = 0; i < scanForecastTimes.size(); i++) {
-        Assert.assertTrue(scanForecastTimes.get(i).equals(explicitForecastTimes.get(i)));
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
+    for (int i = 0; i < scanForecastTimes.size(); i++) {
+      Assert.assertTrue(scanForecastTimes.get(i).equals(explicitForecastTimes.get(i)));
     }
 
   }
 
   @Test
   public void FmrcForecastOffsets() {
-    try {
-      Assert.assertArrayEquals(fmrcExplicit.getForecastOffsets(), fmrcScan.getForecastOffsets(), 0);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    Assert.assertArrayEquals(fmrcExplicit.getForecastOffsets(), fmrcScan.getForecastOffsets(), 0);
   }
 
   @Test

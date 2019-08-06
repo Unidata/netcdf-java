@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
  */
 public class GtopoIosp extends AbstractIOServiceProvider {
 
-  public boolean isValidFile(RandomAccessFile raf) throws IOException {
+  public boolean isValidFile(RandomAccessFile raf) {
     String location = raf.getLocation();
     if (!location.endsWith(".DEM")) return false;
 

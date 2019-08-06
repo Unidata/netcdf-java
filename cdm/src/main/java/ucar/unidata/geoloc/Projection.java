@@ -20,21 +20,21 @@ public interface Projection {
    *
    * @return the class name
    */
-  public String getClassName();
+  String getClassName();
 
   /**
    * The name of this projection.
    *
    * @return the name of this projection
    */
-  public String getName();
+  String getName();
 
   /**
    * String representation of the projection parameters.
    *
    * @return String representation of the projection parameters.
    */
-  public String paramsToString();
+  String paramsToString();
 
   /**
    * Convert a LatLonPoint to projection coordinates.  Note: do not assume
@@ -44,7 +44,7 @@ public interface Projection {
    * @param result point to put result in
    * @return ProjectionPoint convert to these projection coordinates
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result);
+  ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result);
 
   /**
    * Convert projection coordinates to a LatLonPoint.
@@ -55,7 +55,7 @@ public interface Projection {
    * @param result return result here, or null
    * @return lat/lon coordinates
    */
-  public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl result);
+  LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl result);
 
   /**
    * Does the line between these two points cross the projection "seam", which
@@ -65,7 +65,7 @@ public interface Projection {
    * @param pt2 the line goes between these two points
    * @return false if there is no seam, or the line does not cross it.
    */
-  public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2);
+  boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2);
 
   /**
    * Get a reasonable bounding box in this projection.
@@ -74,7 +74,7 @@ public interface Projection {
    *
    * @return a reasonable bounding box in this projection.
    */
-  public ProjectionRect getDefaultMapArea();
+  ProjectionRect getDefaultMapArea();
 
   /**
    * Check for equality with the object in question
@@ -82,14 +82,14 @@ public interface Projection {
    * @param proj projection to check
    * @return true if this represents the same Projection as proj.
    */
-  public boolean equals(Object proj);
+  boolean equals(Object proj);
 
   /**
    * Get parameters as list of ucar.unidata.util.Parameter
    *
    * @return List of parameters
    */
-  public java.util.List<Parameter> getProjectionParameters();
+  java.util.List<Parameter> getProjectionParameters();
 
 }
 

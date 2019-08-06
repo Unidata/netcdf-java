@@ -136,14 +136,12 @@ public interface IOServiceProvider {
    * Release any system resources like file handles.
    * Optional, implement only if you are able to reacquire.
    * Used when object is made inactive in cache.
-   * @throws IOException
    */
   void release() throws IOException;
 
   /**
    * Reacquire any resources like file handles
    * Used when reactivating in cache.
-   * @throws IOException
    */
   void reacquire() throws IOException;
 

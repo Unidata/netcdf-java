@@ -104,7 +104,7 @@ public class ShapefileIosp extends AbstractIOServiceProvider {
 
 
   @Override
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 

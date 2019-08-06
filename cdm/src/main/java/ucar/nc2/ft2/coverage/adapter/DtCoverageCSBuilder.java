@@ -29,7 +29,7 @@ public class DtCoverageCSBuilder {
 
     // sort by largest size first
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
-    Collections.sort(css, (o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
+    css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
 
     DtCoverageCSBuilder builder = null;
     for (CoordinateSystem cs : css) {
@@ -129,7 +129,7 @@ public class DtCoverageCSBuilder {
     }
 
     allAxes = new ArrayList<>(cs.getCoordinateAxes());
-    Collections.sort(allAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+    allAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
 
     independentAxes = new ArrayList<>();
     otherAxes = new ArrayList<>();
@@ -139,7 +139,7 @@ public class DtCoverageCSBuilder {
       if (axis.isIndependentCoordinate()) independentAxes.add(axis);
       else otherAxes.add(axis);
     }
-    Collections.sort(independentAxes, (o1, o2) -> {
+    independentAxes.sort((o1, o2) -> {
       AxisType t1 = o1.getAxisType();
       AxisType t2 = o2.getAxisType();
       if (t1 != null && t2 != null)

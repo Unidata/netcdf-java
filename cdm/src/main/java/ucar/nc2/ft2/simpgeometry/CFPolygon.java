@@ -421,7 +421,7 @@ public class CFPolygon implements Polygon  {
 	 * Constructs an empty polygon with nothing in it using an Array List.
 	 */
 	public CFPolygon() {
-		this.points = new ArrayList<Point>();
+		this.points = new ArrayList<>();
 		this.next = null;
 		this.prev = null;
 		this.isInteriorRing = false;

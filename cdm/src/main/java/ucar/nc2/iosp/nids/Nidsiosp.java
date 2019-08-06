@@ -43,10 +43,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
   protected boolean showHeaderBytes = false;
 
   /**
-   * checking the file
-   *
-   * @param raf
-   * @return the valid of file checking
+   * Check if the file is a Nids file.
    */
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     Nidsheader localHeader = new Nidsheader();
@@ -74,12 +71,6 @@ public class Nidsiosp extends AbstractIOServiceProvider {
 
   /**
    * Read nested structure data
-   *
-   * @param v2
-   * @param section
-   * @return output data
-   * @throws java.io.IOException
-   * @throws ucar.ma2.InvalidRangeException
    */
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
           throws java.io.IOException, ucar.ma2.InvalidRangeException {
@@ -120,12 +111,6 @@ public class Nidsiosp extends AbstractIOServiceProvider {
 
   /**
    * Read the data for each variable passed in
-   *
-   * @param v2
-   * @param section
-   * @return output data
-   * @throws IOException
-   * @throws InvalidRangeException
    */
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     // subset
@@ -136,14 +121,6 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     ByteBuffer bos;
     List<Range> ranges = section.getRanges();
     vinfo = (Nidsheader.Vinfo) v2.getSPobject();
-
-    /*
-if (vinfo.isZlibed  )
-vdata = readCompData(vinfo.hoff, vinfo.doff);
-else
-vdata = readUCompData(vinfo.hoff, vinfo.doff);
-
-ByteBuffer bos = ByteBuffer.wrap(vdata);     */
 
     vdata = headerParser.getUncompData((int) vinfo.doff, 0);
     bos = ByteBuffer.wrap(vdata);
@@ -269,7 +246,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
    * @param vinfo variable info,
    * @return the arraystructure of graphic symbol data
    */
-  public ArrayStructure readGraphicSymbolData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  public ArrayStructure readGraphicSymbolData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int[] pos = vinfo.pos;
     int[] dlen = vinfo.len;
     int size = pos.length;
@@ -349,7 +326,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
    * @param vinfo variable info,
    * @return the arraystructure of linked vector data
    */
-  public ArrayStructure readLinkedVectorData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  public ArrayStructure readLinkedVectorData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int[] pos = vinfo.pos;
     int[] dlen = vinfo.len;
     bos.position(0);
@@ -452,7 +429,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
    * @param vinfo variable info,
    * @return the arraystructure of circle struct data
    */
-  public ArrayStructure readCircleStructData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  public ArrayStructure readCircleStructData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int[] pos = vinfo.pos;
     int size = pos.length;
 
@@ -481,7 +458,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
    * @param vinfo variable info,
    * @return the array of tab data
    */
-  public Object readTabAlphaNumData(ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  public Object readTabAlphaNumData(ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int plen = vinfo.xt;
     int tablen = vinfo.yt;
     String[] pdata = new String[plen];
@@ -519,7 +496,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
      * @return the data object of scan data
      */
     // all the work is here, so can be called recursively
-    public Object readOneScanGenericData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) throws IOException, InvalidRangeException {
+    public Object readOneScanGenericData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) throws IOException {
         int npixel = 0;
         short [] pdata = null;
 
@@ -788,33 +765,33 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
 
     }
 
-    /*else if(vName.endsWith( "_Brightness" )){
-  float ratio = 256.0f/vinfo.level;
+        /*else if(vName.endsWith( "_Brightness" )){
+      float ratio = 256.0f/vinfo.level;
 
-  float [] fdata = new float[npixel];
-  for ( int i = 0; i < vinfo.yt * vinfo.xt; i++ ) {
-         fdata[i] = pdata[i] * ratio;
-   }
-  return fdata;
+      float [] fdata = new float[npixel];
+      for ( int i = 0; i < vinfo.yt * vinfo.xt; i++ ) {
+             fdata[i] = pdata[i] * ratio;
+       }
+      return fdata;
 
- }  else if ( vName.endsWith( "_VIP" )) {
-  int [] levels = vinfo.len;
-  int iscale = vinfo.code;
-  int [] dvip ={ 0, 30, 40, 45, 50, 55 };
-  float [] fdata = new float[npixel];
-  for (int i = 0; i < npixel; i++ ) {
-    float dbz = levels[pdata[i]] / iscale + offset;
-    for (int j = 0; j <= 5; j++ ) {
-      if ( dbz > dvip[j] ) fdata[i] = j + 1;
-    }
-  }
-  return fdata;
+     }  else if ( vName.endsWith( "_VIP" )) {
+      int [] levels = vinfo.len;
+      int iscale = vinfo.code;
+      int [] dvip ={ 0, 30, 40, 45, 50, 55 };
+      float [] fdata = new float[npixel];
+      for (int i = 0; i < npixel; i++ ) {
+        float dbz = levels[pdata[i]] / iscale + offset;
+        for (int j = 0; j <= 5; j++ ) {
+          if ( dbz > dvip[j] ) fdata[i] = j + 1;
+        }
+      }
+      return fdata;
 
- }   */
+     }   */
     return null;
   }
 
-  public float getHexDecodeValue(short val) {
+  private float getHexDecodeValue(short val) {
       float deco;
 
       int s = (val >> 15) & 1;
@@ -829,19 +806,9 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
 
       return deco;
   }
-  /**
-   * read one radial beam data
-   *
-   * @param ddata
-   * @param rLen
-   * @param xt
-   * @param level
-   * @return one beam data array
-   * @throws IOException
-   * @throws InvalidRangeException
-   */
 
-  public byte[] readOneBeamData(byte[] ddata, int rLen, int xt, int level) throws IOException, InvalidRangeException {
+  /** read one radial beam data */
+  private byte[] readOneBeamData(byte[] ddata, int rLen, int xt, int level) {
     int run;
     byte[] bdata = new byte[xt];
 
@@ -865,18 +832,8 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     return bdata;
   }
 
-  /**
-   * read one radial beam data
-   *
-   * @param ddata
-   * @param rLen
-   * @param xt
-   * @param level
-   * @return one beam data array
-   * @throws IOException
-   * @throws InvalidRangeException
-   */
-  public short[] readOneBeamShortData(byte[] ddata, int rLen, int xt, int level) throws IOException, InvalidRangeException {
+  /** read one radial beam data */
+  public short[] readOneBeamShortData(byte[] ddata, int rLen, int xt, int level) {
     int run;
     short[] sdata = new short[xt];
 
@@ -936,7 +893,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
    * @param vinfo variable info,
    * @return the arraystructure of wind barb data
    */
-  public ArrayStructure readWindBarbData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo, List sList) throws IOException, InvalidRangeException {
+  public ArrayStructure readWindBarbData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo, List sList) throws InvalidRangeException {
     int[] pos = vinfo.pos;
     int size = pos.length;
 
@@ -1009,7 +966,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
    * @param vinfo variable info,
    * @return the arraystructure of vector arrow data
    */
-  public ArrayStructure readVectorArrowData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  public ArrayStructure readVectorArrowData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int[] pos = vinfo.pos;
     int size = pos.length;
     /* short istart = 0;
@@ -1151,7 +1108,7 @@ short arrowHeadValue = 0;    */
    * @param vinfo variable info
    * @return the arraystructure of text string data
    */
-  public ArrayStructure readTextStringData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  public ArrayStructure readTextStringData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int[] pos = vinfo.pos;
     int[] sizes = vinfo.len;
     int size = pos.length;
@@ -1253,13 +1210,7 @@ short arrowHeadValue = 0;    */
       this.size = size;
     }
 
-    /**
-     * convert structure member into a string
-     *
-     * @param recnum
-     * @param m
-     * @return
-     */
+    /** convert structure member into a string */
     public String getScalarString(int recnum, StructureMembers.Member m) {
       if ((m.getDataType() == DataType.CHAR) || (m.getDataType() == DataType.STRING)) {
         int offset = calcOffsetSetOrder(recnum, m);
@@ -1314,7 +1265,7 @@ short arrowHeadValue = 0;    */
    * @param vinfo variable info,
    * @return the arraystructure of unlinked vector data
    */
-  public ArrayStructure readUnlinkedVectorData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  public ArrayStructure readUnlinkedVectorData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int[] pos = vinfo.pos;
     int[] dlen = vinfo.len;
     bos.position(0);
@@ -1488,7 +1439,7 @@ short arrowHeadValue = 0;    */
    * @param ddata is encoded data values
    * @return the data array of row data
    */
-  public short[] readOneRowData1(byte[] ddata, int rLen, int xt) throws IOException, InvalidRangeException {
+  public short[] readOneRowData1(byte[] ddata, int rLen, int xt) {
     int run;
     short[] bdata = new short[xt];
 
@@ -1518,7 +1469,7 @@ short arrowHeadValue = 0;    */
      * @param ddata is encoded data values
      * @return the data array of row data
      */
-    public short[] readOneRowData2(byte[] ddata, int rLen, int xt) throws IOException, InvalidRangeException {
+    public short[] readOneRowData2(byte[] ddata, int rLen, int xt) {
       int run;
       short[] bdata = new short[xt];
 
@@ -1548,7 +1499,7 @@ short arrowHeadValue = 0;    */
    * @param ddata is encoded data values
    * @return the data array of row data
    */
-  public byte[] readOneRowData(byte[] ddata, int rLen, int xt) throws IOException, InvalidRangeException {
+  public byte[] readOneRowData(byte[] ddata, int rLen, int xt) {
     int run;
     byte[] bdata = new byte[xt];
 
@@ -1581,7 +1532,7 @@ short arrowHeadValue = 0;    */
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public Object readRadialDataEle(ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  private Object readRadialDataEle(ByteBuffer bos, Nidsheader.Vinfo vinfo) {
 
     float[] elvdata = new float[vinfo.yt];
     float elvAngle = vinfo.y0 * 0.1f;
@@ -1595,16 +1546,8 @@ short arrowHeadValue = 0;    */
 
   }
 
-  /**
-   * read radial data
-   *
-   * @param t
-   * @param vinfo
-   * @return data output
-   * @throws IOException
-   * @throws InvalidRangeException
-   */
-  public Object readRadialDataLatLonAlt(double t, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  /** read radial data */
+  private Object readRadialDataLatLonAlt(double t, Nidsheader.Vinfo vinfo) {
 
     float[] vdata = new float[vinfo.yt];
 
@@ -1616,7 +1559,7 @@ short arrowHeadValue = 0;    */
 
   }
 
-  public Object readRadialDataAzi(ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  private Object readRadialDataAzi(ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int doff = 0;
     float[] azidata = new float[vinfo.yt];
 
@@ -1633,8 +1576,8 @@ short arrowHeadValue = 0;    */
       else
         doff += runLen;
       bos.position(doff);
-      Float ra = new Float(radialAngle);
-      azidata[radial] = ra.floatValue();
+      Float ra = radialAngle;
+      azidata[radial] = ra;
 
     }   //end of for loop
 
@@ -1642,7 +1585,7 @@ short arrowHeadValue = 0;    */
 
   }
 
-  public Object readDistance(Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  private Object readDistance(Nidsheader.Vinfo vinfo) {
     //int doff = 0;
     int[] data = new int[vinfo.yt * vinfo.xt];
 
@@ -1658,7 +1601,7 @@ short arrowHeadValue = 0;    */
 
   }
 
-  public Object readRadialDataGate(Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  private Object readRadialDataGate(Nidsheader.Vinfo vinfo) {
     //int doff = 0;
     float[] gatedata = new float[vinfo.xt];
     double ddg = Nidsheader.code_reslookup(pcode);
@@ -1678,7 +1621,7 @@ short arrowHeadValue = 0;    */
   // for the compressed data read all out into a array and then parse into requested
   // This routine reads compressed image data for Level III formatted file.
   // We referenced McIDAS GetNexrLine function
-  public byte[] readCompData1(byte[] uncomp, long hoff, long doff) throws IOException {
+  public byte[] readCompData1(byte[] uncomp, long hoff, long doff) {
     int off;
     off = 2 * (((uncomp[0] & 0x3F) << 8) | (uncomp[1] & 0xFF));
     /* eat WMO and PIL */

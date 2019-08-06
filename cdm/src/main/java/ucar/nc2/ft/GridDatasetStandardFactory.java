@@ -6,10 +6,7 @@ package ucar.nc2.ft;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
@@ -22,7 +19,7 @@ import java.util.Formatter;
  */
 public class GridDatasetStandardFactory implements FeatureDatasetFactory {
 
-  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     DtCoverageCSBuilder dtCoverage = DtCoverageCSBuilder.classify(ncd, errlog);
     if (dtCoverage == null || dtCoverage.getCoverageType() == null) return null;
     if (!match(wantFeatureType, dtCoverage.getCoverageType())) return null;

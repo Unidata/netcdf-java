@@ -37,7 +37,7 @@ public class SimpleGeometryCSBuilder {
 
     // sort by largest size first
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
-    Collections.sort(css, (o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
+    css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
 
     SimpleGeometryCSBuilder builder = null;
     for (CoordinateSystem cs : css) {
@@ -80,10 +80,10 @@ public class SimpleGeometryCSBuilder {
       return;
     }
     
-    sgAxes = new ArrayList<CoordinateAxis>();
-    geometrySeriesVarNames = new ArrayList<String>();
-    geometryContainerNames = new ArrayList<String>();
-    geometryContainersAssoc = new HashMap<String, List<String>>();
+    sgAxes = new ArrayList<>();
+    geometrySeriesVarNames = new ArrayList<>();
+    geometryContainerNames = new ArrayList<>();
+    geometryContainersAssoc = new HashMap<>();
     dims = ds.getDimensions();
     allAxes = cs.getCoordinateAxes();
     
@@ -104,7 +104,7 @@ public class SimpleGeometryCSBuilder {
     			
     			// If the list is null, instantiate it
     			if(geometryContainersAssoc.get(varName) == null) {
-    				List<String> strList = new ArrayList<String>();
+    				List<String> strList = new ArrayList<>();
     				geometryContainersAssoc.put(varName, strList);
     			}
     		
@@ -204,10 +204,6 @@ public class SimpleGeometryCSBuilder {
   
   /**
    * Given a certain variable name and geometry index, returns a Simple Geometry Polygon.
-   * 
-   * @param name
-   * @param index
-   * @return polygon
    */
   public Polygon getPolygon(String name, int index)
   {
@@ -216,14 +212,9 @@ public class SimpleGeometryCSBuilder {
   
   /**
    * Given a certain Polygon variable name and geometry begin and end indicies, returns a list of Simple Geometry Polygon
-   * 
-   * @param name
-   * @param indexBegin
-   * @param indexEnd
-   * @return
    */
   public List<Polygon> getPolygons(String name, int indexBegin, int indexEnd) {
-	  List<Polygon> polyList = new ArrayList<Polygon>();
+	  List<Polygon> polyList = new ArrayList<>();
 	  
 	  for(int i = indexBegin; i <= indexEnd; i++)
 	  {
@@ -236,9 +227,6 @@ public class SimpleGeometryCSBuilder {
   
   /**
    * Given a certain variable name and geometry index, returns a Simple Geometry Line.
-   * 
-   * @param name
-   * @param index
    * @return line
    */
   public Line getLine(String name, int index)
@@ -248,14 +236,9 @@ public class SimpleGeometryCSBuilder {
   
   /**
    * Given a certain line variable name and geometry begin and end indicies, returns a list of Simple Geometry Line
-   * 
-   * @param name
-   * @param indexBegin
-   * @param indexEnd
-   * @return
    */
   public List<Line> getLines(String name, int indexBegin, int indexEnd) {
-	  List<Line> lineList = new ArrayList<Line>();
+	  List<Line> lineList = new ArrayList<>();
 	  
 	  for(int i = indexBegin; i <= indexEnd; i++)
 	  {
@@ -268,11 +251,6 @@ public class SimpleGeometryCSBuilder {
   
   /**
    * Given a certain variable name and geometry index, returns a Simple Geometry Point
-   * 
-   * 
-   * @param name
-   * @param index
-   * @return
    */
   public Point getPoint(String name, int index)
   {
@@ -281,14 +259,9 @@ public class SimpleGeometryCSBuilder {
   
   /**
    * Given a certain Point variable name and geometry begin and end indicies, returns a list of Simple Geometry Points
-   * 
-   * @param name
-   * @param indexBegin
-   * @param indexEnd
-   * @return
    */
   public List<Point> getPoints(String name, int indexBegin, int indexEnd) {
-	  List<Point> ptList = new ArrayList<Point>();
+	  List<Point> ptList = new ArrayList<>();
 	  
 	  for(int i = indexBegin; i <= indexEnd; i++)
 	  {
@@ -332,12 +305,10 @@ public class SimpleGeometryCSBuilder {
   public SimpleGeometryCS makeCoordSys() {
     if (type == null) return null;
 
-    switch (type) {
-      case SIMPLE_GEOMETRY:
-    	return new SimpleGeometryCS(this);
-      default:
-    	return null;
+    if (type == FeatureType.SIMPLE_GEOMETRY) {
+      return new SimpleGeometryCS(this);
     }
+    return null;
   }
 
   /**

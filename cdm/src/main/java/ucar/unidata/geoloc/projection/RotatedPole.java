@@ -54,8 +54,6 @@ public class RotatedPole extends ProjectionImpl {
 
   /**
    * Constructor.
-   * @param northPoleLat
-   * @param northPoleLon
    */
   public RotatedPole(double northPoleLat, double northPoleLon) {
     super("RotatedPole", false);
@@ -68,9 +66,6 @@ public class RotatedPole extends ProjectionImpl {
     addParameter(CF.GRID_NORTH_POLE_LONGITUDE, northPoleLon);
   }
 
-  /**
-   *
-   */
   private void buildRotationMatrices() {
 
     double betaRad = 0.;
@@ -112,16 +107,10 @@ public class RotatedPole extends ProjectionImpl {
     rotZ[2][2] = 1.;
   }
 
-  /**
-   *
-   */
   public ProjectionPointImpl getNorthPole() {
     return new ProjectionPointImpl(northPole);
   }
 
-  /**
-   *
-   */
   @Override
   public ProjectionImpl constructCopy() {
     final ProjectionImpl result = new RotatedPole(northPole.getY(), northPole.getX());
@@ -130,9 +119,6 @@ public class RotatedPole extends ProjectionImpl {
     return result;
   }
 
-  /**
-   *
-   */
   public String paramsToString() {
     return " northPole= " + northPole;
   }

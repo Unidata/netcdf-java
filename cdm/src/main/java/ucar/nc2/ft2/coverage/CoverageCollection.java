@@ -10,7 +10,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 
 import javax.annotation.concurrent.Immutable;
@@ -48,18 +47,18 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
   protected final HorizCoordSys hcs;
 
   /**
-   *
-   * @param name
-   * @param coverageType
-   * @param atts
+   * Ctor
+   * @param name  CoverageCollection name
+   * @param coverageType CoverageCollection type
+   * @param atts CoverageCollection attributes
    * @param latLonBoundingBox if null, calculate
    * @param projBoundingBox   if null, calculate
    * @param calendarDateRange need this to get the Calendar
-   * @param coordSys
-   * @param coordTransforms
-   * @param coordAxes
-   * @param coverages
-   * @param reader
+   * @param coordSys list of coordinate systems
+   * @param coordTransforms list of coordinate transforms
+   * @param coordAxes list of coordinate axes
+   * @param coverages list of coverages
+   * @param reader delegate for reading
    */
   public CoverageCollection(String name, FeatureType coverageType, AttributeContainerHelper atts,
                             LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
@@ -120,7 +119,7 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
 
     // sort the coordsys sets
     List<CoordSysSet> csets = new ArrayList<>(map.values());
-    Collections.sort(csets, (o1, o2) -> o1.getCoordSys().getName().compareTo(o2.getCoordSys().getName()));
+    csets.sort(Comparator.comparing(o -> o.getCoordSys().getName()));
     return csets;
   }
 

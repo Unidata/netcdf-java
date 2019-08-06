@@ -125,7 +125,7 @@ public class TableParser {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   private List<Field> fields = new ArrayList<>();
-  public TableParser(String format) throws IOException, NumberFormatException {
+  public TableParser(String format) throws NumberFormatException {
     int start = 0;
     StringTokenizer stoker = new StringTokenizer(format, " ,");
     while (stoker.hasMoreTokens()) {

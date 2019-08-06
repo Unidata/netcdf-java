@@ -67,13 +67,13 @@ public class PointFeatureCopyFactory {
 
     @Nonnull
     @Override
-    public StructureData getDataAll() throws IOException {
+    public StructureData getDataAll() {
       return data;
     }
 
     @Nonnull
     @Override
-    public StructureData getFeatureData() throws IOException {
+    public StructureData getFeatureData() {
       return data;
     }
   }

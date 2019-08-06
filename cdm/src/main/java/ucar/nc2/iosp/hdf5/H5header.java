@@ -10,7 +10,6 @@ import ucar.nc2.iosp.NCheader;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
-import ucar.nc2.EnumTypedef;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.Layout;
@@ -90,12 +89,7 @@ public class H5header extends NCheader
   static private final boolean transformReference = true;
 
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    switch (checkFileType(raf)) {
-    case NC_FORMAT_NETCDF4:
-	return true;
-    default: break;
-    }
-    return false;
+    return checkFileType(raf) == NC_FORMAT_NETCDF4;
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -649,7 +643,7 @@ public class H5header extends NCheader
     }
   }
 
-  private void findDimensionScales2D(H5Group h5group, DataObjectFacade facade) throws IOException {
+  private void findDimensionScales2D(H5Group h5group, DataObjectFacade facade) {
     int[] lens = facade.dobj.mds.dimLength;
     if (lens.length > 2) {
       log.warn("DIMENSION_LIST: dimension scale > 2 = {}", facade.getName());
@@ -685,10 +679,10 @@ public class H5header extends NCheader
     } else {
       if (match == null) { // 3. if no length matches or multiple matches, then use anonymous
         log.warn("DIMENSION_LIST: dimension scale {} has second dimension {} but no match", facade.getName(), want_len);
-        sbuff.append(Integer.toString(want_len));
+        sbuff.append(want_len);
       } else {
         log.warn("DIMENSION_LIST: dimension scale {} has second dimension {} but multiple matches", facade.getName(), want_len);
-        sbuff.append(Integer.toString(want_len));
+        sbuff.append(want_len);
       }
     }
 
@@ -758,44 +752,60 @@ public class H5header extends NCheader
       MessageAttribute matt = iter.next();
       // find the dimensions - set length to maximum
       // DIMENSION_LIST contains, for each dimension, a list of references to Dimension Scales
-      if (matt.name.equals(HDF5_DIMENSION_LIST)) { // references : may extend the dimension length
-        Attribute att = makeAttribute(matt);       // this reads in the data
-        if (att == null) {
-          log.warn("DIMENSION_LIST: failed to read on variable {}", facade.getName());
+      switch (matt.name) {
+        case HDF5_DIMENSION_LIST: { // references : may extend the dimension length
+          Attribute att = makeAttribute(matt);       // this reads in the data
 
-        } else if (att.getLength() != facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly fail here
-          log.warn("DIMENSION_LIST: must have same number of dimension scales as dimensions att={} on variable {}", att, facade.getName());
+          if (att == null) {
+            log.warn("DIMENSION_LIST: failed to read on variable {}", facade.getName());
 
-        } else {
-          StringBuilder sbuff = new StringBuilder();
-          for (int i = 0; i < att.getLength(); i++) {
-            String name = att.getStringValue(i);
-            String dimName = extendDimension(g, h5group, name, facade.dobj.mds.dimLength[i]);
-            sbuff.append(dimName).append(" ");
+          } else if (att.getLength()
+              != facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly fail here
+            log.warn(
+                "DIMENSION_LIST: must have same number of dimension scales as dimensions att={} on variable {}",
+                att, facade.getName());
+
+          } else {
+            StringBuilder sbuff = new StringBuilder();
+            for (int i = 0; i < att.getLength(); i++) {
+              String name = att.getStringValue(i);
+              String dimName = extendDimension(g, h5group, name, facade.dobj.mds.dimLength[i]);
+              sbuff.append(dimName).append(" ");
+            }
+            facade.dimList = sbuff.toString();
+            facade.hasNetcdfDimensions = true;
+            if (debugDimensionScales) {
+              log.debug("Found dimList '{}' for group '{}' matt={}", facade.dimList,
+                  g.getFullName(), matt);
+            }
+            if (!h5iosp.includeOriginalAttributes)
+              iter.remove();
           }
-          facade.dimList = sbuff.toString();
-          facade.hasNetcdfDimensions = true;
+
+          break;
+        }
+        case HDF5_DIMENSION_NAME: {
+          Attribute att = makeAttribute(matt);
+          if (att == null)
+            throw new IllegalStateException();
+          String val = att.getStringValue();
+          if (val.startsWith("This is a netCDF dimension but not a netCDF variable")) {
+            facade.isVariable = false;
+            isNetcdf4 = true;
+          }
+          if (!h5iosp.includeOriginalAttributes)
+            iter.remove();
           if (debugDimensionScales) {
-            log.debug("Found dimList '{}' for group '{}' matt={}", facade.dimList, g.getFullName(), matt);
-          }
-          if (!h5iosp.includeOriginalAttributes) iter.remove();
-        }
-
-      } else if (matt.name.equals(HDF5_DIMENSION_NAME)) {
-        Attribute att = makeAttribute(matt);
-        if (att == null) throw new IllegalStateException();
-        String val = att.getStringValue();
-        if (val.startsWith("This is a netCDF dimension but not a netCDF variable")) {
-          facade.isVariable = false;
-          isNetcdf4 = true;
-        }
-        if (!h5iosp.includeOriginalAttributes) iter.remove();
-        if (debugDimensionScales) {
             log.debug("Found {}", val);
-        }
+          }
 
-      } else if (matt.name.equals(HDF5_REFERENCE_LIST))
-        if (!h5iosp.includeOriginalAttributes) iter.remove();
+          break;
+        }
+        case HDF5_REFERENCE_LIST:
+          if (!h5iosp.includeOriginalAttributes)
+            iter.remove();
+          break;
+      }
     }
     return facade.hasNetcdfDimensions || facade.dobj.mds.dimLength.length == 0;
 
@@ -849,7 +859,7 @@ public class H5header extends NCheader
     return dimName;
   }
 
-  private void createDimensions(ucar.nc2.Group g, H5Group h5group) throws IOException {
+  private void createDimensions(ucar.nc2.Group g, H5Group h5group) {
     for (Dimension d : h5group.dimList) {
       g.addDimension(d);
     }
@@ -1159,7 +1169,7 @@ public class H5header extends NCheader
     return dataArray;
   }
 
-  private String convertString(byte[] b) throws UnsupportedEncodingException {
+  private String convertString(byte[] b) {
     // null terminates
     int count = 0;
     while (count < b.length) {
@@ -1169,7 +1179,7 @@ public class H5header extends NCheader
     return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
-  private String convertString(byte[] b, int start, int len) throws UnsupportedEncodingException {
+  private String convertString(byte[] b, int start, int len) {
     // null terminates
     int count = start;
     while (count < start + len) {
@@ -1774,9 +1784,8 @@ public class H5header extends NCheader
      * @param mdt     datatype
      * @param mds     dataspace
      * @param dataPos start of data in file
-     * @throws java.io.IOException on read error
      */
-    Vinfo(MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
+    Vinfo(MessageDatatype mdt, MessageDataspace mds, long dataPos) {
       this.mdt = mdt;
       this.mds = mds;
       this.dataPos = dataPos;
@@ -2426,8 +2435,6 @@ public class H5header extends NCheader
           mdt = (MessageDatatype) mess.messData;
         else if (mess.mtype == MessageType.Layout)
           msl = (MessageLayout) mess.messData;
-        else if (mess.mtype == MessageType.Group)
-          groupMessage = (MessageGroup) mess.messData;
         else if (mess.mtype == MessageType.FilterPipeline)
           mfp = (MessageFilter) mess.messData;
         else if (mess.mtype == MessageType.Attribute)
@@ -2901,7 +2908,7 @@ public class H5header extends NCheader
     }
   }
 
-  abstract interface Named {
+  interface Named {
     String getName();
   }
 
@@ -3241,7 +3248,7 @@ public class H5header extends NCheader
       if (dtype != null)
         return dtype.toString() + " size= " + byteSize;
       else
-        return "type=" + Integer.toString(type) + " size= " + byteSize;
+        return "type=" + type + " size= " + byteSize;
     }
 
     public String getType() {
@@ -3249,7 +3256,7 @@ public class H5header extends NCheader
       if (dtype != null)
         return dtype.toString();
       else
-        return "type=" + Integer.toString(type) + " size= " + byteSize;
+        return "type=" + type + " size= " + byteSize;
     }
 
     void read(String objectName) throws IOException {
@@ -4582,10 +4589,10 @@ public class H5header extends NCheader
   // debug - hdf5Table
   public List<DataObject> getDataObjects() {
     ArrayList<DataObject> result = new ArrayList<>(addressMap.values());
-    Collections.sort(result, new java.util.Comparator<DataObject>() {
+    result.sort(new Comparator<DataObject>() {
       public int compare(DataObject o1, DataObject o2) {
         // return (int) (o1.address - o2.address);
-        return (o1.address < o2.address ? -1 : (o1.address == o2.address ? 0 : 1));
+        return (Long.compare(o1.address, o2.address));
       }
     });
     return result;
@@ -4632,7 +4639,7 @@ public class H5header extends NCheader
     }
 
     // the heap id is has already been read into a byte array at given pos
-    HeapIdentifier(ByteBuffer bb, int pos) throws IOException {
+    HeapIdentifier(ByteBuffer bb, int pos) {
       bb.order(ByteOrder.LITTLE_ENDIAN); // header information is in le byte order
       bb.position(pos); // reletive reading
       nelems = bb.getInt();
@@ -4996,7 +5003,7 @@ public class H5header extends NCheader
     return result;
   }
 
-  long getFileOffset(long address) throws IOException {
+  long getFileOffset(long address) {
     return baseAddress + address;
   }
 

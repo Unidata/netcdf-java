@@ -51,7 +51,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   }
 
 
-  public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(ucar.nc2.Variable v2, Section section) {
 
     Array outputData;
     int nSensor = mySweep.getNSensors();
@@ -121,26 +121,37 @@ public class Doradeiosp extends AbstractIOServiceProvider {
 
       float d = 0.0f;
 
-      if (v2.getShortName().equals("Range_to_First_Cell")) {
-        d = mySweep.getRangeToFirstCell(0);
-      } else if (v2.getShortName().equals("Cell_Spacing")) {
-        d = mySweep.getCellSpacing(0);
-      } else if (v2.getShortName().equals("Fixed_Angle")) {
-        d = mySweep.getFixedAngle();
-      } else if (v2.getShortName().equals("Nyquist_Velocity")) {
-        d = mySweep.getUnambiguousVelocity(0);
-      } else if (v2.getShortName().equals("Unambiguous_Range")) {
-        d = mySweep.getunambiguousRange(0);
-      } else if (v2.getShortName().equals("Radar_Constant")) {
-        d = mySweep.getradarConstant(0);
-      } else if (v2.getShortName().equals("rcvr_gain")) {
-        d = mySweep.getrcvrGain(0);
-      } else if (v2.getShortName().equals("ant_gain")) {
-        d = mySweep.getantennaGain(0);
-      } else if (v2.getShortName().equals("sys_gain")) {
-        d = mySweep.getsystemGain(0);
-      } else if (v2.getShortName().equals("bm_width")) {
-        d = mySweep.gethBeamWidth(0);
+      switch (v2.getShortName()) {
+        case "Range_to_First_Cell":
+          d = mySweep.getRangeToFirstCell(0);
+          break;
+        case "Cell_Spacing":
+          d = mySweep.getCellSpacing(0);
+          break;
+        case "Fixed_Angle":
+          d = mySweep.getFixedAngle();
+          break;
+        case "Nyquist_Velocity":
+          d = mySweep.getUnambiguousVelocity(0);
+          break;
+        case "Unambiguous_Range":
+          d = mySweep.getunambiguousRange(0);
+          break;
+        case "Radar_Constant":
+          d = mySweep.getradarConstant(0);
+          break;
+        case "rcvr_gain":
+          d = mySweep.getrcvrGain(0);
+          break;
+        case "ant_gain":
+          d = mySweep.getantennaGain(0);
+          break;
+        case "sys_gain":
+          d = mySweep.getsystemGain(0);
+          break;
+        case "bm_width":
+          d = mySweep.gethBeamWidth(0);
+          break;
       }
       float[] dd = new float[1];
       dd[0] = d;

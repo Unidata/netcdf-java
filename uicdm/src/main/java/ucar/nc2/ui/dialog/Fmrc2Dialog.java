@@ -45,12 +45,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
-/**
- * @author unknown
- */
 public class Fmrc2Dialog extends JDialog {
 
   public static class Data {
+
     public String type;
     public Object param;
     public String where;
@@ -64,14 +62,15 @@ public class Fmrc2Dialog extends JDialog {
     @Override
     public String toString() {
       return "Data{" +
-              "type='" + type + '\'' +
-              "param='" + param + '\'' +
-              ", where='" + where + '\'' +
-              '}';
+          "type='" + type + '\'' +
+          "param='" + param + '\'' +
+          ", where='" + where + '\'' +
+          '}';
     }
   }
 
   private Fmrc fmrc;
+
   public Fmrc2Dialog(Frame owner) {
     super(owner);
     initComponents();
@@ -80,9 +79,10 @@ public class Fmrc2Dialog extends JDialog {
   public void setFmrc(Fmrc fmrc) {
     this.fmrc = fmrc;
   }
-  
+
   private void okButtonActionPerformed(ActionEvent e) {
-    Data data =  new Data((String) comboBox1.getSelectedItem(), comboBox2.getSelectedItem(), (String) list1.getSelectedValue());
+    Data data = new Data((String) comboBox1.getSelectedItem(), comboBox2.getSelectedItem(),
+        (String) list1.getSelectedValue());
     firePropertyChange("OK", null, data);
     setVisible(false);
   }
@@ -125,12 +125,12 @@ public class Fmrc2Dialog extends JDialog {
         label1.setFont(new Font("Dialog", Font.BOLD, 12));
 
         //---- comboBox1 ----
-        comboBox1.setModel(new DefaultComboBoxModel(new String[] {
-          "Dataset2D",
-          "Best",
-          "Run",
-          "ConstantForecast",
-          "ConstantOffset"
+        comboBox1.setModel(new DefaultComboBoxModel(new String[]{
+            "Dataset2D",
+            "Best",
+            "Run",
+            "ConstantForecast",
+            "ConstantOffset"
         }));
         comboBox1.setAction(datasetCB);
 
@@ -142,20 +142,26 @@ public class Fmrc2Dialog extends JDialog {
         list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list1.setModel(new AbstractListModel() {
           String[] values = {
-            "NetcdfFile Viewer",
-            "CoordSys Tab",
-            "Grid FeatureType",
-            "GridDataset Info",
-            "Selected UberGrid Info"
+              "NetcdfFile Viewer",
+              "CoordSys Tab",
+              "Grid FeatureType",
+              "GridDataset Info",
+              "Selected UberGrid Info"
           };
-          public int getSize() { return values.length; }
-          public Object getElementAt(int i) { return values[i]; }
+
+          public int getSize() {
+            return values.length;
+          }
+
+          public Object getElementAt(int i) {
+            return values[i];
+          }
         });
         list1.setVisibleRowCount(7);
 
         //---- comboBox2 ----
-        comboBox2.setModel(new DefaultComboBoxModel(new String[] {
-          "N/A"
+        comboBox2.setModel(new DefaultComboBoxModel(new String[]{
+            "N/A"
         }));
 
         //---- label3 ----
@@ -165,37 +171,42 @@ public class Fmrc2Dialog extends JDialog {
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
         contentPanelLayout.setHorizontalGroup(
-          contentPanelLayout.createParallelGroup()
-            .addGroup(contentPanelLayout.createSequentialGroup()
-              .addContainerGap()
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                .addGroup(contentPanelLayout.createParallelGroup()
-                  .addComponent(label1)
-                  .addComponent(label2))
-                .addComponent(label3))
-              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-              .addGroup(contentPanelLayout.createParallelGroup()
-                .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(list1))
-              .addContainerGap(140, Short.MAX_VALUE))
+            contentPanelLayout.createParallelGroup()
+                .addGroup(contentPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                        .addGroup(contentPanelLayout.createParallelGroup()
+                            .addComponent(label1)
+                            .addComponent(label2))
+                        .addComponent(label3))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(contentPanelLayout.createParallelGroup()
+                        .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(list1))
+                    .addContainerGap(140, Short.MAX_VALUE))
         );
         contentPanelLayout.setVerticalGroup(
-          contentPanelLayout.createParallelGroup()
-            .addGroup(contentPanelLayout.createSequentialGroup()
-              .addContainerGap()
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label1)
-                .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-              .addGap(18, 18, 18)
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(label3))
-              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(list1, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
-                .addComponent(label2))
-              .addContainerGap())
+            contentPanelLayout.createParallelGroup()
+                .addGroup(contentPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(label1)
+                        .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGap(18, 18, 18)
+                    .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(label3))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                    .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(list1, GroupLayout.PREFERRED_SIZE, 86,
+                            GroupLayout.PREFERRED_SIZE)
+                        .addComponent(label2))
+                    .addContainerGap())
         );
       }
       dialogPane.add(contentPanel, BorderLayout.CENTER);
@@ -204,22 +215,22 @@ public class Fmrc2Dialog extends JDialog {
       {
         buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
         buttonBar.setLayout(new GridBagLayout());
-        ((GridBagLayout)buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
-        ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
+        ((GridBagLayout) buttonBar.getLayout()).columnWidths = new int[]{0, 85, 80};
+        ((GridBagLayout) buttonBar.getLayout()).columnWeights = new double[]{1.0, 0.0, 0.0};
 
         //---- okButton ----
         okButton.setText("OK");
         okButton.addActionListener(this::okButtonActionPerformed);
         buttonBar.add(okButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-          GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-          new Insets(0, 0, 0, 5), 0, 0));
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets(0, 0, 0, 5), 0, 0));
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(this::cancelButtonActionPerformed);
         buttonBar.add(cancelButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-          GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-          new Insets(0, 0, 0, 0), 0, 0));
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets(0, 0, 0, 0), 0, 0));
       }
       dialogPane.add(buttonBar, BorderLayout.SOUTH);
     }
@@ -246,6 +257,7 @@ public class Fmrc2Dialog extends JDialog {
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 
   private class datasetCBaction extends AbstractAction {
+
     private datasetCBaction() {
       // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
       // Generated using JFormDesigner non-commercial license
@@ -259,37 +271,28 @@ public class Fmrc2Dialog extends JDialog {
       switch (type) {
         case "Run": {
           java.util.List<CalendarDate> dates;
-          try {
-            dates = fmrc.getRunDates();
-          } catch (IOException e1) {
-            return;
-          }
-          for (CalendarDate d : dates)
+          dates = fmrc.getRunDates();
+          for (CalendarDate d : dates) {
             m.addElement(d.toString());
+          }
 
           break;
         }
         case "ConstantForecast": {
           java.util.List<CalendarDate> dates;
-          try {
-            dates = fmrc.getForecastDates();
-          } catch (IOException e1) {
-            return;
-          }
-          for (CalendarDate d : dates)
+          dates = fmrc.getForecastDates();
+          for (CalendarDate d : dates) {
             m.addElement(d.toString());
+          }
 
           break;
         }
         case "ConstantOffset":
           double[] offs;
-          try {
-            offs = fmrc.getForecastOffsets();
-          } catch (IOException e1) {
-            return;
-          }
-          for (double d : offs)
+          offs = fmrc.getForecastOffsets();
+          for (double d : offs) {
             m.addElement(d);
+          }
 
           break;
         default:

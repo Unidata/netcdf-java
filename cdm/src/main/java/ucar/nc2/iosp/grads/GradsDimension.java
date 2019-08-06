@@ -53,7 +53,7 @@ public class GradsDimension {
         this.name    = name;
         this.size    = size;
         this.mapping = mapping;
-        levels       = new ArrayList<String>();
+        levels       = new ArrayList<>();
         if (name.equalsIgnoreCase(GradsDataDescriptorFile.XDEF)) {
             unitName = CDM.LON_UNITS;
         } else if (name.equalsIgnoreCase(GradsDataDescriptorFile.YDEF)) {
@@ -171,20 +171,19 @@ public class GradsDimension {
         }
         // sanity check on z units
         if (name.equals(GradsDataDescriptorFile.ZDEF)) {
-            for (int i = 0; i < vals.length; i++) {
-                double val = vals[i];
-                if (val > 1050) {
-                    unitName = "Pa";
+          for (double val : vals) {
+            if (val > 1050) {
+              unitName = "Pa";
 
-                    break;
-                } else if (val < 10) {
-                    // sometimes it's just a level number
-                    // probably should be something else, but dimensionless
-                    unitName = "";
+              break;
+            } else if (val < 10) {
+              // sometimes it's just a level number
+              // probably should be something else, but dimensionless
+              unitName = "";
 
-                    break;
-                }
+              break;
             }
+          }
         }
         return vals;
     }
@@ -195,7 +194,7 @@ public class GradsDimension {
      * @return a String representation of this object
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("Dimension: ");
         buf.append(name.toUpperCase());
         buf.append("\n");

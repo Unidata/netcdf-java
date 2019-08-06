@@ -4,31 +4,6 @@
  */
 package ucar.nc2;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URL;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
-import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.StringTokenizer;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
 
 import org.jdom2.Element;
@@ -413,14 +388,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   /**
-   * debugging
-   * @param printStream write to this stream.
-   *
-  static public void setDebugOutputStream(PrintStream printStream) {
-  ucar.nc2.iosp.hdf5.H5iosp.setDebugOutputStream(printStream);
-  } */
-
-  /**
    * Set properties. Currently recognized:
    * "syncExtendOnly", "true" or "false" (default).  if true, can only extend file on a sync.
    *
@@ -670,10 +637,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
     if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       // see if its locked - another thread is writing it
-      FileInputStream stream = null;
       FileLock lock = null;
-      try {
-        stream = new FileInputStream(uncompressedFile);
+      try (FileInputStream stream = new FileInputStream(uncompressedFile)) {
         // obtain the lock
         while (true) { // loop waiting for the lock
           try {
@@ -695,12 +660,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
           }
         }
 
-        if (debugCompress) log.info("found uncompressed {} for {}", uncompressedFile, filename);
+        if (debugCompress)
+          log.info("found uncompressed {} for {}", uncompressedFile, filename);
         return uncompressedFile.getPath();
 
       } finally {
-        if (lock != null) lock.release();
-        if (stream != null) stream.close();
+        if (lock != null)
+          lock.release();
       }
     }
 
@@ -1405,7 +1371,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * CDL representation of Netcdf header info, non strict
    */
-  public String toNcML(String url) throws IOException {
+  public String toNcML(String url) {
     NcMLWriter ncmlWriter = new NcMLWriter();
     ncmlWriter.setWriteVariablesPredicate(NcMLWriter.writeNoVariablesPredicate);
 
@@ -2388,7 +2354,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * debugging - do not use
    */
-  public static void main(String[] arg) throws Exception {
+  public static void main(String[] arg) throws IOException {
     //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);
 
     int wide = 20;
@@ -2556,18 +2522,5 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     sbuff.append(name);
     return sbuff.toString();
   }
-
-  /**
-   * Escape standard special characters in a netcdf object name.
-   *
-   * @param vname the name
-   * @return escaped version of it
-   */
-/* Who uses this?
-  public static String escapeName(String vname) {
-    return EscapeStrings.backslashEscape(vname, NetcdfFile.reserved);
-  }
-*/
-
 
 }

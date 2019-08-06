@@ -19,40 +19,40 @@ public interface GridDataset extends FeatureDataset {
   /** get the list of GridDatatype objects contained in this dataset.
    * @return  list of GridDatatype
    */
-  public List<GridDatatype> getGrids();
+  List<GridDatatype> getGrids();
 
   /** find the named GridDatatype.
    * @param name full unescaped name
    * @return  the named GridDatatype, or null if not found
    */
-  public GridDatatype findGridDatatype( String name);
+  GridDatatype findGridDatatype(String name);
 
-  public GridDatatype findGridByShortName(String shortName);
+  GridDatatype findGridByShortName(String shortName);
 
 
-  public ProjectionRect getProjBoundingBox();
+  ProjectionRect getProjBoundingBox();
 
   /**
    * Return GridDatatype objects grouped by GridCoordSystem. All GridDatatype in a Gridset
    *   have the same GridCoordSystem.
    * @return List of type GridDataset.Gridset
    */
-  public List<Gridset> getGridsets();
+  List<Gridset> getGridsets();
 
   /**
    * A set of GridDatatype objects with the same Coordinate System.
    */
-  public interface Gridset {
+  interface Gridset {
 
     /** Get list of GridDatatype objects with same Coordinate System
      * @return list of GridDatatype
      */
-    public List<GridDatatype> getGrids();
+    List<GridDatatype> getGrids();
 
     /** all the GridDatatype in this Gridset use this GridCoordSystem
      * @return  the common GridCoordSystem
      */
-    public ucar.nc2.dt.GridCoordSystem getGeoCoordSystem();
+    ucar.nc2.dt.GridCoordSystem getGeoCoordSystem();
   }
 
 }

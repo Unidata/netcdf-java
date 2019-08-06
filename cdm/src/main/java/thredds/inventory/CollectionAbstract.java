@@ -243,7 +243,7 @@ public abstract class CollectionAbstract implements MCollection {
         list.add(iter.next());
     }
     if (hasDateExtractor()) {
-      Collections.sort(list, new DateSorter());  // sort by date
+      list.sort(new DateSorter());  // sort by date
     } else {
       Collections.sort(list);                    // sort by name
     }

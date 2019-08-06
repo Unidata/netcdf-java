@@ -252,7 +252,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return result;
   }
 
-  private CalendarDate makeCalendarDateFromStringCoord(String coordValue, VariableDS org, Formatter errMessages) throws IOException {
+  private CalendarDate makeCalendarDateFromStringCoord(String coordValue, VariableDS org, Formatter errMessages) {
     CalendarDate cd =  helper.makeCalendarDateFromOffset(coordValue);
     if (cd == null) {
       if (errMessages != null) {

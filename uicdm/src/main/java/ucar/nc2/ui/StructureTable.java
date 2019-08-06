@@ -318,12 +318,7 @@ public class StructureTable extends JPanel {
     if (sd == null) return;
 
     StringWriter sw = new StringWriter(10000);
-    try {
-      NCdumpW.printStructureData(new PrintWriter(sw), sd);
-    } catch (IOException e) {
-      String mess = e.getMessage();
-      sw.write(mess);
-    }
+    NCdumpW.printStructureData(new PrintWriter(sw), sd);
     dumpTA.setText(sw.toString());
     dumpWindow.setVisible(true);
   }

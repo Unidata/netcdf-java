@@ -249,7 +249,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     return projBB;
   }
 
-  public void calcBounds() throws java.io.IOException {
+  public void calcBounds() {
     // not needed
   }
 
@@ -315,7 +315,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
    * @return the list of GeoGrid objects contained in this dataset.
    */
   public List<GridDatatype> getGrids() {
-    return new ArrayList<GridDatatype>(grids);
+    return new ArrayList<>(grids);
   }
 
   public GridDatatype findGridDatatype(String name) {
@@ -329,7 +329,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
    * @return List of type ucar.nc2.dt.GridDataset.Gridset
    */
   public List<ucar.nc2.dt.GridDataset.Gridset> getGridsets() {
-    return new ArrayList<ucar.nc2.dt.GridDataset.Gridset>(gridsetHash.values());
+    return new ArrayList<>(gridsetHash.values());
   }
 
   /**

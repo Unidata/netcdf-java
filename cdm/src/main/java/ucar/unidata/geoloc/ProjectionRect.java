@@ -435,11 +435,10 @@ public class ProjectionRect implements java.io.Serializable {
    * Read the object from the input stream of the serialized object
    *
    * @param s stream to read
-   * @throws ClassNotFoundException couldn't file the class
    * @throws IOException            Problem reading from stream
    */
   private void readObject(ObjectInputStream s)
-          throws IOException, ClassNotFoundException {
+          throws IOException {
     double x = s.readDouble();
     double y = s.readDouble();
     double w = s.readDouble();

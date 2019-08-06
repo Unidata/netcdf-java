@@ -45,7 +45,6 @@ public class CatalogXmlWriter {
    * @param catalog write this catalog
    * @param os      write to this OutputStream
    * @param raw     write raw file if true (for server configuration)
-   * @throws java.io.IOException
    */
   public void writeXML(Catalog catalog, OutputStream os, boolean raw) throws IOException {
     this.raw = raw;
@@ -65,7 +64,6 @@ public class CatalogXmlWriter {
    *
    * @param catalog write this catalog
    * @param os      write to this OutputStream
-   * @throws IOException
    */
   public void writeXML(Catalog catalog, OutputStream os) throws IOException {
     // Output the document, use standard formatter

@@ -1090,7 +1090,6 @@ public class NetcdfFileWriter implements Closeable {
 
   /**
    * Abort writing to this file. The file is closed.
-   * @throws java.io.IOException
    */
   public void abort() throws java.io.IOException {
     if (spiw != null) {

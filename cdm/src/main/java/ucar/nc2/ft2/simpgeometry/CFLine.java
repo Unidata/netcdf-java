@@ -304,7 +304,7 @@ public class CFLine implements Line {
 		}
 		
 		catch (IOException  | InvalidRangeException  | InvalidDataseriesException e) {
-			cfl.error(e.getMessage());;
+			cfl.error(e.getMessage());
 			return null;
 		}
 		
@@ -374,7 +374,7 @@ public class CFLine implements Line {
 	 * 
 	 */
 	public CFLine() {
-		this.points = new ArrayList<Point>();
+		this.points = new ArrayList<>();
 		this.next = null;
 		this.prev = null;
 		this.data = null;

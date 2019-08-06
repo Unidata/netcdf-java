@@ -88,7 +88,6 @@ public interface MCollection extends Closeable {
   /**
    * Sorted filename
    * @return Sorted filename
-   * @throws IOException
    */
   List<String> getFilenames() throws IOException;
 

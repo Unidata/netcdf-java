@@ -300,12 +300,16 @@ public class WKTParser {
         throw new ParseException("expected , or ]", position);
       } else {
         String term = eatTerm();
-        if ("PARAMETER".equals(term)) {
-          eatParameter();
-        } else if ("UNIT".equals(term)) {
-          eatProjcsUnit();
-        } else if ("PROJECTION".equals(term)) {
-          eatProjectionType();
+        switch (term) {
+          case "PARAMETER":
+            eatParameter();
+            break;
+          case "UNIT":
+            eatProjcsUnit();
+            break;
+          case "PROJECTION":
+            eatProjectionType();
+            break;
         }
       }
     }
@@ -368,12 +372,16 @@ public class WKTParser {
         throw new ParseException("expected , or ]", position);
       } else {
         String term = eatTerm();
-        if ("DATUM".equals(term)) {
-          eatDatum();
-        } else if ("PRIMEM".equals(term)) {
-          eatPrimem();
-        } else if ("UNIT".equals(term)) {
-          eatUnit();
+        switch (term) {
+          case "DATUM":
+            eatDatum();
+            break;
+          case "PRIMEM":
+            eatPrimem();
+            break;
+          case "UNIT":
+            eatUnit();
+            break;
         }
       }
     }
@@ -548,7 +556,7 @@ public class WKTParser {
     if (val == null) {
       throw new IllegalArgumentException("no parameter called " + name);
     }
-    return val.doubleValue();
+    return val;
   }
 
   /**

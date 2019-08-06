@@ -8,7 +8,6 @@ import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.VariableDS;
-import ucar.ma2.IsMissingEvaluator;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -27,56 +26,56 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    *
    * @return the full, unescaped name of the Grid
    */
-  public String getFullName();
+  String getFullName();
 
   /**
    * Get the short name of the Grid
    *
    * @return the short name of the Grid
    */
-  public String getShortName();
+  String getShortName();
 
   /**
    * Alias for getFullName().
    * @return the full, unescaped name
    */
-  public String getName();
+  String getName();
 
   /**
    * Get the description/long_name of the Grid, or null if none.
    * @return the description/long_name of the Grid, or null if none.
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * Get the unit string
    * @return the unit string
    */
-  public String getUnitsString();
+  String getUnitsString();
 
   /**
    * get the data type
    * @return the data type
    */
-  public DataType getDataType();
+  DataType getDataType();
 
   /**
    * get the rank
    * @return the rank
    */
-  public int getRank();
+  int getRank();
 
   /**
    * get the shape (canonical ordering)
    * @return the shape (canonical ordering)
    */
-  public int[] getShape();
+  int[] getShape();
 
   /**
    * Get a List of Attribute specific to the Grid
    * @return a List of Attribute
    */
-  public List<Attribute> getAttributes();
+  List<Attribute> getAttributes();
 
   /**
    * Convenience function; lookup Attribute by name.
@@ -84,7 +83,7 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @param name the name of the attribute
    * @return the attribute, or null if not found
    */
-  public Attribute findAttributeIgnoreCase(String name);
+  Attribute findAttributeIgnoreCase(String name);
 
   /**
    * Convenience function; lookup Attribute value by name. Must be String valued
@@ -93,7 +92,7 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @param defaultValue if not found, use this as the default
    * @return Attribute string value, or default if not found.
    */
-  public String findAttValueIgnoreCase(String attName, String defaultValue);
+  String findAttValueIgnoreCase(String attName, String defaultValue);
 
   /**
    * Returns a List of Dimension containing the dimensions used by this grid.
@@ -104,111 +103,111 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    *
    * @return List with objects of type Dimension, in canonical order.
    */
-  public List<Dimension> getDimensions();
+  List<Dimension> getDimensions();
 
   /**
    * get the ith dimension
    * @param i index of dimension
    * @return the ith dimension
    */
-  public Dimension getDimension(int i);
+  Dimension getDimension(int i);
 
   /**
    * get the time Dimension, if it exists
    * @return the time Dimension, or null
    */
-  public Dimension getTimeDimension();
+  Dimension getTimeDimension();
 
   /**
    * get the z Dimension, if it exists
    * @return the z Dimension, or null
    */
-  public Dimension getZDimension();
+  Dimension getZDimension();
 
   /**
    * get the y Dimension, if it exists
    * @return the y Dimension, or null
    */
-  public Dimension getYDimension();
+  Dimension getYDimension();
 
   /**
    * get the x Dimension, if it exists
    * @return the x Dimension, or null
    */
-  public Dimension getXDimension();
+  Dimension getXDimension();
 
   /**
    * get the ensemble Dimension, if it exists
    * @return the ensemble Dimension, or null
    */
-  public Dimension getEnsembleDimension();
+  Dimension getEnsembleDimension();
 
   /**
    * get the runtime Dimension, if it exists
    * @return the runtime Dimension, or null
    */
-  public Dimension getRunTimeDimension();
+  Dimension getRunTimeDimension();
 
   /**
    * get the time Dimension index in the geogrid (canonical order), or -1 if none
    * @return the time Dimension index in canonical order, or -1
    */
-  public int getTimeDimensionIndex();
+  int getTimeDimensionIndex();
 
   /**
    * get the z Dimension index in the geogrid (canonical order), or -1 if none
    * @return the z Dimension index in canonical order, or -1
    */
-  public int getZDimensionIndex();
+  int getZDimensionIndex();
 
   /**
    * get the y Dimension index in the geogrid (canonical order)
    * @return the y Dimension index in canonical order, or -1
    */
-  public int getYDimensionIndex();
+  int getYDimensionIndex();
 
   /**
    * get the x Dimension index in the geogrid (canonical order)
    * @return the x Dimension index in canonical order, or -1
    */
-  public int getXDimensionIndex();
+  int getXDimensionIndex();
 
   /**
    * get the ensemble Dimension index in the geogrid (canonical order), or -1 if none
    * @return the ensemble Dimension index in canonical order, or -1
    */
-  public int getEnsembleDimensionIndex();
+  int getEnsembleDimensionIndex();
 
   /**
    * get the runtime Dimension index in the geogrid (canonical order), or -1 if none
    * @return the runtime Dimension index in canonical order, or -1
    */
-  public int getRunTimeDimensionIndex();
+  int getRunTimeDimensionIndex();
 
   /**
    * get the Grid's Coordinate System.
    * @return the Grid's Coordinate System.
    */
-  public GridCoordSystem getCoordinateSystem();
+  GridCoordSystem getCoordinateSystem();
 
   /**
    * get the Projection, if it exists.
    * @return the Projection, or null
    */
-  public ProjectionImpl getProjection();
+  ProjectionImpl getProjection();
 
   /**
    * true if there may be missing data
    * @return true if there may be missing data
    */
-  public boolean hasMissingData();
+  boolean hasMissingData();
 
   /**
    * if val is missing data
    * @param val test this value
    * @return true if val is missing data
    */
-  public boolean isMissingData(double val);
+  boolean isMissingData(double val);
 
   /**
    * Get the minimum and the maximum data value of the previously read Array,
@@ -217,7 +216,7 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @param data Array to get min/max values
    * @return both min and max value.
    */
-  public MAMath.MinMax getMinMaxSkipMissingData(Array data);
+  MAMath.MinMax getMinMaxSkipMissingData(Array data);
 
   /**
    * Convert (in place) all values in the given array that are considered
@@ -226,7 +225,7 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @param data input array
    * @return input array, with missing values converted to NaNs.
    */
-  public float[] setMissingToNaN(float[] data);
+  float[] setMissingToNaN(float[] data);
 
   /**
    * This reads an arbitrary data slice, returning the data in
@@ -241,9 +240,9 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
    * @throws java.io.IOException on io error
    */
-  public Array readDataSlice(int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
+  Array readDataSlice(int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
 
-  public Array readSubset(List<Range> subset) throws InvalidRangeException, IOException;
+  Array readSubset(List<Range> subset) throws InvalidRangeException, IOException;
 
 
   /**
@@ -258,7 +257,7 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
    * @throws java.io.IOException on io error
    */
-  public Array readDataSlice(int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
+  Array readDataSlice(int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
 
   /**
    * Reads in the data "volume" at the given time index.
@@ -270,7 +269,7 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @return data[z,y,x] or data[y,x] if no z axis.
    * @throws java.io.IOException on io error
    */
-  public Array readVolumeData(int t_index) throws java.io.IOException;
+  Array readVolumeData(int t_index) throws java.io.IOException;
 
   /**
    * Create a new GeoGrid that is a logical subset of this GeoGrid.
@@ -284,7 +283,8 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @return subsetted GeoGrid
    * @throws ucar.ma2.InvalidRangeException if ranges are invlaid
    */
-  public GridDatatype makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
+  GridDatatype makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range,
+      Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
 
   /**
    * Create a new GeoGrid that is a logical subset of this GeoGrid.
@@ -299,18 +299,19 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @return subsetted GeoGrid
    * @throws ucar.ma2.InvalidRangeException if ranges are invlaid
    */
-  public GridDatatype makeSubset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException;
+  GridDatatype makeSubset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride,
+      int x_stride) throws InvalidRangeException;
 
   /**
    * human readable information about this Grid.
    * @return human readable information about this Grid.
    */
-  public String getInfo();
+  String getInfo();
 
   /**
    * Get the underlying Variable, if it exists.
    * @return the underlying Variable, if it exists, else null
    */
-  public VariableDS getVariable();
+  VariableDS getVariable();
 
 }

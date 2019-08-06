@@ -46,7 +46,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
   }
 
   @Override
-  public TrajectoryFeatureCollection subset(LatLonRect boundingBox) throws IOException {
+  public TrajectoryFeatureCollection subset(LatLonRect boundingBox) {
     return new StandardTrajectoryCollectionSubset( this, boundingBox);
   }
 
@@ -130,7 +130,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     StandardTrajectoryFeature prev;
     CollectionInfo calcInfo;
 
-    TrajCollectionIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
+    TrajCollectionIterator(ucar.ma2.StructureDataIterator structIter) {
       this.structIter = structIter;
       CollectionInfo info = getInfo();
       if (!info.isComplete())

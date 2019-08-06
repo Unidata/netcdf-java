@@ -22,10 +22,9 @@ public interface ProfileFeatureCollection extends PointFeatureCC, Iterable<Profi
    * Subset this collection by boundingBox
    * @param boundingBox want only profiles in this lat/lon bounding box.
    * @return subsetted collection, may be null if empty
-   * @throws IOException on read error
    */
-  ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException;
-  ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+  ProfileFeatureCollection subset(LatLonRect boundingBox);
+  ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange);
 
   //////////////////////////////////////////////////////
   // deprecated use foreach

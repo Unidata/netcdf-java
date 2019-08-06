@@ -86,60 +86,92 @@ public class Ray {
   }
 
   public String getDatatypeName(String abbrev) {
-    if (abbrev.equals("ZN") || abbrev.equals("ZS"))
-      return "Reflectivity";
-    else if (abbrev.equals("ZF") || abbrev.equals("ZX") || abbrev.equals("DR"))
-      return "Reflectivity";
-    else if (abbrev.equals("VR") || abbrev.equals("DN") || abbrev.equals("DS") || abbrev.equals("DF") || abbrev.equals("DX"))
-      return "RadialVelocity";
-    else if (abbrev.equals("VN") || abbrev.equals("VF"))
-      return "CorrectedRadialVelocity";
-    else if (abbrev.equals("SW") || abbrev.equals("WS") || abbrev.equals("WF") || abbrev.equals("WX") || abbrev.equals("WN"))
-      return "SpectrumWidth";
-    else if (abbrev.equals("PN") || abbrev.equals("PS") || abbrev.equals("PF") || abbrev.equals("PX"))
-      return "Power";
-    else if (abbrev.equals("MN") || abbrev.equals("MS") || abbrev.equals("MF") || abbrev.equals("MX"))
-      return "Power";
-    else if (abbrev.equals("PH"))
-      return "PhiDP";
-    else if (abbrev.equals("RH"))
-      return "RhoHV";
-    else if (abbrev.equals("LH"))
-      return "LdrH";
-    else if (abbrev.equals("KD"))
-      return "KDP";
-    else if (abbrev.equals("LV"))
-      return "LdrV";
-    else if (abbrev.equals("DR"))
-      return "ZDR";
-    else if (abbrev.equals("CZ"))
-      return "CorrecteddBZ";
-    else if (abbrev.equals("DZ"))
-      return "TotalReflectivity";
-    else if (abbrev.equals("DR"))
-      return "ZDR";
-    else
-      return abbrev;
+    switch (abbrev) {
+      case "ZN":
+      case "ZS":
+      case "ZF":
+      case "ZX":
+        return "Reflectivity";
+      case "VR":
+      case "DN":
+      case "DS":
+      case "DF":
+      case "DX":
+        return "RadialVelocity";
+      case "VN":
+      case "VF":
+        return "CorrectedRadialVelocity";
+      case "SW":
+      case "WS":
+      case "WF":
+      case "WX":
+      case "WN":
+        return "SpectrumWidth";
+      case "PN":
+      case "PS":
+      case "PF":
+      case "PX":
+        return "Power";
+      case "MN":
+      case "MS":
+      case "MF":
+      case "MX":
+        return "Power";
+      case "PH":
+        return "PhiDP";
+      case "RH":
+        return "RhoHV";
+      case "LH":
+        return "LdrH";
+      case "KD":
+        return "KDP";
+      case "LV":
+        return "LdrV";
+      case "CZ":
+        return "CorrecteddBZ";
+      case "DZ":
+        return "TotalReflectivity";
+      case "DR":
+        return "ZDR";
+      default:
+        return abbrev;
+    }
   }
 
   public String getDatatypeUnits(String abbrev) {
-    if (abbrev.equals("CZ") || abbrev.equals("DZ") || abbrev.equals("ZN") || abbrev.equals("ZS"))
-      return "dBz";
-    else if (abbrev.equals("ZF") || abbrev.equals("ZX"))
-      return "dBz";
-    else if (abbrev.equals("VR") || abbrev.equals("DN") || abbrev.equals("DS") || abbrev.equals("DF") || abbrev.equals("DX"))
-      return "m/s";
-    else if (abbrev.equals("VN") || abbrev.equals("VF"))
-      return "m/s";
-    else if (abbrev.equals("SW") || abbrev.equals("WS") || abbrev.equals("WF") || abbrev.equals("WX") || abbrev.equals("WN"))
-      return "m/s";
-    else if (abbrev.equals("PN") || abbrev.equals("PS") || abbrev.equals("PF") || abbrev.equals("PX"))
-      return "dBM";
-    else if (abbrev.equals("MN") || abbrev.equals("MS") || abbrev.equals("MF") || abbrev.equals("MX"))
-      return "dBM";
-
-    else
-      return abbrev;
+    switch (abbrev) {
+      case "CZ":
+      case "DZ":
+      case "ZN":
+      case "ZS":
+      case "ZF":
+      case "ZX":
+        return "dBz";
+      case "VR":
+      case "DN":
+      case "DS":
+      case "DF":
+      case "DX":
+      case "VN":
+      case "VF":
+      case "SW":
+      case "WS":
+      case "WF":
+      case "WX":
+      case "WN":
+        return "m/s";
+      case "PN":
+      case "PS":
+      case "PF":
+      case "PX":
+      case "MN":
+      case "MS":
+      case "MF":
+      case "MX":
+        return "dBM";
+      default:
+        return abbrev;
+    }
   }
 
   public short getDatatypeRangeFoldingThreshhold(String abbrev) {
@@ -442,7 +474,6 @@ public class Ray {
    * @param abbrev    which data type we want
    * @param gateRange handles the possible subset of data to return
    * @param ii        put the data here
-   * @throws java.io.IOException
    */
   public void readData(RandomAccessFile raf, String abbrev, Range gateRange, IndexIterator ii) throws IOException {
     long offset = rayOffset;

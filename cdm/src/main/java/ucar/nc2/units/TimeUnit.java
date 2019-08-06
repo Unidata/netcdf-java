@@ -142,7 +142,6 @@ public class TimeUnit extends SimpleUnit {
    * @param value in the units of this "base unit"
    * @param outputUnit convert to this base type, must be convertible to units of "seconds"
    * @return new value in the units of the "outputUnit
-   * @throws ConversionException
    */
   public double convertTo(double value, TimeUnit outputUnit) throws ConversionException {
     return uu.convertTo( value, outputUnit.uu);

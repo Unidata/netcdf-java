@@ -86,7 +86,6 @@ public class CoverageDatasetFactory {
    *
    * @param endpoint cdmrFeature:url, local GRIB data or index file, or NetcdfDataset location
    * @return FeatureDatasetCoverage or null on failure. use openCoverageDataset to get error message
-   * @throws IOException
    */
   static public FeatureDatasetCoverage open(String endpoint) throws IOException {
     Optional<FeatureDatasetCoverage> opt = openCoverageDataset(endpoint);
@@ -96,9 +95,8 @@ public class CoverageDatasetFactory {
   /**
    * @param endpoint local GRIB data or index file
    * @return FeatureDatasetCoverage or null on failure.
-   * @throws IOException
    */
-  static public Optional<FeatureDatasetCoverage> openGrib(String endpoint) throws IOException {
+  static public Optional<FeatureDatasetCoverage> openGrib(String endpoint) {
 
     List<Object> notGribThrowables = Arrays.asList(
             IllegalAccessException.class,
@@ -131,7 +129,7 @@ public class CoverageDatasetFactory {
 
   }
 
-  static public Optional<FeatureDatasetCoverage> openNcmlString(String ncml) throws IOException, FileNotFoundException {
+  static public Optional<FeatureDatasetCoverage> openNcmlString(String ncml) throws IOException {
     NetcdfDataset ncd = NcMLReader.readNcML(new StringReader(ncml), null);
 
     DtCoverageDataset gds = new DtCoverageDataset(ncd);

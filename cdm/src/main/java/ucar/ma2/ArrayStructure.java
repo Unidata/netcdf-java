@@ -994,7 +994,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
   }
 
   @Override
-  public Array sectionNoReduce(List<Range> ranges) throws InvalidRangeException {
+  public Array sectionNoReduce(List<Range> ranges) {
     Section viewSection = new Section(ranges);
     ArrayStructureW result = new ArrayStructureW(this.members, viewSection.getShape());
     int count = 0;

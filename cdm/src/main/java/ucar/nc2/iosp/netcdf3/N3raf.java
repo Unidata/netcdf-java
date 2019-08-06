@@ -19,10 +19,10 @@ import java.nio.channels.WritableByteChannel;
 
 public class N3raf extends N3iosp  {
 
-  protected void _open(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException {
+  protected void _open(ucar.unidata.io.RandomAccessFile raf) {
   }
 
-  protected void _create(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException {
+  protected void _create(ucar.unidata.io.RandomAccessFile raf) {
   }
 
   /**

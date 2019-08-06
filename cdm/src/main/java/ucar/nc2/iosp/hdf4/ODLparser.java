@@ -102,7 +102,7 @@ public class ODLparser {
     return rootElem;
   }
 
-  Element startGroup(Element parent, String line) throws IOException {
+  Element startGroup(Element parent, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String toke = stoke.nextToken();
     assert toke.equals("GROUP");
@@ -112,7 +112,7 @@ public class ODLparser {
     return group;
   }
 
-  void endGroup(Element current, String line) throws IOException {
+  void endGroup(Element current, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String toke = stoke.nextToken();
     assert toke.equals("END_GROUP");
@@ -121,7 +121,7 @@ public class ODLparser {
     assert name.equals( current.getName());
   }
 
-  Element startObject(Element parent, String line) throws IOException {
+  Element startObject(Element parent, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String toke = stoke.nextToken();
     assert toke.equals("OBJECT");
@@ -131,7 +131,7 @@ public class ODLparser {
     return obj;
   }
 
-  void endObject(Element current, String line) throws IOException {
+  void endObject(Element current, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String toke = stoke.nextToken();
     assert toke.equals("END_OBJECT");
@@ -140,7 +140,7 @@ public class ODLparser {
     assert name.equals( current.getName()) : name +" !+ "+ current.getName();
   }
 
-  void addField(Element parent, String line) throws IOException {
+  void addField(Element parent, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String name = stoke.nextToken();
     if (stoke.hasMoreTokens()) {

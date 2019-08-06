@@ -64,7 +64,7 @@ public class CollectionList extends CollectionAbstract {
   }
 
   @Override
-  public CloseableIterator<MFile> getFileIterator() throws IOException {
+  public CloseableIterator<MFile> getFileIterator() {
     return new MFileIterator(mfiles.iterator(), null);
   }
 

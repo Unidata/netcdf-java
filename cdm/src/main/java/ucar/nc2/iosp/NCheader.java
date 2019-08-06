@@ -48,12 +48,10 @@ public class NCheader
 
     /**
      * Figure out what kind of netcdf-related file we have.
-     * Constraint: leave raf read pointer to point just after
-     * the magic number.
+     * Constraint: leave raf read pointer to point just after the magic number.
      *
      * @param raf to test type
-     * @return
-     * @throws IOException
+     * @return integer that matches constants in netcdf-c/include/netcdf.h
      */
     static public int
     checkFileType(ucar.unidata.io.RandomAccessFile raf)
@@ -110,13 +108,8 @@ public class NCheader
 
     /**
      * Not quite memcmp
-     *
-     * @param b1
-     * @param b2
-     * @param len
-     * @return
      */
-    static boolean
+    private static boolean
     memequal(byte[] b1, byte[] b2, int len)
     {
         if(b1 == b2) return true;

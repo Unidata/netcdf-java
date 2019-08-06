@@ -220,7 +220,7 @@ public class IgraPor extends AbstractIOServiceProvider {
   ////////////////////////////////////////////////////////////////////
 
   @Override
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException {
     StructureDataRegexp.Vinfo vinfo = (StructureDataRegexp.Vinfo) v2.getSPobject();
     if (stationId != null)
       return new ArraySequence(vinfo.sm, new SingleStationSeqIter(vinfo), vinfo.nelems);
@@ -255,7 +255,7 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
 
     @Override
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
       return recno == 0;
     }
 
@@ -330,7 +330,7 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public StructureData next() {
       return curr;
     }
 
@@ -518,7 +518,7 @@ public class IgraPor extends AbstractIOServiceProvider {
         }
 
         @Override
-        public boolean hasNext() throws IOException {
+        public boolean hasNext() {
           return countRead < lines.size();
         }
 

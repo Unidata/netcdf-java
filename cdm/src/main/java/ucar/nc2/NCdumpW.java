@@ -323,8 +323,7 @@ public class NCdumpW {
     return sw.toString();
   }
 
-  static private void printArray(Array array, String name, PrintWriter out, Indent indent, CancelTask ct)
-          throws IOException {
+  static private void printArray(Array array, String name, PrintWriter out, Indent indent, CancelTask ct) {
     printArray(array, name, null, out, indent, ct, true);
     out.flush();
   }
@@ -571,9 +570,8 @@ public class NCdumpW {
    *
    * @param out   send output here.
    * @param sdata StructureData to print.
-   * @throws IOException on read error
    */
-  static public void printStructureData(PrintWriter out, StructureData sdata) throws IOException {
+  static public void printStructureData(PrintWriter out, StructureData sdata) {
     printStructureData(out, sdata, new Indent(2), null);
     out.flush();
   }
@@ -588,7 +586,7 @@ public class NCdumpW {
     indent.decr();
   }
 
-  static public String toString(StructureData sdata) throws IOException {
+  static public String toString(StructureData sdata) {
     CharArrayWriter carray = new CharArrayWriter(1000);
     PrintWriter pw = new PrintWriter(carray);
     for (StructureMembers.Member m : sdata.getMembers()) {

@@ -150,7 +150,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
       v.addAttribute(new Attribute(_Coordinate.AxisType, type.name()));
   }
 
-  private void addCoordSystem(NetcdfDataset ds) throws IOException {
+  private void addCoordSystem(NetcdfDataset ds) {
 
     double lat = ds.findGlobalAttributeIgnoreCase("Latitude").getNumericValue().doubleValue();
     double lon = ds.findGlobalAttributeIgnoreCase("Longitude").getNumericValue().doubleValue();

@@ -47,7 +47,7 @@ import ucar.unidata.geoloc.Station;
 public class StandardStationProfileCollectionImpl extends StationProfileCollectionImpl {
   private NestedTable ft;
 
-  StandardStationProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) throws IOException {
+  StandardStationProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
   }
@@ -145,7 +145,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     @Override
-    public List<CalendarDate> getTimes() throws IOException {
+    public List<CalendarDate> getTimes() {
       List<CalendarDate> result = new ArrayList<>();
       for (ProfileFeature pf : this) {
         result.add(pf.getTime());
@@ -154,7 +154,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     @Override
-    public ProfileFeature getProfileByDate(CalendarDate date) throws IOException {
+    public ProfileFeature getProfileByDate(CalendarDate date) {
       for (ProfileFeature pf : this) {
         if (pf.getTime().equals(date)) return pf;
       }
@@ -239,7 +239,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     private Cursor cursor;
     StructureData profileData;
 
-    StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor, StructureData profileData) throws IOException {
+    StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor, StructureData profileData) {
       super(timeUnit.makeCalendarDate(time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time, -1);
       this.cursor = cursor;
       this.profileData = profileData;
@@ -276,7 +276,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     @Nonnull
     @Override
-    public StructureData getFeatureData() throws IOException {
+    public StructureData getFeatureData() {
       return profileData;
     }
 

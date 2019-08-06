@@ -1173,7 +1173,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   // for station and stationProfile, not flat
 
-  private TableConfig makeStationTable(NetcdfDataset ds, FeatureType ftype, EncodingInfo info, Formatter errlog) throws IOException {
+  private TableConfig makeStationTable(NetcdfDataset ds, FeatureType ftype, EncodingInfo info, Formatter errlog) {
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
     if (lat == null || lon == null) {
@@ -1248,7 +1248,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   }
 
-  private TableConfig makeStructTable(NetcdfDataset ds, FeatureType ftype, EncodingInfo info, Formatter errlog) throws IOException {
+  private TableConfig makeStructTable(NetcdfDataset ds, FeatureType ftype, EncodingInfo info, Formatter errlog) {
     Table.Type tableType = Table.Type.Structure;
     if (info.encoding == Encoding.single) tableType = Table.Type.Top;
     if (info.encoding == Encoding.flat) tableType = Table.Type.ParentId;
@@ -1283,7 +1283,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   // test E:/work/signell/traj2D.ncml
-  private TableConfig makeStructTableTestTraj(NetcdfDataset ds, FeatureType ftype, EncodingInfo info, Formatter errlog) throws IOException {
+  private TableConfig makeStructTableTestTraj(NetcdfDataset ds, FeatureType ftype, EncodingInfo info, Formatter errlog) {
     Table.Type tableType = Table.Type.Structure;
     if (info.encoding == Encoding.single) tableType = Table.Type.Top;
     if (info.encoding == Encoding.flat) tableType = Table.Type.ParentId;
@@ -1308,7 +1308,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   /////////////////////////////////////////////////////////////////////////////////
 
-  private TableConfig makeRaggedContiguousChildTable(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Structure childStruct, Formatter errlog) throws IOException {
+  private TableConfig makeRaggedContiguousChildTable(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Structure childStruct, Formatter errlog) {
     TableConfig childTable = new TableConfig(Table.Type.Contiguous, childDim.getShortName());
     childTable.dimName = childDim.getShortName();
 
@@ -1324,7 +1324,7 @@ public class CFpointObs extends TableConfigurerImpl {
     return childTable;
   }
 
-  private TableConfig makeRaggedIndexChildTable(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Variable ragged_parentIndex, Formatter errlog) throws IOException {
+  private TableConfig makeRaggedIndexChildTable(NetcdfDataset ds, Dimension parentDim, Dimension childDim, Variable ragged_parentIndex, Formatter errlog) {
     TableConfig childTable = new TableConfig(Table.Type.ParentIndex, childDim.getShortName());
     childTable.dimName = childDim.getShortName();
 
@@ -1343,7 +1343,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   // the inner table of Structure(outer, inner) and middle table of Structure(outer, middle, inner)
 
-  private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, EncodingInfo info, Formatter errlog) throws IOException {
+  private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, EncodingInfo info, Formatter errlog) {
     Dimension parentDim = ds.findDimension(parentTable.dimName);
 
     Table.Type obsTableType = (parentTable.structureType == TableConfig.StructureType.PsuedoStructure) ? Table.Type.MultidimInnerPsuedo : Table.Type.MultidimInner;
@@ -1392,7 +1392,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   // the inner table of Structure(outer, middle, inner)
 
-  private TableConfig makeMultidimInner3D(NetcdfDataset ds, TableConfig outerTable, TableConfig middleTable, Dimension innerDim, Formatter errlog) throws IOException {
+  private TableConfig makeMultidimInner3D(NetcdfDataset ds, TableConfig outerTable, TableConfig middleTable, Dimension innerDim, Formatter errlog) {
     Dimension outerDim = ds.findDimension(outerTable.dimName);
     Dimension middleDim = ds.findDimension(middleTable.innerName);
 
@@ -1440,7 +1440,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
 
-  private TableConfig makeSingle(NetcdfDataset ds, Dimension obsDim, Formatter errlog) throws IOException {
+  private TableConfig makeSingle(NetcdfDataset ds, Dimension obsDim, Formatter errlog) {
 
     Table.Type obsTableType = Table.Type.Structure;
     TableConfig obsTable = new TableConfig(obsTableType, "single");
@@ -1457,7 +1457,7 @@ public class CFpointObs extends TableConfigurerImpl {
     return obsTable;
   }
 
-  private TableConfig makeMiddleTable(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
+  private TableConfig makeMiddleTable(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) {
     throw new UnsupportedOperationException("CFpointObs: middleTable encoding");
   }
 

@@ -940,11 +940,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public String showFields() {
       StringWriter sw = new StringWriter(10000);
-      try {
-        NCdumpW.printStructureData(new PrintWriter(sw), sdata);
-      } catch (IOException e) {
-        e.printStackTrace(new PrintWriter(sw));
-      }
+      NCdumpW.printStructureData(new PrintWriter(sw), sdata);
       return sw.toString();
     }
   }

@@ -107,8 +107,6 @@ public class OceanSG1 extends VerticalTransformImpl {
        return makeHeight(etaArray, sArray, depthArray, cArray, depth_c);
     }
 
-    /** Add new method for retrieving 1D Z values for specified indices for lat/lon. */
-    /* -Sachin */
     /**
         * Get the 1D vertical coordinate array for this time step and
         * the specified X,Y index for Lat-Lon point.

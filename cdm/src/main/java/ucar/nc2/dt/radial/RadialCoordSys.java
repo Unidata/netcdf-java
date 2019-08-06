@@ -89,7 +89,7 @@ public class RadialCoordSys {
     coordAxes.add( elevAxis);
 
     // make name based on coordinate
-    Collections.sort( coordAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+    coordAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     this.name = CoordinateSystem.makeName( coordAxes);
 
   }
@@ -156,9 +156,7 @@ public class RadialCoordSys {
         SimpleUnit radialUnit = SimpleUnit.factory(units);
         maxRadial = radialUnit.convertTo(maxRadial, SimpleUnit.kmUnit); // convert to km
 
-      } catch (IOException e) {
-        e.printStackTrace();
-      } catch (IllegalArgumentException e) {
+      } catch (IOException | IllegalArgumentException e) {
         e.printStackTrace();
       }
     }

@@ -139,6 +139,7 @@ public class FmrcInv {
       uv.finish();
     }
 
+    // LOOK runSeqs is alwats empty, according to InteliJ!
     // assign sequence ids
     int seqno = 0;
     for (RunSeq seq : runSeqs) {
@@ -535,10 +536,12 @@ public class FmrcInv {
             timeList.add(tc);
         }
         // sort by run Date
-        Collections.sort(timeList, new Comparator<TimeCoord>() {
+        timeList.sort(new Comparator<TimeCoord>() {
           public int compare(TimeCoord o1, TimeCoord o2) {
-            if (o1 == null || o1.getRunDate() == null) return -1;
-            if (o2 == null || o2.getRunDate() == null) return 1;
+            if (o1 == null || o1.getRunDate() == null)
+              return -1;
+            if (o2 == null || o2.getRunDate() == null)
+              return 1;
             return o1.getRunDate().compareTo(o2.getRunDate());
           }
         });

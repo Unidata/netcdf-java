@@ -45,5 +45,5 @@ public interface ProfileFeature extends PointFeatureCollection, Iterable<PointFe
    * @return the actual data of this profile. may be empty, not null.
    */
   @Nonnull
-  StructureData getFeatureData() throws IOException;
+  StructureData getFeatureData();
 }

@@ -46,8 +46,6 @@ public class CFGridCoverageWriter2 {
    * @param writer            this does the actual writing, may be null if testSizeOnly=true
    * @return  the total number of bytes that the variables in the output file occupy. This is NOT the same as the
    *          size of the the whole output file, but it's close.
-   * @throws IOException
-   * @throws InvalidRangeException
    */
   public static ucar.nc2.util.Optional<Long> writeOrTestSize(CoverageCollection gdsOrg, List<String> gridNames,
           SubsetParams subset, boolean tryToAddLatLon2D, boolean testSizeOnly, NetcdfFileWriter writer)

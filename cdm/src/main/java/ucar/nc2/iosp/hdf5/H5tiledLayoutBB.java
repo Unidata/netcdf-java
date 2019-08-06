@@ -278,14 +278,14 @@ class H5tiledLayoutBB implements LayoutBB {
      } */
 
      // just strip off the 4-byte fletcher32 checksum at the end
-    private byte[] checkfletcher32(byte[] org) throws IOException {
+    private byte[] checkfletcher32(byte[] org) {
       byte[] result = new byte[org.length-4];
       System.arraycopy(org, 0, result, 0, result.length);
       if (debug) System.out.println(" checkfletcher32 bytes in= " + org.length + " bytes out= " + result.length);
       return result;
     }
 
-    private byte[] shuffle(byte[] data, int n) throws IOException {
+    private byte[] shuffle(byte[] data, int n) {
       if (debug) System.out.println(" shuffle bytes in= " + data.length + " n= " + n);
 
       assert data.length % n == 0;

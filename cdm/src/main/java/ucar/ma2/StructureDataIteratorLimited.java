@@ -17,7 +17,7 @@ public class StructureDataIteratorLimited implements StructureDataIterator {
   private StructureDataIterator org;
   private int limit, count;
 
-  public StructureDataIteratorLimited(StructureDataIterator org, int limit) throws IOException {
+  public StructureDataIteratorLimited(StructureDataIterator org, int limit) {
     this.org = org;
     this.limit = limit;
     this.count = 0;

@@ -86,7 +86,7 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
   }
 
   @Override
-  public PointFeature next() throws IOException {
+  public PointFeature next() {
     return localIterator.next();
   }
 

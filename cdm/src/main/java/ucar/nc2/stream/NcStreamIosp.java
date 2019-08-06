@@ -139,7 +139,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     //return dataArray.sectionNoReduce(section.getRanges());
   }
 
-  private Array readStructureData(Structure v, Section section, DataStorage dataStorage) throws IOException, InvalidRangeException {
+  private Array readStructureData(Structure v, Section section, DataStorage dataStorage) {
     ByteBuffer bb = dataStorage.sdata.getData().asReadOnlyByteBuffer();
     bb.order(dataStorage.bo);
     StructureMembers sm = v.makeStructureMembers();
@@ -150,7 +150,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   }
 
   // lOOK probably desnt work
-  private Array readVlenData(Variable v, Section section, DataStorage dataStorage) throws IOException, InvalidRangeException {
+  private Array readVlenData(Variable v, Section section, DataStorage dataStorage) throws IOException {
     raf.seek(dataStorage.filePos);
     int nelems = readVInt(raf);
     Array[] result = new Array[nelems];
@@ -183,7 +183,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     return test(b, test);
   }
 
-  private boolean test(byte[] bread, byte[] test) throws IOException {
+  private boolean test(byte[] bread, byte[] test) {
     if (bread.length != test.length) return false;
     for (int i = 0; i < bread.length; i++)
       if (bread[i] != test[i]) return false;

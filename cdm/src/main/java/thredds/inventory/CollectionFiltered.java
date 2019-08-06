@@ -42,7 +42,7 @@ public class CollectionFiltered extends CollectionAbstract {
       }
     }
     if (hasDateExtractor()) {
-      Collections.sort(list, new DateSorter());  // sort by date
+      list.sort(new DateSorter());  // sort by date
     } else {
       Collections.sort(list);                    // sort by name
     }

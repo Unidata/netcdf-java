@@ -110,11 +110,7 @@ public class FmrInv implements Comparable<FmrInv> {
     // assign sequence number for vertical coords with same name
     HashMap<String, List<VertCoord>> map = new HashMap<>();
     for (VertCoord vc : vertCoords) {
-      List<VertCoord> list = map.get(vc.getName());
-      if (list == null) {
-        list = new ArrayList<>();
-        map.put(vc.getName(), list);
-      }
+      List<VertCoord> list = map.computeIfAbsent(vc.getName(), k -> new ArrayList<>());
       list.add(vc);
     }
     for (List<VertCoord> list : map.values()) {

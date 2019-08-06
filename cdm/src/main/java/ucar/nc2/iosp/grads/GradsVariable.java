@@ -78,7 +78,7 @@ public class GradsVariable {
         } else {
             unit = Integer.parseInt(unitString);
         }
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 3; i < toks.length; i++) {
             buf.append(toks[i]);
             buf.append(" ");
@@ -152,7 +152,7 @@ public class GradsVariable {
      * @return a String representation of this object
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("Variable: ");
         buf.append(varName);
         buf.append("\n");

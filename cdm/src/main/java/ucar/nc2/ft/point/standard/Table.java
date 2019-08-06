@@ -387,7 +387,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       return as.getStructureDataIterator();
     }
 
@@ -419,7 +419,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       return as.getStructureDataIterator();
     }
 
@@ -537,11 +537,7 @@ public abstract class Table {
         this.indexMap = new HashMap<>((int) (2 * index.getSize()));
         while (index.hasNext()) {
           int parent = index.nextInt();
-          List<Integer> list = indexMap.get(parent);
-          if (list == null) {
-            list = new ArrayList<>();
-            indexMap.put(parent, list);
-          }
+          List<Integer> list = indexMap.computeIfAbsent(parent, k -> new ArrayList<>());
           list.add(childIndex);
           childIndex++;
         }
@@ -776,7 +772,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       StructureData parentStruct = cursor.getParentStructure();
       if (parentStruct instanceof StructureDataProxy)
         parentStruct = ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
@@ -856,7 +852,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       StructureData parentStruct = cursor.tableData[2];
       if (parentStruct instanceof StructureDataProxy)
         parentStruct = ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
@@ -1062,7 +1058,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       StructureData parentStruct = cursor.getParentStructure();
 
       StructureMembers members = parentStruct.getStructureMembers();
@@ -1112,7 +1108,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       return new SingletonStructureDataIterator(sdata);
     }
 
@@ -1191,12 +1187,12 @@ public abstract class Table {
     }
 
     @Override
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
       return (count == 0);
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public StructureData next() {
       count++;
       return sdata;
     }

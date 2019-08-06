@@ -100,7 +100,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (debugLeaks) openFiles.add(location);
   }
 
-  public void close() throws IOException {
+  public void close() {
     if (debugLeaks)
       openFiles.remove(location);
 
@@ -222,7 +222,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   // override selected RandomAccessFile public methods
 
   @Override
-  public long length() throws IOException {
+  public long length() {
     long fileLength = total_length;
     if (fileLength < dataEnd)
       return dataEnd;

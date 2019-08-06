@@ -99,7 +99,6 @@ public class NOWRadheader {
      * read the header of input file and parsing the NOWRAD part
      * @param raf    input file
      * @return        1 if checking passing
-     * @throws IOException
      */
     int readTop(ucar.unidata.io.RandomAccessFile raf) throws IOException {
         int pos = 0;
@@ -152,7 +151,6 @@ public class NOWRadheader {
      * read and parse the header of the nids/tdwr file
      * @param raf       input file
      * @param ncfile    output file
-     * @throws IOException
      */
     void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile) throws Exception {
         this.raf = raf;
@@ -702,9 +700,9 @@ public class NOWRadheader {
         byte[] b = new byte[4];
 
         b[0] = (byte) (s1 >>> 8);
-        b[1] = (byte) (s1 >>> 0);
+        b[1] = (byte) (s1);
         b[2] = (byte) (s2 >>> 8);
-        b[3] = (byte) (s2 >>> 0);
+        b[3] = (byte) (s2);
 
         return bytesToInt(b, false);
     }
@@ -769,12 +767,7 @@ public class NOWRadheader {
                : b;
     }
 
-    /**
-     * get jave date
-     * @param julianDays
-     * @param msecs
-     * @return   java date
-     */
+    /** get java date */
     static public java.util.Date getDate(int julianDays, int msecs) {
         long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
 
@@ -783,7 +776,6 @@ public class NOWRadheader {
 
     /**
      * Flush all data buffers to disk.
-     * @throws IOException
      */
     public void flush() throws IOException {
         raf.flush();
@@ -791,7 +783,6 @@ public class NOWRadheader {
 
     /**
      *  Close the file.
-     * @throws IOException
      */
     public void close() throws IOException {
         if (raf != null) {

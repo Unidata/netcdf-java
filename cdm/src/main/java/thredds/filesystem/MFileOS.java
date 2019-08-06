@@ -49,7 +49,7 @@ public class MFileOS implements MFile {
 
   /**
    * Make MFileOS if file exists, otherwise return null
-   * @param filename
+   * @param filename name of the existing file.
    * @return MFileOS or null
    */
   static public MFileOS getExistingFile(String filename) {

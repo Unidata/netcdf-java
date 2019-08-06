@@ -58,7 +58,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     super.writeHeader(coords, null, pf.getDataAll(), coordNames.toString());
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
     // NOOP
   }
 

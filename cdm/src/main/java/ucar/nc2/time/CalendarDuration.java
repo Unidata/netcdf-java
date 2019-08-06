@@ -306,7 +306,7 @@ public class CalendarDuration {
 
   ///////////////////////////
 
-static private void test(String unit, String result) throws Exception {
+static private void test(String unit, String result) {
   org.joda.time.Period jp = convertToPeriod(1, unit);
   assert jp != null;
   System.out.printf("%s == %s%n", unit, jp);

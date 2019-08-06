@@ -83,7 +83,7 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
 
    */
   private boolean addTimeCoord;
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
     addTimeCoord = addTimeCoordinate(ds);
     augmentGroup(ds, ds.getRootGroup());
     ds.addAttribute(ds.getRootGroup(), new Attribute(CDM.CONVENTIONS, "CF-1.0"));

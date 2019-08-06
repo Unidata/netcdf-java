@@ -174,18 +174,18 @@ public class ListenerManager {
     args[0] = event;
 
     // send event to all listeners except the source
-    ListIterator iter = listeners.listIterator();
-    while (iter.hasNext()) {
-      Object client = iter.next();
-      if (client == source)
+    for (Object client : listeners) {
+      if (client == source) {
         continue;
+      }
 
       try {
         method.invoke(client, args);
       } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
         e.printStackTrace();
-        if (e.getCause() != null)
+        if (e.getCause() != null) {
           e.getCause().printStackTrace();
+        }
 
         // iter.remove();
         logger.error("ListenerManager calling " + method + " threw exception ", e);

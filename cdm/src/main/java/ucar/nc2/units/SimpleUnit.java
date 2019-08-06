@@ -71,7 +71,7 @@ public class SimpleUnit {
    *
    * @param name parse this name to create a unit.
    * @return SimpleUnit, DateUnit, or TimeUnit
-   * @throws Exception when date parser fails
+   * @throws UnitException when date parser fails
    * @see ucar.units.UnitFormat#parse
    */
   static public SimpleUnit factoryWithExceptions(String name) throws UnitException {
@@ -247,11 +247,6 @@ public class SimpleUnit {
       throw new IllegalArgumentException(e.getMessage());
     }
   }
-
-  /** Divide this unit by given unit, creat a new unit to hold result.
-   public SimpleUnit divideBy(SimpleUnit denom) throws OperationException {
-   return new SimpleUnit( uu.divideBy( denom.uu));
-   } */
 
   /**
    * Return true if unitString1 is compatible to unitString2,

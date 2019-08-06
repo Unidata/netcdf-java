@@ -132,16 +132,6 @@ public class Dimension extends CDMNode implements Comparable {
   private int length;
 
   /**
-   * Returns the name of this Dimension; may be null.
-   * A Dimension with a null name is called "anonymous" and must be private.
-   * Dimension names are unique within a Group.
-   * @return name of Dimension, may be null for anonymous dimension
-   */
-  /* @Obsolete
-  public String getName() { return getShortName(); }
-  */
-
-  /**
    * Get the length of the Dimension.
    *
    * @return length of Dimension

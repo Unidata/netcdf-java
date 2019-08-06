@@ -37,7 +37,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   protected List<VariableSimpleIF> dataVariables;
   protected List<Attribute> globalAttributes;
 
-  protected CompositePointCollection(String name, CalendarDateUnit timeUnit, String altUnits, TimedCollection pointCollections) throws IOException {
+  protected CompositePointCollection(String name, CalendarDateUnit timeUnit, String altUnits, TimedCollection pointCollections) {
     super(name, timeUnit, altUnits);
     this.pointCollections = pointCollections;
   }
@@ -83,7 +83,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   }
 
   @Override
-  public PointFeatureIterator getPointFeatureIterator() throws IOException {
+  public PointFeatureIterator getPointFeatureIterator() {
     return new CompositePointFeatureIterator();
   }
 

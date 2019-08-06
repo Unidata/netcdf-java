@@ -121,8 +121,8 @@ public class Parameter implements java.io.Serializable {
         result = 37 * result + getStringValue().hashCode();
       }
       if (valueD != null) {
-        for (int i = 0; i < valueD.length; i++) {
-          result += 1000 * valueD[i];
+        for (double v : valueD) {
+          result += 1000 * v;
         }
       }
       hashCode = result;

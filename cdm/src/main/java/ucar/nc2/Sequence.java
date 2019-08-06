@@ -41,103 +41,71 @@ public class Sequence extends Structure {
   }
 
   /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
+   * @throws UnsupportedOperationException always
    */
   @Override
-  public Array read(int[] origin, int[] shape) throws IOException, InvalidRangeException {
+  public Array read(int[] origin, int[] shape) {
     throw new UnsupportedOperationException();
   }
 
   /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
+   * @throws UnsupportedOperationException always
    */
   @Override
-  public Array read(String sectionSpec) throws IOException, InvalidRangeException {
+  public Array read(String sectionSpec) {
     throw new UnsupportedOperationException();
   }
 
   /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
+   * @throws UnsupportedOperationException always
    */
   @Override
-  public Array read(List<Range> ranges) throws IOException, InvalidRangeException {
+  public Array read(List<Range> ranges) {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
-   */
   @Override
-  public Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  public Array read(ucar.ma2.Section section) throws java.io.IOException {
     return read();
   }
 
-  /*
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
-   *
-  @Override
-  public Array read() throws IOException {
-    throw new UnsupportedOperationException();
-  } */
-
   /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
+   * @throws UnsupportedOperationException always
    */
   @Override
-  public StructureData readStructure() throws IOException {
+  public StructureData readStructure() {
     throw new UnsupportedOperationException();
   }
 
   /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
+   * @throws UnsupportedOperationException always
    */
   @Override
-  public StructureData readStructure(int index) throws IOException, ucar.ma2.InvalidRangeException {
+  public StructureData readStructure(int index) {
     throw new UnsupportedOperationException();
   }
 
   /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
+   * @throws UnsupportedOperationException always
    */
   @Override
-  public ArrayStructure readStructure(int start, int count) throws IOException, ucar.ma2.InvalidRangeException {
-    throw new UnsupportedOperationException();
-  }
-
-
-  /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
-   */
-  @Override
-  public Variable slice(int dim, int value) throws InvalidRangeException {
+  public ArrayStructure readStructure(int start, int count) {
     throw new UnsupportedOperationException();
   }
 
   /**
-   * UnsupportedOperation
-   *
-   * @throws UnsupportedOperationException
+   * @throws UnsupportedOperationException always
    */
   @Override
-  public Variable section(Section subsection) throws InvalidRangeException {
+  public Variable slice(int dim, int value) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @throws UnsupportedOperationException always
+   */
+  @Override
+  public Variable section(Section subsection) {
     throw new UnsupportedOperationException();
   }
 

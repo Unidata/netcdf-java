@@ -31,7 +31,7 @@ public class MFileIterator implements CloseableIterator<MFile> {
     this.filter = filter;
   }
 
-  public void close() throws IOException {
+  public void close() {
   }
 
   public boolean hasNext() {

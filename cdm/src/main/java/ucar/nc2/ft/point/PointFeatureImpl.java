@@ -73,9 +73,7 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
 
   @Override
   public int compareTo(@Nonnull PointFeature other) {
-    if (obsTime < other.getObservationTime()) return -1;
-    if (obsTime > other.getObservationTime()) return 1;
-    return 0;
+    return Double.compare(obsTime, other.getObservationTime());
   }
 
   @Override

@@ -237,21 +237,17 @@ public class NcStreamDataCol {
     List<Integer> vlens;
     List<MemberData> members;
 
-    public MemberData(StructureMembers.Member member, int[] parent) {
+    MemberData(StructureMembers.Member member, int[] parent) {
       this.member = member;
       this.section = new Section(parent);
-      try {
-        int[] mshape = member.getShape();
-        //if (mshape.length == 0) // scalar
-        //  this.section.appendRange(Range.ONE);
-        //else
-        // compose with the parent
-        for (int s : mshape) {
-          if (s < 0) continue;
-          this.section.appendRange(s);
-        }
-      } catch (InvalidRangeException e) {
-        throw new RuntimeException(e);
+      int[] mshape = member.getShape();
+      //if (mshape.length == 0) // scalar
+      //  this.section.appendRange(Range.ONE);
+      //else
+      // compose with the parent
+      for (int s : mshape) {
+        if (s < 0) continue;
+        this.section.appendRange(s);
       }
 
       this.dtype = member.getDataType();
@@ -588,7 +584,7 @@ public class NcStreamDataCol {
   }
 
   // top level vlen
-  public Array decodeVlenData(NcStreamProto.DataCol dproto) throws IOException {
+  public Array decodeVlenData(NcStreamProto.DataCol dproto) {
     DataType dataType = NcStream.convertDataType(dproto.getDataType());
     ByteBuffer bb = dproto.getPrimdata().asReadOnlyByteBuffer();
     ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
@@ -615,7 +611,7 @@ public class NcStreamDataCol {
   }
 
   // vlen inside a Structure
-  private Array decodeVlenData(NcStreamProto.DataCol dproto, Section parentSection) throws IOException {
+  private Array decodeVlenData(NcStreamProto.DataCol dproto, Section parentSection) {
     DataType dataType = NcStream.convertDataType(dproto.getDataType());
     ByteBuffer bb = dproto.getPrimdata().asReadOnlyByteBuffer();
     ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;

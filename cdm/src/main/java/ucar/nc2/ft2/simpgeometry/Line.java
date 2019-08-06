@@ -16,21 +16,21 @@ public interface Line extends SimpleGeometry{
 	 * Add a point to the end of the line. 
 	 *
 	 */
-	public void addPoint(double x, double y);
+  void addPoint(double x, double y);
 	
 	/**
 	 * Returns the list of points which make up this line
 	 * 
 	 * @return points - the collection of points that make up this line
 	 */
-	public List<Point> getPoints();
+  List<Point> getPoints();
 	
 	/**
 	 * Get the data associated with this line
 	 * 
 	 * @return data
 	 */
-	public Array getData();
+  Array getData();
 	
 	/**
 	 * If part of a multiline, returns the next line within that line
@@ -38,7 +38,7 @@ public interface Line extends SimpleGeometry{
 	 * 
 	 * @return next line if present, null if not
 	 */
-	public Line getNext();
+  Line getNext();
 	
 	/**
 	 * If part of a multiline, returns the previous line within that line
@@ -46,25 +46,25 @@ public interface Line extends SimpleGeometry{
 	 * 
 	 * @return previous line if present, null if not
 	 */
-	public Line getPrev();
+  Line getPrev();
 	
 	/**
 	 * Set the data associated with this Line
 	 * 
 	 * @param data - array of data to set to
 	 */
-	public void setData(Array data);
+  void setData(Array data);
 	
 	/**
 	 * Sets the next line which make up the multiline which this line is a part of.
 	 */
-	public void setNext(Line next);
+  void setNext(Line next);
 	
 
 	/**
 	 * Sets the previous line which makes up the multiline which this line is a part of.
 	 */
-	public void setPrev(Line prev);
+  void setPrev(Line prev);
 	
 	/**
 	 * Given a dataset, construct a line from the variable which holds lines
@@ -76,6 +76,6 @@ public interface Line extends SimpleGeometry{
 	 * 
 	 * @return the constructed Line with associated data
 	 */
-	public Line setupLine(NetcdfDataset dataset, Variable variable, int index);
+  Line setupLine(NetcdfDataset dataset, Variable variable, int index);
 	
 }

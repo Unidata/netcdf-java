@@ -100,7 +100,7 @@ public class UFiosp extends AbstractIOServiceProvider {
   private double radarRadius = 100000.0;
 
   public Variable makeVariable(NetcdfFile ncfile, String shortName, String longName,
-                               String abbrev, List<List<Ray>> groups) throws IOException {
+                               String abbrev, List<List<Ray>> groups) {
     int nscans = groups.size();
 
     if (nscans == 0) {
@@ -302,7 +302,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         nradialsIter.setIntNext(nradials);
       }
     } catch (java.lang.ArrayIndexOutOfBoundsException ae) {
-
+      throw new RuntimeException(ae);
     }
     time.setCachedData(timeData, false);
     elev.setCachedData(elevData, false);
@@ -321,7 +321,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     }
   }
 
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException {
     Vgroup vgroup = (Vgroup) v2.getSPobject();
 
     Range scanRange = section.getRange(0);

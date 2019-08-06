@@ -32,7 +32,7 @@ public class UnidataObsConvention extends CoordSysBuilder {
   }
 
   /** create a NetcdfDataset out of this NetcdfFile, adding coordinates etc. */
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
 
     // latitude
     if (!hasAxisType( ds, AxisType.Lat)) { // already has _CoordinateAxisType

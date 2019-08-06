@@ -48,8 +48,7 @@ public class PointCollectionStreamRemote extends PointCollectionStreamAbstract i
         LatLonRect filter_bb;
         CalendarDateRange filter_date;
 
-        Subset(PointCollectionStreamRemote from, LatLonRect filter_bb, CalendarDateRange filter_date)
-                throws IOException {
+        Subset(PointCollectionStreamRemote from, LatLonRect filter_bb, CalendarDateRange filter_date) {
             // Passing null to the queryMaker param causes the default query to be used.
             // The default query will use the boundingBox and dateRange we calculate below.
             super(from.uri, from.getTimeUnit(), from.getAltUnits(), null);

@@ -243,7 +243,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
       long fileSize = dataFile.length();
       // calculate record indicator length
       long dataSize = fileHeaderBytes
-              + (xlen * ylen * 4l + xyHeaderBytes) * numrecords;
+              + (xlen * ylen * 4L + xyHeaderBytes) * numrecords;
       // add on the bytes for the time header/trailers
       dataSize += numtimes * (timeHeaderBytes + timeTrailerBytes);
       int leftovers = (int) (fileSize - dataSize);
@@ -298,9 +298,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
   /**
    * Fill out the netCDF file
    *
-   * @throws IOException problem reading or writing stuff
    */
-  private void fillNCFile() throws IOException {
+  private void fillNCFile() {
 
     List<GradsVariable> vars = gradsDDF.getVariables();
     List<GradsAttribute> attrs = gradsDDF.getAttributes();
@@ -308,7 +307,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     List<GradsDimension> dims = gradsDDF.getDimensions();
     Variable v;
     int numZ = 0;
-    HashMap<String, Dimension> zDims = new HashMap<String, Dimension>();
+    HashMap<String, Dimension> zDims = new HashMap<>();
     for (GradsDimension dim : dims) {
       String name = getVarName(dim);
       int size = dim.getSize();
@@ -335,31 +334,36 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         v = new Variable(ncFile, null, null, name, DataType.DOUBLE,
                 name);
         v.addAttribute(new Attribute(CDM.UNITS, dim.getUnit()));
-        if (name.equals(Y_VAR)) {
-          v.addAttribute(new Attribute(CDM.LONG_NAME, "latitude"));
-          v.addAttribute(new Attribute("standard_name",
-                  "latitude"));
-          v.addAttribute(new Attribute("axis", "Y"));
-          sizeY = dim.getSize();
-          v.addAttribute(new Attribute(_Coordinate.AxisType,
-                  AxisType.Lat.toString()));
-        } else if (name.equals(X_VAR)) {
-          v.addAttribute(new Attribute(CDM.LONG_NAME, "longitude"));
-          v.addAttribute(new Attribute("standard_name",
-                  "longitude"));
-          v.addAttribute(new Attribute("axis", "X"));
-          v.addAttribute(new Attribute(_Coordinate.AxisType,
-                  AxisType.Lon.toString()));
-          sizeX = dim.getSize();
-        } else if (name.equals(Z_VAR)) {
-          numZ = size;
-          zDims.put(name, ncDim);
-          v.addAttribute(new Attribute(CDM.LONG_NAME, "level"));
-          addZAttributes(dim, v);
-        } else if (name.equals(TIME_VAR)) {
-          v.addAttribute(new Attribute(CDM.LONG_NAME, "time"));
-          v.addAttribute(new Attribute(_Coordinate.AxisType,
-                  AxisType.Time.toString()));
+        switch (name) {
+          case Y_VAR:
+            v.addAttribute(new Attribute(CDM.LONG_NAME, "latitude"));
+            v.addAttribute(new Attribute("standard_name",
+                "latitude"));
+            v.addAttribute(new Attribute("axis", "Y"));
+            sizeY = dim.getSize();
+            v.addAttribute(new Attribute(_Coordinate.AxisType,
+                AxisType.Lat.toString()));
+            break;
+          case X_VAR:
+            v.addAttribute(new Attribute(CDM.LONG_NAME, "longitude"));
+            v.addAttribute(new Attribute("standard_name",
+                "longitude"));
+            v.addAttribute(new Attribute("axis", "X"));
+            v.addAttribute(new Attribute(_Coordinate.AxisType,
+                AxisType.Lon.toString()));
+            sizeX = dim.getSize();
+            break;
+          case Z_VAR:
+            numZ = size;
+            zDims.put(name, ncDim);
+            v.addAttribute(new Attribute(CDM.LONG_NAME, "level"));
+            addZAttributes(dim, v);
+            break;
+          case TIME_VAR:
+            v.addAttribute(new Attribute(CDM.LONG_NAME, "time"));
+            v.addAttribute(new Attribute(_Coordinate.AxisType,
+                AxisType.Time.toString()));
+            break;
         }
         ArrayDouble.D1 varArray = new ArrayDouble.D1(size);
         for (int i = 0; i < vals.length; i++) {
@@ -417,8 +421,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
       if (var.getUnitName() != null) {
         v.addAttribute(new Attribute(CDM.UNITS, var.getUnitName()));
       }
-      v.addAttribute(new Attribute(CDM.FILL_VALUE, new Float(gradsDDF.getMissingValue())));
-      v.addAttribute(new Attribute(CDM.MISSING_VALUE, new Float(gradsDDF.getMissingValue())));
+      v.addAttribute(new Attribute(CDM.FILL_VALUE, (float) gradsDDF.getMissingValue()));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (float) gradsDDF.getMissingValue()));
       for (GradsAttribute attr : attrs) {
         if (attr.getVariable().equalsIgnoreCase(var.getName())) {
           // TODO: what to do about a UINT16/32
@@ -494,7 +498,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    * @param v    the variable to augment
    */
   private void addZAttributes(GradsDimension zDim, Variable v) {
-    if (zDim.getUnit().indexOf("Pa") >= 0) {
+    if (zDim.getUnit().contains("Pa")) {
       v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN));
       v.addAttribute(new Attribute(_Coordinate.AxisType,
               AxisType.Pressure.toString()));
@@ -529,7 +533,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     //  [End of file]
     // so we have to add 2*sequentialRecordBytes for each record we skip,
     offset += (sizeX * sizeY * wordSize + xyHeaderBytes
-            + 2l * sequentialRecordBytes) * (long) index;
+            + 2L * sequentialRecordBytes) * (long) index;
     //System.out.println("offset to grid = " + offset);
 
     // TODO: make sure this works - need an example
@@ -640,11 +644,10 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    * @param xRange  y range
    * @param ii      index iterator
    * @throws IOException           problem reading the file
-   * @throws InvalidRangeException invalid range
    */
   private void readXY(Variable v2, int ensIdx, int timeIdx, int levIdx,
                       Range yRange, Range xRange, IndexIterator ii)
-          throws IOException, InvalidRangeException {
+          throws IOException {
 
     //System.out.println("ens: " + ensIdx + " , time = " + timeIdx
     //                   + ", lev = " + levIdx);

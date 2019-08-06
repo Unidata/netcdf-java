@@ -110,21 +110,21 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
-    if (v.getShortName().equals("station"))
-      return readStation(v, section);
-
-    else if (v.getShortName().equals("report"))
-      return readReport(v, section);
-
-    else if (v.getShortName().equals("reportIndex"))
-      return readReportIndex(v, section);
+    switch (v.getShortName()) {
+      case "station":
+        return readStation(v, section);
+      case "report":
+        return readReport(v, section);
+      case "reportIndex":
+        return readReportIndex(v, section);
+    }
 
     throw new IllegalArgumentException("Unknown variable name= "+v.getShortName());
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  private Structure makeStationStructure() throws IOException, InvalidRangeException {
+  private Structure makeStationStructure() throws InvalidRangeException {
     Structure station = new Structure(ncfile, null, null, "station");
     station.setDimensions("station");
     station.addAttribute(new Attribute(CDM.LONG_NAME, "unique stations within this file"));
@@ -168,7 +168,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return station;
   }
 
-  private Structure makeReportIndexStructure() throws InvalidRangeException, IOException {
+  private Structure makeReportIndexStructure() throws InvalidRangeException {
     Structure reportIndex = new Structure(ncfile, null, null, "reportIndex");
     reportIndex.setDimensions("report");
 
@@ -278,7 +278,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   /////////////////////////////////////////////////////////////
 
-  private Array readStation(Variable v, Section section) throws IOException, InvalidRangeException {
+  private Array readStation(Variable v, Section section) {
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
     for (Variable v2 : s.getVariables()) {
@@ -307,7 +307,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return abb;
   }
 
-  public Array readReportIndex(Variable v, Section section) throws IOException, InvalidRangeException {
+  public Array readReportIndex(Variable v, Section section) throws IOException {
       //coverity[FB.BC_UNCONFIRMED_CAST]
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
@@ -330,7 +330,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return abb;
   }
 
-  public Array readReport(Variable v, Section section) throws IOException, InvalidRangeException {
+  public Array readReport(Variable v, Section section) throws IOException {
     //coverity[FB.BC_UNCONFIRMED_CAST]
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
@@ -614,7 +614,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       System.out.println(new String(b, CDM.utf8Charset));
     }
 
-    void loadIndexData(ByteBuffer bb) throws IOException {
+    void loadIndexData(ByteBuffer bb) {
       bb.put(stationId.getBytes(CDM.utf8Charset));
       bb.putInt((int) (date.getTime() / 1000));
     }
@@ -667,12 +667,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       }
 
       @Override
-      public boolean hasNext() throws IOException {
+      public boolean hasNext() {
         return count < entries.length;
       }
 
       @Override
-      public StructureData next() throws IOException {
+      public StructureData next() {
         Entry entry = entries[count++];
 
         // LOOK should read 10 at a time or something ???
@@ -841,7 +841,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     float geopot, press, temp, dewp;
     byte[] quality = new byte[4];
 
-    Cat01(byte[] b, int offset, int level) throws IOException {
+    Cat01(byte[] b, int offset, int level) {
       press = mandPressureLevel[level];
       geopot = Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
       temp = .1f * Float.parseFloat(new String(b, offset + 5, 4, CDM.utf8Charset));
@@ -930,7 +930,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] quality = new byte[3];
     String qs;
 
-    Cat02(byte[] b, int offset) throws IOException {
+    Cat02(byte[] b, int offset) {
       press = .1f * Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
       temp = .1f * Float.parseFloat(new String(b, offset + 5, 4, CDM.utf8Charset));
       dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3, CDM.utf8Charset));
@@ -994,7 +994,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] quality;
     String qs;
 
-    Cat03(byte[] b, int offset) throws IOException {
+    Cat03(byte[] b, int offset) {
       press = .1f * Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
       windDir = Short.parseShort(new String(b, offset + 5, 3, CDM.utf8Charset));
       windSpeed = Short.parseShort(new String(b, offset + 8, 3, CDM.utf8Charset));
@@ -1057,7 +1057,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] quality;
     String qs;
 
-    Cat04(byte[] b, int offset) throws IOException {
+    Cat04(byte[] b, int offset) {
       geopot = Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
       windDir = Short.parseShort(new String(b, offset + 5, 3, CDM.utf8Charset));
       windSpeed = Short.parseShort(new String(b, offset + 8, 3, CDM.utf8Charset));
@@ -1119,7 +1119,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] quality;
     String qs;
 
-    Cat05(byte[] b, int offset) throws IOException {
+    Cat05(byte[] b, int offset) {
       press = .1f * Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
       temp = .1f * Float.parseFloat(new String(b, offset + 5, 4, CDM.utf8Charset));
       dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3, CDM.utf8Charset));
@@ -1202,7 +1202,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] quality;
     String qs;
 
-    Cat07(byte[] b, int offset) throws IOException {
+    Cat07(byte[] b, int offset) {
       press = .1f * Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
       percentClouds = Short.parseShort(new String(b, offset + 5, 3, CDM.utf8Charset));
       quality = new byte[2];
@@ -1255,7 +1255,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] quality;
     String qs;
 
-    Cat08(byte[] b, int offset) throws IOException {
+    Cat08(byte[] b, int offset) {
       data = Integer.parseInt(new String(b, offset, 5, CDM.utf8Charset));
       table101code = Short.parseShort(new String(b, offset + 5, 3, CDM.utf8Charset));
       quality = new byte[2];
@@ -1315,7 +1315,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] cloudCm = new byte[2];
     byte[] cloudCh = new byte[2];
 
-    Cat51(byte[] b, int offset) throws IOException {
+    Cat51(byte[] b, int offset) {
       pressSeaLevel = Float.parseFloat(new String(b, offset, 5, CDM.utf8Charset));
       pressStation = Float.parseFloat(new String(b, offset + 5, 5, CDM.utf8Charset));
       windDir = Short.parseShort(new String(b, offset + 10, 3, CDM.utf8Charset));
@@ -1530,7 +1530,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] special2 = new byte[2];
     byte[] shipSpeed = new byte[2];
 
-    Cat52(byte[] b, int offset) throws IOException {
+    Cat52(byte[] b, int offset) {
       precip6hours = .01f * Float.parseFloat(new String(b, offset, 4, CDM.utf8Charset));
       snowDepth = Short.parseShort(new String(b, offset + 4, 3, CDM.utf8Charset));
       precip24hours = .01f * Float.parseFloat(new String(b, offset + 7, 4, CDM.utf8Charset));

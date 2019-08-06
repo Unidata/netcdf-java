@@ -4,7 +4,6 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
-import ucar.nc2.iosp.netcdf3.N3raf;
 import ucar.nc2.iosp.IOServiceProvider;
 
 /**
@@ -23,9 +22,7 @@ public class SPFactory {
     try {
       if (debug) System.out.println("**********using Service Provider Class = "+spClass.getName());
       return (IOServiceProvider) spClass.newInstance();
-    } catch (InstantiationException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException e) {
       e.printStackTrace();
     }
     return null;

@@ -46,7 +46,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
     // install failed, use alternate form of URL constructor
     try {
       URI uri = new URI( urlString);
-      URLStreamHandler h = (URLStreamHandler) hash.get( uri.getScheme().toLowerCase());;
+      URLStreamHandler h = (URLStreamHandler) hash.get( uri.getScheme().toLowerCase());
       return new URL( parent, urlString, h);
     } catch (URISyntaxException e) {
       throw new MalformedURLException(e.getMessage());

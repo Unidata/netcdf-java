@@ -239,15 +239,15 @@ public class Misc {
 
   // from Java7
   public static int compare(int x, int y) {
-    return (x < y) ? -1 : ((x == y) ? 0 : 1);
+    return Integer.compare(x, y);
   }
 
   public static int compare(long x, long y) {
-    return (x < y) ? -1 : ((x == y) ? 0 : 1);
+    return Long.compare(x, y);
   }
 
   public static String stackTraceToString(StackTraceElement[] stackTrace) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     for (StackTraceElement ste : stackTrace) {
       buf.append(ste.toString());
       buf.append("\n");

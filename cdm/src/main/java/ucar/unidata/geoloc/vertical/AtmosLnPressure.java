@@ -77,10 +77,8 @@ public class AtmosLnPressure extends VerticalTransformImpl {
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
-   * @throws IOException           problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_
    */
-  public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
+  public ArrayDouble.D3 getCoordinateArray(int timeIndex) {
 
     int nz = (int) pressure.getSize();
     int[] shape2D = pressure.getShape();
@@ -109,11 +107,8 @@ public class AtmosLnPressure extends VerticalTransformImpl {
    * @param xIndex    the x index
    * @param yIndex    the y index
    * @return vertical coordinate array
-   * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_ 
    */  
-  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
-  		throws IOException, InvalidRangeException {
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) {
 	  
 	  throw new UnsupportedOperationException("1D subsetting is not implemented yet for this vertical tranformation");
   }

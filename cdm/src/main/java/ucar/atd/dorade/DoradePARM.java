@@ -220,7 +220,6 @@ public class DoradePARM extends DoradeDescriptor {
      * @param rdat the name of the desired parameter
      * @return the unpacked data values for all cells, using BAD_VALUE
      * for bad data cells
-     * @throws DescriptorException
      */
     public float[] getParamValues(DoradeRDAT rdat)
             throws DescriptorException {
@@ -233,7 +232,6 @@ public class DoradePARM extends DoradeDescriptor {
      * @param workingArray If non-null and the same length as needed then use this.
      * @return the unpacked data values for all cells, using BAD_VALUE
      * for bad data cells
-     * @throws DescriptorException
      */
     public float[] getParamValues(DoradeRDAT rdat,float[] workingArray)
             throws DescriptorException {
@@ -301,7 +299,6 @@ public class DoradePARM extends DoradeDescriptor {
      * Unpack MIT/HRD-compressed data into an array of exactly nCells shorts.
      * @param compressedData the raw HRD-compressed data array
      * @return an array of nCells unpacked short values
-     * @throws DescriptorException
      */
     private short[] uncompressHRD(byte[] compressedData, int nCells)
             throws DescriptorException {

@@ -518,9 +518,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @param s the record structure
    * @param section the record range to read
    * @return an ArrayStructure, with all the data read in.
-   * @throws IOException on error
    */
-  private ucar.ma2.Array readRecordDataSubset(ucar.nc2.Structure s, Section section) throws java.io.IOException {
+  private ucar.ma2.Array readRecordDataSubset(ucar.nc2.Structure s, Section section) {
     Range recordRange = section.getRange(0);
     int nrecords = recordRange.length();
 
@@ -601,7 +600,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     return readData(layout, dataType, channel);
   }
 
-  private long readRecordData(ucar.nc2.Structure s, Section section, WritableByteChannel out) throws java.io.IOException, InvalidRangeException {
+  private long readRecordData(ucar.nc2.Structure s, Section section, WritableByteChannel out) throws java.io.IOException {
     long count = 0;
 
     /* RegularIndexer index = new RegularIndexer( s.getShape(), recsize, recStart, section, recsize);
@@ -795,7 +794,6 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    *
    * @param v2  variable, or null for fglobal attribute
    * @param att replace with this value
-   * @throws IOException
    */
   @Override
   public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
@@ -988,9 +986,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    */
   abstract protected void writeData(Array aa, Layout index, DataType dataType) throws IOException;
 
-  abstract protected void _open(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException;
+  abstract protected void _open(ucar.unidata.io.RandomAccessFile raf);
 
-  abstract protected void _create(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException;
+  abstract protected void _create(ucar.unidata.io.RandomAccessFile raf);
 
   private static void testValid(String test) {
     //boolean isValid = isValidNetcdf3ObjectName(test);

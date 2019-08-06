@@ -94,7 +94,7 @@ public class Nccopy {
 
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     String progName = Nccopy.class.getName();
 
     try {

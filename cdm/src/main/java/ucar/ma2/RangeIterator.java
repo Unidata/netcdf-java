@@ -5,8 +5,6 @@
 package ucar.ma2;
 
 import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
 /**
  * Generalization of Range (which is restricted to (start:stop:stride).

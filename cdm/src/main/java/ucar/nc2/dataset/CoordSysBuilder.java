@@ -320,7 +320,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param cancelTask allow user to bail out.
    * @return the builder used
    * @throws java.io.IOException on io error
-   * @see ucar.nc2.dataset.NetcdfDataset#enhance
    */
   static public @Nonnull
   CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
@@ -1061,11 +1060,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   // track coordinate variables
   protected void addCoordinateVariable(Dimension dim, VarProcess vp) {
-    List<VarProcess> list = coordVarMap.get(dim);
-    if (list == null) {
-      list = new ArrayList<>();
-      coordVarMap.put(dim, list);
-    }
+    List<VarProcess> list = coordVarMap.computeIfAbsent(dim, k -> new ArrayList<>());
     if (!list.contains(vp))
       list.add(vp);
   }

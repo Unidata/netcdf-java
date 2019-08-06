@@ -49,12 +49,12 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
   }
 
   @Override
-  public ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException {
+  public ProfileFeatureCollection subset(LatLonRect boundingBox) {
     return new StandardProfileCollectionSubset(this, boundingBox);
   }
 
   @Override
-  public ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+  public ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
     return new StandardProfileCollectionSubset(this, boundingBox); // LOOK ignoring dateRange
   }
 
@@ -178,7 +178,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     StandardProfileFeature prev;
     CollectionInfo calcInfo;
 
-    ProfileIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
+    ProfileIterator(ucar.ma2.StructureDataIterator structIter) {
       this.structIter = structIter;
       CollectionInfo info = getInfo();
       if (!info.isComplete())

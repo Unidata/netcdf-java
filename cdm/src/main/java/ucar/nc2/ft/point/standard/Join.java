@@ -20,9 +20,8 @@ public interface Join {
    * Get 'join' data to be added to the row.
    * @param cursor the state of the iteration
    * @return extra data to be added to the row
-   * @throws IOException on read error
    */
-  StructureData getJoinData(Cursor cursor) throws IOException;
+  StructureData getJoinData(Cursor cursor);
 
   /**
    * Find the Variable of the given name in the joined table.

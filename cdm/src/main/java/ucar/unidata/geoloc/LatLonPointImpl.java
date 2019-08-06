@@ -104,7 +104,7 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * Find difference (lon1 - lon2) normalized so that maximum value is += 180.
    * @param lon1 start
    * @param lon2 end
-   * @return
+   * @return normalized difference
    */
   static public double lonDiff(double lon1, double lon2) {
     return Math.IEEEremainder(lon1-lon2, 360.0);

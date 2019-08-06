@@ -263,7 +263,7 @@ public class DatasetUrl {
       url = url.toLowerCase(); // for matching purposes
       for(int i=0; i<FRAGPROTOCOLS.length;i++) {
         String p = FRAGPROTOCOLS[i];
-        if(url.indexOf("/thredds/"+p.toLowerCase()+"/")>= 0) {
+        if(url.contains("/thredds/" + p.toLowerCase() + "/")) {
           return FRAGPROTOSVCTYPE[i];
         }
       }
@@ -304,21 +304,20 @@ public class DatasetUrl {
  * @return ServiceType indicating how to handle the url, or null.
  */
   @Urlencoded
-  static private ServiceType decodeLeadProtocol(String protocol) throws IOException {
-    if (protocol.equals("dods"))
-      return ServiceType.OPENDAP;
-
-    else if (protocol.equals("dap4"))
-      return ServiceType.DAP4;
-
-    else if (protocol.equals("httpserver") || protocol.equals("nodods"))
-      return ServiceType.HTTPServer;
-
-    else if (protocol.equals(CdmRemote.PROTOCOL))
-      return ServiceType.CdmRemote;
-
-    else if (protocol.equals(DataFactory.PROTOCOL)) //thredds
-      return ServiceType.THREDDS;
+  static private ServiceType decodeLeadProtocol(String protocol) {
+    switch (protocol) {
+      case "dods":
+        return ServiceType.OPENDAP;
+      case "dap4":
+        return ServiceType.DAP4;
+      case "httpserver":
+      case "nodods":
+        return ServiceType.HTTPServer;
+      case CdmRemote.PROTOCOL:
+        return ServiceType.CdmRemote;
+      case DataFactory.PROTOCOL:  //thredds
+        return ServiceType.THREDDS;
+    }
 
     return null;
   }

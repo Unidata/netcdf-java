@@ -40,7 +40,7 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
     this.conventionName = "ModisSatellite";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
    for (Variable v : ds.getVariables())
      checkIfAxis(v);
 

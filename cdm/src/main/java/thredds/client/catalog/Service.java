@@ -70,7 +70,7 @@ public class Service {            // (7)
   }
 
   public List<Property> getProperties() {
-    return properties == null ? new ArrayList<Property>(0) : properties;
+    return properties == null ? new ArrayList<>(0) : properties;
   }
 
   /**

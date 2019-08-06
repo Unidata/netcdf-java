@@ -169,7 +169,6 @@ public class CalendarDateFormatter {
    * Does not handle non-standard Calendars
    * @param iso iso formatted string
    * @return Date
-   * @throws IllegalArgumentException
    * @deprecated use isoStringToCalendarDate
    */
   static public Date isoStringToDate(String iso) throws IllegalArgumentException {

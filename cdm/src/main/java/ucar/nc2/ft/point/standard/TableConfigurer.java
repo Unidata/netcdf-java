@@ -24,9 +24,8 @@ public interface TableConfigurer {
    * @param wantFeatureType want this FeatureType
    * @param ds for this dataset
    * @return true if it can be opened as a wantFeatureType dataset
-   * @throws IOException on read error
    */
-  boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException;
+  boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds);
 
   /**
    * Create a TableConfig for this dataset.

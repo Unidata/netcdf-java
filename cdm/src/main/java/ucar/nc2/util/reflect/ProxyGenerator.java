@@ -23,9 +23,9 @@ public class ProxyGenerator {
 
     ArrayList allMethods = new ArrayList();
     addAllMethods(allMethods, c);
-    Collections.sort(allMethods, new MethodComparator());
-    for (int i = 0; i < allMethods.size(); i++) {
-      genMethod((Method) allMethods.get(i), out);
+    allMethods.sort(new MethodComparator());
+    for (Object allMethod : allMethods) {
+      genMethod((Method) allMethod, out);
     }
 
     out.println("}");
@@ -105,8 +105,7 @@ public class ProxyGenerator {
 
     Method[] methodsArray = c.getDeclaredMethods();
 
-    for (int i = 0; i < methodsArray.length; i++) {
-      Method m = methodsArray[i];
+    for (Method m : methodsArray) {
       System.out.println(" " + m.getName());
     }
   }

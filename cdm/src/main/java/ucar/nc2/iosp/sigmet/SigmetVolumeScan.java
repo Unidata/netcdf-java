@@ -138,12 +138,12 @@ public class SigmetVolumeScan {
     // Array of Ray objects is 2D. Number of columns=number of rays
     // Number of raws = number of types of data if number_sweeps=1,
     // or number of raws = number_sweeps
-    List<Ray> totalPower = new ArrayList<Ray>();
-    List<Ray> velocity = new ArrayList<Ray>();
-    List<Ray> reflectivity = new ArrayList<Ray>();
-    List<Ray> width = new ArrayList<Ray>();
-    List<Ray> diffReflectivity = new ArrayList<Ray>();
-    List<Ray> time = new ArrayList<Ray>();
+    List<Ray> totalPower = new ArrayList<>();
+    List<Ray> velocity = new ArrayList<>();
+    List<Ray> reflectivity = new ArrayList<>();
+    List<Ray> width = new ArrayList<>();
+    List<Ray> diffReflectivity = new ArrayList<>();
+    List<Ray> time = new ArrayList<>();
     int irays = (int) num_rays;
     Ray ray = null;
     int two = 0;
@@ -619,15 +619,10 @@ public class SigmetVolumeScan {
   private List<List<Ray>> sortScans(String name, List<Ray> scans, int siz) {
 
     // now group by elevation_num
-    Map<Short, List<Ray>> groupHash = new HashMap<Short, List<Ray>>(siz);
+    Map<Short, List<Ray>> groupHash = new HashMap<>(siz);
 
     for (Ray ray : scans) {
-      List<Ray> group = groupHash.get((short) ray.nsweep);
-
-      if (null == group) {
-        group = new ArrayList<Ray>();
-        groupHash.put((short) ray.nsweep, group);
-      }
+      List<Ray> group = groupHash.computeIfAbsent((short) ray.nsweep, k -> new ArrayList<>());
 
       group.add(ray);
     }
@@ -640,8 +635,8 @@ public class SigmetVolumeScan {
     }
 
     // sort the groups by elevation_num
-    List<List<Ray>> groups = new ArrayList<List<Ray>>(groupHash.values());
-    Collections.sort(groups, new GroupComparator());
+    List<List<Ray>> groups = new ArrayList<>(groupHash.values());
+    groups.sort(new GroupComparator());
 
     // use the maximum radials
     for (List<Ray> group : groups) {
@@ -782,11 +777,11 @@ public class SigmetVolumeScan {
       }
     }
     Arrays.sort(r, new RayComparator());
-    for (int i = 0; i < r.length; i++) {
-      float a = r[i].getAz();
+    for (Ray ray : r) {
+      float a = ray.getAz();
       if (a < 0 & a > -361.0f) {
-        float qa = r[i].getAz();
-        r[i].setAz(qa + 360.0f);
+        float qa = ray.getAz();
+        ray.setAz(qa + 360.0f);
       }
     }
 

@@ -169,38 +169,44 @@ public class N3outputStreamWriter extends N3streamWriter {
 
     if (dataType == DataType.BYTE) {
       byte[] pa = (byte[]) values.get1DJavaArray(byte.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.write(pa[i]);
+      for (byte b : pa) {
+        stream.write(b);
+      }
       return pa.length;
 
     } else if (dataType == DataType.CHAR) {
       byte[] pa = IospHelper.convertCharToByte((char[]) values.get1DJavaArray(char.class));
-      for (int i = 0; i < pa.length; i++)
-        stream.write(pa[i]);
+      for (byte b : pa) {
+        stream.write(b);
+      }
       return pa.length;
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = (short[]) values.get1DJavaArray(short.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.writeShort(pa[i]);
+      for (short value : pa) {
+        stream.writeShort(value);
+      }
       return 2 * pa.length;
 
     } else if (dataType == DataType.INT) {
       int[] pa = (int[]) values.get1DJavaArray(int.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.writeInt(pa[i]);
+      for (int value : pa) {
+        stream.writeInt(value);
+      }
       return 4 * pa.length;
 
     } else if (dataType == DataType.FLOAT) {
       float[] pa = (float[]) values.get1DJavaArray(float.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.writeFloat(pa[i]);
+      for (float value : pa) {
+        stream.writeFloat(value);
+      }
       return 4 * pa.length;
 
     } else if (dataType == DataType.DOUBLE) {
       double[] pa = (double[]) values.get1DJavaArray(double.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.writeDouble(pa[i]);
+      for (double value : pa) {
+        stream.writeDouble(value);
+      }
       return 8 * pa.length;
     }
 

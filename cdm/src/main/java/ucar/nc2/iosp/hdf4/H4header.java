@@ -31,12 +31,7 @@ public class H4header extends NCheader
   static private final long maxHeaderPos = 500000; // header's gotta be within this
 
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    switch (checkFileType(raf)) {
-    case NC_FORMAT_HDF4:
-	return true;
-    default: break;
-    }
-    return false;
+    return checkFileType(raf) == NC_FORMAT_HDF4;
   }
 
   /* replace space and / with underscore
@@ -305,11 +300,7 @@ public class H4header extends NCheader
     for (Variable v : parent.getVariables()) {
       for (Dimension d : v.getDimensions()) {
         if (!d.isShared()) continue;
-        List<Variable> vlist = dimUsedMap.get(d);
-        if (vlist == null) {
-          vlist = new ArrayList<>();
-          dimUsedMap.put(d, vlist);
-        }
+        List<Variable> vlist = dimUsedMap.computeIfAbsent(d, k -> new ArrayList<>());
         vlist.add(v);
       }
     }
@@ -994,7 +985,7 @@ public class H4header extends NCheader
       return Short.compare(refno, o.refno);
     }
 
-    void setData(TagData data, int elemSize) throws IOException {
+    void setData(TagData data, int elemSize) {
       this.data = data;
       this.elemSize = elemSize;
       hasNoData = (data == null);
@@ -1369,8 +1360,9 @@ public class H4header extends NCheader
       for (int i = 0; i < ndims; i++)
         sbuff.append(" ").append(dim_flag[i][2]).append(",").append(dim_flag[i][3]).append(" ").append(dim_length[i]).append(" ").append(chunk_length[i]).append("\n");
       sbuff.append(" special=").append(sp_tag_desc).append(" val=");
-      for (int i = 0; i < sp_tag_header.length; i++)
-        sbuff.append(" ").append(sp_tag_header[i]);
+      for (byte b : sp_tag_header) {
+        sbuff.append(" ").append(b);
+      }
       return sbuff.toString();
     }
   }
@@ -1389,7 +1381,9 @@ public class H4header extends NCheader
       this.data = data;
       if (debugChunkTable) {
         System.out.print(" Chunk origin=");
-        for (int i = 0; i < origin.length; i++) System.out.print(origin[i] + " ");
+        for (int value : origin) {
+          System.out.print(value + " ");
+        }
         System.out.println(" data=" + data.detail());
       }
     }
@@ -1427,7 +1421,7 @@ public class H4header extends NCheader
       }
     }
 
-    TagData getDataTag() throws IOException {
+    TagData getDataTag() {
       if (dataTag == null) {
         dataTag = (TagData) tagMap.get(tagid(data_ref, TagEnum.COMPRESSED.getCode()));
         if (dataTag == null)

@@ -52,7 +52,7 @@ public class N3header extends NCheader
 
   ucar.unidata.io.RandomAccessFile raf;
   private ucar.nc2.NetcdfFile ncfile;
-  private List<Variable> uvars = new ArrayList<Variable>(); // vars that have the unlimited dimension
+  private List<Variable> uvars = new ArrayList<>(); // vars that have the unlimited dimension
   private Dimension udim; // the unlimited dimension
 
   // N3iosp needs access to these
@@ -583,7 +583,6 @@ public class N3header extends NCheader
    * @param largeFile  is large file format
    * @param fout  put debug messages here, mnay be null
    * @return true if it worked
-   * @throws IOException
    */
   boolean rewriteHeader(boolean largeFile, Formatter fout) throws IOException {
     int want = sizeHeader(largeFile);
@@ -957,7 +956,7 @@ public class N3header extends NCheader
     raf.writeInt(numrecs);
   }
 
-  void setNumrecs(int n) throws IOException {
+  void setNumrecs(int n) {
     this.numrecs = n;
   }
 

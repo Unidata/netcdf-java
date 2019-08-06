@@ -202,13 +202,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   @Override
   public Array getCoordsAsArray() {
     Array result;
-    switch (dependenceType) {
-      case scalar:
-        result = Array.factory(getDataType(), new int[0]);
-        break;
-      default:
-        result = Array.factory(getDataType(), new int[]{ncoords});
-        break;
+    if (dependenceType == DependenceType.scalar) {
+      result = Array.factory(getDataType(), new int[0]);
+    } else {
+      result = Array.factory(getDataType(), new int[]{ncoords});
     }
 
     for (int i = 0; i < ncoords; i++)
@@ -229,7 +226,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) throws InvalidRangeException {
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
     Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue, stride);
     return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new CoverageCoordAxis1D(buildero.get()));
@@ -303,20 +300,16 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
       ranges.add(opt.get());
     }
 
-    try {
-      RangeComposite compositeRange = new RangeComposite(AxisType.Lon.toString(), ranges);
-      int npts = compositeRange.length();
-      double end = start + npts * resolution;
+    RangeComposite compositeRange = new RangeComposite(AxisType.Lon.toString(), ranges);
+    int npts = compositeRange.length();
+    double end = start + npts * resolution;
 
-      CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(this); // copy
-      builder.subset(npts, start, end, resolution, null);
-      builder.setRange(null);
-      builder.setCompositeRange(compositeRange);
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(this); // copy
+    builder.subset(npts, start, end, resolution, null);
+    builder.setRange(null);
+    builder.setCompositeRange(compositeRange);
 
-      return Optional.of(new CoverageCoordAxis1D(builder));
-    } catch (InvalidRangeException e) {
-      return Optional.empty(e.getMessage());
-    }
+    return Optional.of(new CoverageCoordAxis1D(builder));
   }
 
   public Optional<CoverageCoordAxis> subsetByIndex(Range range) {

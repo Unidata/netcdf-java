@@ -54,7 +54,7 @@ public class PointConfigXML {
     PointConfigXML writer = new PointConfigXML();
     try {
       writer.writeConfigXML(config, tc.getClass().getName(), f);
-    } catch (IOException e) {
+    } catch (Exception e) {
       f.format("%s error writing=%s%n", pfd.getLocation(), e.getMessage());
     }
   }
@@ -63,7 +63,7 @@ public class PointConfigXML {
   private TableConfig tc;
   private String tableConfigurerClass;
 
-  public void writeConfigXML(TableConfig tc, String tableConfigurerClass, java.util.Formatter sf) throws IOException {
+  public void writeConfigXML(TableConfig tc, String tableConfigurerClass, java.util.Formatter sf) {
     this.tc = tc;
     this.tableConfigurerClass = tableConfigurerClass;
 
@@ -173,7 +173,7 @@ public class PointConfigXML {
       }
     }
 
-    List<String> varNames = (config.vars == null) ? new ArrayList<String>() : new ArrayList<>(config.vars);
+    List<String> varNames = (config.vars == null) ? new ArrayList<>() : new ArrayList<>(config.vars);
 
     // add coordinates
     for (Table.CoordName coord : Table.CoordName.values()) {
@@ -230,7 +230,7 @@ public class PointConfigXML {
     JoinArray.Type type = JoinArray.Type.valueOf(joinElement.getAttributeValue("type"));
     Element paramElem = joinElement.getChild("param");
     String paramS = paramElem.getText();
-    Integer param = Integer.parseInt(paramS);
+    int param = Integer.parseInt(paramS);
 
     Element varElem = joinElement.getChild("variable");
     String varName = varElem.getText();

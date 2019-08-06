@@ -75,14 +75,14 @@ public class SimpleGeometryFeature implements VariableSimpleIF{
     // Find the name of the axes specific to this geometry
     axesStrList = coordSysName.split(" ");
 
-    List<String> axesStrActualList = new ArrayList<String>();
+    List<String> axesStrActualList = new ArrayList<>();
     int shapeLength = 0;
     
     if(axesStrList != null) {
-    
-    	for(int i = 0; i < axesStrList.length; i++) {
-    		axesStrActualList.add(axesStrList[i]);
-    	}
+
+      for (String s : axesStrList) {
+        axesStrActualList.add(s);
+      }
     
     	// Set up x Axis
     	for(CoordinateAxis xAx : coordSys.getSimpleGeometryX()) {
@@ -234,7 +234,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF{
    * Get the data associated with the index
    * @param  index  number associated with the geometry 
    */
-  public SimpleGeometry readGeometry(int index) throws IOException, InvalidRangeException {
+  public SimpleGeometry readGeometry(int index) {
 
 	  SimpleGeometry geom = null;
 	  switch (geometryType) {

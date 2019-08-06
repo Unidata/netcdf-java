@@ -734,7 +734,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   private static final String MAGIC_START = "GhncmIndex";
   private static final int version = 1;
 
-  private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
+  private HashMap<Long, StationIndex> map = new HashMap<>(10000);
   private TableParser.Field stnIdFromData;
   private StructureMembers stnDataMembers;
 
@@ -915,10 +915,8 @@ public class Ghcnm extends AbstractIOServiceProvider {
    *                There must be a Range for each Dimension in the variable, in order.
    *                Note: no nulls allowed. IOSP may not modify.
    * @return ArraySequence
-   * @throws IOException
-   * @throws InvalidRangeException
    */
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     return new ArraySequence(vinfo.sm, new SeqIter(vinfo), vinfo.nelems);
   }
@@ -981,7 +979,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public StructureData next() {
       return curr;
     }
 
@@ -1030,7 +1028,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     }
 
     @Override
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
       return (countRead < stationIndex.dataCount);
     }
 
@@ -1071,7 +1069,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
   ////////////////////////////////////
 
-  static private int parseLine(String line) throws IOException {
+  static private int parseLine(String line) {
     int balony = 0;
     Matcher matcher = dataPattern.matcher(line);
     if (matcher.matches()) {
@@ -1173,7 +1171,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
 
   static public void main2(String args[]) throws IOException {
-    Set<Integer> stns = new HashSet<Integer>(10 * 1000);
+    Set<Integer> stns = new HashSet<>(10 * 1000);
     stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv", stns, false);
     stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qca.inv", stns, true);
     stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.inv", stns, true);

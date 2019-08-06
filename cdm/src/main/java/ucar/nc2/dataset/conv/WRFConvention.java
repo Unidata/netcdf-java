@@ -21,8 +21,6 @@ import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -62,7 +62,7 @@ class Tag implements Comparable {
    * @return Tag or null if no match.
    */
   static Tag get( int code) {
-    return (Tag) map.get( new Integer(code));
+    return (Tag) map.get(code);
   }
 
   private String name;
@@ -71,7 +71,7 @@ class Tag implements Comparable {
   private Tag( String  name, int code) {
     this.name = name;
     this.code = code;
-    map.put( new Integer(code), this);
+    map.put(code, this);
   }
 
   /** for unknown tags */

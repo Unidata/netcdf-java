@@ -35,9 +35,8 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
    *
    * @param structIter original iterator
    * @param filter     optional filter
-   * @throws IOException
    */
-  public PointIteratorFromStructureData(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
+  public PointIteratorFromStructureData(StructureDataIterator structIter, PointFeatureIterator.Filter filter) {
     this.structIter = structIter;
     this.filter = filter;
   }

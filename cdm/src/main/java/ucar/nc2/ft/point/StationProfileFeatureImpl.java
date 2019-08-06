@@ -106,12 +106,12 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
   }
 
   // @Override
-  public StationProfileFeature subset(LatLonRect boundingBox) throws IOException {
+  public StationProfileFeature subset(LatLonRect boundingBox) {
     return this; // only one station - we could check if its in the bb
   }
 
   @Override
-  public StationProfileFeature subset(CalendarDateRange dateRange) throws IOException {
+  public StationProfileFeature subset(CalendarDateRange dateRange) {
     return new StationProfileFeatureSubset(this, dateRange);
   }
 
@@ -132,7 +132,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
     }
 
     @Override
-    public List<CalendarDate> getTimes() throws IOException {
+    public List<CalendarDate> getTimes() {
       List<CalendarDate> result = new ArrayList<>();
       for (ProfileFeature pf : this) {
         if (dateRange.includes(pf.getTime()))

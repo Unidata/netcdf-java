@@ -120,7 +120,7 @@ public class GridDatasetInfo {
 
 		// gridSets
 		List<GridDataset.Gridset> gridSets = gds.getGridsets();
-		Collections.sort(gridSets, new GridSetComparator());
+		gridSets.sort(new GridSetComparator());
 		for (GridDataset.Gridset gridset : gridSets) {
 			rootElem.addContent(writeGridSet(gridset));
 		}
@@ -187,7 +187,7 @@ public class GridDatasetInfo {
 
 		// its all about grids
 		List<GridDatatype> grids = gds.getGrids();
-		Collections.sort(grids, new GridComparator()); // sort by time axis, vert axis, grid name
+		grids.sort(new GridComparator()); // sort by time axis, vert axis, grid name
 
 
 		CoordinateAxis currentTime = null;

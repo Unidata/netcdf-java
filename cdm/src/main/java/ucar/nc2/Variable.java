@@ -374,7 +374,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *               Each Range corresponds to a Dimension, and specifies the section of data to read in that Dimension.
    *               A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
-   * @throws InvalidRangeException
    */
   public Variable section(List<Range> ranges) throws InvalidRangeException {
     return section(new Section(ranges, shape).makeImmutable());
@@ -462,9 +461,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *
    * @param dims   list of  dimensions of length 1 to reduce
    * @return a new Variable which is a logical slice of this Variable.
-   * @throws InvalidRangeException if dimension or value is illegal
    */
-  public Variable reduce(List<Dimension> dims) throws InvalidRangeException {
+  public Variable reduce(List<Dimension> dims) {
     List<Integer> dimIdx = new ArrayList<>(dims.size());
     for (Dimension d : dims) {
       assert dimensions.contains(d);
@@ -633,10 +631,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return _read();
   }
 
-  /**
-   * *********************************************************************
-   */
-  // scalar reading
+  ///// scalar reading
 
   /**
    * Get the value as a byte for a scalar Variable. May also be one-dimensional of length 1.
@@ -845,8 +840,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return ncfile.readToOutputStream(this, section, out);
   }
 
-  /*******************************************/
-  /* nicely formatted string representation */
+  ///////////////// nicely formatted string representation
 
   /**
    * Get the display name plus the dimensions, eg 'float name(dim1, dim2)'
@@ -1399,17 +1393,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     this.dimensions = new ArrayList<>();
     resetShape();
   }
-
-  /**
-   * Replace a dimension with an equivalent one.
-   * @param dim must have the same name, length as old one
-   *
-  public void replaceDimension( Dimension dim) {
-  int idx = findDimensionIndex( dim.getName());
-  if (idx >= 0)
-  dimensions.set( idx, dim);
-  resetShape();
-  } */
 
   /**
    * Replace a dimension with an equivalent one.

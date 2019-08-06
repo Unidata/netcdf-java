@@ -46,7 +46,7 @@ public class DataBTree {
 
   private Variable owner;
 
-  DataBTree(H5header h5, long rootNodeAddress, int[] varShape, int[] storageSize, MemTracker memTracker) throws IOException {
+  DataBTree(H5header h5, long rootNodeAddress, int[] varShape, int[] storageSize, MemTracker memTracker) {
     this.h5 = h5;
     this.rootNodeAddress = rootNodeAddress;
     this.tiling = new Tiling(varShape, storageSize);
@@ -195,7 +195,7 @@ public class DataBTree {
 
       if (level == 0) {
         // read all entries as a DataChunk
-        myEntries = new ArrayList<DataChunk>();
+        myEntries = new ArrayList<>();
         for (int i = 0; i <= nentries; i++) {
           DataChunk dc = new DataChunk(ndimStorage, (i == nentries));
           myEntries.add(dc);

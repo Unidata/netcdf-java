@@ -709,7 +709,7 @@ public class FeatureCollectionConfig {
       if (latestNamer != null) sb.append(", latestNamer='").append(latestNamer).append('\'');
       if (bestNamer != null) sb.append(", bestNamer='").append(bestNamer).append('\'');
       if (paramTable != null) sb.append(", paramTable=").append(paramTable);
-      if (filesSortIncreasing != null) sb.append(", filesSortIncreasing=").append(filesSortIncreasing);
+      if (filesSortIncreasing.isPresent()) sb.append(", filesSortIncreasing=").append(filesSortIncreasing);
       if (intvFilter != null) sb.append(", intvFilter=").append(intvFilter);
       if (userTimeUnit != null) sb.append(", userTimeUnit='").append(userTimeUnit).append('\'');
       sb.append('}');

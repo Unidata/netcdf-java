@@ -37,8 +37,8 @@ public class NexradStationDB {
   public static Station getByIdNumber(String idn) { return stationTableHash1.get(idn); }
 
   private static void readStationTableXML() throws IOException {
-    stationTableHash = new HashMap<String,Station>();
-    stationTableHash1 = new HashMap<String,Station>();
+    stationTableHash = new HashMap<>();
+    stationTableHash1 = new HashMap<>();
     ClassLoader cl = Level2VolumeScan.class.getClassLoader();
     InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexradstns.xml");
 
@@ -52,8 +52,8 @@ public class NexradStationDB {
 
     Element root = doc.getRootElement();
     List children = root.getChildren("station");
-    for (int i = 0; i < children.size(); i++) {
-      Element sElem =  (Element)children.get(i);
+    for (Object child : children) {
+      Element sElem = (Element) child;
       String idn = sElem.getAttributeValue("idn");
       String id = sElem.getAttributeValue("id");
       String name = sElem.getAttributeValue("name");
@@ -64,15 +64,17 @@ public class NexradStationDB {
       String elev = sElem.getAttributeValue("elev");
 
       Station s = new Station();
-      s.id = "K"+id;
-      s.name = name + "," + st+ "," + co;
+      s.id = "K" + id;
+      s.name = name + "," + st + "," + co;
       s.lat = parseDegree(lat);
       s.lon = parseDegree(lon);
       s.elev = Double.parseDouble(elev);
 
       stationTableHash.put(s.id, s);
       stationTableHash1.put(idn, s);
-      if (showStations) System.out.println(" station= "+s);
+      if (showStations) {
+        System.out.println(" station= " + s);
+      }
     }
   }
 
@@ -98,7 +100,7 @@ public class NexradStationDB {
 
   // this is the old Gempak table, not as precise
    private static void readStationTable() throws IOException {
-    stationTableHash = new HashMap<String,Station>();
+    stationTableHash = new HashMap<>();
 
     ClassLoader cl = Level2VolumeScan.class.getClassLoader();
     InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexrad.tbl");

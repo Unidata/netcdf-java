@@ -5,7 +5,7 @@
 
 package ucar.nc2.util.rc;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -14,8 +14,7 @@ import java.util.*;
 
 public class RC {
   static boolean showlog = false; /* do not do any logging */
-  static public org.slf4j.Logger log
-          = org.slf4j.LoggerFactory.getLogger(RC.class);
+  static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RC.class);
 
 //////////////////////////////////////////////////
 // Predefined flags
@@ -52,12 +51,16 @@ public class RC {
   static public void set(String key, String value) {
     // TODO: think about the rc properties naming hierarchy
     assert (key != null);
-    if (USEGROUPSKEY.equals(key)) {
-      useGroups = booleanize(value);
-    } else if (VERIFYSERVERKEY.equals(key)) {
-      verifyServer = booleanize(value);
-    } else if (ALLOWSELFSIGNEDKEY.equals(key)) {
-      allowSelfSigned = booleanize(value);
+    switch (key) {
+      case USEGROUPSKEY:
+        useGroups = booleanize(value);
+        break;
+      case VERIFYSERVERKEY:
+        verifyServer = booleanize(value);
+        break;
+      case ALLOWSELFSIGNEDKEY:
+        allowSelfSigned = booleanize(value);
+        break;
     }
   }
 
@@ -201,8 +204,8 @@ public class RC {
   /**
    * Allow users to add to the default rc
    *
-   * @param key
-   * @param value
+   * @param key add this key
+   * @param value and this value
    * @param url   null => not url specific
    */
   static synchronized public void
@@ -218,7 +221,7 @@ public class RC {
   /**
    * Allow users to search the default rc
    *
-   * @param key
+   * @param key search for this key
    * @param url null => not url specific
    * @return value corresponding to key+url, or null if does not exist
    */
@@ -296,7 +299,7 @@ public class RC {
 // constructors
 
   public RC() {
-    triplestore = new HashMap<String, List<Triple>>();
+    triplestore = new HashMap<>();
   }
 
 //////////////////////////////////////////////////
@@ -313,7 +316,8 @@ public class RC {
       return false;
     }
     if (showlog) log.debug("Loading rc file: " + abspath);
-    try (BufferedReader rdr = new BufferedReader(new InputStreamReader(new FileInputStream(rcFile), CDM.UTF8))) {
+    try (BufferedReader rdr = new BufferedReader(new InputStreamReader(new FileInputStream(rcFile),
+        StandardCharsets.UTF_8))) {
         for (int lineno = 1; ; lineno++) {
           URL url = null;
           String line = rdr.readLine();
@@ -345,7 +349,7 @@ public class RC {
           if (pieces.length == 2) value = pieces[1].trim();
           Triple triple = new Triple(pieces[0].trim(), value, url);
           List<Triple> list = triplestore.get(triple.key);
-          if (list == null) list = new ArrayList<Triple>();
+          if (list == null) list = new ArrayList<>();
           Triple prev = addtriple(list, triple);
           triplestore.put(triple.key, list);
         }
@@ -368,7 +372,7 @@ public class RC {
     public List<Triple> getTriples (String key)
     {
       List<Triple> list = triplestore.get(key);
-      if (list == null) list = new ArrayList<Triple>();
+      if (list == null) list = new ArrayList<>();
       return list;
     }
 
@@ -382,7 +386,7 @@ public class RC {
     try {
       URL u = new URL(url);
       return lookup(key, u);
-    } catch (MalformedURLException m) {
+    } catch (MalformedURLException ignored) {
     }
     return null;
   }
@@ -418,7 +422,7 @@ public class RC {
   insert(Triple t) {
     if (t.key == null) return null;
     List<Triple> list = triplestore.get(t.key);
-    if (list == null) list = new ArrayList<Triple>();
+    if (list == null) list = new ArrayList<>();
     Triple prev = addtriple(list, t);
     triplestore.put(t.key, list);
     return prev;

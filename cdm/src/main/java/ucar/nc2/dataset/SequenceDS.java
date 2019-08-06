@@ -74,7 +74,7 @@ public class SequenceDS extends StructureDS {
   }
 
   @Override
-  public Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  public Array read(ucar.ma2.Section section) throws java.io.IOException {
     return read();
   }
 

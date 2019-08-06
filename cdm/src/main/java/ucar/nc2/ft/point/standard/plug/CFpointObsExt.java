@@ -11,15 +11,11 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft.point.standard.Evaluator;
-import ucar.nc2.ft.point.standard.TableConfig;
 
-import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * CFpointObs using extended model, namely netcdf-4 Structures

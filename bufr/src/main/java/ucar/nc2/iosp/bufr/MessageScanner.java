@@ -176,11 +176,7 @@ public class MessageScanner {
 
     } catch (IOException ioe) {
       log.error("Error reading message at "+lastPos, ioe);
-      try {
-        lastPos = raf.getFilePointer(); // dont do an infinite loop
-      } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      }
+      lastPos = raf.getFilePointer(); // dont do an infinite loop
       return null;
     }
   }

@@ -113,19 +113,8 @@ public class GeotiffWriter implements Closeable {
    * <li> be lat/lon or Lambert Conformal Projection
    * <li> be equally spaced
    * </ol>
-   *
-   * @param grid        original grid
-   * @param data        2D array in YX order
-   * @param greyScale   if true, write greyScale image, else dataSample.
-   * @param xStart
-   * @param yStart
-   * @param xInc
-   * @param yInc
-   * @param imageNumber
-   * @throws IOException              on i/o error
-   * @throws IllegalArgumentException if above assumptions not valid
    */
-  protected void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
+  void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
                         double yInc, int imageNumber) throws IOException {
 
     int nextStart = 0;

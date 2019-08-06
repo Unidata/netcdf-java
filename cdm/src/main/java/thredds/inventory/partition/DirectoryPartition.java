@@ -6,7 +6,6 @@ package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import thredds.inventory.MCollection;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
@@ -73,7 +72,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     }
 
     // sort collection by name
-    Collections.sort(result, new Comparator<MCollection>() {
+    result.sort(new Comparator<MCollection>() {
       public int compare(MCollection o1, MCollection o2) {
         return o1.getCollectionName().compareTo(o2.getCollectionName());
       }
@@ -100,7 +99,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   // empty mfile list
 
   @Override
-  public Iterable<MFile> getFilesSorted() throws IOException {
+  public Iterable<MFile> getFilesSorted() {
     return new ArrayList<>();
   }
 

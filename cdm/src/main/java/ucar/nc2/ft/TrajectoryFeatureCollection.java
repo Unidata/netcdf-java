@@ -17,7 +17,7 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 public interface TrajectoryFeatureCollection extends PointFeatureCC, Iterable<TrajectoryFeature> {
 
-  TrajectoryFeatureCollection subset(LatLonRect boundingBox) throws IOException;
+  TrajectoryFeatureCollection subset(LatLonRect boundingBox);
 
   ////////////////////////////////////////////////////////////////
 

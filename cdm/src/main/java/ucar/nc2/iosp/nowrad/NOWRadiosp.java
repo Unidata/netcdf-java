@@ -44,10 +44,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
   protected boolean readonly;
 
   /**
-   * checking the file
-   *
-   * @param raf
-   * @return the valid of file checking
+   * Check if the file is a NOWRad file
    */
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     NOWRadheader localHeader = new NOWRadheader();
@@ -65,11 +62,6 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
 
   /**
    * Open the file and read the header part
-   *
-   * @param raf
-   * @param file
-   * @param cancelTask
-   * @throws java.io.IOException
    */
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile file,
                    ucar.nc2.util.CancelTask cancelTask)
@@ -80,6 +72,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
     try {
       headerParser.read(this.raf, ncfile);
     } catch (Exception e) {
+      throw new IOException(e);
     }
 
     // myInfo = headerParser.getVarInfo();
@@ -89,12 +82,6 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
 
   /**
    * Read the data for each variable passed in
-   *
-   * @param v2
-   * @param section
-   * @return output data
-   * @throws IOException
-   * @throws ucar.ma2.InvalidRangeException
    */
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
 
@@ -129,8 +116,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
    */
 
   // all the work is here, so can be called recursively
-  public Object readOneScanData(ByteBuffer bos, NOWRadheader.Vinfo vinfo, String vName)
-          throws IOException, InvalidRangeException {
+  public Object readOneScanData(ByteBuffer bos, NOWRadheader.Vinfo vinfo, String vName) {
     int doff = (int) vinfo.hoff;
     int npixel = vinfo.yt * vinfo.xt;
     byte[] rdata = null;
@@ -298,7 +284,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
    * @param ddata is encoded data values
    * @return the data array of row data
    */
-  public byte[] readOneRowData(byte[] ddata, int rLen, int xt) throws IOException, InvalidRangeException {
+  public byte[] readOneRowData(byte[] ddata, int rLen, int xt) {
     int run;
     byte[] bdata = new byte[xt];
     int nbin = 0;

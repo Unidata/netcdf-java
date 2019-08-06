@@ -498,7 +498,7 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @throws java.io.IOException            if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian, boolean convertChar) throws java.io.IOException, InvalidRangeException {
+  Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian, boolean convertChar) throws java.io.IOException {
 
     if (dataType == DataType.STRING) {
       int size = (int) layout.getTotalNelems();

@@ -142,7 +142,7 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
 /**
  *
  */
-    private void augmentDataset3(NetcdfDataset ds) throws IOException {
+    private void augmentDataset3(NetcdfDataset ds) {
         final Group grids = ds.findGroup("/HDFEOS/GRIDS");
         if (grids == null) { return; }
         for (final Group g2 : grids.getGroups()) {

@@ -8,7 +8,6 @@
 package ucar.nc2.iosp.netcdf3;
 
 import ucar.nc2.*;
-import ucar.ma2.DataType;
 import ucar.nc2.constants.CDM;
 
 import java.util.List;
@@ -27,8 +26,8 @@ public abstract class N3streamWriter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   protected ucar.nc2.NetcdfFile ncfile;
-  protected Map<Variable,Vinfo> vinfoMap = new HashMap<Variable,Vinfo>();
-  protected List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
+  protected Map<Variable,Vinfo> vinfoMap = new HashMap<>();
+  protected List<Vinfo> vinfoList = new ArrayList<>(); // output order of the variables
   protected boolean debug=false, debugPos=true, debugWriteData = false;
   protected int recStart, recSize;
   protected boolean usePadding = true;
@@ -74,9 +73,9 @@ public abstract class N3streamWriter {
     }
     count += 8;
 
-    for (int i = 0; i < numdims; i++) {
-      Dimension dim = (Dimension) dims.get(i);
-      count += writeString(stream, N3iosp.makeValidNetcdfObjectName( dim.getShortName()));
+    for (Object o : dims) {
+      Dimension dim = (Dimension) o;
+      count += writeString(stream, N3iosp.makeValidNetcdfObjectName(dim.getShortName()));
       stream.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       count += 4;
     }
@@ -109,9 +108,11 @@ public abstract class N3streamWriter {
 
     // we have to calculate how big the header is before we can actually write it
     // so we set stream = null
-    for (int i = 0; i < nvars; i++) {
-      Variable var = (Variable) vars.get(i);
-      if (var instanceof Structure) continue;
+    for (Variable item : vars) {
+      Variable var = (Variable) item;
+      if (var instanceof Structure) {
+        continue;
+      }
       Vinfo vinfo = writeVar(null, var, 0);
       count += vinfo.hsize;
     }
@@ -122,15 +123,18 @@ public abstract class N3streamWriter {
     if (debug) System.out.println(" non-record vars start at "+dataStart);
 
     // do all non-record variables first
-    for (int i = 0; i < nvars; i++) {
-      Variable var = (Variable) vars.get(i);
+    for (Variable value : vars) {
+      Variable var = (Variable) value;
       //if (var instanceof Structure) continue;
 
       if (!var.isUnlimited()) {
         Vinfo vinfo = writeVar(stream, var, offset);
         vinfoMap.put(var, vinfo);
-        if (debugPos)
-          System.out.println(" " + var.getNameAndDimensions() + " begin at = " + offset + " end=" + (offset + vinfo.vsize));
+        if (debugPos) {
+          System.out.println(
+              " " + var.getNameAndDimensions() + " begin at = " + offset + " end=" + (offset
+                  + vinfo.vsize));
+        }
 
         offset += vinfo.vsize;
         vinfoList.add(vinfo);
@@ -142,16 +146,21 @@ public abstract class N3streamWriter {
     recSize = 0;
 
     // do all record variables
-    for (int i = 0; i < nvars; i++) {
-      Variable var = (Variable) vars.get(i);
+    for (Variable variable : vars) {
+      Variable var = (Variable) variable;
 
       if (var.isUnlimited()) {
-        if (var instanceof Structure) continue;
+        if (var instanceof Structure) {
+          continue;
+        }
         Vinfo vinfo = writeVar(stream, var, offset);
         vinfoMap.put(var, vinfo);
 
-        if (debugPos)
-          System.out.println(" " + var.getNameAndDimensions() + "(record) begin at = " + offset + " end=" + (offset + vinfo.vsize) + " size=" + vinfo.vsize);
+        if (debugPos) {
+          System.out.println(
+              " " + var.getNameAndDimensions() + "(record) begin at = " + offset + " end=" + (offset
+                  + vinfo.vsize) + " size=" + vinfo.vsize);
+        }
 
         offset += vinfo.vsize;
         recSize += vinfo.vsize;
@@ -213,24 +222,27 @@ public abstract class N3streamWriter {
     }
     int hsize = 8;
 
-    for (int i = 0; i < natts; i++) {
-      Attribute att = atts.get(i);
-
-      hsize += writeString(stream, N3iosp.makeValidNetcdfObjectName( att.getShortName()));
+    for (Attribute att : atts) {
+      hsize += writeString(stream, N3iosp.makeValidNetcdfObjectName(att.getShortName()));
       int type = N3header.getType(att.getDataType());
-      if (null != stream) stream.writeInt(type);
+      if (null != stream) {
+        stream.writeInt(type);
+      }
       hsize += 4;
 
       if (type == 2) {
         hsize += writeStringValues(stream, att);
       } else {
         int nelems = att.getLength();
-        if (null != stream) stream.writeInt(nelems);
+        if (null != stream) {
+          stream.writeInt(nelems);
+        }
         hsize += 4;
 
         int nbytes = 0;
-        for (int j = 0; j < nelems; j++)
+        for (int j = 0; j < nelems; j++) {
           nbytes += writeAttributeValue(stream, att.getNumericValue(j));
+        }
         hsize += nbytes;
 
         hsize += pad(stream, nbytes, (byte) 0);

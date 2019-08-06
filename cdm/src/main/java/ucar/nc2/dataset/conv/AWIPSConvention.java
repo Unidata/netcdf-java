@@ -217,7 +217,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     int len = values.size();
     String name = makeZCoordName(units);
     if (len > 1)
-      name = name + Integer.toString(len);
+      name = name + len;
     else
       name = name + values.get(0);
     StringUtil2.replace(name, ' ', "-");

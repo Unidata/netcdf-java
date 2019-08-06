@@ -36,7 +36,7 @@ public class FileCacheGuava implements FileCacheIF {
            // .removalListener(MY_LISTENER)
            .build(
                    new CacheLoader<String, FileCacheable>() {
-                     public FileCacheable load(String key) throws IOException {
+                     public FileCacheable load(String key) {
                        throw new IllegalStateException();
                      }
                    });
@@ -60,7 +60,7 @@ public class FileCacheGuava implements FileCacheIF {
   }
 
   @Override
-  public FileCacheable acquire(final FileFactory factory, Object hashKey, final DatasetUrl durl, final int buffer_size, final CancelTask cancelTask, final Object spiObject) throws IOException {
+  public FileCacheable acquire(final FileFactory factory, Object hashKey, final DatasetUrl durl, final int buffer_size, final CancelTask cancelTask, final Object spiObject) {
     if (null == hashKey) hashKey = durl.trueurl;
     if (null == hashKey) throw new IllegalArgumentException();
 
@@ -73,7 +73,7 @@ public class FileCacheGuava implements FileCacheIF {
   }
 
   @Override
-  public boolean release(FileCacheable ncfile) throws IOException {
+  public boolean release(FileCacheable ncfile) {
     return false;
   }
 

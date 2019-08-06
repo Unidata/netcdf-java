@@ -74,8 +74,6 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @param s     belongs to this structure
    * @param sdata the stuctureData to append
    * @return      the recnum where it was written
-   * @throws IOException
-   * @throws InvalidRangeException
    */
   int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException;
 
@@ -83,7 +81,6 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
   /**
    * if theres room before data, rewrite header without moving the data. netcdf3 only
    * @return true if it worked
-   * @throws IOException
    */
   boolean rewriteHeader(boolean largeFile) throws IOException;
 
@@ -95,13 +92,11 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    *
    * @param v2 variable, or null for global attribute
    * @param att replace with this value
-   * @throws IOException if I/O error
    */
   void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException;
 
   /**
    * Flush all data buffers to disk.
-   * @throws IOException if I/O error
    */
   void flush() throws IOException;
 

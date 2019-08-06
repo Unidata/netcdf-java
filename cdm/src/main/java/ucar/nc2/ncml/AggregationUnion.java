@@ -9,7 +9,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

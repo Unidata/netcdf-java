@@ -50,11 +50,9 @@ public class DoradeSweep {
    * Construct a <code>DoradeSweep</code> using the named DORADE sweep file.
    *
    * @param filename the DORADE sweepfile to load
-   * @throws DoradeSweepException
-   * @throws java.io.FileNotFoundException
    */
   public DoradeSweep(String filename)
-          throws DoradeSweepException, java.io.FileNotFoundException {
+          throws DoradeSweepException {
 
     try (RandomAccessFile file = new RandomAccessFile(filename, "r")) {
       littleEndian = DoradeDescriptor.sweepfileIsLittleEndian(file);
@@ -68,7 +66,7 @@ public class DoradeSweep {
   }
 
   public DoradeSweep(RandomAccessFile file)
-          throws DoradeSweepException, java.io.FileNotFoundException {
+          throws DoradeSweepException {
     //file = new RandomAccessFile(filename, "r");
     try {
       littleEndian = DoradeDescriptor.sweepfileIsLittleEndian(file);
@@ -150,10 +148,9 @@ public class DoradeSweep {
    *
    * @param which the index of the sensor of interest
    * @return whether the selected sensor is moving
-   * @throws DoradeSweepException
    * @see #getNSensors
    */
-  public boolean sensorIsMoving(int which) throws DoradeSweepException {
+  public boolean sensorIsMoving(int which) {
     try {
       getLatitude(which);
       getLongitude(which);
@@ -371,7 +368,6 @@ public class DoradeSweep {
    * @return an array containing unpacked values for every cell for the given
    * parameter and ray.  Cells having bad or missing data will hold the
    * value <code>BAD_VALUE</code>
-   * @throws DoradeSweepException
    * @see #getNCells
    * @see #getNRays
    * @see #BAD_VALUE
@@ -391,7 +387,6 @@ public class DoradeSweep {
    * @return an array containing unpacked values for every cell for the given
    * parameter and ray.  Cells having bad or missing data will hold the
    * value <code>BAD_VALUE</code>
-   * @throws DoradeSweepException
    * @see #getNCells
    * @see #getNRays
    * @see #BAD_VALUE

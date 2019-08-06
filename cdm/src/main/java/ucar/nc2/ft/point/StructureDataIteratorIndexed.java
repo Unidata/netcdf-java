@@ -26,7 +26,7 @@ public class StructureDataIteratorIndexed implements StructureDataIterator {
   private Iterator<Integer> indexIter;
   private int currRecord;
 
-  public StructureDataIteratorIndexed(Structure s, List<Integer> index) throws IOException {
+  public StructureDataIteratorIndexed(Structure s, List<Integer> index) {
     this.s = s;
     this.index = index;
     reset();
@@ -46,7 +46,7 @@ public class StructureDataIteratorIndexed implements StructureDataIterator {
   }
 
   @Override
-  public boolean hasNext() throws IOException {
+  public boolean hasNext() {
     return indexIter.hasNext();
   }
 
