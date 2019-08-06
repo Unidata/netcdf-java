@@ -76,7 +76,7 @@ public class GradsAttribute {
      */
     public static GradsAttribute parseAttribute(String attrSpec) {
         String[]     toks = attrSpec.split("\\s+");
-        StringBuffer buf  = new StringBuffer();
+        StringBuilder buf  = new StringBuilder();
         for (int i = 4; i < toks.length; i++) {
             buf.append(toks[i]);
             buf.append(" ");

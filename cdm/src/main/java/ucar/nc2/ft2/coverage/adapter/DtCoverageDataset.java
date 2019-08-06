@@ -128,7 +128,7 @@ public class DtCoverageDataset implements Closeable {
       VariableEnhanced ve = (VariableEnhanced) v;
       List<CoordinateSystem> css = ve.getCoordinateSystems();
       if (css.size() == 0) continue;
-      Collections.sort(css, (o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
+      css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
       CoordinateSystem cs = css.get(0);    // the largest one
       Gridset cset = csHash.get(cs.getName());
       if (cset == null) continue;
@@ -221,7 +221,7 @@ public class DtCoverageDataset implements Closeable {
     return projBB;
   }
 
-  public void calcBounds() throws java.io.IOException {
+  public void calcBounds() {
     // not needed
   }
 

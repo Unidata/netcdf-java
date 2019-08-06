@@ -84,7 +84,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
     return collectionIter.next();
   }
 
-  private PointFeature nextFilteredDataPoint() throws IOException {
+  private PointFeature nextFilteredDataPoint() {
     if (pfiter == null) return null;
     if (!pfiter.hasNext()) return null;
     PointFeature pdata = pfiter.next();

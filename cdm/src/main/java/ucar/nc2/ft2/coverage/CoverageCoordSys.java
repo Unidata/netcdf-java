@@ -89,11 +89,8 @@ public class CoverageCoordSys {
           if (!axisNames.contains(indAxisName))
             throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in CoordSys");
 
-          List<CoverageCoordAxis> dependents = dependentMap.get(indAxisName);
-          if (dependents == null) {
-            dependents = new ArrayList<>();
-            dependentMap.put(indAxisName, dependents);
-          }
+          List<CoverageCoordAxis> dependents = dependentMap
+              .computeIfAbsent(indAxisName, k -> new ArrayList<>());
           dependents.add(axis);
         }
       }

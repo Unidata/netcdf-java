@@ -23,7 +23,7 @@ class SliceReader implements ProxyReader {
   private int sliceDim;    // dimension index into original
   private Section slice;   // section of the original
 
-  SliceReader(Variable orgClient, int dim, Section slice) throws InvalidRangeException {
+  SliceReader(Variable orgClient, int dim, Section slice) {
    // LOOK could do check that slice is compatible with client
 
     this.orgClient = orgClient;

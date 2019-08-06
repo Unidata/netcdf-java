@@ -161,7 +161,7 @@ public class PointStream {
     return builder.build();
   }
 
-  static public PointStreamProto.StationList encodeStations(List<Station> stnList) throws IOException {
+  static public PointStreamProto.StationList encodeStations(List<Station> stnList) {
     PointStreamProto.StationList.Builder stnBuilder = PointStreamProto.StationList.newBuilder();
     for (Station loc : stnList) {
       PointStreamProto.Station.Builder locBuilder = PointStreamProto.Station.newBuilder();
@@ -189,7 +189,7 @@ public class PointStream {
     private CalendarDateUnit dateUnit;
     private StructureMembers sm;
 
-    ProtobufPointFeatureMaker(PointStreamProto.PointFeatureCollection pfc) throws IOException {
+    ProtobufPointFeatureMaker(PointStreamProto.PointFeatureCollection pfc) {
       try {
         // LOOK No calendar
         dateUnit = CalendarDateUnit.of(null, pfc.getTimeUnit());
@@ -229,7 +229,7 @@ public class PointStream {
 
       @Nonnull
       @Override
-      public StructureData getFeatureData() throws IOException {
+      public StructureData getFeatureData() {
         ByteBuffer bb = ByteBuffer.wrap(pfp.getData().toByteArray());
         ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
         for (String s : pfp.getSdataList()) {
@@ -254,12 +254,10 @@ public class PointStream {
     String name = outFile.getCanonicalPath();
     String timeUnitString = pointFeatCol.getTimeUnit().getUdUnit();
     String altUnits = pointFeatCol.getAltUnits();
-    PointFeatureIterator pointFeatIter = pointFeatCol.getPointFeatureIterator();
 
-    try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile))) {
+    try (PointFeatureIterator pointFeatIter = pointFeatCol.getPointFeatureIterator();
+        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile))) {
       return write(out, pointFeatIter, name, timeUnitString, altUnits);
-    } finally {
-      pointFeatIter.close();
     }
   }
 

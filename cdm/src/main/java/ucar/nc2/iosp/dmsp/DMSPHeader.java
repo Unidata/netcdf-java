@@ -790,8 +790,6 @@ public class DMSPHeader
 
     /**
      * Find the HeaderInfoTitle that matches this title.
-     *
-     * @param title
      * @return HeaderInfoTitle or null if no match.
      */
     public static HeaderInfoTitle getTitle( String title )

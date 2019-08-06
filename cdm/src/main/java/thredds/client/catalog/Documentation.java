@@ -4,6 +4,7 @@
  */
 package thredds.client.catalog;
 
+import java.util.Objects;
 import ucar.nc2.constants.CDM;
 
 import javax.annotation.concurrent.Immutable;
@@ -128,11 +129,11 @@ public class Documentation {
 
     Documentation that = (Documentation) o;
 
-    if (href != null ? !href.equals(that.href) : that.href != null) return false;
-    if (inlineContent != null ? !inlineContent.equals(that.inlineContent) : that.inlineContent != null) return false;
-    if (title != null ? !title.equals(that.title) : that.title != null) return false;
-    if (type != null ? !type.equals(that.type) : that.type != null) return false;
-    if (uri != null ? !uri.equals(that.uri) : that.uri != null) return false;
+    if (!Objects.equals(href, that.href)) return false;
+    if (!Objects.equals(inlineContent, that.inlineContent)) return false;
+    if (!Objects.equals(title, that.title)) return false;
+    if (!Objects.equals(type, that.type)) return false;
+    if (!Objects.equals(uri, that.uri)) return false;
 
     return true;
   }

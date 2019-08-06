@@ -128,11 +128,9 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
      *
      * @return the subsetted VerticalTransform
      *
-     * @throws ucar.ma2.InvalidRangeException if any of the range parameters are illegal
      */
     public VerticalTransform subset(Range t_range, Range z_range,
-                                    Range y_range, Range x_range)
-            throws ucar.ma2.InvalidRangeException {
+                                    Range y_range, Range x_range) {
         return new VerticalTransformSubset(this, t_range, z_range, y_range, x_range);
     }
 

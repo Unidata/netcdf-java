@@ -28,7 +28,7 @@ public class StreamFilter implements DirectoryStream.Filter<Path> {
   }
 
   @Override
-  public boolean accept(Path entry) throws IOException {
+  public boolean accept(Path entry) {
 
     String matchOn = nameOnly ? entry.getName(entry.getNameCount()-1).toString() : StringUtil2.replace(entry.toString(), "\\", "/");
 

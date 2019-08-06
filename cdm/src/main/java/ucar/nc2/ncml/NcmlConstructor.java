@@ -78,7 +78,7 @@ public class NcmlConstructor {
     return errlog.toString().length() == 0;
   }
 
-  private void readGroup(NetcdfFile ncfile, Group parent, Element groupElem) throws IOException {
+  private void readGroup(NetcdfFile ncfile, Group parent, Element groupElem) {
 
     String name = groupElem.getAttributeValue("name");
 

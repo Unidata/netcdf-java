@@ -24,8 +24,8 @@ import java.util.EnumSet;
  * @since Aug 16, 2007
  */
 public class AggregationTiled extends Aggregation implements ProxyReader {
-  private List<String> dimNames = new ArrayList<String>();
-  private List<Dimension> dims = new ArrayList<Dimension>();
+  private List<String> dimNames = new ArrayList<>();
+  private List<Dimension> dims = new ArrayList<>();
   private Section section;
 
   private boolean debug = false;
@@ -121,7 +121,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
   @Override
   protected void rebuildDataset() throws IOException {
     ncDataset.empty();
-    dims = new ArrayList<Dimension>();
+    dims = new ArrayList<>();
     buildNetcdfDataset(null);
   }
 

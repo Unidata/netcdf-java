@@ -432,7 +432,7 @@ public class CdmrfWriter {
     return builder;
   }
 
-  private long sendData(Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
+  private long sendData(Array data, OutputStream out, boolean deflate) throws IOException {
 
     // length of data uncompressed
     long uncompressedLength = data.getSizeBytes();

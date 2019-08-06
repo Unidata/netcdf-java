@@ -83,7 +83,7 @@ public class Fmrc implements Closeable {
       return fmrc;
   }
 
-  public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
+  public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) {
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
       String name = config.collectionName != null ? config.collectionName : config.spec;
       CollectionManagerCatalog manager = new CollectionManagerCatalog(name, config.spec, null, errlog);
@@ -154,18 +154,18 @@ public class Fmrc implements Closeable {
     return fmrcDataset.getDateRangeForOffset( offset);
   }
 
-  public List<CalendarDate> getRunDates() throws IOException {
+  public List<CalendarDate> getRunDates() {
     checkNeeded( false); // ??
     return fmrcDataset.getRunDates();
   }
 
-  public List<CalendarDate> getForecastDates() throws IOException {
+  public List<CalendarDate> getForecastDates() {
     checkNeeded( false); // ??
     return fmrcDataset.getForecastDates();
   }
 
   // for making offset datasets
-  public double[] getForecastOffsets() throws IOException {
+  public double[] getForecastOffsets() {
     checkNeeded( false); // ??
     return fmrcDataset.getForecastOffsets();
   }
@@ -236,11 +236,11 @@ public class Fmrc implements Closeable {
   }
 
   // true if things have changed since given time
-  public boolean checkInvState(long lastInvChange) throws IOException {
+  public boolean checkInvState(long lastInvChange) {
     return this.lastInvChanged > lastInvChange;
   }
   // true if things have changed since given time
-  public boolean checkProtoState(long lastProtoChanged) throws IOException {
+  public boolean checkProtoState(long lastProtoChanged) {
     return this.lastProtoChanged > lastProtoChanged;
   }
 
@@ -256,7 +256,7 @@ public class Fmrc implements Closeable {
   }
 
   // scan has been done, create FmrcInv
-  private FmrcInv makeFmrcInv(Formatter debug) throws IOException {
+  private FmrcInv makeFmrcInv(Formatter debug) {
     try {
       Map<CalendarDate, FmrInv> fmrMap = new HashMap<>(); // all files are grouped by run date in an FmrInv
       List<FmrInv> fmrList = new ArrayList<>(); // an fmrc is a collection of fmr
@@ -316,7 +316,7 @@ public class Fmrc implements Closeable {
     }
   }
 
-  public void showDetails(Formatter out) throws IOException {
+  public void showDetails(Formatter out) {
     checkNeeded(false);
     fmrcDataset.showDetails(out);
   }

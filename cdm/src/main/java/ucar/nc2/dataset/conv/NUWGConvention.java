@@ -59,7 +59,7 @@ public class NUWGConvention extends CoordSysBuilder {
         }
       }
     }
-    java.util.Collections.sort( navInfo, new NavComparator());
+    navInfo.sort(new NavComparator());
     parseInfo.format("%s%n%n", navInfo);
 
     // is this pathetic or what ?

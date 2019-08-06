@@ -127,7 +127,7 @@ public class NcStream {
     return dimBuilder;
   }
 
-  static NcStreamProto.EnumTypedef.Builder encodeEnumTypedef(EnumTypedef enumType) throws IOException {
+  static NcStreamProto.EnumTypedef.Builder encodeEnumTypedef(EnumTypedef enumType) {
     NcStreamProto.EnumTypedef.Builder builder = NcStreamProto.EnumTypedef.newBuilder();
 
     builder.setName(enumType.getShortName());
@@ -243,7 +243,7 @@ public class NcStream {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  static void show(NcStreamProto.Header proto) throws InvalidProtocolBufferException {
+  static void show(NcStreamProto.Header proto) {
     NcStreamProto.Group root = proto.getRoot();
 
     for (NcStreamProto.Dimension dim : root.getDimsList()) {
@@ -400,7 +400,7 @@ public class NcStream {
     return true;
   }
 
-  static public boolean test(byte[] b, byte[] test) throws IOException {
+  static public boolean test(byte[] b, byte[] test) {
     if (b.length != test.length) return false;
     for (int i = 0; i < b.length; i++)
       if (b[i] != test[i]) return false;
@@ -419,7 +419,7 @@ public class NcStream {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  static void readGroup(NcStreamProto.Group proto, NetcdfFile ncfile, Group g) throws InvalidProtocolBufferException {
+  static void readGroup(NcStreamProto.Group proto, NetcdfFile ncfile, Group g) {
 
     for (NcStreamProto.Dimension dim : proto.getDimsList())
       g.addDimension(NcStream.decodeDim(dim));

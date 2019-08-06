@@ -400,10 +400,7 @@ public class Attribute extends CDMNode
 
   /**
    * Construct an empty attribute with no values
-   *
-   * @param name
-   * @param dataType
-     */
+   */
   public Attribute(String name, DataType dataType)
   {
       this(name);
@@ -419,7 +416,7 @@ public class Attribute extends CDMNode
    * The list determines the attribute type
    * @param name   name of attribute
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
-   * @param isUnsigned
+   * @param isUnsigned if the data type is unsigned.
    */
   public Attribute(String name, List values, boolean isUnsigned) {
     this(name);
@@ -493,9 +490,7 @@ public class Attribute extends CDMNode
   }
 
   /**
-   * set the values from a list
-   *
-   * @param values
+   * Set the values from a list
    */
   public void setValues(List values)
   {

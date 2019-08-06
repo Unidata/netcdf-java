@@ -10,7 +10,6 @@ import ucar.ma2.Range;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Formatter;
 
 /**

@@ -154,8 +154,6 @@ public class AggregationExisting extends AggregationOuterDimension {
 
   /**
    * Persist info (ncoords, coordValues) from joinExisting, since that can be expensive to recreate.
-   *
-   * @throws IOException
    */
   public void persistWrite() throws IOException {
     if (diskCache2 == null)
@@ -275,7 +273,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     if ((version == null) || !version.equals("3")) return; // dont read old cache files, recreate
 
     // use a map to find datasets to avoid O(n**2) searching
-    Map<String, Dataset> map = new HashMap<String, Dataset>();
+    Map<String, Dataset> map = new HashMap<>();
     for (Dataset ds : getDatasets()) {
       map.put(ds.getId(), ds);
     }

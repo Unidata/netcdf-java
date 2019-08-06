@@ -27,12 +27,12 @@ public class SequenceIterator implements StructureDataIterator {
   }
 
   @Override
-  public boolean hasNext() throws IOException {
+  public boolean hasNext() {
     return (count < size);
   }
 
   @Override
-  public StructureData next() throws IOException {
+  public StructureData next() {
     StructureData result = abb.getStructureData(start + count);
     count++;
     return result;

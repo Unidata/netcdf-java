@@ -53,7 +53,7 @@ public class FlattenedDatasetPointCollection extends PointCollectionImpl {
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator() throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() {
         return new FlattenedDatasetPointIterator(fdPoint);
     }
 

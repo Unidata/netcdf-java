@@ -5,8 +5,6 @@
 
  package ucar.unidata.geoloc.projection.sat;
 
-import java.lang.Math;
-import java.lang.String;
 import java.lang.*;
 
 /**

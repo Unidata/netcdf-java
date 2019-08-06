@@ -3,9 +3,6 @@
  * See LICENSE for license information.
  */
 
-/**
- * 
- */
 package ucar.nc2.ft.point.writer;
 
 import ucar.ma2.Array;
@@ -22,7 +19,6 @@ import java.util.List;
 
 /**
  * @author mhermida
- *
  */
 public final class CFPointWriterUtils {
 	

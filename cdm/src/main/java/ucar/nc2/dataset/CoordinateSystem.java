@@ -54,7 +54,7 @@ public class CoordinateSystem {
    */
   static public String makeName( List<CoordinateAxis> axes) {
     List<CoordinateAxis> axesSorted = new ArrayList<>( axes);
-    Collections.sort( axesSorted, new CoordinateAxis.AxisComparator());
+    axesSorted.sort(new CoordinateAxis.AxisComparator());
     StringBuilder buff = new StringBuilder();
     for (int i=0; i<axesSorted.size(); i++) {
       CoordinateAxis axis = axesSorted.get(i);

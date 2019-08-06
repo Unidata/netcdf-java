@@ -276,9 +276,8 @@ public class ArrayStructureMA extends ArrayStructure {
    * @param from copy from here. If from is a ArrayStructureMA, return it.
    * @param shape the shape of the ArrayStructure
    * @return equivilent ArrayStructureMA
-   * @throws java.io.IOException on error reading a sequence
    */
-  static public ArrayStructureMA factoryMA(Structure from, int[] shape) throws IOException {
+  static public ArrayStructureMA factoryMA(Structure from, int[] shape) {
     StructureMembers sm = from.makeStructureMembers();
     for (Variable v : from.getVariables()) {
       Array data;

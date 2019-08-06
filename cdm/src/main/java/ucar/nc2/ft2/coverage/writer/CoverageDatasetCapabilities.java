@@ -121,7 +121,7 @@ public class CoverageDatasetCapabilities {
     return doc;
   }
 
-  private Element writeAxis(CoverageCoordAxis axis) throws IOException {
+  private Element writeAxis(CoverageCoordAxis axis) {
     Element varElem = new Element("axis");
     varElem.setAttribute("name", axis.getName());
     varElem.setAttribute("shape", Misc.showInts(axis.getShape()));
@@ -242,7 +242,7 @@ public class CoverageDatasetCapabilities {
       csElem.addContent(elem);
     }
 
-    Collections.sort(grids, new GridCoverageComparator());
+    grids.sort(new GridCoverageComparator());
     for (Coverage grid : grids) {
       csElem.addContent(writeGrid(grid));
     }

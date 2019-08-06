@@ -121,7 +121,7 @@ public class TableAnalyzer {
       conventionList.add(anal);
   }
 
-  static private interface ConventionNameOk {
+  private interface ConventionNameOk {
     boolean isMatch(String convName, String wantName);
   }
 
@@ -153,9 +153,8 @@ public class TableAnalyzer {
    * @param wantFeatureType want this FeatureType
    * @param ds for this dataset
    * @return TableConfigurer or null if not found
-   * @throws IOException on read error
    */
-  static public TableConfigurer getTableConfigurer(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException {
+  static public TableConfigurer getTableConfigurer(FeatureType wantFeatureType, NetcdfDataset ds) {
     String convUsed = null;
 
     // search for the Conventions attribute
@@ -432,7 +431,7 @@ public class TableAnalyzer {
   // default analasis aka guessing
 
   // no TableConfig was passed in - gotta wing it
-  private void makeTablesDefault(boolean structAdded) throws IOException {
+  private void makeTablesDefault(boolean structAdded) {
 
     // make Structures into a table
     List<Variable> vars = new ArrayList<>(ds.getVariables());

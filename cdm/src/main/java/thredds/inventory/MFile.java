@@ -44,7 +44,6 @@ public interface MFile extends Comparable<MFile> {
   /**
    * Get the parent of this
    * @return  the parent or null
-   * @throws IOException
    */
   MFile getParent() throws IOException;
 

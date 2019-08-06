@@ -122,7 +122,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   abstract public Optional<CoverageCoordAxis> subset(SubsetParams params);
 
   // called from HorizCoordSys
-  abstract public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) throws InvalidRangeException;
+  abstract public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride);
 
   // called only on dependent axes. pass in independent axis
   abstract public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn);

@@ -21,8 +21,8 @@ import ucar.nc2.units.DateUnit;
 // However, we do not have the timeUnit and altUnits that the constructor requires. Does it really need
 // that info? Can't it calculate it from one of its features? That interface may need to be re-thought.
 public class SortingStationPointFeatureCache {
-    public static final Comparator<StationPointFeature> stationNameComparator = (pointFeat1, pointFeat2) ->
-            pointFeat1.getStation().getName().compareTo(pointFeat2.getStation().getName());
+    public static final Comparator<StationPointFeature> stationNameComparator =
+        Comparator.comparing(pointFeat -> pointFeat.getStation().getName());
 
     private final SortedMap<StationPointFeature, List<StationPointFeature>> inMemCache;
 
@@ -51,16 +51,13 @@ public class SortingStationPointFeatureCache {
         Preconditions.checkNotNull(feat, "feat == null");
         StationPointFeature featCopy = getStationFeatureCopyFactory(feat).deepCopy(feat);
 
-        List<StationPointFeature> bucket = inMemCache.get(featCopy);
-        if (bucket == null) {
-            bucket = new LinkedList<>();
-            inMemCache.put(featCopy, bucket);
-        }
+      List<StationPointFeature> bucket = inMemCache
+          .computeIfAbsent(featCopy, k -> new LinkedList<>());
 
-        bucket.add(featCopy);
+      bucket.add(featCopy);
     }
 
-    public void addAll(File datasetFile) throws NoFactoryFoundException, IOException {
+    public void addAll(File datasetFile) throws IOException {
         try (FeatureDatasetPoint fdPoint = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
                 FeatureType.STATION, datasetFile.getAbsolutePath(), null, new Formatter())) {
             addAll(fdPoint);
@@ -97,7 +94,7 @@ public class SortingStationPointFeatureCache {
     }
 
     // TODO: Once this method is called, prohibit any further additions to cache.
-    public PointFeatureIterator getPointFeatureIterator() throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() {
         return new PointIteratorAdapter(new Iter());
     }
 

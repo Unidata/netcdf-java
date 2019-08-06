@@ -39,38 +39,6 @@ public class Group extends CDMNode implements AttributeContainer {
   protected AttributeContainerHelper attributes;
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
   private int hashCode = 0;
-
-  /**
-   * Get the full name, starting from the root Group.
-   *
-   * @return group full name
-   */
-/* see CDMNode.getFullName()
-  public String getFullName() {
-    String name = getShortName();
-    Group parent = getParentGroup();
-    if(parent == null) // we are the root group
-	return name;
-    else if(parent == ncfile.getRootGroup()) // we are just below root group
-	return name; // this does not seem right; should it not return /name?
-    else
-	return parent.getFullName() + "/" + name;
-  }
-*/
-
-  /**
-   * Alias for getFullName
-   * Deprecated because it is unclear
-   * to the caller if it is short or fullname.
-   *
-   * @return group full name
-   */
-/*
-   @Deprecated
-   public String getName() {
-    return getFullName();
-   }
-*/
  
   /**
    * Is this the root group?
@@ -237,7 +205,7 @@ public class Group extends CDMNode implements AttributeContainer {
   // AttributeHelper
 
   public java.util.List<Attribute> getAttributes() {
-    return attributes.filter(attributes,Attribute.SPECIALS).getAttributes();
+    return AttributeContainerHelper.filter(attributes,Attribute.SPECIALS).getAttributes();
   }
 
   public Attribute findAttribute(String name) {

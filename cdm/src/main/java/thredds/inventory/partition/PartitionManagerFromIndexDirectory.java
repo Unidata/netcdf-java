@@ -45,7 +45,7 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
 
   }
 
-  public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException {
+  public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) {
     return new PartIterator();
   }
 
@@ -95,12 +95,12 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
   public void close() { }
 
   @Override
-  public Iterable<MFile> getFilesSorted() throws IOException {
+  public Iterable<MFile> getFilesSorted() {
     return null;
   }
 
   @Override
-  public CloseableIterator<MFile> getFileIterator() throws IOException {
+  public CloseableIterator<MFile> getFileIterator() {
     return null;
   }
 

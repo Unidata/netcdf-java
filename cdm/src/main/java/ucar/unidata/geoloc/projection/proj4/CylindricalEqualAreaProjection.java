@@ -16,9 +16,7 @@ limitations under the License.
 
 /*
  * This file was semi-automatically converted from the public-domain USGS PROJ source.
- */
-
-/**
+ *
  * Changes by Bernhard Jenny, May 2007: added missing toString() and 
  * isEqualArea(); this class now derives from CylindricalProjection instead of
  * Projection; removed isRectilinear, which is defined in the new superclass
@@ -167,7 +165,7 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
     if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
     if (Double.compare(that.projectionLongitude, projectionLongitude) != 0) return false;
     if (Double.compare(that.scaleFactor, scaleFactor) != 0) return false;
-    if (earth != null ? !earth.equals(that.earth) : that.earth != null) return false;
+    if (!Objects.equals(earth, that.earth)) return false;
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
     if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
 

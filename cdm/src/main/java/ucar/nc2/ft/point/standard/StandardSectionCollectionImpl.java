@@ -40,7 +40,7 @@ import ucar.nc2.util.IOIterator;
 public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   private NestedTable ft;
 
-  StandardSectionCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) throws IOException {
+  StandardSectionCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
     this.extras = ft.getExtras();
@@ -133,7 +133,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     @Nonnull
     @Override
-    public StructureData getFeatureData() throws IOException {
+    public StructureData getFeatureData() {
       return sectionData;
     }
 
@@ -235,7 +235,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     @Nonnull
     @Override
-    public StructureData getFeatureData() throws IOException {
+    public StructureData getFeatureData() {
       return profileData;
     }
 

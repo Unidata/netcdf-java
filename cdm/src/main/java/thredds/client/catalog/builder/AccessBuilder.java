@@ -7,7 +7,6 @@ package thredds.client.catalog.builder;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
-import ucar.nc2.constants.DataFormatType;
 
 /**
  * build immutable access element

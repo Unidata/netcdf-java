@@ -5,12 +5,8 @@
 
 package ucar.nc2.dataset.transform;
 
-import java.util.List;
-
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.units.SimpleUnit;

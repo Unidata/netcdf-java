@@ -78,7 +78,6 @@ public class DirectoryBuilder {
    * @param topCollectionName  from config, name of the collection
    * @param dir covers this directory
    * @param attr file attributes, may be null
-   * @throws IOException
    */
   public DirectoryBuilder(String topCollectionName, Path dir, BasicFileAttributes attr, String suffix) throws IOException {
     this.topCollectionName = topCollectionName;
@@ -101,7 +100,6 @@ public class DirectoryBuilder {
   /**
    * Find the index file, using its canonical name
    * @return true if found
-   * @throws IOException
    */
   public boolean findIndex() throws IOException {
     Path indexPath = Paths.get(dir.toString(), partitionName + suffix);
@@ -119,7 +117,6 @@ public class DirectoryBuilder {
    * Scans first 100 files to decide if its a leaf. If so, it becomes a DirectoryCollection, else a PartitionCollection.
    * @param indexReader reads the index
    * @return true if partition, false if file collection
-   * @throws IOException on IO error
    */
   private boolean isLeaf(IndexReader indexReader) throws IOException {
     if (partitionStatus == PartitionStatus.unknown) {
@@ -153,7 +150,6 @@ public class DirectoryBuilder {
    *
    * @param indexReader  this reads the index, and calls AddChild.addchild() for each child
    * @return children, may be empty but not null
-   * @throws IOException
    */
   public List<DirectoryBuilder> constructChildren(IndexReader indexReader, CollectionUpdateType forceCollection) throws IOException {
     if (childrenConstructed) return children;

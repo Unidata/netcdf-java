@@ -159,10 +159,9 @@ abstract class FixedYearLengthChronology extends BaseChronology {
         // We subtract one to ensure that the whole of this year can be
         // encoded
         public int getMaximumValue() { return this.get(Long.MAX_VALUE) - 1; }
-    };
+    }
 
-
-    ///// CONSTRUCTORS AND FACTORIES /////
+  ///// CONSTRUCTORS AND FACTORIES /////
 
     /**
      * @param daysInYear The number of days in each year

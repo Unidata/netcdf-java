@@ -39,10 +39,8 @@ public class LayoutBBTiled implements LayoutBB {
    * @param chunkSize     all chunks assumed to be the same size
    * @param elemSize      size of an element in bytes.
    * @param wantSection   the wanted section of data, contains a List of Range objects. Must be complete.
-   * @throws ucar.ma2.InvalidRangeException if section invalid for this variable
-   * @throws java.io.IOException            on io error
    */
-  public LayoutBBTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, Section wantSection) throws InvalidRangeException, IOException {
+  public LayoutBBTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, Section wantSection) {
     this.chunkIterator = chunkIterator;
     this.chunkSize = chunkSize;
     this.elemSize = elemSize;
@@ -99,10 +97,7 @@ public class LayoutBBTiled implements LayoutBB {
         index = new IndexChunkerTiled(dataSection, want); // new indexer into this chunk
         next = new Chunk( dataChunk.getByteBuffer()); // this does the uncompression
 
-      } catch (InvalidRangeException e) {
-        throw new IllegalStateException(e);
-
-      } catch (IOException e) {
+      } catch (InvalidRangeException | IOException e) {
         throw new IllegalStateException(e);
       }
     }
@@ -114,7 +109,7 @@ public class LayoutBBTiled implements LayoutBB {
     return true;
   }
 
-  public LayoutBB.Chunk next() throws IOException {
+  public LayoutBB.Chunk next() {
     return next;
   }
   
@@ -134,17 +129,17 @@ public class LayoutBBTiled implements LayoutBB {
   /**
    * An iterator over the data chunks.
    */
-  static public interface DataChunkIterator {
-    public boolean hasNext();
-    public DataChunk next() throws IOException;
+  public interface DataChunkIterator {
+    boolean hasNext();
+    DataChunk next() throws IOException;
   }
 
   /**
    * A data chunk
    */
-  static public interface DataChunk {
-    public int[] getOffset();
-    public ByteBuffer getByteBuffer() throws IOException;
+  public interface DataChunk {
+    int[] getOffset();
+    ByteBuffer getByteBuffer() throws IOException;
   }
 
   /**

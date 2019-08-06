@@ -918,9 +918,8 @@ public class NcMLReader {
    * @param g       parent Group
    * @param refg    referenced dataset parent Group - may be same (modify) or different (explicit)
    * @param varElem ncml variable element
-   * @throws java.io.IOException on read error
    */
-  private void readVariable(NetcdfDataset ds, Group g, Group refg, Element varElem) throws IOException {
+  private void readVariable(NetcdfDataset ds, Group g, Group refg, Element varElem) {
     String name = varElem.getAttributeValue("name");
     if (name == null) {
       errlog.format("NcML Variable name is required (%s)%n", varElem);
@@ -1122,15 +1121,9 @@ public class NcMLReader {
         dimList.add(v.getDimension(idx));
       }
 
-      try {
-        Variable view = v.reduce(dimList);
-        g.removeVariable(v.getShortName());
-        g.addVariable(view);
-
-      } catch (InvalidRangeException e) {
-        errlog.format("Failed logicalReduce (%s) on variable=%s error=%s %n", dimName, v.getFullName(), e.getMessage());
-      }
-
+      Variable view = v.reduce(dimList);
+      g.removeVariable(v.getShortName());
+      g.addVariable(view);
     }
 
   }
@@ -1523,7 +1516,7 @@ public class NcMLReader {
       // must always open through a NcML reader, in case the netcdf element modifies the dataset
       NcmlElementReader reader = new NcmlElementReader(ncmlLocation, location, netcdfElemNested);
       String cacheName = (location != null) ? location : ncmlLocation;
-      cacheName += "#" + Integer.toString(netcdfElemNested.hashCode()); // need a unique name, in case file has been modified by ncml
+      cacheName += "#" + netcdfElemNested.hashCode(); // need a unique name, in case file has been modified by ncml
 
       String realLocation = URLnaming.resolveFile(ncmlLocation, location);
 
@@ -1703,7 +1696,6 @@ public class NcMLReader {
    *
    * @param ncml        read NcML from this input stream
    * @param fileOutName write to this local file
-   * @throws IOException on error
    * @see ucar.nc2.FileWriter2
    */
   public static void writeNcMLToFile(InputStream ncml, String fileOutName) throws IOException {
@@ -1720,7 +1712,6 @@ public class NcMLReader {
    * @param fileOutName write to this local file
    * @param version     kind of netcdf file
    * @param chunker     optional chunking (netcdf4 only)
-   * @throws IOException
    */
   public static void writeNcMLToFile(InputStream ncml, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker) throws IOException {
     NetcdfDataset ncd = NcMLReader.readNcML(ncml, null);

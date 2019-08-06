@@ -22,18 +22,16 @@ public interface StationCollection {
    * Get all the Stations in the collection.
    *
    * @return List of Station
-   * @throws java.io.IOException on i/o error
    */
-  List<Station> getStations() throws IOException;
+  List<Station> getStations();
 
   /**
    * Get all the Stations within a bounding box.
    *
    * @param boundingBox spatial subset
    * @return List of Station
-   * @throws java.io.IOException on i/o error
    */
-  List<Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+  List<Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox);
 
   /**
    * Translate list of station names to list of Stations. Skip any not found

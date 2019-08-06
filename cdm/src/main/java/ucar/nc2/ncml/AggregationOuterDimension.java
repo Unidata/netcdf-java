@@ -33,11 +33,11 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
   static protected boolean debugCache = false, debugInvocation = false, debugStride = false;
   static public int invocation = 0;  // debugging
 
-  protected List<String> aggVarNames = new ArrayList<String>(); // explicitly specified in the NcML
-  protected List<VariableDS> aggVars = new ArrayList<VariableDS>(); // actual vars that will be aggregated
+  protected List<String> aggVarNames = new ArrayList<>(); // explicitly specified in the NcML
+  protected List<VariableDS> aggVars = new ArrayList<>(); // actual vars that will be aggregated
   private int totalCoords = 0;  // the aggregation dimension size
 
-  protected List<CacheVar> cacheList = new ArrayList<CacheVar>(); // promote global attribute to variable
+  protected List<CacheVar> cacheList = new ArrayList<>(); // promote global attribute to variable
   protected boolean timeUnitsChange = false;
 
   /**
@@ -281,7 +281,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
    *
    * @param section    read just this section of the data, array of Range
    * @return the data array section
-   * @throws IOException
    */
   @Override
   public Array reallyRead(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
@@ -358,7 +357,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
    * This is an implementation of ProxyReader, so must fulfill that contract.
    *
    * @param mainv      the aggregation variable
-   * @throws IOException
    */
    @Override
   public Array reallyRead(Variable mainv, CancelTask cancelTask) throws IOException {
@@ -837,7 +835,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
   class CacheVar {
     String varName;
     DataType dtype;
-    private Map<String, Array> dataMap = new HashMap<String, Array>();
+    private Map<String, Array> dataMap = new HashMap<>();
 
     CacheVar(String varName, DataType dtype) {
       this.varName = varName;
@@ -940,13 +938,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       if (data != null) return data;
       if (type == Type.joinNew) return null;  // ??
 
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = dset.acquireFile(null);
+      try (NetcdfFile ncfile = dset.acquireFile(null)) {
         return read(dset, ncfile);
-
-      } finally {
-        if (ncfile != null) ncfile.close();
       }
     }
 
@@ -996,7 +989,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     }
 
     // only deals with possible setting of the coord values in the NcML
-    private Array readCached(DatasetOuterDimension dset) throws IOException {
+    private Array readCached(DatasetOuterDimension dset) {
       Array data = getData(dset.getId());
       if (data != null) return data;
 
@@ -1078,7 +1071,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     }
 
     @Override
-    protected Array read(DatasetOuterDimension dset, NetcdfFile ncfile) throws IOException {
+    protected Array read(DatasetOuterDimension dset, NetcdfFile ncfile) {
       Array data = getData(dset.getId());
       if (data != null) return data;
 
@@ -1126,7 +1119,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     }
 
     @Override
-    protected Array read(DatasetOuterDimension dset, NetcdfFile ncfile) throws IOException {
+    protected Array read(DatasetOuterDimension dset, NetcdfFile ncfile) {
       Array data = getData(dset.getId());
       if (data != null) return data;
 
@@ -1189,16 +1182,16 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
   }
 
-  public static void main(String args[]) throws IOException {
+  public static void main(String args[]) {
     String format = "%04d-%02d-%02dT%02d:%02d:%02.0f";
     Formatter f = new Formatter();
     Object[] vals = new Object[6];
-    vals[0] = new Integer(2002);
-    vals[1] = new Integer(10);
-    vals[2] = new Integer(20);
-    vals[3] = new Integer(23);
-    vals[4] = new Integer(0);
-    vals[5] = new Float(2.1);
+    vals[0] = 2002;
+    vals[1] = 10;
+    vals[2] = 20;
+    vals[3] = 23;
+    vals[4] = 0;
+    vals[5] = 2.1f;
     f.format(format, vals);
     System.out.println(f);
   }

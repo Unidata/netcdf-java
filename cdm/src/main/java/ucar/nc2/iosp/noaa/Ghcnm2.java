@@ -526,7 +526,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
 
   /////////////////////////////////////////////////////////////////////////
   private RandomAccessFile stnRaf, dataRaf;
-  private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
+  private HashMap<Long, StationIndex> map = new HashMap<>(10000);
   private int stn_fldno;
   private StructureDataRegexp.Vinfo dataVinfo, stnVinfo;
 
@@ -601,7 +601,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
   ////////////////////////////////////////////////////////////////////
 
   @Override
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException {
     StructureDataRegexp.Vinfo vinfo = (StructureDataRegexp.Vinfo) v2.getSPobject();
     return new ArraySequence( vinfo.sm, new SeqIter(vinfo), vinfo.nelems);
   }
@@ -657,7 +657,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public StructureData next() {
       return curr;
     }
 
@@ -729,7 +729,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     }
 
     @Override
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
       return (countRead < stationIndex.dataCount);
     }
 

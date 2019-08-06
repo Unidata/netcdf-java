@@ -38,7 +38,7 @@ public class MMapRandomAccessFile extends RandomAccessFile {
   }
 
 
-  public void flush() throws IOException {
+  public void flush() {
     if (bufferModified) {
       source.force();
       bufferModified = false;
@@ -61,7 +61,7 @@ public class MMapRandomAccessFile extends RandomAccessFile {
      seek( filePosition-1);
    }
 
-  public int read() throws IOException {
+  public int read() {
     // If the file position is within the data, return the byte...
     if( filePosition < dataEnd ) {
       filePosition++;
@@ -72,7 +72,7 @@ public class MMapRandomAccessFile extends RandomAccessFile {
     }
   }
 
-   public int readBytes( byte dst[], int offset, int length ) throws IOException {
+   public int readBytes( byte dst[], int offset, int length ) {
      if( endOfFile ) return -1;
 
      length = (int) Math.min( length, dataEnd - filePosition);
@@ -83,13 +83,13 @@ public class MMapRandomAccessFile extends RandomAccessFile {
      return length;
    }
 
-  public void write( int b ) throws IOException {
+  public void write( int b ) {
      source.put( (byte)b);
      filePosition++;
      bufferModified = true;
   }
 
-  public void writeBytes( byte dst[], int offset, int length ) throws IOException {
+  public void writeBytes( byte dst[], int offset, int length ) {
     source.put(dst, offset, length);
     filePosition += length;
   }

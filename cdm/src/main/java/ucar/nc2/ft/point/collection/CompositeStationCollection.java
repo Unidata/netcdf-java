@@ -48,7 +48,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   protected List<Attribute> globalAttributes;
 
   protected CompositeStationCollection(
-          String name, CalendarDateUnit timeUnit, String altUnits, TimedCollection dataCollection) throws IOException {
+          String name, CalendarDateUnit timeUnit, String altUnits, TimedCollection dataCollection) {
     super(name, timeUnit, altUnits);
     this.dataCollection = dataCollection;
     TimedCollection.Dataset td = dataCollection.getPrototype();
@@ -176,19 +176,19 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   // betterto use the flatten() method, then reconstitute the station with getStation(pointFeature)
 
   @Override
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator() {
 
     // an anonymous class iterating over the stations
     return new PointFeatureCollectionIterator() {
       Iterator<Station> stationIter = getStationHelper().getStations().iterator();
 
       @Override
-      public boolean hasNext() throws IOException {
+      public boolean hasNext() {
         return stationIter.hasNext();
       }
 
       @Override
-      public PointFeatureCollection next() throws IOException {
+      public PointFeatureCollection next() {
         return (PointFeatureCollection) stationIter.next();
       }
 
@@ -218,7 +218,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     // an iterator over the observations for this station
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator() throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() {
       return new CompositeStationFeatureIterator();
     }
 
@@ -228,7 +228,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     } */
 
     @Override
-    public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
+    public StationTimeSeriesFeature subset(CalendarDateRange dateRange) {
       if (dateRange == null) return this;
 
       // Extract the collection members that intersect dateRange. For example, if we have:
@@ -265,7 +265,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     @Nonnull
     @Override
-    public StructureData getFeatureData() throws IOException {
+    public StructureData getFeatureData() {
       return sdata;
     }
 

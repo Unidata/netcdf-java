@@ -62,7 +62,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   }
 
   @Override
-  public List<StationFeature> getStationFeatures() throws IOException {
+  public List<StationFeature> getStationFeatures() {
     return getStationHelper().getStationFeatures();
   }
 
@@ -82,7 +82,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   }
 
   @Override
-  public StationProfileFeature getStationProfileFeature(StationFeature s) throws IOException {
+  public StationProfileFeature getStationProfileFeature(StationFeature s) {
     return (StationProfileFeature) s; // LOOK
   }
 
@@ -126,7 +126,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
     private final StationProfileCollectionImpl from;
     private final List<StationFeature> stations;
 
-    StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<StationFeature> stations) throws IOException {
+    StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<StationFeature> stations) {
       super( from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.stations = stations;

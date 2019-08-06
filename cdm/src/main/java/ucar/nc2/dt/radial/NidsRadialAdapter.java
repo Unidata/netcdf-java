@@ -6,7 +6,6 @@ package ucar.nc2.dt.radial;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDateUnit;
@@ -28,7 +27,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
   private NetcdfDataset ds;
 
   /////////////////////////////////////////////////
-  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ncd.findAttValueIgnoreCase(null, "Format", null);
@@ -38,7 +37,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
     return null;
   }
 
-  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) {
     return new NidsRadialAdapter(ncd);
   }
 
@@ -200,9 +199,8 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
   public void clearDatasetMemory() {
     List rvars = getDataVariables();
-    Iterator iter = rvars.iterator();
-    while (iter.hasNext()) {
-      RadialVariable radVar = (RadialVariable) iter.next();
+    for (Object rvar : rvars) {
+      RadialVariable radVar = (RadialVariable) rvar;
       radVar.clearVariableMemory();
     }
   }
@@ -384,12 +382,12 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
         return true;
       }
 
-      public float getElevation(int ray) throws IOException {
+      public float getElevation(int ray) {
         // setMeanElevation();
         return (float) meanElevation;
       }
 
-      public float[] getElevation() throws IOException {
+      public float[] getElevation() {
         float[] spArray = null;
         try {
           Variable sp = ds.findVariable("elevation");

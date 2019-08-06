@@ -737,7 +737,7 @@ public class IospHelper {
   }
 
   static public long transferData(Array result, WritableByteChannel channel)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+          throws java.io.IOException {
 
     // LOOK should we buffer ??
     DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel));
@@ -832,7 +832,7 @@ public class IospHelper {
     }
   }
 
-  static private void extractSectionFromSequence(ParsedSectionSpec child, ArraySequence outerData, IndexIterator to) throws IOException, InvalidRangeException {
+  static private void extractSectionFromSequence(ParsedSectionSpec child, ArraySequence outerData, IndexIterator to) throws IOException {
     try (StructureDataIterator sdataIter = outerData.getStructureDataIterator()) {
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
@@ -845,7 +845,7 @@ public class IospHelper {
 
   // LOOK could be used in createView ??
 
-  static private ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData, StructureMembers.Member m) throws IOException, InvalidRangeException {
+  static private ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData, StructureMembers.Member m) {
     StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
     ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());
 

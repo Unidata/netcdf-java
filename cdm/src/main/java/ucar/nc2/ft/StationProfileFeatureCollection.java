@@ -18,12 +18,12 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 public interface StationProfileFeatureCollection extends PointFeatureCCC, Iterable<StationProfileFeature> {
 
-  List<StationFeature> getStationFeatures() throws IOException;
-  List<StationFeature> getStationFeatures( List<String> stnNames)  throws IOException;
+  List<StationFeature> getStationFeatures();
+  List<StationFeature> getStationFeatures( List<String> stnNames);
   List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
   StationFeature findStationFeature(String name);
-  StationProfileFeature getStationProfileFeature(StationFeature s) throws IOException;
+  StationProfileFeature getStationProfileFeature(StationFeature s);
 
   // subsetting
   StationProfileFeatureCollection subset(List<StationFeature> stations) throws IOException;

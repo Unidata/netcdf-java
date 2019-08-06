@@ -18,8 +18,6 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.CollectionInfo;
-import ucar.nc2.ft.point.DsgCollectionHelper;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
@@ -236,7 +234,7 @@ public class FeatureDatasetCapabilitiesWriter {
     return builder.build(in);
   }
 
-  public static LatLonRect getSpatialExtent(Document doc) throws IOException {
+  public static LatLonRect getSpatialExtent(Document doc) {
     Element root = doc.getRootElement();
     Element latlonBox = root.getChild("LatLonBox");
     if (latlonBox == null) return null;
@@ -259,7 +257,7 @@ public class FeatureDatasetCapabilitiesWriter {
     }
   }
 
-  public static CalendarDateRange getTimeSpan(Document doc) throws IOException {
+  public static CalendarDateRange getTimeSpan(Document doc) {
     Element root = doc.getRootElement();
     Element timeSpan = root.getChild("TimeSpan");
     if (timeSpan == null) return null;
@@ -304,14 +302,14 @@ public class FeatureDatasetCapabilitiesWriter {
     }
   }
 
-  public static String getAltUnits(Document doc) throws IOException {
+  public static String getAltUnits(Document doc) {
     Element root = doc.getRootElement();
     String altUnits = root.getChildText("AltitudeUnits");
     if (altUnits == null || altUnits.length() == 0) return null;
     return altUnits;
   }
 
-  public static List<VariableSimpleIF> getDataVariables(Document doc) throws IOException {
+  public static List<VariableSimpleIF> getDataVariables(Document doc) {
     Element root = doc.getRootElement();
 
     List<VariableSimpleIF> dataVars = new ArrayList<>();

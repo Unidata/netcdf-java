@@ -28,9 +28,8 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
    * Subset this collection by calendar dateRange
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
-   * @throws IOException on read error
    */
-  StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException;
+  StationTimeSeriesFeature subset(CalendarDateRange dateRange);
 
   /**
    * The actual data of just this StationTimeSeries feature.

@@ -98,44 +98,58 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       curVariable.addAttribute(new Attribute(CDM.LONG_NAME, curVarInfo.getLongName()));
       curVariable.addAttribute(new Attribute(CDM.UNITS, curVarInfo.getUnits()));
 
-      if (curVariable.getShortName().equals("latitude")) {
-        curVariable.addAttribute(new Attribute("calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
-        curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      } else if (curVariable.getShortName().equals("longitude")) {
-        curVariable.addAttribute(new Attribute("calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
-        curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      } else if (curVariable.getShortName().equals("time")) {
-        curVariable.addAttribute(new Attribute("calculatedVariable", "Using the satellite epoch for each scan."));
-        this.startDateString = this.header.getStartDateAtt().getStringValue();
-        try {
-          this.startDate = DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateFromDateTimeString(this.startDateString);
-        } catch (ParseException e) {
-          throw new IOException("Invalid DMSP file: \"startDate\" attribute value <" + this.startDateString +
-                  "> not parseable with format string <" + DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString() + ">.");
-        }
-        curVariable.addAttribute(new Attribute(CDM.UNITS, "seconds since " + this.startDateString));
-        curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+      switch (curVariable.getShortName()) {
+        case "latitude":
+          curVariable.addAttribute(new Attribute("calculatedVariable",
+              "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
+          curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+          break;
+        case "longitude":
+          curVariable.addAttribute(new Attribute("calculatedVariable",
+              "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
+          curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+          break;
+        case "time":
+          curVariable.addAttribute(
+              new Attribute("calculatedVariable", "Using the satellite epoch for each scan."));
+          this.startDateString = this.header.getStartDateAtt().getStringValue();
+          try {
+            this.startDate = DMSPHeader.DateFormatHandler.ISO_DATE_TIME
+                .getDateFromDateTimeString(this.startDateString);
+          } catch (ParseException e) {
+            throw new IOException(
+                "Invalid DMSP file: \"startDate\" attribute value <" + this.startDateString +
+                    "> not parseable with format string <"
+                    + DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString() + ">.");
+          }
+          curVariable
+              .addAttribute(new Attribute(CDM.UNITS, "seconds since " + this.startDateString));
+          curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
-      } else if (curVariable.getShortName().equals("infraredImagery")) {
-        curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
-        //curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
-        curVariable.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float((310.0 - 190.0) / (256.0 - 1.0))));
-        curVariable.addAttribute(new Attribute(CDM.ADD_OFFSET, new Float(190.0)));
-        curVariable.addAttribute(new Attribute("description",
-                "Infrared pixel values correspond to a temperature range of 190 to 310 " +
-                        "Kelvins in 256 equally spaced steps. Onboard calibration is performed " +
-                        "during each scan. -- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
+          break;
+        case "infraredImagery":
+          curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
+          //curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+          curVariable.addAttribute(new Attribute(CDM.SCALE_FACTOR,
+              (float) ((310.0 - 190.0) / (256.0 - 1.0))));
+          curVariable.addAttribute(new Attribute(CDM.ADD_OFFSET, 190.0f));
+          curVariable.addAttribute(new Attribute("description",
+              "Infrared pixel values correspond to a temperature range of 190 to 310 " +
+                  "Kelvins in 256 equally spaced steps. Onboard calibration is performed " +
+                  "during each scan. -- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
 
-      } else if (curVariable.getShortName().equals("visibleImagery")) {
-        curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
-        //curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
-        curVariable.addAttribute(new Attribute("description",
-                "Visible pixels are relative values ranging from 0 to 63 rather than " +
-                        "absolute values in Watts per m^2. Instrumental gain levels are adjusted " +
-                        "to maintain constant cloud reference values under varying conditions of " +
-                        "solar and lunar illumination. Telescope pixel values are replaced by " +
-                        "Photo Multiplier Tube (PMT) values at night. " +
-                        "-- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
+          break;
+        case "visibleImagery":
+          curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
+          //curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+          curVariable.addAttribute(new Attribute("description",
+              "Visible pixels are relative values ranging from 0 to 63 rather than " +
+                  "absolute values in Watts per m^2. Instrumental gain levels are adjusted " +
+                  "to maintain constant cloud reference values under varying conditions of " +
+                  "solar and lunar illumination. Telescope pixel values are replaced by " +
+                  "Photo Multiplier Tube (PMT) values at night. " +
+                  "-- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
+          break;
       }
 
       this.ncfile.addVariable(null, curVariable);

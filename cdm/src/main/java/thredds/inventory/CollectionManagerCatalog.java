@@ -128,7 +128,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     }
 
     @Override
-    public MFile getParent() throws IOException {
+    public MFile getParent() {
       return null;
     }
 

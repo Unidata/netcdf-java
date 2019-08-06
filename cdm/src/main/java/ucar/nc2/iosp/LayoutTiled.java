@@ -42,10 +42,8 @@ public class LayoutTiled implements Layout {
    * @param chunkSize     all chunks assumed to be the same size
    * @param elemSize      size of an element in bytes.
    * @param wantSection   the wanted section of data, contains a List of Range objects. Must be complete
-   * @throws ucar.ma2.InvalidRangeException if section invalid for this variable
-   * @throws java.io.IOException            on io error
    */
-  public LayoutTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, Section wantSection) throws InvalidRangeException, IOException {
+  public LayoutTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, Section wantSection) {
     this.chunkIterator = chunkIterator;
     this.chunkSize = chunkSize;
     this.elemSize = elemSize;
@@ -119,7 +117,7 @@ public class LayoutTiled implements Layout {
     return true;
   }
 
-  public Layout.Chunk next() throws IOException {
+  public Layout.Chunk next() {
     if (debugNext) System.out.println("  next="+next);
     return next;
   }
@@ -138,9 +136,9 @@ public class LayoutTiled implements Layout {
   }
 
 
-  static public interface DataChunkIterator {
-    public boolean hasNext();
-    public DataChunk next() throws IOException;
+  public interface DataChunkIterator {
+    boolean hasNext();
+    DataChunk next() throws IOException;
   }
 
   static public class DataChunk {

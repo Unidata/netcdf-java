@@ -403,10 +403,10 @@ public class GridDatasetInv {
         if (j > 0) {
           sbuff.append(" ");
         }
-        sbuff.append(Double.toString(values1[j]));
+        sbuff.append(values1[j]);
         if (values2 != null) {
           sbuff.append(",");
-          sbuff.append(Double.toString(values2[j]));
+          sbuff.append(values2[j]);
         }
       }
       vcElem.addContent(sbuff.toString());

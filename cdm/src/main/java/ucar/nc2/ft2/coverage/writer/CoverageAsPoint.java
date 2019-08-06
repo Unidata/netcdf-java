@@ -120,7 +120,7 @@ public class CoverageAsPoint {
     }
 
     @Override
-    protected StationHelper createStationHelper() throws IOException {
+    protected StationHelper createStationHelper() {
       StationHelper helper = new StationHelper();
       String name = String.format("GridPointAt[%s]", latLonPoint.toString(3));
       name = StringUtil2.replace(name.trim(), ' ', "_");
@@ -139,12 +139,12 @@ public class CoverageAsPoint {
 
     @Nonnull
     @Override
-    public StructureData getFeatureData() throws IOException {
+    public StructureData getFeatureData() {
       return StructureData.EMPTY;
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator() throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() {
       return new TimeseriesIterator();
     }
 
@@ -226,13 +226,13 @@ public class CoverageAsPoint {
 
       @Override
       @Nonnull
-      public StructureData getFeatureData() throws IOException {
+      public StructureData getFeatureData() {
         return sdata;
       }
 
       @Override
       @Nonnull
-      public StructureData getDataAll() throws IOException {
+      public StructureData getDataAll() {
         return sdata;
       }
     }

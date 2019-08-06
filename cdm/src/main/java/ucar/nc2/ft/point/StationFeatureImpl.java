@@ -30,7 +30,7 @@ public class StationFeatureImpl extends StationImpl implements StationFeature {
   }
 
   @Override
-  public StructureData getFeatureData() throws IOException {
+  public StructureData getFeatureData() {
     return sdata;
   }
 }

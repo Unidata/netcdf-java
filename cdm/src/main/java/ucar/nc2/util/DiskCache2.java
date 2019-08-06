@@ -288,9 +288,9 @@ public class DiskCache2 {
   public synchronized File createUniqueFile(String prefix, String suffix) {
     if (suffix == null) suffix = ".tmp";
     Random random = new Random(System.currentTimeMillis());
-    File result = new File(getRootDirectory(), prefix + Integer.toString(random.nextInt()) + suffix);
+    File result = new File(getRootDirectory(), prefix + random.nextInt() + suffix);
     while (result.exists())
-      result = new File(getRootDirectory(), prefix + Integer.toString(random.nextInt()) + suffix);
+      result = new File(getRootDirectory(), prefix + random.nextInt() + suffix);
     return result;
   }
 

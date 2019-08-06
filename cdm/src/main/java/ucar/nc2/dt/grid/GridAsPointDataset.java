@@ -133,15 +133,7 @@ public class GridAsPointDataset {
    * 
    * Reads one single data for one point.
    * Takes the ensemble and elevation coordinates allowing them to be < 0 and in that case they'll be ignored. 
-   * 
-   * @param grid
-   * @param date
-   * @param ensCoord
-   * @param zCoord
-   * @param lat
-   * @param lon
    * @return Point matching lat/lon for this grid
-   * @throws java.io.IOException
    */
   public Point readData(GridDatatype grid, CalendarDate date, double ensCoord, double zCoord, double lat, double lon)  throws java.io.IOException {
 	    GridCoordSystem gcs = grid.getCoordinateSystem();

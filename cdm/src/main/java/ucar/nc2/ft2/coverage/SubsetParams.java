@@ -148,7 +148,7 @@ public class SubsetParams {
   public Double getDouble(String key) {
     Object val = req.get(key);
     if (val == null) return null;
-    Double dval;
+    double dval;
     if (val instanceof Number) dval = ((Number) val).doubleValue();
     else dval = Double.parseDouble((String) val);
     return dval;

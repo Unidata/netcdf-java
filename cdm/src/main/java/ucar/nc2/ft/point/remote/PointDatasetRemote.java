@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class PointDatasetRemote extends PointDatasetImpl {
 
-  public PointDatasetRemote(FeatureType wantFeatureType, String uri, CalendarDateUnit timeUnit, String altUnits, List<VariableSimpleIF> vars, LatLonRect bb, CalendarDateRange dr) throws IOException {
+  public PointDatasetRemote(FeatureType wantFeatureType, String uri, CalendarDateUnit timeUnit, String altUnits, List<VariableSimpleIF> vars, LatLonRect bb, CalendarDateRange dr) {
 
     super(wantFeatureType);
     setBoundingBox(bb);

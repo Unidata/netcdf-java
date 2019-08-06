@@ -250,7 +250,7 @@ public class GeoTiff implements Closeable {
     return firstIFD;
   }
 
-  public void initTags() throws IOException {
+  public void initTags() {
     tags = new ArrayList<>();
     geokeys = new ArrayList<>();
   }

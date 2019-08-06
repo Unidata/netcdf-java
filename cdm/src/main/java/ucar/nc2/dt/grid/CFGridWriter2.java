@@ -5,8 +5,6 @@
 
 package ucar.nc2.dt.grid;
 
-import org.w3c.dom.Attr;
-
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -50,8 +48,6 @@ public class CFGridWriter2 {
    * @param stride_time      the time stride
    * @param addLatLon        add 2D lat/lon coordinates if needed
    * @return total bytes written
-   * @throws IOException
-   * @throws InvalidRangeException
    */
   static public long makeSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
                                        LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
@@ -75,8 +71,6 @@ public class CFGridWriter2 {
    * @param addLatLon        add 2D lat/lon coordinates if needed
    * @param writer           this does the actual writing
    * @return total bytes written
-   * @throws IOException
-   * @throws InvalidRangeException
    */
   static public long writeFile(ucar.nc2.dt.GridDataset gds, List<String> gridList,
                                        LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
@@ -100,8 +94,6 @@ public class CFGridWriter2 {
    * @param testSizeOnly     dont write, just return size
    * @param writer           this does the actual writing
    * @return total bytes written
-   * @throws IOException
-   * @throws InvalidRangeException
    */
   private long writeOrTestSize(ucar.nc2.dt.GridDataset gds, List<String> gridList,
                               LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
@@ -444,7 +436,7 @@ public class CFGridWriter2 {
     return size;
   }
 
-  private Range makeVerticalRange(Range zRange, CoordinateAxis1D vertAxis) throws InvalidRangeException {
+  private Range makeVerticalRange(Range zRange, CoordinateAxis1D vertAxis) {
     return (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
   }
 

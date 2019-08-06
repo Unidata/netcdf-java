@@ -123,7 +123,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
   private static class Subset extends StationCollectionStream {
     StationCollectionStream from;
 
-    Subset(StationCollectionStream from, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
+    Subset(StationCollectionStream from, LatLonRect filter_bb, CalendarDateRange filter_date) {
       super(from.uri, from.getTimeUnit(), from.getAltUnits());
       this.from = from;
 
@@ -169,7 +169,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     // StationTimeSeriesFeature
 
     @Override
-    public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
+    public StationTimeSeriesFeature subset(CalendarDateRange dateRange) {
       if (dateRange == null) return this;
       return new StationFeatureStream(stnFeature, dateRange);
     }

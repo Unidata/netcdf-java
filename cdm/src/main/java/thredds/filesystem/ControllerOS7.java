@@ -66,7 +66,7 @@ public class ControllerOS7 implements MController {
     }
 
     @Override
-    public boolean accept(Path entry) throws IOException {
+    public boolean accept(Path entry) {
       return !entry.endsWith(".gbx9") && !entry.endsWith(".ncx");
     }
   }

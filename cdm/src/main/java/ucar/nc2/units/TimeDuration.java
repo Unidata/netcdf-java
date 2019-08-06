@@ -7,11 +7,9 @@ package ucar.nc2.units;
 
 import ucar.units.ConversionException;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 

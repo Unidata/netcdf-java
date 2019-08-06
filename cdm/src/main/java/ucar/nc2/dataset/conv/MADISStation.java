@@ -27,7 +27,7 @@ public class MADISStation extends CoordSysBuilder {
     this.conventionName = "MADIS_Station_1.0";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
 
     String timeVars = ds.findAttValueIgnoreCase(null, "timeVariables", "");
     StringTokenizer stoker = new StringTokenizer( timeVars, ", ");

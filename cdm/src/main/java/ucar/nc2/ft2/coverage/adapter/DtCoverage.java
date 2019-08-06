@@ -568,7 +568,7 @@ public class DtCoverage implements IsMissingEvaluator {
     return dataVolume;
   }
 
-  private int[] calcPermuteIndex() throws java.io.IOException {
+  private int[] calcPermuteIndex() {
     Dimension xdim = getXDimension();
     Dimension ydim = getYDimension();
     Dimension zdim = getZDimension();

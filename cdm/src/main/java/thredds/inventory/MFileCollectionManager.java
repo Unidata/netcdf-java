@@ -49,7 +49,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public MFileCollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
+  static public MFileCollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
     return new MFileCollectionManager(collectionName, collectionSpec, olderThan, errlog);
   }
 
@@ -441,7 +441,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     List<MFile> result = new ArrayList<>(map.values());
     if (hasDateExtractor()) {
-      Collections.sort(result, new DateSorter());
+      result.sort(new DateSorter());
     } else {
       Collections.sort(result);
     }

@@ -113,11 +113,10 @@ abstract class DoradeDescriptor {
    *
    * @param file the DORADE sweepfile, positioned at the beginning of a
    *             descriptor
-   * @throws java.io.IOException
    */
   protected static void skipDescriptor(RandomAccessFile file,
                                        boolean littleEndianData)
-          throws DescriptorException, java.io.IOException {
+          throws DescriptorException {
     try {
       file.readFully(new byte[4]); // skip name
       byte[] lenBytes = new byte[4];
@@ -139,7 +138,6 @@ abstract class DoradeDescriptor {
    *             descriptor
    * @return the name of the DORADE descriptor starting at the current
    * file position, or null if no descriptor name is available
-   * @throws DescriptorException
    */
   protected static String peekName(RandomAccessFile file)
           throws DescriptorException {
@@ -162,7 +160,6 @@ abstract class DoradeDescriptor {
    *
    * @param file the DORADE sweepfile,
    * @return <code>true</code> iff the file contains little-endian data
-   * @throws DescriptorException
    */
   public static boolean sweepfileIsLittleEndian(RandomAccessFile file)
           throws DescriptorException {

@@ -36,7 +36,7 @@ public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, I
   }
 
   @Override
-  public PointFeatureCC next() throws IOException {
+  public PointFeatureCC next() {
     return done ? null : pointFeatureCollection;
   }
 

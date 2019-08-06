@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp.uamiv;
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -15,7 +16,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
-import java.io.File;
 import java.util.HashSet;
 import java.util.Arrays;
 
@@ -66,7 +66,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
    * @param raf RandomAccessFile
    * @return true if valid.
    */
-  public boolean isValidFile(RandomAccessFile raf) throws IOException {
+  public boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
@@ -92,7 +92,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
    * @param raf        the file to work on, it has already passed the isValidFile() test.
    * @param ncfile     add objects to this NetcdfFile
    * @param cancelTask used to monito user cancellation; may be null.
-   * @throws IOException
    */
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     /*
@@ -374,12 +373,12 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      * 1) needs earth radius
      * 2) needs better error checking
     */
-    Integer gdtyp = 2;
-    Double p_alp = 20.;
-    Double p_bet = 60.;
-    Double p_gam = 0.;
-    Double xcent = -95.;
-    Double ycent = 25.;
+    int gdtyp = 2;
+    double p_alp = 20.;
+    double p_bet = 60.;
+    double p_gam = 0.;
+    double xcent = -95.;
+    double ycent = 25.;
     if (!((iproj == 0) && (tlat1 == 0) && (tlat2 == 0) && (plon == 0) && (plat == 0))) {
       xcent = (double) plon;
       ycent = (double) plat;
@@ -416,12 +415,12 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
 
     String thisLine;
     String projpath = raf.getLocation();
-    Boolean lgdtyp = false;
-    Boolean lp_alp = false;
-    Boolean lp_bet = false;
-    Boolean lp_gam = false;
-    Boolean lxcent = false;
-    Boolean lycent = false;
+    boolean lgdtyp = false;
+    boolean lp_alp = false;
+    boolean lp_bet = false;
+    boolean lp_gam = false;
+    boolean lxcent = false;
+    boolean lycent = false;
     int lastIndex = projpath.lastIndexOf(File.separator);
     if (lastIndex <= 0)
       lastIndex = projpath.lastIndexOf('/');
@@ -431,7 +430,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     File paramFile = new File(projpath);
 
     if (paramFile.exists()) {
-      try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(paramFile), CDM.UTF8))) {
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(paramFile),
+          StandardCharsets.UTF_8))) {
         while ((thisLine = br.readLine()) != null) {
           if (thisLine.length() == 0) continue;
           if (thisLine.charAt(0) == '#') continue;
@@ -464,12 +464,12 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
           }
         }
       }
-      if (!lgdtyp) log.warn("GDTYP not found; using " + gdtyp.toString());
-      if (!lp_alp) log.warn("P_ALP not found; using " + p_alp.toString());
-      if (!lp_bet) log.warn("P_BET not found; using " + p_bet.toString());
-      if (!lp_gam) log.warn("P_GAM not found; using " + p_gam.toString());
-      if (!lxcent) log.warn("XCENT not found; using " + xcent.toString());
-      if (!lycent) log.warn("YCENT not found; using " + ycent.toString());
+      if (!lgdtyp) log.warn("GDTYP not found; using " + Integer.toString(gdtyp));
+      if (!lp_alp) log.warn("P_ALP not found; using " + Double.toString(p_alp));
+      if (!lp_bet) log.warn("P_BET not found; using " + Double.toString(p_bet));
+      if (!lp_gam) log.warn("P_GAM not found; using " + Double.toString(p_gam));
+      if (!lxcent) log.warn("XCENT not found; using " + Double.toString(xcent));
+      if (!lycent) log.warn("YCENT not found; using " + Double.toString(ycent));
 
     } else {
       if (log.isDebugEnabled()) log.debug("UAMIVServiceProvider: adding projection file");
@@ -480,22 +480,22 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
         bw.write("# Projection parameters are based on IOAPI.  For details, see www.baronams.com/products/ioapi/GRIDS.html");
         bw.newLine();
         bw.write("GDTYP=");
-        bw.write(gdtyp.toString());
+        bw.write(Integer.toString(gdtyp));
         bw.newLine();
         bw.write("P_ALP=");
-        bw.write(p_alp.toString());
+        bw.write(Double.toString(p_alp));
         bw.newLine();
         bw.write("P_BET=");
-        bw.write(p_bet.toString());
+        bw.write(Double.toString(p_bet));
         bw.newLine();
         bw.write("P_GAM=");
-        bw.write(p_gam.toString());
+        bw.write(Double.toString(p_gam));
         bw.newLine();
         bw.write("XCENT=");
-        bw.write(xcent.toString());
+        bw.write(Double.toString(xcent));
         bw.newLine();
         bw.write("YCENT=");
-        bw.write(ycent.toString());
+        bw.write(Double.toString(ycent));
         bw.newLine();
         bw.flush();
         bw.close();
@@ -519,8 +519,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
    *                    There must be a Range for each Dimension in the variable, in order.
    *                    Note: no nulls.
    * @return the requested data in a memory-resident Array
-   * @throws java.io.IOException
-   * @throws ucar.ma2.InvalidRangeException
    * @see ucar.ma2.Range
    */
   public ucar.ma2.Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {

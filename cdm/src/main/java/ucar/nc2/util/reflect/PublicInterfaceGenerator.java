@@ -21,9 +21,9 @@ public class PublicInterfaceGenerator {
 
     ArrayList allMethods = new ArrayList();
     addAllMethods( allMethods, c, doAllMethods);
-    Collections.sort( allMethods, new MethodComparator());
-    for (int i=0; i < allMethods.size(); i++) {
-       genMethod( (Method) allMethods.get(i), out);
+    allMethods.sort(new MethodComparator());
+    for (Object allMethod : allMethods) {
+      genMethod((Method) allMethod, out);
     }
 
     out.println( "}");
@@ -96,9 +96,8 @@ public class PublicInterfaceGenerator {
 
     Method[] methodsArray = c.getDeclaredMethods();
 
-    for (int i=0; i < methodsArray.length; i++) {
-       Method m = methodsArray[i];
-       System.out.println(" "+m.getName());
+    for (Method m : methodsArray) {
+      System.out.println(" " + m.getName());
     }
   }
 

@@ -82,7 +82,7 @@ public class StationHelper {
     return rect;
   }
 
-  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
+  public List<Station> getStations(LatLonRect boundingBox) {
     if (boundingBox == null) return getStations();
     
     LatLonPointImpl latlonPt = new LatLonPointImpl();
@@ -95,7 +95,7 @@ public class StationHelper {
     return result;
   }
 
-  public List<StationFeature> getStationFeatures(LatLonRect boundingBox) throws IOException {
+  public List<StationFeature> getStationFeatures(LatLonRect boundingBox) {
     if (boundingBox == null) return stations;
 
     LatLonPointImpl latlonPt = new LatLonPointImpl();
@@ -162,7 +162,7 @@ public class StationHelper {
     return result;
   }
 
-  public StationHelper subset(List<StationFeature> stns) throws IOException {
+  public StationHelper subset(List<StationFeature> stns) {
     StationHelper result = new StationHelper();
     result.setStations( stns);
     return result;

@@ -355,21 +355,6 @@ public class LatLonProjection extends ProjectionImpl {
   }
 
   /**
-   * projection rect 1
-   */
-  //private ProjectionRect projR1 = new ProjectionRect();
-
-  /**
-   * projection rect 1
-   */
-  //private ProjectionRect projR2 = new ProjectionRect();
-
-  /**
-   * array fo rects
-   */
-  //private ProjectionRect rects[] = new ProjectionRect[2];
-
-  /**
    * Create a latlon rectangle and split it into the equivalent
    * ProjectionRect using this LatLonProjection. The latlon rect is
    * constructed from 2 lat/lon points. The lon values are considered

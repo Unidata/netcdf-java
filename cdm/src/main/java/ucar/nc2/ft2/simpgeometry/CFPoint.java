@@ -10,7 +10,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.simpgeometry.Point;
 import ucar.nc2.ft2.simpgeometry.exception.InvalidDataseriesException;
 
 /**
@@ -138,18 +137,18 @@ public class CFPoint implements Point{
 	 * @param index of the point within the variable
 	 * @return return a point
 	 */
-	public Point setupPoint(NetcdfDataset set, Variable vari, int index)
+	public Point setupPoint(NetcdfDataset dataset, Variable vari, int index)
 	{
 		// Points are much simpler, node_count is used multigeometries so it's a bit different
 		// No need for the index finder here, unless there is a multipoint
 		Array xPts = null;
 		Array yPts = null;
-		Integer ind = (int)index;
+		int ind = index;
 		Variable nodeCounts = null;
 		boolean multi = false;
 		SimpleGeometryIndexFinder indexFinder = null;
 
-		List<CoordinateAxis> axes = set.getCoordinateAxes();
+		List<CoordinateAxis> axes = dataset.getCoordinateAxes();
 		CoordinateAxis x = null; CoordinateAxis y = null;
 		
 		String[] nodeCoords = vari.findAttributeIgnoreCase(CF.NODE_COORDINATES).getStringValue().split(" ");
@@ -167,7 +166,7 @@ public class CFPoint implements Point{
 		String node_c_str = vari.findAttValueIgnoreCase(CF.NODE_COUNT, "");
 		
 		if(!node_c_str.equals("")) {
-			nodeCounts = set.findVariable(node_c_str);
+			nodeCounts = dataset.findVariable(node_c_str);
 			indexFinder = new SimpleGeometryIndexFinder(nodeCounts);
 			multi = true;
 		}
@@ -183,8 +182,8 @@ public class CFPoint implements Point{
 			
 			else
 			{
-				xPts = x.read( ind.toString() ).reduce();
-				yPts = y.read( ind.toString() ).reduce();
+				xPts = x.read(Integer.toString(ind)).reduce();
+				yPts = y.read(Integer.toString(ind)).reduce();
 				this.x = xPts.getDouble(0);
 				this.y = yPts.getDouble(0);
 			}
@@ -250,22 +249,12 @@ public class CFPoint implements Point{
 				point.setNext(null);
 			}
 		
-		} catch (IOException e) {
-
-			e.printStackTrace();
-			return null;
-		
-		} catch (InvalidRangeException e) {
-			
-			e.printStackTrace();
-			return null;
-		} catch (InvalidDataseriesException e) {
-
+		} catch (IOException | InvalidRangeException | InvalidDataseriesException e) {
 			e.printStackTrace();
 			return null;
 		}
-		
-		return this;
+
+    return this;
 	}
 	
 	/**

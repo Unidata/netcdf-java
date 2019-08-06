@@ -295,7 +295,7 @@ public class DiskCache {
     File[] files = dir.listFiles();
     if (files != null) {
       List<File> fileList = Arrays.asList(files);
-      Collections.sort(fileList, fileComparator);
+      fileList.sort(fileComparator);
 
       for (File file : fileList) {
         if (file.length() + total > maxBytes) {
@@ -321,7 +321,7 @@ public class DiskCache {
     public int compare(File f1, File f2) {
       long f1Age = f1.lastModified();
       long f2Age = f2.lastModified();
-      return (f1Age < f2Age) ? 1 : (f1Age == f2Age ? 0 : -1);  // Steve Ansari 6/3/2010
+      return Long.compare(f2Age, f1Age);  // Steve Ansari 6/3/2010
     }
   }
 

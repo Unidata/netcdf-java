@@ -4,7 +4,6 @@
  */
 package ucar.nc2.iosp.nexrad2;
 
-import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
@@ -30,7 +29,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private final float MISSING_FLOAT = Float.NaN;
 
 
-  public boolean isValidFile( RandomAccessFile raf) throws IOException {
+  public boolean isValidFile( RandomAccessFile raf) {
     try {
       raf.seek(0);
       String test = raf.readString(8);
@@ -191,22 +190,23 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       throw new IllegalStateException("No data for "+shortName);
     }
 
-    List<List<Level2Record>> firstGroup = new ArrayList<List<Level2Record>>(groups.size());
-    List<List<Level2Record>> secondGroup = new ArrayList<List<Level2Record>>(groups.size());
+    List<List<Level2Record>> firstGroup = new ArrayList<>(groups.size());
+    List<List<Level2Record>> secondGroup = new ArrayList<>(groups.size());
 
-    for(int i = 0; i < nscans; i++) {
-        List<Level2Record> o = groups.get(i);
-        Level2Record firstRecord = (Level2Record) o.get(0);
-        int ol = o.size();
-        
-        if(ol >= 720 )
-            firstGroup.add(o);
-        else if(ol <= 360)
-            secondGroup.add(o);
-        else if( firstRecord.getGateCount(REFLECTIVITY_HIGH) > 500 || firstRecord.getGateCount(VELOCITY_HIGH) > 1000)
-            firstGroup.add(o);
-        else
-            secondGroup.add(o);
+    for (List<Level2Record> o : groups) {
+      Level2Record firstRecord = (Level2Record) o.get(0);
+      int ol = o.size();
+
+      if (ol >= 720) {
+        firstGroup.add(o);
+      } else if (ol <= 360) {
+        secondGroup.add(o);
+      } else if (firstRecord.getGateCount(REFLECTIVITY_HIGH) > 500
+          || firstRecord.getGateCount(VELOCITY_HIGH) > 1000) {
+        firstGroup.add(o);
+      } else {
+        secondGroup.add(o);
+      }
     }
     if(firstGroup != null && firstGroup.size() > 0)
         v1 = makeVariable(ncfile, datatype, shortName + "_HI", longName + "_HI",  abbrev + "_HI", firstGroup, 1, vScan);
@@ -217,10 +217,10 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
   public int getMaxRadials(List groups) {
       int maxRadials = 0;
-      for (int i = 0; i < groups.size(); i++) {
-        ArrayList group = (ArrayList) groups.get(i);
-        maxRadials = Math.max(maxRadials, group.size());
-      }
+    for (Object o : groups) {
+      ArrayList group = (ArrayList) o;
+      maxRadials = Math.max(maxRadials, group.size());
+    }
       return maxRadials;
   }
 
@@ -232,7 +232,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
   public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName,
                                String longName, String abbrev, List<List<Level2Record>> groups,
-                               int rd, Level2VolumeScan volScan) throws IOException {
+                               int rd, Level2VolumeScan volScan) {
     int nscans = groups.size();
 
     if (nscans == 0) {
@@ -254,7 +254,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addDimension( null, gateDim);
     ncfile.addDimension( null, radialDim);
 
-    List<Dimension> dims = new ArrayList<Dimension>();
+    List<Dimension> dims = new ArrayList<>();
     dims.add( scanDim);
     dims.add( radialDim);
     dims.add( gateDim);
@@ -467,27 +467,31 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       int nradials = scanGroup.size();
 
       Level2Record first = null;
-      for (int j = 0; j < nradials; j++) {
-        Level2Record r =  (Level2Record) scanGroup.get(j);
-        if (first == null) first = r;
+      for (Object o : scanGroup) {
+        Level2Record r = (Level2Record) o;
+        if (first == null) {
+          first = r;
+        }
 
-        int radial = r.radial_num-1;
+        int radial = r.radial_num - 1;
         if (radial >= nradials) {
           radial %= nradials;
         }
-        if(last_msecs != Integer.MIN_VALUE && (last_msecs - r.data_msecs ) > 80000000 ) {
-             overMidNight = true;
+        if (last_msecs != Integer.MIN_VALUE && (last_msecs - r.data_msecs) > 80000000) {
+          overMidNight = true;
         }
-        if(overMidNight)
-            timeData.setInt( timeIndex.set(scan, radial), r.data_msecs + 24 * 3600 * 1000);
-        else
-            timeData.setInt( timeIndex.set(scan, radial), r.data_msecs);
-        elevData.setFloat( elevIndex.set(scan, radial), r.getElevation());
-        aziData.setFloat( aziIndex.set(scan, radial), r.getAzimuth());
+        if (overMidNight) {
+          timeData.setInt(timeIndex.set(scan, radial), r.data_msecs + 24 * 3600 * 1000);
+        } else {
+          timeData.setInt(timeIndex.set(scan, radial), r.data_msecs);
+        }
+        elevData.setFloat(elevIndex.set(scan, radial), r.getElevation());
+        aziData.setFloat(aziIndex.set(scan, radial), r.getAzimuth());
 
-        if (r.data_msecs < last_msecs && !overMidNight)
-            logger.warn("makeCoordinateData time out of order: " +
-                    r.data_msecs + " before " + last_msecs);
+        if (r.data_msecs < last_msecs && !overMidNight) {
+          logger.warn("makeCoordinateData time out of order: " +
+              r.data_msecs + " before " + last_msecs);
+        }
 
         last_msecs = r.data_msecs;
       }
@@ -503,7 +507,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ngatesVar.setCachedData( ngatesData, false);
   }
 
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException {
     Vgroup vgroup = (Vgroup) v2.getSPobject();    Range scanRange = section.getRange(0);
     Range radialRange = section.getRange(1);
     Range gateRange = section.getRange(2);

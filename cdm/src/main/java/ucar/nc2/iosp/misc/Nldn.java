@@ -177,20 +177,20 @@ The specifics for the binary NLDN data record contained in the IDD is:
     v = makeLightningVariable(ncfile, null, seq, LAT, DataType.INT, "",
             "latitude", "latitude", CDM.LAT_UNITS,
             AxisType.Lat);
-    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float(1.0e-3)));
+    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0e-3f));
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(ncfile, null, seq, LON, DataType.INT, "",
             "longitude", "longitude", CDM.LON_UNITS,
             AxisType.Lon);
-    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float(1.0e-3)));
+    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0e-3f));
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(
             ncfile, null, seq, SIGNAL, DataType.SHORT, "",
             "signal strength/polarity [150 NLDN measures ~= 30 kAmps]", null, "",
             null);
-    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float(1.0e-1)));
+    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0e-1f));
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(ncfile, null, seq, MULTIPLICITY,
@@ -305,11 +305,10 @@ The specifics for the binary NLDN data record contained in the IDD is:
    *                Note: no nulls allowed. IOSP may not modify.
    * @return the requested data in a memory-resident Array
    * @throws IOException           if read error
-   * @throws InvalidRangeException if invalid section
    * @see ucar.ma2.Range
    */
   public Array readData(Variable v2, Section section)
-          throws IOException, InvalidRangeException {
+          throws IOException {
     return new ArraySequence(sm, new SeqIter(), nelems);
   }
 
@@ -398,7 +397,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public StructureData next() {
       done++;
       return asbb.getStructureData(nextIndex++);
     }

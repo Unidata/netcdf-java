@@ -94,11 +94,8 @@ public class UFheader {
       Map<String, Ray.UF_field_header2> rayMap = r.field_header_map;      // each ray has a list of variables
       for (Map.Entry<String, Ray.UF_field_header2> entry : rayMap.entrySet()) {
         String ab = entry.getKey();                                      // variable name
-        List<Ray> group = rayListMap.get(ab);                            // all the rays for this variable
-        if (null == group) {
-          group = new ArrayList<>();
-          rayListMap.put(ab, group);
-        }
+        List<Ray> group = rayListMap.computeIfAbsent(ab,
+            k -> new ArrayList<>());                            // all the rays for this variable
         group.add(r);
       }
     }
@@ -123,18 +120,14 @@ public class UFheader {
     for ( Ray r : rays) {
       Integer groupNo = (int) r.uf_header2.sweepNumber; //.elevation);
 
-      List<Ray> group = sweepMap.get(groupNo);
-      if (null == group) {
-        group = new ArrayList<>();
-        sweepMap.put(groupNo, group);
-      }
+      List<Ray> group = sweepMap.computeIfAbsent(groupNo, k -> new ArrayList<>());
 
       group.add(r);
     }
 
     // sort the groups by elevation
     List<List<Ray>> groups = new ArrayList<>(sweepMap.values());
-    Collections.sort(groups, new GroupComparator());
+    groups.sort(new GroupComparator());
 
     // count rays in each group
     for (List<Ray> group : groups) {
@@ -234,7 +227,7 @@ public class UFheader {
 
   protected short getShort(byte[] bytes, int offset) {
     int ndx0 = offset + (littleEndianData ? 1 : 0);
-    int ndx1 = offset + (littleEndianData ? 0 : 1);
+    int ndx1 = offset;
     // careful that we only allow sign extension on the highest order byte
     return (short) (bytes[ndx0] << 8 | (bytes[ndx1] & 0xff));
   }

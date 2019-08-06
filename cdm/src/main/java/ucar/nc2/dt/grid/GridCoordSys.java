@@ -26,8 +26,6 @@ import ucar.ma2.*;
 import java.util.*;
 import java.io.IOException;
 
-import ucar.nc2.units.DateRange;
-
 /**
  * A georeferencing "gridded" CoordinateSystem. This describes a "grid" of coordinates, which
  * implies a connected topology such that values next to each other in index space are next to
@@ -383,7 +381,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     // make name based on coordinate
-    Collections.sort(coordAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+    coordAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     this.name = makeName(coordAxes);
 
     // copy all coordinate transforms into here
@@ -532,7 +530,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
 
     // make name based on coordinate
-    Collections.sort(coordAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+    coordAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     this.name = makeName(coordAxes);
 
     this.coordTrans = new ArrayList<>(from.getCoordinateTransforms());

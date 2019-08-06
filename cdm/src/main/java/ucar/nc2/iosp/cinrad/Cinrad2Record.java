@@ -983,7 +983,6 @@ public class Cinrad2Record {
    * @param datatype which data type we want
    * @param gateRange handles the possible subset of data to return
    * @param ii put the data here
-   * @throws IOException
    */
   public void readData(RandomAccessFile raf, int datatype, Range gateRange, IndexIterator ii) throws IOException {
     long offset = message_offset;

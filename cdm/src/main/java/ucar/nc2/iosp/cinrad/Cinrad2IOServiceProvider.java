@@ -195,17 +195,22 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     if (volScan.getStationId() != null) {
       ncfile.addAttribute(null, new Attribute("Station", volScan.getStationId()));
       ncfile.addAttribute(null, new Attribute("StationName", volScan.getStationName()));
-      ncfile.addAttribute(null, new Attribute("StationLatitude", new Double(volScan.getStationLatitude())));
-      ncfile.addAttribute(null, new Attribute("StationLongitude", new Double(volScan.getStationLongitude())));
-      ncfile.addAttribute(null, new Attribute("StationElevationInMeters", new Double(volScan.getStationElevation())));
+      ncfile.addAttribute(null, new Attribute("StationLatitude", volScan.getStationLatitude()));
+      ncfile.addAttribute(null, new Attribute("StationLongitude", volScan.getStationLongitude()));
+      ncfile.addAttribute(null, new Attribute("StationElevationInMeters",
+          volScan.getStationElevation()));
 
       double latRadiusDegrees = Math.toDegrees( radarRadius / ucar.unidata.geoloc.Earth.getRadius());
-      ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Double(volScan.getStationLatitude() - latRadiusDegrees)));
-      ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Double(volScan.getStationLatitude() + latRadiusDegrees)));
+      ncfile.addAttribute(null, new Attribute("geospatial_lat_min",
+          volScan.getStationLatitude() - latRadiusDegrees));
+      ncfile.addAttribute(null, new Attribute("geospatial_lat_max",
+          volScan.getStationLatitude() + latRadiusDegrees));
       double cosLat = Math.cos( Math.toRadians(volScan.getStationLatitude()));
       double lonRadiusDegrees = Math.toDegrees( radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
-      ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Double(volScan.getStationLongitude() - lonRadiusDegrees)));
-      ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Double(volScan.getStationLongitude() + lonRadiusDegrees)));
+      ncfile.addAttribute(null, new Attribute("geospatial_lon_min",
+          volScan.getStationLongitude() - lonRadiusDegrees));
+      ncfile.addAttribute(null, new Attribute("geospatial_lon_max",
+          volScan.getStationLongitude() + lonRadiusDegrees));
 
 
           // add a radial coordinate transform (experimental)
@@ -213,9 +218,9 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
       ct.setDataType(DataType.CHAR);
       ct.setDimensions(""); // scalar
       ct.addAttribute( new Attribute("transform_name", "Radial"));
-      ct.addAttribute( new Attribute("center_latitude", new Double(volScan.getStationLatitude())));
-      ct.addAttribute( new Attribute("center_longitude", new Double(volScan.getStationLongitude())));
-      ct.addAttribute( new Attribute("center_elevation", new Double(volScan.getStationElevation())));
+      ct.addAttribute( new Attribute("center_latitude", volScan.getStationLatitude()));
+      ct.addAttribute( new Attribute("center_longitude", volScan.getStationLongitude()));
+      ct.addAttribute( new Attribute("center_elevation", volScan.getStationElevation()));
       ct.addAttribute( new Attribute(_Coordinate.TransformType, "Radial"));
       ct.addAttribute( new Attribute(_Coordinate.AxisTypes, "RadialElevation RadialAzimuth RadialDistance"));
 
@@ -232,7 +237,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     //Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     //ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
 
-    ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(volScan.getStartDate())));; //.toDateTimeStringISO(d)));
+    ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(volScan.getStartDate())));//.toDateTimeStringISO(d)));
     ncfile.addAttribute(null, new Attribute("time_coverage_end", formatter.toDateTimeStringISO(volScan.getEndDate())));
 
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
@@ -250,13 +255,14 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     ncfile.addAttribute(null, new Attribute("VolumeCoveragePatternName",
       Cinrad2Record.getVolumeCoveragePatternName(volScan.getVCP())));
-    ncfile.addAttribute(null, new Attribute("VolumeCoveragePattern", new Integer(volScan.getVCP())));
-    ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees", new Double(Cinrad2Record.HORIZONTAL_BEAM_WIDTH)));
+    ncfile.addAttribute(null, new Attribute("VolumeCoveragePattern", volScan.getVCP()));
+    ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees",
+        (double) Cinrad2Record.HORIZONTAL_BEAM_WIDTH));
 
     ncfile.finish();
   }
 
-  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List groups) throws IOException {
+  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List groups) {
     int nscans = groups.size();
 
     if (nscans == 0) {
@@ -303,9 +309,9 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     else
       v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     //v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
-    v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
-    v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
-    v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
+    v.addAttribute( new Attribute("signal_below_threshold", Cinrad2Record.BELOW_THRESHOLD));
+    v.addAttribute( new Attribute(CDM.SCALE_FACTOR, Cinrad2Record.getDatatypeScaleFactor(datatype)));
+    v.addAttribute( new Attribute(CDM.ADD_OFFSET, Cinrad2Record.getDatatypeAddOffset(datatype)));
     //if (!isCC)
     //  v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
@@ -329,7 +335,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     timeVar.addAttribute( new Attribute(CDM.LONG_NAME, "time since base date"));
     timeVar.addAttribute( new Attribute(CDM.UNITS, units));
-    timeVar.addAttribute( new Attribute(CDM.MISSING_VALUE, new Integer(MISSING_INT)));
+    timeVar.addAttribute( new Attribute(CDM.MISSING_VALUE, MISSING_INT));
     timeVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     // add elevation coordinate variable
@@ -341,7 +347,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     elevVar.addAttribute( new Attribute(CDM.UNITS, "degrees"));
     elevVar.addAttribute( new Attribute(CDM.LONG_NAME, "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular"));
-    elevVar.addAttribute( new Attribute(CDM.MISSING_VALUE, new Float(MISSING_FLOAT)));
+    elevVar.addAttribute( new Attribute(CDM.MISSING_VALUE, MISSING_FLOAT));
     elevVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
 
     // add azimuth coordinate variable
@@ -353,7 +359,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     aziVar.addAttribute( new Attribute(CDM.UNITS, "degrees"));
     aziVar.addAttribute( new Attribute(CDM.LONG_NAME, "azimuth angle in degrees: 0 = true north, 90 = east"));
-    aziVar.addAttribute( new Attribute(CDM.MISSING_VALUE, new Float(MISSING_FLOAT)));
+    aziVar.addAttribute( new Attribute(CDM.MISSING_VALUE, MISSING_FLOAT));
     aziVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString()));
 
     // add gate coordinate variable
@@ -433,9 +439,9 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
       v.addAttribute( new Attribute(CDM.MISSING_VALUE, (short)-32768));
     else
       v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
-    v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
-    v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
-    v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
+    v.addAttribute( new Attribute("signal_below_threshold", Cinrad2Record.BELOW_THRESHOLD));
+    v.addAttribute( new Attribute(CDM.SCALE_FACTOR, Cinrad2Record.getDatatypeScaleFactor(datatype)));
+    v.addAttribute( new Attribute(CDM.ADD_OFFSET, Cinrad2Record.getDatatypeAddOffset(datatype)));
     //v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
@@ -468,33 +474,35 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     int last_msecs = Integer.MIN_VALUE;
     int nscans = groups.size();
     int maxRadials = volScan.getMaxRadials();
-    for (int i = 0; i < nscans; i++) {
-      List scanGroup = (List) groups.get(i);
+    for (Object group : groups) {
+      List scanGroup = (List) group;
       int nradials = scanGroup.size();
 
       boolean needFirst = true;
-      for (int j = 0; j < nradials; j++) {
-        Cinrad2Record r =  (Cinrad2Record) scanGroup.get(j);
+      for (Object o : scanGroup) {
+        Cinrad2Record r = (Cinrad2Record) o;
         if (needFirst) {
-            ngatesIter.setIntNext(r.getGateCount(datatype));
-            needFirst = false;
+          ngatesIter.setIntNext(r.getGateCount(datatype));
+          needFirst = false;
         }
 
-        timeDataIter.setIntNext( r.data_msecs);
-        elevDataIter.setFloatNext( r.getElevation());
-        aziDataIter.setFloatNext( r.getAzimuth());
+        timeDataIter.setIntNext(r.data_msecs);
+        elevDataIter.setFloatNext(r.getElevation());
+        aziDataIter.setFloatNext(r.getAzimuth());
 
-        if (r.data_msecs < last_msecs) logger.warn("makeCoordinateData time out of order "+r.data_msecs);
+        if (r.data_msecs < last_msecs) {
+          logger.warn("makeCoordinateData time out of order " + r.data_msecs);
+        }
         last_msecs = r.data_msecs;
       }
 
       for (int j = nradials; j < maxRadials; j++) {
-        timeDataIter.setIntNext( MISSING_INT);
-        elevDataIter.setFloatNext( MISSING_FLOAT);
-        aziDataIter.setFloatNext( MISSING_FLOAT);
+        timeDataIter.setIntNext(MISSING_INT);
+        elevDataIter.setFloatNext(MISSING_FLOAT);
+        aziDataIter.setFloatNext(MISSING_FLOAT);
       }
 
-      nradialsIter.setIntNext( nradials);
+      nradialsIter.setIntNext(nradials);
     }
 
     time.setCachedData( timeData, false);
@@ -573,7 +581,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     ngatesVar.setCachedData( ngatesData, false);
   }
 
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException {
     Vgroup vgroup = (Vgroup) v2.getSPobject();
 
     Range scanRange = section.getRange(0);

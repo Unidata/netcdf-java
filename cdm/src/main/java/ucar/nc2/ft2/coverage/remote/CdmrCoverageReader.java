@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.InflaterInputStream;
 
 import com.google.common.escape.Escaper;
@@ -45,13 +44,13 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
   boolean showCompression = true;
   boolean showRequest = true;
 
-  CdmrCoverageReader(String endpoint, HTTPSession httpClient) throws IOException {
+  CdmrCoverageReader(String endpoint, HTTPSession httpClient) {
     this.endpoint = endpoint;
     this.httpClient = httpClient;
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     httpClient.close();
   }
 

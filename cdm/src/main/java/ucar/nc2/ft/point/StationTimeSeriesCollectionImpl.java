@@ -64,7 +64,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   }
 
   @Override
-  public List<StationFeature> getStationFeatures() throws IOException {
+  public List<StationFeature> getStationFeatures() {
     return getStationHelper().getStationFeatures();
   }
 
@@ -122,7 +122,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   }
 
   @Override
-  public StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stationsFeatures) throws IOException {
+  public StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stationsFeatures) {
     return new StationSubset(this, stationsFeatures);
   }
 
@@ -135,14 +135,14 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     }
 
     @Override
-    protected StationHelper createStationHelper() throws IOException {
+    protected StationHelper createStationHelper() {
       StationHelper stationHelper = new StationHelper();
       stationHelper.setStations(stations);
       return stationHelper;
     }
 
     @Override
-    public List<StationFeature> getStationFeatures() throws IOException {
+    public List<StationFeature> getStationFeatures() {
       return getStationHelper().getStationFeatures();
     }
   }
@@ -171,7 +171,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
 
 
   @Override
-  public StationFeature getStationFeature(PointFeature flatPointFeature) throws IOException {
+  public StationFeature getStationFeature(PointFeature flatPointFeature) {
     if (flatPointFeature instanceof StationFeatureHas) {
       return ((StationFeatureHas)flatPointFeature).getStationFeature();
     }
@@ -182,21 +182,17 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
 
   @Override
   public Iterator<StationTimeSeriesFeature> iterator() {
-    try {
-      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator();
-      return new CollectionIteratorAdapter<>(pfIterator);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator();
+    return new CollectionIteratorAdapter<>(pfIterator);
   }
 
   @Override
-  public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
+  public IOIterator<PointFeatureCollection> getCollectionIterator() {
     return new StationIterator();
   }
 
   @Override
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator() {
     return new StationIterator();
   }
 
@@ -216,7 +212,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     }
 
     @Override
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
       if (prev != null && calcInfo != null)
         calcInfo.extend(prev.getInfo());
 
@@ -226,7 +222,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     }
 
     @Override
-    public PointFeatureCollection next() throws IOException {
+    public PointFeatureCollection next() {
       PointFeatureCollection result = (PointFeatureCollection) stationIter.next(); // LOOK
       prev = (DsgCollectionImpl) result; // common for Station and StationProfile
       return result;

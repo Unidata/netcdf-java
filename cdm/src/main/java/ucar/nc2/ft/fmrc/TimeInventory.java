@@ -13,18 +13,18 @@ package ucar.nc2.ft.fmrc;
  * @since Apr 15, 2010
  */
 public interface TimeInventory {
-  public String getName();
+  String getName();
 
-  public int getTimeLength(FmrcInvLite.Gridset gridset);
-  public FmrcInvLite.ValueB getTimeCoords(FmrcInvLite.Gridset gridset);
-  public double[] getRunTimeCoords(FmrcInvLite.Gridset gridset);
-  public double[] getOffsetCoords(FmrcInvLite.Gridset gridset);  
+  int getTimeLength(FmrcInvLite.Gridset gridset);
+  FmrcInvLite.ValueB getTimeCoords(FmrcInvLite.Gridset gridset);
+  double[] getRunTimeCoords(FmrcInvLite.Gridset gridset);
+  double[] getOffsetCoords(FmrcInvLite.Gridset gridset);
 
-  public Instance getInstance( FmrcInvLite.Gridset.Grid gridLite, int timeIdx);
+  Instance getInstance(FmrcInvLite.Gridset.Grid gridLite, int timeIdx);
 
-  public interface Instance {
-    public String getDatasetLocation();
-    public int getDatasetIndex();
+  interface Instance {
+    String getDatasetLocation();
+    int getDatasetIndex();
   }
 
 }

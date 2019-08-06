@@ -27,7 +27,7 @@ public class RafNimbus extends TableConfigurerImpl {
     return center != null && center.equals("NCAR-RAF/nimbus");
   }
 
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     TableConfig topTable = new TableConfig(Table.Type.Top, "singleTrajectory");
 
     CoordinateAxis coordAxis = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);

@@ -30,7 +30,7 @@ public class BeLeDataInputStream extends DataInputStream {
    *
    * @param inputStream from which to read
    */
-  public BeLeDataInputStream(InputStream inputStream) throws IOException {
+  public BeLeDataInputStream(InputStream inputStream) {
     super(inputStream);
   }
 

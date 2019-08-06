@@ -27,8 +27,6 @@ public class SimpleGeometryIndexFinder {
 	
 	/**
 	 * Gets the beginning index of a geometry's points given the index of the geometry within the array. 
-	 * 
-	 * @param index
 	 * @return beginning of the range
 	 */
 	public int getBeginning(int index) {

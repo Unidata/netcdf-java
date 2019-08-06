@@ -89,7 +89,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
   }
 
   @Override
-  public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
+  public StationTimeSeriesFeature subset(CalendarDateRange dateRange) {
     if (dateRange == null) return this;
     return new StationFeatureSubset(this, dateRange);
   }

@@ -158,7 +158,6 @@ public class Catalog extends DatasetNode {
    * @param uriString any url, reletive or absolute
    * @return resolved url string, or null on error
    * @throws java.net.URISyntaxException if uriString violates RFC 2396
-   * @see java.net.URI#resolve
    */
   public URI resolveUri(String uriString) throws URISyntaxException {
     if (baseURI == null) return new URI(uriString);

@@ -160,7 +160,7 @@ public abstract class Aggregation {
     this.dimName = dimName;
     this.type = type;
     String name = ncd.getLocation();
-    if (name == null) name = "Agg-"+Integer.toString(ncd.hashCode());
+    if (name == null) name = "Agg-"+ ncd.hashCode();
     datasetManager = MFileCollectionManager.openWithRecheck(name, recheckS);
   }
 
@@ -514,31 +514,6 @@ public abstract class Aggregation {
   }
   private Random r;
 
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Read an aggregation variable: A variable whose data spans multiple files.
-   *
-   * @param mainv      the aggregation variable
-   * @param cancelTask allow the user to cancel
-   * @return the data array
-   * @throws IOException
-   */
-  //public abstract Array read(Variable mainv, CancelTask cancelTask) throws IOException;
-  //public abstract Array reallyRead() throws IOException;
-
-  /**
-   * Read a section of an aggregation variable.
-   *
-   * @param mainv      the aggregation variable
-   * @param cancelTask allow the user to cancel
-   * @param section    read just this section of the data, refers to aggregated Variable's section.
-   * @return the data array section
-   * @throws IOException
-   */
-  //public abstract Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
-  //public abstract Array reallyRead(Section section) throws IOException, InvalidRangeException;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

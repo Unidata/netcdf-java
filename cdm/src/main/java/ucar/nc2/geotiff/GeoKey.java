@@ -201,7 +201,7 @@ class GeoKey  {
     static public final Tag GeoKey_ProjFalseOriginLat = new Tag("GeoKey_ProjFalseOriginLat", 3085);
 
     static Tag get( int code) {
-      return (Tag) map.get( new Integer(code));
+      return (Tag) map.get(code);
     }
 
     static Tag getOrMake( int code) {
@@ -216,7 +216,7 @@ class GeoKey  {
     private Tag( String  name, int code) {
       this.name = name;
       this.code = code;
-      map.put( new Integer(code), this);
+      map.put(code, this);
     }
 
     Tag( int code) {

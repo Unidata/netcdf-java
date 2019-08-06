@@ -599,7 +599,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         int N = 1;
         do {
           if (nextSym == RUNA) {
-            s = s + (0 + 1) * N;
+            s = s + N;
           } else if (nextSym == RUNB) {
             s = s + (1 + 1) * N;
           }

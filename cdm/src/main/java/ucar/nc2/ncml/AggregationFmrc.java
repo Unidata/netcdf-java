@@ -38,7 +38,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
   }
 
   public void addDirectoryScanFmrc(String dirName, String suffix, String regexpPatternString, String subdirs, String olderThan,
-                                   String runMatcher, String forecastMatcher, String offsetMatcher) throws IOException {
+                                   String runMatcher, String forecastMatcher, String offsetMatcher) {
 
     // only one
     this.runMatcher = runMatcher;
@@ -108,7 +108,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
   // we assume the variables are complete, but the time dimensions and values have to be recomputed
   @Override
-  protected void rebuildDataset() throws IOException {
+  protected void rebuildDataset() {
     throw new UnsupportedOperationException();
     // ncDataset.empty();
     // fmrc.getDataset2D(false, true, ncDataset);

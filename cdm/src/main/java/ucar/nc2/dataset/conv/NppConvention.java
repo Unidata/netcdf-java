@@ -62,7 +62,7 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
     this.conventionName = "NPP/NPOESS";
   }
 
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
     ds.addAttribute(null, new Attribute("FeatureType", FeatureType.SWATH.toString()));
 
     boolean hasPressureLevels = false;

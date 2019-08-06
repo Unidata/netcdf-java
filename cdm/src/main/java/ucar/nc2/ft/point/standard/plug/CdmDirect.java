@@ -67,7 +67,7 @@ public class CdmDirect extends TableConfigurerImpl {
     }
   }
 
-  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     if (lat == null) {

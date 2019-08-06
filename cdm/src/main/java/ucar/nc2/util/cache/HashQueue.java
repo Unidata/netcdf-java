@@ -6,10 +6,7 @@
 package ucar.nc2.util.cache;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.NavigableMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 /**

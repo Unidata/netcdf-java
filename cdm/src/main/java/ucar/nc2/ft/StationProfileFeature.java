@@ -30,17 +30,15 @@ public interface StationProfileFeature extends StationFeature, PointFeatureCC, I
    * Subset this collection by dateRange
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
-   * @throws java.io.IOException on read error
    */
-  StationProfileFeature subset(CalendarDateRange dateRange) throws IOException;
+  StationProfileFeature subset(CalendarDateRange dateRange);
 
 
   /**
    * Get the list of times in the time series of profiles. Note that this may be as costly as iterating over the collection.
    * @return list of times in the time series of profiles.
-   * @throws java.io.IOException on read error
    */
-  List<CalendarDate> getTimes() throws IOException;
+  List<CalendarDate> getTimes();
 
   /**
    * Get a particular profile by date. Note that this may be as costly as iterating over the collection.

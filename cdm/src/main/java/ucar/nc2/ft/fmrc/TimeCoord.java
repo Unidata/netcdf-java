@@ -136,7 +136,7 @@ public class TimeCoord implements Comparable {
    * @return list of GridDatasetInv.Grid that use this TimeCoord
    */
   public List<GridDatasetInv.Grid> getGridInventory() {
-    return (gridInv == null) ? new ArrayList<GridDatasetInv.Grid>() : gridInv;
+    return (gridInv == null) ? new ArrayList<>() : gridInv;
   }
 
   /**

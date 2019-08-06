@@ -32,7 +32,7 @@ import ucar.nc2.time.CalendarDateUnit;
 public class StandardStationCollectionImpl extends StationTimeSeriesCollectionImpl {
   private NestedTable ft;
 
-  StandardStationCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) throws IOException {
+  StandardStationCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
     this.extras = ft.getExtras();

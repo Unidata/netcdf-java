@@ -125,7 +125,7 @@ public class ParsedSectionSpec {
     return sb.toString();
   }
 
-  private static List<Range> makeSpec(StringBuilder sb, Variable v, List<Range> orgRanges) throws InvalidRangeException {
+  private static List<Range> makeSpec(StringBuilder sb, Variable v, List<Range> orgRanges) {
     if (v.isMemberOfStructure()) {
       orgRanges = makeSpec(sb, v.getParentStructure(), orgRanges);
       sb.append('.');

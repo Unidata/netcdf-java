@@ -7,9 +7,6 @@ package ucar.nc2.ft2.coverage.writer;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
 
@@ -22,7 +19,7 @@ import java.util.*;
  */
 public class CoverageSubsetter2 {
 
-  public static ucar.nc2.util.Optional<CoverageCollection> makeCoverageDatasetSubset(CoverageCollection org, List<String> gridsWanted, SubsetParams params) throws InvalidRangeException {
+  public static ucar.nc2.util.Optional<CoverageCollection> makeCoverageDatasetSubset(CoverageCollection org, List<String> gridsWanted, SubsetParams params) {
 
     // Get subset of original objects that are needed by the requested grids
     List<Coverage> orgCoverages = new ArrayList<>();

@@ -31,7 +31,7 @@ public class FslWindProfiler extends CoordSysBuilder {
     this.conventionName = "FslWindProfiler";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
     for (Variable v : ds.getVariables()) {
       switch (v.getShortName()) {
         case "staName":

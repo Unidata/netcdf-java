@@ -136,7 +136,7 @@ public class H5diag {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  public void deflate(Formatter f, Variable v) throws IOException {
+  public void deflate(Formatter f, Variable v) {
     H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
     DataBTree btree = vinfo.btree;
     if (btree == null || vinfo.useFillValue) {

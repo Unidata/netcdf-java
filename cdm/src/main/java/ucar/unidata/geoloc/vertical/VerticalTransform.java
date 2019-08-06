@@ -66,8 +66,7 @@ public interface VerticalTransform {
      *  @param y_range subset the y dimension, or null if you want all of it
      *  @param x_range subset the x dimension, or null if you want all of it
      *  @return a new VerticalTransform for the given subset
-     *  @throws ucar.ma2.InvalidRangeException if any Range is incompatible with the existing VerticalTransform
      */
-    VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
+    VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range);
 }
 

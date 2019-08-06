@@ -30,14 +30,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/**
- * Polyconic Projection.
- * This file was semi-automatically converted from the public-domain USGS PROJ source.
- *
- * Bernhard Jenny, 19 September 2010: fixed spherical inverse.
-
- * @author ghansham@sac.isro.gov.in 1/8/2012
- */
 package ucar.unidata.geoloc.projection.proj4;
 
 import java.util.Formatter;
@@ -51,6 +43,14 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 
+/**
+ * Polyconic Projection.
+ * This file was semi-automatically converted from the public-domain USGS PROJ source.
+ *
+ * Bernhard Jenny, 19 September 2010: fixed spherical inverse.
+
+ * @author ghansham@sac.isro.gov.in 1/8/2012
+ */
 public class PolyconicProjection extends ProjectionImpl {
 
   private double ml0;

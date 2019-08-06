@@ -100,38 +100,6 @@ public class Earth implements Serializable {
   }
 
   /**
-   * Specify earth with equatorial and polar radius.
-   *
-   * @param a semimajor (equatorial) radius, in meters.
-   * @param b semiminor (polar) radius, in meters.
-   *
-   * Earth(double a, double b) {
-   * this.equatorRadius = a;
-   * this.poleRadius = b;
-   * eccentricitySquared = 1.0 - (b * b) / (a * a);
-   * flattening = 1.0 - b / a;
-   * }
-   *
-   *
-   * Specify earth with semimajor radius a, and flattening f.
-   * b = a(1-flattening)
-   *
-   * @param a    semimajor (equatorial) radius, in meters.
-   * @param f    flattening.
-   * @param fake fake
-   *
-   * Earth(double a, double f, boolean fake) {
-   * this.equatorRadius = a;
-   * this.flattening = flattening;
-   * poleRadius = a * (1.0 - flattening);
-   * eccentricitySquared = 1.0 - (poleRadius * poleRadius) / (a * a);
-   * }
-   *
-   * @return _more_
-   */
-
-
-  /**
    * Get the equatorial radius (semimajor axis) of the earth, in meters.
    *
    * @return equatorial radius (semimajor axis) in meters

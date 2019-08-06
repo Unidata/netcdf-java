@@ -27,10 +27,9 @@ public interface TrajectoryProfileFeature extends PointFeatureCC, Iterable<Profi
   /**
    * The data associated with the Section feature.
    * @return the actual data of this section. may be empty, not null.
-   * @throws java.io.IOException on i/o error
    */
   @Nonnull
-  StructureData getFeatureData() throws IOException;
+  StructureData getFeatureData();
 
   //////////////////////////////////////////////////////////
   // deprecated use foreach

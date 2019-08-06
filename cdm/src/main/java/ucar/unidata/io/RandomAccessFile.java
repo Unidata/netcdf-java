@@ -325,7 +325,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       if (ioe.getMessage().equals("Too many open files")) {
         System.out.printf("RandomAccessFile %s%n", ioe);
         try {
-          Thread.currentThread().sleep(100);
+          Thread.sleep(100);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
@@ -510,9 +510,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * write will occur.
    *
    * @return the offset from the start of the file in bytes.
-   * @throws IOException if an I/O error occurrs.
    */
-  public long getFilePointer() throws IOException {
+  public long getFilePointer() {
     return filePosition;
   }
 

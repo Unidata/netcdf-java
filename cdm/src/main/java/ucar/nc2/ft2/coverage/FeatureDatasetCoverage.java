@@ -193,12 +193,12 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
   }
 
   @Override
-  public void release() throws IOException {
+  public void release() {
     // reader.release()
   }
 
   @Override
-  public void reacquire() throws IOException {
+  public void reacquire() {
     // reader.reacquire()
   }
 

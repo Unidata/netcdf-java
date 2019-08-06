@@ -205,9 +205,7 @@ public class VertCoord implements Comparable {
     public int compareTo(Object o) {
       LevelCoord other = (LevelCoord) o;
       //if (nearlyEquals(value1, other.value1) && nearlyEquals(value2, other.value2)) return 0;
-      if (mid < other.mid) return -1;
-      if (mid > other.mid) return 1;
-      return 0;
+      return Double.compare(mid, other.mid);
     }
 
     public boolean equals2(Object oo) {

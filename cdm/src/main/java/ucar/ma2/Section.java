@@ -333,7 +333,6 @@ public class Section {
    * Compute the element offset of an intersecting subrange of this.
    * @param intersect the subrange
    * @return element offset
-   * @throws InvalidRangeException
    */
   public int offset(Section intersect) throws InvalidRangeException {
     if (!compatibleRank(intersect))
@@ -531,9 +530,8 @@ public class Section {
    *
    * @param size add this Range
    * @return this
-   * @throws InvalidRangeException if size < 1
    */
-  public Section appendRange(int size) throws InvalidRangeException {
+  public Section appendRange(int size) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (size > 0)
       list.add(new Range(size));

@@ -12,7 +12,6 @@ import java.util.List;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft2.simpgeometry.*;
 
 /**
@@ -30,8 +29,8 @@ public class SimpleGeometryCS {
   
   public SimpleGeometryCS(SimpleGeometryCSBuilder builder) {
     this.builder = builder;
-    simpleGeometryX = new ArrayList<CoordinateAxis>(); simpleGeometryY = new ArrayList<CoordinateAxis>();
-    simpleGeometryZ = new ArrayList<CoordinateAxis>(); simpleGeometryID = new ArrayList<CoordinateAxis>();
+    simpleGeometryX = new ArrayList<>(); simpleGeometryY = new ArrayList<>();
+    simpleGeometryZ = new ArrayList<>(); simpleGeometryID = new ArrayList<>();
     
     for(CoordinateAxis axis : builder.getSgAxes()) {
     	
@@ -116,11 +115,6 @@ public class SimpleGeometryCS {
   /**
    * Given a Variable name and a beginning index and end index, returns a list of
    * polygon (inclusive on both sides)
-   * 
-   * @param name
-   * @param indexBegin
-   * @param indexEnd
-   * @return
    */
   public List<Polygon> getPolygons(String name, int indexBegin, int indexEnd) {
 	  return builder.getPolygons(name, indexBegin, indexEnd);
@@ -142,11 +136,6 @@ public class SimpleGeometryCS {
   /**
    * Given a Variable name and a beginning index and end index, returns a list of
    * lines (inclusive on both sides)
-   * 
-   * @param name
-   * @param indexBegin
-   * @param indexEnd
-   * @return
    */
   public List<Line> getLines(String name, int indexBegin, int indexEnd) {
 	  return builder.getLines(name, indexBegin, indexEnd);

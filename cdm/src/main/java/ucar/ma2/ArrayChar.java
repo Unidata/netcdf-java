@@ -878,31 +878,26 @@ public class ArrayChar extends Array implements Iterable<String> {
   public static ArrayChar makeFromStringArray(ArrayObject values, int strlen) {
 
     // create shape for equivilent charArray
-    try {
-      Section section = new Section(values.getShape());
-      section.appendRange(strlen);
+    Section section = new Section(values.getShape());
+    section.appendRange(strlen);
 
-      int[] shape = section.getShape();
-      long size = section.computeSize();
+    int[] shape = section.getShape();
+    long size = section.computeSize();
 
-      // populate char array
-      char[] cdata = new char[(int) size];
-      int start = 0;
-      IndexIterator ii = values.getIndexIterator();
-      while (ii.hasNext()) {
-        String s = (String) ii.next();
-        for (int k = 0; k < s.length() && k < strlen; k++)
-          cdata[start + k] = s.charAt(k);
-        start += strlen;
-      }
-
-      // ready to create the char Array
-      Array carr = Array.factory(DataType.CHAR, shape, cdata);
-      return (ArrayChar) carr;
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();  // cant happen.
-      return null;
+    // populate char array
+    char[] cdata = new char[(int) size];
+    int start = 0;
+    IndexIterator ii = values.getIndexIterator();
+    while (ii.hasNext()) {
+      String s = (String) ii.next();
+      for (int k = 0; k < s.length() && k < strlen; k++)
+        cdata[start + k] = s.charAt(k);
+      start += strlen;
     }
+
+    // ready to create the char Array
+    Array carr = Array.factory(DataType.CHAR, shape, cdata);
+    return (ArrayChar) carr;
   }
 
 }

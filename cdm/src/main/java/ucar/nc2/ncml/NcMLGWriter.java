@@ -159,7 +159,7 @@ public class NcMLGWriter {
     }
 
     // look for coordinate transforms, ref systems
-    List<CoordinateTransform> coordTrans = new ArrayList<CoordinateTransform>();
+    List<CoordinateTransform> coordTrans = new ArrayList<>();
     for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
       List<CoordinateTransform> ctList = cs.getCoordinateTransforms();
       if (ctList != null) {
@@ -195,7 +195,7 @@ public class NcMLGWriter {
       attElem.setAttribute("value", value);
     } else {
 
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       for (int i=0; i<att.getLength(); i++) {
         Number val = att.getNumericValue(i);
         if (i > 0) buff.append( " ");
@@ -221,11 +221,11 @@ public class NcMLGWriter {
     } else {
       attElem.setAttribute("type", "double");
 
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       for (int i=0; i<att.getLength(); i++) {
         double val = att.getNumericValue(i);
         if (i > 0) buff.append( " ");
-        buff.append( Double.toString( val));
+        buff.append(val);
       }
       attElem.setAttribute("value", buff.toString());
     }
@@ -237,7 +237,7 @@ public class NcMLGWriter {
     Element varElem = new Element("coordinateAxis", thredds.client.catalog.Catalog.ncmlNS);
     varElem.setAttribute("name", var.getFullName());
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     List dims = var.getDimensions();
     for (int i=0; i<dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
@@ -351,7 +351,7 @@ public class NcMLGWriter {
 
     varElem.setAttribute("name", var.getFullName());
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     List dims = var.getDimensions();
     for (int i=0; i<dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
@@ -391,7 +391,7 @@ public class NcMLGWriter {
   private Element makeValues( VariableDS v) {
     Element elem = new Element("values", thredds.client.catalog.Catalog.ncmlNS);
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     Array a;
     try {
       a = v.read();

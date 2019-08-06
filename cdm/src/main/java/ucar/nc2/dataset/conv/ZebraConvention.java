@@ -69,34 +69,4 @@ public class ZebraConvention extends ATDRadarConvention {
     time.setCachedData(data, true);
   }
 
-  /**
-   * Search for netcdf variables with "coord_axis" pointing to a Dimension
-   * construct coordAxes from them, add to collection of CoordAxisImpl.
-   *
-   protected void addCoordAxesFromAliasVariables() {
-
-   // look for aliased variables
-   Iterator vars = netcdf.getVariableIterator();
-   while (vars.hasNext()) {
-   Variable ncvar = (Variable) vars.next();
-   String dimName = netcdf.findAttValueIgnoreCase(ncvar, "coord_axis", null);
-   if (null == dimName)
-   continue;
-   Dimension dim = netcdf.findDimension( dimName);
-   if (null != dim)
-   addCoordAxisFromVariable( dim, ncvar);
-   }
-   }
-
-
-   // look for an coord_alias attribute
-   private String findAlias( DimCoordAxis dc) {
-   if (dc.mid != null)
-   return netcdf.findAttValueIgnoreCase(dc.mid, "coord_alias", "");
-   if (dc.edge != null)
-   return netcdf.findAttValueIgnoreCase(dc.edge, "coord_alias", "");
-   return "";
-   } */
-
-
 }

@@ -80,12 +80,12 @@ public class FixedYearVariableMonthChronology extends FixedYearLengthChronology 
         if (arr == null) throw new NullPointerException("null array");
         if (arr.length == 0) throw new IllegalArgumentException("Zero-length array");
         int sum = 0;
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] <= 0) {
-                throw new IllegalArgumentException("All array values must be > 0");
-            }
-            sum += arr[i];
+      for (int value : arr) {
+        if (value <= 0) {
+          throw new IllegalArgumentException("All array values must be > 0");
         }
+        sum += value;
+      }
         return sum;
     }
 
@@ -107,7 +107,7 @@ public class FixedYearVariableMonthChronology extends FixedYearLengthChronology 
     /**
      * Gets the length of each month in days.  Returns a new array with each
      * invocation to maintain integrity of internal data.
-     * @todo return an immutable List
+     * TODO return an immutable List
      */
     public int[] getMonthLengths() {
         return this.monthLengths.clone(); // Defensive copy

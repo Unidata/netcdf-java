@@ -50,7 +50,6 @@ public class Orthographic extends ProjectionImpl {
    *
    * @param lat0 lat origin of the coord. system on the projection plane
    * @param lon0 lon origin of the coord. system on the projection plane
-   * @throws IllegalArgumentException
    */
   public Orthographic(double lat0, double lon0) {
     this(lat0, lon0, EARTH_RADIUS);

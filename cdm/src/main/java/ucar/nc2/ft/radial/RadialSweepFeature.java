@@ -15,35 +15,35 @@ import java.util.Date;
  */
 public interface RadialSweepFeature {
 
-  public enum Type { NONE }
+  enum Type { NONE }
 
   /**
    * @return the type of the Sweep
    */
-  public RadialSweepFeature.Type getType();
+  RadialSweepFeature.Type getType();
 
 
-  public Variable getSweepVar();
+  Variable getSweepVar();
 
   /**
    * @return the number of radials for this Sweep
    */
-  public int getRadialNumber();
+  int getRadialNumber();
 
   /**
    * @return the number of gates for all radials
    */
-  public int getGateNumber();
+  int getGateNumber();
 
   /**
    * @return the beam width for all radials, in degrees
    */
-  public float getBeamWidth();
+  float getBeamWidth();
 
   /**
    * @return the Nyquist Frequency for all radials
    */
-  public float getNyquistFrequency();
+  float getNyquistFrequency();
 
   /**
    * Get the radial distance from origin to the start of the first data gate.
@@ -51,7 +51,7 @@ public interface RadialSweepFeature {
    *
    * @return distance to first gate in meters, for all radials
    */
-  public float getRangeToFirstGate();
+  float getRangeToFirstGate();
 
   /**
    * Get the radial length of each data gate.
@@ -59,90 +59,83 @@ public interface RadialSweepFeature {
    *
    * @return gate size in meters,  for all radials
    */
-  public float getGateSize();
+  float getGateSize();
 
   /**
    * @return all the sweep data, of length getNumRadials() by getNumGates()
-   * @throws java.io.IOException on io error
    */
-  public float[] readData() throws java.io.IOException;
+  float[] readData();
 
   /**
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the actual data, of length getNumGates()
-   * @throws java.io.IOException on io error
    */
-  public float[] readData(int radial) throws java.io.IOException;
+  float[] readData(int radial);
 
   /**
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the elevation of the ith radial, in degrees
-   * @throws java.io.IOException on io error
    */
-  public float getElevation(int radial) throws java.io.IOException;
+  float getElevation(int radial);
 
   /**
    * @return all elevation in the sweep
-   * @throws java.io.IOException on io error
    */
-  public float[] getElevation() throws java.io.IOException;
+  float[] getElevation();
 
   /**
    * @return the average elevation of all the radials in the sweep, in degrees.
    *         Only valid if getType() == TYPE_
    */
-  public float getMeanElevation();
+  float getMeanElevation();
 
   /**
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the azimuth of the ith radial, in degrees
-   * @throws java.io.IOException on io error
    */
-  public float getAzimuth(int radial) throws java.io.IOException;
+  float getAzimuth(int radial);
 
   /**
    * @return all azimuth in the sweep
-   * @throws java.io.IOException on io error
    */
-  public float[] getAzimuth() throws java.io.IOException;
+  float[] getAzimuth();
 
   /**
    * @return the average azimuth of all the radials in the sweep, in degrees.
    *         Only valid if getType() == TYPE_
    */
-  public float getMeanAzimuth();
+  float getMeanAzimuth();
 
   /**
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the location of the origin of the ith radial.
    */
-  public ucar.unidata.geoloc.EarthLocation getOrigin(int radial);
+  ucar.unidata.geoloc.EarthLocation getOrigin(int radial);
 
   /**
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the time of the ith radial, in units of getTimeUnits().
-   * @throws java.io.IOException on io error
    */
-  public float getTime(int radial) throws IOException;
+  float getTime(int radial);
 
   /**
    * @return the starting time of the sweep, in units of getTimeUnits().
    */
-  public Date getStartingTime();
+  Date getStartingTime();
 
   /**
    * @return the ending time of the sweep, in units of getTimeUnits().
    */
-  public Date getEndingTime();
+  Date getEndingTime();
 
   /**
    * @return the index of sweep
    */
-  public int getSweepIndex();
+  int getSweepIndex();
 
   /**
    * deallocate memory of sweep
    */
-  public void clearSweepMemory();
+  void clearSweepMemory();
 
 }

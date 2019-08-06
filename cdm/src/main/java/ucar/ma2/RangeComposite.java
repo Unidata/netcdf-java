@@ -20,7 +20,7 @@ public class RangeComposite implements RangeIterator {
   private final List<RangeIterator> ranges;
   private final String name;
 
-  public RangeComposite(String name, List<RangeIterator> ranges) throws InvalidRangeException {
+  public RangeComposite(String name, List<RangeIterator> ranges) {
     this.name = name;
     this.ranges = ranges;
   }
@@ -37,11 +37,7 @@ public class RangeComposite implements RangeIterator {
   @Override
   public RangeIterator setName(String name) {
     if (name.equals(this.getName())) return this;
-    try {
-      return new RangeComposite(name, ranges);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
-    }
+    return new RangeComposite(name, ranges);
   }
 
   @Override

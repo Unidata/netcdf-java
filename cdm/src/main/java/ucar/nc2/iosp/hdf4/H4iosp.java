@@ -367,7 +367,7 @@ public class H4iosp extends AbstractIOServiceProvider {
       return chunkNo < chunks.size();
     }
 
-    public LayoutTiled.DataChunk next() throws IOException {
+    public LayoutTiled.DataChunk next() {
       H4header.DataChunk chunk = chunks.get(chunkNo);
       H4header.TagData chunkData = chunk.data; 
       chunkNo++;
@@ -389,7 +389,7 @@ public class H4iosp extends AbstractIOServiceProvider {
       return chunkNo < chunks.size();
     }
 
-    public LayoutBBTiled.DataChunk next() throws IOException {
+    public LayoutBBTiled.DataChunk next() {
       H4header.DataChunk chunk = chunks.get(chunkNo);
       H4header.TagData chunkData = chunk.data;
       assert (chunkData.ext_type == TagEnum.SPECIAL_COMP);

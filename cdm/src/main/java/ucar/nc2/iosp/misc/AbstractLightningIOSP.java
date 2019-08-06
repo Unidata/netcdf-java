@@ -106,12 +106,5 @@ public abstract class AbstractLightningIOSP extends AbstractIOServiceProvider {
         ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.toString()));
         ncfile.addAttribute( null, new Attribute(CDM.HISTORY, "Read directly by Netcdf Java IOSP"));
     }
-
-    /**
-     * Make the sequence that holds the data.
-     * @param the netcdf file to add to.
-     * @return the Sequence
-     */
-    //protected abstract Sequence makeSequence(NetcdfFile ncfile);
 }
 

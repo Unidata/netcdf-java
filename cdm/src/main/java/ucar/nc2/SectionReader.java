@@ -21,7 +21,7 @@ class SectionReader implements ProxyReader {
   private Variable orgClient;
 
   // section must be filled
-  SectionReader(Variable orgClient, Section section) throws InvalidRangeException {
+  SectionReader(Variable orgClient, Section section) {
     this.orgClient = orgClient;
     this.orgSection = section.isImmutable() ? section : new Section(section.getRanges());
   }

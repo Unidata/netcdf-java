@@ -35,7 +35,7 @@ public class Time2DCoordSys {
     this.timeAxis2D = timeAxis;
   }
 
-  public List<CoverageCoordAxis> getCoordAxes() throws InvalidRangeException {
+  public List<CoverageCoordAxis> getCoordAxes() {
     List<CoverageCoordAxis> result = new ArrayList<>();
     result.add(runAxis);
     result.add(timeAxis2D);

@@ -52,14 +52,14 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
 
-  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String convStr = ncd.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convStr) && convStr.startsWith("CF/Radial"))
       return this;
     return null;
   }
 
-  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) {
     return new CFRadialAdapter(ncd);
   }
 
@@ -205,6 +205,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
         elev = 0.0;
       }
     } catch (IOException e) {
+      throw new RuntimeException(e);
     }
 
     origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
@@ -359,7 +360,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
    * @return _more_
    */
   public String getInfo() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("CFRadial2Dataset\n");
     sbuff.append(super.getDetailInfo());
     sbuff.append("\n\n");
@@ -858,9 +859,8 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
        *
        * @param ray _more_
        * @return _more_
-       * @throws IOException _more_
        */
-      public float getElevation(int ray) throws IOException {
+      public float getElevation(int ray) {
         return elevation[ray + startIdx];
       }
 
@@ -868,9 +868,8 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
        * _more_
        *
        * @return _more_
-       * @throws IOException _more_
        */
-      public float[] getElevation() throws IOException {
+      public float[] getElevation() {
         float[] elev = new float[numRays];
         System.arraycopy(elevation, startIdx, elev, 0, numRays);
         return elev;
@@ -881,9 +880,8 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
        * _more_
        *
        * @return _more_
-       * @throws IOException _more_
        */
-      public float[] getAzimuth() throws IOException {
+      public float[] getAzimuth() {
         float[] azimu = new float[numRays];
         System.arraycopy(azimuth, startIdx, azimu, 0, numRays);
         return azimu;
@@ -895,9 +893,8 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
        *
        * @param ray _more_
        * @return _more_
-       * @throws IOException _more_
        */
-      public float getAzimuth(int ray) throws IOException {
+      public float getAzimuth(int ray) {
         return azimuth[ray + startIdx];
       }
 
@@ -907,9 +904,8 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
        *
        * @param gate _more_
        * @return _more_
-       * @throws IOException _more_
        */
-      public float getRadialDistance(int gate) throws IOException {
+      public float getRadialDistance(int gate) {
         return range[gate];
       }
 
@@ -918,9 +914,8 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
        *
        * @param ray _more_
        * @return _more_
-       * @throws IOException _more_
        */
-      public float getTime(int ray) throws IOException {
+      public float getTime(int ray) {
 
         return (float) time[ray + startIdx];
 
@@ -950,12 +945,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
        * @return _more_
        */
       public float getRangeToFirstGate() {
-        try {
-          return getRadialDistance(0);
-        } catch (IOException e) {
-          e.printStackTrace();
-          return 0.0f;
-        }
+        return getRadialDistance(0);
       }
 
       /**
@@ -964,12 +954,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
        * @return _more_
        */
       public float getGateSize() {
-        try {
-          return getRadialDistance(1) - getRadialDistance(0);
-        } catch (IOException e) {
-          e.printStackTrace();
-          return 0.0f;
-        }
+        return getRadialDistance(1) - getRadialDistance(0);
       }
 
       /**

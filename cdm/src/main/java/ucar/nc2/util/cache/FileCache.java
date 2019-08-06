@@ -450,7 +450,7 @@ public class FileCache implements FileCacheIF {
   }
 
   // debug
-  public String getInfo(FileCacheable ncfile) throws IOException {
+  public String getInfo(FileCacheable ncfile) {
     if (ncfile == null) return "";
 
     // find it in the file cache

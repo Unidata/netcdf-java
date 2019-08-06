@@ -54,7 +54,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Ragged array representation of time series profiless, H.5.3"));
   }
 
-  public void setStations(List<StationFeature> stns) throws IOException {
+  public void setStations(List<StationFeature> stns) {
     this.stnList = stns;
 
     // see if there's altitude, wmoId for any stations

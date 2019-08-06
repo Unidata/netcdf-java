@@ -49,7 +49,7 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   @Override
-  protected int read_(long pos, byte[] b, int offset, int len) throws IOException {
+  protected int read_(long pos, byte[] b, int offset, int len) {
     len = Math.min(len, (int) (buffer.length - pos));
     // copy out of buffer
     System.arraycopy(buffer, (int) pos, b, offset, len);

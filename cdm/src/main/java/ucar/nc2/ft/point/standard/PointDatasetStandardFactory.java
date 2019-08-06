@@ -49,7 +49,6 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
    * @param ds              analyse this dataset
    * @param errlog          log error messages here (may not be null)
    * @return if successful, return non-null. This object is then passed back into open(), so analysis can be reused.
-   * @throws IOException
    */
   @Override
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {

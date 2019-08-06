@@ -239,21 +239,23 @@ public class FmrcInvLite implements java.io.Serializable {
 
       // fill twoD time coordinate from the sequence of time coordinates
       int runIdx = 0;
-      for (int seqIdx = 0; seqIdx < timeList.size(); seqIdx++) {
+      for (TimeCoord timeCoord : timeList) {
         TimeCoord tc = null;
         if (hasMissingTimes) {
-          tc = timeList.get(seqIdx);
+          tc = timeCoord;
           double tc_offset = FmrcInv.getOffsetInHours(base, tc.getRunDate());
 
           while (true) { // incr run till we find it
             double run_offset = runOffset[runIdx];
-            if (Misc.nearlyEquals(run_offset, tc_offset))
+            if (Misc.nearlyEquals(run_offset, tc_offset)) {
               break;
+            }
             runIdx++;
             if (log.isDebugEnabled()) {
               String missingDate = FmrcInv.makeOffsetDate(base, run_offset).toString();
               String wantDate = tc.getRunDate().toString();
-              log.debug(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName());
+              log.debug(collectionName + ": runseq missing time " + missingDate + " looking for "
+                  + wantDate + " for var = " + runseq.getUberGrids().get(0).getName());
             }
           }
 
@@ -264,16 +266,18 @@ public class FmrcInvLite implements java.io.Serializable {
         double run_offset = FmrcInv.getOffsetInHours(base, tc.getRunDate());
         double[] offsets = tc.getOffsetTimes();
         int ntimes = offsets.length;
-        for (int time = 0; time < ntimes; time++)
-          timeOffset[runIdx * noffsets + time] = run_offset + offsets[time];  // offset == bound2 when its an interval
+        for (int time = 0; time < ntimes; time++) {
+          timeOffset[runIdx * noffsets + time] =
+              run_offset + offsets[time];  // offset == bound2 when its an interval
+        }
 
         // optionally create 2D bounds
         if (runseq.isInterval()) {
           double[] bound1 = tc.getBound1();
           double[] bound2 = tc.getBound2();
           for (int time = 0; time < ntimes; time++) {
-            timeBounds[2*(runIdx * noffsets + time)] = run_offset + bound1[time];
-            timeBounds[2*(runIdx * noffsets + time)+1] = run_offset + bound2[time];
+            timeBounds[2 * (runIdx * noffsets + time)] = run_offset + bound1[time];
+            timeBounds[2 * (runIdx * noffsets + time) + 1] = run_offset + bound2[time];
           }
         }
 
@@ -829,8 +833,11 @@ public class FmrcInvLite implements java.io.Serializable {
       this.offset = offset;
       boolean ok = false;
       double[] offsets = getForecastOffsets();
-      for (int i=0; i<offsets.length; i++)
-        if (Misc.nearlyEquals(offsets[i], offset)) ok = true;
+      for (double v : offsets) {
+        if (Misc.nearlyEquals(v, offset)) {
+          ok = true;
+        }
+      }
 
       if (!ok)
         throw new FileNotFoundException("No constant offset dataset for = " + offset);

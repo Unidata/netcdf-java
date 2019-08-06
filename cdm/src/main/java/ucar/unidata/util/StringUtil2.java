@@ -616,7 +616,7 @@ public class StringUtil2 {
     return sb.toString();
   }
 
-  public static List<String> getTokens(String fullString, String sep) throws Exception {
+  public static List<String> getTokens(String fullString, String sep) {
 
     List<String> strs = new ArrayList<>();
     if (sep != null) {

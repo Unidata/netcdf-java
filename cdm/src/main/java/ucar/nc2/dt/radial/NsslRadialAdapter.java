@@ -15,7 +15,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 
 import java.io.IOException;
 import java.util.*;
@@ -26,7 +25,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   private double latv, lonv, elev;
 
   /////////////////////////////////////////////////
-  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String format = ncd.findAttValueIgnoreCase(null, "format", null);
     if (format != null) {
       if (format.startsWith("nssl/netcdf"))
@@ -41,7 +40,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
     return null;
   }
 
-  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) {
     return new NsslRadialAdapter(ncd);
   }
 
@@ -118,7 +117,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
 
     }
-    ds.addAttribute(null, new Attribute("IsRadial", new Integer(1)));
+    ds.addAttribute(null, new Attribute("IsRadial", 1));
     attr = ds.findGlobalAttributeIgnoreCase("vcp-value");
     String vcp;
     if (attr == null)
@@ -198,8 +197,8 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
   protected void setTimeUnits() throws Exception {
     List axes = ds.getCoordinateAxes();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis = (CoordinateAxis) axes.get(i);
+    for (Object axe : axes) {
+      CoordinateAxis axis = (CoordinateAxis) axe;
       if (axis.getAxisType() == AxisType.Time) {
         String units = axis.getUnitsString();
         dateUnits = new DateUnit(units);
@@ -252,9 +251,8 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
   public void clearDatasetMemory() {
     List rvars = getDataVariables();
-    Iterator iter = rvars.iterator();
-    while (iter.hasNext()) {
-      RadialVariable radVar = (RadialVariable) iter.next();
+    for (Object rvar : rvars) {
+      RadialVariable radVar = (RadialVariable) rvar;
       radVar.clearVariableMemory();
     }
   }
@@ -504,11 +502,11 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
         return true;
       }
 
-      public float getElevation(int ray) throws IOException {
+      public float getElevation(int ray) {
         return (float) meanElevation;
       }
 
-      public float[] getElevation() throws IOException {
+      public float[] getElevation() {
 
         float[] dataValue = new float[nrays];
         for (int i = 0; i < nrays; i++) {
@@ -552,7 +550,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
         return dist;
       }
 
-      public float getTime(int ray) throws IOException {
+      public float getTime(int ray) {
         return startDate.getTime();
       }
 

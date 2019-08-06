@@ -19,12 +19,12 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iterable<StationTimeSeriesFeature> {
 
-  List<StationFeature> getStationFeatures() throws IOException;
-  List<StationFeature> getStationFeatures( List<String> stnNames)  throws IOException;
+  List<StationFeature> getStationFeatures();
+  List<StationFeature> getStationFeatures( List<String> stnNames);
   List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
   StationFeature findStationFeature(String name);
-  StationTimeSeriesFeature getStationTimeSeriesFeature(StationFeature s) throws IOException;
+  StationTimeSeriesFeature getStationTimeSeriesFeature(StationFeature s);
 
   // subsetting
   StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) throws IOException;
@@ -43,13 +43,13 @@ public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iter
    */
   PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
   PointFeatureCollection flatten(LatLonRect llbbox, CalendarDateRange dateRange) throws IOException;
-  StationFeature getStationFeature(PointFeature flatPointFeature) throws IOException; // for flattened point only
+  StationFeature getStationFeature(PointFeature flatPointFeature); // for flattened point only
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // deprecated
 
   // use subset()
-  StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stations) throws IOException;
+  StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stations);
 
   /**
    * Use the internal iterator to check if there is another StationTimeSeriesFeature in the iteration.
@@ -87,6 +87,6 @@ public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iter
   /**
    * @deprecated use foreach
    */
-  PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws java.io.IOException;
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator();
 
 }

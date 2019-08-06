@@ -22,9 +22,8 @@ public class RangeScatter implements RangeIterator {
    * Ctor
    * @param name optional name
    * @param val  should be sorted
-   * @throws InvalidRangeException
    */
-  public RangeScatter(String name, int... val) throws InvalidRangeException {
+  public RangeScatter(String name, int... val) {
     // super(name, val[0], val[val.length-1], 1, val.length);
     this.name = name;
     this.vals = val;
@@ -38,11 +37,7 @@ public class RangeScatter implements RangeIterator {
   @Override
   public RangeIterator setName(String name) {
     if (name.equals(this.getName())) return this;
-    try {
-      return new RangeScatter(name, vals);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
-    }
+    return new RangeScatter(name, vals);
   }
 
   @Override

@@ -72,8 +72,7 @@ import ucar.unidata.io.RandomAccessFile;
  * ("IRIS Programmer's Manual" 3.5.4.1)
  *
  * @author yuanho
- * @see "ftp://ftp.sigmet.com/outgoing/manuals/program/3data.pdf"
- *   esp section 3.5
+ * @see "ftp://ftp.sigmet.com/outgoing/manuals/program/3data.pdf esp section 3.5"
  */
 
 public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
@@ -82,7 +81,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   private int[] sweep_bins = null;
   private String date0;
 
-  public static java.util.Map<String, Number> recHdr = new java.util.HashMap<String, Number>();
+  public static java.util.Map<String, Number> recHdr = new java.util.HashMap<>();
   private SigmetVolumeScan volScan;
 
   public static void main(String[] args) {
@@ -147,7 +146,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
                    ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
     super.open(raf, ncfile, cancelTask);
     //java.util.Map<String, Number> recHdr=new java.util.HashMap<String, Number>();
-    java.util.Map<String, String> hdrNames = new java.util.HashMap<String, String>();
+    java.util.Map<String, String> hdrNames = new java.util.HashMap<>();
     volScan = new SigmetVolumeScan(raf, ncfile, varList);
     this.varList = init(raf, ncfile, hdrNames);
 
@@ -161,7 +160,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * fixed length=6144 bytes.
    */
   static public java.util.Map<String, Number> readRecordsHdr(ucar.unidata.io.RandomAccessFile raf) {
-    java.util.Map<String, Number> recHdr1 = new java.util.HashMap<String, Number>();
+    java.util.Map<String, Number> recHdr1 = new java.util.HashMap<>();
     try {
       int nparams = 0;
       //      -- Read from <product_end> of the 1st record -- 12+320+120
@@ -238,7 +237,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * Read StationName strings
    */
   public java.util.Map<String, String> readStnNames(ucar.unidata.io.RandomAccessFile raf) {
-    java.util.Map<String, String> hdrNames = new java.util.HashMap<String, String>();
+    java.util.Map<String, String> hdrNames = new java.util.HashMap<>();
     try {
       raf.seek(6288);
       String stnName = raf.readString(16);  //System.out.println(" stnName="+stnName.trim());
@@ -262,7 +261,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @return ArrayList of Variables of ncfile
    */
   public ArrayList<Variable> init(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-                                  java.util.Map<String, String> hdrNames) throws java.io.IOException {
+                                  java.util.Map<String, String> hdrNames) {
     // prepare attribute values
     String[] data_name = {" ", "TotalPower", "Reflectivity", "Velocity",
             "Width", "Differential_Reflectivity"};
@@ -320,12 +319,12 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     for (int j = 0; j < number_sweeps; j++) {
       ncfile.addDimension(null, gateR[j]);
     }
-    ArrayList<Dimension> dims0 = new ArrayList<Dimension>();
-    ArrayList<Dimension> dims1 = new ArrayList<Dimension>();
-    ArrayList<Dimension> dims2 = new ArrayList<Dimension>();
-    ArrayList<Dimension> dims3 = new ArrayList<Dimension>();
+    ArrayList<Dimension> dims0 = new ArrayList<>();
+    ArrayList<Dimension> dims1 = new ArrayList<>();
+    ArrayList<Dimension> dims2 = new ArrayList<>();
+    ArrayList<Dimension> dims3 = new ArrayList<>();
 
-    ArrayList<Variable> varList = new ArrayList<Variable>();
+    ArrayList<Variable> varList = new ArrayList<>();
 
     Variable[][] v = new Variable[nparams][number_sweeps];
     String var_name = "";
@@ -360,7 +359,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       if (st1.length() < 2) st1 = "0" + st1;
       String st2 = Short.toString(day);
       if (st2.length() < 2) st2 = "0" + st2;
-      date0 = String.valueOf(year) + "-" + st1 + "-" + st2;
+      date0 = year + "-" + st1 + "-" + st2;
       tsu[i] = date0 + "T" + calcTime(tsu_sec[i], 0) + "Z";
     }
     for (int j = 0; j < number_sweeps; j++) {
@@ -532,12 +531,12 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     if (sss1.length() < 2) sss1 = "0" + sss1;
     String sss2 = Short.toString(dda[0]);
     if (sss2.length() < 2) sss2 = "0" + sss2;
-    String base_date0 = String.valueOf(yr[0]) + "-" + sss1 + "-" + sss2;
+    String base_date0 = yr[0] + "-" + sss1 + "-" + sss2;
     String sss11 = Short.toString(m[number_sweeps - 1]);
     if (sss11.length() < 2) sss11 = "0" + sss11;
     String sss22 = Short.toString(dda[number_sweeps - 1]);
     if (sss22.length() < 2) sss22 = "0" + sss22;
-    String base_date1 = String.valueOf(yr[number_sweeps - 1]) + "-" + sss11 + "-" + sss22;
+    String base_date1 = yr[number_sweeps - 1] + "-" + sss11 + "-" + sss22;
     String start_time = base_date0 + "T" + calcTime(bst[0], 0) + "Z";
     String end_time = base_date1 + "T" + calcTime(bst[number_sweeps - 1], last_t) + "Z";
     ncfile.addAttribute(null, new Attribute("time_coverage_start", start_time));
@@ -752,7 +751,7 @@ channel.close();
     return temp;
   }
 
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException {
     // Vgroup vgroup = (Vgroup) v2.getSPobject();
     // Range scanRange = section.getRange(0);
     // Range radialRange = section.getRange(1);

@@ -44,11 +44,10 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
    * Use the internal iterator to get the next PointFeature in the iteration.
    * You must call hasNext() before you call this.
    * @return the next PointFeature in the iteration
-   * @throws java.io.IOException on read error
    * @see PointFeatureIterator#next
    * @deprecated use foreach
    */
-  PointFeature next() throws java.io.IOException;
+  PointFeature next();
 
   /**
    * Reset the internal iterator for another iteration over the PointFeatures in this Collection.

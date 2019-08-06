@@ -188,12 +188,12 @@ public class CF1Convention extends CSMConvention {
       	v.addAttribute(new Attribute(CF.GEOMETRY_TYPE, ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, "")));
       	
       	// Only add attribute if present, sometimes optional
-      	if(ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "").equals("") == false) {
+      	if(!ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "").equals("")) {
       		v.addAttribute(new Attribute(CF.NODES, ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "")));
       	}
       	
       	// Only add attribute if present, sometimes optional
-      	if(ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "").equals("") == false) {
+      	if(!ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "").equals("")) {
       		v.addAttribute(new Attribute(CF.NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "")));
       	}
       		
@@ -202,7 +202,7 @@ public class CF1Convention extends CSMConvention {
       	if (CF.POLYGON.equalsIgnoreCase(ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, ""))) {
 
       		// Again, interior ring is not always required, but add it if it is present
-      		if(ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "").equals("") == false)
+      		if(!ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "").equals(""))
       			v.addAttribute(new Attribute(CF.INTERIOR_RING, ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "")));
       	}
       	
@@ -211,26 +211,29 @@ public class CF1Convention extends CSMConvention {
       		String[] coords = ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "").split(" ");
       
   			String cds = "";
-      		for (int i = 0; i < coords.length; i++) {
-      			Variable temp = ds.findVariable(coords[i]);
-      			if (temp != null) {
-      				Attribute axis = temp.findAttribute(CF.AXIS);
-      				if (axis != null) {
-      					if ("x".equalsIgnoreCase(axis.getStringValue())) {
-      						temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryX.toString()));
-      					}
-      					if ("y".equalsIgnoreCase(axis.getStringValue())) {
-      						temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryY.toString()));
-      					}
-      					if ("z".equalsIgnoreCase(axis.getStringValue())) {
-      						temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryZ.toString()));
-      					}
-      				
-      					cds += coords[i] + " ";
-      				
-      				}
-      			}
-      		}
+          for (String coord : coords) {
+            Variable temp = ds.findVariable(coord);
+            if (temp != null) {
+              Attribute axis = temp.findAttribute(CF.AXIS);
+              if (axis != null) {
+                if ("x".equalsIgnoreCase(axis.getStringValue())) {
+                  temp.addAttribute(
+                      new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryX.toString()));
+                }
+                if ("y".equalsIgnoreCase(axis.getStringValue())) {
+                  temp.addAttribute(
+                      new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryY.toString()));
+                }
+                if ("z".equalsIgnoreCase(axis.getStringValue())) {
+                  temp.addAttribute(
+                      new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryZ.toString()));
+                }
+
+                cds += coord + " ";
+
+              }
+            }
+          }
   
       		List<Dimension> dims = v.getDimensions();
       		

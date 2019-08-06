@@ -386,7 +386,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
   }
 
 
-  /**
+  /*
    *    gast.f
    *     Compute hour angle dtheta
    *
@@ -497,7 +497,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
     double JD;
 
     double IY = Y - (12 - M) / 10;
-    double IM = M + 1 + 12 * ((12 - M) / 10);
+    double IM = M + 1 + 12 * ((12 - M) / 10.0);
     double I = IY / 100;
     double J = 2 - I + I / 4 + Math.round(365.25 * IY)
             + Math.round(30.6001 * IM);
