@@ -145,10 +145,6 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     return new Dorade2Variable(nds, v, v0);
   }
 
-  public java.util.List getDataVariables() {
-    return dataVariables;
-  }
-
   protected void setStartDate() {
     Date da = new Date((long) timv[0]);
     String start_datetime = da.toString();
@@ -169,9 +165,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
 
   protected void setTimeUnits() throws Exception {
-    List axes = ncd.getCoordinateAxes();
-    for (Object axe : axes) {
-      CoordinateAxis axis = (CoordinateAxis) axe;
+    for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
       if (axis.getAxisType() == AxisType.Time) {
         String units = axis.getUnitsString();
         dateUnits = new DateUnit(units);
@@ -195,8 +189,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
   }
 
   public void clearDatasetMemory() {
-    List rvars = getDataVariables();
-    for (Object rvar : rvars) {
+    for (VariableSimpleIF rvar : getDataVariables()) {
       RadialVariable radVar = (RadialVariable) rvar;
       radVar.clearVariableMemory();
     }

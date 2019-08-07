@@ -21,43 +21,47 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * CF-1 Convention.
- * see http://www.cgd.ucar.edu/cms/eaton/cf-metadata/index.html
+ * CF-1 Convention. see http://www.cgd.ucar.edu/cms/eaton/cf-metadata/index.html
  * <p/>
  * <i>
- * "The CF conventions for climate and forecast metadata are designed to promote the
- * processing and sharing of files created with the netCDF API. The conventions define
- * metadata that provide a definitive description of what the data in each variable
- * represents, and of the spatial and temporal properties of the data.
- * This enables users of data from different sources to decide which quantities are
- * comparable, and facilitates building applications with powerful extraction, regridding,
- * and display capabilities."
+ * "The CF conventions for climate and forecast metadata are designed to promote the processing and sharing of files created with the netCDF
+ * API. The conventions define metadata that provide a definitive description of what the data in each variable represents, and of the
+ * spatial and temporal properties of the data. This enables users of data from different sources to decide which quantities are comparable,
+ * and facilitates building applications with powerful extraction, regridding, and display capabilities."
  * </i>
  *
  * @author caron
  */
 
 public class CF1Convention extends CSMConvention {
+
   private static final String convName = "CF-1.";   // start with
 
   /**
    * Get which CF version this is, ie CF-1.x
+   *
    * @param hasConvName extract from convention name or list of names
    * @return version, or -1 if not CF
    */
   public static int getVersion(String hasConvName) {
     int result = extractVersion(hasConvName);
-    if (result >= 0) return result;
+    if (result >= 0) {
+      return result;
+    }
     List<String> names = breakupConventionNames(hasConvName);
     for (String name : names) {
       result = extractVersion(name);
-      if (result >= 0) return result;
+      if (result >= 0) {
+        return result;
+      }
     }
     return -1;
   }
 
   private static int extractVersion(String hasConvName) {
-    if (!hasConvName.startsWith(convName)) return -1;
+    if (!hasConvName.startsWith(convName)) {
+      return -1;
+    }
     String versionS = hasConvName.substring(convName.length());
     try {
       return Integer.parseInt(versionS);
@@ -70,36 +74,42 @@ public class CF1Convention extends CSMConvention {
   /**
    * Guess the value of ZisPositive based on z axis name and units
    *
-   * @param zaxisName      z coordinate axis name
+   * @param zaxisName z coordinate axis name
    * @param vertCoordUnits z coordinate axis name
    * @return CF.POSITIVE_UP or CF.POSITIVE_DOWN
    */
   public static String getZisPositive(String zaxisName, String vertCoordUnits) {
-    if (vertCoordUnits == null) return CF.POSITIVE_UP;
-    if (vertCoordUnits.isEmpty()) return CF.POSITIVE_UP;
-
-    if (SimpleUnit.isCompatible("millibar", vertCoordUnits))
-      return CF.POSITIVE_DOWN;
-
-    if (SimpleUnit.isCompatible("m", vertCoordUnits))
+    if (vertCoordUnits == null) {
       return CF.POSITIVE_UP;
+    }
+    if (vertCoordUnits.isEmpty()) {
+      return CF.POSITIVE_UP;
+    }
+
+    if (SimpleUnit.isCompatible("millibar", vertCoordUnits)) {
+      return CF.POSITIVE_DOWN;
+    }
+
+    if (SimpleUnit.isCompatible("m", vertCoordUnits)) {
+      return CF.POSITIVE_UP;
+    }
 
     // dunno - make it up
     return CF.POSITIVE_UP;
   }
 
   private static final String[] vertical_coords = {
-          "atmosphere_ln_pressure_coordinate",
-          "atmosphere_sigma_coordinate",
-          "atmosphere_hybrid_sigma_pressure_coordinate",
-          "atmosphere_hybrid_height_coordinate",
-          "atmosphere_sleve_coordinate",
-          "ocean_sigma_coordinate",
-          "ocean_s_coordinate",
-          "ocean_sigma_z_coordinate",
-          "ocean_double_sigma_coordinate",
-          "ocean_s_coordinate_g1",          // -sachin 03/25/09
-          "ocean_s_coordinate_g2"};
+      "atmosphere_ln_pressure_coordinate",
+      "atmosphere_sigma_coordinate",
+      "atmosphere_hybrid_sigma_pressure_coordinate",
+      "atmosphere_hybrid_height_coordinate",
+      "atmosphere_sleve_coordinate",
+      "ocean_sigma_coordinate",
+      "ocean_s_coordinate",
+      "ocean_sigma_z_coordinate",
+      "ocean_double_sigma_coordinate",
+      "ocean_s_coordinate_g1",          // -sachin 03/25/09
+      "ocean_s_coordinate_g2"};
 
   public CF1Convention() {
     this.conventionName = "CF-1.X";
@@ -107,7 +117,7 @@ public class CF1Convention extends CSMConvention {
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     boolean got_grid_mapping = false;
-    
+
     // look for transforms
     List<Variable> vars = ds.getVariables();
     for (Variable v : vars) {
@@ -130,7 +140,7 @@ public class CF1Convention extends CSMConvention {
           v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
           continue;
         }
-        
+
         if (sname.equalsIgnoreCase(CF.TIME)) {
           v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
         }
@@ -140,15 +150,17 @@ public class CF1Convention extends CSMConvention {
           continue;
         }
 
-        for (String vertical_coord : vertical_coords)
+        for (String vertical_coord : vertical_coords) {
           if (sname.equalsIgnoreCase(vertical_coord)) {
             v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
-            if (v.findAttribute(_Coordinate.Axes) == null)
+            if (v.findAttribute(_Coordinate.Axes) == null) {
               v.addAttribute(new Attribute(_Coordinate.Axes, v.getFullName())); // LOOK: may also be time dependent
+            }
           }
+        }
 
-          // look for time variables and check to see if they have a calendar attribute. if not, add the default
-          checkTimeVarForCalendar(v);
+        // look for time variables and check to see if they have a calendar attribute. if not, add the default
+        checkTimeVarForCalendar(v);
       }
 
       // look for horiz transforms. only ones that are referenced by another variable.
@@ -174,85 +186,90 @@ public class CF1Convention extends CSMConvention {
           got_grid_mapping = true;
         }
       }
-      
-    	  
+
       // simple geometry
 
-      if(ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if(getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8) // only acknowledge simple geometry standard extension if CF-1.8 or higher
-      if (v.findAttribute(CF.GEOMETRY) != null) {
-    	  
-    	Attribute container = v.findAttribute(CF.GEOMETRY);
-    	Variable coordsvar = ds.findVariable(container.getStringValue());
-    	  
-      	v.addAttribute(new Attribute(CF.GEOMETRY_TYPE, ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, "")));
-      	
-      	// Only add attribute if present, sometimes optional
-      	if(!ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "").equals("")) {
-      		v.addAttribute(new Attribute(CF.NODES, ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "")));
-      	}
-      	
-      	// Only add attribute if present, sometimes optional
-      	if(!ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "").equals("")) {
-      		v.addAttribute(new Attribute(CF.NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "")));
-      	}
-      		
-      	v.addAttribute(new Attribute(CF.NODE_COORDINATES, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "")));
-      	v.addAttribute(new Attribute(CF.PART_NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.PART_NODE_COUNT, "")));
-      	if (CF.POLYGON.equalsIgnoreCase(ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, ""))) {
+      if (ds.findGlobalAttribute(CF.CONVENTIONS) != null) {
+        if (getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue())
+            >= 8) // only acknowledge simple geometry standard extension if CF-1.8 or higher
+        {
+          if (v.findAttribute(CF.GEOMETRY) != null) {
 
-      		// Again, interior ring is not always required, but add it if it is present
-      		if(!ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "").equals(""))
-      			v.addAttribute(new Attribute(CF.INTERIOR_RING, ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "")));
-      	}
-      	
-      	if (v.findAttribute(CF.NODE_COORDINATES) != null) {
+            Attribute container = v.findAttribute(CF.GEOMETRY);
+            Variable coordsvar = ds.findVariable(container.getStringValue());
 
-      		String[] coords = ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "").split(" ");
-      
-  			String cds = "";
-          for (String coord : coords) {
-            Variable temp = ds.findVariable(coord);
-            if (temp != null) {
-              Attribute axis = temp.findAttribute(CF.AXIS);
-              if (axis != null) {
-                if ("x".equalsIgnoreCase(axis.getStringValue())) {
-                  temp.addAttribute(
-                      new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryX.toString()));
-                }
-                if ("y".equalsIgnoreCase(axis.getStringValue())) {
-                  temp.addAttribute(
-                      new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryY.toString()));
-                }
-                if ("z".equalsIgnoreCase(axis.getStringValue())) {
-                  temp.addAttribute(
-                      new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryZ.toString()));
-                }
+            v.addAttribute(new Attribute(CF.GEOMETRY_TYPE, ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, "")));
 
-                cds += coord + " ";
+            // Only add attribute if present, sometimes optional
+            if (!ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "").equals("")) {
+              v.addAttribute(new Attribute(CF.NODES, ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "")));
+            }
 
+            // Only add attribute if present, sometimes optional
+            if (!ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "").equals("")) {
+              v.addAttribute(new Attribute(CF.NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "")));
+            }
+
+            v.addAttribute(new Attribute(CF.NODE_COORDINATES, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "")));
+            v.addAttribute(new Attribute(CF.PART_NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.PART_NODE_COUNT, "")));
+            if (CF.POLYGON.equalsIgnoreCase(ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, ""))) {
+
+              // Again, interior ring is not always required, but add it if it is present
+              if (!ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "").equals("")) {
+                v.addAttribute(new Attribute(CF.INTERIOR_RING, ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "")));
               }
             }
+
+            if (v.findAttribute(CF.NODE_COORDINATES) != null) {
+
+              String[] coords = ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "").split(" ");
+              String cds = "";
+              for (String coord : coords) {
+                Variable temp = ds.findVariable(coord);
+                if (temp != null) {
+                  Attribute axis = temp.findAttribute(CF.AXIS);
+                  if (axis != null) {
+                    if ("x".equalsIgnoreCase(axis.getStringValue())) {
+                      temp.addAttribute(
+                          new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryX.toString()));
+                    }
+                    if ("y".equalsIgnoreCase(axis.getStringValue())) {
+                      temp.addAttribute(
+                          new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryY.toString()));
+                    }
+                    if ("z".equalsIgnoreCase(axis.getStringValue())) {
+                      temp.addAttribute(
+                          new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryZ.toString()));
+                    }
+
+                    cds += coord + " ";
+
+                  }
+                }
+              }
+
+              List<Dimension> dims = v.getDimensions();
+
+              // Append any geometry dimensions as axis
+              String pre = "";
+
+              for (Dimension di : dims) {
+
+                if (!di.getShortName().equals("time")) {
+                  if (ds.findVariable(di.getFullNameEscaped()) != null) {
+                    ds.findVariable(di.getFullNameEscaped())
+                        .addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString()));
+                  }
+                  // handle else case as malformed CF NetCDF
+                }
+
+                pre = di.getShortName() + " " + pre;
+              }
+
+              v.addAttribute(new Attribute(_Coordinate.Axes, pre + cds.trim()));
+            }
           }
-  
-      		List<Dimension> dims = v.getDimensions();
-      		
-      		// Append any geometry dimensions as axis
-      		String pre = "";
-      		
-      		for(Dimension di: dims) {
-      			
-      			if(!di.getShortName().equals("time")) {
-      				if(ds.findVariable(di.getFullNameEscaped()) != null)
-      					ds.findVariable(di.getFullNameEscaped()).addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString()));
-      				// handle else case as malformed CF NetCDF
-      			}
-      			
-      			pre = di.getShortName() + " " + pre;
-      		}
-      		
-      		v.addAttribute(new Attribute(_Coordinate.Axes, pre + cds.trim()));
-      	}
+        }
       }
     }
 
@@ -336,8 +353,8 @@ public class CF1Convention extends CSMConvention {
       }
 
       CoordinateAxis1D p = new CoordinateAxis1D(ds, null, v.getShortName() + "_pressure", DataType.DOUBLE,
-              levelVar.getDimensionsString(), units,
-              "Vertical Pressure coordinate synthesized from atmosphere_ln_pressure_coordinate formula");
+          levelVar.getDimensionsString(), units,
+          "Vertical Pressure coordinate synthesized from atmosphere_ln_pressure_coordinate formula");
       p.setCachedData(pressureData, false);
       p.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       p.addAttribute(new Attribute(_Coordinate.AliasForDimension, p.getDimensionsString()));
@@ -367,42 +384,55 @@ public class CF1Convention extends CSMConvention {
    */
   protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
 
-     // standard names for unitless vertical coords
+    // standard names for unitless vertical coords
     String sname = ncDataset.findAttValueIgnoreCase((Variable) v, CF.STANDARD_NAME, null);
     if (sname != null) {
       sname = sname.trim();
 
-      for (String vertical_coord : vertical_coords)
-        if (sname.equalsIgnoreCase(vertical_coord))
+      for (String vertical_coord : vertical_coords) {
+        if (sname.equalsIgnoreCase(vertical_coord)) {
           return AxisType.GeoZ;
+        }
+      }
     }
 
     // COARDS - check units
     AxisType at = super.getAxisType(ncDataset, v);
-    if (at != null) return at;
+    if (at != null) {
+      return at;
+    }
 
     // standard names for X, Y : bug in CDO putting wrong standard name, so check units first (!)
     if (sname != null) {
-      if (sname.equalsIgnoreCase(CF.ENSEMBLE))
+      if (sname.equalsIgnoreCase(CF.ENSEMBLE)) {
         return AxisType.Ensemble;
+      }
 
-      if (sname.equalsIgnoreCase(CF.LATITUDE))
+      if (sname.equalsIgnoreCase(CF.LATITUDE)) {
         return AxisType.Lat;
+      }
 
-      if (sname.equalsIgnoreCase(CF.LONGITUDE))
+      if (sname.equalsIgnoreCase(CF.LONGITUDE)) {
         return AxisType.Lon;
+      }
 
-      if (sname.equalsIgnoreCase(CF.PROJECTION_X_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LONGITUDE) || sname.equalsIgnoreCase("rotated_longitude"))
+      if (sname.equalsIgnoreCase(CF.PROJECTION_X_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LONGITUDE) || sname
+          .equalsIgnoreCase("rotated_longitude")) {
         return AxisType.GeoX;
+      }
 
-      if (sname.equalsIgnoreCase(CF.PROJECTION_Y_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LATITUDE) || sname.equalsIgnoreCase("rotated_latitude"))
+      if (sname.equalsIgnoreCase(CF.PROJECTION_Y_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LATITUDE) || sname
+          .equalsIgnoreCase("rotated_latitude")) {
         return AxisType.GeoY;
+      }
 
-      if (sname.equalsIgnoreCase(CF.TIME_REFERENCE))
+      if (sname.equalsIgnoreCase(CF.TIME_REFERENCE)) {
         return AxisType.RunTime;
+      }
 
-      if (sname.equalsIgnoreCase(CF.TIME_OFFSET))
+      if (sname.equalsIgnoreCase(CF.TIME_OFFSET)) {
         return AxisType.TimeOffset;
+      }
     }
 
     // check axis attribute - only for X, Y, Z
@@ -412,33 +442,41 @@ public class CF1Convention extends CSMConvention {
       String unit = v.getUnitsString();
 
       if (axis.equalsIgnoreCase("X")) {
-        if (SimpleUnit.isCompatible("m", unit))
+        if (SimpleUnit.isCompatible("m", unit)) {
           return AxisType.GeoX;
+        }
 
       } else if (axis.equalsIgnoreCase("Y")) {
-        if (SimpleUnit.isCompatible("m", unit))
+        if (SimpleUnit.isCompatible("m", unit)) {
           return AxisType.GeoY;
+        }
 
       } else if (axis.equalsIgnoreCase("Z")) {
-        if (unit == null) return AxisType.GeoZ;
-        if (SimpleUnit.isCompatible("m", unit))
-          return AxisType.Height;
-        else if (SimpleUnit.isCompatible("mbar", unit))
-          return AxisType.Pressure;
-        else
+        if (unit == null) {
           return AxisType.GeoZ;
+        }
+        if (SimpleUnit.isCompatible("m", unit)) {
+          return AxisType.Height;
+        } else if (SimpleUnit.isCompatible("mbar", unit)) {
+          return AxisType.Pressure;
+        } else {
+          return AxisType.GeoZ;
+        }
       }
     }
 
     if (avhrr_oiv2) {
-      if (v.getShortName().equals("zlev"))
+      if (v.getShortName().equals("zlev")) {
         return AxisType.Height;
+      }
     }
 
     try {
       String units = v.getUnitsString();
       CalendarDateUnit cd = CalendarDateUnit.of(null, units);
-      if (cd != null) return AxisType.Time;
+      if (cd != null) {
+        return AxisType.Time;
+      }
     } catch (Throwable t) {
       // ignore
     }

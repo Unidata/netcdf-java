@@ -154,25 +154,12 @@ public class Section {
    *
    * @param from  the list of Range
    * @param shape use this as default shape if any of the ranges are null.
-   * @throws InvalidRangeException if shape and range list done match
+   * @throws InvalidRangeException if shape and range list dont match
    */
   public Section(List<Range> from, int[] shape) throws InvalidRangeException {
     list = new ArrayList<>(from);
     setDefaults(shape);
   }
-
-  /* public Section subsection(int startElement, int endElement) throws InvalidRangeException {
-    int[] shape = getShape();
-    Index index = Index.factory( shape);
-    index.setCurrentCounter(startElement);
-    int[] startShape = index.getCurrentCounter();
-    index.setCurrentCounter(endElement);
-    int[] endShape = index.getCurrentCounter();
-    Section result = new Section();
-    for (int i=0; i<getRank();i++)
-      result.appendRange(startShape[i], endShape[i] - 1);
-    return result;
-  } */
 
   /**
    * Parse an index section String specification, return equivilent Section.

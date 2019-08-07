@@ -117,9 +117,8 @@ public class ParsedSectionSpec {
    * @param ranges list of Range. Must includes all parent structures. The list be null, meaning use all.
    *   Individual ranges may be null, meaning all for that dimension.
    * @return section specification String.
-   * @throws InvalidRangeException is specified section doesnt match variable shape
    */
-  public static String makeSectionSpecString(Variable v, List<Range> ranges) throws InvalidRangeException {
+  public static String makeSectionSpecString(Variable v, List<Range> ranges) {
     StringBuilder sb = new StringBuilder();
     makeSpec(sb, v, ranges);
     return sb.toString();

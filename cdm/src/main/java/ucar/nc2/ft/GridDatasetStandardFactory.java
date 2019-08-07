@@ -33,13 +33,6 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
   }
 
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
-    // already been opened by isMine
-    // DtCoverageCSBuilder dtCoverage =  (DtCoverageCSBuilder) analysis;
-
-    // look - use GridDataset 2/24/2016
-    //DtCoverageDataset dt = DtCoverageDataset.open(ncd);
-    //return DtCoverageAdapter.factory(dt, errlog);
-
     return new ucar.nc2.dt.grid.GridDataset( ncd);
   }
 

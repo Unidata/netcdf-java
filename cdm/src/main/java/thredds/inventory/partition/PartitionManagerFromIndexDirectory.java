@@ -96,12 +96,27 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
 
   @Override
   public Iterable<MFile> getFilesSorted() {
-    return null;
+    return Collections.emptyList() ;
   }
 
   @Override
   public CloseableIterator<MFile> getFileIterator() {
-    return null;
+    return new CloseableIterator() {
+      @Override
+      public boolean hasNext() {
+        return false;
+      }
+
+      @Override
+      public Object next() {
+        return null;
+      }
+
+      @Override
+      public void close() {
+
+      }
+    };
   }
 
     /////////////////////////////////////////////////////////////

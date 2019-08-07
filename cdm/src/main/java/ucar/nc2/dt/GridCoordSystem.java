@@ -33,10 +33,10 @@ import java.util.List;
 
 public interface GridCoordSystem {
 
-/* Notes
- * We could insist on one dimensional X, Y, Z, T, and treat optional HorizontalTransform the same as VerticalTransform.
- * Its job would be to provide lat(x,y) and lon(x,y) arrays.
- */
+  /* LOOK
+   * We could insist on one dimensional X, Y, Z, T, and treat optional HorizontalTransform the same as VerticalTransform.
+   * Its job would be to provide lat(x,y) and lon(x,y) arrays.
+   */
 
   /**
    * The name of the Grid Coordinate System, consisting of the list of coordinate axes, seperated by blanks.

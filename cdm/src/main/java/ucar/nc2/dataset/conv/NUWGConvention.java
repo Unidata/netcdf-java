@@ -62,7 +62,6 @@ public class NUWGConvention extends CoordSysBuilder {
     navInfo.sort(new NavComparator());
     parseInfo.format("%s%n%n", navInfo);
 
-    // is this pathetic or what ?
     // problem is NUWG doesnt identify the x, y coords.
     // so we get to hack it in here
     int mode = 3; // default is LambertConformal
@@ -82,7 +81,7 @@ public class NUWGConvention extends CoordSysBuilder {
       }
     } catch (NoSuchElementException e) {
       log.warn("No mode in navInfo - assume = 1");
-      // could match variable grid_type, data = "tangential lambert conformal  "
+      // LOOK could match variable grid_type, data = "tangential lambert conformal  "
     }
     grib = new Grib1( mode);
 

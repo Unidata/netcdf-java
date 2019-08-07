@@ -196,9 +196,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
 
   protected void setTimeUnits() throws Exception {
-    List axes = ds.getCoordinateAxes();
-    for (Object axe : axes) {
-      CoordinateAxis axis = (CoordinateAxis) axe;
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if (axis.getAxisType() == AxisType.Time) {
         String units = axis.getUnitsString();
         dateUnits = new DateUnit(units);
@@ -250,8 +248,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
 
   public void clearDatasetMemory() {
-    List rvars = getDataVariables();
-    for (Object rvar : rvars) {
+    for (VariableSimpleIF rvar : getDataVariables()) {
       RadialVariable radVar = (RadialVariable) rvar;
       radVar.clearVariableMemory();
     }

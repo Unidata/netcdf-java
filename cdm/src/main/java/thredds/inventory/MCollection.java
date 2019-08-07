@@ -86,8 +86,7 @@ public interface MCollection extends Closeable {
   Iterable<MFile> getFilesSorted() throws IOException;
 
   /**
-   * Sorted filename
-   * @return Sorted filename
+   * Get list of sorted filenames that are in this collection.
    */
   List<String> getFilenames() throws IOException;
 

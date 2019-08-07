@@ -67,7 +67,6 @@ public class DoradeSweep {
 
   public DoradeSweep(RandomAccessFile file)
           throws DoradeSweepException {
-    //file = new RandomAccessFile(filename, "r");
     try {
       littleEndian = DoradeDescriptor.sweepfileIsLittleEndian(file);
 

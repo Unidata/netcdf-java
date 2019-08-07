@@ -85,22 +85,22 @@ import java.util.zip.ZipInputStream;
  */
 
 public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable {
-  static public final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
-  static public final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
-  static public final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
-  static public final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
+  public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
+  public static final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
+  public static final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
+  public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
-  static private int default_buffersize = 8092;
-  static private List<IOServiceProvider> registeredProviders = new ArrayList<>();
-  static protected boolean debugSPI = false, debugCompress = false, showRequest = false;
+  private static int default_buffersize = 8092;
+  private static List<IOServiceProvider> registeredProviders = new ArrayList<>();
+  protected static boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
   static boolean loadWarnings = false;
 
-  static private boolean userLoads = false;
+  private static boolean userLoads = false;
 
-  static private StringLocker stringLocker = new StringLocker();
+  private static StringLocker stringLocker = new StringLocker();
 
   // IOSPs are loaded by reflection
   static {
@@ -277,7 +277,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassNotFoundException if class not found.
    */
-  static public void registerIOProvider(String className) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+  public static void registerIOProvider(String className) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
     Class ioClass = NetcdfFile.class.getClassLoader().loadClass(className);
     registerIOProvider(ioClass);
   }
@@ -290,7 +290,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
    */
-  static public void registerIOProvider(Class iospClass)
+  public static void registerIOProvider(Class iospClass)
           throws IllegalAccessException, InstantiationException {
     registerIOProvider(iospClass, false);
   }
@@ -304,7 +304,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
    */
-  static public void registerIOProvider(Class iospClass, boolean last)
+  public static void registerIOProvider(Class iospClass, boolean last)
           throws IllegalAccessException, InstantiationException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
@@ -326,7 +326,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     * @throws InstantiationException if class doesnt have a no-arg constructor.
     * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
     */
-   static public void registerIOProviderPreferred(Class iospClass, Class target)
+   public static void registerIOProviderPreferred(Class iospClass, Class target)
            throws IllegalAccessException, InstantiationException
    {
      iospDeRegister(iospClass); // forcibly de-register
@@ -349,7 +349,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @param iospClass Class for which to search
    */
-  static public boolean iospRegistered(Class iospClass) {
+  public static boolean iospRegistered(Class iospClass) {
     for (IOServiceProvider spi : registeredProviders) {
       if (spi.getClass() == iospClass) return true;
     }
@@ -362,7 +362,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param iospClass Class for which to search  and remove
    * @return true if class was present
    */
-  static public boolean iospDeRegister(Class iospClass) {
+  public static boolean iospDeRegister(Class iospClass) {
       for (int i=0;i<registeredProviders.size();i++) {
         IOServiceProvider spi = registeredProviders.get(i);
         if (spi.getClass() == iospClass) {
@@ -378,7 +378,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @param debugFlag debug flags
    */
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugSPI = debugFlag.isSet("NetcdfFile/debugSPI");
     debugCompress = debugFlag.isSet("NetcdfFile/debugCompress");
     debugStructureIterator = debugFlag.isSet("NetcdfFile/structureIterator");
@@ -394,7 +394,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param name  name of property
    * @param value value of property
    */
-  static public void setProperty(String name, String value) {
+  public static void setProperty(String name, String value) {
     N3iosp.setProperty(name, value);
   }
 
@@ -417,7 +417,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException if error
    */
-  static public NetcdfFile open(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public static NetcdfFile open(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return open(location, -1, cancelTask);
   }
 
@@ -430,7 +430,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException if error
    */
-  static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public static NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return open(location, buffer_size, cancelTask, null);
   }
 
@@ -456,7 +456,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException if error
    */
-  static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
+  public static NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
     ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
 
@@ -476,7 +476,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return true if can be opened
    * @throws IOException on read error
    */
-  static public boolean canOpen(String location) throws IOException {
+  public static boolean canOpen(String location) throws IOException {
     ucar.unidata.io.RandomAccessFile raf = null;
     try {
       raf = getRaf(location, -1);
@@ -517,7 +517,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @throws InstantiationException if class cannot be instantiated
    * @throws IllegalAccessException if class is not accessible
    */
-  static public NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask, Object iospMessage)
+  public static NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask, Object iospMessage)
           throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
@@ -561,7 +561,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return StringUtil2.replace(uriString, '\\', "/");
   }
 
-  static private ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
+  private static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
 
     String uriString = location.trim();
 
@@ -620,7 +620,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return raf;
   }
 
-  static private String makeUncompressed(String filename) throws Exception {
+  private static String makeUncompressed(String filename) throws Exception {
     // see if its a compressed file
     int pos = filename.lastIndexOf('.');
     if (pos < 0) return null;
@@ -665,7 +665,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         return uncompressedFile.getPath();
 
       } finally {
-        if (lock != null)
+        if (lock != null && lock.isValid())
           lock.release();
       }
     }
@@ -753,7 +753,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return uncompressedFile.getPath();
   }
 
-  static private void copy(InputStream in, OutputStream out, int bufferSize) throws IOException {
+  private static void copy(InputStream in, OutputStream out, int bufferSize) throws IOException {
     byte[] buffer = new byte[bufferSize];
     while (true) {
       int bytesRead = in.read(buffer);
@@ -2349,48 +2349,21 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     }
   } */
 
-  //////////////////////////////////////////////////////////
-
-  /**
-   * debugging - do not use
-   */
-  public static void main(String[] arg) throws IOException {
-    //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);
-
-    int wide = 20;
-    Formatter f = new Formatter(System.out);
-    f.format(" %" + wide + "s %n", "test");
-    f.format(" %20s %n", "asiuasdipuasiud");
-
-    /*
-    try {
-      String filename = "R:/testdata2/hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
-      NetcdfFile ncfile = NetcdfFile.open(filename);
-      //Thread.currentThread().sleep( 60 * 60 * 1000); // pause to examine in profiler
-
-      ncfile.close();
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }            */
-  }
-
-
   ///////////////////////////////////////////////////////////////////////
   // All CDM naming convention enforcement should be here.
   // DAP conventions should be in DODSNetcdfFile
 
   // reservedFullName defines the characters that must be escaped
   // when a short name is inserted into a full name
-  static public final String reservedFullName = ".\\";
+  public static final String reservedFullName = ".\\";
 
   // reservedSectionSpec defines the characters that must be escaped
   // when a short name is inserted into a section specification.
-  static public final String reservedSectionSpec = "();,.\\";
+  public static final String reservedSectionSpec = "();,.\\";
 
   // reservedSectionCdl defines the characters that must be escaped
   // when what?
-  static public final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~\\";
+  public static final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~\\";
 
   /**
    * Create a valid CDM object name.
@@ -2402,7 +2375,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param shortName from this name
    * @return valid CDM object name
    */
-  static public String makeValidCdmObjectName(String shortName) {
+  public static String makeValidCdmObjectName(String shortName) {
     if (shortName == null) return null;
     return StringUtil2.makeValidCdmObjectName(shortName);
   }
@@ -2458,7 +2431,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param v the cdm node
    * @return full name
    */
-  static protected String makeFullName(CDMNode v) {
+  protected static String makeFullName(CDMNode v) {
     return makeFullName(v, reservedFullName);
   }
 
@@ -2469,7 +2442,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param v the cdm node
    * @return full name
    */
-  static protected String makeFullNameSectionSpec(CDMNode v) {
+  protected static String makeFullNameSectionSpec(CDMNode v) {
     return makeFullName(v, reservedSectionSpec);
   }
 
@@ -2481,7 +2454,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param reservedChars the set of characters to escape
    * @return full name
    */
-  static protected String makeFullName(CDMNode node, String reservedChars) {
+  protected static String makeFullName(CDMNode node, String reservedChars) {
     Group parent = node.getParentGroup();
     if (((parent == null) || parent.isRoot())
             && !node.isMemberOfStructure()) // common case?
@@ -2492,7 +2465,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return sbuff.toString();
   }
 
-  static private void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
+  private static void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
     if (g == null) return;
     if (g.getParentGroup() == null) return;
     appendGroupName(sbuff, g.getParentGroup(), reserved);
@@ -2500,7 +2473,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     sbuff.append("/");
   }
 
-  static private void appendStructureName(StringBuilder sbuff, CDMNode n, String reserved) {
+  private static void appendStructureName(StringBuilder sbuff, CDMNode n, String reserved) {
     if (n.isMemberOfStructure()) {
       appendStructureName(sbuff, n.getParentStructure(), reserved);
       sbuff.append(".");
