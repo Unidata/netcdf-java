@@ -16,6 +16,7 @@ The other projects held under the THREDDS umbrella are link:https://github.com/u
  * link:#gh-contrib-workflow[Contribution workflow]
  ** link:#gh-sync-ud[Make sure you have the latest changes from Unidata THREDDS repository]
  ** link:#gh-branch[Make a new branch for your work and start hacking]
+ ** link:#gh-style-guidelines[Follow these Java Style Guidelines]
  ** link:#gh-history-cleanup[Clean up your git commit history]
  ** link:#gh-final-commit-for-pr[Push changes to your fork to use for the pull request]
  ** link:#gh-pr[Make the pull request]
@@ -94,6 +95,38 @@ If you would like these changes to be stored on your personal remote repository,
 `git push me mywork`
 
 Once you are satisfied with your work, there is one last step to complete before submitting the pull request - clean up the history.
+
+[[gh-style-guidelines]]
+=== Follow these Java Style Guidelines
+
+We are using the
+link:https://google.github.io/styleguide/javaguide.html[Google Java Style Guide] with these exceptions and augmentations:
+
+1. The recommended line width is 140, not 100. Modern screens are much wider than tall, so having
+wider lines allows more code to fit on a screen.
+
+2. As a rule, dont add empty javadoc that has no information that can't be seen directly in the
+code. For example, do not do this:
+
+```java
+  /**
+   * _more_
+   *
+   * @param nds _more_
+   * @param v   _more_
+   * @return _more_
+   * @throws IOException
+   */
+  protected Foo makeFoo(NetcdfDataset nds, VariableSimpleIF v) throws IOException
+```
+
+Better to not have any javadoc then to have empty javadoc. Of course, best is to
+put actual, useful comments to help others understand your API.
+
+Much of the code does not follow these guidelines, but we aspire to eventually clean it up
+to get there. The guidelines are voluntary, but if you dont follow them, you are giving someone
+else permission to change your code. We recommend that you follow them for new code
+submissions (and feel free to convert old code to it as time permits).
 
 [[gh-history-cleanup]]
 === Clean up your git commit history
