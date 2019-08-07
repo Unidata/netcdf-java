@@ -39,7 +39,7 @@ import java.util.List;
  * Notes jcaron
  *  Apparently we need the control file (.ctl), which then references the data file (.dat)
  *  Dont see any test data - added to cdmUnitTest/formats/grads
- *  Possible File leaks - remove from standard IOSP's until we can resolve this. Also need to override  release, reacquire
+ *  Possible File leaks - remove from standard IOSP's until we can resolve this. Also need to override release, reacquire
  *
  * @author Don Murray - CU/CIRES
  * @see "http://www.iges.org/grads/gadoc/descriptorfile.html"

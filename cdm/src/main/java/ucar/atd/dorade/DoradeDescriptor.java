@@ -66,28 +66,19 @@ abstract class DoradeDescriptor {
     byte[] data;
 
     try {
-      //
       // find the next descriptor with our expected name
-      //
       findNext(file);
 
-      //
       // keep track of the start of this descriptor
-      //
       long startpos = file.getFilePointer();
 
-      //
       // get the name and descriptor size
-      //
       byte[] header = new byte[8];
       file.readFully(header);
       descName = new String(header, 0, 4, CDM.utf8Charset);
       int size = grabInt(header, 4);
 
-      //
-      // now back up to the start of the descriptor and read the entire
-      // thing into a byte array
-      //
+      // now back up to the start of the descriptor and read the entire thing into a byte array
       file.seek(startpos);
 
       data = new byte[size];
@@ -96,9 +87,7 @@ abstract class DoradeDescriptor {
       throw new DescriptorException(ex);
     }
 
-    //
     // now check the name we got against the expected name
-    //
     if (!descName.equals(expectedName))
       throw new DescriptorException("Got descriptor name '" + descName +
               "' when expecting name '" +

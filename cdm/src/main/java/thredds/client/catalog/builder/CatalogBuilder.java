@@ -278,22 +278,6 @@ public class CatalogBuilder {
   /////////////////////////////////////////////////////////////////////
   // JDOM
 
-  /* private void readXML(String fileName)  throws IOException {
-    try {
-      StAXStreamBuilder staxBuilder = new StAXStreamBuilder();
-      XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-      XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(new FileInputStream(fileName));
-      Document jdomDoc = staxBuilder.build(xmlStreamReader);
-      readCatalog(jdomDoc.getRootElement());
-
-    } catch (Exception e) {
-      errlog.format("failed to read catalog at '%s' err='%s'%n", fileName, e);
-      logger.error("failed to read catalog at " + fileName, e);
-      // e.printStackTrace();
-      fatalError = true;
-    }
-  }  */
-
   private void readXML(String location) {
      try {
        SAXBuilder saxBuilder = new SAXBuilder();

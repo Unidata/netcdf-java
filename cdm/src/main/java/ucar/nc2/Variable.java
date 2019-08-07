@@ -374,6 +374,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *               Each Range corresponds to a Dimension, and specifies the section of data to read in that Dimension.
    *               A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
+   * @throws InvalidRangeException if shape and range list dont match
    */
   public Variable section(List<Range> ranges) throws InvalidRangeException {
     return section(new Section(ranges, shape).makeImmutable());

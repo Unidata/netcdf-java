@@ -453,7 +453,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   private void makeCoordinateData(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
-                                  Variable ngatesVar, List groups) {
+                                  Variable ngatesVar, List<Group> groups) {
 
     Array timeData = Array.factory( time.getDataType(), time.getShape());
     IndexIterator timeDataIter = timeData.getIndexIterator();
@@ -469,7 +469,6 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     Array ngatesData = Array.factory( ngatesVar.getDataType(), ngatesVar.getShape());
     IndexIterator ngatesIter = ngatesData.getIndexIterator();
-
 
     int last_msecs = Integer.MIN_VALUE;
     int nscans = groups.size();

@@ -86,7 +86,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
   double getMaximumRadialDist() {
     double maxdist = 0.0;
 
-    for (VariableSimpleIF dataVariable : dataVariables) {
+    for (VariableSimpleIF dataVariable : getDataVariables()) {
       RadialVariable rv = (RadialVariable) dataVariable;
       Sweep sp = rv.getSweep(0);
       double dist = sp.getGateNumber() * sp.getGateSize();
@@ -158,9 +158,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setTimeUnits() throws Exception {
-    List axes = ds.getCoordinateAxes();
-    for (Object axe : axes) {
-      CoordinateAxis axis = (CoordinateAxis) axe;
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if (axis.getAxisType() == AxisType.Time) {
         String units = axis.getUnitsString();
         dateUnits = new DateUnit(units);
@@ -188,13 +186,11 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
   }
 
   public void clearDatasetMemory() {
-      List  rvars = getDataVariables();
-    for (Object rvar : rvars) {
+    for (VariableSimpleIF rvar : getDataVariables()) {
       RadialVariable radVar = (RadialVariable) rvar;
       radVar.clearVariableMemory();
     }
   }
-
 
   protected void addRadialVariable(NetcdfDataset nds, Variable var) {
       RadialDatasetSweep.RadialVariable rsvar = null;
@@ -210,8 +206,6 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
         dataVariables.add(rsvar);
   }
 
-
-
   protected RadialDatasetSweep.RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0)  {
       // this function is null in level 2
       return new UF2Variable(nds, v, v0);
@@ -225,7 +219,6 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     sbuff.append(parseInfo.toString());
     return sbuff.toString();
   }
-
 
   private class UF2Variable extends AbstractRadialAdapter.MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     int nsweeps;

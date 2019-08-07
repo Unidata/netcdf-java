@@ -29,8 +29,10 @@ public class SimpleGeometryCS {
   
   public SimpleGeometryCS(SimpleGeometryCSBuilder builder) {
     this.builder = builder;
-    simpleGeometryX = new ArrayList<>(); simpleGeometryY = new ArrayList<>();
-    simpleGeometryZ = new ArrayList<>(); simpleGeometryID = new ArrayList<>();
+    simpleGeometryX = new ArrayList<>();
+    simpleGeometryY = new ArrayList<>();
+    simpleGeometryZ = new ArrayList<>();
+    simpleGeometryID = new ArrayList<>();
     
     for(CoordinateAxis axis : builder.getSgAxes()) {
     	

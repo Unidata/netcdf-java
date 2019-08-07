@@ -5,6 +5,7 @@
 
 package thredds.inventory.partition;
 
+import java.util.Collections;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
@@ -55,15 +56,9 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
     public MCollection next() {
       MFile nextFile = iter.next();
 
-      // try {
-        MCollection result = new CollectionSingleIndexFile( nextFile, logger);
-        result.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-        return result;
-
-      //} catch (IOException e) {
-      //  logger.error("PartitionManagerFromList failed on "+nextFile.getPath(), e);
-     //   throw new RuntimeException(e);
-     // }
+      MCollection result = new CollectionSingleIndexFile( nextFile, logger);
+      result.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+      return result;
     }
 
     @Override
@@ -76,12 +71,27 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
 
   @Override
   public Iterable<MFile> getFilesSorted() {
-    return null;
+    return Collections.emptyList() ;
   }
 
   @Override
   public CloseableIterator<MFile> getFileIterator() {
-    return null;
+    return new CloseableIterator() {
+      @Override
+      public boolean hasNext() {
+        return false;
+      }
+
+      @Override
+      public Object next() {
+        return null;
+      }
+
+      @Override
+      public void close() {
+
+      }
+    };
   }
 
   /////////////////////////////////////////////////////////////
