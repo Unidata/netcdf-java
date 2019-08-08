@@ -23,10 +23,9 @@ import java.lang.invoke.MethodHandles;
 
 public class TestProjections {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  boolean show = false;
-  int NTRIALS = 10000;
-  double tolerence = 5.0e-4;
+  private static final boolean show = false;
+  private static final int NTRIALS = 10000;
+  private static final double tolerence = 5.0e-4;
 
   private LatLonPoint doOne(ProjectionImpl proj, double lat, double lon, boolean show) {
     LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
@@ -52,7 +51,6 @@ public class TestProjections {
     if (endL.equals(LatLonPointImmutable.INVALID)) return;
     Assert.assertEquals(lat, endL.getLatitude(), tolerence);
     Assert.assertEquals(lon, endL.getLongitude(), tolerence);
-
   }
 
   private void testProjection(ProjectionImpl proj) {
@@ -97,7 +95,7 @@ public class TestProjections {
   }
 
   // must have lon within +/- lonMax, lat within +/- latMax
-  public void testProjectionLonMax(ProjectionImpl proj, double lonMax, double latMax) {
+  private void testProjectionLonMax(ProjectionImpl proj, double lonMax, double latMax) {
     java.util.Random r = new java.util.Random((long) this.hashCode());
     LatLonPointImpl startL = new LatLonPointImpl();
 
@@ -159,7 +157,6 @@ public class TestProjections {
         Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
       } catch (IllegalArgumentException e) {
         System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
-        continue;
       }
     }
 
@@ -169,8 +166,7 @@ public class TestProjections {
   }
 
   // must have x within +/- xMax, y within +/- yMax
-  public void testProjectionProjMax(ProjectionImpl proj, double xMax,
-                                    double yMax) {
+  private void testProjectionProjMax(ProjectionImpl proj, double xMax, double yMax) {
       java.util.Random r = new java.util.Random((long) this.hashCode());
       ProjectionPointImpl startP = new ProjectionPointImpl();
       for (int i = 0; i < NTRIALS; i++) {
@@ -199,9 +195,9 @@ public class TestProjections {
   @Test
   public void testLC() {
     testProjection(new LambertConformal());
-    LambertConformal lc = new LambertConformal();
-    LambertConformal lc2 = (LambertConformal) lc.constructCopy();
-    assert lc.equals(lc2);
+    LambertConformal p = new LambertConformal();
+    LambertConformal p2 = (LambertConformal) p.constructCopy();
+    Truth.assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -339,8 +335,6 @@ public class TestProjections {
     grid_south_pole_angle = 0.0 */
   @Test
   public void testRotatedLatLon() {
-    //   public RotatedLatLon(double southPoleLat, double southPoleLon, double southPoleAngle) {
-
     testProjectionLonMax(new RotatedLatLon(-30, -15, 0), 360, 88);
     RotatedLatLon p = new RotatedLatLon();
     RotatedLatLon p2 = (RotatedLatLon) p.constructCopy();
@@ -356,7 +350,6 @@ public class TestProjections {
     Truth.assertThat(p).isEqualTo(p2);
   }
 
-  // UTM failing - no not use
   @Test
   public void testUTM() {
     // The central meridian = (zone * 6 - 183) degrees, where zone in [1,60].
@@ -440,12 +433,12 @@ public class TestProjections {
       System.out.println("Tested " + n + " pts for UTM projection ");
   }
 
+  @Test
   public void utestVerticalPerspectiveView() {
     testProjectionLonMax(new VerticalPerspectiveView(), 66, 60);
     VerticalPerspectiveView p = new VerticalPerspectiveView();
     VerticalPerspectiveView p2 = (VerticalPerspectiveView) p.constructCopy();
     Truth.assertThat(p).isEqualTo(p2);
   }
-
 
 }
