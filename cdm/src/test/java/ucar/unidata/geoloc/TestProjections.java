@@ -386,7 +386,6 @@ public class TestProjections {
     Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), 1.3e-4);
   }
 
-
   private void testProjectionUTM(int n) {
     java.util.Random r = new java.util.Random((long) this.hashCode());
     LatLonPointImpl startL = new LatLonPointImpl();
@@ -431,14 +430,6 @@ public class TestProjections {
 
     if (show)
       System.out.println("Tested " + n + " pts for UTM projection ");
-  }
-
-  @Test
-  public void utestVerticalPerspectiveView() {
-    testProjectionLonMax(new VerticalPerspectiveView(), 66, 60);
-    VerticalPerspectiveView p = new VerticalPerspectiveView();
-    VerticalPerspectiveView p2 = (VerticalPerspectiveView) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
   }
 
 }
