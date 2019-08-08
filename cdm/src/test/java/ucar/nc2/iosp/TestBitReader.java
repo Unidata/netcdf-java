@@ -14,6 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.util.Misc;
 
 /**
  * from https://github.com/lost-carrier 6/12/2014
@@ -49,13 +50,19 @@ public class TestBitReader {
 		assertEquals(-945, (int) bu.bits2SInt(11));
 	}
 
+	// 1100011111110010       0       0     110     110
+	// 012345678901234567890123456789012345678901234567890
+	// 	         1         2         3         4         5
 	@Test
-	@Ignore("why is this failing?")
-	public void testSignedNegative3() throws IOException {
-		BitReader bu = new BitReader(new byte[] {(byte)199,(byte)242,(byte)0,(byte)0,(byte)6,(byte)6});
+	public void testUnsigned() throws IOException {
+		byte[] bits = new byte[] {(byte)199,(byte)242,(byte)0,(byte)0,(byte)6,(byte)6};
+		System.out.printf("%s", Misc.showBits(bits));
+		BitReader bu = new BitReader(bits);
 		assertEquals(799, (int) bu.bits2UInt(10));
 		assertEquals(800, (int) bu.bits2UInt(10));
-		assertEquals(-344, (int) bu.bits2SInt(10));
+		assertEquals(0, (int) bu.bits2UInt(10));
+		assertEquals(6, (int) bu.bits2UInt(10));
+		assertEquals(6, (int) bu.bits2UInt(8));
 	}
 
 }

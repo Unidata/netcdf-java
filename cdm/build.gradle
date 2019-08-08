@@ -34,6 +34,7 @@ dependencies {
 
     testCompile libraries["commons-io"]
     testCompile libraries["mockito"]
+    testCompile libraries["truth"]
 }
 
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'
