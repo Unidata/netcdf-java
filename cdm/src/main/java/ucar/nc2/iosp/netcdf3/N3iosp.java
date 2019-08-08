@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -15,8 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * IOServiceProvider implementation abstract base class to read/write "version 3" netcdf files.

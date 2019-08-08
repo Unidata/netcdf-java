@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -22,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Reads BUFR tables of various forms. Interacts with TableLookup.

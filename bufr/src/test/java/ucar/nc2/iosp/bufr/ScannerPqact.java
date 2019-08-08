@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
@@ -12,8 +14,6 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.nio.channels.WritableByteChannel;
 
 /**

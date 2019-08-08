@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.misc;
 
+import com.google.re2j.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -14,7 +16,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
-//import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 
@@ -27,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
 
 /**

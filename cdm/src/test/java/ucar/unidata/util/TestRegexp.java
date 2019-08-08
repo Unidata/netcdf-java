@@ -7,9 +7,9 @@ package ucar.unidata.util;
 
 import static org.junit.Assert.assertEquals;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import java.lang.invoke.MethodHandles;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.slf4j.Logger;

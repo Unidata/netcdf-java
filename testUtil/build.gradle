@@ -11,6 +11,7 @@ dependencies {
     compile project(":httpservices")
     
     compile libraries["junit"]
+    compile libraries["re2j"]
     compile libraries["slf4j-api"]
     testRuntime libraries["logback-classic"]
 }

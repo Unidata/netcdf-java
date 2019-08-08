@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.noaa;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -19,8 +21,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * NOMADS Ghcnm2

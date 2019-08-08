@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import com.google.re2j.Pattern;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -141,7 +142,7 @@ public class TestDcm {
     // count scanned files
     // String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger
     DirectoryCollection dcm = new DirectoryCollection("topCollectionName", specp.getRootDir(), true, config.olderThan, logger);
-    dcm.setStreamFilter(new StreamFilter(java.util.regex.Pattern.compile(".*grib2"), true));
+    dcm.setStreamFilter(new StreamFilter(Pattern.compile(".*grib2"), true));
 
     List<String> fileList = dcm.getFilenames();
     for (String name : fileList)

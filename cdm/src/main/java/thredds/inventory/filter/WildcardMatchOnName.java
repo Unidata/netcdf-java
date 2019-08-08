@@ -5,10 +5,9 @@
 
 package thredds.inventory.filter;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import thredds.inventory.MFile;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A wildcard expression that matches on the MFile name.

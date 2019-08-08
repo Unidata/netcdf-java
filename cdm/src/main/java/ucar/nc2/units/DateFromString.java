@@ -4,6 +4,8 @@
  */
 package ucar.nc2.units;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -270,8 +272,8 @@ public class DateFromString {
                                                       String dateFormatString )
   {
     // Match the given date string against the regular expression.
-    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile( matchPattern );
-    java.util.regex.Matcher matcher = pattern.matcher( dateString );
+    Pattern pattern = Pattern.compile( matchPattern );
+    Matcher matcher = pattern.matcher( dateString );
     if ( ! matcher.matches() )
     {
       return null;
