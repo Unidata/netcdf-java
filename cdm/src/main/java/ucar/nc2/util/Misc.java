@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import ucar.ma2.DataType;
 
 /**
  * Miscellaneous static routines.
@@ -198,6 +199,19 @@ public class Misc {
     List<Object> result = new ArrayList<>();
     for (Object i : ii) result.add(i);
     return result;
+  }
+
+  public static String showBits(byte[] bytes) {
+    try (Formatter f = new Formatter()) {
+      int count = 0;
+      for (byte b : bytes) {
+        short s = DataType.unsignedByteToShort(b);
+        f.format("%8s", Long.toBinaryString(s));
+        if (++count % 10 == 0)
+          f.format("%n");
+      }
+      return f.toString();
+    }
   }
 
   //////////////////////////////////////////////////////////////////////

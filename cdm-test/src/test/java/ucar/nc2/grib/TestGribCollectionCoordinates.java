@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Describe
+ * Test GribCollection Coordinates
  *
  * @author caron
  * @since 3/2/2015
@@ -43,7 +43,7 @@ public class TestGribCollectionCoordinates {
     PartitionCollectionImmutable.countPC = 0;
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
-    // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
   }
@@ -84,7 +84,7 @@ public class TestGribCollectionCoordinates {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/.*gbx9", null, null, null, "file", null);
-    // config.gribConfig.setOption("timeUnit", "1 minute");
+    config.gribConfig.setExcludeZero(true); // no longer the default
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
@@ -106,7 +106,7 @@ public class TestGribCollectionCoordinates {
             for (int i = 0; i < axis.getSize(); i++) {
               double[] bound = axis.getCoordBounds(i);
               if (bound[0] == bound[1]) {
-                System.out.printf("%s(%d) = [%f,%f]%n", vds.getFullName(), i, bound[0], bound[1]);
+                System.out.printf("ERR1 %s(%d) = [%f,%f]%n", vds.getFullName(), i, bound[0], bound[1]);
                 ok = false;
               }
             }
@@ -121,7 +121,7 @@ public class TestGribCollectionCoordinates {
                 double start = bounds.get(i, j, 0);
                 double end = bounds.get(i, j, 1);
                 if (start == end) {
-                  System.out.printf("%s(%d,%d) = [%f,%f]%n", vds.getFullName(), i, j, start, end);
+                  System.out.printf("ERR2 %s(%d,%d) = [%f,%f]%n", vds.getFullName(), i, j, start, end);
                   ok = false;
                 }
               }
