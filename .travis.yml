@@ -23,6 +23,9 @@ env:
     # become part of the S3 URL.
     - TEST_REPORT_DIR="build/reports/allTests"
     - TDS_LOGS_DIR="tds/src/test/content/thredds/logs"
+  matrix:
+    - TASK=test-ncj
+    - TASK=test-tds
 
 addons:
   # See the note in travis/after_script.sh about the environment variables that Travis artifact uploading requires.
