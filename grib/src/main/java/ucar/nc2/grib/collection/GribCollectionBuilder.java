@@ -5,7 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
-import jdk.nashorn.internal.ir.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
