@@ -5,7 +5,8 @@
 
 package thredds.logs;
 
-import java.util.regex.*;
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import java.util.Date;
 import java.io.BufferedReader;
 import java.io.IOException;

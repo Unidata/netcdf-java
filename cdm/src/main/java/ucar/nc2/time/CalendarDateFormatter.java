@@ -5,6 +5,8 @@
 
 package ucar.nc2.time;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -19,8 +21,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Threadsafe static routines for date formatting.

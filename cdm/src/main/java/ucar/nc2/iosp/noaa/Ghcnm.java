@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.noaa;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -19,8 +21,6 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Nomads GLOBAL HISTORICAL CLIMATOLOGY NETWORK MONTHLY (GHCNM) v3 Beta.

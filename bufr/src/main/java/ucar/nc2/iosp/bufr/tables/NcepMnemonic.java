@@ -10,16 +10,16 @@ package ucar.nc2.iosp.bufr.tables;
  * @version 1.0
  */
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.lang.Integer;
+import java.util.*;
 
 /**
  * A class that reads a  mnemonic table. It doesn't include X < 48 and Y < 192 type of

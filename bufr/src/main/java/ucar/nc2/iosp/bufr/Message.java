@@ -4,22 +4,18 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.time.CalendarDate;
-import ucar.unidata.io.RandomAccessFile;
-
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Encapsolates a complete BUFR message.
  * A message has a DataDescriptor and one or more "datasets" aka "data subsets" aka "observations" aka "obs".
  * Table lookup is done through getLookup().
- *
- * @author caron
- * @since May 9, 2008
  */
 public class Message {
   private static final Pattern wmoPattern = Pattern.compile(".*([IJ]..... ....) .*");

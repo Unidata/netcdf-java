@@ -4,11 +4,10 @@
  */
 package ucar.nc2.iosp.noaa;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Create a StructureData by using a java.util.regex.Pattern on an ascii file.

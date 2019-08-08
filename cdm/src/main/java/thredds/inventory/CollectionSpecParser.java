@@ -4,6 +4,8 @@
  */
 package thredds.inventory;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -12,7 +14,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.Formatter;
-import java.util.regex.Pattern;
 
 /**
  * Parses the collection specification string.
@@ -43,7 +44,7 @@ public class CollectionSpecParser {
   private final String rootDir;
   private final boolean subdirs; // recurse into subdirectories under the root dir
   private final boolean filterOnName; // filter on name, else on entire path
-  private final java.util.regex.Pattern filter; // regexp filter
+  private final Pattern filter; // regexp filter
   private final String dateFormatMark;
 
   /**
@@ -96,17 +97,17 @@ public class CollectionSpecParser {
           for (int i = posFormat; i < posFormat2 - 1; i++)
             sb.setCharAt(i, '.');
           String regExp = sb.toString();
-          this.filter = java.util.regex.Pattern.compile(regExp);
+          this.filter = Pattern.compile(regExp);
 
         } else { // one hash
           dateFormatMark = filter; // everything
           String regExp = filter.substring(0, posFormat) + "*";
-          this.filter = java.util.regex.Pattern.compile(regExp);
+          this.filter = Pattern.compile(regExp);
         }
 
       } else { // no hash (dateFormatMark)
         dateFormatMark = null;
-        this.filter = java.util.regex.Pattern.compile(filter);
+        this.filter = Pattern.compile(filter);
       }
     } else {
       dateFormatMark = null;
@@ -120,7 +121,7 @@ public class CollectionSpecParser {
     this.rootDir = StringUtil2.removeFromEnd(rootDir, '/');
     this.subdirs = true;
     this.spec = this.rootDir +"/" + regExp;
-    this.filter = java.util.regex.Pattern.compile(spec);
+    this.filter = Pattern.compile(spec);
     this.dateFormatMark = null;
     this.filterOnName = false;
   }
@@ -136,7 +137,7 @@ public class CollectionSpecParser {
   private class BySpecp implements java.nio.file.PathMatcher {
     @Override
     public boolean matches(Path path) {
-      java.util.regex.Matcher matcher = filter.matcher(path.getFileName().toString());
+      Matcher matcher = filter.matcher(path.getFileName().toString());
       return matcher.matches();
     }
   }

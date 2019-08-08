@@ -4,6 +4,9 @@
  */
 package ucar.nc2.iosp.nids;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
+
 import ucar.ma2.*;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -33,8 +36,11 @@ import java.util.zip.*;
  */
 
 class Nidsheader{
-    final private static boolean useStationDB = false; // use station db for loactions
-    static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nidsheader.class);
+    private static final boolean useStationDB = false; // use station db for loactions
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nidsheader.class);
+
+    private static final Pattern PARAM_PATTERN =
+        Pattern.compile("([\\w*\\s*?]*)\\=([(\\<|\\{|\\[|\\()?\\w*\\s*?\\.?\\,?\\-?\\/?\\%?(\\>|\\}|\\]|\\))?]*)");
 
     final static int  NEXR_PID_READ = 100;
     final static int  DEF_NUM_ELEMS = 640;   /* default num of elements to send         */
@@ -1885,12 +1891,9 @@ class Nidsheader{
      * @param s
      * @return  attributes
      */
-    public HashMap addAttributePairs(String s)
-    {
-        java.util.regex.Pattern PARAM_PATTERN =
-                java.util.regex.Pattern.compile("([\\w*\\s*?]*)\\=([(\\<|\\{|\\[|\\()?\\w*\\s*?\\.?\\,?\\-?\\/?\\%?(\\>|\\}|\\]|\\))?]*)");
+    public HashMap addAttributePairs(String s) {
         HashMap attributes = new HashMap();
-        for(java.util.regex.Matcher matcher = PARAM_PATTERN.matcher(s);
+        for(Matcher matcher = PARAM_PATTERN.matcher(s);
             matcher.find(); attributes.put(matcher.group(1).trim(), matcher.group(2).trim()));
 
         return attributes;

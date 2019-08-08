@@ -6,20 +6,17 @@
 
 package ucar.nc2.iosp.gempak;
 
-
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.nc2.constants.CDM;
 
 import java.io.*;
-
 import java.net.URL;
 import java.net.URLConnection;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**

@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -14,8 +16,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.nio.charset.Charset;
 
 import org.slf4j.Logger;

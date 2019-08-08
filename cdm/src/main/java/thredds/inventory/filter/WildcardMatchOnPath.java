@@ -5,10 +5,10 @@
 
 package thredds.inventory.filter;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import thredds.inventory.MFileFilter;
 import thredds.inventory.MFile;
-
-import java.util.regex.Pattern;
 
 /**
  * A wildcard expression that matches on the MFile path.
@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
  */
 public class WildcardMatchOnPath implements MFileFilter {
   private static final boolean debug = false;
-  protected String wildcardString;
-  protected java.util.regex.Pattern pattern;
+  private String wildcardString;
+  protected Pattern pattern;
 
   public WildcardMatchOnPath(String wildcardString) {
     this.wildcardString = wildcardString;
@@ -29,16 +29,16 @@ public class WildcardMatchOnPath implements MFileFilter {
     regExp = regExp.replaceAll("\\?", ".?"); // Replace "?" with ".?".
 
     // Compile regular expression pattern
-    this.pattern = java.util.regex.Pattern.compile(regExp);
+    this.pattern = Pattern.compile(regExp);
   }
 
-  public WildcardMatchOnPath(Pattern pattern) {
+  WildcardMatchOnPath(Pattern pattern) {
     this.pattern = pattern;
   }
 
   public boolean accept(MFile file) {
     String p = file.getPath();
-    java.util.regex.Matcher matcher = this.pattern.matcher(p);
+    Matcher matcher = this.pattern.matcher(p);
     if (debug)
       System.out.printf(" WildcardMatchOnPath regexp %s on %s match=%s%n", pattern, file.getPath(), matcher.matches());
     return matcher.matches();
