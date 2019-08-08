@@ -5,8 +5,6 @@
 
 package ucar.ma2;
 
-import java.io.IOException;
-
 /**
  * Creates a StructureDataIterator by wrapping a section of a ArrayStructure.
  *

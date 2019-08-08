@@ -15,8 +15,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.Sinusoidal;
 
-import java.io.IOException;
-
 /**
  * HDF4-EOS TERRA MODIS
  *

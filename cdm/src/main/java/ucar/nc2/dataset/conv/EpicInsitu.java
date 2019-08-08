@@ -10,7 +10,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 
-import java.io.IOException;
 import java.util.List;
 
 /**

@@ -13,7 +13,6 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.Dimension;
 
 import java.util.Formatter;
-import java.io.IOException;
 
 /**
  * RAF Nimbus conventions

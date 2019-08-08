@@ -6,7 +6,6 @@ package ucar.nc2.ft2.coverage.writer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import org.jdom2.Document;

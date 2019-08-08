@@ -477,12 +477,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @throws IOException on read error
    */
   public static boolean canOpen(String location) throws IOException {
-    ucar.unidata.io.RandomAccessFile raf = null;
-    try {
-      raf = getRaf(location, -1);
+    try (ucar.unidata.io.RandomAccessFile raf = getRaf(location, -1)) {
       return (raf != null) && canOpen(raf);
-    } finally {
-      if (raf != null) raf.close();
     }
   }
 

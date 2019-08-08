@@ -16,7 +16,6 @@ import ucar.ma2.ArrayLong;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import java.io.IOException;
 
 /**
  * Modis satellite conventions

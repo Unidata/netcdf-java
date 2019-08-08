@@ -12,7 +12,6 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

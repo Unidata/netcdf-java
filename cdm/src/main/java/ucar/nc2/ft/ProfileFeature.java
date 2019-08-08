@@ -9,7 +9,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * A set of observations along the vertical (z) axis.

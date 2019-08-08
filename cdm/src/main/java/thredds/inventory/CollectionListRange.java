@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

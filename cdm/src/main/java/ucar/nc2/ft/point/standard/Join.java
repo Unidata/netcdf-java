@@ -9,8 +9,6 @@ import ucar.ma2.*;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableDS;
 
-import java.io.IOException;
-
 /**
  * An abstract way to 'join' more cols to a row
  */

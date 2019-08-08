@@ -8,7 +8,6 @@ import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.StationCollection;
 import ucar.nc2.ft.FeatureDataset;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**

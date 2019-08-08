@@ -13,8 +13,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 
-import java.io.IOException;
-
 /**
  * FslWindProfiler netccdf files - identify coordinates
  * @author caron

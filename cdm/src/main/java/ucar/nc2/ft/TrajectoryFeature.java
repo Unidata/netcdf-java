@@ -8,7 +8,6 @@ import ucar.ma2.StructureData;
 import ucar.nc2.time.CalendarDateRange;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * A set of observations along a 1 dimensional path, connected in space and time.

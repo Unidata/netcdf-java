@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.NoFactoryFoundException;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.units.DateUnit;
 

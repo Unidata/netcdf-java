@@ -6,7 +6,6 @@ package thredds.inventory.filter;
 
 import ucar.unidata.util.StringUtil2;
 
-import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.util.regex.Pattern;

@@ -6,7 +6,6 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 

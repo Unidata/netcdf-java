@@ -1848,7 +1848,6 @@ class Nidsheader {
     HashMap attributes = new HashMap();
     for (java.util.regex.Matcher matcher = PARAM_PATTERN.matcher(s);
         matcher.find(); attributes.put(matcher.group(1).trim(), matcher.group(2).trim())) {
-      ;
     }
 
     return attributes;

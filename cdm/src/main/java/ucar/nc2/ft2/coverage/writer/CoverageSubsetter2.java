@@ -4,7 +4,6 @@
  */
 package ucar.nc2.ft2.coverage.writer;
 
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.ft2.coverage.*;
 

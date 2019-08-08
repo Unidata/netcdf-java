@@ -7,7 +7,6 @@ package ucar.nc2.ft2.coverage.adapter;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
