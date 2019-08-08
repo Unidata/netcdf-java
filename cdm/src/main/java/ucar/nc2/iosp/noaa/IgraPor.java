@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.noaa;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -14,8 +16,6 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Nomads IGRA files.

@@ -14,6 +14,7 @@ dependencies {
 
     compile libraries["visad"]
     compile libraries["guava"]
+    compile libraries["re2j"]
 
     compile libraries["slf4j-api"]
 }

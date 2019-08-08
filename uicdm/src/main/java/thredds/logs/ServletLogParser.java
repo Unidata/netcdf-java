@@ -5,11 +5,12 @@
 
 package thredds.logs;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.nc2.util.EscapeStrings;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.*;
 import java.util.Formatter;
 import java.io.BufferedReader;
 import java.io.IOException;

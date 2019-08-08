@@ -16,6 +16,7 @@ dependencies {
     compile libraries["jj2000"]
     compile libraries["guava"]
     compile libraries["jcommander"]
+    compile libraries["re2j"]
     compile libraries["slf4j-api"]
     testCompile libraries["truth"]
     testCompile libraries["jsoup"]

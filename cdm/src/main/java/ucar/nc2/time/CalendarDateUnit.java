@@ -4,12 +4,12 @@
  */
 package ucar.nc2.time;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import javax.annotation.concurrent.Immutable;
 
 import java.util.Date;
 import java.util.Formatter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A Calendar Date Unit: "unit since date"

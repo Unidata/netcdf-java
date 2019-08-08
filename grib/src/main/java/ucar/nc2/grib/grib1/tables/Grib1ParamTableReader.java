@@ -5,6 +5,9 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,8 +28,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A Grib1 Parameter Table (table 2). This is a map: code -> Grib1Parameter. Handles reading the

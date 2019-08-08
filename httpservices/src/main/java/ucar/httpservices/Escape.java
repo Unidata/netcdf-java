@@ -39,12 +39,13 @@
 
 package ucar.httpservices;
 
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Escape
 {

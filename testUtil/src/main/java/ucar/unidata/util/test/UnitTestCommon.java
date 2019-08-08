@@ -4,7 +4,8 @@
 
 package ucar.unidata.util.test;
 
-import org.junit.rules.TemporaryFolder;
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -19,8 +20,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 abstract public class UnitTestCommon
 {

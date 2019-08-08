@@ -585,7 +585,7 @@ The following examples show how date and time patterns are interpreted in the U.
 | "EEE, d MMM yyyy HH:mm:ss Z"	| Wed, 4 Jul 2001 12:08:56 -0700
 | "yyMMddHHmmssZ"	| 010704120856-0700
 
-### Regular Expressions : java.util.regexp
+### Regular Expressions
 
 Regular expressions are used in </b>_scan_</b> elements to match filenames to be included in the aggregation. Note that the regexp pattern is matched against the <b>_full pathname_</b> of the file (_/dir/file.nc, not file.nc_).
 
