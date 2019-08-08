@@ -12,7 +12,6 @@ import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.Optional;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;

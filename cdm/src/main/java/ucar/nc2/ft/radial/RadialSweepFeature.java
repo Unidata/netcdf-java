@@ -6,7 +6,6 @@ package ucar.nc2.ft.radial;
 
 import ucar.nc2.Variable;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**

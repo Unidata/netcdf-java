@@ -464,12 +464,12 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
           }
         }
       }
-      if (!lgdtyp) log.warn("GDTYP not found; using " + Integer.toString(gdtyp));
-      if (!lp_alp) log.warn("P_ALP not found; using " + Double.toString(p_alp));
-      if (!lp_bet) log.warn("P_BET not found; using " + Double.toString(p_bet));
-      if (!lp_gam) log.warn("P_GAM not found; using " + Double.toString(p_gam));
-      if (!lxcent) log.warn("XCENT not found; using " + Double.toString(xcent));
-      if (!lycent) log.warn("YCENT not found; using " + Double.toString(ycent));
+      if (!lgdtyp) log.warn("GDTYP not found; using " + gdtyp);
+      if (!lp_alp) log.warn("P_ALP not found; using " + p_alp);
+      if (!lp_bet) log.warn("P_BET not found; using " + p_bet);
+      if (!lp_gam) log.warn("P_GAM not found; using " + p_gam);
+      if (!lxcent) log.warn("XCENT not found; using " + xcent);
+      if (!lycent) log.warn("YCENT not found; using " + ycent);
 
     } else {
       if (log.isDebugEnabled()) log.debug("UAMIVServiceProvider: adding projection file");

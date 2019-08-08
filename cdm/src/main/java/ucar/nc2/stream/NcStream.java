@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;

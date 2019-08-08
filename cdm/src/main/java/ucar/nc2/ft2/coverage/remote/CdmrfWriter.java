@@ -6,7 +6,6 @@ package ucar.nc2.ft2.coverage.remote;
 
 import com.google.protobuf.ByteString;
 import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;

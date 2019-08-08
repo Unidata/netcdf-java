@@ -12,7 +12,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 
-import java.io.IOException;
 import java.util.StringTokenizer;
 
 /**

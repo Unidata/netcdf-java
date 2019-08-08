@@ -1,7 +1,6 @@
 package ucar.nc2.ft2.simpgeometry;
 
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.Dimension;
@@ -11,7 +10,6 @@ import ucar.nc2.ft2.simpgeometry.adapter.SimpleGeometryCS;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;

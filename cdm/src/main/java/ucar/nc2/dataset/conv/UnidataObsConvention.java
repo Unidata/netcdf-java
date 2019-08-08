@@ -15,7 +15,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.StringTokenizer;
 

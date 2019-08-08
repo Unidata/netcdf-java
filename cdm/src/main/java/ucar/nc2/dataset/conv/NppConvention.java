@@ -13,8 +13,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 
-import java.io.IOException;
-
 /**
  * NPP/NPOESS Conventions
  * note this is almost same as Avhrr ??

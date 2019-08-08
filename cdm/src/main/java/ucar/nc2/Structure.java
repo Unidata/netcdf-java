@@ -584,7 +584,7 @@ public class Structure extends Variable {
 
     for (Attribute att : getAttributes()) {
       if(Attribute.isspecial(att)) continue;
-      buf.format("  ", indent);
+      buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
       if(!strict && (att.getDataType() != DataType.STRING))
