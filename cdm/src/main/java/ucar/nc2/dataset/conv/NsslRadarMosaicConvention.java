@@ -55,7 +55,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     this.conventionName = "NSSL National Reflectivity Mosaic";
   }
 
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
     if (null != ds.findVariable("Lat")) return; // check if its already been done - aggregating enhanced datasets.
     String s = ds.findAttValueIgnoreCase(null, "DataType", null);
     if (s == null) return;
@@ -68,7 +68,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     ds.finish();
   }
 
-  private void augment3D(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  private void augment3D(NetcdfDataset ds, CancelTask cancelTask) {
     ds.addAttribute(null, new Attribute(CDM.CONVENTIONS, "NSSL National Reflectivity Mosaic"));
 
     addLongName(ds, "mrefl_mosaic", "3-D reflectivity mosaic grid");
@@ -96,7 +96,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     var.addAttribute(new Attribute(_Coordinate.Axes, "Height Lat Lon"));
   }
 
-  private void augment2D(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  private void augment2D(NetcdfDataset ds, CancelTask cancelTask) {
     ds.addAttribute(null, new Attribute(CDM.CONVENTIONS, "NSSL National Reflectivity Mosaic"));
 
     addLongName(ds, "cref", "composite reflectivity");

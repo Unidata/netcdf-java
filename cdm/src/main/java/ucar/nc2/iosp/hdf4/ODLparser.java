@@ -65,7 +65,7 @@ public class ODLparser {
     parseFromString(text);
   }
 
-  public Element parseFromString(String text) throws IOException {
+  public Element parseFromString(String text) {
     if (showRaw) System.out.println("Raw ODL=\n"+text);
     
     Element rootElem = new Element("odl");

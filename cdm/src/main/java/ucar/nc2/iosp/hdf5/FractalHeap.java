@@ -209,7 +209,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
   }
 
 
-  DHeapId getFractalHeapId(byte[] heapId) throws IOException {
+  DHeapId getFractalHeapId(byte[] heapId) {
     return new DHeapId(heapId);
   }
 

@@ -103,7 +103,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   // StationTimeSeriesFeatureCollection
 
   @Override
-  public StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) {
     if (stations == null) {
       return this;
     } else {
@@ -113,7 +113,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   @Override
-  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) {
     if (boundingBox == null) {
       return this;
     } else {
@@ -129,7 +129,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   } */
 
   @Override
-  public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+  public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
     return new CompositeStationCollectionFlattened(getName(), getTimeUnit(), getAltUnits(), boundingBox, dateRange, subsetCollection);
 
@@ -137,7 +137,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   @Override
-  public PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+  public PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
     return new CompositeStationCollectionFlattened(getName(), getTimeUnit(), getAltUnits(), stations, dateRange, varList, subsetCollection);
   }
@@ -147,8 +147,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     private final CompositeStationCollection from;
     private final List<StationFeature> stationFeats;
 
-    private CompositeStationCollectionSubset(CompositeStationCollection from, List<StationFeature> stationFeats)
-            throws IOException {
+    private CompositeStationCollectionSubset(CompositeStationCollection from, List<StationFeature> stationFeats) {
       super(from.getName(), from.getTimeUnit(), from.getAltUnits(), from.dataCollection);
       this.from = Preconditions.checkNotNull(from, "from == null");
 
@@ -271,7 +270,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     @Override
     @Nullable
-    public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+    public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
       if (boundingBox != null) {
         if (!boundingBox.contains(s.getLatLon())) return null;
         if (dateRange == null) return this;

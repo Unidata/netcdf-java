@@ -109,7 +109,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
   }
 
-  public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v, Section section) throws IOException {
     switch (v.getShortName()) {
       case "station":
         return readStation(v, section);
@@ -307,7 +307,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return abb;
   }
 
-  public Array readReportIndex(Variable v, Section section) throws IOException {
+  public Array readReportIndex(Variable v, Section section) {
       //coverity[FB.BC_UNCONFIRMED_CAST]
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
@@ -705,7 +705,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     int code, next, nlevels, nbytes;
     Entry[] entries;
 
-    int read(byte[] b, int offset) throws IOException {
+    int read(byte[] b, int offset) {
 
       code = Integer.parseInt(new String(b, offset, 2, CDM.utf8Charset));
       next = Integer.parseInt(new String(b, offset + 2, 3, CDM.utf8Charset));

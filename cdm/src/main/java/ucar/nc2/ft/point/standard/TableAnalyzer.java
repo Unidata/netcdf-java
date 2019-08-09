@@ -628,7 +628,7 @@ public class TableAnalyzer {
     }
   }
 
-  private void writeConfigXML(java.util.Formatter sf) throws IOException {
+  private void writeConfigXML(java.util.Formatter sf) {
     if (configResult != null) {
         PointConfigXML tcx = new PointConfigXML();
         tcx.writeConfigXML(configResult, getName(), sf);

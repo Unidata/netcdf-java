@@ -97,7 +97,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     }
 
     @Override
-    public TrajectoryProfileFeature next() throws IOException {
+    public TrajectoryProfileFeature next() {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = sdataIter.getCurrentRecno();
       cursor.tableData[2] = sectionData; // obs(leaf) = 0, profile=1, section(root)=2
@@ -241,7 +241,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     private class PointIterator extends StandardPointFeatureIterator {
 
-      PointIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+      PointIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) {
         super(StandardSectionProfileFeature.this, ft, timeUnit, structIter, cursor);
       }
 

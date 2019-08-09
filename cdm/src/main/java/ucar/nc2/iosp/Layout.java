@@ -4,8 +4,6 @@
  */
 package ucar.nc2.iosp;
 
-import java.io.IOException;
-
 /**
  * Iterator to read/write subsets of a multidimensional array, finding the contiguous chunks.
  * The iteration is monotonic in both src and dest positions.
@@ -74,9 +72,8 @@ public interface Layout {
    * Get the next chunk
    *
    * @return next chunk, or null if !hasNext()
-   * @throws java.io.IOException on i/o error
    */
-  Chunk next() throws IOException;
+  Chunk next();
 
   /**
    * A chunk of data that is contiguous in both the source and destination.

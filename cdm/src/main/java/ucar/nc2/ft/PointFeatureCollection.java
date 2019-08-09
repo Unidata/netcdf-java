@@ -22,10 +22,9 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
    * @param boundingBox only points in this lat/lon bounding box. may be null.
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
-   * @throws IOException on read error
    */
   @Nullable
-  PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+  PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange);
 
   //////////////////////////////////////////////////////
   // deprecated, use foreach
@@ -47,7 +46,7 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
    * @see PointFeatureIterator#next
    * @deprecated use foreach
    */
-  PointFeature next();
+  PointFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the PointFeatures in this Collection.

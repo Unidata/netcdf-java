@@ -240,7 +240,7 @@ public class PointStream {
 
       @Nonnull
       @Override
-      public StructureData getDataAll() throws IOException {
+      public StructureData getDataAll() {
         return getFeatureData();
       }
 

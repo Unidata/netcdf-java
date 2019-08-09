@@ -92,7 +92,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     super.writeHeader2(obsCoords, sectionData, profileData, obsData, coordNames.toString());
   }
 
-  protected void makeFeatureVariables(StructureData trajData, boolean isExtended) throws IOException {
+  protected void makeFeatureVariables(StructureData trajData, boolean isExtended) {
 
     // add the dimensions : extended model can use an unlimited dimension
     Dimension trajDim = writer.addDimension(null, trajDimName, ntraj);
@@ -131,7 +131,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   }
 
   @Override
-  protected void makeMiddleVariables(StructureData profileData, boolean isExtended) throws IOException {
+  protected void makeMiddleVariables(StructureData profileData, boolean isExtended) {
 
     Dimension profileDim = writer.addDimension(null, profileDimName, nfeatures);
 

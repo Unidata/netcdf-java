@@ -74,7 +74,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   }
 
   @Override
-  public List<StationFeature> getStationFeatures(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+  public List<StationFeature> getStationFeatures(ucar.unidata.geoloc.LatLonRect boundingBox) {
     return getStationHelper().getStationFeatures(boundingBox);
   }
 
@@ -92,22 +92,22 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   // subset
 
   @Override
-  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) {
     return subset( getStationFeatures(boundingBox));
   }
 
   @Override
-  public StationTimeSeriesFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
     return subset(getStationFeatures(boundingBox), dateRange);
   }
 
   @Override
-  public StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) {
     return new StationSubset(this, stations);
   }
 
   @Override
-  public StationTimeSeriesFeatureCollection subset(List<StationFeature> stnsWanted, CalendarDateRange dateRange) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(List<StationFeature> stnsWanted, CalendarDateRange dateRange) {
     if (dateRange == null)
       return subset(stnsWanted);
 
@@ -152,7 +152,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
 
   // might need to override for efficiency
   @Override
-  public PointFeatureCollection flatten(List<String> stationNames, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+  public PointFeatureCollection flatten(List<String> stationNames, CalendarDateRange dateRange, List<VariableSimpleIF> varList) {
     if ((stationNames == null) || (stationNames.size() == 0))
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
 
@@ -252,7 +252,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   }
 
   @Override
-  public void resetIteration() throws IOException {
+  public void resetIteration() {
     localIterator = getPointFeatureCollectionIterator();
   }
 }

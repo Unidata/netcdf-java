@@ -31,7 +31,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
   protected CalendarDateUnit timeUnit;
   protected Cursor cursor;
 
-  StandardPointFeatureIterator(PointCollectionImpl dsg, NestedTable ft, CalendarDateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
+  StandardPointFeatureIterator(PointCollectionImpl dsg, NestedTable ft, CalendarDateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) {
     super(structIter, null);
     this.collectionDsg = dsg;
     this.ft = ft;

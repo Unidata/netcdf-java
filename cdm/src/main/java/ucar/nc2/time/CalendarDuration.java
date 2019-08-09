@@ -313,7 +313,7 @@ static private void test(String unit, String result) {
   assert jp.toString().equals(result) : jp.toString()+" != "+ result;
 }
 
-static public void main(String args[]) throws Exception {
+static public void main(String args[]) {
   test("sec", "PT1S");
   test("secs", "PT1S");
   test("minute", "PT1M");

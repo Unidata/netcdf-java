@@ -29,7 +29,7 @@ public interface TrajectoryProfileFeature extends PointFeatureCC, Iterable<Profi
    * @return the actual data of this section. may be empty, not null.
    */
   @Nonnull
-  StructureData getFeatureData();
+  StructureData getFeatureData() throws java.io.IOException;
 
   //////////////////////////////////////////////////////////
   // deprecated use foreach

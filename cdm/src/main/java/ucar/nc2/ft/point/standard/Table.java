@@ -487,7 +487,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       if (!isInit) init();
 
       int firstRecno, numrecs;
@@ -554,7 +554,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       int parentIndex = cursor.getParentRecnum();
       List<Integer> index = indexMap.get(parentIndex);
       if (index == null) index = new ArrayList<>();
@@ -660,7 +660,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       int parentIndex = cursor.getParentRecnum();
       ParentInfo info = indexMap[parentIndex];
       List<Integer> index = (info == null) ? new ArrayList<>() : info.recnumList;
@@ -696,7 +696,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) {
       StructureData parentStruct = cursor.getParentStructure();
       int firstRecno = parentStruct.getScalarInt(start);
       return new StructureDataIteratorLinked(struct, firstRecno, -1, next);

@@ -155,7 +155,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     }
 
     @Override
-    public TrajectoryFeature next() throws IOException {
+    public TrajectoryFeature next() {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[1] = structIter.getCurrentRecno();
       cursor.tableData[1] = nextTraj;
@@ -185,7 +185,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
 
   // need covariant return to allow superclass to implement
   @Override
-  public TrajectoryFeature next() throws IOException {
+  public TrajectoryFeature next() {
     return localIterator.next();
   }
 

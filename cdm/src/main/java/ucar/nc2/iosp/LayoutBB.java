@@ -4,7 +4,6 @@
  */
 package ucar.nc2.iosp;
 
-import java.io.IOException;
 import java.nio.*;
 
 /**
@@ -62,9 +61,8 @@ public interface LayoutBB extends Layout {
    * Get the next chunk
    *
    * @return next chunk, or null if !hasNext()
-   * @throws java.io.IOException on i/o error
    */
-  Chunk next() throws IOException;
+  Chunk next();
 
   /**
    * A chunk of data that is contiguous in both the source and destination.

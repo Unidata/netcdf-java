@@ -146,9 +146,8 @@ public class HdfEos {
      *
      * @param ncfile         Amend this file
      * @param structMetadata structMetadata as String
-     * @throws IOException on read error
      */
-    private void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
+    private void amendFromODL(NetcdfFile ncfile, String structMetadata) {
         Group rootg = ncfile.getRootGroup();
 
         ODLparser parser = new ODLparser();

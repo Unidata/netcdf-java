@@ -71,7 +71,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
 
   @Override
   @Nonnull
-  public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+  public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
     if ((dateRange == null) && (boundingBox == null))
       return this;
     else if (dateRange == null)

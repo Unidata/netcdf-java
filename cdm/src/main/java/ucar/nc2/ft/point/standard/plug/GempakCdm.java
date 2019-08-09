@@ -50,7 +50,7 @@ public class GempakCdm extends TableConfigurerImpl {
     return (ftype == CF.FeatureType.timeSeries) || (ftype == CF.FeatureType.timeSeriesProfile);
   }
 
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
 
     CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
     if (ftype == null) ftype = CF.FeatureType.point;
@@ -271,7 +271,7 @@ public class GempakCdm extends TableConfigurerImpl {
     return obs;
   }
 
-  protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+  protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig stnTable = makeStationTable(ds, errlog);
     if (stnTable == null) return null;
     Dimension stationDim = ds.findDimension( stnTable.dimName);

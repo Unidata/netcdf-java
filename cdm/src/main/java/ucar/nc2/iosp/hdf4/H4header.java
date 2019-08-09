@@ -652,7 +652,7 @@ public class H4header extends NCheader
     return ncfile.addDimension(null, new Dimension(dimName, len));
   }
 
-  private Variable makeVariable(TagVH vh) throws IOException {
+  private Variable makeVariable(TagVH vh) {
     Vinfo vinfo = new Vinfo(vh.refno);
     vinfo.tags.add(vh);
     vh.vinfo = vinfo;

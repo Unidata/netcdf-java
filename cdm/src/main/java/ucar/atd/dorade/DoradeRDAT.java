@@ -46,7 +46,7 @@ class DoradeRDAT extends DoradeDescriptor {
     return paramData;
   }
 
-  public static DoradeRDAT getNextOf(DoradePARM parm, RandomAccessFile file, boolean littleEndianData) throws DescriptorException, java.io.IOException {
+  public static DoradeRDAT getNextOf(DoradePARM parm, RandomAccessFile file, boolean littleEndianData) throws DescriptorException {
     while (true) {
       long pos = findNextWithName("RDAT", file, littleEndianData);
       if (peekParamName(file).equals(parm.getName()))

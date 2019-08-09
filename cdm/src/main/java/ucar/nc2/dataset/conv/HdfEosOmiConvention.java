@@ -13,8 +13,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 
-import java.io.IOException;
-
 /**
  * HDF5-EOS AURA OMI
  *
@@ -129,7 +127,7 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
     }
   }
    */
-    public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
         final Attribute levelAtt = ds.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
         if (levelAtt == null)  { return; }
         final int level = levelAtt.getStringValue().startsWith("2") ? 2 : 3;

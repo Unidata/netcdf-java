@@ -104,7 +104,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   }
 
   @Override
-  public CloseableIterator<MFile> getFileIterator() throws IOException {
+  public CloseableIterator<MFile> getFileIterator() {
     return new MFileIterator( getFilesSorted().iterator(), null);
   }
 

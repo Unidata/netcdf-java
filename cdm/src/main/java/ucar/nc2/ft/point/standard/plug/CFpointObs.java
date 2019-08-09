@@ -59,7 +59,7 @@ public class CFpointObs extends TableConfigurerImpl {
     return false;
   }
 
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     EncodingInfo info = new EncodingInfo();
 
     // figure out the actual feature type of the dataset
@@ -126,7 +126,7 @@ public class CFpointObs extends TableConfigurerImpl {
   /////////////////////////////////////////////////////////////////////////////////
 
 
-  protected TableConfig getPointConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getPointConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     if (info.time.getRank() != 1) {
       errlog.format("CFpointObs type=point: coord time must have rank 1, coord var= %s %n", info.time.getNameAndDimensions());
       return null;
@@ -140,7 +140,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  protected TableConfig getStationConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getStationConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     if (!identifyEncodingStation(ds, info, CF.FeatureType.timeSeries, errlog))
       return null;
 
@@ -197,7 +197,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   ////
 
-  protected TableConfig getProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     if (!identifyEncodingProfile(ds, info, errlog)) return null;
 
     TableConfig profileTable = makeStructTable(ds, FeatureType.PROFILE, info, errlog);
@@ -248,7 +248,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   ////
 
-  protected TableConfig getTrajectoryConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getTrajectoryConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     if (!identifyEncodingTraj(ds, info, errlog)) return null;
 
     TableConfig trajTable = makeStructTable(ds, FeatureType.TRAJECTORY, info, errlog);
@@ -291,7 +291,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   ////
 
-  protected TableConfig getTimeSeriesProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getTimeSeriesProfileConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     if (!identifyEncodingTimeSeriesProfile(ds, info, CF.FeatureType.timeSeriesProfile, errlog)) return null;
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -454,7 +454,7 @@ public class CFpointObs extends TableConfigurerImpl {
     return stationTable;
   }
 
-  protected TableConfig getSectionConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
+  protected TableConfig getSectionConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     if (!identifyEncodingSection(ds, info, CF.FeatureType.trajectoryProfile, errlog)) return null;
 
     TableConfig parentTable = makeStructTable(ds, FeatureType.TRAJECTORY_PROFILE, info, errlog);

@@ -51,7 +51,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
    * @return if successful, return non-null. This object is then passed back into open(), so analysis can be reused.
    */
   @Override
-  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     if (wantFeatureType == null) wantFeatureType = FeatureType.ANY_POINT;
     if (wantFeatureType != FeatureType.ANY_POINT) {
       if (!wantFeatureType.isPointFeatureType())
@@ -118,7 +118,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     private TableAnalyzer analyser;
     //private DateUnit timeUnit;
 
-    PointDatasetStandard(FeatureType wantFeatureType, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
+    PointDatasetStandard(FeatureType wantFeatureType, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) {
       super(ds, null);
       parseInfo.format(" PointFeatureDatasetImpl=%s%n", getClass().getName());
       this.analyser = analyser;

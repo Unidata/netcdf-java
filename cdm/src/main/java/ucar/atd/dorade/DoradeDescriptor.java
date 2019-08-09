@@ -285,7 +285,7 @@ abstract class DoradeDescriptor {
   protected static long findNextWithName(String expectedName,
                                          RandomAccessFile file,
                                          boolean littleEndianData)
-          throws DescriptorException, java.io.IOException {
+          throws DescriptorException {
 
     //
     // Skip forward through the file until we find a descriptor with
@@ -307,7 +307,7 @@ abstract class DoradeDescriptor {
   }
 
   protected long findNext(RandomAccessFile file)
-          throws DescriptorException, java.io.IOException {
+          throws DescriptorException {
     return findNextWithName(expectedName, file, littleEndianData);
   }
 

@@ -77,7 +77,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     super.writeHeader(coords, profile.getFeatureData(), obs.getFeatureData(), coordNames.toString());
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
 
     // LOOK why not unlimited here ?
     Dimension profileDim = writer.addDimension(null, profileDimName, nfeatures);

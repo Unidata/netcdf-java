@@ -271,9 +271,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
   /**
    * Build the netCDF file
    *
-   * @throws IOException problem reading the file
    */
-  protected void buildNCFile() throws IOException {
+  protected void buildNCFile() {
     ncFile.empty();
     fillNCFile();
     ncFile.finish();

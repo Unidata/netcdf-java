@@ -233,19 +233,13 @@ public class CatalogCrawler {
 
   private Catalog readCatref(CatalogRef catref, PrintWriter out, Indent indent) {
     CatalogBuilder builder = new CatalogBuilder();
-    try {
-      Catalog cat = builder.buildFromCatref(catref);
-      if (builder.hasFatalError() || cat == null) {
-        if (out != null) out.printf("%sError reading catref %s err=%s%n", indent, catref.getName(), builder.getErrorMessage());
-        return null;
-      }
-      return cat;
-    } catch (IOException e) {
-      if (out != null) out.printf("%sError reading catref %s err=%s%n", indent, catref.getName(), e.getMessage());
+    Catalog cat = builder.buildFromCatref(catref);
+    if (builder.hasFatalError() || cat == null) {
+      if (out != null) out.printf("%sError reading catref %s err=%s%n", indent, catref.getName(), builder.getErrorMessage());
+      return null;
     }
-    return null;
+    return cat;
   }
-
 
   private Dataset chooseRandom(List datasets) {
     int index = random.nextInt(datasets.size());

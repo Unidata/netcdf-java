@@ -37,7 +37,7 @@ public class Doradeheader {
     return true;
   }
 
-  void read(DoradeSweep mySweep, ucar.nc2.NetcdfFile ncfile, PrintStream out) throws IOException {
+  void read(DoradeSweep mySweep, ucar.nc2.NetcdfFile ncfile, PrintStream out) {
 
     this.ncfile = ncfile;
     DoradePARM[] parms = mySweep.getParamList();
@@ -308,7 +308,7 @@ public class Doradeheader {
   }
 
 
-  void addNCAttributes(NetcdfFile nc, DoradeSweep mySweep) throws DoradeSweep.DoradeSweepException {
+  void addNCAttributes(NetcdfFile nc, DoradeSweep mySweep) {
     nc.addAttribute(null, new Attribute("summary", "Dorade radar data " +
             "from radar " + mySweep.getSensorName(0) + " in the project " + mySweep.getProjectName()));
     nc.addAttribute(null, new Attribute("radar_name", mySweep.getSensorName(0)));

@@ -214,7 +214,7 @@ public abstract class Aggregation {
  }
 
   // experimental
-  public void addCollection(String spec, String olderThan) throws IOException {
+  public void addCollection(String spec, String olderThan) {
     datasetManager = MFileCollectionManager.open(spec, spec, olderThan, new Formatter());
  }
 
