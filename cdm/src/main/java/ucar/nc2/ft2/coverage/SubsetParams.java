@@ -157,7 +157,7 @@ public class SubsetParams {
   public Integer getInteger(String key) {
     Object val = req.get(key);
     if (val == null) return null;
-    Integer dval;
+    int dval;
     if (val instanceof Number) dval = ((Number) val).intValue();
     else dval = Integer.parseInt((String) val);
     return dval;

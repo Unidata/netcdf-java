@@ -21,13 +21,13 @@ public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iter
 
   List<StationFeature> getStationFeatures();
   List<StationFeature> getStationFeatures( List<String> stnNames);
-  List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+  List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox);
 
   StationFeature findStationFeature(String name);
   StationTimeSeriesFeature getStationTimeSeriesFeature(StationFeature s);
 
   // subsetting
-  StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) throws IOException;
+  StationTimeSeriesFeatureCollection subset(List<StationFeature> stations);
   StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
   StationTimeSeriesFeatureCollection subset(List<StationFeature> stns, CalendarDateRange dateRange) throws IOException;
   StationTimeSeriesFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
@@ -39,9 +39,8 @@ public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iter
    * @param dateRange only points in this date range. may be null.
    * @param varList only these member variables. may be null. currently ignored
    * @return a PointFeatureCollection, may be null if its empty.
-   * @throws IOException on read error
    */
-  PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+  PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList);
   PointFeatureCollection flatten(LatLonRect llbbox, CalendarDateRange dateRange) throws IOException;
   StationFeature getStationFeature(PointFeature flatPointFeature); // for flattened point only
 
@@ -79,10 +78,9 @@ public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iter
 
   /**
    * Reset the internal iterator for another iteration over the StationTimeSeriesFeatures in this Collection.
-   * @throws java.io.IOException on read error
    * @deprecated use foreach
    */
-  void resetIteration() throws IOException;
+  void resetIteration();
 
   /**
    * @deprecated use foreach

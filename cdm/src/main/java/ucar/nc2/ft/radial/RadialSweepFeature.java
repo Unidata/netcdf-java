@@ -63,24 +63,24 @@ public interface RadialSweepFeature {
   /**
    * @return all the sweep data, of length getNumRadials() by getNumGates()
    */
-  float[] readData();
+  float[] readData() throws java.io.IOException;
 
   /**
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the actual data, of length getNumGates()
    */
-  float[] readData(int radial);
+  float[] readData(int radial) throws java.io.IOException;
 
   /**
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the elevation of the ith radial, in degrees
    */
-  float getElevation(int radial);
+  float getElevation(int radial) throws java.io.IOException;
 
   /**
    * @return all elevation in the sweep
    */
-  float[] getElevation();
+  float[] getElevation() throws java.io.IOException;
 
   /**
    * @return the average elevation of all the radials in the sweep, in degrees.
@@ -92,12 +92,12 @@ public interface RadialSweepFeature {
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the azimuth of the ith radial, in degrees
    */
-  float getAzimuth(int radial);
+  float getAzimuth(int radial) throws java.io.IOException;
 
   /**
    * @return all azimuth in the sweep
    */
-  float[] getAzimuth();
+  float[] getAzimuth() throws java.io.IOException;
 
   /**
    * @return the average azimuth of all the radials in the sweep, in degrees.
@@ -115,7 +115,7 @@ public interface RadialSweepFeature {
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the time of the ith radial, in units of getTimeUnits().
    */
-  float getTime(int radial);
+  float getTime(int radial) throws java.io.IOException;
 
   /**
    * @return the starting time of the sweep, in units of getTimeUnits().

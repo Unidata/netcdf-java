@@ -72,7 +72,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   }
 
   @Override
-  public List<StationFeature> getStationFeatures(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+  public List<StationFeature> getStationFeatures(ucar.unidata.geoloc.LatLonRect boundingBox) {
     return getStationHelper().getStationFeatures(boundingBox);
   }
 
@@ -87,23 +87,23 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   }
 
   @Override
-  public StationProfileCollectionImpl subset(List<StationFeature> stations) throws IOException {
+  public StationProfileCollectionImpl subset(List<StationFeature> stations) {
     if (stations == null) return this;
     return new StationProfileFeatureCollectionSubset(this, stations);
   }
 
   @Override
-  public StationProfileCollectionImpl subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+  public StationProfileCollectionImpl subset(ucar.unidata.geoloc.LatLonRect boundingBox) {
     return subset(getStationFeatures(boundingBox));
   }
 
   @Override
-  public StationProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+  public StationProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
     return subset(getStationFeatures(boundingBox), dateRange);
   }
 
   @Override
-  public StationProfileCollectionImpl subset(List<StationFeature> stnsWanted, CalendarDateRange dateRange) throws IOException {
+  public StationProfileCollectionImpl subset(List<StationFeature> stnsWanted, CalendarDateRange dateRange) {
     if (dateRange == null)
       return subset(stnsWanted);
 
@@ -133,7 +133,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
     }
 
     @Override
-    protected StationHelper createStationHelper() throws IOException {
+    protected StationHelper createStationHelper() {
       return from.getStationHelper().subset(stations);
     }
 

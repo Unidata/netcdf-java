@@ -137,7 +137,7 @@ public class DataFactory {
     return openFeatureDataset(wantFeatureType, ds, task, result);
   }
 
-  private Dataset openCatalogFromLocation(String location, ucar.nc2.util.CancelTask task, Result result) throws IOException {
+  private Dataset openCatalogFromLocation(String location, ucar.nc2.util.CancelTask task, Result result) {
     location = location.trim();
     location = StringUtil2.replace(location, '\\', "/");
 
@@ -572,7 +572,7 @@ public class DataFactory {
     return access;
   }
 
-  private Dataset openResolver(String urlString, ucar.nc2.util.CancelTask task, Result result) throws IOException {
+  private Dataset openResolver(String urlString, ucar.nc2.util.CancelTask task, Result result) {
     CatalogBuilder catFactory = new CatalogBuilder();
     Catalog catalog = catFactory.buildFromLocation(urlString, null);
     if (catalog == null) {
@@ -637,7 +637,7 @@ public class DataFactory {
 
 // look for an access method for an image datatype
 
-  private Access getImageAccess(Dataset ds, ucar.nc2.util.CancelTask task, Result result) throws IOException {
+  private Access getImageAccess(Dataset ds, ucar.nc2.util.CancelTask task, Result result) {
 
     List<Access> accessList = new ArrayList<>(ds.getAccess()); // a list of all the accesses
     while (accessList.size() > 0) {

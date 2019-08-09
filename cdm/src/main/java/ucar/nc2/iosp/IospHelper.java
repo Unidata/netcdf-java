@@ -253,9 +253,8 @@ public class IospHelper {
    * @param dataType  dataType of the variable
    * @param fillValue must be Number if dataType.isNumeric(), or String for STRING, byte[] for Structure, or null for none
    * @return primitive array with data read in
-   * @throws java.io.IOException on read error
    */
-  static public Object readDataFill(LayoutBB layout, DataType dataType, Object fillValue) throws java.io.IOException {
+  static public Object readDataFill(LayoutBB layout, DataType dataType, Object fillValue) {
     long size = layout.getTotalNelems();
     if (dataType == DataType.STRUCTURE) size *= layout.getElemSize();
     Object arr = (fillValue == null) ? makePrimitiveArray((int) size, dataType) :
@@ -271,9 +270,8 @@ public class IospHelper {
    * @param dataType dataType of the variable
    * @param arr      primitive array to read data into
    * @return the primitive array with data read in
-   * @throws java.io.IOException on read error
    */
-  static public Object readData(LayoutBB layout, DataType dataType, Object arr) throws java.io.IOException {
+  static public Object readData(LayoutBB layout, DataType dataType, Object arr) {
     if (showLayoutTypes) System.out.println("***BB LayoutType=" + layout.getClass().getName());
 
     if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR)) {

@@ -20,15 +20,15 @@ public interface StationProfileFeatureCollection extends PointFeatureCCC, Iterab
 
   List<StationFeature> getStationFeatures();
   List<StationFeature> getStationFeatures( List<String> stnNames);
-  List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+  List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox);
 
   StationFeature findStationFeature(String name);
   StationProfileFeature getStationProfileFeature(StationFeature s);
 
   // subsetting
-  StationProfileFeatureCollection subset(List<StationFeature> stations) throws IOException;
-  StationProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
-  StationProfileFeatureCollection subset(List<StationFeature> stns, CalendarDateRange dateRange) throws IOException;
+  StationProfileFeatureCollection subset(List<StationFeature> stations);
+  StationProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox);
+  StationProfileFeatureCollection subset(List<StationFeature> stns, CalendarDateRange dateRange);
   StationProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
 

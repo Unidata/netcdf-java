@@ -76,7 +76,7 @@ public class BitReader {
     }
   }
 
-  public long getPos() throws IOException {
+  public long getPos() {
     if (raf != null) {
       return raf.getFilePointer();
     } else {

@@ -145,7 +145,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   }
 
-  protected void makeFeatureVariables(StructureData stnData, boolean isExtended) throws IOException {
+  protected void makeFeatureVariables(StructureData stnData, boolean isExtended) {
 
     // add the dimensions : extended model can use an unlimited dimension
     //Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) : writer.addDimension(null, stationDimName, nstns);
@@ -203,7 +203,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   }
 
   @Override
-  protected void makeMiddleVariables(StructureData profileData, boolean isExtended) throws IOException {
+  protected void makeMiddleVariables(StructureData profileData, boolean isExtended) {
 
     Dimension profileDim = writer.addDimension(null, profileDimName, nfeatures);
 

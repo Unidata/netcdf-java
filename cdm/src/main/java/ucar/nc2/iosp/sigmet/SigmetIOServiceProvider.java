@@ -861,7 +861,7 @@ channel.close();
    * @return the number of bytes written, possibly zero.
    */
   public long readToByteChannel11(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+          throws java.io.IOException {
     Array data = readData(v2, section);
     float[] ftdata = new float[(int) data.getSize()];
     byte[] bytedata = new byte[(int) data.getSize() * 4];

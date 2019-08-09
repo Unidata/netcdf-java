@@ -124,7 +124,7 @@ class H5tiledLayoutBB implements LayoutBB {
     return delegate.hasNext();
   }
 
-  public Chunk next() throws IOException {
+  public Chunk next() {
     return delegate.next();
   }
 

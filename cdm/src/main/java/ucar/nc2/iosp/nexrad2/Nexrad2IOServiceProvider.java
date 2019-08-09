@@ -168,7 +168,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.finish();
   }
 
-  public void makeVariable2(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, Level2VolumeScan vScan) throws IOException {
+  public void makeVariable2(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, Level2VolumeScan vScan) {
       List<List<Level2Record>> groups = null;
 
       if( shortName.startsWith("Reflectivity"))
@@ -226,7 +226,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
   public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName,
                                String longName, String abbrev, List<List<Level2Record>> groups,
-                               int rd) throws IOException {
+                               int rd) {
       return makeVariable(ncfile, datatype, shortName, longName, abbrev, groups, rd, null);
   }
 

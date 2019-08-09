@@ -12,7 +12,6 @@ import com.google.common.cache.LoadingCache;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 
-import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -55,7 +54,7 @@ public class FileCacheGuava implements FileCacheIF {
   }
 
   @Override
-  public FileCacheable acquire(FileFactory factory, DatasetUrl durl) throws IOException {
+  public FileCacheable acquire(FileFactory factory, DatasetUrl durl) {
     return acquire(factory, durl.trueurl, durl, -1, null, null);
   }
 

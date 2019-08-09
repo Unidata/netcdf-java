@@ -626,7 +626,7 @@ public class NestedTable {
   }  */
 
   // add table join to this cursor level
-  void addParentJoin(Cursor cursor) throws IOException {
+  void addParentJoin(Cursor cursor) {
     int level = cursor.currentIndex;
     Table t = getTable(level);
     if (t.extraJoins != null) {

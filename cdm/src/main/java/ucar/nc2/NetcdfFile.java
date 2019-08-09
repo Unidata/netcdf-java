@@ -616,7 +616,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return raf;
   }
 
-  private static String makeUncompressed(String filename) throws Exception {
+  private static String makeUncompressed(String filename) throws IOException {
     // see if its a compressed file
     int pos = filename.lastIndexOf('.');
     if (pos < 0) return null;
@@ -729,11 +729,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
           if (debugCompress) log.info("ungzipped {} to {}", filename, uncompressedFile);
         }
       }  catch (Exception e) {
-
-        // appears we have to close before we can delete   LOOK
-        //fout.close();
-        //fout = null;
-
         // dont leave bad files around
         if (uncompressedFile.exists()) {
           if (!uncompressedFile.delete())

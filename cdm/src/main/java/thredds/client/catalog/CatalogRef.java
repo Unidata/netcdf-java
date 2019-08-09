@@ -98,20 +98,15 @@ public class CatalogRef extends Dataset {
 
   @Override
   public List<Dataset> getDatasetsLogical() {
-    try {
-      ucar.nc2.util.Optional<DatasetNode> opt = readCatref();
-      if (!opt.isPresent())
-        throw new RuntimeException(opt.getErrorMessage());
+    ucar.nc2.util.Optional<DatasetNode> opt = readCatref();
+    if (!opt.isPresent())
+      throw new RuntimeException(opt.getErrorMessage());
 
-      DatasetNode proxy = opt.get();
-      return proxy.getDatasets();
-
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    DatasetNode proxy = opt.get();
+    return proxy.getDatasets();
   }
 
-  public synchronized ucar.nc2.util.Optional<DatasetNode> readCatref() throws IOException {
+  public synchronized ucar.nc2.util.Optional<DatasetNode> readCatref() {
     if (proxy != null)
       return ucar.nc2.util.Optional.of(proxy);
 

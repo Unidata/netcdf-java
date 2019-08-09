@@ -181,9 +181,8 @@ public class NcMLReader {
    * @param targetDS   referenced dataset
    * @param parentElem parent element - usually the aggregation element of the ncml
    * @return new dataset with the merged info
-   * @throws IOException on read error
    */
-  static public NetcdfDataset mergeNcMLdirect(NetcdfDataset targetDS, Element parentElem) throws IOException {
+  static public NetcdfDataset mergeNcMLdirect(NetcdfDataset targetDS, Element parentElem) {
 
     NcMLReader reader = new NcMLReader();
     reader.readGroup(targetDS, targetDS, null, null, parentElem);
@@ -801,7 +800,7 @@ public class NcMLReader {
    * @param refParent parent Group in referenced dataset
    * @param groupElem ncml group element
    */
-  private void readGroup(NetcdfDataset newds, NetcdfFile refds, Group parent, Group refParent, Element groupElem) throws IOException {
+  private void readGroup(NetcdfDataset newds, NetcdfFile refds, Group parent, Group refParent, Element groupElem) {
 
     Group g, refg = null;
     if (parent == null) { // this is the <netcdf> element
@@ -1376,7 +1375,7 @@ public class NcMLReader {
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  private Aggregation readAgg(Element aggElem, String ncmlLocation, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
+  private Aggregation readAgg(Element aggElem, String ncmlLocation, NetcdfDataset newds, CancelTask cancelTask) {
     String dimName = aggElem.getAttributeValue("dimName");
     String type = aggElem.getAttributeValue("type");
     String recheck = aggElem.getAttributeValue("recheckEvery");

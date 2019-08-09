@@ -4,7 +4,6 @@
  */
 package ucar.nc2.iosp.hdf5;
 
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
 import ucar.nc2.iosp.LayoutTiled;
@@ -36,10 +35,9 @@ class H5tiledLayout implements Layout {
    * @param vinfo       the vinfo object for this variable
    * @param dtype       type of data. may be different from v2.
    * @param wantSection the wanted section of data, contains a List of Range objects, must be complete
-   * @throws InvalidRangeException if section invalid for this variable
    * @throws java.io.IOException on io error
    */
-  H5tiledLayout(H5header.Vinfo vinfo, DataType dtype, Section wantSection) throws InvalidRangeException, IOException {
+  H5tiledLayout(H5header.Vinfo vinfo, DataType dtype, Section wantSection) throws IOException {
     assert vinfo.isChunked;
     assert vinfo.btree != null;
 
@@ -84,7 +82,7 @@ class H5tiledLayout implements Layout {
     return delegate.hasNext();
   }
 
-  public Chunk next() throws IOException {
+  public Chunk next() {
     return delegate.next();
   }
 

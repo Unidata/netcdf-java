@@ -107,7 +107,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     @Override
-    public StationProfileFeature next() throws IOException {
+    public StationProfileFeature next() {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = sdataIter.getCurrentRecno();
       cursor.tableData[2] = stationProfileData; // obs(leaf) = 0, profile=1, section(root)=2
@@ -132,7 +132,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     //int recnum;
     Cursor cursor;
 
-    StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) throws IOException {
+    StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) {
       super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(), StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       //this.recnum = recnum;
@@ -219,7 +219,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       }
 
       @Override
-      public PointFeatureCollection next() throws IOException {
+      public PointFeatureCollection next() {
         count++;
         PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
         prev = (DsgCollectionImpl) result;
@@ -282,7 +282,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
 
-      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) {
         super(StandardProfileFeature.this, ft, timeUnit, structIter, cursor);
       }
 

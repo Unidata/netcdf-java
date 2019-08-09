@@ -8,7 +8,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -156,7 +155,7 @@ public class StationHelper {
     return result;
   }
 
-  public StationHelper subset(LatLonRect bb) throws IOException {
+  public StationHelper subset(LatLonRect bb) {
     StationHelper result = new StationHelper();
     result.setStations( getStationFeatures(bb));
     return result;

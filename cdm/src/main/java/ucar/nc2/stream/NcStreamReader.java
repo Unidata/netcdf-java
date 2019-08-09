@@ -19,7 +19,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.zip.InflaterInputStream;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.nc2.constants.CDM;
 
 /**
@@ -311,7 +310,7 @@ public class NcStreamReader {
 
   /////////////////////////////////////////////////////////////////////
 
-  private NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) throws InvalidProtocolBufferException {
+  private NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) {
     if (ncfile == null)
       ncfile = new NetcdfFileSubclass(); // not used i think
     ncfile.setLocation(proto.getLocation());

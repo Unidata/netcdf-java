@@ -68,9 +68,8 @@ public class FeatureDatasetCapabilitiesWriter {
    * @param bb    restrict stations to this bounding box, may be null
    * @param names restrict stations to these names, may be null
    * @return XML document for the stations
-   * @throws IOException on read error
    */
-  public Document makeStationCollectionDocument(LatLonRect bb, String[] names) throws IOException {
+  public Document makeStationCollectionDocument(LatLonRect bb, String[] names) {
 
     List<DsgFeatureCollection> list = fdp.getPointFeatureCollectionList();
     DsgFeatureCollection fc = list.get(0); // LOOK maybe should pass in the dsg?

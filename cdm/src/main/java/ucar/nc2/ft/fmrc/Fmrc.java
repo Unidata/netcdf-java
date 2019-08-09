@@ -107,7 +107,7 @@ public class Fmrc implements Closeable {
   private volatile long lastInvChanged;
   private volatile long lastProtoChanged;
 
-  private Fmrc(String collectionSpec, Formatter errlog) throws IOException {
+  private Fmrc(String collectionSpec, Formatter errlog) {
     this.manager = MFileCollectionManager.open(collectionSpec, collectionSpec, null, errlog);  // LOOK no name
     this.config = new FeatureCollectionConfig();
     this.config.spec = collectionSpec;
@@ -140,7 +140,7 @@ public class Fmrc implements Closeable {
     return manager;
   }
 
-  public FmrcInv getFmrcInv(Formatter debug) throws IOException {
+  public FmrcInv getFmrcInv(Formatter debug) {
     return makeFmrcInv( debug);
   }
 

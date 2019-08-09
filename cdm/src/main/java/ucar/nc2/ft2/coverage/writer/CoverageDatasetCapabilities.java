@@ -74,7 +74,7 @@ public class CoverageDatasetCapabilities {
    *
    * @return a JDOM Document
    */
-  public Document makeDatasetDescription() throws IOException {
+  public Document makeDatasetDescription() {
     Element rootElem = new Element("gridDataset");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", gcd.getName());

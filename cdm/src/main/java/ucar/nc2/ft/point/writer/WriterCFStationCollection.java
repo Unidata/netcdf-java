@@ -103,7 +103,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException {
+  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
 
     // add the dimensions : extendded model can use an unlimited dimension
     //Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) : writer.addDimension(null, stationDimName, nstns);

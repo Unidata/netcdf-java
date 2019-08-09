@@ -40,7 +40,7 @@ public class PointCollectionStreamRemote extends PointCollectionStreamAbstract i
     // Must override default subsetting implementation for efficiency.
 
     @Override
-    public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+    public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
         return new Subset(this, boundingBox, dateRange);
     }
 

@@ -430,7 +430,7 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
 
     @Override
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
       if (!exists) return false;
       if (timeSeriesRaf == null) init();
       assert timeSeriesRaf != null;
@@ -523,7 +523,7 @@ public class IgraPor extends AbstractIOServiceProvider {
         }
 
         @Override
-        public StructureData next() throws IOException {
+        public StructureData next() {
           if (!hasNext()) return null;
           Matcher matcher = profileVinfo.p.matcher(lines.get(countRead));
           StructureData sd;

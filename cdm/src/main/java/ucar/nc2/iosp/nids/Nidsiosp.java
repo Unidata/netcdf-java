@@ -73,7 +73,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
    * Read nested structure data
    */
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+          throws ucar.ma2.InvalidRangeException {
 
     Variable vp = v2.getParentStructure();
     Object data;
@@ -112,7 +112,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
   /**
    * Read the data for each variable passed in
    */
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws InvalidRangeException {
     // subset
     Object data;
     Array outputData;
@@ -222,7 +222,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
    * @return the array  of member variable data
    */
   public Array readNestedGraphicSymbolData(String name, StructureMembers.Member m, ByteBuffer bos, Nidsheader.Vinfo vinfo,
-                                           java.util.List section) throws IOException, InvalidRangeException {
+                                           java.util.List section) throws InvalidRangeException {
     int[] pos = vinfo.pos;
     int size = pos.length;
     Structure pdata = (Structure) ncfile.findVariable(name);
@@ -300,7 +300,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
    * @return the array  of member variable data
    */
   public Array readNestedLinkedVectorData(String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
-                                          java.util.List section) throws IOException, InvalidRangeException {
+                                          java.util.List section) throws InvalidRangeException {
 
     Structure pdata = (Structure) ncfile.findVariable(name);
     ArrayStructure ma = readLinkedVectorData(name, bos, vinfo);
@@ -403,7 +403,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
    * @return the array  of member variable data
    */
   public Array readNestedCircleStructData(String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
-                                          java.util.List section) throws IOException, InvalidRangeException {
+                                          java.util.List section) throws InvalidRangeException {
 
     Structure pdata = (Structure) ncfile.findVariable(name);
     ArrayStructure ma = readCircleStructData(name, bos, vinfo);
@@ -496,7 +496,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
      * @return the data object of scan data
      */
     // all the work is here, so can be called recursively
-    public Object readOneScanGenericData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) throws IOException {
+    public Object readOneScanGenericData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) {
         int npixel = 0;
         short [] pdata = null;
 
@@ -554,7 +554,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
    * @return the data object of scan data
    */
   // all the work is here, so can be called recursively
-  public Object readOneScanData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) throws IOException, InvalidRangeException {
+  public Object readOneScanData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) {
     int doff = 0;
     int npixel = vinfo.yt * vinfo.xt;
     byte[] odata = new byte[vinfo.xt];
@@ -865,7 +865,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
    * @return the array  of member variable data
    */
   public Array readNestedWindBarbData(String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
-                                      java.util.List section) throws IOException, InvalidRangeException {
+                                      java.util.List section) throws InvalidRangeException {
 
     Structure pdata = (Structure) ncfile.findVariable(name);
     ArrayStructure ma = readWindBarbData(name, bos, vinfo, null);
@@ -893,7 +893,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
    * @param vinfo variable info,
    * @return the arraystructure of wind barb data
    */
-  public ArrayStructure readWindBarbData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo, List sList) throws InvalidRangeException {
+  public ArrayStructure readWindBarbData(String name, ByteBuffer bos, Nidsheader.Vinfo vinfo, List sList) {
     int[] pos = vinfo.pos;
     int size = pos.length;
 
@@ -939,7 +939,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
    * @return the array  of member variable data
    */
   public Array readNestedVectorArrowData(String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
-                                         java.util.List section) throws IOException, InvalidRangeException {
+                                         java.util.List section) throws InvalidRangeException {
 
     Structure pdata = (Structure) ncfile.findVariable(name);
     ArrayStructure ma = readVectorArrowData(name, bos, vinfo);
@@ -1072,7 +1072,7 @@ short arrowHeadValue = 0;    */
    * @return the array  of member variable data
    */
   public Array readNestedTextStringData(String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
-                                        java.util.List section) throws IOException, InvalidRangeException {
+                                        java.util.List section) throws InvalidRangeException {
 
     Structure pdata = (Structure) ncfile.findVariable(name);
     ArrayStructure ma = readTextStringData(name, bos, vinfo);
@@ -1240,7 +1240,7 @@ short arrowHeadValue = 0;    */
    * @return the array  of member variable data
    */
   public Array readNestedDataUnlinkVector(String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
-                                          java.util.List section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
+                                          java.util.List section) throws ucar.ma2.InvalidRangeException {
 
     Structure pdata = (Structure) ncfile.findVariable(name);
     ArrayStructure ma = readUnlinkedVectorData(name, bos, vinfo);
@@ -1332,7 +1332,7 @@ short arrowHeadValue = 0;    */
 
 
   // all the work is here, so can be called recursively
-  public Object readOneArrayData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) throws IOException, InvalidRangeException {
+  public Object readOneArrayData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) {
     int doff = 0;
     int offset = 0;
     //byte[] odata = new byte[ vinfo.xt];
@@ -1402,7 +1402,7 @@ short arrowHeadValue = 0;    */
    * @param vinfo is variable info
    * @return the data object
    */
-  public Object readOneArrayData1(ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
+  public Object readOneArrayData1(ByteBuffer bos, Nidsheader.Vinfo vinfo) {
     int doff = 0;
     //byte[] odata = new byte[ vinfo.xt];
 

@@ -277,7 +277,7 @@ public class HorizCoordSys {
   }
 
   // here's where to deal with crossing seam
-  private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride) throws InvalidRangeException {
+  private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride) {
     double wantMin = LatLonPointImpl.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
     double wantMax = LatLonPointImpl.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
     double start = lonAxis.getStartValue();

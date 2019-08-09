@@ -35,7 +35,7 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
   }
 
   @Override
-  public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+  public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
     return new PointCollectionSubset(this, boundingBox, dateRange);
   }
 

@@ -430,8 +430,8 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  protected abstract void makeFeatureVariables(StructureData featureData, boolean isExtended) throws IOException;
-  protected void makeMiddleVariables(StructureData middleData, boolean isExtended) throws IOException {
+  protected abstract void makeFeatureVariables(StructureData featureData, boolean isExtended);
+  protected void makeMiddleVariables(StructureData middleData, boolean isExtended) {
     // NOOP
   }
 
@@ -483,7 +483,7 @@ public abstract class CFPointWriter implements Closeable {
     writeExtraVariables();
   }
 
-  protected void addExtraVariables() throws IOException {
+  protected void addExtraVariables() {
     if (extra == null) return;
     if (extraMap == null) extraMap = new HashMap<>();
 
@@ -513,7 +513,7 @@ public abstract class CFPointWriter implements Closeable {
   }
 
    // added as variables with the unlimited (record) dimension
-  protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords, Map<String, Variable> varMap) throws IOException {
+  protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords, Map<String, Variable> varMap) {
     addDimensionsClassic(coords, dimMap);
 
     for (VariableSimpleIF oldVar : coords) {
@@ -558,7 +558,7 @@ public abstract class CFPointWriter implements Closeable {
   }
 
    // added as variables with the unlimited (record) dimension
-  protected void addDataVariablesClassic(Dimension recordDim, StructureData stnData, Map<String, Variable> varMap, String coordVars) throws IOException {
+  protected void addDataVariablesClassic(Dimension recordDim, StructureData stnData, Map<String, Variable> varMap, String coordVars) {
     addDimensionsClassic(dataVars, dimMap);
 
     for (StructureMembers.Member m : stnData.getMembers()) {

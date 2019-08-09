@@ -45,7 +45,7 @@ public class CatalogBuilder {
   protected Formatter errlog = new Formatter();
   protected boolean fatalError = false;
 
-  public Catalog buildFromLocation(String location, URI baseURI) throws IOException {
+  public Catalog buildFromLocation(String location, URI baseURI) {
     location = StringUtil2.replace(location, "\\", "/");
 
     if (baseURI == null) {
@@ -65,13 +65,13 @@ public class CatalogBuilder {
     return fatalError ? null : makeCatalog();
   }
 
-  public Catalog buildFromURI(URI uri) throws IOException {
+  public Catalog buildFromURI(URI uri) {
     this.baseURI = uri;
     readXML(uri);
     return fatalError ? null : makeCatalog();
   }
 
-  public Catalog buildFromCatref(CatalogRef catref) throws IOException {
+  public Catalog buildFromCatref(CatalogRef catref) {
     URI catrefURI = catref.getURI();
     if (catrefURI == null) {
       errlog.format("Catref doesnt have valid UrlPath=%s%n", catref.getUrlPath());
@@ -85,13 +85,13 @@ public class CatalogBuilder {
     return fatalError ? null : result;
   }
 
-  public Catalog buildFromString(String catalogAsString, URI docBaseUri) throws IOException {
+  public Catalog buildFromString(String catalogAsString, URI docBaseUri) {
     this.baseURI = docBaseUri;
     readXMLfromString(catalogAsString);
     return fatalError ? null : makeCatalog();
   }
 
-  public Catalog buildFromStream(InputStream stream, URI docBaseUri) throws IOException {
+  public Catalog buildFromStream(InputStream stream, URI docBaseUri) {
     this.baseURI = docBaseUri;
     readXML(stream);
     return fatalError ? null : makeCatalog();

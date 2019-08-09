@@ -1750,9 +1750,8 @@ public class H5header extends NCheader
      * Constructor
      *
      * @param facade DataObjectFacade: always has an mdt and an msl
-     * @throws java.io.IOException on read error
      */
-    Vinfo(DataObjectFacade facade) throws IOException {
+    Vinfo(DataObjectFacade facade) {
       this.facade = facade;
       // LOOK if compact, do not use fileOffset
       this.dataPos = (facade.dobj.msl.type == 0) ? facade.dobj.msl.dataAddress : getFileOffset(facade.dobj.msl.dataAddress);

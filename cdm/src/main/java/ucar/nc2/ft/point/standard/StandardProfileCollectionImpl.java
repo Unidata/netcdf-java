@@ -110,7 +110,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
     private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
 
-      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) {
         super(StandardProfileFeature.this, ft, timeUnit, structIter, cursor);
       }
 
@@ -203,7 +203,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     }
 
     @Override
-    public ProfileFeature next() throws IOException {
+    public ProfileFeature next() {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.tableData[1] = nextProfileData;
       cursor.recnum[1] = structIter.getCurrentRecno();
@@ -268,7 +268,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
   // need covariant return to allow superclass to implement
   @Override
-  public ProfileFeature next() throws IOException {
+  public ProfileFeature next() {
     return localIterator.next();
   }
 

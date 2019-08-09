@@ -21,7 +21,7 @@ import java.util.*;
 public abstract class CollectionManagerAbstract extends CollectionAbstract implements CollectionManager  {
 
     // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public CollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
+  static public CollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
     if (collectionSpec.startsWith(CATALOG))
       return new CollectionManagerCatalog(collectionName, collectionSpec, olderThan, errlog);
     else
