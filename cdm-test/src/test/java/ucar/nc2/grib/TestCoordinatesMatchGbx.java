@@ -19,10 +19,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Test reading grib coordinates match gbx
@@ -188,30 +184,16 @@ public class TestCoordinatesMatchGbx {
 
   class GribAct implements TestDir.Act {
 
-    private final List<String> skipFileGrib1 = Arrays.asList("QPE.20101005.009.157",
-            "testproj.grb", "testproj2.grb", "wrf_d03_201308080200.grb", "test.nc");
-
-    private final List<String> skipFileGrib2 = Arrays.asList("ds.pop12.bin",
-            "shtfl.grib2", "shtfl.grib2.ncx4", "ds.mint.nc");
-
     @Override
     public int doAct(String filename) throws IOException {
-      Path filePath = Paths.get(filename);
-      String fileName = filePath.getFileName().toString();
       int fail =0;
       int fail2 = 0;
-
-      if (!(skipFileGrib1.contains(fileName) || skipFileGrib2.contains(fileName))) {
-        ucar.nc2.util.Counters fileCounters = counterCurrent.makeSubCounters();
-        GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, fileCounters);
-        fail = helper.readGridDataset();
-        fail2 = helper.readCoverageDataset();
-        if (showFileCounters) logger.debug("fileCounters= {}", fileCounters);
-        counterCurrent.addTo(fileCounters);
-      } else {
-        logger.warn("Skipping file {}", filename);
-      }
-
+      ucar.nc2.util.Counters fileCounters = counterCurrent.makeSubCounters();
+      GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, fileCounters);
+      fail = helper.readGridDataset();
+      fail2 = helper.readCoverageDataset();
+      if (showFileCounters) logger.debug("fileCounters= {}", fileCounters);
+      counterCurrent.addTo(fileCounters);
       return fail + fail2;
     }
 
