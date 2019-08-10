@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -444,17 +443,12 @@ public class CatalogTreeView extends JPanel {
       if (debugRef) System.out.println("readCatref on ="+ds.getName()+" "+isReading);
       if (!isReading) {
         isReading = true;
-        try {
-          Optional<DatasetNode> opt = catref.readCatref();
-          if (!opt.isPresent()) {
-            javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, opt.getErrorMessage());
-            return;
-          }
-          setCatalog(opt.get());
-
-        } catch (IOException e) {
-          javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, "Error reading catref " + catref.getName()+" err="+e.getMessage());
+        Optional<DatasetNode> opt = catref.readCatref();
+        if (!opt.isPresent()) {
+          javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, opt.getErrorMessage());
+          return;
         }
+        setCatalog(opt.get());
       }
     }
 
