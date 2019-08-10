@@ -16,11 +16,11 @@ repositories {
     
     // Hosted release repositories.
     maven {
-        // For "threddsIso", "visad" and "jj2000".
+        // "visad" and "jj2000".
         url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
     }
     maven {
-        // For snapshots of "threddsIso"
+        // For snapshots of "dtswar", "d4ts" (used by tests)
         url "https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/"
     }
     maven {
@@ -32,11 +32,6 @@ repositories {
     // Third-party repositories.
     maven {
         url "https://dl.bintray.com/cwardgar/maven/"  // For "gretty".
-    }
-
-    // edal-java SNAPSHOTS
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
     }
 }
 
