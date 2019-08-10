@@ -68,9 +68,9 @@ gretty {
 
 farm {
     // used by :dap4 test
-    webapp 'edu.ucar:d4ts:5.0.0-SNAPSHOT', contextPath: '/d4ts'
+    webapp libraries["d4ts"], contextPath: '/d4ts'
     // :opendap and :httpservices test.
-    webapp 'edu.ucar:dtswar:5.0.0-SNAPSHOT', contextPath: '/dts'
+    webapp libraries["dts"], contextPath: '/dts'
     integrationTestTask = 'test'
 }
 
