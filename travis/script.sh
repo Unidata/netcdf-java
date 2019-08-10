@@ -3,7 +3,7 @@
 if [[ $TASK == "test-ncj" ]]
 then
     echo "Testing netCDF-Java PR"
-    $TRAVIS_BUILD_DIR/gradlew --info --stacktrace testAll
+    $TRAVIS_BUILD_DIR/gradlew --info --stacktrace testAll --refresh-dependencies
 elif [[ $TASK == "test-tds" ]]
 then
     echo "Testing the THREDDS Data Server against the netCDF-Java PR"
@@ -30,7 +30,7 @@ then
     # run tds tests
     cd $TDS_BUILD_DIR
     echo "run the TDS tests"
-    ./gradlew $SYSTEM_PROPS --info --stacktrace testAll
+    ./gradlew $SYSTEM_PROPS --info --stacktrace testAll --refresh-dependencies
 else
     echo "I do not understand TASK = ${TASK}"
     echo "TASK must be either test-ncj or test-tds"
