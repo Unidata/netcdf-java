@@ -233,6 +233,14 @@ libraries["jfreechart"] = "org.jfree:jfreechart:1.0.19"
 //// Latest version is 1.9.0, but there is breakage when we try to upgrade.
 libraries["jgoodies-forms"] = "com.jgoodies:jgoodies-forms:1.6.0"
 
+/////////////////////////////// Servlets to run tests against ////////////////////////////////
+
+// used by :dap4 test
+libraries["d4ts"] = "edu.ucar:d4ts:5.0.0-SNAPSHOT"
+
+// :opendap and :httpservices test.
+libraries["dts"] = "edu.ucar:dtswar:5.0.0-SNAPSHOT"
+
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
 // Executes the given closure against all objects in this collection, and any objects subsequently added to this
