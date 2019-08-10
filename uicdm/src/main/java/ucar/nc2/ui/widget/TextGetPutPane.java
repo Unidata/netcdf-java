@@ -35,8 +35,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-//import thredds.catalog.query.*;
-
 /**
  * A text widget that does get and put to a web URL.
  *
@@ -190,7 +188,6 @@ public class TextGetPutPane extends TextHistoryPane {
       ta.setText(os.toString(CDM.UTF8));
     }
 
-   //private DqcFactory dqcFactory = null;
     void validate(String urlString) {
       if (urlString == null) return;
       URI uri;
@@ -203,23 +200,14 @@ public class TextGetPutPane extends TextHistoryPane {
         return;
       }
       String contents = getText();
-      //boolean isCatalog = contents.indexOf("queryCapability") < 0;
-
       ByteArrayInputStream is = new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8));
 
-      try {
-        CatalogBuilder catFactory = new CatalogBuilder();
-        Catalog cat = catFactory.buildFromLocation(urlString, null);
-        boolean isValid = !catFactory.hasFatalError();
+      CatalogBuilder catFactory = new CatalogBuilder();
+      Catalog cat = catFactory.buildFromLocation(urlString, null);
+      boolean isValid = !catFactory.hasFatalError();
 
-       javax.swing.JOptionPane.showMessageDialog(this,
-          "Catalog Validation = " + isValid + "\n" +  catFactory.getErrorMessage());
-
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-
+     javax.swing.JOptionPane.showMessageDialog(this,
+        "Catalog Validation = " + isValid + "\n" +  catFactory.getErrorMessage());
     }
 
     void putURL(String uriString) throws IOException {

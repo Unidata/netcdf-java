@@ -19,7 +19,7 @@ import java.util.Date;
 public interface StationRadialDataset extends StationCollection, FeatureDataset {
 
   // LOOK - should return RadialSweepFeature ??
-  RadialDatasetSweep getRadarDataset(String stationName, Date date) throws java.io.IOException;
+  RadialDatasetSweep getRadarDataset(String stationName, Date date);
 
   /*
    * Get a subsetted StationCollection

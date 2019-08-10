@@ -312,11 +312,7 @@ public class TableAnalyzer {
     for (NestedTable nt : leaves) {
       if (!nt.hasCoords()) {
         errlog.format("Table %s featureType %s: lat/lon/time coord not found%n", nt.getName(), nt.getFeatureType());
-        try {
-          writeConfigXML(errlog);
-        } catch (IOException e) {
-         log.error("featuretypeOk", e);
-        }
+        writeConfigXML(errlog);
       }
 
       if (!FeatureDatasetFactoryManager.featureTypeOk(ftype, nt.getFeatureType()))
@@ -621,11 +617,7 @@ public class TableAnalyzer {
     if (userAdviceS.length() > 0)
       sf.format("%n userAdvice=%n%s%n",userAdviceS);
 
-    try {
-      writeConfigXML(sf);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    writeConfigXML(sf);
   }
 
   private void writeConfigXML(java.util.Formatter sf) {
