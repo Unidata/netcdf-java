@@ -19,7 +19,8 @@ dependencies {
     compile project(":opendap")
     compile project(":uibase")
     compile project(":visadCdm")        // For Gempak IOSPs.
-    compile project(":waterml")         
+    compile project(":waterml")
+    compile project(":wrf")
     
     compile libraries["jdom2"]
     compile libraries["jcommon"]
