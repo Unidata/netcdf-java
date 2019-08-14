@@ -37,5 +37,9 @@ tasks.withType(Test).all {
         if (!isRdaDataAvailable) {
             excludeCategories 'ucar.unidata.util.test.category.NeedsRdaData'
         }
+
+        if (!runSlowTests) {
+            excludeCategories 'ucar.unidata.util.test.category.Slow'
+        }
     }
 }

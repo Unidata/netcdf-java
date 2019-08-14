@@ -50,6 +50,7 @@ public class TestCFRadial {
     private RadialDatasetSweep arrayLatLonData() throws IOException
     {
         String filename = TestDir.cdmUnitTestDir + "conventions/cfradial/cfrad.20171127_202111.203_to_20171127_202123.085_DOW7_v275_s04_el7.00_SUR.nc";
+        System.out.printf("arrayLatLonData= %s%n", filename);
         Formatter buf = new Formatter();
         return (RadialDatasetSweep) FeatureDatasetFactoryManager.open(
                 FeatureType.RADIAL, filename, null, buf);

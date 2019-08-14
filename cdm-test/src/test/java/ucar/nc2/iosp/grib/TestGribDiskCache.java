@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.util.DiskCache2;
+import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -63,9 +64,11 @@ public class TestGribDiskCache {
   @Test
   public void testDiskCache() throws Exception {
     String cacheDirName = tempFolder.newFolder().getAbsolutePath() + "/";
+    cacheDirName = StringUtil2.replace(cacheDirName, '\\', "/"); // no nasty backslash
+
     DiskCache2 cache = new DiskCache2(cacheDirName, false, 0, 0);
     cache.setAlwaysUseCache(true);
-    Assert.assertEquals(cache.getRootDirectory(), cacheDirName);
+    Assert.assertEquals(cacheDirName, cache.getRootDirectory());
     assert new File(cache.getRootDirectory()).exists();
     GribIndexCache.setDiskCache2(cache);
 

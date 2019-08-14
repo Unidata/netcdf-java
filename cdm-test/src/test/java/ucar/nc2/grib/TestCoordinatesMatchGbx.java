@@ -19,11 +19,13 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.unidata.util.test.category.Slow;
 
 /**
  * Test reading grib coordinates match gbx
  */
-@Category(NeedsCdmUnitTest.class)
+@Ignore("too slow")
+@Category({NeedsCdmUnitTest.class, Slow.class})
 public class TestCoordinatesMatchGbx {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final boolean showFileCounters = false;

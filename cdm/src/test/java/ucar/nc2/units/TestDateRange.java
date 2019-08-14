@@ -4,7 +4,8 @@
  */
 package ucar.nc2.units;
 
-import junit.framework.*;
+import com.google.common.truth.Truth;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,88 +20,68 @@ import java.util.Date;
  * @author edavis
  * @since 4.0
  */
-public class TestDateRange extends TestCase
-{
+public class TestDateRange {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestDateRange( String name )
-  {
-    super( name );
-  }
-
   /**
-   * Check if start and end dates change over time for a DateRange
-   * with start set to "present" and a duration set.
+   * Check if start and end dates change over time for a DateRange with start set to "present" and a duration set.
    */
-  public void testStartPresentAndDuration()
-  {
+  @Test
+  public void testStartPresentAndDuration() {
     DateRange drStartIsPresent;
-    try
-    {
-      drStartIsPresent = new DateRange( new DateType( "present", null, null ), null, new TimeDuration( "P7D" ), null );
-    }
-    catch ( ParseException e )
-    {
-      fail( "Failed to parse \"present\" and/or \"P7D\": " + e.getMessage() );
+    try {
+      drStartIsPresent = new DateRange(new DateType("present", null, null), null, new TimeDuration("P7D"), null);
+    } catch (ParseException e) {
+      Truth.assertWithMessage("Failed to parse \"present\" and/or \"P7D\": " + e.getMessage()).fail();
       return;
     }
-    checkValuesAfterDelay( drStartIsPresent );
+    checkValuesAfterDelay(drStartIsPresent);
   }
 
   /**
-   * Check if start and end dates change over time for a DateRange
-   * with end set to "present" and a duration set.
+   * Check if start and end dates change over time for a DateRange with end set to "present" and a duration set.
    */
-  public void testEndPresentAndDuration()
-  {
+  @Test
+  public void testEndPresentAndDuration() {
     DateRange drEndIsPresent;
-    try
-    {
-      drEndIsPresent = new DateRange( null, new DateType( "present", null, null ), new TimeDuration( "P7D" ), null );
-    }
-    catch ( ParseException e )
-    {
-      fail( "Failed to parse \"present\" and/or \"P7D\": " + e.getMessage() );
+    try {
+      drEndIsPresent = new DateRange(null, new DateType("present", null, null), new TimeDuration("P7D"), null);
+    } catch (ParseException e) {
+      Truth.assertWithMessage("Failed to parse \"present\" and/or \"P7D\": " + e.getMessage()).fail();
       return;
     }
-    checkValuesAfterDelay( drEndIsPresent );
+    checkValuesAfterDelay(drEndIsPresent);
   }
 
-  private void checkValuesAfterDelay( DateRange dr )
-  {
+  private void checkValuesAfterDelay(DateRange dr) {
     long d = Calendar.getInstance().getTimeInMillis();
     Date startDate = dr.getStart().getDate();
     Date endDate = dr.getEnd().getDate();
-    System.out.println( "Current : " + d );
-    System.out.println( "Start   :  [" + startDate.getTime() + "]." );
-    System.out.println( "End     :  [" + endDate.getTime() + "]." );
+    System.out.println("Current : " + d);
+    System.out.println("Start   :  [" + startDate.getTime() + "].");
+    System.out.println("End     :  [" + endDate.getTime() + "].");
 
-    try
-    {
-      synchronized ( this )
-      {
+    try {
+      synchronized (this) {
         boolean cond = false;
-        while ( !cond )
-        {
-          this.wait( 10000 );
+        while (!cond) {
+          this.wait(10);
           cond = true;
         }
       }
-    }
-    catch ( InterruptedException e )
-    {
-      fail( "Failed to wait: " + e.getMessage() );
+    } catch (InterruptedException e) {
+      Truth.assertWithMessage("Failed to wait: " + e.getMessage()).fail();
       return;
     }
 
     long d2 = Calendar.getInstance().getTimeInMillis();
     Date startDate2 = dr.getStart().getDate();
     Date endDate2 = dr.getEnd().getDate();
-    System.out.println( "\nCurrent : " + d2 );
-    System.out.println( "Start   : [" + startDate2.getTime() + "]." );
-    System.out.println( "End     : [" + endDate2.getTime() + "]." );
+    System.out.println("\nCurrent : " + d2);
+    System.out.println("Start   : [" + startDate2.getTime() + "].");
+    System.out.println("End     : [" + endDate2.getTime() + "].");
 
-    assertTrue( "Start dates are equal ", !startDate.equals( startDate2 ) );
-    assertTrue( "End dates are equal [" , !endDate.equals( endDate2 ) );
+    Truth.assertThat(startDate).isNotEqualTo(startDate2);
+    Truth.assertThat(endDate).isNotEqualTo(endDate2);
   }
 }
