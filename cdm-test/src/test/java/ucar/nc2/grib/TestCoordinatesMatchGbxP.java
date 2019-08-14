@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import ucar.unidata.util.test.category.Slow;
 
 /**
  *  Test reading grib coordinates match gbx, replace TestGrib1CoordsMatch
@@ -33,7 +34,7 @@ import java.util.List;
  * @since 7/7/2016.
  */
 @RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
+@Category({NeedsCdmUnitTest.class, Slow.class})
 public class TestCoordinatesMatchGbxP {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final boolean showFileCounters = true;

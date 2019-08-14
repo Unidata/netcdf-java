@@ -27,6 +27,8 @@ class Bean {
   // create a bean from an XML element
   public Bean(org.xml.sax.Attributes atts) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
     String className = atts.getValue("class");
+    // LOOK debug occasional failure
+    System.out.printf("ClassForName %s", className);
     Class<?> c = Class.forName(className);
     o = c.newInstance();
     p = BeanParser.getParser( c);

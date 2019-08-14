@@ -18,6 +18,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.util.DiskCache2;
+import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -53,6 +54,7 @@ public class TestAggExistingCache {
     System.out.printf("%s%n", filename);
 
     String cacheDirName = tempFolder.newFolder().getAbsolutePath() + "/";
+    cacheDirName = StringUtil2.replace(cacheDirName, '\\', "/"); // no nasty backslash
     System.out.printf("cacheDir=%s%n", cacheDirName);
     File cacheDir = new File(cacheDirName);
     FileUtils.deleteDirectory(cacheDir); // from commons-io
@@ -60,7 +62,7 @@ public class TestAggExistingCache {
 
     DiskCache2 cache = new DiskCache2(cacheDirName, false, 0, 0);
     cache.setAlwaysUseCache(true);
-    Assert.assertEquals(cache.getRootDirectory(), cacheDirName);
+    Assert.assertEquals(cacheDirName, cache.getRootDirectory());
     assert new File(cache.getRootDirectory()).exists();
 
     Aggregation.setPersistenceCache(cache);

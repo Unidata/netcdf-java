@@ -42,6 +42,7 @@ ext {
     }
     
     isRdaDataAvailable = false  // figure out how to set later
+    runSlowTests = false  // figure out how to set later
 }
 
 import java.nio.file.*
