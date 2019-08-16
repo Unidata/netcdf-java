@@ -101,7 +101,4 @@ public class Util {
         munge.equals("1") ;
   }
 
-  public static void main(String[] args) {
-    System.out.printf("clean '/s' = %s%n", cleanUnit("/s"));
-  }
 }

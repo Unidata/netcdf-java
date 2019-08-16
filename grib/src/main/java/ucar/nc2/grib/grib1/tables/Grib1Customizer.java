@@ -231,9 +231,4 @@ public class Grib1Customizer implements GribTables {
     }
   }
 
-  public static void main(String[] args) {
-    Grib1Customizer cust = new Grib1Customizer(0, null);
-    String units = cust.getLevelUnits(110);
-    assert units != null;
-  }
 }

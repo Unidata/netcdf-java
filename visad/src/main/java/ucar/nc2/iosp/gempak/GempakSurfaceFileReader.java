@@ -24,12 +24,12 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
   /**
    * Surface Text identifier
    */
-  public static final String SFTX = "SFTX";
+  private static final String SFTX = "SFTX";
 
   /**
    * Surface Data identifier
    */
-  public static final String SFDT = "SFDT";
+  static final String SFDT = "SFDT";
 
   /**
    * Surface Data identifier
@@ -39,17 +39,17 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
   /**
    * standard surface file id
    */
-  public static final String STANDARD = "standard";
+  static final String STANDARD = "standard";
 
   /**
    * climate surface file id
    */
-  public static final String CLIMATE = "climate";
+  private static final String CLIMATE = "climate";
 
   /**
    * ship surface file id
    */
-  public static final String SHIP = "ship";
+  static final String SHIP = "ship";
 
   /**
    * Default ctor
@@ -102,8 +102,6 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
       return false;
     }
 
-
-    int numParams = 0;
     String partType = ((dmLabel.kfsrce == 100) && (dmLabel.kprt == 1))
             ? SFTX
             : SFDT;
@@ -113,8 +111,6 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
     if (part == null) {
       logError("No part named " + partType + " found");
       return false;
-    } else {
-      numParams = part.kparms;
     }
 
     if (!readStationsAndTimes(true)) {
@@ -218,45 +214,6 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
    */
   public String getSurfaceFileType() {
     return getFileSubType();
-  }
-
-  /**
-   * Run the program
-   *
-   * @param args [0] filename (required),
-   *             [1] variable name (X for default),
-   *             [2] X to not list grids
-   * @throws IOException problem reading the file
-   */
-  public static void main(String[] args) throws IOException {
-    if (args.length == 0) {
-      System.out.println("need to supply a GEMPAK surface file name");
-      System.exit(1);
-    }
-    try {
-      GempakParameters.addParameters(
-              "resources/nj22/tables/gempak/params.tbl");
-    } catch (Exception e) {
-      System.out.println("unable to init param tables");
-    }
-
-    GempakSurfaceFileReader gsfr = getInstance(getFile(args[0]), true);
-    System.out.println("Type = " + gsfr.getSurfaceFileType());
-    gsfr.printFileLabel();
-    gsfr.printKeys();
-    gsfr.printHeaders();
-    gsfr.printParts();
-    //gsfr.printDates();
-    //gsfr.printStations(false);
-    int row = 1;
-    int col = 1;
-    if (args.length > 1) {
-      row = Integer.parseInt(args[1]);
-    }
-    if (args.length > 2) {
-      col = Integer.parseInt(args[2]);
-    }
-    gsfr.printOb(row, col);
   }
 
 }

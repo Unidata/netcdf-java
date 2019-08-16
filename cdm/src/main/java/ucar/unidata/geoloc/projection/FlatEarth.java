@@ -457,20 +457,5 @@ public class FlatEarth extends ProjectionImpl {
     return to;
   }
 
-  /*ENDGENERATED*/
-
-  /**
-   * Test
-   *
-   * @param args not used
-   */
-  public static void main(String[] args) {
-    FlatEarth a = new FlatEarth(90, -100, 0.0);
-    ProjectionPoint p = a.latLonToProj(89, -101);
-    System.out.println("proj point = " + p);
-    LatLonPoint ll = a.projToLatLon(p);
-    System.out.println("ll = " + ll);
-  }
-
 }
 

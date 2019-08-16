@@ -164,16 +164,4 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     }
   }
 
-
-  /* public static void main(String arg[]) throws IOException {
-    Formatter errlog = new Formatter();
-    String catUrl = "http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml";
-    CollectionManagerCatalog man = new CollectionManagerCatalog("test", catUrl, null, errlog);
-    man.debug = true;
-    man.scan(true);
-    Fmrc fmrc = Fmrc.open(MFileCollectionManager.CATALOG+catUrl, errlog);
-    System.out.printf("errlog = %s %n", errlog);
-  }  */
-
-
 }

@@ -74,8 +74,8 @@ public class TestPanelStore {
     return pp2;
   }
 
-  /** test */
-  public static void main(String args[]) {
+  @Test
+  public void testStuff() {
     JFrame frame = new JFrame("Test PrefPanelStore");
     frame.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {

@@ -95,15 +95,4 @@ public final class StandardPrefixDB extends PrefixDBImpl {
     addName(name, definition);
     addSymbol(symbol, definition);
   }
-
-  /**
-   * Tests this class.
-   */
-  public static void main(final String[] args) throws Exception {
-    final PrefixDB db = StandardPrefixDB.instance();
-    System.out.println("db.getPrefixBySymbol(\"cm\") = \""
-            + db.getPrefixBySymbol("cm") + '"');
-    System.out.println("db.getPrefixBySymbol(\"dm\") = \""
-            + db.getPrefixBySymbol("dm") + '"');
-  }
 }

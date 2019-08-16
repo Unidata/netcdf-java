@@ -506,26 +506,6 @@ public class GempakFileReader implements GempakConstants {
   }
 
   /**
-   * Run the program
-   *
-   * @param args filename
-   * @throws IOException problem reading the file
-   */
-  public static void main(String[] args) throws IOException {
-    if (args.length == 0) {
-      System.out.println("need to supply a GEMPAK grid file name");
-      System.exit(1);
-    }
-
-    GempakFileReader gfr = getInstance(getFile(args[0]), true);
-    gfr.printFileLabel();
-    gfr.printKeys();
-    gfr.printHeaders();
-    gfr.printParts();
-
-  }
-
-  /**
    * Class to mimic the GEMPAK DMLABL common block
    */
   class DMLabel {

@@ -1331,22 +1331,4 @@ public class BufrTables {
     }
     return ios;
   }
-
-  ///////////////////////////////
-  // debug
-  public static void main(String args[]) throws IOException {
-    /* Formatter out = new Formatter(System.out);
-
-    TableB tableB = BufrTables.getWmoTableB(13);
-    tableB.show(out);
-
-    TableD tableD = BufrTables.getWmoTableD(null);
-    tableD.show(out); */
-
-    String location = "resource:/resources/bufrTables/local/opera/localtabd_65535_5.csv";
-    try (InputStream ios = openStream(location)) {
-      TableD d = new TableD(location, location);
-      readOperaTableD(ios, d);
-    }
-  }
 }

@@ -366,10 +366,4 @@ public class Bufr2Xml {
 
     out.flush();
   }
-
-  static public void main(String args[]) throws IOException, XMLStreamException {
-    Bufr2Xml test = new Bufr2Xml();
-    test.read2xml();
-  }
-
 }

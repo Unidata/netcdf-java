@@ -339,9 +339,4 @@ public class Grib2Index extends GribIndex {
     return b.build();
   }
 
-  public static void main(String[] args) throws IOException {
-    String gribName = args[0];
-    new Grib2Index().makeIndex(gribName, null);
-  }
-
 }

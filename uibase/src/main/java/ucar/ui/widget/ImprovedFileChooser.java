@@ -47,8 +47,8 @@ import ucar.ui.util.SwingUtils;
 public class ImprovedFileChooser extends JFileChooser {
     private static final Logger logger = LoggerFactory.getLogger(ImprovedFileChooser.class);
 
-    private static String osName = System.getProperty("os.name").toLowerCase();
-    public static boolean isMacOs = osName.startsWith("mac os x");
+    private static final String osName = System.getProperty("os.name").toLowerCase();
+    public static final boolean isMacOs = osName.startsWith("mac os x");
 
     static {
         // Disable editable "Name" column in JFileChooser details table.
@@ -192,22 +192,4 @@ public class ImprovedFileChooser extends JFileChooser {
         return this.dialog;
     }
 
-
-    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException,
-            InstantiationException, IllegalAccessException {
-        // Switch to Nimbus Look and Feel, if it's available.
-        if (isMacOs) {
-            System.setProperty ("apple.laf.useScreenMenuBar", "true");
-        } else {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        }
-        ImprovedFileChooser fileChooser = new ImprovedFileChooser();
-        fileChooser.setPreferredSize(new Dimension(1000, 750));
-        fileChooser.showDialog(null, "Choose");
-    }
 }

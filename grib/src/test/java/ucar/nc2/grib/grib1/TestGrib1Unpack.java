@@ -126,4 +126,29 @@ public class TestGrib1Unpack {
 
     return data;
   }
+
+
+  @Test
+  public void testStuff() {
+    float add_offset = 143.988f;
+    float scale_factor = 0.000614654f;
+    float fd = 339.029f;
+
+    System.out.printf("res = %f%n", scale_factor / 2);
+
+    int packed_data = Math.round((fd - add_offset) / scale_factor);   // nint((unpacked_data_value - add_offset) / scale_factor)
+    float unpacked_data = packed_data * scale_factor + add_offset;
+    float diff = Math.abs(fd-unpacked_data);
+    System.out.printf("***   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+
+    packed_data++;
+    unpacked_data = packed_data * scale_factor + add_offset;
+    diff = Math.abs(fd-unpacked_data);
+    System.out.printf("***   org=%f, packed_data+1=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+
+    packed_data -=2;
+    unpacked_data = packed_data * scale_factor + add_offset;
+    diff = Math.abs(fd-unpacked_data);
+    System.out.printf("***   org=%f, packed_data-1=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+  }
 }

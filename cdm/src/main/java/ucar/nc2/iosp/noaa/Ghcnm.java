@@ -4,7 +4,6 @@
  */
 package ucar.nc2.iosp.noaa;
 
-import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.ma2.*;
@@ -398,20 +397,20 @@ public class Ghcnm extends AbstractIOServiceProvider {
  see testRegexp.testGhcnm()
 */
   private static final String p = "(\\d{11})(\\d{4})TAVG([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)?.*";
-  private static final Pattern dataPattern = Pattern.compile(p);
+  static final Pattern dataPattern = Pattern.compile(p);
 
-  private static final String RECORD = "all_data";
+  static final String RECORD = "all_data";
+  static final String STNID = "stnid";
+  static final String YEAR = "year";
+
   private static final String DIM_NAME = "month";
-  private static final String STNID = "stnid";
-
   private static final String TIME = "time";
-  private static final String YEAR = "year";
   private static final String VALUE = "value";
   private static final String DMFLAG = "dm";
   private static final String QCFLAG = "qc";
   private static final String DSFLAG = "ds";
 
-  private static final String STNS = "station";
+  static final String STNS = "station";
   private static final String LAT = "lat";
   private static final String LON = "lon";
   private static final String STELEV = "elevation";
@@ -1066,132 +1065,4 @@ public class Ghcnm extends AbstractIOServiceProvider {
       return new ArraySequence(stnDataMembers, new StnDataIter(stnDataMembers, si), -1);
     }
   }
-
-  ////////////////////////////////////
-
-  static private int parseLine(String line) {
-    int balony = 0;
-    Matcher matcher = dataPattern.matcher(line);
-    if (matcher.matches()) {
-      for (int i = 1; i <= matcher.groupCount(); i++) {
-        String r = matcher.group(i);
-        if (r == null) continue;
-        int value = (int) Long.parseLong(r.trim());
-        balony += value;
-      }
-    } else {
-      System.out.printf("Fail on %s%n", line);
-    }
-    return balony;
-  }
-
-
-  static private void readDataRegexp(String filename) throws IOException {
-    int balony = 0;
-    long start = System.currentTimeMillis();
-    System.out.printf("regexp %s%n", filename);
-    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      String line;
-      while (true) {
-        line = raf.readLine();
-        if (line == null) break;
-        if (line.startsWith("#")) continue;
-        if (line.trim().length() == 0) continue;
-        balony += parseLine(line);
-      }
-    }
-
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("DONE %d == %d msecs%n", balony, took);
-  }
-
-  static private void readData(String filename) throws IOException {
-    long start = System.currentTimeMillis();
-    System.out.printf("%s%n", filename);
-    int balony = 0;
-    try (NetcdfFile ncfile = open(filename)) {
-      Sequence seq = (Sequence) ncfile.findVariable(RECORD);
-      try (StructureDataIterator iter = seq.getStructureIterator(-1)) {
-        while (iter.hasNext()) {
-          StructureData sdata = iter.next();
-          StructureMembers.Member m = sdata.findMember(YEAR);
-          balony += sdata.getScalarInt(m);
-
-        /* StructureMembers sm = sdata.getStructureMembers();
-       for (StructureMembers.Member m : sm.getMembers()) {
-         Array data = sdata.getArray(m);
-         balony += data.getSize();
-       } */
-        }
-      }
-    }
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("DONE %d == %d msecs%n", balony, took);
-  }
-
-  static public void main(String args[]) throws IOException {
-    readData("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");
-    readDataRegexp("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");
-  }
-
-      /////////////////////////////////////////////////////////////////////////////////
-  // debug
-
-  static private NetcdfFile open(String filename) throws IOException {
-    Ghcnm iosp = new Ghcnm();
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, filename);
-    iosp.open(raf, ncfile, null);
-    return ncfile;
-  }
-
-  static private void stnDuplicates(String filename, Set<Integer> stns, boolean wantDups) throws IOException {
-    System.out.printf("%s%n", filename);
-    int count = 0;
-    int countDups = 0;
-    NetcdfFile ncfile = open(filename);
-    Sequence seq = (Sequence) ncfile.findVariable(STNS);
-    try (StructureDataIterator iter = seq.getStructureIterator(-1)) {
-      while (iter.hasNext()) {
-        count++;
-        StructureData sdata = iter.next();
-        StructureMembers.Member m = sdata.findMember(STNID);
-        int stnid = sdata.getScalarInt(m);
-        if (stns.contains(stnid)) {
-          countDups++;
-          if (!wantDups) System.out.printf("  dup %d%n", stnid);
-        } else {
-          stns.add(stnid);
-          if (wantDups) System.out.printf("  dup %d%n", stnid);
-        }
-      }
-    }
-    System.out.printf(" counts=%d dups=%d%n", count, countDups);
-  }
-
-
-  static public void main2(String args[]) throws IOException {
-    Set<Integer> stns = new HashSet<>(10 * 1000);
-    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv", stns, false);
-    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qca.inv", stns, true);
-    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.inv", stns, true);
-  }
-
-
-
 }
-
-/*
-
-  static public void main(String args[]) throws IOException {
-    //InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexrad.tbl");
-    InputStream is = new FileInputStream("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv");
-
-    List<TableParser.Record> recs = TableParser.readTable(is, "11,20d,30d,37d,68,73i,74,79i,81,83,85,87i,88,90i,106,107", 10);
-    Formatter f = new Formatter(System.out);
-    //f.format("CNTRY WMO ID      YEAR  ELEM  VAL DM QC DS%n");
-    for (TableParser.Record record : recs) {
-      record.toString(f);
-    }
-  }
- */

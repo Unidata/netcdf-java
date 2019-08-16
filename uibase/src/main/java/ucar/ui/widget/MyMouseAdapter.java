@@ -45,28 +45,4 @@ public class MyMouseAdapter extends java.awt.event.MouseAdapter implements Seria
   public void click(MouseEvent e) { } // System.out.println( "click"); }
   public void drag(MouseEvent e, int deltax, int deltay) { }
     // System.out.println( "drag: "+deltax+" "+deltay);}
-
-  public static void main(String[] args) {
-
-    JFrame frame = new JFrame("Test MyMouseAdapter");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {System.exit(0);}
-    });
-
-    JLabel comp = new JLabel("test  sdfk sdf ks;dflk ;sdlkf ldsk lk");
-    comp.setOpaque(true);
-    comp.setBackground(Color.white);
-    comp.setForeground(Color.black);
-
-    comp.addMouseListener( new MyMouseAdapter());
-
-    JPanel main = new JPanel(new FlowLayout());
-    frame.getContentPane().add(main);
-    main.setPreferredSize(new Dimension(200, 200));
-    main.add( comp);
-
-    frame.pack();
-    frame.setLocation(300, 300);
-    frame.setVisible(true);
-  }
 }

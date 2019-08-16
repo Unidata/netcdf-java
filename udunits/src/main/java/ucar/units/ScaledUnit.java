@@ -424,47 +424,4 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
                 ? Double.toString(getScale())
                 : getScale() + " " + _unit.toString();
     }
-
-    /**
-     * Tests this class.
-     */
-    public static void main(final String[] args) throws Exception {
-        final BaseUnit meter = BaseUnit.getOrCreate(UnitName.newUnitName(
-                "meter", null, "m"), BaseQuantity.LENGTH);
-        final ScaledUnit nauticalMile = new ScaledUnit(1852f, meter);
-        System.out.println("nauticalMile.getUnit().equals(meter)="
-                + nauticalMile.getUnit().equals(meter));
-        final ScaledUnit nauticalMileMeter = (ScaledUnit) nauticalMile
-                .multiplyBy(meter);
-        System.out.println("nauticalMileMeter.divideBy(nauticalMile)="
-                + nauticalMileMeter.divideBy(nauticalMile));
-        System.out.println("meter.divideBy(nauticalMile)="
-                + meter.divideBy(nauticalMile));
-        System.out
-                .println("nauticalMile.raiseTo(2)=" + nauticalMile.raiseTo(2));
-        System.out.println("nauticalMile.toDerivedUnit(1.)="
-                + nauticalMile.toDerivedUnit(1.));
-        System.out
-                .println("nauticalMile.toDerivedUnit(new float[]{1,2,3}, new float[3])[1]="
-                        + nauticalMile.toDerivedUnit(new float[] { 1, 2, 3 },
-                                new float[3])[1]);
-        System.out.println("nauticalMile.fromDerivedUnit(1852.)="
-                + nauticalMile.fromDerivedUnit(1852.));
-        System.out
-                .println("nauticalMile.fromDerivedUnit(new float[]{1852},new float[1])[0]="
-                        + nauticalMile.fromDerivedUnit(new float[] { 1852 },
-                                new float[1])[0]);
-        System.out.println("nauticalMile.equals(nauticalMile)="
-                + nauticalMile.equals(nauticalMile));
-        final ScaledUnit nautical2Mile = new ScaledUnit(2, nauticalMile);
-        System.out.println("nauticalMile.equals(nautical2Mile)="
-                + nauticalMile.equals(nautical2Mile));
-        System.out.println("nauticalMile.isDimensionless()="
-                + nauticalMile.isDimensionless());
-        final BaseUnit radian = BaseUnit.getOrCreate(UnitName.newUnitName(
-                "radian", null, "rad"), BaseQuantity.PLANE_ANGLE);
-        final ScaledUnit degree = new ScaledUnit(3.14159 / 180, radian);
-        System.out.println("degree.isDimensionless()="
-                + degree.isDimensionless());
-    }
 }

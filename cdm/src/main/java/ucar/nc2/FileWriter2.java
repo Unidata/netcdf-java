@@ -569,8 +569,6 @@ public class FileWriter2 {
     System.out.printf("%s%n", cancel);
   }
 
-  // Q:/cdmUnitTest/formats/netcdf4/tst/tst_groups.nc
-
 }
 
 

@@ -1500,9 +1500,6 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public static void main(String[] args) {
     if (debugListen) {
       System.out.println("Arguments:");

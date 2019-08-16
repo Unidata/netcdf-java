@@ -175,4 +175,29 @@ public class TestDateUnits {
       Assert.assertEquals(String.format("'%s' failed", unitSpec), du.makeDate(0), du.makeCalendarDate(0).toDate());
     }
   }
+
+  @Test
+  public void testStuff() throws Exception {
+    UnitFormat udunit = UnitFormatManager.instance();
+    String text2 = "days since 2009-06-14 04:00:00 +00:00";
+    Unit uu2 = udunit.parse(text2);
+    System.out.printf("%s == %s %n", text2, uu2);
+
+    String text = "days since 2009-06-14 04:00:00";
+    Unit uu = udunit.parse(text);
+    System.out.printf("%s == %s %n", text, uu);
+
+    Unit ref = udunit.parse("ms since 1970-01-01");
+    Converter converter = uu.getConverterTo(ref);
+    DateFormatter formatter = new DateFormatter();
+
+    double val = converter.convert(1.0);
+    Date d = new Date((long) val);
+    System.out.printf(" val=%f date=%s (%s)%n", 1.0, d, formatter.toDateTimeStringISO(d));
+
+    double val2 = converter.convert(2.0);
+    Date d2 = new Date((long) val2);
+    System.out.printf(" val=%f date=%s (%s)%n", 2.0, d, formatter.toDateTimeStringISO(d2));
+  }
+
 }

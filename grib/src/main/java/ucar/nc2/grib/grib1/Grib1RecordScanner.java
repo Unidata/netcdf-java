@@ -285,19 +285,4 @@ public class Grib1RecordScanner {
     }
     return true;
   }
-
-  // Count the number of records in a grib1 file.
-  public static void main(String[] args) throws IOException {
-    int count = 0;
-    String file = (args.length > 0) ? args[0] : "Q:/cdmUnitTest/formats/grib1/ECMWF.hybrid.grib1";
-    RandomAccessFile raf = new RandomAccessFile(file, "r");
-    System.out.printf("Read %s%n", raf.getLocation());
-    Grib1RecordScanner scan = new Grib1RecordScanner(raf);
-    while (scan.hasNext()) {
-      scan.next();
-      count++;
-    }
-    raf.close();
-    System.out.printf("count=%d%n", count);
-  }
 }

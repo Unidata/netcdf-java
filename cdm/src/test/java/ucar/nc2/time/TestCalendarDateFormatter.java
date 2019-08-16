@@ -1,13 +1,22 @@
 package ucar.nc2.time;
 
 import static org.junit.Assert.assertEquals;
+import static ucar.nc2.time.CalendarDateFormatter.toDateString;
+import static ucar.nc2.time.CalendarDateFormatter.toDateTimeString;
+import static ucar.nc2.time.CalendarDateFormatter.toDateTimeStringISO;
+import static ucar.nc2.time.CalendarDateFormatter.toTimeUnits;
 
 import java.lang.invoke.MethodHandles;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import java.util.Locale;
+import java.util.TimeZone;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.units.DateFormatter;
 
 /**
  * Test CalendarDateFormatter
@@ -142,5 +151,39 @@ public class TestCalendarDateFormatter {
       return;
     }
   }
+
+  @Test
+  public void testStuff() {
+    CalendarDate cd = CalendarDate.present();
+     /* {"S", "M", "L", "F", "-"}
+     System.out.printf("%s%n", DateTimeFormat.forStyle("SS").print(cd.getDateTime()));
+     System.out.printf("%s%n", DateTimeFormat.forStyle("MM").print(cd.getDateTime()));
+     System.out.printf("%s%n", DateTimeFormat.forStyle("LL").print(cd.getDateTime()));
+     System.out.printf("%s%n", DateTimeFormat.forStyle("FF").print(cd.getDateTime())); */
+
+    System.out.printf("%s%n", cd);
+    System.out.printf("toDateTimeStringISO=%s%n", toDateTimeStringISO(cd));
+    System.out.printf("   toDateTimeString=%s%n", toDateTimeString(cd));
+    System.out.printf("       toDateString=%s%n", toDateString(cd));
+    System.out.printf("        toTimeUnits=%s%n", toTimeUnits(cd));
+    System.out.printf("===============================%n");
+    Date d = cd.toDate();
+    System.out.printf("cd.toDate()=%s%n", toDateTimeString(d));
+
+    SimpleDateFormat udunitDF = (SimpleDateFormat) DateFormat
+        .getDateInstance(DateFormat.SHORT, Locale.US);
+    udunitDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+    udunitDF.applyPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
+    System.out.printf("           udunitDF=%s%n", udunitDF.format(d));
+
+    System.out.printf("===============================%n");
+    DateFormatter df = new DateFormatter();
+    System.out.printf("     toTimeUnits(date)=%s%n", toTimeUnits(cd));
+    System.out.printf("toDateTimeString(date)=%s%n", df.toDateTimeString(d));
+    System.out.printf("toDateOnlyString(date)=%s%n", df.toDateOnlyString(d));
+
+  }
+
+
 
 }

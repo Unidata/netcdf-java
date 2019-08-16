@@ -62,8 +62,6 @@ import java.util.Formatter;
  */
 
 public class ThreddsDatasetChooser extends JPanel {
-  private static final String FRAME_SIZE = "FrameSize";
-
   private CatalogChooser catalogChooser;
   private JTabbedPane tabbedPane;
 
@@ -266,60 +264,4 @@ public class ThreddsDatasetChooser extends JPanel {
       pack();
     }
   }
-
-  /**
-   * Standalone application.
-   *
-   * @param args recognized values:
-   *             <ul> <li> -usePopup to popup messages </ul>
-   */
-  public static void main(String[] args) {
-    boolean usePopup = false;
-
-    for (String arg : args) {
-      if (arg.equals("-usePopup")) {
-        usePopup = true;
-      }
-    }
-
-    try {
-      store = XMLStore.createFromFile("ThreddsDatasetChooser", null);
-      p = store.getPreferences();
-    } catch (IOException e) {
-      System.out.println("XMLStore Creation failed " + e);
-    }
-
-    // put it together in a JFrame
-    final JFrame frame = new JFrame("Thredds Dataset Chooser");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        chooser.save();
-        Rectangle bounds = frame.getBounds();
-        p.putBeanObject(FRAME_SIZE, bounds);
-        try {
-          store.save();
-        } catch (IOException ioe) {
-          ioe.printStackTrace();
-        }
-
-        System.exit(0);
-      }
-    });
-
-    chooser = new ThreddsDatasetChooser(p, null, frame, true, usePopup, false);
-    chooser.setDoResolve(true);
-
-    //
-    frame.getContentPane().add(chooser);
-    Rectangle bounds = (Rectangle) p.getBean(FRAME_SIZE, new Rectangle(50, 50, 800, 450));
-    frame.setBounds(bounds);
-
-    frame.pack();
-    frame.setBounds(bounds);
-    frame.setVisible(true);
-  }
-
-  private static ThreddsDatasetChooser chooser;
-  private static PreferencesExt p;
-  private static XMLStore store;
 }

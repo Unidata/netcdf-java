@@ -539,22 +539,5 @@ public class ArrayStructureBB extends ArrayStructure {
       }
       f.format("%n");
     }
-
   }
-
-  ////////////////////////////////////////////////////////////////////////
-  // debugging
-  public static void main(String argv[]) {
-    byte[] ba = new byte[20];
-    for (int i = 0; i < ba.length; ++i)
-      ba[i] = (byte) i;
-
-    ByteBuffer bbw = ByteBuffer.wrap(ba, 5, 15);
-    bbw.get(0);
-    System.out.println(" bbw(0)=" + bbw.get(0) + " i would expect = 5");
-
-    bbw.position(5);
-    System.out.println(" bbw(0)=" + bbw.get(0) + " i would expect = 4");
-  }
-
 }

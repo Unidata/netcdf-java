@@ -213,8 +213,6 @@ public class N3outputStreamWriter extends N3streamWriter {
     throw new IllegalStateException("dataType= " + dataType);
   }
 
-  ////////////////////////////////////////
-
   public static void writeFromFile(NetcdfFile fileIn, String fileOutName) throws IOException {
     try (DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 10 * 1000))) {
       N3outputStreamWriter writer = new N3outputStreamWriter(fileIn);
@@ -224,7 +222,4 @@ public class N3outputStreamWriter extends N3streamWriter {
     }
   }
 
-  static public void main(String args[]) throws IOException {
-    writeFromFile(NetcdfFile.open("C:/data/metars/Surface_METAR_20070331_0000.nc"), "C:/temp/streamOut.nc");
-  }
 }

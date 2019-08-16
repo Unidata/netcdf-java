@@ -6,7 +6,6 @@
 package ucar.nc2.iosp.bufr.writer;
 
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.ma2.*;
@@ -217,83 +216,5 @@ public class WriteT41_ncFlat {
     if (debug) System.out.println("write record var; total = " + totalRecordBytes + " Mbytes # recs=" + nrecs);
 
     return total;
-  }
-
-  /**
-   * main.
-   */
-  public static void main(String args[]) throws Exception {
-
-    //String fileIn = "C:/data/dt2/point/bufr/IUA_CWAO_20060202_12.bufr";
-    //String fileIn = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";
-    //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
-    //String fileIn = "R:/testdata2/bufr/edition3/idd/profiler/PROFILER_1.bufr";
-    String fileIn = "D:/mlode/bufr/cat.out";
-    NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
-    System.out.println(ncf.toString());
-
-    /* Structure s = (Structure) ncf.findVariable(obsRecord);
-    StructureData sdata = s.readStructure(2);
-    PrintWriter pw = new PrintWriter(System.out);
-    NCdumpW.printStructureData(pw, sdata);  */
-    new WriteT41_ncFlat(ncf, "D:/mlode/bufr/cat2.nc", true);
-
-    //Variable v = ncf.findVariable("recordIndex");
-    //NCdumpW.printArray(v.read(), "recordIndex", pw, null);
-
-    /* ucar.nc2.Variable v;
-
-    v = ncf.findVariable("trajectory_id");
-    if (v != null) {
-      Array data = v.read();
-      NCdump.printArray(data, v.getName(), System.out, null);
-    }
-    v = ncf.findVariable("station_id");
-    if (v != null) {
-      Array data = v.read();
-      NCdump.printArray(data, v.getName(), System.out, null);
-    }
-    v = ncf.findVariable("firstChild");
-    if (v != null) {
-      Array data = v.read();
-      NCdump.printArray(data, v.getName(), System.out, null);
-    }
-    v = ncf.findVariable("numChildren");
-    if (v != null) {
-      Array data = v.read();
-      NCdump.printArray(data, v.getName(), System.out, null);
-    }
-    System.out.println();
-
-    v = ncf.findVariable("record");
-    //ucar.nc2.Variable v = ncf.findVariable("Latitude");
-    //ucar.nc2.Variable v = ncf.findVariable("time");
-    //System.out.println();
-    //System.out.println( v.toString());
-
-    if (v instanceof Structure) {
-      Structure s = (Structure) v;
-      StructureDataIterator iter = s.getStructureIterator();
-      int count = 0;
-      PrintWriter pw = new PrintWriter( System.out);
-      while (iter.hasNext()) {
-        System.out.println("record "+count);
-        NCdumpW.printStructureData(pw, iter.next());
-        count++;
-      }
-      Array data = v.read();
-      NCdump.printArray(data, "record", System.out, null);
-    } else {
-      Array data = v.read();
-      int[] length = data.getShape();
-      System.out.println();
-      System.out.println("v2 length =" + length[0]);
-
-      IndexIterator ii = data.getIndexIterator();
-      for (; ii.hasNext();) {
-        System.out.println(ii.getFloatNext());
-      }
-    }
-    ncf.close();  */
   }
 }

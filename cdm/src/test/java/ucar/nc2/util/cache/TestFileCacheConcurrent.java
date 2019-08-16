@@ -21,23 +21,11 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @author caron
- * @since May 31, 2008
- */
+/** Test concurrent use of FileCache */
 public class TestFileCacheConcurrent {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  FileCacheIF cache = new FileCache(50, 100, 30);
-  FileFactory factory = new MyFileFactory();
-
-  class MyFileFactory implements FileFactory {
-    public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
-    }
-  }
-
-  static public void makeFileList(File dir, String suffix, List<String> result) {
+  private static void makeFileList(File dir, String suffix, List<String> result) {
     File[] files = dir.listFiles();
     if (files == null) {
       assert false;
@@ -48,7 +36,6 @@ public class TestFileCacheConcurrent {
         makeFileList(f, suffix, result);
 
       } else if (f.getPath().endsWith(suffix) && f.length() > 0) {
-        //System.out.println(" open "+f.getPath());
         String want = StringUtil2.replace(f.getPath(), '\\', "/");
         result.add(want);
       }
@@ -57,11 +44,12 @@ public class TestFileCacheConcurrent {
 
   ///////////////////////////////////////////////////////////////////////////////////////////
 
-  int PRINT_EVERY = 1000;
-  int CLIENT_THREADS = 50;
-  int WAIT_MAX = 25; // msecs
-  int MAX_TASKS = 1000; // bounded queue
-  int NSAME = 3; // submit same file n consecutive
+  private final int COUNT = 1000;
+  private final int PRINT_EVERY = 100;
+  private final int CLIENT_THREADS = 50;
+  private final int WAIT_MAX = 25; // msecs
+  private final int MAX_TASKS = 100; // bounded queue
+  private final int NSAME = 3; // submit same file n consecutive
 
   @Test
   public void testConcurrentAccess() throws InterruptedException {
@@ -70,16 +58,16 @@ public class TestFileCacheConcurrent {
     List<String> fileList = new ArrayList<>(100);
     makeFileList(new File(TestDir.cdmLocalTestDataDir), "nc", fileList);
     int nfiles = fileList.size();
-    System.out.println(" loaded " + nfiles + " files");
+    System.out.printf(" loaded %d files%n", nfiles);
 
     ThreadPoolExecutor pool = null;
     try {
       Random r = new Random();
-      ArrayBlockingQueue q = new ArrayBlockingQueue(MAX_TASKS);
+      ArrayBlockingQueue<Runnable> q = new ArrayBlockingQueue<>(MAX_TASKS);
       pool = new ThreadPoolExecutor(CLIENT_THREADS, CLIENT_THREADS, 100, TimeUnit.SECONDS, q);
 
       int count = 0;
-      while (count < 100) {
+      while (count < COUNT) {
         if (q.remainingCapacity() > NSAME) {
           // pick a file at random
           String location = fileList.get(r.nextInt(nfiles));
@@ -91,7 +79,7 @@ public class TestFileCacheConcurrent {
             if (count % PRINT_EVERY == 0) {
               Formatter f = new Formatter();
               cache.showStats(f);
-              System.out.printf(" submit %d queue= %d cache= %s%n", count, q.size(), f);
+              System.out.printf(" submit %d queue size %d cache: {%s}%n", count, q.size(), f);
             }
           }
         } else {
@@ -100,28 +88,20 @@ public class TestFileCacheConcurrent {
       }
     } finally {
       if (pool != null) pool.shutdownNow();
+      FileCache.shutdown();
     }
-
-    /* pool.shutdown(); // Disable new tasks from being submitted
-    try {
-      // Wait a while for existing tasks to terminate
-      if (!pool.awaitTermination(600, TimeUnit.SECONDS)) {
-        pool.shutdownNow(); // Cancel currently executing tasks
-        // Wait a while for tasks to respond to being cancelled
-        if (!pool.awaitTermination(60, TimeUnit.SECONDS))
-            System.err.println("Pool did not terminate");
-      }
-    } catch (InterruptedException ie) {
-      // (Re-)Cancel if current thread also interrupted
-      pool.shutdownNow();
-      // Preserve interrupt status
-      Thread.currentThread().interrupt();
-    } */
-
-
   }
 
-  AtomicInteger done = new AtomicInteger();
+  private AtomicInteger done = new AtomicInteger();
+
+  private FileCacheIF cache = new FileCache(50, 100, 30);
+  private FileFactory factory = new MyFileFactory();
+
+  class MyFileFactory implements FileFactory {
+    public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
+    }
+  }
 
   // as files are acquired, check that they are locked and then release them
   class CallAcquire implements Runnable {

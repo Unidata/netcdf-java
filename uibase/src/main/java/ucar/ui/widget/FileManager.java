@@ -8,14 +8,11 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,7 +20,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import ucar.util.prefs.PreferencesExt;
-
 
 /**
  * Cover for JFileChooser.
@@ -389,177 +385,4 @@ public class FileManager {
       return "xml";
     }
   }
-
-  public static void main(String[] args) throws IOException {
-
-    JFrame frame = new JFrame("Test");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        System.exit(0);
-      }
-    });
-
-    final FileManager fm = new FileManager(frame);
-    final JFileChooser fc = fm.chooser;
-    fc.addActionListener(e -> {
-        System.out.println("**** fm event=" + e.getActionCommand());
-        System.out.println("  curr directory=" + fc.getCurrentDirectory());
-        System.out.println("  selected file=" + fc.getSelectedFile());
-    });
-
-    JButton butt = new JButton("accept");
-    butt.addActionListener(e -> {
-        System.out.println("butt accept");
-        //cb.accept();
-    });
-
-    fm.chooseFilename();
-    /* JPanel main = new JPanel();
-   main.add(fm);
-   //main.add(butt);
-
-   frame.getContentPane().add(main);
-   // cb.setPreferredSize(new java.awt.Dimension(500, 200));
-
-   frame.pack();
-   frame.setLocation(300, 300);
-   frame.setVisible(true); */
-  }
 }
-
-/* claimed workaround for WebStart
-
- http://forum.java.sun.com/read/56761/q_D4Xl3nS380AAZX5#LR
-
-
- Hi Surya,
-
-Unfortunately it looks like you have run into an annoying bug in the Java 2 SDK v1.2.2 or v1.3 .
-This bug will be fixed in a future Java 2 SDK release. In the meantime, there are a couple workarounds:
-
-1) Use the JNLP API FileOpenService and FileSaveService to do file operations; the reference
-implementation uses the workaround I list under 2) below.
-
-2) Keep your current code, but use a customized FileSystemView that you supply to JFileChooser
-when instantiating it on Windows. e.g. :
-
-new JFileChooser(currentDirectory, new WindowsAltFileSystemView ())
-
-Code for WindowsAltFileSystemView follows, with apologies for the formatting :
-
-// This class is necessary due to an annoying bug on Windows NT where
-// instantiating a JFileChooser with the default FileSystemView will
-// cause a "drive A: not ready" error every time. I grabbed the
-// Windows FileSystemView impl from the 1.3 SDK and modified it so
-// as to not use java.io.File.listRoots() to get fileSystem roots.
-// java.io.File.listRoots() does a SecurityManager.checkRead() which
-// causes the OS to try to access drive A: even when there is no disk,
-// causing an annoying "abort, retry, ignore" popup message every time
-// we instantiate a JFileChooser!
-//
-// Instead of calling listRoots() we use a straightforward alternate
-// method of getting file system roots.
-
-
- private class WindowsAltFileSystemView extends FileSystemView {
-
-   /**
-   * Returns true if the given file is a root.
-   *
-   public boolean isRoot(File f) {
-     if(!f.isAbsolute())
-       return false;
-
-     String parentPath = f.getParent();
-     if(parentPath == null) {
-       return true;
-     } else {
-       File parent = new File(parentPath);
-       return parent.equals(f);
-     }
-   }
-
-   /**
-   * creates a new folder with a default folder name.
-   *
-   public File createNewFolder(File containingDir) throws IOException {
-     if (containingDir == null)
-       throw new IOException("Containing directory is null:");
-
-     File newFolder = null;
-     // Using NT's default folder name
-     newFolder = createFileObject(containingDir, "New Folder");
-     int i = 2;
-     while (newFolder.exists() && (i < 100)) {
-       newFolder = createFileObject(containingDir, "New Folder (" + i + ")");
-       i++;
-     }
-
-     if(newFolder.exists()) {
-       throw new IOException("Directory already exists:" + newFolder.getAbsolutePath());
-     } else {
-       newFolder.mkdirs();
-     }
-
-     return newFolder;
-   }
-
-   /**
-   * Returns whether a file is hidden or not. On Windows
-   * there is currently no way to get this information from
-   * io.File, therefore always return false.
-   *
-   public boolean isHiddenFile(File f) {
-     return false;
-   }
-
-   /**
-   * Returns all root partitians on this system. On Windows, this
-   * will be the A: through Z: drives.
-   *
-   public File[] getRoots() {
-     Vector rootsVector = new Vector();
-
-     System.out.println(" getRoots ");
-
-     // Create the A: drive whether it is mounted or not
-     FileSystemRoot floppy = new FileSystemRoot("A" + ":"+ "\\");
-     rootsVector.addElement(floppy);
-
-     // Run through all possible mount points and check
-     // for their existance.
-     for (char c = 'C'; c <= 'Z'; c++) {
-       char device[] = {c, ':', '\\'};
-       String deviceName = new String(device);
-       System.out.println(" try ");
-       System.out.println(" "+deviceName);
-       File deviceFile = new FileSystemRoot(deviceName);
-       boolean ok = deviceFile.exists();
-       System.out.println(" "+ok);
-       if (deviceFile != null && deviceFile.exists()) {
-         rootsVector.addElement(deviceFile);
-         System.out.println(" use "+deviceName);
-       }
-     }
-
-     File[] roots = new File[rootsVector.size()];
-     rootsVector.copyInto(roots);
-     return roots;
-   }
- } // class WindowsAltFileSystemView
-
- private class FileSystemRoot extends File {
-   public FileSystemRoot(File f) {
-     super(f, "");
-   }
-
-   public FileSystemRoot(String s) {
-     super(s);
-   }
-
-   public boolean isDirectory() {
-     return true;
-   }
- } // class FileSystemRoot
-
-} */

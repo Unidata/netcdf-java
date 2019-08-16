@@ -12,11 +12,11 @@ import ucar.unidata.geoloc.ProjectionPointImpl;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Tests for {@link RotatedLatLon}.
+ * Tests for {@link RotatedPole}.
  * 
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
-public class RotatedLatLonTest {
+public class TestRotatedPole {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /**
@@ -28,7 +28,7 @@ public class RotatedLatLonTest {
    * A rotated lat/lon projection with origin at 54 degrees North, 254 degrees
    * East.
    */
-  private Projection proj = new RotatedLatLon(-36, 254, 0);
+  private Projection proj = new RotatedPole(90 - 54, LatLonPointImpl.lonNormal(254 + 180));
 
   /**
    * Test that the unrotated centre lat/lon is the origin of the rotated
@@ -52,7 +52,7 @@ public class RotatedLatLonTest {
     ProjectionPointImpl p = new ProjectionPointImpl(0, 0);
     LatLonPointImpl latlonResult = new LatLonPointImpl();
     proj.projToLatLon(p, latlonResult);
-    Assert.assertEquals("Unexpected longitude", 254 - 360, latlonResult.getLongitude(), TOLERANCE);
+    Assert.assertEquals("Unexpected longitude", LatLonPointImpl.lonNormal(254), latlonResult.getLongitude(), TOLERANCE);
     Assert.assertEquals("Unexpected latitude", 54, latlonResult.getLatitude(), TOLERANCE);
   }
 

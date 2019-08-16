@@ -525,14 +525,6 @@ public class ProjectionManager {
 
   }
 
-
-  // testing 1-2-3
-
-  public static void main(String[] args) {
-    ProjectionManager d = new ProjectionManager(null, null);
-    d.setVisible();
-  }
-
 }
 
 

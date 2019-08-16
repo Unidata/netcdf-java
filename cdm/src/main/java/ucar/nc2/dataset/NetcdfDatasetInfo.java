@@ -273,15 +273,4 @@ public class NetcdfDatasetInfo implements Closeable {
     if (null == su) return "false";
     return su.getCanonicalString();
   }
-
-  /** debug */
-  public static void main(String args[]) throws IOException {
-    String url = "C:/data/badmodels/RUC_CONUS_80km_20051211_1900.nc";
-
-    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(url)) {
-      String infoString = info.writeXML();
-      System.out.println(infoString);
-    }
-  }
-
 }

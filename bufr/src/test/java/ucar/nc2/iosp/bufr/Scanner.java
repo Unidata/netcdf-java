@@ -6,6 +6,7 @@ package ucar.nc2.iosp.bufr;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
@@ -859,7 +860,9 @@ public class Scanner {
   }
 
   static Formatter out = new Formatter(System.out);
-  static public void main(String args[]) throws IOException {
+
+  @Test
+  public void testStuff() throws IOException {
     //extractNMessages("D:/formats/bufr/tmp/dispatch/KNES-ISXX03.bufr", 3, "D:/formats/bufr/tmp/ISXX03-3.bufr");
     extractMessageByListhash("C:\\data\\formats\\bufrRoy/US058MCUS-BUFtdp.SPOUT_00011_sfc_ship_20091101042700.bufr", 1118454047, "C:\\data\\formats\\bufrRoy/out.bufr");
     
@@ -959,8 +962,6 @@ public class Scanner {
         }
       }
     }); // */
-
-
   }
 
 }

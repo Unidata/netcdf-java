@@ -373,26 +373,5 @@ public class DateType {
     CalendarDate result = useDate.add((int) -d.getValueInSeconds(), CalendarPeriod.Field.Second);
     return new DateType(result);
   }
-
-  ////////////////////////////////////////////
-  // test
-  private static void doOne(String s) {
-    try {
-      System.out.println("\nString = (" + s + ")");
-      DateType d = new DateType(s, null, null);
-      System.out.println("DateType = (" + d.toString() + ")");
-      System.out.println("Date = (" + d.getDate() + ")");
-    } catch (java.text.ParseException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * test
-   */
-  public static void main(String[] args) {
-    doOne("T00:00:00Z");
-  }
-
 }
 

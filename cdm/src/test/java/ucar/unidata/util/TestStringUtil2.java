@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
  * Time: 10:50 AM
  * To change this template use File | Settings | File Templates.
  */
-public class StringUtil2Test {
+public class TestStringUtil2 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private String sep1 = "*|*"; //obnoxious multicharacter separator

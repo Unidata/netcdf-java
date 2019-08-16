@@ -6,7 +6,6 @@
 package ucar.nc2.iosp.bufr.writer;
 
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.ma2.*;
@@ -198,15 +197,4 @@ public class Write2ncRect {
 
     return total;
   }
-
-  public static void main(String args[]) throws Exception {
-
-    //String fileIn = "C:/data/bufr/edition3/newIdd/IcingTropopause/IcingTropopause_20080529_0000.bufr";
-    String fileIn = "C:\\data\\bufr\\edition3\\meteosat\\METEOSAT7-MVIRI-MTPHRWW-NA-1-20080405123005.000000000Z-909326.bfr ";
-    try (NetcdfFile ncf = NetcdfDataset.openFile(fileIn, null)) {
-      System.out.println(ncf.toString());
-      new Write2ncRect(ncf, "C:/data/bufr2nc.meteosat.nc", true);
-    }
-  }
-
 }

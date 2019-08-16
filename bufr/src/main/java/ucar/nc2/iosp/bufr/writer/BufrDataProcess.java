@@ -241,9 +241,4 @@ public class BufrDataProcess {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    new BufrDataProcess("C:/data/formats/bufrRoy/", System.out, null);
-    //new BufrDataDump("D:/work/michelle/DART.bufr", System.out);
-  }
-
 }

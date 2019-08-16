@@ -219,7 +219,8 @@ public class TestUnicode {
   }
 
 
-  public static void main(String args[]) throws IOException {
+  @Test
+  public void testStuff() throws IOException {
     //String helloGreek = new TestUnicode("dumm").makeString(helloGreekCode, true);
 
     //testCharsets();

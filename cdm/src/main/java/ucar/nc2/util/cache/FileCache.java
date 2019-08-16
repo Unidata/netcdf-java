@@ -66,30 +66,37 @@ public class FileCache implements FileCacheIF {
 
   // Shared mutable data. Access to it is limited to the following 3 synchronized methods.
   static private Timer timer;
+  static private Object lock = new Object();
 
   /**
    * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.
    */
-  public static synchronized void shutdown() {
-    if (timer != null) {
-      timer.cancel();
-      System.out.printf("FileCache.shutdown called%n");
+  public static void shutdown() {
+    synchronized (lock) {
+      if (timer != null) {
+        timer.cancel();
+        System.out.printf("FileCache.shutdown called%n");
+      }
+      timer = null;
     }
-    timer = null;
   }
 
-  private static synchronized void scheduleAtFixedRate(TimerTask task, long delay, long period) {
-    if (timer == null) {
-      timer = new Timer("FileCache");
+  private static void scheduleAtFixedRate(TimerTask task, long delay, long period) {
+    synchronized (lock) {
+      if (timer == null) {
+        timer = new Timer("FileCache");
+      }
+      timer.scheduleAtFixedRate(task, delay, period);
     }
-    timer.scheduleAtFixedRate(task, delay, period);
   }
 
-  private static synchronized void schedule(TimerTask task, long delay) {
-    if (timer == null) {
-      timer = new Timer("FileCache");
+  private static void schedule(TimerTask task, long delay) {
+    synchronized (lock) {
+      if (timer == null) {
+        timer = new Timer("FileCache");
+      }
+      timer.schedule(task, delay);
     }
-    timer.schedule(task, delay);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -524,7 +531,6 @@ public class FileCache implements FileCacheIF {
     }
     if (cacheLog.isDebugEnabled())
       cacheLog.debug("*FileCache " + name + " clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + files.size());
-    //System.out.println("\n*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
   }
 
   /**

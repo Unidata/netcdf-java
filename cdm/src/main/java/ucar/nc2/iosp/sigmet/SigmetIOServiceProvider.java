@@ -25,7 +25,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
@@ -83,24 +82,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
   public static java.util.Map<String, Number> recHdr = new java.util.HashMap<>();
   private SigmetVolumeScan volScan;
-
-  public static void main(String[] args) {
-    String infile = " ";
-    if (args.length == 1) {
-      infile = args[0];
-    } else {
-      System.out.println("Usage: java SigmetIOServiceProvider inputFile");
-      System.exit(0);
-    }
-    try {
-      NetcdfFile.registerIOProvider(SigmetIOServiceProvider.class);
-      NetcdfFile ncfile = NetcdfFile.open(infile);
-      System.out.println("ncfile = \n" + ncfile);
-    } catch (Exception e) {
-      System.out.println("MAIN!!!   " + e.toString());
-      e.printStackTrace();
-    }
-  }
 
   public String getFileTypeDescription() {
     return "SIGMET-IRIS";

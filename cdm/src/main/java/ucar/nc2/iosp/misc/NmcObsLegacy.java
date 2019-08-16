@@ -1744,29 +1744,4 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     if (showSkip) System.out.println(" b=" + b + " c=" + c + " at " + raf.getFilePointer() + " skipped= " + count);
     raf.skipBytes(-1); // go back one
   }
-
-  static public void main(String args[]) throws IOException, InvalidRangeException {
-    String filename = "C:/data/cadis/tempting";
-    //String filename = "C:/data/cadis/Y94179";
-    //String filename = "C:/data/cadis/Y94132";
-    NmcObsLegacy iosp = new NmcObsLegacy();
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, filename);
-    iosp.open(raf, ncfile, null);
-    System.out.println("\n" + ncfile);
-
-    Variable v = ncfile.findVariable("station");
-    Array data = v.read(new Section().appendRange(0, 1));
-    System.out.println(NCdumpW.toString(data, "station", null));
-
-    v = ncfile.findVariable("report");
-    data = v.read(new Section().appendRange(0, 0));
-    System.out.println(NCdumpW.toString(data, "report", null));
-
-    v = ncfile.findVariable("reportIndex");
-    data = v.read();
-    System.out.println(NCdumpW.toString(data, "reportIndex", null));
-
-    iosp.close();
-  }
 }

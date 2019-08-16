@@ -4,8 +4,10 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 
 import java.lang.invoke.MethodHandles;
@@ -207,7 +209,8 @@ public class TestUtm {
     return (err > 10e-7);
   }
 
-  static public void main( String[] args) {
+  @Test
+  public void testStuff2() {
     TestUtm r = new TestUtm();
 
     //r.doOne( 8.864733394164137, 2020.9206059122835, 2, false);
@@ -224,7 +227,31 @@ public class TestUtm {
      r.run( 60, false);
 
     System.out.println("\nmaxx_all= "+1000*maxx_all+" m");
+  }
 
+
+  /*
+  roszelld@usgs.gov
+  'm transforming coordinates (which are in UTM Zone 17N projection) to
+lat/lon.
+
+If I get the ProjectionImpl from the grid (stage) and use the projToLatLon
+function with {{577.8000000000001}, {2951.8}} in kilometers for example, I
+get {{26.553706785076937}, {-80.21754983617633}}, which is not very
+accurate at all when I plot them.
+
+If I use GeoTools to build a transform based on the same projection
+parameters read from the projectionimpl, I get {{26.685132668190793},
+{-80.21802662821469}} which appears to be MUCH more accurate when I plot
+them on a map.
+   */
+  @Test
+  public void testStuff() {
+    UtmProjection utm = new UtmProjection(17, true);
+    LatLonPoint ll = utm.projToLatLon(577.8000000000001, 2951.8);
+    System.out.printf("%15.12f %15.12f%n", ll.getLatitude(), ll.getLongitude());
+    assert Misc.nearlyEquals(ll.getLongitude(), -80.21802662821469, 1.0e-8);
+    assert Misc.nearlyEquals(ll.getLatitude(), 26.685132668190793, 1.0e-8);
   }
 
 }

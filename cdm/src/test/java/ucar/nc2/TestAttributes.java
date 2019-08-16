@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /** Test reading attributes */
-
 public class TestAttributes {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -60,7 +60,7 @@ public class TestAttributes {
     assert( !att.isArray());
     assert( 1 == att.getLength());
     assert( 1.2f == att.getNumericValue().floatValue());
-    assert( close(1.2, att.getNumericValue().doubleValue()));
+    assert( Misc.nearlyEquals(1.2, att.getNumericValue().doubleValue(), 1.0e-5));
     assert( DataType.FLOAT == att.getDataType());
 
     aa = att.getValues();
@@ -114,11 +114,6 @@ public class TestAttributes {
     assert (n != null);
 
     ncfile.close();
-  }
-
-  boolean close( double d1, double d2) {
-    //System.out.println(d1+" "+d2);
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
   }
 
   // Demonstrates GitHub issue #715: https://github.com/Unidata/thredds/issues/715

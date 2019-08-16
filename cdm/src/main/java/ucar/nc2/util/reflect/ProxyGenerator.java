@@ -109,10 +109,4 @@ public class ProxyGenerator {
       System.out.println(" " + m.getName());
     }
   }
-
-
-  public static void main(String[] args) throws SecurityException {
-    generate(thredds.client.catalog.Dataset.class, System.out);
-  }
-
 }

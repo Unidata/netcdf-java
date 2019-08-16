@@ -8,7 +8,7 @@ import ucar.unidata.geoloc.*;
 
 import java.lang.invoke.MethodHandles;
 
-public class SinusoidalTest {
+public class TestSinusoidal {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // If we want all of the x-coords in the geographic region to be positive, use this.

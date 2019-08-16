@@ -673,22 +673,4 @@ public class AccessLogTable extends JPanel {
     nreqData.add(new Minute(date), (double) count);
   }
 
-  private static void test(String ip) {
-    StringBuilder sbuff = new StringBuilder();
-    String[] p = ip.split("\\.");
-    for (int i = p.length - 1; i >= 0; i--) {
-      sbuff.append(p[i]);
-      if (i != 0) sbuff.append('.');
-    }
-    String ipr = sbuff.toString();
-    System.out.printf("%s == %s%n", ip, ipr);
-  }
-
-  public static void main(String[] args) {
-    test("1.2.3.4");
-    test("..1.2");
-    test("..1.2..");
-
-  }
-
 }

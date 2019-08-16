@@ -84,34 +84,4 @@ QuantityDimension
     {
 	return new QuantityDimension(pow(power));
     }
-
-    /**
-     * Tests this class.
-     */
-    public static void
-    main(String[] args)
-	throws	Exception
-    {
-	System.out.println("new QuantityDimension() = \"" +
-	    new QuantityDimension() + '"');
-	QuantityDimension	timeDimension =
-	    new QuantityDimension(BaseQuantity.TIME);
-	System.out.println("timeDimension = \"" + timeDimension + '"');
-	QuantityDimension	lengthDimension =
-	    new QuantityDimension(BaseQuantity.LENGTH);
-	System.out.println("lengthDimension = \"" + lengthDimension + '"');
-	System.out.println(
-	    "lengthDimension.isReciprocalOf(timeDimension) = \"" +
-	    lengthDimension.isReciprocalOf(timeDimension) + '"');
-	QuantityDimension	hertzDimension = timeDimension.raiseTo(-1);
-	System.out.println("hertzDimension = \"" + hertzDimension + '"');
-	System.out.println(
-	    "hertzDimension.isReciprocalOf(timeDimension) = \"" +
-	    hertzDimension.isReciprocalOf(timeDimension) + '"');
-	System.out.println("lengthDimension.divideBy(timeDimension) = \"" +
-	    lengthDimension.divideBy(timeDimension) + '"');
-	System.out.println(
-	    "lengthDimension.divideBy(timeDimension).raiseTo(2) = \"" +
-	    lengthDimension.divideBy(timeDimension).raiseTo(2) + '"');
-    }
 }
