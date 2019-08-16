@@ -191,10 +191,4 @@ public class RadialCoordSys {
     }
     return dateUnit;
   }
-
-  /** debug */
-  static public void main( String[] args) {
-    System.out.println("1 Deg="+Math.toDegrees( 1000 * 111.0 / Earth.getRadius()));
-  }
-
 }

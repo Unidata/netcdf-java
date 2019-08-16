@@ -801,23 +801,4 @@ public final class StandardUnitDB extends UnitDBImpl {
     addSymbol(symbol, name);
   }
 
-  /**
-   * Tests this class.
-   */
-  public static void main(final String[] args) throws Exception {
-    final UnitDB db = StandardUnitDB.instance();
-    System.out.println("db.get(\"meter\")=" + db.get("meter"));
-    System.out.println("db.get(\"meters\")=" + db.get("meters"));
-    System.out.println("db.get(\"metre\")=" + db.get("metre"));
-    System.out.println("db.get(\"metres\")=" + db.get("metres"));
-    System.out.println("db.get(\"m\")=" + db.get("m"));
-    System.out.println("db.get(\"newton\")=" + db.get("newton"));
-    System.out.println("db.get(\"Cel\")=" + db.get("Cel"));
-    System.out.println("db.get(\"Roentgen\")=" + db.get("Roentgen"));
-    System.out.println("db.get(\"rad\")=" + db.get("rad"));
-    System.out.println("db.get(\"rd\")=" + db.get("rd"));
-    System.out.println("db.get(\"perches\")=" + db.get("perches"));
-    System.out.println("db.get(\"jiffies\")=" + db.get("jiffies"));
-    System.out.println("db.get(\"foo\")=" + db.get("foo"));
-  }
 }

@@ -206,16 +206,6 @@ public class CalendarDateUnit {
   Date getBaseDate() {
     return baseDate.toDate();
   }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  public static void main(String[] args) {
-    CalendarDateUnit cdu;
-
-    String s = "calendar Month since 2012-01-19T18:00:00.000Z";
-    cdu = CalendarDateUnit.of(null, s);
-    System.out.printf("%s == %s%n", s, cdu);
-  }
-
 }
 
 /*

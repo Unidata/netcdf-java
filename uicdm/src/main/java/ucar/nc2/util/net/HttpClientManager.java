@@ -282,49 +282,4 @@ public class HttpClientManager
     return nbytes;
   }
 
-    /* todo:
-    static public void showHttpRequestInfo(Formatter f, HttpRequestBase m)
-    {
-        f.format("HttpClient request %s %s %n", m.getName(), m.getPath());
-        f.format("   do Authentication=%s%n", m.getDoAuthentication());
-        f.format("   follow Redirects =%s%n", m.getFollowRedirects());
-        f.format("   effectiveVersion =%s%n", m.getEffectiveVersion());
-        f.format("   hostAuthState    =%s%n", m.getHostAuthState());
-
-        HttpMethodParams p = m.getParams();
-        f.format("   cookie policy    =%s%n", p.getCookiePolicy());
-        f.format("   http version     =%s%n", p.getVersion());
-        f.format("   timeout (msecs)  =%d%n", p.getSoTimeout());
-        f.format("   virtual host     =%s%n", p.getVirtualHost());
-
-        f.format("Request Headers = %n");
-        Header[] heads = m.getRequestHeaders();
-        for(int i = 0;i < heads.length;i++)
-            f.format("  %s", heads[i]);
-
-        f.format("%n");
-    }
-
-    static public void showHttpResponseInfo(Formatter f, HttpRequest m)
-    {
-        f.format("HttpClient response status = %s%n", m.getStatusLine());
-        f.format("Reponse Headers = %n");
-        Header[] heads = m.getResponseHeaders();
-        for(int i = 0;i < heads.length;i++)
-            f.format("  %s", heads[i]);
-        f.format("%n");
-    }  */
-
-    /*
-    public static void main(String[] args) throws IOException
-    {
-        HTTPSession.setGlobalUserAgent("TestUserAgent123global");
-        HttpClientManager.getContentAsString(null, "http://motherlode.ucar.edu:9080/thredds/catalog.html");
-
-        HTTPSession sess = HTTPFactory.newSession("http://motherlode.ucar.edu:9080/thredds/catalog.html");
-        sess.setUserAgent("TestUserAgent123session");
-        HttpClientManager.getContentAsString(sess, "http://motherlode.ucar.edu:9080/thredds/catalog.html");
-
-    } */
-
 }

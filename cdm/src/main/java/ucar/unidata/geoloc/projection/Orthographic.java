@@ -550,19 +550,5 @@ public class Orthographic extends ProjectionImpl {
     return to;
   }
 
-  /*ENDGENERATED*/
-
-  /**
-   * Test
-   *
-   * @param args not used
-   */
-  public static void main(String[] args) {
-    Orthographic a = new Orthographic(40, -100);
-    ProjectionPoint p = a.latLonToProj(30, -110);
-    System.out.println("proj point = " + p);
-    LatLonPoint ll = a.projToLatLon(p);
-    System.out.println("ll = " + ll);
-  }
 }
 

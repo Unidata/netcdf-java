@@ -40,6 +40,7 @@
 package opendap.dap;
 
 import java.io.*;
+import org.junit.Test;
 
 class UIntTest {
 
@@ -120,7 +121,8 @@ class UIntTest {
         DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
     }
 
-    static public void main(String args[]) throws Exception {
+    @Test
+    public void testStuff() throws Exception {
 
         UIntTest b = new UIntTest();
         File f = new File("UIntTest.bin");

@@ -396,54 +396,5 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
     return true;
   }
 
-  /**
-   * Run the program
-   *
-   * @param args [0] filename (required),
-   *             [1] variable name (X for default),
-   *             [2] X to not list grids
-   * @throws IOException problem reading the file
-   */
-  public static void main(String[] args) throws IOException {
-    if (args.length == 0) {
-      System.out.println("need to supply a GEMPAK sounding file name");
-      System.exit(1);
-    }
-    try {
-      GempakParameters.addParameters(
-              "resources/nj22/tables/gempak/params.tbl");
-    } catch (Exception e) {
-      System.out.println("unable to init param tables");
-    }
-
-    GempakSoundingFileReader gsfr = getInstance(getFile(args[0]), true);
-    System.out.println("Type = " + gsfr.getFileType());
-    gsfr.printFileLabel();
-    gsfr.printKeys();
-    gsfr.printHeaders();
-    gsfr.printParts();
-    gsfr.printDates();
-    gsfr.printStations(false);
-    int row = 1;
-    int col = 1;
-    if (args.length > 1) {
-      row = Integer.parseInt(args[1]);
-    }
-    if (args.length > 2) {
-      try {
-        col = Integer.parseInt(args[2]);
-      } catch (Exception npe) {
-        col = gsfr.findStationIndex(args[2]);
-        if (col == -1) {
-          System.out.println("couldn't find station " + args[2]);
-          System.exit(1);
-        }
-        System.out.println("found station at column " + col);
-      }
-    }
-    gsfr.printOb(row, col);
-  }
-
-
 }
 

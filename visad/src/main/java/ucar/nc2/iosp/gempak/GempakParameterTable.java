@@ -199,26 +199,6 @@ ID# NAME                             UNITS                GNAM         SCALE   M
   }
 
   /**
-   * Test
-   *
-   * @param args ignored
-   * @throws IOException problem reading the table.
-   */
-  public static void main(String[] args) throws IOException {
-    GempakParameterTable pt = new GempakParameterTable();
-    //pt.addParameters("resources/nj22/tables/gempak/wmogrib3.tbl");
-    pt.addParameters("resources/nj22/tables/gempak/params.tbl");
-    if (args.length > 0) {
-      String param = args[0];
-      GempakParameter parm = pt.getParameter(param);
-      if (parm != null) {
-        System.out.println("Found " + param + ": " + parm);
-      }
-    }
-  }
-
-
-  /**
    * Read in the bytes from the given InputStream
    * and construct and return a String.
    * Closes the InputStream argument.

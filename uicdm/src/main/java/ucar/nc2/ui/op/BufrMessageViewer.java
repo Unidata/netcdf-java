@@ -932,33 +932,4 @@ public class BufrMessageViewer extends JPanel {
 
   }
 
- /* public static void main(String[] args) throws IOException {
-    RandomAccessFile raf1 = new RandomAccessFile("G:/ldm/distinct/8.bufr", "r");
-    RandomAccessFile raf2 = new RandomAccessFile("G:/ldm/distinct/9.bufr", "r");
-    MessageScanner scan1 = new MessageScanner(raf1);
-    MessageScanner scan2 = new MessageScanner(raf2);
-    Message m1 = scan1.getFirstDataMessage();
-    Message m2 = scan2.getFirstDataMessage();
-    raf1.close();
-    raf2.close();
-
-    Formatter f1 = new Formatter();
-    Formatter f2 = new Formatter();
-
-    m1.dump(f1);
-    m2.dump(f2);
-
-    System.out.printf("%s%n", f1);
-    System.out.printf("==========================%n");
-    System.out.printf("%s%n", f2);
-    System.out.printf("==========================%n");
-
-
-    GoogleDiff diff = new GoogleDiff();
-    LinkedList<GoogleDiff.Diff> result = diff.diff_main(f1.toString(), f2.toString());
-    diff.diff_cleanupSemantic(result);
-    for (GoogleDiff.Diff d : result)
-      System.out.printf("%s%n", d);
-  } */
-
 }

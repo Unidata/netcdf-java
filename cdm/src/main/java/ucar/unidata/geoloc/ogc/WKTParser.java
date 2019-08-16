@@ -710,16 +710,4 @@ public class WKTParser {
 
       return new UtmProjection(zone, isNorth);
   }
-
-  public static void main(String[] args) throws IOException, ParseException {
-    String testFile = "E:/work/yuan/shapefile/SkiAreaBoundaries.prj";
-    //String filename = ( args != args[0] == null)  ? testFile : args[0];
-
-    String contents = IO.readFile(testFile);
-    System.out.printf("%s%n", contents);
-
-    WKTParser p = new WKTParser(contents);
-    ProjectionImpl proj = convertWKTToProjection(p);
-    System.out.printf("%s%n", proj);
-  }
 }

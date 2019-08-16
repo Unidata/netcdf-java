@@ -273,6 +273,7 @@ public class FeatureScan {
     }
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
   public static void main(String arg[]) {
     String usage = "usage: ucar.nc2.ft.scan.FeatureScan directory [-subdirs]";
     if (arg.length < 1) {

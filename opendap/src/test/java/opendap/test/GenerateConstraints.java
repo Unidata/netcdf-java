@@ -17,6 +17,7 @@ import opendap.servers.*;
 
 import java.util.*;
 import java.io.*;
+import org.junit.Test;
 
 // Generate random constraints
 
@@ -264,16 +265,9 @@ public class GenerateConstraints extends TestCeParser {
     }
   }
 
-  public static void main(String args[]) throws Exception {
+  @Test
+  public void testStuff() throws Exception {
     int nconstraints = DFALTNCONSTRAINTS;
-    if (args.length > 0) {
-      try {
-        int n = Integer.parseInt(args[0]);
-        if (n > 0) nconstraints = n;
-      } catch (NumberFormatException nfe) {
-        System.err.println("GenerateConstraints: non-int argument");
-      }
-    }
     try {
       new GenerateConstraints().generate(nconstraints);
     } catch (Exception e) {

@@ -5,7 +5,6 @@
 
 package ucar.nc2.dt.grid;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +29,6 @@ public class GridAsPointDataset {
   private List<CalendarDate> dates;
 
   public GridAsPointDataset( List<GridDatatype> grids) {
-    //HashSet<Date> dateHash = new HashSet<Date>(); ????
     HashSet<CalendarDate> dateHash = new HashSet<>();
     List<CoordinateAxis1DTime> timeAxes = new ArrayList<>();
 
@@ -40,11 +38,9 @@ public class GridAsPointDataset {
       if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
         timeAxes.add(timeAxis);
 
-        //Date[] timeDates = timeAxis.getTimeDates();
         List<CalendarDate> timeDates = timeAxis.getCalendarDates();
         //for (Date timeDate : timeDates)
         for (CalendarDate timeDate : timeDates)
-          //dateHash.add( CalendarDate.of( timeDate) );
         	dateHash.add( timeDate );
       }
     }
@@ -64,22 +60,16 @@ public class GridAsPointDataset {
 
   public double getMissingValue(GridDatatype grid) {
     return Double.NaN;
-    //VariableEnhanced ve = grid.getVariable();
-    //return ve.getValidMax(); // LOOK bogus
   }
 
   public Point readData(GridDatatype grid, CalendarDate date, double lat, double lon)  throws java.io.IOException {
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
-    //CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-    //int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
-    
     int tidx =-1;
     //Date may be null if the grid does not have time axis 
     if(date != null)
     	tidx = findTimeIndexForCalendarDate(gcs, date);
     
-    //int[] xy = gcs.findXYindexFromLatLonBounded(lat, lon, null);
     int[] xy = gcs.findXYindexFromLatLon(lat, lon, null);
 
     Array data  = grid.readDataSlice(tidx, -1, xy[1], xy[0]);
@@ -104,8 +94,6 @@ public class GridAsPointDataset {
   public Point readData(GridDatatype grid, CalendarDate date, double zCoord, double lat, double lon)  throws java.io.IOException {
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
-    //CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-    //int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
     int tidx = -1;
     //Date may be null if the grid does not have time axis 
     if(date != null)
@@ -190,8 +178,6 @@ public class GridAsPointDataset {
    * @throws java.io.IOException on bad stuff
    */
   public Point readData(GridDatatype grid, CalendarDate date, EarthLocation location, boolean bounded)  throws java.io.IOException {
-
-  
 	  if(!bounded){
 		  if( Double.isNaN(location.getAltitude()) ){
 			  return readData(grid, date, location.getLatitude(), location.getLongitude());
@@ -223,31 +209,12 @@ public class GridAsPointDataset {
 	  return p;
   }
 
-  private int findTimeIndexForCalendarDate(GridCoordSystem gcs, CalendarDate date){	  
-	  
+  private int findTimeIndexForCalendarDate(GridCoordSystem gcs, CalendarDate date){
 	  CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();	  
 	  return timeAxis.findTimeIndexFromCalendarDate(date);
   }
 
   public static class Point {
-    public double lat,lon,z,ens,dataValue;
+    double lat,lon,z,ens,dataValue;
   }
-
-  public static void main(String[] args) throws IOException {
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open("Q:/cdmUnitTest/transforms/Eumetsat.VerticalPerspective.grb");
-    GridDatatype grid = gds.findGridDatatype( "Pixel_scene_type");
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-
-    double lat = 8.0;
-    double lon = 21.0;
-
-    // find the x,y point for a specific lat/lon position
-    int[] xy = gcs.findXYindexFromLatLon(lat, lon, null); // xy[0] = x, xy[1] = y
-
-    // read the data at that lat, lon a specific t and z value
-    Array data  = grid.readDataSlice(0, 0, xy[1], xy[0]); // note t, z, y, x
-    double val = data.getDouble(0);
-    System.out.printf("Value at %f %f == %f%n", lat, lon, val);
-  }
-
 }

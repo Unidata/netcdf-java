@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.grib.writer;
+package ucar.nc2.writer;
 
 import java.io.Closeable;
 import java.io.IOException;

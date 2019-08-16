@@ -1720,20 +1720,4 @@ public class NcMLReader {
     ncd.close();
   }
 
-  public static void main(String arg[]) {
-    String ncmlFile = "C:/data/AStest/oots/test.ncml";
-    String ncmlFileOut = "C:/TEMP/testNcmlOut.nc";
-    try {
-      //NetcdfDataset ncd = NcMLReader.readNcML (ncmlFile, null);
-      //ncd.writeNcMLG(System.out, true, null);
-      //System.out.println("NcML = "+ncmlFile);
-      InputStream in = new FileInputStream(ncmlFile);
-      writeNcMLToFile(in, ncmlFileOut);
-
-    } catch (Exception ioe) {
-      System.out.println("error = " + ncmlFile);
-      ioe.printStackTrace();
-    }
-  }
-
 }

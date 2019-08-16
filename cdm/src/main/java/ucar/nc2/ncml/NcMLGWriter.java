@@ -437,19 +437,4 @@ public class NcMLGWriter {
     return elem;
   }
 
-  public static void main( String arg[]){
-    //String urls = "C:/data/conventions/coards/cldc.mean.nc";
-    String urls = "C:/data/galeon/RUC.nc";
-    try {
-      NetcdfDataset df = NetcdfDataset.openDataset(urls);
-      NcMLGWriter ncFactory = new NcMLGWriter();
-      System.out.println("NetcdfDataset = "+urls+"\n"+df);
-      System.out.println("-----------");
-      ncFactory.writeXML( df, System.out, true, null);
-    } catch (Exception ioe) {
-      System.out.println("error = "+urls);
-      ioe.printStackTrace();
-    }
-  }
-
 }

@@ -15,7 +15,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
 import ucar.nc2.ft.point.bufr.StandardFields;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.StationImpl;
@@ -595,17 +594,5 @@ public class BufrConfig {
     }
     indent.decr();
     out.format("</bufr2nc>%n");
-}
-
-  public static void main(String[] args) throws IOException {
-
-    String filename = "G:/work/manross/split/872d794d.bufr";
-    //String filename = "Q:/cdmUnitTest/formats/bufr/US058MCUS-BUFtdp.SPOUT_00011_buoy_20091101021700.bufr";
-    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      BufrConfig config = BufrConfig.scanEntireFile(raf);
-      Formatter out = new Formatter();
-      config.show(out);
-      System.out.printf("%s%n", out);
-    }
   }
 }

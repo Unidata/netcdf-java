@@ -290,7 +290,6 @@ public class CatalogCrawler {
 
   //////////////////////////////////////////////////////////////////////////////
 
-
   private static class FilterDatasetScan implements Filter {
     PrintWriter out;
     boolean skipDatasetScan;
@@ -368,9 +367,11 @@ public class CatalogCrawler {
       }
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     private final JCommander jc;
 
-    public CommandLine(String progName, String[] args) throws ParameterException {
+    CommandLine(String progName, String[] args) throws ParameterException {
       this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
       jc.setProgramName(progName);           // Displayed in the usage information.
 
@@ -378,7 +379,7 @@ public class CatalogCrawler {
       jc.setParameterDescriptionComparator(new ParameterDescriptionComparator());
     }
 
-    public void printUsage() {
+    void printUsage() {
       jc.usage();
     }
 

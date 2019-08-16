@@ -4,8 +4,6 @@ import opendap.dap.DAS;
 import opendap.dap.DConnect2;
 import opendap.dap.DDS;
 import opendap.dap.DataDDS;
-import opendap.util.Getopts;
-import opendap.util.InvalidSwitch;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -205,23 +203,6 @@ public class TestDConnect2 extends TestSources {
     int okcount = passcount;
 
     System.out.printf("*** PASSED: %d/%d; %d expected failures; %d unexpected failures\n", okcount, totalcount, xfailcount, failcount);
-  }
-
-
-  public static void main(String args[]) throws Exception {
-    Getopts opts = null;
-    try {
-      opts = new Getopts("d", args);
-      if (opts.getSwitch('d').set) {
-        debug = true;
-      }
-    } catch (InvalidSwitch is) {
-      throw new Exception(is);
-    }
-    String testdir = null;
-    if (opts.argList().length > 0) testdir = opts.argList()[0];
-    else testdir = ".";
-    new TestDConnect2().testDConnect2();
   }
 
 }

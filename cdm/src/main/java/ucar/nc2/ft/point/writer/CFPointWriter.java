@@ -833,7 +833,7 @@ public abstract class CFPointWriter implements Closeable {
       }
     }
 
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////
     private final JCommander jc;
 
     public CommandLine(String progName, String[] args) throws ParameterException {

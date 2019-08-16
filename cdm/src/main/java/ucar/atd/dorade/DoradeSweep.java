@@ -479,39 +479,6 @@ public class DoradeSweep {
     return DoradeDescriptor.formatDate(date);
   }
 
-  /**
-   * <code>DoradeSweep</code> class test method.  Usage:
-   * <blockquote><code>
-   * $ java ucar.atd.dorade.DoradeSweep &lt;DORADE_sweepfile&gt;
-   * </code></blockquote>
-   */
-  public static void main(String[] args) {
-    try {
-      if (args.length == 0) {
-        System.err.println("Usage: DoradeSweep <filename>");
-        System.exit(1);
-      }
-
-      DoradeSweep sweepfile = new DoradeSweep(args[0]);
-      DoradePARM[] params = sweepfile.getParamList();
-      System.out.println(params.length + " params in file");
-      for (DoradePARM param : params) mainGetParam(sweepfile, param);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-
-  private static void mainGetParam(DoradeSweep sweepfile, DoradePARM param) throws DoradeSweepException {
-    System.out.print("getting " + param.getName());
-    for (int r = 0; r < sweepfile.getNRays(); r++) {
-      float[] vals = sweepfile.getRayData(param, r);
-      int nCells = vals.length;
-      if (r == 0)
-        System.out.println(" (" + nCells + " cells x " +
-                sweepfile.getNRays() + " rays)");
-    }
-  }
-
   public ScanMode getScanMode() {
     return myVOLD.getRADD(0).getScanMode();
   }

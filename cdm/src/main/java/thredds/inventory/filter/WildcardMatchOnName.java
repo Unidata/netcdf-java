@@ -28,11 +28,4 @@ public class WildcardMatchOnName extends WildcardMatchOnPath {
     Matcher matcher = this.pattern.matcher(file.getName());
     return matcher.matches();
   }
-
-  public static void main(String[] args) {
-    //WildcardMatchOnName m = new WildcardMatchOnName("ECMWF_GNERA_d000..........");
-    WildcardMatchOnName m = new WildcardMatchOnName("ECMWF_GNERA_d000..20121001");
-    Matcher matcher =             m.pattern.matcher("ECMWF_GNERA_d0002.20121001");
-    System.out.printf("%s%n", matcher.matches());
-  }
 }

@@ -7,9 +7,6 @@ package ucar.unidata.geoloc.projection;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-
 /**
  * Grib 1 projection 10 and Grib 2 projection 1.
  *
@@ -114,6 +111,18 @@ public class RotatedLatLon extends ProjectionImpl {
     addParameter(GRID_SOUTH_POLE_ANGLE, southPoleAngle);
   }
 
+  public double getLonpole() {
+    return lonpole;
+  }
+
+  public double getPolerotate() {
+    return polerotate;
+  }
+
+  public double getSinDlat() {
+    return sinDlat;
+  }
+
   @Override
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =  new RotatedLatLon(latpole, lonpole, polerotate);
@@ -183,7 +192,7 @@ public class RotatedLatLon extends ProjectionImpl {
   }
 
   // Tor's transform algorithm renamed to rotate for clarity
-  private double[] rotate(double[] lonlat, double rot1, double rot2, double s) {
+  double[] rotate(double[] lonlat, double rot1, double rot2, double s) {
 
     /* original code
       double e = DEG2RAD * (lonlat[0] - rot1); //east
@@ -252,158 +261,4 @@ public class RotatedLatLon extends ProjectionImpl {
     return result;
   }
 
-  private static class Test {
-    RotatedLatLon rll;
-    static PrintStream ps = System.out;
-
-    public Test(double lo, double la, double rot) {
-      rll = new RotatedLatLon(la, lo, rot);
-      ps.println("lonsp:" + rll.lonpole +
-              ", latsp:" + rll.latpole +
-              ", rotsp:" + rll.polerotate);
-    }
-
-    void pr(double[] pos, double[] pos2, double[] pos3) {
-      ps.println(" " + pos[0] + "   " + pos[1]);
-      ps.println("    fwd: " + pos2[0] + "   " + pos2[1]);
-      ps.println("    inv: " + pos3[0] + "   " + pos3[1]);
-    }
-
-    final static double err = 0.0001;
-
-    private double[] test(float lon, float lat) {
-      double[] p = {lon, lat};
-      double[] p2 = rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      double[] p3 = rll.rotate(p2, -rll.polerotate, -rll.lonpole, -rll.sinDlat);
-      assert Math.abs(p[0] - p3[0]) < err;
-      assert Math.abs(p[1] - p3[1]) < err;
-      pr(p, p2, p3);
-      return p2;
-    }
-
-    double[] proj(double lon, double lat, boolean fwd) {
-      double[] pos = {lon, lat};
-      double[] pos2 = fwd ?
-              rll.rotate(pos, rll.lonpole, rll.polerotate, rll.sinDlat) :
-              rll.rotate(pos, -rll.polerotate, -rll.lonpole, -rll.sinDlat);
-      ps.println((fwd ? " fwd" : " inv")
-              + " [" + lon + ", " + lat + "] -> " + Arrays.toString(pos2));
-      return pos2;
-    }
-  }
-
-
-  private static void test() {
-    Test tst0 = new Test(0, -25, 0);
-    tst0.proj(0, -25, true);
-
-    Test t = new Test(0, 90, 0);
-    t.test(0, 0);
-    t.test(90, 0);
-    t.test(0, 30);
-    t = new Test(0, 0, 0);
-    t.test(0, 0);
-    t.test(90, 0);
-    t.test(0, 30);
-    t = new Test(10, 50, 25);
-    t.test(0, 0);
-    t.test(90, 0);
-    t.test(0, 30);
-    RotatedLatLon rll = new RotatedLatLon(-50, 10, 20);
-    long t0 = System.currentTimeMillis();
-    long dt = 0;
-    double[] p = {12., 60.};
-    int i = 0;
-    while (dt < 1000) {
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      rll.rotate(p, rll.lonpole, rll.polerotate, rll.sinDlat);
-      i++;
-      dt = System.currentTimeMillis() - t0;
-    }
-    System.out.println("fwd/sec: " + i * 10);
-
-  }
-
-  public static void main(String args[]) {
-    test();
-  }
 }
-
-/*
-
-original code:
-
-
-  private static class RotLatLon {
-    double DEG2RAD = (Math.PI * 2) / 360;
-    double RAD2DEG = 1 / DEG2RAD;
-    double lonsp, latsp, rotsp, sinDlat, cosDlat;
-    public RotLatLon(double aLonsp,
-                     double aLatsp,
-                     double aRotsp)
-    {
-       lonsp = aLonsp;
-       latsp = aLatsp;
-       rotsp = aRotsp;
-       double dlat_rad = (latsp - (-90)) * DEG2RAD; //delta latitude
-       sinDlat = Math.sin(dlat_rad);
-       cosDlat = Math.cos(dlat_rad);
-    }
-
-    private double[] transform(double [] lonlat, double rot1, double rot2, double s)
-    {
-       double e = DEG2RAD * (lonlat[0] - rot1); //east
-       double n = DEG2RAD * lonlat[1]; //north
-       double cn = Math.cos(n);
-       double x = cn * Math.cos(e);
-       double y = cn * Math.sin(e);
-       double z = Math.sin(n);
-       double x2 = cosDlat * x + s * z;
-       double z2 = -s * x + cosDlat * z;
-       double R = Math.sqrt(x2 * x2 + y * y);
-       double e2 = Math.atan2(y, x2);
-       double n2 = Math.atan2(z2, R);
-       double rlon = RAD2DEG * e2 - rot2;
-       double rlat = RAD2DEG * n2;
-       return new double[]{rlon, rlat};
-    }
-
-    public double[] fwd(double[] lonlat)
-    {
-       return transform(lonlat, lonsp, rotsp, sinDlat);
-    }
-
-    public double[] inv(double[] lonlat)
-    {
-       return transform(lonlat, -rotsp, -lonsp, -sinDlat);
-    }
-  }
-
-  public static void main(String[] args) {
-    RotLatLon rot = new RotLatLon(155, -30, 0);
-    double[] lonlat = new double[] {130, 2};
-    double[] rlonlat = rot.fwd(lonlat);
-    double[] rrlonlat = rot.inv(rlonlat);
-    System.out.printf("lonlat = %f %f%n", lonlat[0],  lonlat[1]);
-    System.out.printf("rlonlat = %f %f%n", rlonlat[0],  rlonlat[1]);
-    System.out.printf("rrlonlat = %f %f%n", rrlonlat[0],  rrlonlat[1]);
-
-    RotatedLatLon rot2 = new RotatedLatLon(-30, 155, 0);
-    LatLonPointImpl ll = new LatLonPointImpl(2,130);
-    ProjectionPoint pp = rot2.latLonToProj(ll);
-    LatLonPoint ll2 = rot2.projToLatLon(pp);
-    System.out.printf("latlon = %s%n", ll);
-    System.out.printf("pp = %s%n", pp);
-    System.out.printf("latlon = %s%n", ll2);
-  }
-
-
-   */

@@ -614,20 +614,5 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
     }
     return to;
   }
-
-  /*ENDGENERATED*/
-
-  /**
-   * Test
-   *
-   * @param args not used
-   */
-  public static void main(String[] args) {
-    LambertAzimuthalEqualArea a = new LambertAzimuthalEqualArea(40, -100);
-    ProjectionPoint p = a.latLonToProj(-20, 100);
-    System.out.println("proj point = " + p);
-    LatLonPoint ll = a.projToLatLon(p);
-    System.out.println("ll = " + ll);
-  }
 }
 

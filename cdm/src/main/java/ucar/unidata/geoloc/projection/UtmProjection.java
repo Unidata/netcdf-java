@@ -312,29 +312,6 @@ public class UtmProjection extends ProjectionImpl {
     return convert2latlon.projToLatLon(from, to);
   }
 
-  /*
-  roszelld@usgs.gov
-  'm transforming coordinates (which are in UTM Zone 17N projection) to
-lat/lon.
-
-If I get the ProjectionImpl from the grid (stage) and use the projToLatLon
-function with {{577.8000000000001}, {2951.8}} in kilometers for example, I
-get {{26.553706785076937}, {-80.21754983617633}}, which is not very
-accurate at all when I plot them.
-
-If I use GeoTools to build a transform based on the same projection
-parameters read from the projectionimpl, I get {{26.685132668190793},
-{-80.21802662821469}} which appears to be MUCH more accurate when I plot
-them on a map.
-   */
-  public static void main(String arg[]) {
-    UtmProjection utm = new UtmProjection(17, true);
-    LatLonPoint ll = utm.projToLatLon(577.8000000000001, 2951.8);
-    System.out.printf("%15.12f %15.12f%n", ll.getLatitude(), ll.getLongitude());
-    assert Misc.nearlyEquals(ll.getLongitude(), -80.21802662821469, 1.0e-8);
-    assert Misc.nearlyEquals(ll.getLatitude(), 26.685132668190793, 1.0e-8);
-  }
-
 }
 
 

@@ -5,6 +5,7 @@
 
 package ucar.util.memory.memory;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
@@ -34,7 +35,8 @@ public class MemoryCounterAgentTest {
     System.out.printf("%n %4d %6d %s (%s)%n", memShallow, memDeep, name, o.getClass().getName());
   }
 
-  public static void main(String[] args) throws IOException {
+  @Test
+  public void testStuff() throws IOException {
     measureSize(new Object());
     measureSize(new HashMap());
     measureSize(new LinkedHashMap());

@@ -325,34 +325,4 @@ public class DiskCache {
     }
   }
 
-  /**
-   * debug
-   *
-   * @param filename look for this file
-   * @throws java.io.IOException if read error
-   */
-  static void make(String filename) throws IOException {
-    File want = DiskCache.getCacheFile(filename);
-    System.out.println("make=" + want.getPath() + "; exists = " + want.exists());
-    if (!want.exists()) {
-      boolean ret = want.createNewFile();
-      assert ret;
-    }
-    System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = " + new Date(want.lastModified()));
-    System.out.println(" original=" + filename);
-  }
-
-
-  static public void main(String[] args) throws IOException {
-    DiskCache.setRootDirectory("C:/temp/chill/");
-    make("C:/junk.txt");
-    make("C:/some/enchanted/evening/joots+3478.txt");
-    make("http://www.unidata.ucar.edu/some/enc hanted/eve'ning/nowrite.gibberish");
-
-    showCache(System.out);
-    StringBuilder sbuff = new StringBuilder();
-    cleanCache(1000 * 1000 * 10, sbuff);
-    System.out.println(sbuff);
-  }
-
 }

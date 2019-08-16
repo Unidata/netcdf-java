@@ -249,41 +249,4 @@ public class LogReader {
       System.out.printf("----- %s total requests=%d passed=%d %n", file.getPath(), total, count);
     }
   }
-
-
-  ////////////////////////////////////////////////////////
-
-  static class MyFilter implements LogFilter {
-
-    public boolean pass(Log log) {
-      return log.path.startsWith("/thredds/catalog/");
-    }
-  }
-
-  static class MyFF implements FileFilter {
-
-    public boolean accept(File f) {
-      return f.getPath().endsWith(".log");
-    }
-  }
-
-  public static void main(String[] args) throws IOException {
-    // test
-    final LogReader reader = new LogReader( new AccessLogParser());
-
-    long startElapsed = System.nanoTime();
-    Stats stats = new Stats();
-
-    reader.readAll(new File("d:/mlode/logs/all/"), new MyFF(), new Closure() {
-      long count = 0;
-      public void process(Log log) throws IOException {
-        if (count % 1000 == 0) System.out.printf("%s %s %s%n", log.path, log.client, log.ip);
-        count++;
-      }
-    }, new MyFilter(), stats);
-
-    long elapsedTime = System.nanoTime() - startElapsed;
-    System.out.printf(" total= %d passed=%d%n", stats.total, stats.passed);
-    System.out.printf(" elapsed=%d secs%n", elapsedTime / (1000 * 1000 * 1000));
-  }
 }

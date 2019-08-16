@@ -17,6 +17,8 @@ The easiest way to use these is to grab the latest netcdfAll.jar file.
 * [CFPointWriter](#cfpointwriter): copies a CDM point feature dataset to CF/NetCDF format
 * [GribCdmIndex](#gribcdmindex): write GRIB Collection Indexes
 * [FeatureScan](#featurescan): scans a directory to find CDM datasets and determines their FeatureTypes
+* [NetcdfDataset](#netcdfdataset): copies a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file
+* [ToolsUI](#toolsui): Netcdf Tools user interface
 
 ## ncdump
 
@@ -251,3 +253,14 @@ count open = 215
 count fail = 3
 count failException = 0
 ~~~
+
+## NetcdfDataset
+
+Use [nccopy](#nccopy) instead.
+
+## ToolsUI
+
+~~~bash
+java -Xmx8g -jar netcdfAll-<version>.jar 
+~~~
+

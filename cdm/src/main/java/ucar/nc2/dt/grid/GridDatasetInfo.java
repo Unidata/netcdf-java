@@ -5,7 +5,6 @@
 
 package ucar.nc2.dt.grid;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -628,26 +627,6 @@ public class GridDatasetInfo {
 				return cs1.getDomain().size() - cs2.getDomain().size();
 			return cs1.getName().compareTo(cs2.getName());
 		}
-	}
-
-
-	/**
-	 * debug
-	 *
-	 * @param args ignored
-	 * @throws java.io.IOException on io error
-	 */
-	public static void main(String args[]) throws IOException {
-		String url = "cdmremote:http://localhost:8080/thredds/cdmremote/grib/NCDC/CFSR/NCDC-CFSR/PGB-LatLon0p5";
-
-		GridDataset ncd = ucar.nc2.dt.grid.GridDataset.open(url);
-		GridDatasetInfo info = new GridDatasetInfo(ncd, null);
-		FileOutputStream fos2 = new FileOutputStream("C:/tmp2/gridInfo.xml");
-		info.writeXML(info.makeGridForm(), fos2);
-		fos2.close();
-
-		String infoString = info.writeXML(info.makeGridForm());
-		System.out.println(infoString);
 	}
 
 }

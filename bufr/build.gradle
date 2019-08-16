@@ -3,9 +3,9 @@ ext.title = "BUFR IOSP"
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
-// bufr doesn't have any JUnit tests
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
 
 dependencies {
     compile project(":cdm")

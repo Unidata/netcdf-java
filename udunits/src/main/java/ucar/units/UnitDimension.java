@@ -109,39 +109,4 @@ UnitDimension
 	return new QuantityDimension(factors);
     }
 
-    /**
-     * Tests this class.
-     */
-    public static void
-    main(String[] args)
-	throws	Exception
-    {
-	System.out.println("new UnitDimension() = \"" +
-	    new UnitDimension() + '"');
-	UnitDimension	timeDimension =
-	    new UnitDimension(
-		BaseUnit.getOrCreate(
-		    UnitName.newUnitName("second", null, "s"),
-		    BaseQuantity.TIME));
-	System.out.println("timeDimension = \"" + timeDimension + '"');
-	UnitDimension	lengthDimension =
-	    new UnitDimension(
-		BaseUnit.getOrCreate(
-		    UnitName.newUnitName("meter", null, "m"),
-		    BaseQuantity.LENGTH));
-	System.out.println("lengthDimension = \"" + lengthDimension + '"');
-	System.out.println(
-	    "lengthDimension.isReciprocalOf(timeDimension) = \"" +
-	    lengthDimension.isReciprocalOf(timeDimension) + '"');
-	UnitDimension	hertzDimension = timeDimension.raiseTo(-1);
-	System.out.println("hertzDimension = \"" + hertzDimension + '"');
-	System.out.println(
-	    "hertzDimension.isReciprocalOf(timeDimension) = \"" +
-	    hertzDimension.isReciprocalOf(timeDimension) + '"');
-	System.out.println("lengthDimension.divideBy(timeDimension) = \"" +
-	    lengthDimension.divideBy(timeDimension) + '"');
-	System.out.println(
-	    "lengthDimension.divideBy(timeDimension).raiseTo(2) = \"" +
-	    lengthDimension.divideBy(timeDimension).raiseTo(2) + '"');
-    }
 }

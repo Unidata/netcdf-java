@@ -321,26 +321,5 @@ public class McIDASGridReader {
     errorMessage = errMsg;
   }
 
-  /**
-   * for testing purposes
-   *
-   * @param args file name
-   * @throws IOException problem reading file
-   */
-  public static void main(String[] args) throws IOException {
-    String file = "GRID2001";
-    if (args.length > 0) {
-      file = args[0];
-    }
-    McIDASGridReader mg = new McIDASGridReader(file);
-    GridIndex gridIndex = mg.getGridIndex();
-    List grids = gridIndex.getGridRecords();
-    System.out.println("found " + grids.size() + " grids");
-    int num = Math.min(grids.size(), 10);
-    for (int i = 0; i < num; i++) {
-      System.out.println(grids.get(i));
-    }
-
-  }
 }
 

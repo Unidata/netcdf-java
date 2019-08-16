@@ -432,31 +432,5 @@ public class UncompressInputStream extends FilterInputStream {
 
   private static final boolean debug = false, debugTiming = false;
 
-  /** test */
-  public static void main(String args[]) throws Exception {
-    if (args.length != 1) {
-      System.err.println("Usage: UncompressInputStream <file>");
-      System.exit(1);
-    }
-
-    try (InputStream in =
-        new UncompressInputStream(new FileInputStream(args[0]))) {
-
-      byte[] buf = new byte[100000];
-      int tot = 0;
-      long beg = System.currentTimeMillis();
-
-      while (true) {
-        int got = in.read(buf);
-        if (got < 0) break;
-        System.out.write(buf, 0, got);
-        tot += got;
-      }
-
-      long end = System.currentTimeMillis();
-      System.err.println("Decompressed " + tot + " bytes");
-      System.err.println("Time: " + (end - beg) / 1000. + " seconds");
-    }
-  }
 }
 

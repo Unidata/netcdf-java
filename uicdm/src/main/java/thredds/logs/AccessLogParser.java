@@ -35,7 +35,7 @@ public class AccessLogParser implements LogReader.LogParser {
   // 30/Sep/2009:23:50:47 -0600
   private SimpleDateFormat formatFrom = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
 
-  private static Pattern regPattern =
+  static Pattern regPattern =
                          // 1                             2       3         4      5      6             7        8      9                                                         5   6  7     8               9
           Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
 
@@ -164,20 +164,6 @@ public class AccessLogParser implements LogReader.LogParser {
   private long parseLong(String s) {
     if (s.equals("-")) return 0;
     return Long.parseLong(s);
-  }
-
-  // try problem logs
-  public static void main(String[] args) throws IOException {
-    AccessLogParser p = new AccessLogParser();
-    String line = "24.18.236.132 - - [04/Feb/2011:17:49:03 -0700] \"GET /thredds/fileServer//nexrad/level3/N0R/YUX/20110205/Level3_YUX_N0R_20110205_0011.nids \" 200 10409 \"-\" \"-\" 17";
-    Matcher m = regPattern.matcher(line);
-    System.out.printf("%s %s%n", m.matches(), m);
-    for (int i=0; i<m.groupCount(); i++) {
-      System.out.println(" "+i+ " "+m.group(i));
-    }
-
-    LogReader.Log log = p.parseLog(line);
-    System.out.printf("%s%n", log);
   }
 
 }

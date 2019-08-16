@@ -260,35 +260,4 @@ public class TimeDuration {
   public Date add( Date d) {
     return timeUnit.add(d);
   }
-
-  ////////////////////////////////////////////
-  // test
-
-  private static void doDuration(String s) {
-    try {
-      System.out.println("start = (" + s + ")");
-      TimeDuration d = new TimeDuration(s);
-      System.out.println("duration = (" + d.toString() + ")");
-    }
-    catch (java.text.ParseException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public static void main2(String[] args) {
-    doDuration("3 days");
-  }
-
-  public static void main(String arg[]) throws Exception {
-
-    DatatypeFactory factory = DatatypeFactory.newInstance();
-
-    Duration d = factory.newDuration("P3D");
-    long secs1 = d.getTimeInMillis(new Date()) / 1000;
-    Calendar c = Calendar.getInstance();
-    c.set(1970, 0, 1, 0, 0, 0);
-    long secs2 = d.getTimeInMillis(c.getTime()) / 1000;
-
-    System.out.printf("%d %d same = %s%n", secs1, secs2, secs1 == secs2);
-  }
 }

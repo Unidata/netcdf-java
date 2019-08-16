@@ -243,35 +243,4 @@ public abstract class BaseQuantity implements Base, Comparable<BaseQuantity>,
 	 */
 	public abstract boolean isDimensionless();
 
-	/**
-	 * Tests this class.
-	 */
-	public static void main(final String[] args) {
-		System.out.println("AMOUNT_OF_SUBSTANCE.getName() = "
-				+ AMOUNT_OF_SUBSTANCE.getName());
-		System.out.println("LUMINOUS_INTENSITY.getSymbol() = "
-				+ LUMINOUS_INTENSITY.getSymbol());
-		System.out.println("PLANE_ANGLE.getSymbol() = "
-				+ PLANE_ANGLE.getSymbol());
-
-		System.out.println("LENGTH.equals(LENGTH) = " + LENGTH.equals(LENGTH));
-		System.out.println("LENGTH.equals(MASS) = " + LENGTH.equals(MASS));
-		System.out.println("LENGTH.equals(PLANE_ANGLE) = "
-				+ LENGTH.equals(PLANE_ANGLE));
-		System.out.println("PLANE_ANGLE.equals(PLANE_ANGLE) = "
-				+ PLANE_ANGLE.equals(PLANE_ANGLE));
-		System.out.println("PLANE_ANGLE.equals(SOLID_ANGLE) = "
-				+ PLANE_ANGLE.equals(SOLID_ANGLE));
-
-		System.out.println("LENGTH.compareTo(LENGTH) = "
-				+ LENGTH.compareTo(LENGTH));
-		System.out
-				.println("LENGTH.compareTo(MASS) = " + LENGTH.compareTo(MASS));
-		System.out.println("LENGTH.compareTo(PLANE_ANGLE) = "
-				+ LENGTH.compareTo(PLANE_ANGLE));
-		System.out.println("PLANE_ANGLE.compareTo(PLANE_ANGLE) = "
-				+ PLANE_ANGLE.compareTo(PLANE_ANGLE));
-		System.out.println("PLANE_ANGLE.compareTo(SOLID_ANGLE) = "
-				+ PLANE_ANGLE.compareTo(SOLID_ANGLE));
-	}
 }

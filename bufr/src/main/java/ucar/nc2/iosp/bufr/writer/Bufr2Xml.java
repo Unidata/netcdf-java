@@ -10,15 +10,12 @@ import com.google.common.xml.XmlEscapers;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.*;
 import ucar.nc2.util.Indent;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.ma2.*;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import javax.xml.stream.XMLStreamException;
@@ -26,7 +23,6 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLOutputFactory;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.FileOutputStream;
 import java.util.Formatter;
 
 /**
@@ -276,36 +272,6 @@ public class Bufr2Xml {
     String format = "%." + sigDigits + "g";
     stringFormatter.format(format, val);
     staxWriter.writeCharacters(stringFormatter.toString());
-  }
-
-  public static void main(String arg[]) throws Exception {
-
-    //String filename = "C:/temp/cache/uniqueMessages.bufr";
-    String filename = "C:/data/formats/bufr/uniqueExamples.bufr";
-    int size = 0;
-    int count = 0;
-
-    try (RandomAccessFile raf = new RandomAccessFile(filename, "r");
-         OutputStream out = new FileOutputStream("C:/data/formats/bufr/uniqueE/" + count + ".xml")) {
-      MessageScanner scan = new MessageScanner(raf);
-      while (scan.hasNext()) {
-        Message message = scan.next();
-        if (message == null || !message.isTablesComplete() ||
-                !message.isBitCountOk()) continue;
-        byte[] mbytes = scan.getMessageBytesFromLast(message);
-        NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
-        NetcdfDataset ncd = new NetcdfDataset(ncfile);
-        new Bufr2Xml(message, ncd, out, true);
-        out.close();
-        count++;
-        size += message.getMessageSize();
-      }
-
-      } catch (Throwable e) {
-        e.printStackTrace();
-      }
-
-    System.out.printf("total size= %f Kb %n", .001 * size);
   }
 }
 

@@ -143,7 +143,8 @@ public class TestClone extends TestFiles {
     System.out.flush();
   }
 
-  public static void main(String args[]) throws Exception {
+  @Test
+  public void testStuff() throws Exception {
     new TestClone().test();
   }
 

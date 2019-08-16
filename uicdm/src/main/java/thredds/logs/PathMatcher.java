@@ -97,39 +97,8 @@ public class PathMatcher {
   private static class PathComparator implements Comparator<String>, Serializable {
     public int compare(String o1, String o2) {
       int compare = -1 * o1.compareTo(o2); // reverse sort
-      if (debug) System.out.println(" compare "+o1+" to "+o2+" = "+compare);
       return compare;
     }
   }
 
-  // testing
-  private void doit( String s) {
-    System.out.println(s+" == "+match(s));
-  }
-
-  private static boolean debug = false;
-  public static void main( String[] args) {
-    PathMatcher m = new PathMatcher();
-    m.put("/thredds/dods/test/longer");
-    m.put("/thredds/dods/test");
-    m.put("/thredds/dods/tester");
-    m.put("/thredds/dods/short");
-    m.put("/actionable");
-    m.put("myworld");
-    m.put("mynot");
-    m.put("ncmodels");
-    m.put("ncmodels/bzipped");
-
-
-    m.doit("nope");
-    m.doit("/thredds/dods/test");
-    m.doit("/thredds/dods/test/lo");
-    m.doit("/thredds/dods/test/longer/donger");
-    m.doit("myworldly");
-    m.doit("/my");
-    m.doit("mysnot");
-
-    debug = true;
-    m.doit("ncmodels/canonical");
-  }
 }

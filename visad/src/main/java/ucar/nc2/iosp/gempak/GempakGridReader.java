@@ -208,68 +208,6 @@ public class GempakGridReader extends GempakFileReader {
   }
 
   /**
-   * Run the program
-   *
-   * @param args [0] filename (required),
-   *             [1] variable name (X for default),
-   *             [2] X to not list grids
-   * @throws IOException problem reading the file
-   */
-  public static void main(String[] args) throws IOException {
-    if (args.length == 0) {
-      System.out.println("need to supply a GEMPAK grid file name");
-      System.exit(1);
-    }
-
-    try {
-      GempakGridParameterTable.addParameters("resources/nj22/tables/gempak/wmogrib3.tbl");
-      GempakGridParameterTable.addParameters("resources/nj22/tables/gempak/ncepgrib2.tbl");
-    } catch (Exception e) {
-      System.out.println("unable to init param tables");
-    }
-    GempakGridReader ggr = getInstance(getFile(args[0]), true);
-    String var = "PMSL";
-    if ((args.length > 1) && !args[1].equalsIgnoreCase("X")) {
-      var = args[1];
-    }
-    ggr.showGridInfo(args.length != 3);
-    GempakGridRecord gh = ggr.findGrid(var);
-    if (gh != null) {
-      System.out.println("\n" + var + ":");
-      System.out.println(gh);
-      for (int j = 0; j < 2; j++) {
-        System.out.println("Using DP: " + ggr.useDP);
-
-
-        float[] data = ggr.readGrid(gh);
-        if (data != null) {
-          System.out.println("# of points = " + data.length);
-          int cnt = 0;
-          int it = 10;
-          float min = Float.POSITIVE_INFINITY;
-          float max = Float.NEGATIVE_INFINITY;
-          for (int i = 0; i < data.length; i++) {
-            if (cnt == it) {
-              cnt = 0;
-            }
-            cnt++;
-            if ((data[i] != RMISSD) && (data[i] < min)) {
-              min = data[i];
-            }
-            if ((data[i] != RMISSD) && (data[i] > max)) {
-              max = data[i];
-            }
-          }
-          System.out.println("max/min = " + max + "/" + min);
-        } else {
-          System.out.println("unable to decode grid data");
-        }
-        ggr.useDP = !ggr.useDP;
-      }
-    }
-  }
-
-  /**
    * Get the grid index
    *
    * @return the GridIndex

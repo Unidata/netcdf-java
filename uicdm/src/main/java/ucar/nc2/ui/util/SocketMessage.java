@@ -19,8 +19,7 @@ import java.io.*;
  */
 public final class SocketMessage {
   private static final boolean debug = false, throwAway = false;
-  private static final boolean testing = false;
-  private static boolean raw = false;
+  private boolean raw = false;
 
   private ServerSocket server;
   private boolean isAlreadyRunning = false;
@@ -54,6 +53,10 @@ public final class SocketMessage {
       System.out.println("SocketMessage IOException= " + e);
       e.printStackTrace();
     }
+  }
+
+  public void setRaw(boolean raw) {
+    this.raw = raw;
   }
 
   /**
@@ -152,21 +155,4 @@ public final class SocketMessage {
      void setMessage(SocketMessage.Event event);
   }
 
-  //////////////////////////////////////////////
-  public static void main(String[] args) throws IOException {
-    if (!testing) {
-      new SocketMessage( 9999, "startNewServer");
-      raw = true;
-
-    } else {
-      String url = "http://localhost:8080/thredds/test/it" // + EscapeStrings.escapeOGC("yabba/bad[0]/good")
-               +"?"+EscapeStrings.escapeOGC("quuery[1]");
-      System.out.printf("send '%s'%n", url);
-      try (HTTPMethod method = HTTPFactory.Head(url)) {
-          method.execute();
-          int status = method.getStatusCode();
-          System.out.printf("%d%n", status);
-      } // close method, close method internal session
-    }
-  }
 }

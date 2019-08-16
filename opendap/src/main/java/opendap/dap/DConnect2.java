@@ -1317,52 +1317,6 @@ return getDDXData("", statusUI, new DefaultFactory());
 } */
 
 
-    /**
-     * @param args command line arguments
-     */
-    public static void main(String[] args)
-    {
-/*
-  DConnect2 dc;
-
-  for (String url : args) {
-    try {
-      LogStream.out.println("");
-      LogStream.out.println("");
-      LogStream.out.println("########################################################");
-      LogStream.out.println("\nConnecting to " + url + "\n");
-      dc = new DConnect2(url);
-
-      LogStream.out.println("\n- - - - - - - - - - - - - - - - - - -");
-
-      LogStream.out.println("Retrieving DDS:\n");
-      DDS dds = dc.getDDS();
-      dds.print(LogStream.out);
-
-      LogStream.out.println("\n- - - - - - - - - - - - - - - - - - -");
-      LogStream.out.println("Retrieving DAS:\n");
-      DAS das = dc.getDAS();
-      das.print(LogStream.out);
-
-      LogStream.out.println("\n- - - - - - - - - - - - - - - - - - -");
-      LogStream.out.println("Retrieving DATA:\n");
-      dds = dc.getData("");
-      dds.printVal(LogStream.out, "");
-
-
-      LogStream.out.println("\n- - - - - - - - - - - - - - - - - - -");
-      LogStream.out.println("Retrieving DDX:\n");
-      dds = dc.getDDX();
-      dds.printXML(LogStream.out);
-
-      LogStream.out.logflush();
-    }
-    catch (Throwable t) {
-      t.printStackTrace(LogStream.err);
-    }     */
-
-    }
-
 }
 
 

@@ -22,18 +22,18 @@ public class PolarStereographic extends AbstractTransformBuilder implements Hori
   }
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double lon0 = readAttributeDouble( ctv, CF.STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE, Double.NaN);
+    double lon0 = readAttributeDouble(ctv, CF.STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE, Double.NaN);
     if (Double.isNaN(lon0))
-      lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+      lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     if (Double.isNaN(lon0))
       throw new IllegalArgumentException("No longitude parameter");
 
-    double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, 90.0);
+    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, 90.0);
     double latD = 60.0;
 
-    double scale = readAttributeDouble( ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
+    double scale = readAttributeDouble(ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
     if (Double.isNaN(scale)) {
-      double stdpar = readAttributeDouble( ctv, CF.STANDARD_PARALLEL, Double.NaN);
+      double stdpar = readAttributeDouble(ctv, CF.STANDARD_PARALLEL, Double.NaN);
       if (!Double.isNaN(stdpar)) {
         // caclulate scale snyder (21-7)
         // k = 2 * k0/(1 +/- sin stdpar)
@@ -41,8 +41,8 @@ public class PolarStereographic extends AbstractTransformBuilder implements Hori
         // double sin = Math.sin( Math.toRadians( stdpar));
         // scale = (lat0 > 0) ? (1.0 + sin)/2 : (1.0 - sin)/2;
 
-        double sin = Math.abs(Math.sin( Math.toRadians( Math.abs(stdpar))));
-        scale = (1.0 + sin)/2;
+        double sin = Math.abs(Math.sin(Math.toRadians(Math.abs(stdpar))));
+        scale = (1.0 + sin) / 2;
         latD = stdpar;
 
       } else {
@@ -52,8 +52,8 @@ public class PolarStereographic extends AbstractTransformBuilder implements Hori
       // given the scale, calculate stdpar
       // k0 = (1 +/- sin(stdpar))/2
       // asin(2 * k0  - 1) =  stdpar)
-      double temp = 2 * scale -1;
-      latD = Math.toDegrees( Math.asin(temp));
+      double temp = 2 * scale - 1;
+      latD = Math.toDegrees(Math.asin(temp));
     }
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
@@ -72,19 +72,15 @@ public class PolarStereographic extends AbstractTransformBuilder implements Hori
     ucar.unidata.geoloc.ProjectionImpl proj;
 
     // check for ellipsoidal earth
-    if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
+    if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis)
+        || inverse_flattening != 0.0)) {
       Earth earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
-      proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(lat0, lon0, scale, latD, false_easting, false_northing, earth);
+      proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(lat0, lon0,
+          scale, latD, false_easting, false_northing, earth);
     } else {
-      proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale, false_easting, false_northing, earth_radius);
+      proj = new ucar.unidata.geoloc.projection.Stereographic(lat0, lon0, scale, false_easting,
+          false_northing, earth_radius);
     }
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
-
-    public static void main(String arg[]) {
-      double stdpar = 70;
-      double sin = Math.abs(Math.sin( Math.toRadians( stdpar)));
-      double scale = (1.0 + sin)/2;
-      System.out.printf("stdpar = %f has scale = %f %n",stdpar, scale );
-    }
 }

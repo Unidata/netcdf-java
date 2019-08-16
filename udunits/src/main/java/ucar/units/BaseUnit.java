@@ -147,31 +147,4 @@ public class BaseUnit extends DerivedUnitImpl implements Base {
         return baseQuantity.isDimensionless();
     }
 
-    /**
-     * Tests this class.
-     */
-    public static void main(final String[] args) throws Exception {
-        final BaseUnit meter = new BaseUnit(UnitName.newUnitName("meter", null,
-                "m"), BaseQuantity.LENGTH);
-        System.out
-                .println("meter.getBaseQuantity()=" + meter.getBaseQuantity());
-        System.out
-                .println("meter.toDerivedUnit(1.)=" + meter.toDerivedUnit(1.));
-        System.out.println("meter.toDerivedUnit(new float[] {2})[0]="
-                + meter.toDerivedUnit(new float[] { 2 }, new float[1])[0]);
-        System.out.println("meter.fromDerivedUnit(1.)="
-                + meter.fromDerivedUnit(1.));
-        System.out.println("meter.fromDerivedUnit(new float[] {3})[0]="
-                + meter.fromDerivedUnit(new float[] { 3 }, new float[1])[0]);
-        System.out.println("meter.isCompatible(meter)="
-                + meter.isCompatible(meter));
-        final BaseUnit radian = new BaseUnit(UnitName.newUnitName("radian",
-                null, "rad"), BaseQuantity.PLANE_ANGLE);
-        System.out.println("meter.isCompatible(radian)="
-                + meter.isCompatible(radian));
-        System.out
-                .println("meter.isDimensionless()=" + meter.isDimensionless());
-        System.out.println("radian.isDimensionless()="
-                + radian.isDimensionless());
-    }
 }

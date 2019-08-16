@@ -18,7 +18,6 @@ import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.nc2.grib.grib2.Grib2Variable;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.grib.writer.GribToNetcdfWriter;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;

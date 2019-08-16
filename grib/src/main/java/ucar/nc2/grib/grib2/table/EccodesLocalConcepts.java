@@ -432,9 +432,4 @@ class EccodesLocalConcepts {
     f.format("%n");
   }
 
-  public static void main(String[] args) throws IOException {
-    EccodesLocalConcepts ec = new EccodesLocalConcepts("resources/grib2/ecmwf/localConcepts/ecmf");
-    ec.showDetails(new Formatter(System.out));
-  }
-
 }

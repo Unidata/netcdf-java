@@ -192,19 +192,4 @@ public class NcStreamWriterChannel {
     }
 
   }
-
-  static public void main(String args[]) throws InvalidRangeException {
-    long maxChunkElems = maxChunk / 4;
-    int[] totalShape = new int[]{1, 40, 530, 240};
-    //int[] chunkShape = new int[] {1, 1, 530, 240};
-    FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(totalShape);
-    while (index.currentElement() < index.getSize()) {
-      int[] chunkOrigin = index.getCurrentCounter();
-      int[] chunkShape = index.computeChunkShape(maxChunkElems);
-      System.out.printf(" %s%n", new Section(chunkOrigin, chunkShape));
-      index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
-    }
-
-  }
-
 }

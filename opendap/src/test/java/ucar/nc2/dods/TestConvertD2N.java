@@ -7,6 +7,7 @@ package ucar.nc2.dods;
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
 import opendap.test.TestSources;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -26,9 +27,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
-/**
- *
- */
+/** Test ConvertD2N */
 public class TestConvertD2N {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -274,7 +273,8 @@ public class TestConvertD2N {
     testArray(url);
   }
 
-  static public void main( String[] args) throws IOException, ParseException, DAP2Exception, InvalidRangeException {
+  @Test
+  public void testStuff() throws IOException, DAP2Exception, InvalidRangeException {
 
     /* test(server+"test.01"); // scalars
     test(server+"test.02");  // 1D arrays

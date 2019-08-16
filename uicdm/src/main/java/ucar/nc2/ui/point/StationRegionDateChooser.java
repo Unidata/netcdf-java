@@ -557,18 +557,4 @@ public class StationRegionDateChooser extends NPController {
     }
   }
 
-  public static void main(String[] args) {
-    StationRegionDateChooser slm = new StationRegionDateChooser();
-    slm.setBounds(new Rectangle(10, 10, 400, 200));
-
-    JFrame frame = new JFrame("StationRegionChooser Test");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        System.exit(0);
-      }
-    });
-    frame.getContentPane().add(slm);
-    frame.pack();
-    frame.setVisible(true);
-  }
 }

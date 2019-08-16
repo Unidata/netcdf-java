@@ -412,11 +412,4 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     if (s == null) return "";
     return StringUtil2.replace(s, badDash, "-");
   }
-
-  public static void main(String arg[]) throws IOException {
-    CommonCodeTable ct = readCommonCodes(Table.C1);
-    for (TableEntry entry : ct.entries)
-      System.out.printf("%s%n", entry);
-    System.out.printf("%n%s%n", ct.state());
-  }
 }

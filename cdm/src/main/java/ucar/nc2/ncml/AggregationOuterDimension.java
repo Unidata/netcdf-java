@@ -1144,7 +1144,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
   }
 
-
   @Override
   public void getDetailInfo(Formatter f) {
     super.getDetailInfo(f);
@@ -1181,20 +1180,4 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
 
   }
-
-  public static void main(String args[]) {
-    String format = "%04d-%02d-%02dT%02d:%02d:%02.0f";
-    Formatter f = new Formatter();
-    Object[] vals = new Object[6];
-    vals[0] = 2002;
-    vals[1] = 10;
-    vals[2] = 20;
-    vals[3] = 23;
-    vals[4] = 0;
-    vals[5] = 2.1f;
-    f.format(format, vals);
-    System.out.println(f);
-  }
-
-
 }

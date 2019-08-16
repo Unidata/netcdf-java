@@ -218,14 +218,4 @@ public class Chart extends JPanel {
   public String getSymbol() {
     return this.stockSymbol;
   }
-
-  public static void main(String[] args) {
-    Chart shc = new Chart("C:/TEMP/table.csv");
-
-    JFrame frame = new JFrame("Stock History Chart for " + shc.getSymbol());
-    frame.getContentPane().add(shc, BorderLayout.CENTER);
-    frame.setSize(640, 480);
-    frame.setVisible(true);
-    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-  }
 }
