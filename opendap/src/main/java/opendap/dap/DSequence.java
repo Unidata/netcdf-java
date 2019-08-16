@@ -494,15 +494,14 @@ public class DSequence extends DConstructor implements ClientIO {
      *                           (which is trapped here).
      * @throws DataReadException if an unexpected value was read.
      */
-    private void oldDeserialize(DataInputStream source, ServerVersion sv,
-                                StatusUI statusUI)
-            throws IOException, DataReadException {
-        try {
-            for (; ;) {
+    private void oldDeserialize(DataInputStream source, ServerVersion sv, StatusUI statusUI)
+        throws DataReadException {
+        while (true) {
+            try {
                 deserializeSingle(source, sv, statusUI);
+            } catch (IOException ioe) {
+                break;
             }
-        }
-        catch (EOFException e) {
         }
     }
 

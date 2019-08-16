@@ -226,9 +226,9 @@ abstract public class HTTPUtil
                 throw new IOException("Malformed base: " + base);
             File f = File.createTempFile(prefix, suffix, tmpdir);
             // Fill with the content
-            FileOutputStream fw = new FileOutputStream(f);
-            fw.write(content.getBytes(UTF8));
-            fw.close();
+            try (FileOutputStream fw = new FileOutputStream(f)) {
+                fw.write(content.getBytes(UTF8));
+            }
             return f;
         } catch (IOException e) {
             throw new IOException("Cannot create temp file", e);
@@ -582,9 +582,9 @@ abstract public class HTTPUtil
     writebinaryfile(byte[] content, File dst)
             throws IOException
     {
-        FileOutputStream fos = new FileOutputStream(dst);
-        fos.write(content);
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(dst)) {
+            fos.write(content);
+        }
     }
 
 }

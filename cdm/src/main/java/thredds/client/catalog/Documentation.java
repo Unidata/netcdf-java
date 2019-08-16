@@ -96,19 +96,19 @@ public class Documentation {
     if (uri == null) return "";
 
     URL url = uri.toURL();
-    InputStream is = url.openStream();
-    ByteArrayOutputStream os = new ByteArrayOutputStream(is.available());
+    try (InputStream is = url.openStream();
+      ByteArrayOutputStream os = new ByteArrayOutputStream(is.available())) {
 
-    // copy to string
-    byte[] buffer = new byte[1024];
-    while (true) {
-      int bytesRead = is.read(buffer);
-      if (bytesRead == -1) break;
-      os.write(buffer, 0, bytesRead);
+      // copy to string
+      byte[] buffer = new byte[1024];
+      while (true) {
+        int bytesRead = is.read(buffer);
+        if (bytesRead == -1)
+          break;
+        os.write(buffer, 0, bytesRead);
+      }
+      return new String(os.toByteArray(), CDM.utf8Charset);
     }
-    is.close();
-
-    return new String(os.toByteArray(), CDM.utf8Charset);
   }
 
   @Override
