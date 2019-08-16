@@ -658,12 +658,12 @@ public class FileCache implements FileCacheIF {
 
       cleanups.incrementAndGet();
 
-      // add unlocked files to the all list
-      List<CacheElement.CacheFile> allFiles = new ArrayList<>(size + 10);
+      // get list of unlocked files
+      ArrayList<CacheFileSorter> unlockedFiles = new ArrayList<>();
       for (CacheElement.CacheFile file : files.values()) {
-        if (!file.isLocked.get()) allFiles.add(file);
+        if (!file.isLocked.get()) unlockedFiles.add(new CacheFileSorter(file));
       }
-      Collections.sort(allFiles); // sort so oldest are on top
+      Collections.sort(unlockedFiles); // sort so oldest are on top
 
       // take oldest ones and put on delete list
       int need2delete = size - minElements;
@@ -671,9 +671,9 @@ public class FileCache implements FileCacheIF {
       List<CacheElement.CacheFile> deleteList = new ArrayList<>(need2delete);
 
       int count = 0;
-      Iterator<CacheElement.CacheFile> iter = allFiles.iterator();
+      Iterator<CacheFileSorter> iter = unlockedFiles.iterator();
       while (iter.hasNext() && (count < need2delete)) {
-        CacheElement.CacheFile file = iter.next();
+        CacheElement.CacheFile file = iter.next().cacheFile;
         if (file.isLocked.compareAndSet(false, true)) { // lock it so it isnt used anywhere else
           file.remove(); // remove from the containing element
           deleteList.add(file);
@@ -797,6 +797,23 @@ public class FileCache implements FileCacheIF {
       public int compareTo(CacheFile o) {
         return Long.compare(lastAccessed, o.lastAccessed);
       }
+    }
+  }
+
+  // We need to freeze the lastAccessed value for the cleanup sorting.
+  // If it changes, we get "Comparison method violates its general contract".
+  private class CacheFileSorter implements Comparable<CacheFileSorter> {
+    private final CacheElement.CacheFile cacheFile;
+    private final long lastAccessed;
+
+    CacheFileSorter(CacheElement.CacheFile cacheFile) {
+      this.cacheFile = cacheFile;
+      this.lastAccessed = cacheFile.lastAccessed;
+    }
+
+    @Override
+    public int compareTo(CacheFileSorter o) {
+      return Long.compare(lastAccessed, o.lastAccessed);
     }
   }
 
