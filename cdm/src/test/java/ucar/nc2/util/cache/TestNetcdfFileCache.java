@@ -22,18 +22,15 @@ import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.*;
 
-/**
- * @author caron
- * @since May 31, 2008
- */
+/** Test FileCache. */
 public class TestNetcdfFileCache {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static FileCache cache;
-  static FileFactory factory = new MyFileFactory();
+  private static FileCache cache;
+  private static FileFactory factory = new MyFileFactory();
 
   @BeforeClass
-  static public void setUp() throws java.lang.Exception {
+  static public void setUp() {
     cache = new FileCache(5, 100, 60 * 60);
   }
 
@@ -43,9 +40,9 @@ public class TestNetcdfFileCache {
     }
   }
 
-  int count = 0;
+  private int count = 0;
 
-  void loadFilesIntoCache(File dir, FileCache cache) {
+  private void loadFilesIntoCache(File dir, FileCache cache) {
     File[] files = dir.listFiles();
     if ( files == null) return;
 
