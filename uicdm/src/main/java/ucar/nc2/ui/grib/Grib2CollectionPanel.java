@@ -559,24 +559,30 @@ public class Grib2CollectionPanel extends JPanel {
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
 
     // Create a reasonable name for the index
-    MCollection dcm = getCollection(spec, errlog);
-    String name = dcm.getCollectionName();
-    int pos = name.lastIndexOf('/');
-    if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + GribCdmIndex.NCX_SUFFIX);
+    try (MCollection dcm = getCollection(spec, errlog)) {
+      String name = dcm.getCollectionName();
+      int pos = name.lastIndexOf('/');
+      if (pos < 0)
+        pos = name.lastIndexOf('\\');
+      if (pos > 0)
+        name = name.substring(pos + 1);
+      File def = new File(dcm.getRoot(), name + GribCdmIndex.NCX_SUFFIX);
 
-    String filename = fileChooser.chooseFilename(def);
-    if (filename == null) return false;
-    if (!filename.endsWith(GribCdmIndex.NCX_SUFFIX))
-      filename += GribCdmIndex.NCX_SUFFIX;
-    File idxFile = new File(filename);
+      String filename = fileChooser.chooseFilename(def);
+      if (filename == null)
+        return false;
+      if (!filename.endsWith(GribCdmIndex.NCX_SUFFIX))
+        filename += GribCdmIndex.NCX_SUFFIX;
+      File idxFile = new File(filename);
 
-    FeatureCollectionConfig config = new FeatureCollectionConfig(name, idxFile.getPath(), FeatureCollectionType.GRIB2,
-            this.spec, null, null, null, null, null);
+      FeatureCollectionConfig config = new FeatureCollectionConfig(name, idxFile.getPath(),
+          FeatureCollectionType.GRIB2,
+          this.spec, null, null, null, null, null);
 
-    try (GribCollectionImmutable collection = GribCdmIndex.openGribCollection(config, CollectionUpdateType.always, logger)) {
-      return collection != null;
+      try (GribCollectionImmutable collection = GribCdmIndex
+          .openGribCollection(config, CollectionUpdateType.always, logger)) {
+        return collection != null;
+      }
     }
   }
 

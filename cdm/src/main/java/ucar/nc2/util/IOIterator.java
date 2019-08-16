@@ -4,16 +4,17 @@
  */
 package ucar.nc2.util;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
 /**
- * An Iterator that can throw an IOException
+ * A Closeable Iterator that can throw an IOException
  *
  * @author caron
  * @since 9/23/2015.
  */
-public interface IOIterator<T> {
+public interface IOIterator<T> extends Closeable {
 
   /**
    * Returns {@code true} if the iteration has more elements.

@@ -439,15 +439,16 @@ abstract public class UnitTestCommon
             throws IOException
     {
         StringBuilder buf = new StringBuilder();
-        File xx = new File(filename);
-        FileReader file = new FileReader(filename);
-        BufferedReader rdr = new BufferedReader(file);
-        String line;
-        while((line = rdr.readLine()) != null) {
-            if(line.startsWith("#")) continue;
-            buf.append(line + "\n");
+        try (FileReader file = new FileReader(filename)) {
+            BufferedReader rdr = new BufferedReader(file);
+            String line;
+            while ((line = rdr.readLine()) != null) {
+                if (line.startsWith("#"))
+                    continue;
+                buf.append(line + "\n");
+            }
+            return buf.toString();
         }
-        return buf.toString();
     }
 
     static public byte[]

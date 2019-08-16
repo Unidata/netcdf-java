@@ -75,8 +75,8 @@ public class TestCoverageMisc {
       Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
 
       // CFGridCoverageWriter2 adds another (dependent) time coordinate, so we need to test this case
-      ucar.nc2.util.Optional<Long> opt = CFGridCoverageWriter2.writeOrTestSize(gds, Lists.newArrayList("Temperature_isobaric"),
-              new SubsetParams(), false, true, null);
+      ucar.nc2.util.Optional<Long> opt = CFGridCoverageWriter2.getSizeOfOutput(gds, Lists.newArrayList("Temperature_isobaric"),
+              new SubsetParams(), false);
       Assert.assertTrue(opt.isPresent());
 
       long size = opt.get();

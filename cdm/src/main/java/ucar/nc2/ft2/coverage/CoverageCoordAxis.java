@@ -345,8 +345,8 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   private boolean valuesLoaded;
 
   protected void loadValuesIfNeeded() {
-    if (isRegular() || valuesLoaded) return;
     synchronized (this) {
+      if (isRegular() || valuesLoaded) return;
       if (values == null && reader != null)
         try {
           values = reader.readCoordValues(this);

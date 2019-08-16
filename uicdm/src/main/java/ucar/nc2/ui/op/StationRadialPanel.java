@@ -100,9 +100,11 @@ public class StationRadialPanel extends OpPanel {
                                                 FeatureType.STATION_RADIAL, location, null);
             if (result.fatalError) {
                 JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + result.errLog.toString());
+                result.close();
                 return false;
             }
 
+            // COVERITY[RESOURCE_LEAK]
             setStationRadialDataset(result.featureDataset);
             return true;
         }
