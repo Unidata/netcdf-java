@@ -103,9 +103,9 @@ public class N3channelWriter extends N3streamWriter {
 
   public static void writeFromFile(NetcdfFile fileIn, String fileOutName) throws IOException, InvalidRangeException {
 
-    try (FileOutputStream stream = new FileOutputStream(fileOutName)) {
+    try (FileOutputStream stream = new FileOutputStream(fileOutName);
       WritableByteChannel channel = stream.getChannel();
-      DataOutputStream dout = new DataOutputStream(Channels.newOutputStream(channel));
+      DataOutputStream dout = new DataOutputStream(Channels.newOutputStream(channel))) {
 
       N3channelWriter writer = new N3channelWriter(fileIn);
       int numrec = fileIn.getUnlimitedDimension() == null ? 0 : fileIn.getUnlimitedDimension().getLength();
@@ -127,13 +127,15 @@ public class N3channelWriter extends N3streamWriter {
    * @throws InvalidRangeException range error
    */
   public static void writeToChannel(NetcdfFile ncfile, WritableByteChannel wbc) throws IOException, InvalidRangeException {
-    DataOutputStream stream = new DataOutputStream(new BufferedOutputStream( Channels.newOutputStream(wbc), 8000));
-    //DataOutputStream stream = new DataOutputStream(Channels.newOutputStream(wbc));  // buffering seems to improve by 5%
-    N3channelWriter writer = new N3channelWriter(ncfile);
-    int numrec = ncfile.getUnlimitedDimension() == null ? 0 : ncfile.getUnlimitedDimension().getLength();    
-    writer.writeHeader(stream, numrec);
-    stream.flush();
-    writer.writeDataAll(wbc);
+    try (DataOutputStream stream = new DataOutputStream(new BufferedOutputStream( Channels.newOutputStream(wbc), 8000))) {
+      //DataOutputStream stream = new DataOutputStream(Channels.newOutputStream(wbc));  // buffering seems to improve by 5%
+      N3channelWriter writer = new N3channelWriter(ncfile);
+      int numrec =
+          ncfile.getUnlimitedDimension() == null ? 0 : ncfile.getUnlimitedDimension().getLength();
+      writer.writeHeader(stream, numrec);
+      stream.flush();
+      writer.writeDataAll(wbc);
+    }
   }
 
 

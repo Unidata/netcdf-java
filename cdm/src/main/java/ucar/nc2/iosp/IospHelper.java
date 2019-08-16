@@ -381,80 +381,81 @@ public class IospHelper {
       return NcStream.encodeArrayStructure((ArrayStructure) data, null, os);
     } */
 
-    DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel));
-    IndexIterator iterA = data.getIndexIterator();
+    try (DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel))) {
+      IndexIterator iterA = data.getIndexIterator();
 
-    if (classType == double.class) {
-      while (iterA.hasNext())
-        outStream.writeDouble(iterA.getDoubleNext());
+      if (classType == double.class) {
+        while (iterA.hasNext())
+          outStream.writeDouble(iterA.getDoubleNext());
 
-    } else if (classType == float.class) {
-      while (iterA.hasNext())
-        outStream.writeFloat(iterA.getFloatNext());
+      } else if (classType == float.class) {
+        while (iterA.hasNext())
+          outStream.writeFloat(iterA.getFloatNext());
 
-    } else if (classType == long.class) {
-      while (iterA.hasNext())
-        outStream.writeLong(iterA.getLongNext());
+      } else if (classType == long.class) {
+        while (iterA.hasNext())
+          outStream.writeLong(iterA.getLongNext());
 
-    } else if (classType == int.class) {
-      while (iterA.hasNext())
-        outStream.writeInt(iterA.getIntNext());
+      } else if (classType == int.class) {
+        while (iterA.hasNext())
+          outStream.writeInt(iterA.getIntNext());
 
-    } else if (classType == short.class) {
-      while (iterA.hasNext())
-        outStream.writeShort(iterA.getShortNext());
+      } else if (classType == short.class) {
+        while (iterA.hasNext())
+          outStream.writeShort(iterA.getShortNext());
 
-    } else if (classType == char.class) {  // LOOK why are we using chars anyway ?
-      byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(DataType.CHAR));
-      outStream.write(pa, 0, pa.length);
+      } else if (classType == char.class) {  // LOOK why are we using chars anyway ?
+        byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(DataType.CHAR));
+        outStream.write(pa, 0, pa.length);
 
-    } else if (classType == byte.class) {
-      while (iterA.hasNext())
-        outStream.writeByte(iterA.getByteNext());
+      } else if (classType == byte.class) {
+        while (iterA.hasNext())
+          outStream.writeByte(iterA.getByteNext());
 
-    } else if (classType == boolean.class) {
-      while (iterA.hasNext())
-        outStream.writeBoolean(iterA.getBooleanNext());
+      } else if (classType == boolean.class) {
+        while (iterA.hasNext())
+          outStream.writeBoolean(iterA.getBooleanNext());
 
-    } else if (classType == String.class) {
-      long size = 0;
-      while (iterA.hasNext()) {
-        String s = (String) iterA.getObjectNext();
-        size += NcStream.writeVInt(outStream, s.length());
-        byte[] b = s.getBytes(CDM.utf8Charset);
-        outStream.write(b);
-        size += b.length;
-      }
-      return size;
+      } else if (classType == String.class) {
+        long size = 0;
+        while (iterA.hasNext()) {
+          String s = (String) iterA.getObjectNext();
+          size += NcStream.writeVInt(outStream, s.length());
+          byte[] b = s.getBytes(CDM.utf8Charset);
+          outStream.write(b);
+          size += b.length;
+        }
+        return size;
 
-    } else if (classType == ByteBuffer.class) { // OPAQUE
-      long size = 0;
-      while (iterA.hasNext()) {
-        ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
-        size += NcStream.writeVInt(outStream, bb.limit());
-        bb.rewind();
-        channel.write(bb);
-        size += bb.limit();
-      }
-      return size;
+      } else if (classType == ByteBuffer.class) { // OPAQUE
+        long size = 0;
+        while (iterA.hasNext()) {
+          ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
+          size += NcStream.writeVInt(outStream, bb.limit());
+          bb.rewind();
+          channel.write(bb);
+          size += bb.limit();
+        }
+        return size;
 
-    } else if (data instanceof ArrayObject) { // vlen
-      long size = 0;
-      //size += NcStream.writeVInt(outStream, (int) data.getSize()); // nelems already written
-      while (iterA.hasNext()) {
-        Array row = (Array) iterA.getObjectNext();
-        ByteBuffer bb = row.getDataAsByteBuffer();
-        byte[] result = bb.array();
-        size += NcStream.writeVInt(outStream, result.length); // size in bytes
-        outStream.write(result);  // array
-        size += result.length;
-      }
-      return size;
+      } else if (data instanceof ArrayObject) { // vlen
+        long size = 0;
+        //size += NcStream.writeVInt(outStream, (int) data.getSize()); // nelems already written
+        while (iterA.hasNext()) {
+          Array row = (Array) iterA.getObjectNext();
+          ByteBuffer bb = row.getDataAsByteBuffer();
+          byte[] result = bb.array();
+          size += NcStream.writeVInt(outStream, result.length); // size in bytes
+          outStream.write(result);  // array
+          size += result.length;
+        }
+        return size;
 
-    } else
-      throw new UnsupportedOperationException("Class type = " + classType.getName());
+      } else
+        throw new UnsupportedOperationException("Class type = " + classType.getName());
 
-    return data.getSizeBytes();
+      return data.getSizeBytes();
+    }
   }
 
   /**
@@ -738,47 +739,48 @@ public class IospHelper {
           throws java.io.IOException {
 
     // LOOK should we buffer ??
-    DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel));
+    try (DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel))) {
 
-    IndexIterator iterA = result.getIndexIterator();
-    Class classType = result.getElementType();
+      IndexIterator iterA = result.getIndexIterator();
+      Class classType = result.getElementType();
 
-    if (classType == double.class) {
-      while (iterA.hasNext())
-        outStream.writeDouble(iterA.getDoubleNext());
+      if (classType == double.class) {
+        while (iterA.hasNext())
+          outStream.writeDouble(iterA.getDoubleNext());
 
-    } else if (classType == float.class) {
-      while (iterA.hasNext())
-        outStream.writeFloat(iterA.getFloatNext());
+      } else if (classType == float.class) {
+        while (iterA.hasNext())
+          outStream.writeFloat(iterA.getFloatNext());
 
-    } else if (classType == long.class) {
-      while (iterA.hasNext())
-        outStream.writeLong(iterA.getLongNext());
+      } else if (classType == long.class) {
+        while (iterA.hasNext())
+          outStream.writeLong(iterA.getLongNext());
 
-    } else if (classType == int.class) {
-      while (iterA.hasNext())
-        outStream.writeInt(iterA.getIntNext());
+      } else if (classType == int.class) {
+        while (iterA.hasNext())
+          outStream.writeInt(iterA.getIntNext());
 
-    } else if (classType == short.class) {
-      while (iterA.hasNext())
-        outStream.writeShort(iterA.getShortNext());
+      } else if (classType == short.class) {
+        while (iterA.hasNext())
+          outStream.writeShort(iterA.getShortNext());
 
-    } else if (classType == char.class) {
-      while (iterA.hasNext())
-        outStream.writeChar(iterA.getCharNext());
+      } else if (classType == char.class) {
+        while (iterA.hasNext())
+          outStream.writeChar(iterA.getCharNext());
 
-    } else if (classType == byte.class) {
-      while (iterA.hasNext())
-        outStream.writeByte(iterA.getByteNext());
+      } else if (classType == byte.class) {
+        while (iterA.hasNext())
+          outStream.writeByte(iterA.getByteNext());
 
-    } else if (classType == boolean.class) {
-      while (iterA.hasNext())
-        outStream.writeBoolean(iterA.getBooleanNext());
+      } else if (classType == boolean.class) {
+        while (iterA.hasNext())
+          outStream.writeBoolean(iterA.getBooleanNext());
 
-    } else
-      throw new UnsupportedOperationException("Class type = " + classType.getName());
+      } else
+        throw new UnsupportedOperationException("Class type = " + classType.getName());
 
-    return 0;
+      return 0;
+    }
   }
 
   // section reading for member data
