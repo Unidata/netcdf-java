@@ -41,9 +41,9 @@ class CFGridCoverageWriter2Spec extends Specification {
                 1 * DataType.INT.size                // PolarStereographic_Projection
         
         and: "calculate actual size excluding 2D lat/lon vars"
-        long actualSizeNoLatLon = CFGridCoverageWriter2.writeOrTestSize(
+        long actualSizeNoLatLon = CFGridCoverageWriter2.getSizeOfOutput(
                 // No subset; don't addLatLon; calc file size but don't write file.
-                covColl, null, null, false, true, null).get()
+                covColl, null, null, false).get()
         
         then: "expected equals actual"
         expectedSizeNoLatLon == actualSizeNoLatLon
@@ -54,9 +54,9 @@ class CFGridCoverageWriter2Spec extends Specification {
                 numY * numX * DataType.DOUBLE.size            // lon
     
         and: "calculate actual size excluding 2D lat/lon vars"
-        long actualSizeWithLatLon = CFGridCoverageWriter2.writeOrTestSize(
+        long actualSizeWithLatLon = CFGridCoverageWriter2.getSizeOfOutput(
                 // No subset; do addLatLon; calc file size but don't write file.
-                covColl, null, null, true, true, null).get()
+                covColl, null, null, true).get()
     
         then: "expected equals actual"
         expectedSizeWithLatLon == actualSizeWithLatLon
@@ -83,8 +83,8 @@ class CFGridCoverageWriter2Spec extends Specification {
         
         and: "write output file"
         // No subset; do addLatLon; write to outputFile.
-        CFGridCoverageWriter2.writeOrTestSize(covColl, null, null, true, false, writer)
-        
+        CFGridCoverageWriter2.write(covColl, null, null, true, writer)
+
         and: "open output file"
         NetcdfFile ncFile = NetcdfFile.open(outputFile.absolutePath)
         

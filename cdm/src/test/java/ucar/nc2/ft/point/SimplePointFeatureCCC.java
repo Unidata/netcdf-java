@@ -1,6 +1,5 @@
 package ucar.nc2.ft.point;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,18 +27,23 @@ public class SimplePointFeatureCCC extends PointFeatureCCCImpl {
     }
 
     @Override
-    public IOIterator<PointFeatureCC> getCollectionIterator() throws IOException {
+    public IOIterator<PointFeatureCC> getCollectionIterator() {
         return new IOIterator<PointFeatureCC>() {
             private final Iterator<PointFeatureCC> pfccIter = pointFeatCCs.iterator();
 
             @Override
-            public boolean hasNext() throws IOException {
+            public boolean hasNext() {
                 return pfccIter.hasNext();
             }
 
             @Override
-            public PointFeatureCC next() throws IOException {
+            public PointFeatureCC next() {
                 return pfccIter.next();
+            }
+
+            @Override
+            public void close() {
+                // no-op
             }
         };
     }

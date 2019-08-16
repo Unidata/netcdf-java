@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft2.coverage.writer;
 
+import com.google.common.base.Preconditions;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -37,21 +38,30 @@ public class CFGridCoverageWriter2 {
 
   /**
    * Write a netcdf/CF file from a CoverageDataset
-
    * @param gdsOrg            the CoverageDataset
    * @param gridNames         the list of coverage names to be written, or null for all
    * @param subset            defines the requested subset, or null to include everything in gdsOrg
    * @param tryToAddLatLon2D  add 2D lat/lon coordinates, if possible
-   * @param testSizeOnly      dont write, just return expected size
-   * @param writer            this does the actual writing, may be null if testSizeOnly=true
+   * @param writer            this does the actual writing, must not be null
    * @return  the total number of bytes that the variables in the output file occupy. This is NOT the same as the
    *          size of the the whole output file, but it's close.
    */
-  public static ucar.nc2.util.Optional<Long> writeOrTestSize(CoverageCollection gdsOrg, List<String> gridNames,
-          SubsetParams subset, boolean tryToAddLatLon2D, boolean testSizeOnly, NetcdfFileWriter writer)
+  public static ucar.nc2.util.Optional<Long> write(CoverageCollection gdsOrg, List<String> gridNames,
+          SubsetParams subset, boolean tryToAddLatLon2D, NetcdfFileWriter writer)
           throws IOException, InvalidRangeException {
+    Preconditions.checkNotNull(writer);
     CFGridCoverageWriter2 writer2 = new CFGridCoverageWriter2();
-    return writer2.writeFile(gdsOrg, gridNames, subset, tryToAddLatLon2D, testSizeOnly, writer);
+    return writer2.writeFile(gdsOrg, gridNames, subset, tryToAddLatLon2D, false, writer);
+  }
+
+  public static ucar.nc2.util.Optional<Long> getSizeOfOutput(CoverageCollection gdsOrg, List<String> gridNames,
+      SubsetParams subset, boolean tryToAddLatLon2D)
+      throws IOException, InvalidRangeException {
+    CFGridCoverageWriter2 writer2 = new CFGridCoverageWriter2();
+    // null location. It's ok; we'll never write the file.
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(null, false)) {
+      return writer2.writeFile(gdsOrg, gridNames, subset, tryToAddLatLon2D, true, writer);
+    }
   }
 
   private ucar.nc2.util.Optional<Long> writeFile(CoverageCollection gdsOrg, List<String> gridNames,
@@ -69,19 +79,12 @@ public class CFGridCoverageWriter2 {
       subsetParams = new SubsetParams();
     }
 
-    if (writer == null) {
-      if (testSizeOnly) {
-        writer = NetcdfFileWriter.createNew(null, false);  // null location. It's ok; we'll never write the file.
-      } else {
-        throw new NullPointerException("writer must be non-null when testSizeOnly == false.");
-      }
-    }
-
     // We need global attributes, subsetted axes, transforms, and the coverages with attributes and referencing
     // subsetted axes.
     Optional<CoverageCollection> opt = CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
-    if (!opt.isPresent())
+    if (!opt.isPresent()) {
       return ucar.nc2.util.Optional.empty(opt.getErrorMessage());
+    }
 
     CoverageCollection subsetDataset = opt.get();
 

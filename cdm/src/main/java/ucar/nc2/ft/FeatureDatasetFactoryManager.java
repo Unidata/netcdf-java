@@ -229,6 +229,7 @@ public class FeatureDatasetFactoryManager {
         result.close();
         return null;
       }
+      // COVERITY[RESOURCE_LEAK]
       return result.featureDataset;
 
       // special processing for cdmrFeature: datasets

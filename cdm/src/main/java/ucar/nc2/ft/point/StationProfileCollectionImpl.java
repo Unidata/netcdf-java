@@ -181,6 +181,11 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
         throw new RuntimeException(e);
       }
     }
+
+    @Override
+    public void close() throws IOException {
+      pfIterator.close();
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////////////

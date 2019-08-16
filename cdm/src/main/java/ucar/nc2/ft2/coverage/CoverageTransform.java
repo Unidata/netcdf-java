@@ -40,12 +40,12 @@ public class CoverageTransform implements AttributeContainer {
   }
 
   public ProjectionImpl getProjection() {
-    if (projection == null && isHoriz) {
-      synchronized (this) {
+    synchronized (this) {
+      if (projection == null && isHoriz) {
         projection = CoordTransBuilder.makeProjection(this, new Formatter());
       }
+      return projection;
     }
-    return projection;
   }
 
   @Override

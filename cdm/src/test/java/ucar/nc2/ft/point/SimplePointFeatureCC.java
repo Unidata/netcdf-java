@@ -30,6 +30,11 @@ public class SimplePointFeatureCC extends PointFeatureCCImpl {
     @Override
     public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
         return new IOIterator<PointFeatureCollection>() {
+            @Override
+            public void close() {
+                // no op
+            }
+
             private final Iterator<PointFeatureCollection> pfcIter = pointFeatCols.iterator();
 
             @Override

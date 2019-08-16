@@ -94,11 +94,15 @@ public class TestCoverageFileWriterP {
       for (String covName : covList)
         Assert.assertNotNull(covName, gcs.findCoverage(covName));
 
-      NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, tempFile.getPath(), null);
+      try (NetcdfFileWriter writer = NetcdfFileWriter
+          .createNew(version, tempFile.getPath(), null)) {
 
-      Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(gcs, covList, params, false, false, writer);
-      if (!estimatedSizeo.isPresent())
-        throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
+        Optional<Long> estimatedSizeo = CFGridCoverageWriter2
+            .write(gcs, covList, params, false, writer);
+        if (!estimatedSizeo.isPresent())
+          throw new InvalidRangeException(
+              "Request contains no data: " + estimatedSizeo.getErrorMessage());
+      }
     }
 
     // open the new file as a Coverage. Since its a netcdf file, it will open through the DtAdapter (!)

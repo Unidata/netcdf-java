@@ -127,11 +127,13 @@ public class TestCoverageCrossSeamWriteFile {
     SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);
     System.out.printf("params=%s%n", params);
 
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, tempFile.getPath(), null);
-
-    Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(coverageDataset, Lists.newArrayList(covName), params, false, false, writer);
-    if (!estimatedSizeo.isPresent())
-      throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, tempFile.getPath(), null)) {
+      Optional<Long> estimatedSizeo = CFGridCoverageWriter2
+          .write(coverageDataset, Lists.newArrayList(covName), params, false, writer);
+      if (!estimatedSizeo.isPresent())
+        throw new InvalidRangeException(
+            "Request contains no data: " + estimatedSizeo.getErrorMessage());
+    }
 
     // open the new file as a Coverage
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(tempFile.getPath())) {
