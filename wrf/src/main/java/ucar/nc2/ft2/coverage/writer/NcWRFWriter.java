@@ -32,6 +32,10 @@ package ucar.nc2.ft2.coverage.writer;
 
 class NcWRFWriter {
 
+  static final String METGRID_NAME = "Metgrid_Name";
+  static final String METGRID_UNIT = "Metgrid_Unit";
+  static final String METGRID_DESC = "Metgrid_Desc";
+
   private static class CommandLine {
     @Parameter(names = {"-i", "--input"}, description = "Input dataset.", required = true)
     public File inputFile = null;
@@ -132,7 +136,7 @@ class NcWRFWriter {
   }
 
   private static void displayCoverages(ArrayList<Coverage> cov) {
-    System.out.println("\nCoverages found");
+    System.out.println("\nCoverages found:");
     cov.forEach( e ->System.out.println(e));
   }
 
@@ -169,11 +173,66 @@ class NcWRFWriter {
     return entries;
   }
 
-  private static ArrayList<Coverage> createCoverageList(CoverageCollection cv, ArrayList<VtableEntry> vt) {
+  private static boolean hasAllRequired( CoverageCollection cv ){
+
+    boolean requirementsMet = false;
+
+
+    /**
+    Temperature
+    U	and	V	components	of	wind
+    Geopotential Height
+    Relative	Humidity/Specific	Humidity
+• 2D	Data
+    Surface	pressure
+    Mean	sea-level	pressure
+    Skin	temperature/SST
+    2	meter	temperature	and	relative	humidity
+    10	meter	U	and	V	components	of	wind
+    Soil	data	(temperature	and	moisture)	and	soil	height
+*/
+    return requirementsMet;
+  }
+
+  private static ArrayList<Coverage> createCoverageListGrib1(CoverageCollection cv, ArrayList<VtableEntry> vt){
+
+    final String GRIB1_PARAMETER = "Grib1_Parameter";
+    final String GRIB1_LEVEL_TYPE = "Grib1_Level_Type";
+
+    ArrayList<Coverage> theCoverages = new ArrayList<>();
+
+    for (VtableEntry v : vt) {
+
+      int i = Integer.parseInt(v.getParam());
+      int j = Integer.parseInt(v.getLevelType());
+
+      for(Coverage c: cv.getCoverages()) {
+
+        Attribute ab = c.findAttributeIgnoreCase(GRIB1_PARAMETER);
+        if (ab != null) {
+          Number num = ab.getNumericValue();
+          int n = num.intValue();
+          if (n == i) {
+            Attribute level = c.findAttributeIgnoreCase(GRIB1_LEVEL_TYPE);
+            if (level != null) {
+              Number nLevel = level.getNumericValue();
+              int iLevel = nLevel.intValue();
+              if (iLevel == j) {
+                c.getAttributes().add(new Attribute(METGRID_NAME, v.getMetgridName()));
+                c.getAttributes().add(new Attribute(METGRID_UNIT, v.getMetgridUnits()));
+                c.getAttributes().add(new Attribute(METGRID_DESC, v.getMetgridDesc()));
+                theCoverages.add(c);
+              }
+            }
+          }
+        }
+      }
+    }
+    return theCoverages;
+  }
+
+  private static ArrayList<Coverage> createCoverageListGrib2(CoverageCollection cv, ArrayList<VtableEntry> vt) {
     final String GRIB_VAR_ID =  "Grib_Variable_Id";
-    final String METGRID_NAME = "Metgrid_Name";
-    final String METGRID_UNIT = "Metgrid_Unit";
-    final String METGRID_DESC = "Metgrid_Desc";
 
     ArrayList<Coverage> theCoverages = new ArrayList<>();
 
@@ -192,6 +251,15 @@ class NcWRFWriter {
   }
 
   public static void main(String[] args) throws Exception {
+
+    final String GRIB_1_FILE_VER = "GRIB-1";
+    final String GRIB_2_FILE_VER = "GRIB-2";
+    final String FILE_TYPE_ATTR = "file_format";
+    final String GRIB1_GENERATING_PROCESS = "Generating_process_or_model";
+    final String ORIGINATOR = "Originating_or_generating_Center";
+    final String GRIB2_GENERATING_PROCESS = "Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre";
+
+    String mapSource;
 
     String progName = NcWRFWriter.class.getName();
 
@@ -222,8 +290,23 @@ class NcWRFWriter {
           displayVtable(table);
           // validate the required vtable items against the coverages in the collection
           //
-          ArrayList<Coverage> theCoverages = createCoverageList(covColl, table);
-          displayCoverages(theCoverages);
+          List<Attribute> atts = covColl.getGlobalAttributes();
+          Attribute fileVersion = covColl.findAttribute(FILE_TYPE_ATTR);
+
+          if( fileVersion.getStringValue().equals(GRIB_1_FILE_VER)){
+
+            String genProc = covColl.findAttribute(GRIB1_GENERATING_PROCESS).getStringValue();
+            mapSource = genProc + "," + covColl.findAttribute(ORIGINATOR).getStringValue();
+            // do the coverages
+            ArrayList<Coverage> theCoverages = createCoverageListGrib1(covColl, table);
+            displayCoverages(theCoverages);
+          }
+          else{
+            String genProc = covColl.findAttribute(GRIB2_GENERATING_PROCESS).getStringValue();
+            mapSource = genProc + "," + covColl.findAttribute(ORIGINATOR).getStringValue();
+            ArrayList<Coverage> theCoverages = createCoverageListGrib2(covColl, table);
+            displayCoverages(theCoverages);
+          }
           // WRFWriter.write(theCoverages, String mapSource, boolean isWindEarthRel, output file);
         }
       }  // if !datasetIn

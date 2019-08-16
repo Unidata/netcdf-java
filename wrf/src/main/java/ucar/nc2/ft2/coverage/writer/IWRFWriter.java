@@ -10,8 +10,8 @@ package ucar.nc2.ft2.coverage.writer;
 
 public interface IWRFWriter {
 
-  java.io.OutputStream write(ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel, File output);
+  java.io.OutputStream write(ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel);
 
-  void write( ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel);
+  void write( ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel, File output);
 
 }

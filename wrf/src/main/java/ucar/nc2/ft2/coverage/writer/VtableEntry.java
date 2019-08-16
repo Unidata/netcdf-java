@@ -75,10 +75,11 @@ class VtableEntry {
   public String getGRIB2Var(){
     return "VAR_" + discipline + '-' + category + '-' + parameter + "_L" + level;
   }
-
+/*********
   public String getGRIB1Var(){
     return "GRIB1" + param + "-" + levelType;
   }
+*********/
 
   public String toString(){
     Formatter fmt = new Formatter();
