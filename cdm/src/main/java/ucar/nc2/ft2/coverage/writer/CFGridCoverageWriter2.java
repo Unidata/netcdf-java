@@ -59,9 +59,9 @@ public class CFGridCoverageWriter2 {
       throws IOException, InvalidRangeException {
     CFGridCoverageWriter2 writer2 = new CFGridCoverageWriter2();
     // null location. It's ok; we'll never write the file.
-    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(null, false)) {
-      return writer2.writeFile(gdsOrg, gridNames, subset, tryToAddLatLon2D, true, writer);
-    }
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(null, false);
+    // COVERITY[RESOURCE_LEAK]
+    return writer2.writeFile(gdsOrg, gridNames, subset, tryToAddLatLon2D, true, writer);
   }
 
   private ucar.nc2.util.Optional<Long> writeFile(CoverageCollection gdsOrg, List<String> gridNames,
