@@ -1879,7 +1879,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         for (int i = 0; i < size; i++) {
           long addr = getNativeAddr(pos, bb);
           Pointer p = new Pointer(addr);
-          result[i] = p.getString(0, false);
+          result[i] = p.getString(0, CDM.UTF8);
         }
         int index = asbb.addObjectToHeap(result);
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap

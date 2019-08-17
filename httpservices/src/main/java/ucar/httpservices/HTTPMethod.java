@@ -14,7 +14,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
@@ -375,18 +374,17 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             HttpClientBuilder cb = HttpClients.custom();
             configClient(cb, this.settings);
             session.setAuthenticationAndProxy(cb);
-            try (CloseableHttpClient httpclient = cb.build()) {
-                if (MOCKEXECUTOR != null) {
-                    URI uri = this.lastrequest.getURI();
-                    this.lastresponse = MOCKEXECUTOR.execute(this.lastrequest);
-                } else {
-                    this.lastresponse = httpclient
-                        .execute(targethost, this.lastrequest, session.getContext());
-                }
-                if (this.lastresponse == null)
-                    throw new HTTPException("HTTPMethod.execute: Response was null");
-                return this.lastresponse;
+            HttpClient httpclient = cb.build();
+            if(MOCKEXECUTOR != null) {
+                URI uri = this.lastrequest.getURI();
+                this.lastresponse = MOCKEXECUTOR.execute(this.lastrequest);
+            } else {
+                this.lastresponse = httpclient.execute(targethost, this.lastrequest, session.getContext());
             }
+            if(this.lastresponse == null)
+                throw new HTTPException("HTTPMethod.execute: Response was null");
+            return this.lastresponse;
+            // COVERITY[RESOURCE_LEAK]
         } catch (IOException ioe) {
             throw new HTTPException(ioe);
         }
