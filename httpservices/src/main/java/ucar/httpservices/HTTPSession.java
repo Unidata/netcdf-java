@@ -577,6 +577,63 @@ public class HTTPSession implements Closeable
             authcontrols.put(AuthProp.SSLFACTORY, globalsslfactory);
     }
 
+    /*
+    Original code with IGNORECERTS which was removed to prevent security hole.
+    jlcaron 8/15/2019
+
+    static void
+    buildsslfactory(AuthControls authcontrols, KeyStore truststore, KeyStore keystore, String keypassword)
+    {
+        SSLConnectionSocketFactory globalsslfactory;
+        try {
+            // set up the context
+            SSLContext scxt = null;
+            if(IGNORECERTS) {
+                scxt = SSLContext.getInstance("TLS");
+                TrustManager[] trust_mgr = new TrustManager[]{
+                        new X509TrustManager()
+                        {
+                            public X509Certificate[] getAcceptedIssuers()
+                            {
+                                return null;
+                            }
+
+                            public void checkClientTrusted(X509Certificate[] certs, String t)
+                            {
+                            }
+
+                            public void checkServerTrusted(X509Certificate[] certs, String t)
+                            {
+                            }
+                        }};
+                scxt.init(null,               // key manager
+                        trust_mgr,          // trust manager
+                        new SecureRandom()); // random number generator
+            } else {
+                SSLContextBuilder sslbuilder = SSLContexts.custom();
+                TrustStrategy strat = new LooseTrustStrategy();
+                if(truststore != null)
+                    sslbuilder.loadTrustMaterial(truststore, strat);
+                else
+                    sslbuilder.loadTrustMaterial(strat);
+                sslbuilder.loadTrustMaterial(truststore, new LooseTrustStrategy());
+                if(keystore != null)
+                    sslbuilder.loadKeyMaterial(keystore, keypassword.toCharArray());
+                scxt = sslbuilder.build();
+            }
+            globalsslfactory = new SSLConnectionSocketFactory(scxt, new NoopHostnameVerifier());
+        } catch (KeyStoreException
+                | NoSuchAlgorithmException
+                | KeyManagementException
+                | UnrecoverableEntryException e) {
+            log.error("Failed to set key/trust store(s): " + e.getMessage());
+            globalsslfactory = null;
+        }
+        if(globalsslfactory != null)
+            authcontrols.put(AuthProp.SSLFACTORY, globalsslfactory);
+    }
+     */
+
     static synchronized void
     processDFlags()
     {
