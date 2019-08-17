@@ -6,29 +6,35 @@ package ucar.nc2.iosp.noaa;
 public final class GhcnmProto {
   private GhcnmProto() {}
   public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistryLite registry) {
+  }
+
+  public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions(
+        (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   public interface StationIndexOrBuilder extends
       // @@protoc_insertion_point(interface_extends:StationIndex)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional uint64 stnid = 1;</code>
+     * <code>uint64 stnid = 1;</code>
      */
     long getStnid();
 
     /**
-     * <code>optional uint64 stnPos = 2;</code>
+     * <code>uint64 stnPos = 2;</code>
      */
     long getStnPos();
 
     /**
-     * <code>optional uint64 dataPos = 3;</code>
+     * <code>uint64 dataPos = 3;</code>
      */
     long getDataPos();
 
     /**
-     * <code>optional uint32 dataCount = 4;</code>
+     * <code>uint32 dataCount = 4;</code>
      */
     int getDataCount();
   }
@@ -36,30 +42,39 @@ public final class GhcnmProto {
    * Protobuf type {@code StationIndex}
    */
   public  static final class StationIndex extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:StationIndex)
       StationIndexOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use StationIndex.newBuilder() to construct.
-    private StationIndex(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private StationIndex(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private StationIndex() {
-      stnid_ = 0L;
-      stnPos_ = 0L;
-      dataPos_ = 0L;
-      dataCount_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new StationIndex();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private StationIndex(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -68,12 +83,6 @@ public final class GhcnmProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 8: {
 
               stnid_ = input.readUInt64();
@@ -94,15 +103,22 @@ public final class GhcnmProto {
               dataCount_ = input.readUInt32();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -111,7 +127,8 @@ public final class GhcnmProto {
       return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndex_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndex_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -121,7 +138,7 @@ public final class GhcnmProto {
     public static final int STNID_FIELD_NUMBER = 1;
     private long stnid_;
     /**
-     * <code>optional uint64 stnid = 1;</code>
+     * <code>uint64 stnid = 1;</code>
      */
     public long getStnid() {
       return stnid_;
@@ -130,7 +147,7 @@ public final class GhcnmProto {
     public static final int STNPOS_FIELD_NUMBER = 2;
     private long stnPos_;
     /**
-     * <code>optional uint64 stnPos = 2;</code>
+     * <code>uint64 stnPos = 2;</code>
      */
     public long getStnPos() {
       return stnPos_;
@@ -139,7 +156,7 @@ public final class GhcnmProto {
     public static final int DATAPOS_FIELD_NUMBER = 3;
     private long dataPos_;
     /**
-     * <code>optional uint64 dataPos = 3;</code>
+     * <code>uint64 dataPos = 3;</code>
      */
     public long getDataPos() {
       return dataPos_;
@@ -148,13 +165,14 @@ public final class GhcnmProto {
     public static final int DATACOUNT_FIELD_NUMBER = 4;
     private int dataCount_;
     /**
-     * <code>optional uint32 dataCount = 4;</code>
+     * <code>uint32 dataCount = 4;</code>
      */
     public int getDataCount() {
       return dataCount_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -164,6 +182,7 @@ public final class GhcnmProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (stnid_ != 0L) {
@@ -178,8 +197,10 @@ public final class GhcnmProto {
       if (dataCount_ != 0) {
         output.writeUInt32(4, dataCount_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -201,11 +222,67 @@ public final class GhcnmProto {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(4, dataCount_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.iosp.noaa.GhcnmProto.StationIndex)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.iosp.noaa.GhcnmProto.StationIndex other = (ucar.nc2.iosp.noaa.GhcnmProto.StationIndex) obj;
+
+      if (getStnid()
+          != other.getStnid()) return false;
+      if (getStnPos()
+          != other.getStnPos()) return false;
+      if (getDataPos()
+          != other.getDataPos()) return false;
+      if (getDataCount()
+          != other.getDataCount()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + STNID_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getStnid());
+      hash = (37 * hash) + STNPOS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getStnPos());
+      hash = (37 * hash) + DATAPOS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getDataPos());
+      hash = (37 * hash) + DATACOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + getDataCount();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -229,36 +306,43 @@ public final class GhcnmProto {
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndex parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -266,6 +350,7 @@ public final class GhcnmProto {
     public static Builder newBuilder(ucar.nc2.iosp.noaa.GhcnmProto.StationIndex prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -273,7 +358,7 @@ public final class GhcnmProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -281,7 +366,7 @@ public final class GhcnmProto {
      * Protobuf type {@code StationIndex}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:StationIndex)
         ucar.nc2.iosp.noaa.GhcnmProto.StationIndexOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -289,7 +374,8 @@ public final class GhcnmProto {
         return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndex_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndex_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -302,14 +388,16 @@ public final class GhcnmProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         stnid_ = 0L;
@@ -323,15 +411,18 @@ public final class GhcnmProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndex_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.iosp.noaa.GhcnmProto.StationIndex getDefaultInstanceForType() {
         return ucar.nc2.iosp.noaa.GhcnmProto.StationIndex.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.iosp.noaa.GhcnmProto.StationIndex build() {
         ucar.nc2.iosp.noaa.GhcnmProto.StationIndex result = buildPartial();
         if (!result.isInitialized()) {
@@ -340,6 +431,7 @@ public final class GhcnmProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.iosp.noaa.GhcnmProto.StationIndex buildPartial() {
         ucar.nc2.iosp.noaa.GhcnmProto.StationIndex result = new ucar.nc2.iosp.noaa.GhcnmProto.StationIndex(this);
         result.stnid_ = stnid_;
@@ -350,6 +442,39 @@ public final class GhcnmProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.iosp.noaa.GhcnmProto.StationIndex) {
           return mergeFrom((ucar.nc2.iosp.noaa.GhcnmProto.StationIndex)other);
@@ -373,14 +498,17 @@ public final class GhcnmProto {
         if (other.getDataCount() != 0) {
           setDataCount(other.getDataCount());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -390,7 +518,7 @@ public final class GhcnmProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.iosp.noaa.GhcnmProto.StationIndex) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -401,13 +529,13 @@ public final class GhcnmProto {
 
       private long stnid_ ;
       /**
-       * <code>optional uint64 stnid = 1;</code>
+       * <code>uint64 stnid = 1;</code>
        */
       public long getStnid() {
         return stnid_;
       }
       /**
-       * <code>optional uint64 stnid = 1;</code>
+       * <code>uint64 stnid = 1;</code>
        */
       public Builder setStnid(long value) {
         
@@ -416,7 +544,7 @@ public final class GhcnmProto {
         return this;
       }
       /**
-       * <code>optional uint64 stnid = 1;</code>
+       * <code>uint64 stnid = 1;</code>
        */
       public Builder clearStnid() {
         
@@ -427,13 +555,13 @@ public final class GhcnmProto {
 
       private long stnPos_ ;
       /**
-       * <code>optional uint64 stnPos = 2;</code>
+       * <code>uint64 stnPos = 2;</code>
        */
       public long getStnPos() {
         return stnPos_;
       }
       /**
-       * <code>optional uint64 stnPos = 2;</code>
+       * <code>uint64 stnPos = 2;</code>
        */
       public Builder setStnPos(long value) {
         
@@ -442,7 +570,7 @@ public final class GhcnmProto {
         return this;
       }
       /**
-       * <code>optional uint64 stnPos = 2;</code>
+       * <code>uint64 stnPos = 2;</code>
        */
       public Builder clearStnPos() {
         
@@ -453,13 +581,13 @@ public final class GhcnmProto {
 
       private long dataPos_ ;
       /**
-       * <code>optional uint64 dataPos = 3;</code>
+       * <code>uint64 dataPos = 3;</code>
        */
       public long getDataPos() {
         return dataPos_;
       }
       /**
-       * <code>optional uint64 dataPos = 3;</code>
+       * <code>uint64 dataPos = 3;</code>
        */
       public Builder setDataPos(long value) {
         
@@ -468,7 +596,7 @@ public final class GhcnmProto {
         return this;
       }
       /**
-       * <code>optional uint64 dataPos = 3;</code>
+       * <code>uint64 dataPos = 3;</code>
        */
       public Builder clearDataPos() {
         
@@ -479,13 +607,13 @@ public final class GhcnmProto {
 
       private int dataCount_ ;
       /**
-       * <code>optional uint32 dataCount = 4;</code>
+       * <code>uint32 dataCount = 4;</code>
        */
       public int getDataCount() {
         return dataCount_;
       }
       /**
-       * <code>optional uint32 dataCount = 4;</code>
+       * <code>uint32 dataCount = 4;</code>
        */
       public Builder setDataCount(int value) {
         
@@ -494,7 +622,7 @@ public final class GhcnmProto {
         return this;
       }
       /**
-       * <code>optional uint32 dataCount = 4;</code>
+       * <code>uint32 dataCount = 4;</code>
        */
       public Builder clearDataCount() {
         
@@ -502,14 +630,16 @@ public final class GhcnmProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -528,20 +658,12 @@ public final class GhcnmProto {
 
     private static final com.google.protobuf.Parser<StationIndex>
         PARSER = new com.google.protobuf.AbstractParser<StationIndex>() {
+      @java.lang.Override
       public StationIndex parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new StationIndex(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new StationIndex(input, extensionRegistry);
       }
     };
 
@@ -554,6 +676,7 @@ public final class GhcnmProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.iosp.noaa.GhcnmProto.StationIndex getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -592,11 +715,12 @@ public final class GhcnmProto {
    * Protobuf type {@code StationIndexList}
    */
   public  static final class StationIndexList extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:StationIndexList)
       StationIndexListOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use StationIndexList.newBuilder() to construct.
-    private StationIndexList(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private StationIndexList(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private StationIndexList() {
@@ -604,15 +728,28 @@ public final class GhcnmProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new StationIndexList();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private StationIndexList(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -621,32 +758,34 @@ public final class GhcnmProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 list_ = new java.util.ArrayList<ucar.nc2.iosp.noaa.GhcnmProto.StationIndex>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              list_.add(input.readMessage(ucar.nc2.iosp.noaa.GhcnmProto.StationIndex.parser(), extensionRegistry));
+              list_.add(
+                  input.readMessage(ucar.nc2.iosp.noaa.GhcnmProto.StationIndex.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           list_ = java.util.Collections.unmodifiableList(list_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -655,7 +794,8 @@ public final class GhcnmProto {
       return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndexList_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndexList_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -698,6 +838,7 @@ public final class GhcnmProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -707,13 +848,16 @@ public final class GhcnmProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (int i = 0; i < list_.size(); i++) {
         output.writeMessage(1, list_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -723,11 +867,54 @@ public final class GhcnmProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, list_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList other = (ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList) obj;
+
+      if (!getListList()
+          .equals(other.getListList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getListCount() > 0) {
+        hash = (37 * hash) + LIST_FIELD_NUMBER;
+        hash = (53 * hash) + getListList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -751,36 +938,43 @@ public final class GhcnmProto {
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -788,6 +982,7 @@ public final class GhcnmProto {
     public static Builder newBuilder(ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -795,7 +990,7 @@ public final class GhcnmProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -803,7 +998,7 @@ public final class GhcnmProto {
      * Protobuf type {@code StationIndexList}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:StationIndexList)
         ucar.nc2.iosp.noaa.GhcnmProto.StationIndexListOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -811,7 +1006,8 @@ public final class GhcnmProto {
         return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndexList_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndexList_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -824,15 +1020,17 @@ public final class GhcnmProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getListFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         if (listBuilder_ == null) {
@@ -844,15 +1042,18 @@ public final class GhcnmProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.iosp.noaa.GhcnmProto.internal_static_StationIndexList_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList getDefaultInstanceForType() {
         return ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList build() {
         ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList result = buildPartial();
         if (!result.isInitialized()) {
@@ -861,11 +1062,12 @@ public final class GhcnmProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList buildPartial() {
         ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList result = new ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList(this);
         int from_bitField0_ = bitField0_;
         if (listBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             list_ = java.util.Collections.unmodifiableList(list_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
@@ -877,6 +1079,39 @@ public final class GhcnmProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList) {
           return mergeFrom((ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList)other);
@@ -907,21 +1142,24 @@ public final class GhcnmProto {
               list_ = other.list_;
               bitField0_ = (bitField0_ & ~0x00000001);
               listBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getListFieldBuilder() : null;
             } else {
               listBuilder_.addAllMessages(other.list_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -931,7 +1169,7 @@ public final class GhcnmProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -944,13 +1182,13 @@ public final class GhcnmProto {
       private java.util.List<ucar.nc2.iosp.noaa.GhcnmProto.StationIndex> list_ =
         java.util.Collections.emptyList();
       private void ensureListIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           list_ = new java.util.ArrayList<ucar.nc2.iosp.noaa.GhcnmProto.StationIndex>(list_);
           bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.iosp.noaa.GhcnmProto.StationIndex, ucar.nc2.iosp.noaa.GhcnmProto.StationIndex.Builder, ucar.nc2.iosp.noaa.GhcnmProto.StationIndexOrBuilder> listBuilder_;
 
       /**
@@ -1166,28 +1404,30 @@ public final class GhcnmProto {
            getListBuilderList() {
         return getListFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.iosp.noaa.GhcnmProto.StationIndex, ucar.nc2.iosp.noaa.GhcnmProto.StationIndex.Builder, ucar.nc2.iosp.noaa.GhcnmProto.StationIndexOrBuilder> 
           getListFieldBuilder() {
         if (listBuilder_ == null) {
-          listBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          listBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.iosp.noaa.GhcnmProto.StationIndex, ucar.nc2.iosp.noaa.GhcnmProto.StationIndex.Builder, ucar.nc2.iosp.noaa.GhcnmProto.StationIndexOrBuilder>(
                   list_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           list_ = null;
         }
         return listBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -1206,20 +1446,12 @@ public final class GhcnmProto {
 
     private static final com.google.protobuf.Parser<StationIndexList>
         PARSER = new com.google.protobuf.AbstractParser<StationIndexList>() {
+      @java.lang.Override
       public StationIndexList parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new StationIndexList(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new StationIndexList(input, extensionRegistry);
       }
     };
 
@@ -1232,28 +1464,29 @@ public final class GhcnmProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.iosp.noaa.GhcnmProto.StationIndexList getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_StationIndex_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_StationIndex_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_StationIndexList_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_StationIndexList_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
   }
-  private static com.google.protobuf.Descriptors.FileDescriptor
+  private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
     java.lang.String[] descriptorData = {
@@ -1264,28 +1497,20 @@ public final class GhcnmProto {
       "tionIndexB \n\022ucar.nc2.iosp.noaaB\nGhcnmPr" +
       "otob\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_StationIndex_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_StationIndex_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StationIndex_descriptor,
         new java.lang.String[] { "Stnid", "StnPos", "DataPos", "DataCount", });
     internal_static_StationIndexList_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_StationIndexList_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StationIndexList_descriptor,
         new java.lang.String[] { "List", });
   }

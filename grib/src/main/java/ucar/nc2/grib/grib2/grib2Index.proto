@@ -62,5 +62,5 @@ message Grib2Index {
   reserved 4; // version / proto_version, do not use again
 }
 
-//  cd c:/dev/github/thredds/grib/src/main/java
+//  cd netcdf-java/grib/src/main/java
 //  protoc --proto_path=. --java_out=. ucar/nc2/grib/grib2/grib2Index.proto

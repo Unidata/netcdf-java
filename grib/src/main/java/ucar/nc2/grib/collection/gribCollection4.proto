@@ -197,5 +197,5 @@ message FcConfig {
   string userTimeUnit = 19;
 }
 
-//  cd c:/dev/github/thredds/grib/src/main/java
+//  cd netcdf-java/grib/src/main/java
 //  protoc --proto_path=. --java_out=. ucar/nc2/grib/collection/gribCollection4.proto

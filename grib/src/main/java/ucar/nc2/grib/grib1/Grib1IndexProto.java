@@ -44,6 +44,13 @@ public final class Grib1IndexProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Grib1GdsSection();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
@@ -111,7 +118,7 @@ public final class Grib1IndexProto {
      * <code>required bytes gds = 2;</code>
      */
     public boolean hasGds() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>required bytes gds = 2;</code>
@@ -138,7 +145,7 @@ public final class Grib1IndexProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeBytes(2, gds_);
       }
       unknownFields.writeTo(output);
@@ -150,7 +157,7 @@ public final class Grib1IndexProto {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, gds_);
       }
@@ -169,14 +176,13 @@ public final class Grib1IndexProto {
       }
       ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection other = (ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection) obj;
 
-      boolean result = true;
-      result = result && (hasGds() == other.hasGds());
+      if (hasGds() != other.hasGds()) return false;
       if (hasGds()) {
-        result = result && getGds()
-            .equals(other.getGds());
+        if (!getGds()
+            .equals(other.getGds())) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -353,7 +359,7 @@ public final class Grib1IndexProto {
         ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection result = new ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((from_bitField0_ & 0x00000001) != 0)) {
           to_bitField0_ |= 0x00000001;
         }
         result.gds_ = gds_;
@@ -364,35 +370,35 @@ public final class Grib1IndexProto {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -447,7 +453,7 @@ public final class Grib1IndexProto {
        * <code>required bytes gds = 2;</code>
        */
       public boolean hasGds() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>required bytes gds = 2;</code>
@@ -635,13 +641,14 @@ public final class Grib1IndexProto {
     }
     private Grib1Record() {
       header_ = com.google.protobuf.ByteString.EMPTY;
-      gribMessageStart_ = 0L;
-      gribMessageLength_ = 0L;
-      gdsIdx_ = 0;
       pds_ = com.google.protobuf.ByteString.EMPTY;
-      bmsPos_ = 0L;
-      dataPos_ = 0L;
-      dataLen_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Grib1Record();
     }
 
     @java.lang.Override
@@ -747,7 +754,7 @@ public final class Grib1IndexProto {
      * <code>required bytes header = 1;</code>
      */
     public boolean hasHeader() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>required bytes header = 1;</code>
@@ -766,7 +773,7 @@ public final class Grib1IndexProto {
      * <code>optional uint64 gribMessageStart = 15;</code>
      */
     public boolean hasGribMessageStart() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <pre>
@@ -785,7 +792,7 @@ public final class Grib1IndexProto {
      * <code>required uint64 gribMessageLength = 2;</code>
      */
     public boolean hasGribMessageLength() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
      * <code>required uint64 gribMessageLength = 2;</code>
@@ -804,7 +811,7 @@ public final class Grib1IndexProto {
      * <code>required uint32 gdsIdx = 6;</code>
      */
     public boolean hasGdsIdx() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000008) != 0);
     }
     /**
      * <pre>
@@ -823,7 +830,7 @@ public final class Grib1IndexProto {
      * <code>required bytes pds = 7;</code>
      */
     public boolean hasPds() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000010) != 0);
     }
     /**
      * <code>required bytes pds = 7;</code>
@@ -838,7 +845,7 @@ public final class Grib1IndexProto {
      * <code>optional uint64 bmsPos = 11;</code>
      */
     public boolean hasBmsPos() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000020) != 0);
     }
     /**
      * <code>optional uint64 bmsPos = 11;</code>
@@ -853,7 +860,7 @@ public final class Grib1IndexProto {
      * <code>required uint64 dataPos = 13;</code>
      */
     public boolean hasDataPos() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000040) != 0);
     }
     /**
      * <code>required uint64 dataPos = 13;</code>
@@ -868,7 +875,7 @@ public final class Grib1IndexProto {
      * <code>required uint32 dataLen = 14;</code>
      */
     public boolean hasDataLen() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000080) != 0);
     }
     /**
      * <code>required uint32 dataLen = 14;</code>
@@ -915,28 +922,28 @@ public final class Grib1IndexProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeBytes(1, header_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((bitField0_ & 0x00000004) != 0)) {
         output.writeUInt64(2, gribMessageLength_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (((bitField0_ & 0x00000008) != 0)) {
         output.writeUInt32(6, gdsIdx_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000010) != 0)) {
         output.writeBytes(7, pds_);
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (((bitField0_ & 0x00000020) != 0)) {
         output.writeUInt64(11, bmsPos_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000040) != 0)) {
         output.writeUInt64(13, dataPos_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000080) != 0)) {
         output.writeUInt32(14, dataLen_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         output.writeUInt64(15, gribMessageStart_);
       }
       unknownFields.writeTo(output);
@@ -948,35 +955,35 @@ public final class Grib1IndexProto {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(1, header_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(2, gribMessageLength_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (((bitField0_ & 0x00000008) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(6, gdsIdx_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000010) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(7, pds_);
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (((bitField0_ & 0x00000020) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(11, bmsPos_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000040) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(13, dataPos_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000080) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(14, dataLen_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(15, gribMessageStart_);
       }
@@ -995,49 +1002,48 @@ public final class Grib1IndexProto {
       }
       ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record other = (ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record) obj;
 
-      boolean result = true;
-      result = result && (hasHeader() == other.hasHeader());
+      if (hasHeader() != other.hasHeader()) return false;
       if (hasHeader()) {
-        result = result && getHeader()
-            .equals(other.getHeader());
+        if (!getHeader()
+            .equals(other.getHeader())) return false;
       }
-      result = result && (hasGribMessageStart() == other.hasGribMessageStart());
+      if (hasGribMessageStart() != other.hasGribMessageStart()) return false;
       if (hasGribMessageStart()) {
-        result = result && (getGribMessageStart()
-            == other.getGribMessageStart());
+        if (getGribMessageStart()
+            != other.getGribMessageStart()) return false;
       }
-      result = result && (hasGribMessageLength() == other.hasGribMessageLength());
+      if (hasGribMessageLength() != other.hasGribMessageLength()) return false;
       if (hasGribMessageLength()) {
-        result = result && (getGribMessageLength()
-            == other.getGribMessageLength());
+        if (getGribMessageLength()
+            != other.getGribMessageLength()) return false;
       }
-      result = result && (hasGdsIdx() == other.hasGdsIdx());
+      if (hasGdsIdx() != other.hasGdsIdx()) return false;
       if (hasGdsIdx()) {
-        result = result && (getGdsIdx()
-            == other.getGdsIdx());
+        if (getGdsIdx()
+            != other.getGdsIdx()) return false;
       }
-      result = result && (hasPds() == other.hasPds());
+      if (hasPds() != other.hasPds()) return false;
       if (hasPds()) {
-        result = result && getPds()
-            .equals(other.getPds());
+        if (!getPds()
+            .equals(other.getPds())) return false;
       }
-      result = result && (hasBmsPos() == other.hasBmsPos());
+      if (hasBmsPos() != other.hasBmsPos()) return false;
       if (hasBmsPos()) {
-        result = result && (getBmsPos()
-            == other.getBmsPos());
+        if (getBmsPos()
+            != other.getBmsPos()) return false;
       }
-      result = result && (hasDataPos() == other.hasDataPos());
+      if (hasDataPos() != other.hasDataPos()) return false;
       if (hasDataPos()) {
-        result = result && (getDataPos()
-            == other.getDataPos());
+        if (getDataPos()
+            != other.getDataPos()) return false;
       }
-      result = result && (hasDataLen() == other.hasDataLen());
+      if (hasDataLen() != other.hasDataLen()) return false;
       if (hasDataLen()) {
-        result = result && (getDataLen()
-            == other.getDataLen());
+        if (getDataLen()
+            != other.getDataLen()) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1260,38 +1266,38 @@ public final class Grib1IndexProto {
         ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record result = new ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((from_bitField0_ & 0x00000001) != 0)) {
           to_bitField0_ |= 0x00000001;
         }
         result.header_ = header_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.gribMessageStart_ = gribMessageStart_;
           to_bitField0_ |= 0x00000002;
         }
-        result.gribMessageStart_ = gribMessageStart_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.gribMessageLength_ = gribMessageLength_;
           to_bitField0_ |= 0x00000004;
         }
-        result.gribMessageLength_ = gribMessageLength_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.gdsIdx_ = gdsIdx_;
           to_bitField0_ |= 0x00000008;
         }
-        result.gdsIdx_ = gdsIdx_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((from_bitField0_ & 0x00000010) != 0)) {
           to_bitField0_ |= 0x00000010;
         }
         result.pds_ = pds_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.bmsPos_ = bmsPos_;
           to_bitField0_ |= 0x00000020;
         }
-        result.bmsPos_ = bmsPos_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.dataPos_ = dataPos_;
           to_bitField0_ |= 0x00000040;
         }
-        result.dataPos_ = dataPos_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          result.dataLen_ = dataLen_;
           to_bitField0_ |= 0x00000080;
         }
-        result.dataLen_ = dataLen_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1299,35 +1305,35 @@ public final class Grib1IndexProto {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1418,7 +1424,7 @@ public final class Grib1IndexProto {
        * <code>required bytes header = 1;</code>
        */
       public boolean hasHeader() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>required bytes header = 1;</code>
@@ -1457,7 +1463,7 @@ public final class Grib1IndexProto {
        * <code>optional uint64 gribMessageStart = 15;</code>
        */
       public boolean hasGribMessageStart() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <pre>
@@ -1501,7 +1507,7 @@ public final class Grib1IndexProto {
        * <code>required uint64 gribMessageLength = 2;</code>
        */
       public boolean hasGribMessageLength() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <code>required uint64 gribMessageLength = 2;</code>
@@ -1537,7 +1543,7 @@ public final class Grib1IndexProto {
        * <code>required uint32 gdsIdx = 6;</code>
        */
       public boolean hasGdsIdx() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000008) != 0);
       }
       /**
        * <pre>
@@ -1581,7 +1587,7 @@ public final class Grib1IndexProto {
        * <code>required bytes pds = 7;</code>
        */
       public boolean hasPds() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000010) != 0);
       }
       /**
        * <code>required bytes pds = 7;</code>
@@ -1616,7 +1622,7 @@ public final class Grib1IndexProto {
        * <code>optional uint64 bmsPos = 11;</code>
        */
       public boolean hasBmsPos() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000020) != 0);
       }
       /**
        * <code>optional uint64 bmsPos = 11;</code>
@@ -1648,7 +1654,7 @@ public final class Grib1IndexProto {
        * <code>required uint64 dataPos = 13;</code>
        */
       public boolean hasDataPos() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000040) != 0);
       }
       /**
        * <code>required uint64 dataPos = 13;</code>
@@ -1680,7 +1686,7 @@ public final class Grib1IndexProto {
        * <code>required uint32 dataLen = 14;</code>
        */
       public boolean hasDataLen() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000080) != 0);
       }
       /**
        * <code>required uint32 dataLen = 14;</code>
@@ -1844,23 +1850,6 @@ public final class Grib1IndexProto {
      */
     ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder getRecordsOrBuilder(
         int index);
-
-    /**
-     * <pre>
-     * added for proto3 in 5.0
-     * </pre>
-     *
-     * <code>optional uint32 version = 4;</code>
-     */
-    boolean hasVersion();
-    /**
-     * <pre>
-     * added for proto3 in 5.0
-     * </pre>
-     *
-     * <code>optional uint32 version = 4;</code>
-     */
-    int getVersion();
   }
   /**
    * Protobuf type {@code Grib1Index}
@@ -1878,7 +1867,13 @@ public final class Grib1IndexProto {
       filename_ = "";
       gdsList_ = java.util.Collections.emptyList();
       records_ = java.util.Collections.emptyList();
-      version_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Grib1Index();
     }
 
     @java.lang.Override
@@ -1912,7 +1907,7 @@ public final class Grib1IndexProto {
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 gdsList_ = new java.util.ArrayList<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection>();
                 mutable_bitField0_ |= 0x00000002;
               }
@@ -1921,17 +1916,12 @@ public final class Grib1IndexProto {
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 records_ = new java.util.ArrayList<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record>();
                 mutable_bitField0_ |= 0x00000004;
               }
               records_.add(
                   input.readMessage(ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.PARSER, extensionRegistry));
-              break;
-            }
-            case 32: {
-              bitField0_ |= 0x00000002;
-              version_ = input.readUInt32();
               break;
             }
             default: {
@@ -1949,10 +1939,10 @@ public final class Grib1IndexProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           gdsList_ = java.util.Collections.unmodifiableList(gdsList_);
         }
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
           records_ = java.util.Collections.unmodifiableList(records_);
         }
         this.unknownFields = unknownFields.build();
@@ -1979,7 +1969,7 @@ public final class Grib1IndexProto {
      * <code>required string filename = 1;</code>
      */
     public boolean hasFilename() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>required string filename = 1;</code>
@@ -2105,29 +2095,6 @@ public final class Grib1IndexProto {
       return records_.get(index);
     }
 
-    public static final int VERSION_FIELD_NUMBER = 4;
-    private int version_;
-    /**
-     * <pre>
-     * added for proto3 in 5.0
-     * </pre>
-     *
-     * <code>optional uint32 version = 4;</code>
-     */
-    public boolean hasVersion() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <pre>
-     * added for proto3 in 5.0
-     * </pre>
-     *
-     * <code>optional uint32 version = 4;</code>
-     */
-    public int getVersion() {
-      return version_;
-    }
-
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2158,7 +2125,7 @@ public final class Grib1IndexProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, filename_);
       }
       for (int i = 0; i < gdsList_.size(); i++) {
@@ -2166,9 +2133,6 @@ public final class Grib1IndexProto {
       }
       for (int i = 0; i < records_.size(); i++) {
         output.writeMessage(3, records_.get(i));
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeUInt32(4, version_);
       }
       unknownFields.writeTo(output);
     }
@@ -2179,7 +2143,7 @@ public final class Grib1IndexProto {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, filename_);
       }
       for (int i = 0; i < gdsList_.size(); i++) {
@@ -2189,10 +2153,6 @@ public final class Grib1IndexProto {
       for (int i = 0; i < records_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, records_.get(i));
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(4, version_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2209,23 +2169,17 @@ public final class Grib1IndexProto {
       }
       ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index other = (ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index) obj;
 
-      boolean result = true;
-      result = result && (hasFilename() == other.hasFilename());
+      if (hasFilename() != other.hasFilename()) return false;
       if (hasFilename()) {
-        result = result && getFilename()
-            .equals(other.getFilename());
+        if (!getFilename()
+            .equals(other.getFilename())) return false;
       }
-      result = result && getGdsListList()
-          .equals(other.getGdsListList());
-      result = result && getRecordsList()
-          .equals(other.getRecordsList());
-      result = result && (hasVersion() == other.hasVersion());
-      if (hasVersion()) {
-        result = result && (getVersion()
-            == other.getVersion());
-      }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getGdsListList()
+          .equals(other.getGdsListList())) return false;
+      if (!getRecordsList()
+          .equals(other.getRecordsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -2246,10 +2200,6 @@ public final class Grib1IndexProto {
       if (getRecordsCount() > 0) {
         hash = (37 * hash) + RECORDS_FIELD_NUMBER;
         hash = (53 * hash) + getRecordsList().hashCode();
-      }
-      if (hasVersion()) {
-        hash = (37 * hash) + VERSION_FIELD_NUMBER;
-        hash = (53 * hash) + getVersion();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2400,8 +2350,6 @@ public final class Grib1IndexProto {
         } else {
           recordsBuilder_.clear();
         }
-        version_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -2430,12 +2378,12 @@ public final class Grib1IndexProto {
         ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index result = new ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((from_bitField0_ & 0x00000001) != 0)) {
           to_bitField0_ |= 0x00000001;
         }
         result.filename_ = filename_;
         if (gdsListBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             gdsList_ = java.util.Collections.unmodifiableList(gdsList_);
             bitField0_ = (bitField0_ & ~0x00000002);
           }
@@ -2444,7 +2392,7 @@ public final class Grib1IndexProto {
           result.gdsList_ = gdsListBuilder_.build();
         }
         if (recordsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000004) != 0)) {
             records_ = java.util.Collections.unmodifiableList(records_);
             bitField0_ = (bitField0_ & ~0x00000004);
           }
@@ -2452,10 +2400,6 @@ public final class Grib1IndexProto {
         } else {
           result.records_ = recordsBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.version_ = version_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2463,35 +2407,35 @@ public final class Grib1IndexProto {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2562,9 +2506,6 @@ public final class Grib1IndexProto {
             }
           }
         }
-        if (other.hasVersion()) {
-          setVersion(other.getVersion());
-        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -2613,7 +2554,7 @@ public final class Grib1IndexProto {
        * <code>required string filename = 1;</code>
        */
       public boolean hasFilename() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>required string filename = 1;</code>
@@ -2687,7 +2628,7 @@ public final class Grib1IndexProto {
       private java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection> gdsList_ =
         java.util.Collections.emptyList();
       private void ensureGdsListIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           gdsList_ = new java.util.ArrayList<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection>(gdsList_);
           bitField0_ |= 0x00000002;
          }
@@ -2988,7 +2929,7 @@ public final class Grib1IndexProto {
           gdsListBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSection.Builder, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1GdsSectionOrBuilder>(
                   gdsList_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           gdsList_ = null;
@@ -2999,7 +2940,7 @@ public final class Grib1IndexProto {
       private java.util.List<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record> records_ =
         java.util.Collections.emptyList();
       private void ensureRecordsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           records_ = new java.util.ArrayList<ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record>(records_);
           bitField0_ |= 0x00000004;
          }
@@ -3228,60 +3169,12 @@ public final class Grib1IndexProto {
           recordsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record.Builder, ucar.nc2.grib.grib1.Grib1IndexProto.Grib1RecordOrBuilder>(
                   records_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           records_ = null;
         }
         return recordsBuilder_;
-      }
-
-      private int version_ ;
-      /**
-       * <pre>
-       * added for proto3 in 5.0
-       * </pre>
-       *
-       * <code>optional uint32 version = 4;</code>
-       */
-      public boolean hasVersion() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <pre>
-       * added for proto3 in 5.0
-       * </pre>
-       *
-       * <code>optional uint32 version = 4;</code>
-       */
-      public int getVersion() {
-        return version_;
-      }
-      /**
-       * <pre>
-       * added for proto3 in 5.0
-       * </pre>
-       *
-       * <code>optional uint32 version = 4;</code>
-       */
-      public Builder setVersion(int value) {
-        bitField0_ |= 0x00000008;
-        version_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       * added for proto3 in 5.0
-       * </pre>
-       *
-       * <code>optional uint32 version = 4;</code>
-       */
-      public Builder clearVersion() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        version_ = 0;
-        onChanged();
-        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -3365,24 +3258,16 @@ public final class Grib1IndexProto {
       "Record\022\016\n\006header\030\001 \002(\014\022\030\n\020gribMessageSta" +
       "rt\030\017 \001(\004\022\031\n\021gribMessageLength\030\002 \002(\004\022\016\n\006g" +
       "dsIdx\030\006 \002(\r\022\013\n\003pds\030\007 \002(\014\022\016\n\006bmsPos\030\013 \001(\004" +
-      "\022\017\n\007dataPos\030\r \002(\004\022\017\n\007dataLen\030\016 \002(\r\"q\n\nGr" +
+      "\022\017\n\007dataPos\030\r \002(\004\022\017\n\007dataLen\030\016 \002(\r\"f\n\nGr" +
       "ib1Index\022\020\n\010filename\030\001 \002(\t\022!\n\007gdsList\030\002 " +
       "\003(\0132\020.Grib1GdsSection\022\035\n\007records\030\003 \003(\0132\014" +
-      ".Grib1Record\022\017\n\007version\030\004 \001(\rB&\n\023ucar.nc" +
-      "2.grib.grib1B\017Grib1IndexProto"
+      ".Grib1RecordJ\004\010\004\020\005B&\n\023ucar.nc2.grib.grib" +
+      "1B\017Grib1IndexProto"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_Grib1GdsSection_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_Grib1GdsSection_fieldAccessorTable = new
@@ -3400,7 +3285,7 @@ public final class Grib1IndexProto {
     internal_static_Grib1Index_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Grib1Index_descriptor,
-        new java.lang.String[] { "Filename", "GdsList", "Records", "Version", });
+        new java.lang.String[] { "Filename", "GdsList", "Records", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

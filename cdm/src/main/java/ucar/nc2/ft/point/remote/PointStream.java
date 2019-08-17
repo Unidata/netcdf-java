@@ -111,7 +111,7 @@ public class PointStream {
     StructureData sdata = pf.getDataAll();
     StructureMembers sm = sdata.getStructureMembers();
     for (StructureMembers.Member m : sm.getMembers()) {
-      PointStreamProto.Member.Builder mbuilder = PointStreamProto.Member.newBuilder();
+      PointStreamProto.PointFeatureMember.Builder mbuilder = PointStreamProto.PointFeatureMember.newBuilder();
       mbuilder.setName(m.getName());
       if (null != m.getDescription())
         mbuilder.setDesc(m.getDescription());
@@ -199,7 +199,7 @@ public class PointStream {
       }
 
       sm = new StructureMembers(pfc.getName());
-      for (PointStreamProto.Member m : pfc.getMembersList()) {
+      for (PointStreamProto.PointFeatureMember m : pfc.getMembersList()) {
         String name = m.getName();
         String desc = m.getDesc().length() > 0 ? m.getDesc() : null;
         String units = m.getUnits().length() > 0 ? m.getUnits() : null;

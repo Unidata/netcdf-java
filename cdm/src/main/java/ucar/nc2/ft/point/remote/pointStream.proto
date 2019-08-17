@@ -19,7 +19,7 @@ message PointFeature {
   repeated string sdata = 4; // Strings
 }
 
-message Member {
+message PointFeatureMember {
   string name = 1;
   string desc = 2;
   string units = 3;
@@ -30,7 +30,7 @@ message Member {
 message PointFeatureCollection {
   string name = 1;
   string timeUnit = 2;
-  repeated Member members = 3;
+  repeated PointFeatureMember members = 3;
   string altUnit = 4;
 }
 
@@ -47,6 +47,5 @@ message StationList {
   repeated Station stations = 1;
 }
 
-// cd <THREDDS_ROOT>/cdm/src/main/java
+// cd netcdf-java/cdm/src/main/java
 // protoc --proto_path=. --java_out=. ucar/nc2/ft/point/remote/pointStream.proto
-// Last compiled on 2015/09/20 using Protobuf 2.6.1
