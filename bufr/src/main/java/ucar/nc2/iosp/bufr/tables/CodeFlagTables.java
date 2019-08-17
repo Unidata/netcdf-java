@@ -143,93 +143,12 @@ public class CodeFlagTables {
     }
   }
 
-  static private final boolean showReadErrs = false, showNameDiff = false;
-
-  static void init2(Map<Short, CodeFlagTables> table) {
-    String filename = BufrTables.RESOURCE_PATH + "wmo/BC_CodeFlagTable.csv";
-    BufferedReader dataIS = null;
-
-    try {
-      InputStream is = CodeFlagTables.class.getResourceAsStream(filename);
-      dataIS = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF8")));
-      int count = 0;
-      while (true) {
-        String line = dataIS.readLine();
-        if (line == null) break;
-        if (line.startsWith("#")) continue;
-        count++;
-
-        if (count == 1) { // skip first line - its the header
-          continue;
-        }
-
-        // any commas that are embedded in quotes - replace with blanks for now so split works
-        int pos1 = line.indexOf('"');
-        if (pos1 >= 0) {
-          int pos2 = line.indexOf('"', pos1 + 1);
-          StringBuilder sb = new StringBuilder(line);
-          for (int i = pos1; i < pos2; i++)
-            if (sb.charAt(i) == ',') sb.setCharAt(i, ' ');
-          line = sb.toString();
-        }
-
-        String[] flds = line.split(",");
-        if (flds.length < 4) {
-          if (showReadErrs) System.out.printf("%d BAD split == %s%n", count, line);
-          continue;
-        }
-
-        // SNo,FXY,CodeFigure,enDescription1,enDescription2,enDescription3
-        int fldidx = 1; // start at 1 to skip sno
-        try {
-          int xy = Integer.parseInt(flds[fldidx++].trim());
-          int no;
-          try {
-            no = Integer.parseInt(flds[fldidx++].trim());
-          } catch (NumberFormatException e) {
-            if (showReadErrs) System.out.printf("%d skip == %s%n", count, line);
-            continue;
-          }
-          String name = StringUtil2.remove(flds[fldidx], '"');
-          String nameLow = name.toLowerCase();
-          if (nameLow.startsWith("reserved")) continue;
-          if (nameLow.startsWith("not used")) continue;
-
-          int x = xy / 1000;
-          int y = xy % 1000;
-          int fxy = (x << 8) + y;
-
-          CodeFlagTables ct = table.get((short) fxy);
-          if (ct == null) {
-            ct = new CodeFlagTables((short) fxy, null);
-            table.put(ct.fxy, ct);
-            //System.out.printf(" added in 2: %s (%d)%n", ct.fxy(), ct.fxy);
-          }
-          ct.addValue((short) no, name);
-
-        } catch (NumberFormatException e) {
-          if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
-        }
-      }
-
-    } catch (IOException e) {
-      log.error("Can't read BUFR code table " + filename, e);
-    } finally {
-      if (dataIS != null)
-        try {
-          dataIS.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-    }
-  }
-
   ////////////////////////////////////////////////
   private short fxy;
   private String name;
   private Map<Integer, String> map;  // needs to be integer for EnumTypedef
 
-  private CodeFlagTables(short fxy, String name) {
+  CodeFlagTables(short fxy, String name) {
     this.fxy = fxy;
     this.name = (name == null) ? fxy() : name; // StringUtil2.replace(name, ' ', "_") + "("+fxy()+")";
     map = new HashMap<>(20);
@@ -249,7 +168,7 @@ public class CodeFlagTables {
     return map;
   }
 
-  private void addValue(int value, String text) {
+  void addValue(int value, String text) {
     map.put(value, text);
   }
 

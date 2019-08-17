@@ -861,7 +861,7 @@ public class Scanner {
 
   static Formatter out = new Formatter(System.out);
 
-  @Test
+  // LOOK turn this into a test
   public void testStuff() throws IOException {
     //extractNMessages("D:/formats/bufr/tmp/dispatch/KNES-ISXX03.bufr", 3, "D:/formats/bufr/tmp/ISXX03-3.bufr");
     extractMessageByListhash("C:\\data\\formats\\bufrRoy/US058MCUS-BUFtdp.SPOUT_00011_sfc_ship_20091101042700.bufr", 1118454047, "C:\\data\\formats\\bufrRoy/out.bufr");
