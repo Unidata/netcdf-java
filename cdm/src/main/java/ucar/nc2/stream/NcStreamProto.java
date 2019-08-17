@@ -6,7 +6,13 @@ package ucar.nc2.stream;
 public final class NcStreamProto {
   private NcStreamProto() {}
   public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistryLite registry) {
+  }
+
+  public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions(
+        (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   /**
    * Protobuf enum {@code DataType}
@@ -16,76 +22,76 @@ public final class NcStreamProto {
     /**
      * <code>CHAR = 0;</code>
      */
-    CHAR(0, 0),
+    CHAR(0),
     /**
      * <code>BYTE = 1;</code>
      */
-    BYTE(1, 1),
+    BYTE(1),
     /**
      * <code>SHORT = 2;</code>
      */
-    SHORT(2, 2),
+    SHORT(2),
     /**
      * <code>INT = 3;</code>
      */
-    INT(3, 3),
+    INT(3),
     /**
      * <code>LONG = 4;</code>
      */
-    LONG(4, 4),
+    LONG(4),
     /**
      * <code>FLOAT = 5;</code>
      */
-    FLOAT(5, 5),
+    FLOAT(5),
     /**
      * <code>DOUBLE = 6;</code>
      */
-    DOUBLE(6, 6),
+    DOUBLE(6),
     /**
      * <code>STRING = 7;</code>
      */
-    STRING(7, 7),
+    STRING(7),
     /**
      * <code>STRUCTURE = 8;</code>
      */
-    STRUCTURE(8, 8),
+    STRUCTURE(8),
     /**
      * <code>SEQUENCE = 9;</code>
      */
-    SEQUENCE(9, 9),
+    SEQUENCE(9),
     /**
      * <code>ENUM1 = 10;</code>
      */
-    ENUM1(10, 10),
+    ENUM1(10),
     /**
      * <code>ENUM2 = 11;</code>
      */
-    ENUM2(11, 11),
+    ENUM2(11),
     /**
      * <code>ENUM4 = 12;</code>
      */
-    ENUM4(12, 12),
+    ENUM4(12),
     /**
      * <code>OPAQUE = 13;</code>
      */
-    OPAQUE(13, 13),
+    OPAQUE(13),
     /**
      * <code>UBYTE = 14;</code>
      */
-    UBYTE(14, 14),
+    UBYTE(14),
     /**
      * <code>USHORT = 15;</code>
      */
-    USHORT(15, 15),
+    USHORT(15),
     /**
      * <code>UINT = 16;</code>
      */
-    UINT(16, 16),
+    UINT(16),
     /**
      * <code>ULONG = 17;</code>
      */
-    ULONG(17, 17),
-    UNRECOGNIZED(-1, -1),
+    ULONG(17),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -163,14 +169,22 @@ public final class NcStreamProto {
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static DataType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static DataType forNumber(int value) {
       switch (value) {
         case 0: return CHAR;
         case 1: return BYTE;
@@ -202,13 +216,13 @@ public final class NcStreamProto {
         DataType> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<DataType>() {
             public DataType findValueByNumber(int number) {
-              return DataType.valueOf(number);
+              return DataType.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -233,11 +247,9 @@ public final class NcStreamProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private DataType(int index, int value) {
-      this.index = index;
+    private DataType(int value) {
       this.value = value;
     }
 
@@ -252,12 +264,12 @@ public final class NcStreamProto {
     /**
      * <code>NONE = 0;</code>
      */
-    NONE(0, 0),
+    NONE(0),
     /**
      * <code>DEFLATE = 1;</code>
      */
-    DEFLATE(1, 1),
-    UNRECOGNIZED(-1, -1),
+    DEFLATE(1),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -271,14 +283,22 @@ public final class NcStreamProto {
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static Compress valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static Compress forNumber(int value) {
       switch (value) {
         case 0: return NONE;
         case 1: return DEFLATE;
@@ -294,13 +314,13 @@ public final class NcStreamProto {
         Compress> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<Compress>() {
             public Compress findValueByNumber(int number) {
-              return Compress.valueOf(number);
+              return Compress.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -325,11 +345,9 @@ public final class NcStreamProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private Compress(int index, int value) {
-      this.index = index;
+    private Compress(int value) {
       this.value = value;
     }
 
@@ -341,104 +359,104 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
-     * <code>optional .Attribute.Type type = 2;</code>
-     *
      * <pre>
      * &lt; 5.0
      * </pre>
+     *
+     * <code>.Attribute.Type type = 2;</code>
      */
     int getTypeValue();
     /**
-     * <code>optional .Attribute.Type type = 2;</code>
-     *
      * <pre>
      * &lt; 5.0
      * </pre>
+     *
+     * <code>.Attribute.Type type = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.Attribute.Type getType();
 
     /**
-     * <code>optional uint32 len = 3;</code>
+     * <code>uint32 len = 3;</code>
      */
     int getLen();
 
     /**
-     * <code>optional bytes data = 4;</code>
-     *
      * <pre>
      * not needed if len == 0, Attribute with name but no value
      * </pre>
+     *
+     * <code>bytes data = 4;</code>
      */
     com.google.protobuf.ByteString getData();
 
     /**
-     * <code>repeated string sdata = 5;</code>
-     *
      * <pre>
      * used for string data
      * </pre>
+     *
+     * <code>repeated string sdata = 5;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getSdataList();
     /**
-     * <code>repeated string sdata = 5;</code>
-     *
      * <pre>
      * used for string data
      * </pre>
+     *
+     * <code>repeated string sdata = 5;</code>
      */
     int getSdataCount();
     /**
-     * <code>repeated string sdata = 5;</code>
-     *
      * <pre>
      * used for string data
      * </pre>
+     *
+     * <code>repeated string sdata = 5;</code>
      */
     java.lang.String getSdata(int index);
     /**
-     * <code>repeated string sdata = 5;</code>
-     *
      * <pre>
      * used for string data
      * </pre>
+     *
+     * <code>repeated string sdata = 5;</code>
      */
     com.google.protobuf.ByteString
         getSdataBytes(int index);
 
     /**
-     * <code>optional bool unsigned = 6;</code>
-     *
      * <pre>
      * not used
      * </pre>
+     *
+     * <code>bool unsigned = 6;</code>
      */
     boolean getUnsigned();
 
     /**
-     * <code>optional .DataType dataType = 7;</code>
-     *
      * <pre>
      * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
      * </pre>
+     *
+     * <code>.DataType dataType = 7;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 7;</code>
-     *
      * <pre>
      * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
      * </pre>
+     *
+     * <code>.DataType dataType = 7;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
   }
@@ -446,33 +464,45 @@ public final class NcStreamProto {
    * Protobuf type {@code Attribute}
    */
   public  static final class Attribute extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Attribute)
       AttributeOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Attribute.newBuilder() to construct.
-    private Attribute(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Attribute(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Attribute() {
       name_ = "";
       type_ = 0;
-      len_ = 0;
       data_ = com.google.protobuf.ByteString.EMPTY;
       sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      unsigned_ = false;
       dataType_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Attribute();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Attribute(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -481,14 +511,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
@@ -510,10 +534,10 @@ public final class NcStreamProto {
               break;
             }
             case 42: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 sdata_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000010;
+                mutable_bitField0_ |= 0x00000001;
               }
               sdata_.add(s);
               break;
@@ -529,18 +553,25 @@ public final class NcStreamProto {
               dataType_ = rawValue;
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           sdata_ = sdata_.getUnmodifiableView();
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -549,7 +580,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -557,43 +589,43 @@ public final class NcStreamProto {
     }
 
     /**
-     * Protobuf enum {@code Attribute.Type}
-     *
      * <pre>
      * &lt; 5.0
      * </pre>
+     *
+     * Protobuf enum {@code Attribute.Type}
      */
     public enum Type
         implements com.google.protobuf.ProtocolMessageEnum {
       /**
        * <code>STRING = 0;</code>
        */
-      STRING(0, 0),
+      STRING(0),
       /**
        * <code>BYTE = 1;</code>
        */
-      BYTE(1, 1),
+      BYTE(1),
       /**
        * <code>SHORT = 2;</code>
        */
-      SHORT(2, 2),
+      SHORT(2),
       /**
        * <code>INT = 3;</code>
        */
-      INT(3, 3),
+      INT(3),
       /**
        * <code>LONG = 4;</code>
        */
-      LONG(4, 4),
+      LONG(4),
       /**
        * <code>FLOAT = 5;</code>
        */
-      FLOAT(5, 5),
+      FLOAT(5),
       /**
        * <code>DOUBLE = 6;</code>
        */
-      DOUBLE(6, 6),
-      UNRECOGNIZED(-1, -1),
+      DOUBLE(6),
+      UNRECOGNIZED(-1),
       ;
 
       /**
@@ -627,14 +659,22 @@ public final class NcStreamProto {
 
 
       public final int getNumber() {
-        if (index == -1) {
+        if (this == UNRECOGNIZED) {
           throw new java.lang.IllegalArgumentException(
               "Can't get the number of an unknown enum value.");
         }
         return value;
       }
 
+      /**
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
       public static Type valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static Type forNumber(int value) {
         switch (value) {
           case 0: return STRING;
           case 1: return BYTE;
@@ -655,13 +695,13 @@ public final class NcStreamProto {
           Type> internalValueMap =
             new com.google.protobuf.Internal.EnumLiteMap<Type>() {
               public Type findValueByNumber(int number) {
-                return Type.valueOf(number);
+                return Type.forNumber(number);
               }
             };
 
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
           getValueDescriptor() {
-        return getDescriptor().getValues().get(index);
+        return getDescriptor().getValues().get(ordinal());
       }
       public final com.google.protobuf.Descriptors.EnumDescriptor
           getDescriptorForType() {
@@ -686,22 +726,19 @@ public final class NcStreamProto {
         return VALUES[desc.getIndex()];
       }
 
-      private final int index;
       private final int value;
 
-      private Type(int index, int value) {
-        this.index = index;
+      private Type(int value) {
         this.value = value;
       }
 
       // @@protoc_insertion_point(enum_scope:Attribute.Type)
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -716,7 +753,7 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -735,23 +772,24 @@ public final class NcStreamProto {
     public static final int TYPE_FIELD_NUMBER = 2;
     private int type_;
     /**
-     * <code>optional .Attribute.Type type = 2;</code>
-     *
      * <pre>
      * &lt; 5.0
      * </pre>
+     *
+     * <code>.Attribute.Type type = 2;</code>
      */
     public int getTypeValue() {
       return type_;
     }
     /**
-     * <code>optional .Attribute.Type type = 2;</code>
-     *
      * <pre>
      * &lt; 5.0
      * </pre>
+     *
+     * <code>.Attribute.Type type = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Attribute.Type getType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.Attribute.Type result = ucar.nc2.stream.NcStreamProto.Attribute.Type.valueOf(type_);
       return result == null ? ucar.nc2.stream.NcStreamProto.Attribute.Type.UNRECOGNIZED : result;
     }
@@ -759,7 +797,7 @@ public final class NcStreamProto {
     public static final int LEN_FIELD_NUMBER = 3;
     private int len_;
     /**
-     * <code>optional uint32 len = 3;</code>
+     * <code>uint32 len = 3;</code>
      */
     public int getLen() {
       return len_;
@@ -768,11 +806,11 @@ public final class NcStreamProto {
     public static final int DATA_FIELD_NUMBER = 4;
     private com.google.protobuf.ByteString data_;
     /**
-     * <code>optional bytes data = 4;</code>
-     *
      * <pre>
      * not needed if len == 0, Attribute with name but no value
      * </pre>
+     *
+     * <code>bytes data = 4;</code>
      */
     public com.google.protobuf.ByteString getData() {
       return data_;
@@ -781,42 +819,42 @@ public final class NcStreamProto {
     public static final int SDATA_FIELD_NUMBER = 5;
     private com.google.protobuf.LazyStringList sdata_;
     /**
-     * <code>repeated string sdata = 5;</code>
-     *
      * <pre>
      * used for string data
      * </pre>
+     *
+     * <code>repeated string sdata = 5;</code>
      */
     public com.google.protobuf.ProtocolStringList
         getSdataList() {
       return sdata_;
     }
     /**
-     * <code>repeated string sdata = 5;</code>
-     *
      * <pre>
      * used for string data
      * </pre>
+     *
+     * <code>repeated string sdata = 5;</code>
      */
     public int getSdataCount() {
       return sdata_.size();
     }
     /**
-     * <code>repeated string sdata = 5;</code>
-     *
      * <pre>
      * used for string data
      * </pre>
+     *
+     * <code>repeated string sdata = 5;</code>
      */
     public java.lang.String getSdata(int index) {
       return sdata_.get(index);
     }
     /**
-     * <code>repeated string sdata = 5;</code>
-     *
      * <pre>
      * used for string data
      * </pre>
+     *
+     * <code>repeated string sdata = 5;</code>
      */
     public com.google.protobuf.ByteString
         getSdataBytes(int index) {
@@ -826,11 +864,11 @@ public final class NcStreamProto {
     public static final int UNSIGNED_FIELD_NUMBER = 6;
     private boolean unsigned_;
     /**
-     * <code>optional bool unsigned = 6;</code>
-     *
      * <pre>
      * not used
      * </pre>
+     *
+     * <code>bool unsigned = 6;</code>
      */
     public boolean getUnsigned() {
       return unsigned_;
@@ -839,28 +877,30 @@ public final class NcStreamProto {
     public static final int DATATYPE_FIELD_NUMBER = 7;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 7;</code>
-     *
      * <pre>
      * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
      * </pre>
+     *
+     * <code>.DataType dataType = 7;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 7;</code>
-     *
      * <pre>
      * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
      * </pre>
+     *
+     * <code>.DataType dataType = 7;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -870,10 +910,11 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (type_ != ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING.getNumber()) {
         output.writeEnum(2, type_);
@@ -885,7 +926,7 @@ public final class NcStreamProto {
         output.writeBytes(4, data_);
       }
       for (int i = 0; i < sdata_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 5, sdata_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, sdata_.getRaw(i));
       }
       if (unsigned_ != false) {
         output.writeBool(6, unsigned_);
@@ -893,15 +934,17 @@ public final class NcStreamProto {
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(7, dataType_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (type_ != ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -931,11 +974,77 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(7, dataType_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Attribute)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Attribute other = (ucar.nc2.stream.NcStreamProto.Attribute) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (type_ != other.type_) return false;
+      if (getLen()
+          != other.getLen()) return false;
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (!getSdataList()
+          .equals(other.getSdataList())) return false;
+      if (getUnsigned()
+          != other.getUnsigned()) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + type_;
+      hash = (37 * hash) + LEN_FIELD_NUMBER;
+      hash = (53 * hash) + getLen();
+      hash = (37 * hash) + DATA_FIELD_NUMBER;
+      hash = (53 * hash) + getData().hashCode();
+      if (getSdataCount() > 0) {
+        hash = (37 * hash) + SDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getSdataList().hashCode();
+      }
+      hash = (37 * hash) + UNSIGNED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getUnsigned());
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Attribute parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Attribute parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Attribute parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -959,36 +1068,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Attribute parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Attribute parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Attribute parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Attribute parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Attribute parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Attribute parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -996,6 +1112,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Attribute prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -1003,7 +1120,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -1011,7 +1128,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Attribute}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Attribute)
         ucar.nc2.stream.NcStreamProto.AttributeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -1019,7 +1136,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -1032,14 +1150,16 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -1051,7 +1171,7 @@ public final class NcStreamProto {
         data_ = com.google.protobuf.ByteString.EMPTY;
 
         sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000001);
         unsigned_ = false;
 
         dataType_ = 0;
@@ -1059,15 +1179,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Attribute getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Attribute build() {
         ucar.nc2.stream.NcStreamProto.Attribute result = buildPartial();
         if (!result.isInitialized()) {
@@ -1076,26 +1199,58 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Attribute buildPartial() {
         ucar.nc2.stream.NcStreamProto.Attribute result = new ucar.nc2.stream.NcStreamProto.Attribute(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         result.type_ = type_;
         result.len_ = len_;
         result.data_ = data_;
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((bitField0_ & 0x00000001) != 0)) {
           sdata_ = sdata_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.sdata_ = sdata_;
         result.unsigned_ = unsigned_;
         result.dataType_ = dataType_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Attribute) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Attribute)other);
@@ -1123,7 +1278,7 @@ public final class NcStreamProto {
         if (!other.sdata_.isEmpty()) {
           if (sdata_.isEmpty()) {
             sdata_ = other.sdata_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000001);
           } else {
             ensureSdataIsMutable();
             sdata_.addAll(other.sdata_);
@@ -1136,14 +1291,17 @@ public final class NcStreamProto {
         if (other.dataType_ != 0) {
           setDataTypeValue(other.getDataTypeValue());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1153,7 +1311,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Attribute) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -1165,7 +1323,7 @@ public final class NcStreamProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -1180,7 +1338,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -1196,7 +1354,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -1209,7 +1367,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -1218,7 +1376,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -1234,21 +1392,21 @@ public final class NcStreamProto {
 
       private int type_ = 0;
       /**
-       * <code>optional .Attribute.Type type = 2;</code>
-       *
        * <pre>
        * &lt; 5.0
        * </pre>
+       *
+       * <code>.Attribute.Type type = 2;</code>
        */
       public int getTypeValue() {
         return type_;
       }
       /**
-       * <code>optional .Attribute.Type type = 2;</code>
-       *
        * <pre>
        * &lt; 5.0
        * </pre>
+       *
+       * <code>.Attribute.Type type = 2;</code>
        */
       public Builder setTypeValue(int value) {
         type_ = value;
@@ -1256,22 +1414,23 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Attribute.Type type = 2;</code>
-       *
        * <pre>
        * &lt; 5.0
        * </pre>
+       *
+       * <code>.Attribute.Type type = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Type getType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.Attribute.Type result = ucar.nc2.stream.NcStreamProto.Attribute.Type.valueOf(type_);
         return result == null ? ucar.nc2.stream.NcStreamProto.Attribute.Type.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .Attribute.Type type = 2;</code>
-       *
        * <pre>
        * &lt; 5.0
        * </pre>
+       *
+       * <code>.Attribute.Type type = 2;</code>
        */
       public Builder setType(ucar.nc2.stream.NcStreamProto.Attribute.Type value) {
         if (value == null) {
@@ -1283,11 +1442,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Attribute.Type type = 2;</code>
-       *
        * <pre>
        * &lt; 5.0
        * </pre>
+       *
+       * <code>.Attribute.Type type = 2;</code>
        */
       public Builder clearType() {
         
@@ -1298,13 +1457,13 @@ public final class NcStreamProto {
 
       private int len_ ;
       /**
-       * <code>optional uint32 len = 3;</code>
+       * <code>uint32 len = 3;</code>
        */
       public int getLen() {
         return len_;
       }
       /**
-       * <code>optional uint32 len = 3;</code>
+       * <code>uint32 len = 3;</code>
        */
       public Builder setLen(int value) {
         
@@ -1313,7 +1472,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 len = 3;</code>
+       * <code>uint32 len = 3;</code>
        */
       public Builder clearLen() {
         
@@ -1324,21 +1483,21 @@ public final class NcStreamProto {
 
       private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes data = 4;</code>
-       *
        * <pre>
        * not needed if len == 0, Attribute with name but no value
        * </pre>
+       *
+       * <code>bytes data = 4;</code>
        */
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
       /**
-       * <code>optional bytes data = 4;</code>
-       *
        * <pre>
        * not needed if len == 0, Attribute with name but no value
        * </pre>
+       *
+       * <code>bytes data = 4;</code>
        */
       public Builder setData(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -1350,11 +1509,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bytes data = 4;</code>
-       *
        * <pre>
        * not needed if len == 0, Attribute with name but no value
        * </pre>
+       *
+       * <code>bytes data = 4;</code>
        */
       public Builder clearData() {
         
@@ -1365,59 +1524,59 @@ public final class NcStreamProto {
 
       private com.google.protobuf.LazyStringList sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureSdataIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           sdata_ = new com.google.protobuf.LazyStringArrayList(sdata_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000001;
          }
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public com.google.protobuf.ProtocolStringList
           getSdataList() {
         return sdata_.getUnmodifiableView();
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public int getSdataCount() {
         return sdata_.size();
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public java.lang.String getSdata(int index) {
         return sdata_.get(index);
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public com.google.protobuf.ByteString
           getSdataBytes(int index) {
         return sdata_.getByteString(index);
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public Builder setSdata(
           int index, java.lang.String value) {
@@ -1430,11 +1589,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public Builder addSdata(
           java.lang.String value) {
@@ -1447,11 +1606,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public Builder addAllSdata(
           java.lang.Iterable<java.lang.String> values) {
@@ -1462,24 +1621,24 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public Builder clearSdata() {
         sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string sdata = 5;</code>
-       *
        * <pre>
        * used for string data
        * </pre>
+       *
+       * <code>repeated string sdata = 5;</code>
        */
       public Builder addSdataBytes(
           com.google.protobuf.ByteString value) {
@@ -1495,21 +1654,21 @@ public final class NcStreamProto {
 
       private boolean unsigned_ ;
       /**
-       * <code>optional bool unsigned = 6;</code>
-       *
        * <pre>
        * not used
        * </pre>
+       *
+       * <code>bool unsigned = 6;</code>
        */
       public boolean getUnsigned() {
         return unsigned_;
       }
       /**
-       * <code>optional bool unsigned = 6;</code>
-       *
        * <pre>
        * not used
        * </pre>
+       *
+       * <code>bool unsigned = 6;</code>
        */
       public Builder setUnsigned(boolean value) {
         
@@ -1518,11 +1677,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool unsigned = 6;</code>
-       *
        * <pre>
        * not used
        * </pre>
+       *
+       * <code>bool unsigned = 6;</code>
        */
       public Builder clearUnsigned() {
         
@@ -1533,21 +1692,21 @@ public final class NcStreamProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 7;</code>
-       *
        * <pre>
        * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
        * </pre>
+       *
+       * <code>.DataType dataType = 7;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 7;</code>
-       *
        * <pre>
        * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
        * </pre>
+       *
+       * <code>.DataType dataType = 7;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -1555,22 +1714,23 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 7;</code>
-       *
        * <pre>
        * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
        * </pre>
+       *
+       * <code>.DataType dataType = 7;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 7;</code>
-       *
        * <pre>
        * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
        * </pre>
+       *
+       * <code>.DataType dataType = 7;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -1582,11 +1742,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 7;</code>
-       *
        * <pre>
        * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
        * </pre>
+       *
+       * <code>.DataType dataType = 7;</code>
        */
       public Builder clearDataType() {
         
@@ -1594,14 +1754,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -1620,20 +1782,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Attribute>
         PARSER = new com.google.protobuf.AbstractParser<Attribute>() {
+      @java.lang.Override
       public Attribute parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Attribute(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Attribute(input, extensionRegistry);
       }
     };
 
@@ -1646,6 +1800,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Attribute getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -1657,48 +1812,48 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name - optional when private
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name - optional when private
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
-     * <code>optional uint64 length = 2;</code>
-     *
      * <pre>
      * optional when vlen, may be zero (unlimited no data yet)
      * </pre>
+     *
+     * <code>uint64 length = 2;</code>
      */
     long getLength();
 
     /**
-     * <code>optional bool isUnlimited = 3;</code>
-     *
      * <pre>
      * is this needed ??
      * </pre>
+     *
+     * <code>bool isUnlimited = 3;</code>
      */
     boolean getIsUnlimited();
 
     /**
-     * <code>optional bool isVlen = 4;</code>
+     * <code>bool isVlen = 4;</code>
      */
     boolean getIsVlen();
 
     /**
-     * <code>optional bool isPrivate = 5;</code>
+     * <code>bool isPrivate = 5;</code>
      */
     boolean getIsPrivate();
   }
@@ -1706,31 +1861,40 @@ public final class NcStreamProto {
    * Protobuf type {@code Dimension}
    */
   public  static final class Dimension extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Dimension)
       DimensionOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Dimension.newBuilder() to construct.
-    private Dimension(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Dimension(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Dimension() {
       name_ = "";
-      length_ = 0L;
-      isUnlimited_ = false;
-      isVlen_ = false;
-      isPrivate_ = false;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Dimension();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Dimension(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -1739,14 +1903,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
@@ -1771,15 +1929,22 @@ public final class NcStreamProto {
               isPrivate_ = input.readBool();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -1788,7 +1953,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -1798,11 +1964,11 @@ public final class NcStreamProto {
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name - optional when private
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -1817,11 +1983,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name - optional when private
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -1840,11 +2006,11 @@ public final class NcStreamProto {
     public static final int LENGTH_FIELD_NUMBER = 2;
     private long length_;
     /**
-     * <code>optional uint64 length = 2;</code>
-     *
      * <pre>
      * optional when vlen, may be zero (unlimited no data yet)
      * </pre>
+     *
+     * <code>uint64 length = 2;</code>
      */
     public long getLength() {
       return length_;
@@ -1853,11 +2019,11 @@ public final class NcStreamProto {
     public static final int ISUNLIMITED_FIELD_NUMBER = 3;
     private boolean isUnlimited_;
     /**
-     * <code>optional bool isUnlimited = 3;</code>
-     *
      * <pre>
      * is this needed ??
      * </pre>
+     *
+     * <code>bool isUnlimited = 3;</code>
      */
     public boolean getIsUnlimited() {
       return isUnlimited_;
@@ -1866,7 +2032,7 @@ public final class NcStreamProto {
     public static final int ISVLEN_FIELD_NUMBER = 4;
     private boolean isVlen_;
     /**
-     * <code>optional bool isVlen = 4;</code>
+     * <code>bool isVlen = 4;</code>
      */
     public boolean getIsVlen() {
       return isVlen_;
@@ -1875,13 +2041,14 @@ public final class NcStreamProto {
     public static final int ISPRIVATE_FIELD_NUMBER = 5;
     private boolean isPrivate_;
     /**
-     * <code>optional bool isPrivate = 5;</code>
+     * <code>bool isPrivate = 5;</code>
      */
     public boolean getIsPrivate() {
       return isPrivate_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -1891,10 +2058,11 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (length_ != 0L) {
         output.writeUInt64(2, length_);
@@ -1908,15 +2076,17 @@ public final class NcStreamProto {
       if (isPrivate_ != false) {
         output.writeBool(5, isPrivate_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (length_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
@@ -1934,11 +2104,72 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(5, isPrivate_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Dimension)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Dimension other = (ucar.nc2.stream.NcStreamProto.Dimension) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (getLength()
+          != other.getLength()) return false;
+      if (getIsUnlimited()
+          != other.getIsUnlimited()) return false;
+      if (getIsVlen()
+          != other.getIsVlen()) return false;
+      if (getIsPrivate()
+          != other.getIsPrivate()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + LENGTH_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getLength());
+      hash = (37 * hash) + ISUNLIMITED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsUnlimited());
+      hash = (37 * hash) + ISVLEN_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsVlen());
+      hash = (37 * hash) + ISPRIVATE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsPrivate());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Dimension parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Dimension parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Dimension parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1962,36 +2193,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Dimension parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Dimension parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Dimension parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Dimension parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Dimension parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Dimension parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -1999,6 +2237,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Dimension prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -2006,7 +2245,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -2014,7 +2253,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Dimension}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Dimension)
         ucar.nc2.stream.NcStreamProto.DimensionOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -2022,7 +2261,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -2035,14 +2275,16 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -2058,15 +2300,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Dimension getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Dimension build() {
         ucar.nc2.stream.NcStreamProto.Dimension result = buildPartial();
         if (!result.isInitialized()) {
@@ -2075,6 +2320,7 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Dimension buildPartial() {
         ucar.nc2.stream.NcStreamProto.Dimension result = new ucar.nc2.stream.NcStreamProto.Dimension(this);
         result.name_ = name_;
@@ -2086,6 +2332,39 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Dimension) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Dimension)other);
@@ -2113,14 +2392,17 @@ public final class NcStreamProto {
         if (other.getIsPrivate() != false) {
           setIsPrivate(other.getIsPrivate());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2130,7 +2412,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Dimension) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -2141,11 +2423,11 @@ public final class NcStreamProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name - optional when private
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -2160,11 +2442,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name - optional when private
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -2180,11 +2462,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name - optional when private
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -2197,11 +2479,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name - optional when private
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -2210,11 +2492,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name - optional when private
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -2230,21 +2512,21 @@ public final class NcStreamProto {
 
       private long length_ ;
       /**
-       * <code>optional uint64 length = 2;</code>
-       *
        * <pre>
        * optional when vlen, may be zero (unlimited no data yet)
        * </pre>
+       *
+       * <code>uint64 length = 2;</code>
        */
       public long getLength() {
         return length_;
       }
       /**
-       * <code>optional uint64 length = 2;</code>
-       *
        * <pre>
        * optional when vlen, may be zero (unlimited no data yet)
        * </pre>
+       *
+       * <code>uint64 length = 2;</code>
        */
       public Builder setLength(long value) {
         
@@ -2253,11 +2535,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint64 length = 2;</code>
-       *
        * <pre>
        * optional when vlen, may be zero (unlimited no data yet)
        * </pre>
+       *
+       * <code>uint64 length = 2;</code>
        */
       public Builder clearLength() {
         
@@ -2268,21 +2550,21 @@ public final class NcStreamProto {
 
       private boolean isUnlimited_ ;
       /**
-       * <code>optional bool isUnlimited = 3;</code>
-       *
        * <pre>
        * is this needed ??
        * </pre>
+       *
+       * <code>bool isUnlimited = 3;</code>
        */
       public boolean getIsUnlimited() {
         return isUnlimited_;
       }
       /**
-       * <code>optional bool isUnlimited = 3;</code>
-       *
        * <pre>
        * is this needed ??
        * </pre>
+       *
+       * <code>bool isUnlimited = 3;</code>
        */
       public Builder setIsUnlimited(boolean value) {
         
@@ -2291,11 +2573,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool isUnlimited = 3;</code>
-       *
        * <pre>
        * is this needed ??
        * </pre>
+       *
+       * <code>bool isUnlimited = 3;</code>
        */
       public Builder clearIsUnlimited() {
         
@@ -2306,13 +2588,13 @@ public final class NcStreamProto {
 
       private boolean isVlen_ ;
       /**
-       * <code>optional bool isVlen = 4;</code>
+       * <code>bool isVlen = 4;</code>
        */
       public boolean getIsVlen() {
         return isVlen_;
       }
       /**
-       * <code>optional bool isVlen = 4;</code>
+       * <code>bool isVlen = 4;</code>
        */
       public Builder setIsVlen(boolean value) {
         
@@ -2321,7 +2603,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool isVlen = 4;</code>
+       * <code>bool isVlen = 4;</code>
        */
       public Builder clearIsVlen() {
         
@@ -2332,13 +2614,13 @@ public final class NcStreamProto {
 
       private boolean isPrivate_ ;
       /**
-       * <code>optional bool isPrivate = 5;</code>
+       * <code>bool isPrivate = 5;</code>
        */
       public boolean getIsPrivate() {
         return isPrivate_;
       }
       /**
-       * <code>optional bool isPrivate = 5;</code>
+       * <code>bool isPrivate = 5;</code>
        */
       public Builder setIsPrivate(boolean value) {
         
@@ -2347,7 +2629,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool isPrivate = 5;</code>
+       * <code>bool isPrivate = 5;</code>
        */
       public Builder clearIsPrivate() {
         
@@ -2355,14 +2637,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -2381,20 +2665,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Dimension>
         PARSER = new com.google.protobuf.AbstractParser<Dimension>() {
+      @java.lang.Override
       public Dimension parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Dimension(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Dimension(input, extensionRegistry);
       }
     };
 
@@ -2407,6 +2683,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Dimension getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -2418,72 +2695,72 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> 
         getShapeList();
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.Dimension getShape(int index);
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     int getShapeCount();
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
         getShapeOrBuilderList();
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
         int index);
@@ -2513,37 +2790,37 @@ public final class NcStreamProto {
         int index);
 
     /**
-     * <code>optional bool unsigned = 5;</code>
-     *
      * <pre>
      * not used &gt;= 5
      * </pre>
+     *
+     * <code>bool unsigned = 5;</code>
      */
     boolean getUnsigned();
 
     /**
-     * <code>optional bytes data = 6;</code>
-     *
      * <pre>
      * "immediate" - store small data in header
      * </pre>
+     *
+     * <code>bytes data = 6;</code>
      */
     com.google.protobuf.ByteString getData();
 
     /**
-     * <code>optional string enumType = 7;</code>
-     *
      * <pre>
      * EnumTypedef name, only for enum types
      * </pre>
+     *
+     * <code>string enumType = 7;</code>
      */
     java.lang.String getEnumType();
     /**
-     * <code>optional string enumType = 7;</code>
-     *
      * <pre>
      * EnumTypedef name, only for enum types
      * </pre>
+     *
+     * <code>string enumType = 7;</code>
      */
     com.google.protobuf.ByteString
         getEnumTypeBytes();
@@ -2552,11 +2829,12 @@ public final class NcStreamProto {
    * Protobuf type {@code Variable}
    */
   public  static final class Variable extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Variable)
       VariableOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Variable.newBuilder() to construct.
-    private Variable(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Variable(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Variable() {
@@ -2564,21 +2842,33 @@ public final class NcStreamProto {
       dataType_ = 0;
       shape_ = java.util.Collections.emptyList();
       atts_ = java.util.Collections.emptyList();
-      unsigned_ = false;
       data_ = com.google.protobuf.ByteString.EMPTY;
       enumType_ = "";
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Variable();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Variable(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -2587,14 +2877,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
@@ -2606,19 +2890,21 @@ public final class NcStreamProto {
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 shape_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Dimension>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000001;
               }
-              shape_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Dimension.parser(), extensionRegistry));
+              shape_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Dimension.parser(), extensionRegistry));
               break;
             }
             case 34: {
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-                mutable_bitField0_ |= 0x00000008;
+                mutable_bitField0_ |= 0x00000002;
               }
-              atts_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
+              atts_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
               break;
             }
             case 40: {
@@ -2632,26 +2918,33 @@ public final class NcStreamProto {
               break;
             }
             case 58: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               enumType_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           shape_ = java.util.Collections.unmodifiableList(shape_);
         }
-        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           atts_ = java.util.Collections.unmodifiableList(atts_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -2660,22 +2953,22 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Variable_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Variable_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Variable.class, ucar.nc2.stream.NcStreamProto.Variable.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -2690,11 +2983,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -2713,15 +3006,16 @@ public final class NcStreamProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
@@ -2729,52 +3023,52 @@ public final class NcStreamProto {
     public static final int SHAPE_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_;
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
       return shape_;
     }
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
         getShapeOrBuilderList() {
       return shape_;
     }
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public int getShapeCount() {
       return shape_.size();
     }
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Dimension getShape(int index) {
       return shape_.get(index);
     }
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
         int index) {
@@ -2819,11 +3113,11 @@ public final class NcStreamProto {
     public static final int UNSIGNED_FIELD_NUMBER = 5;
     private boolean unsigned_;
     /**
-     * <code>optional bool unsigned = 5;</code>
-     *
      * <pre>
      * not used &gt;= 5
      * </pre>
+     *
+     * <code>bool unsigned = 5;</code>
      */
     public boolean getUnsigned() {
       return unsigned_;
@@ -2832,11 +3126,11 @@ public final class NcStreamProto {
     public static final int DATA_FIELD_NUMBER = 6;
     private com.google.protobuf.ByteString data_;
     /**
-     * <code>optional bytes data = 6;</code>
-     *
      * <pre>
      * "immediate" - store small data in header
      * </pre>
+     *
+     * <code>bytes data = 6;</code>
      */
     public com.google.protobuf.ByteString getData() {
       return data_;
@@ -2845,11 +3139,11 @@ public final class NcStreamProto {
     public static final int ENUMTYPE_FIELD_NUMBER = 7;
     private volatile java.lang.Object enumType_;
     /**
-     * <code>optional string enumType = 7;</code>
-     *
      * <pre>
      * EnumTypedef name, only for enum types
      * </pre>
+     *
+     * <code>string enumType = 7;</code>
      */
     public java.lang.String getEnumType() {
       java.lang.Object ref = enumType_;
@@ -2864,11 +3158,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string enumType = 7;</code>
-     *
      * <pre>
      * EnumTypedef name, only for enum types
      * </pre>
+     *
+     * <code>string enumType = 7;</code>
      */
     public com.google.protobuf.ByteString
         getEnumTypeBytes() {
@@ -2885,6 +3179,7 @@ public final class NcStreamProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -2894,10 +3189,11 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -2915,17 +3211,19 @@ public final class NcStreamProto {
         output.writeBytes(6, data_);
       }
       if (!getEnumTypeBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 7, enumType_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, enumType_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -2948,13 +3246,82 @@ public final class NcStreamProto {
           .computeBytesSize(6, data_);
       }
       if (!getEnumTypeBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(7, enumType_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, enumType_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Variable)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Variable other = (ucar.nc2.stream.NcStreamProto.Variable) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (!getShapeList()
+          .equals(other.getShapeList())) return false;
+      if (!getAttsList()
+          .equals(other.getAttsList())) return false;
+      if (getUnsigned()
+          != other.getUnsigned()) return false;
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (!getEnumType()
+          .equals(other.getEnumType())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      if (getShapeCount() > 0) {
+        hash = (37 * hash) + SHAPE_FIELD_NUMBER;
+        hash = (53 * hash) + getShapeList().hashCode();
+      }
+      if (getAttsCount() > 0) {
+        hash = (37 * hash) + ATTS_FIELD_NUMBER;
+        hash = (53 * hash) + getAttsList().hashCode();
+      }
+      hash = (37 * hash) + UNSIGNED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getUnsigned());
+      hash = (37 * hash) + DATA_FIELD_NUMBER;
+      hash = (53 * hash) + getData().hashCode();
+      hash = (37 * hash) + ENUMTYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getEnumType().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Variable parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Variable parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Variable parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -2978,36 +3345,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Variable parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Variable parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Variable parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Variable parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Variable parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Variable parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -3015,6 +3389,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Variable prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -3022,7 +3397,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -3030,7 +3405,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Variable}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Variable)
         ucar.nc2.stream.NcStreamProto.VariableOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -3038,7 +3413,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Variable_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Variable_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -3051,16 +3427,18 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getShapeFieldBuilder();
           getAttsFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -3069,13 +3447,13 @@ public final class NcStreamProto {
 
         if (shapeBuilder_ == null) {
           shape_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           shapeBuilder_.clear();
         }
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
           attsBuilder_.clear();
         }
@@ -3088,15 +3466,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Variable_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Variable getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Variable.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Variable build() {
         ucar.nc2.stream.NcStreamProto.Variable result = buildPartial();
         if (!result.isInitialized()) {
@@ -3105,25 +3486,25 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Variable buildPartial() {
         ucar.nc2.stream.NcStreamProto.Variable result = new ucar.nc2.stream.NcStreamProto.Variable(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         result.dataType_ = dataType_;
         if (shapeBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             shape_ = java.util.Collections.unmodifiableList(shape_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.shape_ = shape_;
         } else {
           result.shape_ = shapeBuilder_.build();
         }
         if (attsBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             atts_ = java.util.Collections.unmodifiableList(atts_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.atts_ = atts_;
         } else {
@@ -3132,11 +3513,43 @@ public final class NcStreamProto {
         result.unsigned_ = unsigned_;
         result.data_ = data_;
         result.enumType_ = enumType_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Variable) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Variable)other);
@@ -3159,7 +3572,7 @@ public final class NcStreamProto {
           if (!other.shape_.isEmpty()) {
             if (shape_.isEmpty()) {
               shape_ = other.shape_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureShapeIsMutable();
               shape_.addAll(other.shape_);
@@ -3172,9 +3585,9 @@ public final class NcStreamProto {
               shapeBuilder_.dispose();
               shapeBuilder_ = null;
               shape_ = other.shape_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
               shapeBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getShapeFieldBuilder() : null;
             } else {
               shapeBuilder_.addAllMessages(other.shape_);
@@ -3185,7 +3598,7 @@ public final class NcStreamProto {
           if (!other.atts_.isEmpty()) {
             if (atts_.isEmpty()) {
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureAttsIsMutable();
               atts_.addAll(other.atts_);
@@ -3198,9 +3611,9 @@ public final class NcStreamProto {
               attsBuilder_.dispose();
               attsBuilder_ = null;
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000002);
               attsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getAttsFieldBuilder() : null;
             } else {
               attsBuilder_.addAllMessages(other.atts_);
@@ -3217,14 +3630,17 @@ public final class NcStreamProto {
           enumType_ = other.enumType_;
           onChanged();
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3234,7 +3650,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Variable) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -3246,11 +3662,11 @@ public final class NcStreamProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -3265,11 +3681,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -3285,11 +3701,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -3302,11 +3718,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -3315,11 +3731,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -3335,13 +3751,13 @@ public final class NcStreamProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -3349,14 +3765,15 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -3368,7 +3785,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -3380,21 +3797,21 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_ =
         java.util.Collections.emptyList();
       private void ensureShapeIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           shape_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Dimension>(shape_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> shapeBuilder_;
 
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
         if (shapeBuilder_ == null) {
@@ -3404,11 +3821,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public int getShapeCount() {
         if (shapeBuilder_ == null) {
@@ -3418,11 +3835,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension getShape(int index) {
         if (shapeBuilder_ == null) {
@@ -3432,11 +3849,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder setShape(
           int index, ucar.nc2.stream.NcStreamProto.Dimension value) {
@@ -3453,11 +3870,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder setShape(
           int index, ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -3471,11 +3888,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addShape(ucar.nc2.stream.NcStreamProto.Dimension value) {
         if (shapeBuilder_ == null) {
@@ -3491,11 +3908,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addShape(
           int index, ucar.nc2.stream.NcStreamProto.Dimension value) {
@@ -3512,11 +3929,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addShape(
           ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -3530,11 +3947,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addShape(
           int index, ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -3548,11 +3965,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addAllShape(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Dimension> values) {
@@ -3567,16 +3984,16 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder clearShape() {
         if (shapeBuilder_ == null) {
           shape_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           shapeBuilder_.clear();
@@ -3584,11 +4001,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder removeShape(int index) {
         if (shapeBuilder_ == null) {
@@ -3601,22 +4018,22 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder getShapeBuilder(
           int index) {
         return getShapeFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
           int index) {
@@ -3626,11 +4043,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
            getShapeOrBuilderList() {
@@ -3641,22 +4058,22 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder addShapeBuilder() {
         return getShapeFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder addShapeBuilder(
           int index) {
@@ -3664,24 +4081,24 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension.Builder> 
            getShapeBuilderList() {
         return getShapeFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
           getShapeFieldBuilder() {
         if (shapeBuilder_ == null) {
-          shapeBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          shapeBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder>(
                   shape_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           shape_ = null;
@@ -3692,13 +4109,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>(atts_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000002;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
@@ -3844,7 +4261,7 @@ public final class NcStreamProto {
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           attsBuilder_.clear();
@@ -3914,14 +4331,14 @@ public final class NcStreamProto {
            getAttsBuilderList() {
         return getAttsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
           getAttsFieldBuilder() {
         if (attsBuilder_ == null) {
-          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder>(
                   atts_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           atts_ = null;
@@ -3931,21 +4348,21 @@ public final class NcStreamProto {
 
       private boolean unsigned_ ;
       /**
-       * <code>optional bool unsigned = 5;</code>
-       *
        * <pre>
        * not used &gt;= 5
        * </pre>
+       *
+       * <code>bool unsigned = 5;</code>
        */
       public boolean getUnsigned() {
         return unsigned_;
       }
       /**
-       * <code>optional bool unsigned = 5;</code>
-       *
        * <pre>
        * not used &gt;= 5
        * </pre>
+       *
+       * <code>bool unsigned = 5;</code>
        */
       public Builder setUnsigned(boolean value) {
         
@@ -3954,11 +4371,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool unsigned = 5;</code>
-       *
        * <pre>
        * not used &gt;= 5
        * </pre>
+       *
+       * <code>bool unsigned = 5;</code>
        */
       public Builder clearUnsigned() {
         
@@ -3969,21 +4386,21 @@ public final class NcStreamProto {
 
       private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes data = 6;</code>
-       *
        * <pre>
        * "immediate" - store small data in header
        * </pre>
+       *
+       * <code>bytes data = 6;</code>
        */
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
       /**
-       * <code>optional bytes data = 6;</code>
-       *
        * <pre>
        * "immediate" - store small data in header
        * </pre>
+       *
+       * <code>bytes data = 6;</code>
        */
       public Builder setData(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -3995,11 +4412,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bytes data = 6;</code>
-       *
        * <pre>
        * "immediate" - store small data in header
        * </pre>
+       *
+       * <code>bytes data = 6;</code>
        */
       public Builder clearData() {
         
@@ -4010,11 +4427,11 @@ public final class NcStreamProto {
 
       private java.lang.Object enumType_ = "";
       /**
-       * <code>optional string enumType = 7;</code>
-       *
        * <pre>
        * EnumTypedef name, only for enum types
        * </pre>
+       *
+       * <code>string enumType = 7;</code>
        */
       public java.lang.String getEnumType() {
         java.lang.Object ref = enumType_;
@@ -4029,11 +4446,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string enumType = 7;</code>
-       *
        * <pre>
        * EnumTypedef name, only for enum types
        * </pre>
+       *
+       * <code>string enumType = 7;</code>
        */
       public com.google.protobuf.ByteString
           getEnumTypeBytes() {
@@ -4049,11 +4466,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string enumType = 7;</code>
-       *
        * <pre>
        * EnumTypedef name, only for enum types
        * </pre>
+       *
+       * <code>string enumType = 7;</code>
        */
       public Builder setEnumType(
           java.lang.String value) {
@@ -4066,11 +4483,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string enumType = 7;</code>
-       *
        * <pre>
        * EnumTypedef name, only for enum types
        * </pre>
+       *
+       * <code>string enumType = 7;</code>
        */
       public Builder clearEnumType() {
         
@@ -4079,11 +4496,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string enumType = 7;</code>
-       *
        * <pre>
        * EnumTypedef name, only for enum types
        * </pre>
+       *
+       * <code>string enumType = 7;</code>
        */
       public Builder setEnumTypeBytes(
           com.google.protobuf.ByteString value) {
@@ -4096,14 +4513,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -4122,20 +4541,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Variable>
         PARSER = new com.google.protobuf.AbstractParser<Variable>() {
+      @java.lang.Override
       public Variable parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Variable(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Variable(input, extensionRegistry);
       }
     };
 
@@ -4148,6 +4559,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Variable getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -4159,80 +4571,80 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
-     *
      * <pre>
      * STRUCTURE or SEQUENCE
      * </pre>
+     *
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
-     *
      * <pre>
      * STRUCTURE or SEQUENCE
      * </pre>
+     *
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> 
         getShapeList();
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.Dimension getShape(int index);
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     int getShapeCount();
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
         getShapeOrBuilderList();
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
         int index);
@@ -4262,89 +4674,89 @@ public final class NcStreamProto {
         int index);
 
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Variable> 
         getVarsList();
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     ucar.nc2.stream.NcStreamProto.Variable getVars(int index);
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     int getVarsCount();
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
         getVarsOrBuilderList();
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
         int index);
 
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Structure> 
         getStructsList();
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     ucar.nc2.stream.NcStreamProto.Structure getStructs(int index);
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     int getStructsCount();
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
         getStructsOrBuilderList();
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
         int index);
@@ -4353,11 +4765,12 @@ public final class NcStreamProto {
    * Protobuf type {@code Structure}
    */
   public  static final class Structure extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Structure)
       StructureOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Structure.newBuilder() to construct.
-    private Structure(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Structure(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Structure() {
@@ -4370,15 +4783,28 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Structure();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Structure(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -4387,14 +4813,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
@@ -4406,58 +4826,69 @@ public final class NcStreamProto {
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 shape_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Dimension>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000001;
               }
-              shape_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Dimension.parser(), extensionRegistry));
+              shape_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Dimension.parser(), extensionRegistry));
               break;
             }
             case 34: {
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-                mutable_bitField0_ |= 0x00000008;
+                mutable_bitField0_ |= 0x00000002;
               }
-              atts_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
+              atts_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
               break;
             }
             case 42: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 vars_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Variable>();
-                mutable_bitField0_ |= 0x00000010;
+                mutable_bitField0_ |= 0x00000004;
               }
-              vars_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Variable.parser(), extensionRegistry));
+              vars_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Variable.parser(), extensionRegistry));
               break;
             }
             case 50: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
                 structs_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Structure>();
-                mutable_bitField0_ |= 0x00000020;
+                mutable_bitField0_ |= 0x00000008;
               }
-              structs_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Structure.parser(), extensionRegistry));
+              structs_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Structure.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           shape_ = java.util.Collections.unmodifiableList(shape_);
         }
-        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           atts_ = java.util.Collections.unmodifiableList(atts_);
         }
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
           vars_ = java.util.Collections.unmodifiableList(vars_);
         }
-        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((mutable_bitField0_ & 0x00000008) != 0)) {
           structs_ = java.util.Collections.unmodifiableList(structs_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -4466,22 +4897,22 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Structure_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Structure_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Structure.class, ucar.nc2.stream.NcStreamProto.Structure.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -4496,11 +4927,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -4519,23 +4950,24 @@ public final class NcStreamProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
-     *
      * <pre>
      * STRUCTURE or SEQUENCE
      * </pre>
+     *
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
-     *
      * <pre>
      * STRUCTURE or SEQUENCE
      * </pre>
+     *
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
@@ -4543,52 +4975,52 @@ public final class NcStreamProto {
     public static final int SHAPE_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_;
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
       return shape_;
     }
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
         getShapeOrBuilderList() {
       return shape_;
     }
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public int getShapeCount() {
       return shape_.size();
     }
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Dimension getShape(int index) {
       return shape_.get(index);
     }
     /**
-     * <code>repeated .Dimension shape = 3;</code>
-     *
      * <pre>
      * actual dimension instead of reference
      * </pre>
+     *
+     * <code>repeated .Dimension shape = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
         int index) {
@@ -4633,52 +5065,52 @@ public final class NcStreamProto {
     public static final int VARS_FIELD_NUMBER = 5;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_;
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
       return vars_;
     }
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
         getVarsOrBuilderList() {
       return vars_;
     }
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     public int getVarsCount() {
       return vars_.size();
     }
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Variable getVars(int index) {
       return vars_.get(index);
     }
     /**
-     * <code>repeated .Variable vars = 5;</code>
-     *
      * <pre>
      * members
      * </pre>
+     *
+     * <code>repeated .Variable vars = 5;</code>
      */
     public ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
         int index) {
@@ -4688,52 +5120,52 @@ public final class NcStreamProto {
     public static final int STRUCTS_FIELD_NUMBER = 6;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_;
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
       return structs_;
     }
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
         getStructsOrBuilderList() {
       return structs_;
     }
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     public int getStructsCount() {
       return structs_.size();
     }
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Structure getStructs(int index) {
       return structs_.get(index);
     }
     /**
-     * <code>repeated .Structure structs = 6;</code>
-     *
      * <pre>
      * struct members
      * </pre>
+     *
+     * <code>repeated .Structure structs = 6;</code>
      */
     public ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
         int index) {
@@ -4741,6 +5173,7 @@ public final class NcStreamProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -4750,10 +5183,11 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -4770,15 +5204,17 @@ public final class NcStreamProto {
       for (int i = 0; i < structs_.size(); i++) {
         output.writeMessage(6, structs_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -4800,11 +5236,79 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, structs_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Structure)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Structure other = (ucar.nc2.stream.NcStreamProto.Structure) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (!getShapeList()
+          .equals(other.getShapeList())) return false;
+      if (!getAttsList()
+          .equals(other.getAttsList())) return false;
+      if (!getVarsList()
+          .equals(other.getVarsList())) return false;
+      if (!getStructsList()
+          .equals(other.getStructsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      if (getShapeCount() > 0) {
+        hash = (37 * hash) + SHAPE_FIELD_NUMBER;
+        hash = (53 * hash) + getShapeList().hashCode();
+      }
+      if (getAttsCount() > 0) {
+        hash = (37 * hash) + ATTS_FIELD_NUMBER;
+        hash = (53 * hash) + getAttsList().hashCode();
+      }
+      if (getVarsCount() > 0) {
+        hash = (37 * hash) + VARS_FIELD_NUMBER;
+        hash = (53 * hash) + getVarsList().hashCode();
+      }
+      if (getStructsCount() > 0) {
+        hash = (37 * hash) + STRUCTS_FIELD_NUMBER;
+        hash = (53 * hash) + getStructsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Structure parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Structure parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Structure parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -4828,36 +5332,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Structure parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Structure parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Structure parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Structure parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Structure parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Structure parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -4865,6 +5376,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Structure prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -4872,7 +5384,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -4880,7 +5392,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Structure}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Structure)
         ucar.nc2.stream.NcStreamProto.StructureOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -4888,7 +5400,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Structure_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Structure_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -4901,18 +5414,20 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getShapeFieldBuilder();
           getAttsFieldBuilder();
           getVarsFieldBuilder();
           getStructsFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -4921,40 +5436,43 @@ public final class NcStreamProto {
 
         if (shapeBuilder_ == null) {
           shape_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           shapeBuilder_.clear();
         }
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
           attsBuilder_.clear();
         }
         if (varsBuilder_ == null) {
           vars_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
           varsBuilder_.clear();
         }
         if (structsBuilder_ == null) {
           structs_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           structsBuilder_.clear();
         }
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Structure_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Structure getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Structure.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Structure build() {
         ucar.nc2.stream.NcStreamProto.Structure result = buildPartial();
         if (!result.isInitialized()) {
@@ -4963,53 +5481,85 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Structure buildPartial() {
         ucar.nc2.stream.NcStreamProto.Structure result = new ucar.nc2.stream.NcStreamProto.Structure(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         result.dataType_ = dataType_;
         if (shapeBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             shape_ = java.util.Collections.unmodifiableList(shape_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.shape_ = shape_;
         } else {
           result.shape_ = shapeBuilder_.build();
         }
         if (attsBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             atts_ = java.util.Collections.unmodifiableList(atts_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.atts_ = atts_;
         } else {
           result.atts_ = attsBuilder_.build();
         }
         if (varsBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          if (((bitField0_ & 0x00000004) != 0)) {
             vars_ = java.util.Collections.unmodifiableList(vars_);
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.vars_ = vars_;
         } else {
           result.vars_ = varsBuilder_.build();
         }
         if (structsBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             structs_ = java.util.Collections.unmodifiableList(structs_);
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.structs_ = structs_;
         } else {
           result.structs_ = structsBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Structure) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Structure)other);
@@ -5032,7 +5582,7 @@ public final class NcStreamProto {
           if (!other.shape_.isEmpty()) {
             if (shape_.isEmpty()) {
               shape_ = other.shape_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureShapeIsMutable();
               shape_.addAll(other.shape_);
@@ -5045,9 +5595,9 @@ public final class NcStreamProto {
               shapeBuilder_.dispose();
               shapeBuilder_ = null;
               shape_ = other.shape_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
               shapeBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getShapeFieldBuilder() : null;
             } else {
               shapeBuilder_.addAllMessages(other.shape_);
@@ -5058,7 +5608,7 @@ public final class NcStreamProto {
           if (!other.atts_.isEmpty()) {
             if (atts_.isEmpty()) {
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureAttsIsMutable();
               atts_.addAll(other.atts_);
@@ -5071,9 +5621,9 @@ public final class NcStreamProto {
               attsBuilder_.dispose();
               attsBuilder_ = null;
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000002);
               attsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getAttsFieldBuilder() : null;
             } else {
               attsBuilder_.addAllMessages(other.atts_);
@@ -5084,7 +5634,7 @@ public final class NcStreamProto {
           if (!other.vars_.isEmpty()) {
             if (vars_.isEmpty()) {
               vars_ = other.vars_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureVarsIsMutable();
               vars_.addAll(other.vars_);
@@ -5097,9 +5647,9 @@ public final class NcStreamProto {
               varsBuilder_.dispose();
               varsBuilder_ = null;
               vars_ = other.vars_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000004);
               varsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getVarsFieldBuilder() : null;
             } else {
               varsBuilder_.addAllMessages(other.vars_);
@@ -5110,7 +5660,7 @@ public final class NcStreamProto {
           if (!other.structs_.isEmpty()) {
             if (structs_.isEmpty()) {
               structs_ = other.structs_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureStructsIsMutable();
               structs_.addAll(other.structs_);
@@ -5123,23 +5673,26 @@ public final class NcStreamProto {
               structsBuilder_.dispose();
               structsBuilder_ = null;
               structs_ = other.structs_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000008);
               structsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getStructsFieldBuilder() : null;
             } else {
               structsBuilder_.addAllMessages(other.structs_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5149,7 +5702,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Structure) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -5161,11 +5714,11 @@ public final class NcStreamProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -5180,11 +5733,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -5200,11 +5753,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -5217,11 +5770,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -5230,11 +5783,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -5250,21 +5803,21 @@ public final class NcStreamProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
-       *
        * <pre>
        * STRUCTURE or SEQUENCE
        * </pre>
+       *
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
-       *
        * <pre>
        * STRUCTURE or SEQUENCE
        * </pre>
+       *
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -5272,22 +5825,23 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
-       *
        * <pre>
        * STRUCTURE or SEQUENCE
        * </pre>
+       *
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
-       *
        * <pre>
        * STRUCTURE or SEQUENCE
        * </pre>
+       *
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -5299,11 +5853,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
-       *
        * <pre>
        * STRUCTURE or SEQUENCE
        * </pre>
+       *
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -5315,21 +5869,21 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_ =
         java.util.Collections.emptyList();
       private void ensureShapeIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           shape_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Dimension>(shape_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> shapeBuilder_;
 
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
         if (shapeBuilder_ == null) {
@@ -5339,11 +5893,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public int getShapeCount() {
         if (shapeBuilder_ == null) {
@@ -5353,11 +5907,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension getShape(int index) {
         if (shapeBuilder_ == null) {
@@ -5367,11 +5921,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder setShape(
           int index, ucar.nc2.stream.NcStreamProto.Dimension value) {
@@ -5388,11 +5942,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder setShape(
           int index, ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -5406,11 +5960,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addShape(ucar.nc2.stream.NcStreamProto.Dimension value) {
         if (shapeBuilder_ == null) {
@@ -5426,11 +5980,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addShape(
           int index, ucar.nc2.stream.NcStreamProto.Dimension value) {
@@ -5447,11 +6001,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addShape(
           ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -5465,11 +6019,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addShape(
           int index, ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -5483,11 +6037,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder addAllShape(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Dimension> values) {
@@ -5502,16 +6056,16 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder clearShape() {
         if (shapeBuilder_ == null) {
           shape_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           shapeBuilder_.clear();
@@ -5519,11 +6073,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public Builder removeShape(int index) {
         if (shapeBuilder_ == null) {
@@ -5536,22 +6090,22 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder getShapeBuilder(
           int index) {
         return getShapeFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
           int index) {
@@ -5561,11 +6115,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
            getShapeOrBuilderList() {
@@ -5576,22 +6130,22 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder addShapeBuilder() {
         return getShapeFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder addShapeBuilder(
           int index) {
@@ -5599,24 +6153,24 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .Dimension shape = 3;</code>
-       *
        * <pre>
        * actual dimension instead of reference
        * </pre>
+       *
+       * <code>repeated .Dimension shape = 3;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension.Builder> 
            getShapeBuilderList() {
         return getShapeFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
           getShapeFieldBuilder() {
         if (shapeBuilder_ == null) {
-          shapeBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          shapeBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder>(
                   shape_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           shape_ = null;
@@ -5627,13 +6181,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>(atts_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000002;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
@@ -5779,7 +6333,7 @@ public final class NcStreamProto {
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           attsBuilder_.clear();
@@ -5849,14 +6403,14 @@ public final class NcStreamProto {
            getAttsBuilderList() {
         return getAttsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
           getAttsFieldBuilder() {
         if (attsBuilder_ == null) {
-          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder>(
                   atts_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           atts_ = null;
@@ -5867,21 +6421,21 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_ =
         java.util.Collections.emptyList();
       private void ensureVarsIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           vars_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Variable>(vars_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000004;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Variable, ucar.nc2.stream.NcStreamProto.Variable.Builder, ucar.nc2.stream.NcStreamProto.VariableOrBuilder> varsBuilder_;
 
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
         if (varsBuilder_ == null) {
@@ -5891,11 +6445,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public int getVarsCount() {
         if (varsBuilder_ == null) {
@@ -5905,11 +6459,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable getVars(int index) {
         if (varsBuilder_ == null) {
@@ -5919,11 +6473,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder setVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable value) {
@@ -5940,11 +6494,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder setVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -5958,11 +6512,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addVars(ucar.nc2.stream.NcStreamProto.Variable value) {
         if (varsBuilder_ == null) {
@@ -5978,11 +6532,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable value) {
@@ -5999,11 +6553,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addVars(
           ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -6017,11 +6571,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -6035,11 +6589,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addAllVars(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Variable> values) {
@@ -6054,16 +6608,16 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder clearVars() {
         if (varsBuilder_ == null) {
           vars_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           varsBuilder_.clear();
@@ -6071,11 +6625,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder removeVars(int index) {
         if (varsBuilder_ == null) {
@@ -6088,22 +6642,22 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder getVarsBuilder(
           int index) {
         return getVarsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
           int index) {
@@ -6113,11 +6667,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
            getVarsOrBuilderList() {
@@ -6128,22 +6682,22 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder addVarsBuilder() {
         return getVarsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Variable.getDefaultInstance());
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder addVarsBuilder(
           int index) {
@@ -6151,24 +6705,24 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Variable.getDefaultInstance());
       }
       /**
-       * <code>repeated .Variable vars = 5;</code>
-       *
        * <pre>
        * members
        * </pre>
+       *
+       * <code>repeated .Variable vars = 5;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable.Builder> 
            getVarsBuilderList() {
         return getVarsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Variable, ucar.nc2.stream.NcStreamProto.Variable.Builder, ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
           getVarsFieldBuilder() {
         if (varsBuilder_ == null) {
-          varsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          varsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Variable, ucar.nc2.stream.NcStreamProto.Variable.Builder, ucar.nc2.stream.NcStreamProto.VariableOrBuilder>(
                   vars_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           vars_ = null;
@@ -6179,21 +6733,21 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_ =
         java.util.Collections.emptyList();
       private void ensureStructsIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           structs_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Structure>(structs_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000008;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Structure, ucar.nc2.stream.NcStreamProto.Structure.Builder, ucar.nc2.stream.NcStreamProto.StructureOrBuilder> structsBuilder_;
 
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
         if (structsBuilder_ == null) {
@@ -6203,11 +6757,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public int getStructsCount() {
         if (structsBuilder_ == null) {
@@ -6217,11 +6771,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure getStructs(int index) {
         if (structsBuilder_ == null) {
@@ -6231,11 +6785,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder setStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure value) {
@@ -6252,11 +6806,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder setStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -6270,11 +6824,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addStructs(ucar.nc2.stream.NcStreamProto.Structure value) {
         if (structsBuilder_ == null) {
@@ -6290,11 +6844,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure value) {
@@ -6311,11 +6865,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addStructs(
           ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -6329,11 +6883,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -6347,11 +6901,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addAllStructs(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Structure> values) {
@@ -6366,16 +6920,16 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder clearStructs() {
         if (structsBuilder_ == null) {
           structs_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           structsBuilder_.clear();
@@ -6383,11 +6937,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder removeStructs(int index) {
         if (structsBuilder_ == null) {
@@ -6400,22 +6954,22 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder getStructsBuilder(
           int index) {
         return getStructsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
           int index) {
@@ -6425,11 +6979,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
            getStructsOrBuilderList() {
@@ -6440,22 +6994,22 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder addStructsBuilder() {
         return getStructsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Structure.getDefaultInstance());
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder addStructsBuilder(
           int index) {
@@ -6463,38 +7017,40 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Structure.getDefaultInstance());
       }
       /**
-       * <code>repeated .Structure structs = 6;</code>
-       *
        * <pre>
        * struct members
        * </pre>
+       *
+       * <code>repeated .Structure structs = 6;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Structure.Builder> 
            getStructsBuilderList() {
         return getStructsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Structure, ucar.nc2.stream.NcStreamProto.Structure.Builder, ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
           getStructsFieldBuilder() {
         if (structsBuilder_ == null) {
-          structsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          structsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Structure, ucar.nc2.stream.NcStreamProto.Structure.Builder, ucar.nc2.stream.NcStreamProto.StructureOrBuilder>(
                   structs_,
-                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           structs_ = null;
         }
         return structsBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -6513,20 +7069,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Structure>
         PARSER = new com.google.protobuf.AbstractParser<Structure>() {
+      @java.lang.Override
       public Structure parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Structure(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Structure(input, extensionRegistry);
       }
     };
 
@@ -6539,6 +7087,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Structure getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -6550,11 +7099,11 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -6587,11 +7136,12 @@ public final class NcStreamProto {
    * Protobuf type {@code EnumTypedef}
    */
   public  static final class EnumTypedef extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:EnumTypedef)
       EnumTypedefOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use EnumTypedef.newBuilder() to construct.
-    private EnumTypedef(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private EnumTypedef(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private EnumTypedef() {
@@ -6600,15 +7150,28 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new EnumTypedef();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private EnumTypedef(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -6617,38 +7180,40 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 map_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType>();
-                mutable_bitField0_ |= 0x00000002;
+                mutable_bitField0_ |= 0x00000001;
               }
-              map_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.parser(), extensionRegistry));
+              map_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           map_ = java.util.Collections.unmodifiableList(map_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -6657,7 +7222,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -6669,16 +7235,16 @@ public final class NcStreamProto {
         com.google.protobuf.MessageOrBuilder {
 
       /**
-       * <code>optional uint32 code = 1;</code>
+       * <code>uint32 code = 1;</code>
        */
       int getCode();
 
       /**
-       * <code>optional string value = 2;</code>
+       * <code>string value = 2;</code>
        */
       java.lang.String getValue();
       /**
-       * <code>optional string value = 2;</code>
+       * <code>string value = 2;</code>
        */
       com.google.protobuf.ByteString
           getValueBytes();
@@ -6687,28 +7253,40 @@ public final class NcStreamProto {
      * Protobuf type {@code EnumTypedef.EnumType}
      */
     public  static final class EnumType extends
-        com.google.protobuf.GeneratedMessage implements
+        com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:EnumTypedef.EnumType)
         EnumTypeOrBuilder {
+    private static final long serialVersionUID = 0L;
       // Use EnumType.newBuilder() to construct.
-      private EnumType(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      private EnumType(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
         super(builder);
       }
       private EnumType() {
-        code_ = 0;
         value_ = "";
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new EnumType();
       }
 
       @java.lang.Override
       public final com.google.protobuf.UnknownFieldSet
       getUnknownFields() {
-        return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+        return this.unknownFields;
       }
       private EnumType(
           com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
         this();
-        int mutable_bitField0_ = 0;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
         try {
           boolean done = false;
           while (!done) {
@@ -6717,32 +7295,33 @@ public final class NcStreamProto {
               case 0:
                 done = true;
                 break;
-              default: {
-                if (!input.skipField(tag)) {
-                  done = true;
-                }
-                break;
-              }
               case 8: {
 
                 code_ = input.readUInt32();
                 break;
               }
               case 18: {
-                String s = input.readStringRequireUtf8();
+                java.lang.String s = input.readStringRequireUtf8();
 
                 value_ = s;
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
                 break;
               }
             }
           }
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw new RuntimeException(e.setUnfinishedMessage(this));
+          throw e.setUnfinishedMessage(this);
         } catch (java.io.IOException e) {
-          throw new RuntimeException(
-              new com.google.protobuf.InvalidProtocolBufferException(
-                  e.getMessage()).setUnfinishedMessage(this));
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
         } finally {
+          this.unknownFields = unknownFields.build();
           makeExtensionsImmutable();
         }
       }
@@ -6751,7 +7330,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -6761,7 +7341,7 @@ public final class NcStreamProto {
       public static final int CODE_FIELD_NUMBER = 1;
       private int code_;
       /**
-       * <code>optional uint32 code = 1;</code>
+       * <code>uint32 code = 1;</code>
        */
       public int getCode() {
         return code_;
@@ -6770,7 +7350,7 @@ public final class NcStreamProto {
       public static final int VALUE_FIELD_NUMBER = 2;
       private volatile java.lang.Object value_;
       /**
-       * <code>optional string value = 2;</code>
+       * <code>string value = 2;</code>
        */
       public java.lang.String getValue() {
         java.lang.Object ref = value_;
@@ -6785,7 +7365,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string value = 2;</code>
+       * <code>string value = 2;</code>
        */
       public com.google.protobuf.ByteString
           getValueBytes() {
@@ -6802,6 +7382,7 @@ public final class NcStreamProto {
       }
 
       private byte memoizedIsInitialized = -1;
+      @java.lang.Override
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized == 1) return true;
@@ -6811,16 +7392,19 @@ public final class NcStreamProto {
         return true;
       }
 
+      @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         if (code_ != 0) {
           output.writeUInt32(1, code_);
         }
         if (!getValueBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessage.writeString(output, 2, value_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, value_);
         }
+        unknownFields.writeTo(output);
       }
 
+      @java.lang.Override
       public int getSerializedSize() {
         int size = memoizedSize;
         if (size != -1) return size;
@@ -6831,13 +7415,58 @@ public final class NcStreamProto {
             .computeUInt32Size(1, code_);
         }
         if (!getValueBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessage.computeStringSize(2, value_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, value_);
         }
+        size += unknownFields.getSerializedSize();
         memoizedSize = size;
         return size;
       }
 
-      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType)) {
+          return super.equals(obj);
+        }
+        ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType other = (ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType) obj;
+
+        if (getCode()
+            != other.getCode()) return false;
+        if (!getValue()
+            .equals(other.getValue())) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (37 * hash) + CODE_FIELD_NUMBER;
+        hash = (53 * hash) + getCode();
+        hash = (37 * hash) + VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getValue().hashCode();
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
       public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -6861,36 +7490,43 @@ public final class NcStreamProto {
       }
       public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(java.io.InputStream input)
           throws java.io.IOException {
-        return PARSER.parseFrom(input);
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
       }
       public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        return PARSER.parseFrom(input, extensionRegistry);
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
       }
       public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
-        return PARSER.parseDelimitedFrom(input);
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
       }
       public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        return PARSER.parseDelimitedFrom(input, extensionRegistry);
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
       }
       public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
-        return PARSER.parseFrom(input);
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
       }
       public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        return PARSER.parseFrom(input, extensionRegistry);
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
       }
 
+      @java.lang.Override
       public Builder newBuilderForType() { return newBuilder(); }
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
@@ -6898,6 +7534,7 @@ public final class NcStreamProto {
       public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
+      @java.lang.Override
       public Builder toBuilder() {
         return this == DEFAULT_INSTANCE
             ? new Builder() : new Builder().mergeFrom(this);
@@ -6905,7 +7542,7 @@ public final class NcStreamProto {
 
       @java.lang.Override
       protected Builder newBuilderForType(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         Builder builder = new Builder(parent);
         return builder;
       }
@@ -6913,7 +7550,7 @@ public final class NcStreamProto {
        * Protobuf type {@code EnumTypedef.EnumType}
        */
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
           // @@protoc_insertion_point(builder_implements:EnumTypedef.EnumType)
           ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
@@ -6921,7 +7558,8 @@ public final class NcStreamProto {
           return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_descriptor;
         }
 
-        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
           return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
@@ -6934,14 +7572,16 @@ public final class NcStreamProto {
         }
 
         private Builder(
-            com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
           super(parent);
           maybeForceBuilderInitialization();
         }
         private void maybeForceBuilderInitialization() {
-          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
           }
         }
+        @java.lang.Override
         public Builder clear() {
           super.clear();
           code_ = 0;
@@ -6951,15 +7591,18 @@ public final class NcStreamProto {
           return this;
         }
 
+        @java.lang.Override
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
           return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_descriptor;
         }
 
+        @java.lang.Override
         public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getDefaultInstanceForType() {
           return ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.getDefaultInstance();
         }
 
+        @java.lang.Override
         public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType build() {
           ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType result = buildPartial();
           if (!result.isInitialized()) {
@@ -6968,6 +7611,7 @@ public final class NcStreamProto {
           return result;
         }
 
+        @java.lang.Override
         public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType buildPartial() {
           ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType result = new ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType(this);
           result.code_ = code_;
@@ -6976,6 +7620,39 @@ public final class NcStreamProto {
           return result;
         }
 
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType) {
             return mergeFrom((ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType)other);
@@ -6994,14 +7671,17 @@ public final class NcStreamProto {
             value_ = other.value_;
             onChanged();
           }
+          this.mergeUnknownFields(other.unknownFields);
           onChanged();
           return this;
         }
 
+        @java.lang.Override
         public final boolean isInitialized() {
           return true;
         }
 
+        @java.lang.Override
         public Builder mergeFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7011,7 +7691,7 @@ public final class NcStreamProto {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
             parsedMessage = (ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType) e.getUnfinishedMessage();
-            throw e;
+            throw e.unwrapIOException();
           } finally {
             if (parsedMessage != null) {
               mergeFrom(parsedMessage);
@@ -7022,13 +7702,13 @@ public final class NcStreamProto {
 
         private int code_ ;
         /**
-         * <code>optional uint32 code = 1;</code>
+         * <code>uint32 code = 1;</code>
          */
         public int getCode() {
           return code_;
         }
         /**
-         * <code>optional uint32 code = 1;</code>
+         * <code>uint32 code = 1;</code>
          */
         public Builder setCode(int value) {
           
@@ -7037,7 +7717,7 @@ public final class NcStreamProto {
           return this;
         }
         /**
-         * <code>optional uint32 code = 1;</code>
+         * <code>uint32 code = 1;</code>
          */
         public Builder clearCode() {
           
@@ -7048,7 +7728,7 @@ public final class NcStreamProto {
 
         private java.lang.Object value_ = "";
         /**
-         * <code>optional string value = 2;</code>
+         * <code>string value = 2;</code>
          */
         public java.lang.String getValue() {
           java.lang.Object ref = value_;
@@ -7063,7 +7743,7 @@ public final class NcStreamProto {
           }
         }
         /**
-         * <code>optional string value = 2;</code>
+         * <code>string value = 2;</code>
          */
         public com.google.protobuf.ByteString
             getValueBytes() {
@@ -7079,7 +7759,7 @@ public final class NcStreamProto {
           }
         }
         /**
-         * <code>optional string value = 2;</code>
+         * <code>string value = 2;</code>
          */
         public Builder setValue(
             java.lang.String value) {
@@ -7092,7 +7772,7 @@ public final class NcStreamProto {
           return this;
         }
         /**
-         * <code>optional string value = 2;</code>
+         * <code>string value = 2;</code>
          */
         public Builder clearValue() {
           
@@ -7101,7 +7781,7 @@ public final class NcStreamProto {
           return this;
         }
         /**
-         * <code>optional string value = 2;</code>
+         * <code>string value = 2;</code>
          */
         public Builder setValueBytes(
             com.google.protobuf.ByteString value) {
@@ -7114,14 +7794,16 @@ public final class NcStreamProto {
           onChanged();
           return this;
         }
+        @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return this;
+          return super.setUnknownFields(unknownFields);
         }
 
+        @java.lang.Override
         public final Builder mergeUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return this;
+          return super.mergeUnknownFields(unknownFields);
         }
 
 
@@ -7140,20 +7822,12 @@ public final class NcStreamProto {
 
       private static final com.google.protobuf.Parser<EnumType>
           PARSER = new com.google.protobuf.AbstractParser<EnumType>() {
+        @java.lang.Override
         public EnumType parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          try {
-            return new EnumType(input, extensionRegistry);
-          } catch (RuntimeException e) {
-            if (e.getCause() instanceof
-                com.google.protobuf.InvalidProtocolBufferException) {
-              throw (com.google.protobuf.InvalidProtocolBufferException)
-                  e.getCause();
-            }
-            throw e;
-          }
+          return new EnumType(input, extensionRegistry);
         }
       };
 
@@ -7166,17 +7840,17 @@ public final class NcStreamProto {
         return PARSER;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
 
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -7191,7 +7865,7 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -7243,6 +7917,7 @@ public final class NcStreamProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -7252,33 +7927,83 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       for (int i = 0; i < map_.size(); i++) {
         output.writeMessage(2, map_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       for (int i = 0; i < map_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, map_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.EnumTypedef)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.EnumTypedef other = (ucar.nc2.stream.NcStreamProto.EnumTypedef) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getMapList()
+          .equals(other.getMapList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      if (getMapCount() > 0) {
+        hash = (37 * hash) + MAP_FIELD_NUMBER;
+        hash = (53 * hash) + getMapList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -7302,36 +8027,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -7339,6 +8071,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.EnumTypedef prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -7346,7 +8079,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -7354,7 +8087,7 @@ public final class NcStreamProto {
      * Protobuf type {@code EnumTypedef}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:EnumTypedef)
         ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -7362,7 +8095,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -7375,37 +8109,42 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getMapFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
 
         if (mapBuilder_ == null) {
           map_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           mapBuilder_.clear();
         }
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.EnumTypedef getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.EnumTypedef.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.EnumTypedef build() {
         ucar.nc2.stream.NcStreamProto.EnumTypedef result = buildPartial();
         if (!result.isInitialized()) {
@@ -7414,25 +8153,57 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.EnumTypedef buildPartial() {
         ucar.nc2.stream.NcStreamProto.EnumTypedef result = new ucar.nc2.stream.NcStreamProto.EnumTypedef(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         if (mapBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             map_ = java.util.Collections.unmodifiableList(map_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.map_ = map_;
         } else {
           result.map_ = mapBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.EnumTypedef) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.EnumTypedef)other);
@@ -7452,7 +8223,7 @@ public final class NcStreamProto {
           if (!other.map_.isEmpty()) {
             if (map_.isEmpty()) {
               map_ = other.map_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureMapIsMutable();
               map_.addAll(other.map_);
@@ -7465,23 +8236,26 @@ public final class NcStreamProto {
               mapBuilder_.dispose();
               mapBuilder_ = null;
               map_ = other.map_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
               mapBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getMapFieldBuilder() : null;
             } else {
               mapBuilder_.addAllMessages(other.map_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7491,7 +8265,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.EnumTypedef) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -7503,7 +8277,7 @@ public final class NcStreamProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -7518,7 +8292,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -7534,7 +8308,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -7547,7 +8321,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -7556,7 +8330,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -7573,13 +8347,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> map_ =
         java.util.Collections.emptyList();
       private void ensureMapIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           map_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType>(map_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder> mapBuilder_;
 
       /**
@@ -7725,7 +8499,7 @@ public final class NcStreamProto {
       public Builder clearMap() {
         if (mapBuilder_ == null) {
           map_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           mapBuilder_.clear();
@@ -7795,28 +8569,30 @@ public final class NcStreamProto {
            getMapBuilderList() {
         return getMapFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder> 
           getMapFieldBuilder() {
         if (mapBuilder_ == null) {
-          mapBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          mapBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder>(
                   map_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           map_ = null;
         }
         return mapBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -7835,20 +8611,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<EnumTypedef>
         PARSER = new com.google.protobuf.AbstractParser<EnumTypedef>() {
+      @java.lang.Override
       public EnumTypedef parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new EnumTypedef(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new EnumTypedef(input, extensionRegistry);
       }
     };
 
@@ -7861,6 +8629,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.EnumTypedef getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -7872,19 +8641,19 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -8037,11 +8806,12 @@ public final class NcStreamProto {
    * Protobuf type {@code Group}
    */
   public  static final class Group extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Group)
       GroupOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Group.newBuilder() to construct.
-    private Group(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Group(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Group() {
@@ -8055,15 +8825,28 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Group();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Group(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -8072,93 +8855,100 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 dims_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Dimension>();
-                mutable_bitField0_ |= 0x00000002;
+                mutable_bitField0_ |= 0x00000001;
               }
-              dims_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Dimension.parser(), extensionRegistry));
+              dims_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Dimension.parser(), extensionRegistry));
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 vars_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Variable>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000002;
               }
-              vars_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Variable.parser(), extensionRegistry));
+              vars_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Variable.parser(), extensionRegistry));
               break;
             }
             case 34: {
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 structs_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Structure>();
-                mutable_bitField0_ |= 0x00000008;
+                mutable_bitField0_ |= 0x00000004;
               }
-              structs_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Structure.parser(), extensionRegistry));
+              structs_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Structure.parser(), extensionRegistry));
               break;
             }
             case 42: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
                 atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-                mutable_bitField0_ |= 0x00000010;
+                mutable_bitField0_ |= 0x00000008;
               }
-              atts_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
+              atts_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
               break;
             }
             case 50: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+              if (!((mutable_bitField0_ & 0x00000010) != 0)) {
                 groups_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Group>();
-                mutable_bitField0_ |= 0x00000020;
+                mutable_bitField0_ |= 0x00000010;
               }
-              groups_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Group.parser(), extensionRegistry));
+              groups_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Group.parser(), extensionRegistry));
               break;
             }
             case 58: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+              if (!((mutable_bitField0_ & 0x00000020) != 0)) {
                 enumTypes_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef>();
-                mutable_bitField0_ |= 0x00000040;
+                mutable_bitField0_ |= 0x00000020;
               }
-              enumTypes_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.EnumTypedef.parser(), extensionRegistry));
+              enumTypes_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.EnumTypedef.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           dims_ = java.util.Collections.unmodifiableList(dims_);
         }
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           vars_ = java.util.Collections.unmodifiableList(vars_);
         }
-        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
           structs_ = java.util.Collections.unmodifiableList(structs_);
         }
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((mutable_bitField0_ & 0x00000008) != 0)) {
           atts_ = java.util.Collections.unmodifiableList(atts_);
         }
-        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((mutable_bitField0_ & 0x00000010) != 0)) {
           groups_ = java.util.Collections.unmodifiableList(groups_);
         }
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((mutable_bitField0_ & 0x00000020) != 0)) {
           enumTypes_ = java.util.Collections.unmodifiableList(enumTypes_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -8167,22 +8957,22 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Group_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Group_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Group.class, ucar.nc2.stream.NcStreamProto.Group.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -8197,11 +8987,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -8428,6 +9218,7 @@ public final class NcStreamProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -8437,10 +9228,11 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       for (int i = 0; i < dims_.size(); i++) {
         output.writeMessage(2, dims_.get(i));
@@ -8460,15 +9252,17 @@ public final class NcStreamProto {
       for (int i = 0; i < enumTypes_.size(); i++) {
         output.writeMessage(7, enumTypes_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       for (int i = 0; i < dims_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -8494,11 +9288,88 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(7, enumTypes_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Group)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Group other = (ucar.nc2.stream.NcStreamProto.Group) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getDimsList()
+          .equals(other.getDimsList())) return false;
+      if (!getVarsList()
+          .equals(other.getVarsList())) return false;
+      if (!getStructsList()
+          .equals(other.getStructsList())) return false;
+      if (!getAttsList()
+          .equals(other.getAttsList())) return false;
+      if (!getGroupsList()
+          .equals(other.getGroupsList())) return false;
+      if (!getEnumTypesList()
+          .equals(other.getEnumTypesList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      if (getDimsCount() > 0) {
+        hash = (37 * hash) + DIMS_FIELD_NUMBER;
+        hash = (53 * hash) + getDimsList().hashCode();
+      }
+      if (getVarsCount() > 0) {
+        hash = (37 * hash) + VARS_FIELD_NUMBER;
+        hash = (53 * hash) + getVarsList().hashCode();
+      }
+      if (getStructsCount() > 0) {
+        hash = (37 * hash) + STRUCTS_FIELD_NUMBER;
+        hash = (53 * hash) + getStructsList().hashCode();
+      }
+      if (getAttsCount() > 0) {
+        hash = (37 * hash) + ATTS_FIELD_NUMBER;
+        hash = (53 * hash) + getAttsList().hashCode();
+      }
+      if (getGroupsCount() > 0) {
+        hash = (37 * hash) + GROUPS_FIELD_NUMBER;
+        hash = (53 * hash) + getGroupsList().hashCode();
+      }
+      if (getEnumTypesCount() > 0) {
+        hash = (37 * hash) + ENUMTYPES_FIELD_NUMBER;
+        hash = (53 * hash) + getEnumTypesList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Group parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Group parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Group parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -8522,36 +9393,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Group parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Group parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Group parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Group parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Group parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Group parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -8559,6 +9437,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Group prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -8566,7 +9445,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -8574,7 +9453,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Group}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Group)
         ucar.nc2.stream.NcStreamProto.GroupOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -8582,7 +9461,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Group_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Group_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -8595,12 +9475,13 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getDimsFieldBuilder();
           getVarsFieldBuilder();
           getStructsFieldBuilder();
@@ -8609,58 +9490,62 @@ public final class NcStreamProto {
           getEnumTypesFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
 
         if (dimsBuilder_ == null) {
           dims_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           dimsBuilder_.clear();
         }
         if (varsBuilder_ == null) {
           vars_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
           varsBuilder_.clear();
         }
         if (structsBuilder_ == null) {
           structs_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
           structsBuilder_.clear();
         }
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           attsBuilder_.clear();
         }
         if (groupsBuilder_ == null) {
           groups_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000010);
         } else {
           groupsBuilder_.clear();
         }
         if (enumTypesBuilder_ == null) {
           enumTypes_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000020);
         } else {
           enumTypesBuilder_.clear();
         }
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Group_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Group getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Group.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Group build() {
         ucar.nc2.stream.NcStreamProto.Group result = buildPartial();
         if (!result.isInitialized()) {
@@ -8669,70 +9554,102 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Group buildPartial() {
         ucar.nc2.stream.NcStreamProto.Group result = new ucar.nc2.stream.NcStreamProto.Group(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         if (dimsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             dims_ = java.util.Collections.unmodifiableList(dims_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.dims_ = dims_;
         } else {
           result.dims_ = dimsBuilder_.build();
         }
         if (varsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             vars_ = java.util.Collections.unmodifiableList(vars_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.vars_ = vars_;
         } else {
           result.vars_ = varsBuilder_.build();
         }
         if (structsBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000004) != 0)) {
             structs_ = java.util.Collections.unmodifiableList(structs_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.structs_ = structs_;
         } else {
           result.structs_ = structsBuilder_.build();
         }
         if (attsBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             atts_ = java.util.Collections.unmodifiableList(atts_);
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.atts_ = atts_;
         } else {
           result.atts_ = attsBuilder_.build();
         }
         if (groupsBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          if (((bitField0_ & 0x00000010) != 0)) {
             groups_ = java.util.Collections.unmodifiableList(groups_);
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.groups_ = groups_;
         } else {
           result.groups_ = groupsBuilder_.build();
         }
         if (enumTypesBuilder_ == null) {
-          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          if (((bitField0_ & 0x00000020) != 0)) {
             enumTypes_ = java.util.Collections.unmodifiableList(enumTypes_);
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000020);
           }
           result.enumTypes_ = enumTypes_;
         } else {
           result.enumTypes_ = enumTypesBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Group) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Group)other);
@@ -8752,7 +9669,7 @@ public final class NcStreamProto {
           if (!other.dims_.isEmpty()) {
             if (dims_.isEmpty()) {
               dims_ = other.dims_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureDimsIsMutable();
               dims_.addAll(other.dims_);
@@ -8765,9 +9682,9 @@ public final class NcStreamProto {
               dimsBuilder_.dispose();
               dimsBuilder_ = null;
               dims_ = other.dims_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
               dimsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getDimsFieldBuilder() : null;
             } else {
               dimsBuilder_.addAllMessages(other.dims_);
@@ -8778,7 +9695,7 @@ public final class NcStreamProto {
           if (!other.vars_.isEmpty()) {
             if (vars_.isEmpty()) {
               vars_ = other.vars_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureVarsIsMutable();
               vars_.addAll(other.vars_);
@@ -8791,9 +9708,9 @@ public final class NcStreamProto {
               varsBuilder_.dispose();
               varsBuilder_ = null;
               vars_ = other.vars_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000002);
               varsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getVarsFieldBuilder() : null;
             } else {
               varsBuilder_.addAllMessages(other.vars_);
@@ -8804,7 +9721,7 @@ public final class NcStreamProto {
           if (!other.structs_.isEmpty()) {
             if (structs_.isEmpty()) {
               structs_ = other.structs_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureStructsIsMutable();
               structs_.addAll(other.structs_);
@@ -8817,9 +9734,9 @@ public final class NcStreamProto {
               structsBuilder_.dispose();
               structsBuilder_ = null;
               structs_ = other.structs_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000004);
               structsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getStructsFieldBuilder() : null;
             } else {
               structsBuilder_.addAllMessages(other.structs_);
@@ -8830,7 +9747,7 @@ public final class NcStreamProto {
           if (!other.atts_.isEmpty()) {
             if (atts_.isEmpty()) {
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureAttsIsMutable();
               atts_.addAll(other.atts_);
@@ -8843,9 +9760,9 @@ public final class NcStreamProto {
               attsBuilder_.dispose();
               attsBuilder_ = null;
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000008);
               attsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getAttsFieldBuilder() : null;
             } else {
               attsBuilder_.addAllMessages(other.atts_);
@@ -8856,7 +9773,7 @@ public final class NcStreamProto {
           if (!other.groups_.isEmpty()) {
             if (groups_.isEmpty()) {
               groups_ = other.groups_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureGroupsIsMutable();
               groups_.addAll(other.groups_);
@@ -8869,9 +9786,9 @@ public final class NcStreamProto {
               groupsBuilder_.dispose();
               groupsBuilder_ = null;
               groups_ = other.groups_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000010);
               groupsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getGroupsFieldBuilder() : null;
             } else {
               groupsBuilder_.addAllMessages(other.groups_);
@@ -8882,7 +9799,7 @@ public final class NcStreamProto {
           if (!other.enumTypes_.isEmpty()) {
             if (enumTypes_.isEmpty()) {
               enumTypes_ = other.enumTypes_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000020);
             } else {
               ensureEnumTypesIsMutable();
               enumTypes_.addAll(other.enumTypes_);
@@ -8895,23 +9812,26 @@ public final class NcStreamProto {
               enumTypesBuilder_.dispose();
               enumTypesBuilder_ = null;
               enumTypes_ = other.enumTypes_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000020);
               enumTypesBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getEnumTypesFieldBuilder() : null;
             } else {
               enumTypesBuilder_.addAllMessages(other.enumTypes_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8921,7 +9841,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Group) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -8933,11 +9853,11 @@ public final class NcStreamProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -8952,11 +9872,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -8972,11 +9892,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -8989,11 +9909,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -9002,11 +9922,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -9023,13 +9943,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> dims_ =
         java.util.Collections.emptyList();
       private void ensureDimsIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           dims_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Dimension>(dims_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> dimsBuilder_;
 
       /**
@@ -9175,7 +10095,7 @@ public final class NcStreamProto {
       public Builder clearDims() {
         if (dimsBuilder_ == null) {
           dims_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           dimsBuilder_.clear();
@@ -9245,14 +10165,14 @@ public final class NcStreamProto {
            getDimsBuilderList() {
         return getDimsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
           getDimsFieldBuilder() {
         if (dimsBuilder_ == null) {
-          dimsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          dimsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder>(
                   dims_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           dims_ = null;
@@ -9263,13 +10183,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_ =
         java.util.Collections.emptyList();
       private void ensureVarsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           vars_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Variable>(vars_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000002;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Variable, ucar.nc2.stream.NcStreamProto.Variable.Builder, ucar.nc2.stream.NcStreamProto.VariableOrBuilder> varsBuilder_;
 
       /**
@@ -9415,7 +10335,7 @@ public final class NcStreamProto {
       public Builder clearVars() {
         if (varsBuilder_ == null) {
           vars_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           varsBuilder_.clear();
@@ -9485,14 +10405,14 @@ public final class NcStreamProto {
            getVarsBuilderList() {
         return getVarsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Variable, ucar.nc2.stream.NcStreamProto.Variable.Builder, ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
           getVarsFieldBuilder() {
         if (varsBuilder_ == null) {
-          varsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          varsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Variable, ucar.nc2.stream.NcStreamProto.Variable.Builder, ucar.nc2.stream.NcStreamProto.VariableOrBuilder>(
                   vars_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           vars_ = null;
@@ -9503,13 +10423,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_ =
         java.util.Collections.emptyList();
       private void ensureStructsIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           structs_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Structure>(structs_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000004;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Structure, ucar.nc2.stream.NcStreamProto.Structure.Builder, ucar.nc2.stream.NcStreamProto.StructureOrBuilder> structsBuilder_;
 
       /**
@@ -9655,7 +10575,7 @@ public final class NcStreamProto {
       public Builder clearStructs() {
         if (structsBuilder_ == null) {
           structs_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           structsBuilder_.clear();
@@ -9725,14 +10645,14 @@ public final class NcStreamProto {
            getStructsBuilderList() {
         return getStructsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Structure, ucar.nc2.stream.NcStreamProto.Structure.Builder, ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
           getStructsFieldBuilder() {
         if (structsBuilder_ == null) {
-          structsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          structsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Structure, ucar.nc2.stream.NcStreamProto.Structure.Builder, ucar.nc2.stream.NcStreamProto.StructureOrBuilder>(
                   structs_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           structs_ = null;
@@ -9743,13 +10663,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>(atts_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000008;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
@@ -9895,7 +10815,7 @@ public final class NcStreamProto {
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           attsBuilder_.clear();
@@ -9965,14 +10885,14 @@ public final class NcStreamProto {
            getAttsBuilderList() {
         return getAttsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
           getAttsFieldBuilder() {
         if (attsBuilder_ == null) {
-          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder>(
                   atts_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           atts_ = null;
@@ -9983,13 +10903,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Group> groups_ =
         java.util.Collections.emptyList();
       private void ensureGroupsIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+        if (!((bitField0_ & 0x00000010) != 0)) {
           groups_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Group>(groups_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000010;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder> groupsBuilder_;
 
       /**
@@ -10135,7 +11055,7 @@ public final class NcStreamProto {
       public Builder clearGroups() {
         if (groupsBuilder_ == null) {
           groups_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           groupsBuilder_.clear();
@@ -10205,14 +11125,14 @@ public final class NcStreamProto {
            getGroupsBuilderList() {
         return getGroupsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder> 
           getGroupsFieldBuilder() {
         if (groupsBuilder_ == null) {
-          groupsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          groupsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder>(
                   groups_,
-                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
                   isClean());
           groups_ = null;
@@ -10223,13 +11143,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> enumTypes_ =
         java.util.Collections.emptyList();
       private void ensureEnumTypesIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+        if (!((bitField0_ & 0x00000020) != 0)) {
           enumTypes_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef>(enumTypes_);
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000020;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.EnumTypedef, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder, ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder> enumTypesBuilder_;
 
       /**
@@ -10375,7 +11295,7 @@ public final class NcStreamProto {
       public Builder clearEnumTypes() {
         if (enumTypesBuilder_ == null) {
           enumTypes_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000020);
           onChanged();
         } else {
           enumTypesBuilder_.clear();
@@ -10445,28 +11365,30 @@ public final class NcStreamProto {
            getEnumTypesBuilderList() {
         return getEnumTypesFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.EnumTypedef, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder, ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder> 
           getEnumTypesFieldBuilder() {
         if (enumTypesBuilder_ == null) {
-          enumTypesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          enumTypesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.EnumTypedef, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder, ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder>(
                   enumTypes_,
-                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  ((bitField0_ & 0x00000020) != 0),
                   getParentForChildren(),
                   isClean());
           enumTypes_ = null;
         }
         return enumTypesBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -10485,20 +11407,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Group>
         PARSER = new com.google.protobuf.AbstractParser<Group>() {
+      @java.lang.Override
       public Group parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Group(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Group(input, extensionRegistry);
       }
     };
 
@@ -10511,6 +11425,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Group getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -10522,66 +11437,66 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string location = 1;</code>
+     * <code>string location = 1;</code>
      */
     java.lang.String getLocation();
     /**
-     * <code>optional string location = 1;</code>
+     * <code>string location = 1;</code>
      */
     com.google.protobuf.ByteString
         getLocationBytes();
 
     /**
-     * <code>optional string title = 2;</code>
-     *
      * <pre>
      * ??
      * </pre>
+     *
+     * <code>string title = 2;</code>
      */
     java.lang.String getTitle();
     /**
-     * <code>optional string title = 2;</code>
-     *
      * <pre>
      * ??
      * </pre>
+     *
+     * <code>string title = 2;</code>
      */
     com.google.protobuf.ByteString
         getTitleBytes();
 
     /**
-     * <code>optional string id = 3;</code>
-     *
      * <pre>
      * ??
      * </pre>
+     *
+     * <code>string id = 3;</code>
      */
     java.lang.String getId();
     /**
-     * <code>optional string id = 3;</code>
-     *
      * <pre>
      * ??
      * </pre>
+     *
+     * <code>string id = 3;</code>
      */
     com.google.protobuf.ByteString
         getIdBytes();
 
     /**
-     * <code>optional .Group root = 4;</code>
+     * <code>.Group root = 4;</code>
      */
     boolean hasRoot();
     /**
-     * <code>optional .Group root = 4;</code>
+     * <code>.Group root = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.Group getRoot();
     /**
-     * <code>optional .Group root = 4;</code>
+     * <code>.Group root = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.GroupOrBuilder getRootOrBuilder();
 
     /**
-     * <code>optional uint32 version = 5;</code>
+     * <code>uint32 version = 5;</code>
      */
     int getVersion();
   }
@@ -10589,30 +11504,42 @@ public final class NcStreamProto {
    * Protobuf type {@code Header}
    */
   public  static final class Header extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Header)
       HeaderOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Header.newBuilder() to construct.
-    private Header(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Header(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Header() {
       location_ = "";
       title_ = "";
       id_ = "";
-      version_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Header();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Header(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -10621,26 +11548,20 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               location_ = s;
               break;
             }
             case 18: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               title_ = s;
               break;
             }
             case 26: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               id_ = s;
               break;
@@ -10663,15 +11584,22 @@ public final class NcStreamProto {
               version_ = input.readUInt32();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -10680,7 +11608,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Header_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Header_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -10690,7 +11619,7 @@ public final class NcStreamProto {
     public static final int LOCATION_FIELD_NUMBER = 1;
     private volatile java.lang.Object location_;
     /**
-     * <code>optional string location = 1;</code>
+     * <code>string location = 1;</code>
      */
     public java.lang.String getLocation() {
       java.lang.Object ref = location_;
@@ -10705,7 +11634,7 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string location = 1;</code>
+     * <code>string location = 1;</code>
      */
     public com.google.protobuf.ByteString
         getLocationBytes() {
@@ -10724,11 +11653,11 @@ public final class NcStreamProto {
     public static final int TITLE_FIELD_NUMBER = 2;
     private volatile java.lang.Object title_;
     /**
-     * <code>optional string title = 2;</code>
-     *
      * <pre>
      * ??
      * </pre>
+     *
+     * <code>string title = 2;</code>
      */
     public java.lang.String getTitle() {
       java.lang.Object ref = title_;
@@ -10743,11 +11672,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string title = 2;</code>
-     *
      * <pre>
      * ??
      * </pre>
+     *
+     * <code>string title = 2;</code>
      */
     public com.google.protobuf.ByteString
         getTitleBytes() {
@@ -10766,11 +11695,11 @@ public final class NcStreamProto {
     public static final int ID_FIELD_NUMBER = 3;
     private volatile java.lang.Object id_;
     /**
-     * <code>optional string id = 3;</code>
-     *
      * <pre>
      * ??
      * </pre>
+     *
+     * <code>string id = 3;</code>
      */
     public java.lang.String getId() {
       java.lang.Object ref = id_;
@@ -10785,11 +11714,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string id = 3;</code>
-     *
      * <pre>
      * ??
      * </pre>
+     *
+     * <code>string id = 3;</code>
      */
     public com.google.protobuf.ByteString
         getIdBytes() {
@@ -10808,19 +11737,19 @@ public final class NcStreamProto {
     public static final int ROOT_FIELD_NUMBER = 4;
     private ucar.nc2.stream.NcStreamProto.Group root_;
     /**
-     * <code>optional .Group root = 4;</code>
+     * <code>.Group root = 4;</code>
      */
     public boolean hasRoot() {
       return root_ != null;
     }
     /**
-     * <code>optional .Group root = 4;</code>
+     * <code>.Group root = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Group getRoot() {
       return root_ == null ? ucar.nc2.stream.NcStreamProto.Group.getDefaultInstance() : root_;
     }
     /**
-     * <code>optional .Group root = 4;</code>
+     * <code>.Group root = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.GroupOrBuilder getRootOrBuilder() {
       return getRoot();
@@ -10829,13 +11758,14 @@ public final class NcStreamProto {
     public static final int VERSION_FIELD_NUMBER = 5;
     private int version_;
     /**
-     * <code>optional uint32 version = 5;</code>
+     * <code>uint32 version = 5;</code>
      */
     public int getVersion() {
       return version_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -10845,16 +11775,17 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getLocationBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, location_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, location_);
       }
       if (!getTitleBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, title_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, title_);
       }
       if (!getIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 3, id_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, id_);
       }
       if (root_ != null) {
         output.writeMessage(4, getRoot());
@@ -10862,21 +11793,23 @@ public final class NcStreamProto {
       if (version_ != 0) {
         output.writeUInt32(5, version_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getLocationBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, location_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, location_);
       }
       if (!getTitleBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, title_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, title_);
       }
       if (!getIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, id_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, id_);
       }
       if (root_ != null) {
         size += com.google.protobuf.CodedOutputStream
@@ -10886,11 +11819,73 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(5, version_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Header)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Header other = (ucar.nc2.stream.NcStreamProto.Header) obj;
+
+      if (!getLocation()
+          .equals(other.getLocation())) return false;
+      if (!getTitle()
+          .equals(other.getTitle())) return false;
+      if (!getId()
+          .equals(other.getId())) return false;
+      if (hasRoot() != other.hasRoot()) return false;
+      if (hasRoot()) {
+        if (!getRoot()
+            .equals(other.getRoot())) return false;
+      }
+      if (getVersion()
+          != other.getVersion()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + LOCATION_FIELD_NUMBER;
+      hash = (53 * hash) + getLocation().hashCode();
+      hash = (37 * hash) + TITLE_FIELD_NUMBER;
+      hash = (53 * hash) + getTitle().hashCode();
+      hash = (37 * hash) + ID_FIELD_NUMBER;
+      hash = (53 * hash) + getId().hashCode();
+      if (hasRoot()) {
+        hash = (37 * hash) + ROOT_FIELD_NUMBER;
+        hash = (53 * hash) + getRoot().hashCode();
+      }
+      hash = (37 * hash) + VERSION_FIELD_NUMBER;
+      hash = (53 * hash) + getVersion();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -10914,36 +11909,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Header parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Header parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Header parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -10951,6 +11953,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Header prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -10958,7 +11961,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -10966,7 +11969,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Header}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Header)
         ucar.nc2.stream.NcStreamProto.HeaderOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -10974,7 +11977,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Header_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Header_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -10987,14 +11991,16 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         location_ = "";
@@ -11014,15 +12020,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Header_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Header getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Header.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Header build() {
         ucar.nc2.stream.NcStreamProto.Header result = buildPartial();
         if (!result.isInitialized()) {
@@ -11031,6 +12040,7 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Header buildPartial() {
         ucar.nc2.stream.NcStreamProto.Header result = new ucar.nc2.stream.NcStreamProto.Header(this);
         result.location_ = location_;
@@ -11046,6 +12056,39 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Header) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Header)other);
@@ -11075,14 +12118,17 @@ public final class NcStreamProto {
         if (other.getVersion() != 0) {
           setVersion(other.getVersion());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11092,7 +12138,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Header) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -11103,7 +12149,7 @@ public final class NcStreamProto {
 
       private java.lang.Object location_ = "";
       /**
-       * <code>optional string location = 1;</code>
+       * <code>string location = 1;</code>
        */
       public java.lang.String getLocation() {
         java.lang.Object ref = location_;
@@ -11118,7 +12164,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string location = 1;</code>
+       * <code>string location = 1;</code>
        */
       public com.google.protobuf.ByteString
           getLocationBytes() {
@@ -11134,7 +12180,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string location = 1;</code>
+       * <code>string location = 1;</code>
        */
       public Builder setLocation(
           java.lang.String value) {
@@ -11147,7 +12193,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string location = 1;</code>
+       * <code>string location = 1;</code>
        */
       public Builder clearLocation() {
         
@@ -11156,7 +12202,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string location = 1;</code>
+       * <code>string location = 1;</code>
        */
       public Builder setLocationBytes(
           com.google.protobuf.ByteString value) {
@@ -11172,11 +12218,11 @@ public final class NcStreamProto {
 
       private java.lang.Object title_ = "";
       /**
-       * <code>optional string title = 2;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string title = 2;</code>
        */
       public java.lang.String getTitle() {
         java.lang.Object ref = title_;
@@ -11191,11 +12237,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string title = 2;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string title = 2;</code>
        */
       public com.google.protobuf.ByteString
           getTitleBytes() {
@@ -11211,11 +12257,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string title = 2;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string title = 2;</code>
        */
       public Builder setTitle(
           java.lang.String value) {
@@ -11228,11 +12274,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string title = 2;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string title = 2;</code>
        */
       public Builder clearTitle() {
         
@@ -11241,11 +12287,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string title = 2;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string title = 2;</code>
        */
       public Builder setTitleBytes(
           com.google.protobuf.ByteString value) {
@@ -11261,11 +12307,11 @@ public final class NcStreamProto {
 
       private java.lang.Object id_ = "";
       /**
-       * <code>optional string id = 3;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string id = 3;</code>
        */
       public java.lang.String getId() {
         java.lang.Object ref = id_;
@@ -11280,11 +12326,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string id = 3;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string id = 3;</code>
        */
       public com.google.protobuf.ByteString
           getIdBytes() {
@@ -11300,11 +12346,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string id = 3;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string id = 3;</code>
        */
       public Builder setId(
           java.lang.String value) {
@@ -11317,11 +12363,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string id = 3;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string id = 3;</code>
        */
       public Builder clearId() {
         
@@ -11330,11 +12376,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string id = 3;</code>
-       *
        * <pre>
        * ??
        * </pre>
+       *
+       * <code>string id = 3;</code>
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
@@ -11348,17 +12394,17 @@ public final class NcStreamProto {
         return this;
       }
 
-      private ucar.nc2.stream.NcStreamProto.Group root_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.stream.NcStreamProto.Group root_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder> rootBuilder_;
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
       public boolean hasRoot() {
         return rootBuilder_ != null || root_ != null;
       }
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Group getRoot() {
         if (rootBuilder_ == null) {
@@ -11368,7 +12414,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
       public Builder setRoot(ucar.nc2.stream.NcStreamProto.Group value) {
         if (rootBuilder_ == null) {
@@ -11384,7 +12430,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
       public Builder setRoot(
           ucar.nc2.stream.NcStreamProto.Group.Builder builderForValue) {
@@ -11398,7 +12444,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
       public Builder mergeRoot(ucar.nc2.stream.NcStreamProto.Group value) {
         if (rootBuilder_ == null) {
@@ -11416,7 +12462,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
       public Builder clearRoot() {
         if (rootBuilder_ == null) {
@@ -11430,7 +12476,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Group.Builder getRootBuilder() {
         
@@ -11438,7 +12484,7 @@ public final class NcStreamProto {
         return getRootFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.GroupOrBuilder getRootOrBuilder() {
         if (rootBuilder_ != null) {
@@ -11449,13 +12495,13 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .Group root = 4;</code>
+       * <code>.Group root = 4;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder> 
           getRootFieldBuilder() {
         if (rootBuilder_ == null) {
-          rootBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          rootBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder>(
                   getRoot(),
                   getParentForChildren(),
@@ -11467,13 +12513,13 @@ public final class NcStreamProto {
 
       private int version_ ;
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public int getVersion() {
         return version_;
       }
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public Builder setVersion(int value) {
         
@@ -11482,7 +12528,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public Builder clearVersion() {
         
@@ -11490,14 +12536,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -11516,20 +12564,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Header>
         PARSER = new com.google.protobuf.AbstractParser<Header>() {
+      @java.lang.Override
       public Header parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Header(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Header(input, extensionRegistry);
       }
     };
 
@@ -11542,6 +12582,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Header getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -11553,17 +12594,17 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string message = 1;</code>
+     * <code>string message = 1;</code>
      */
     java.lang.String getMessage();
     /**
-     * <code>optional string message = 1;</code>
+     * <code>string message = 1;</code>
      */
     com.google.protobuf.ByteString
         getMessageBytes();
 
     /**
-     * <code>optional uint32 code = 2;</code>
+     * <code>uint32 code = 2;</code>
      */
     int getCode();
   }
@@ -11571,28 +12612,40 @@ public final class NcStreamProto {
    * Protobuf type {@code Error}
    */
   public  static final class Error extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Error)
       ErrorOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Error.newBuilder() to construct.
-    private Error(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Error(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Error() {
       message_ = "";
-      code_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Error();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Error(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -11601,14 +12654,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               message_ = s;
               break;
@@ -11618,15 +12665,22 @@ public final class NcStreamProto {
               code_ = input.readUInt32();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -11635,7 +12689,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Error_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Error_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -11645,7 +12700,7 @@ public final class NcStreamProto {
     public static final int MESSAGE_FIELD_NUMBER = 1;
     private volatile java.lang.Object message_;
     /**
-     * <code>optional string message = 1;</code>
+     * <code>string message = 1;</code>
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -11660,7 +12715,7 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string message = 1;</code>
+     * <code>string message = 1;</code>
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -11679,13 +12734,14 @@ public final class NcStreamProto {
     public static final int CODE_FIELD_NUMBER = 2;
     private int code_;
     /**
-     * <code>optional uint32 code = 2;</code>
+     * <code>uint32 code = 2;</code>
      */
     public int getCode() {
       return code_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -11695,33 +12751,81 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getMessageBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, message_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, message_);
       }
       if (code_ != 0) {
         output.writeUInt32(2, code_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getMessageBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, message_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, message_);
       }
       if (code_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(2, code_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Error)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Error other = (ucar.nc2.stream.NcStreamProto.Error) obj;
+
+      if (!getMessage()
+          .equals(other.getMessage())) return false;
+      if (getCode()
+          != other.getCode()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getMessage().hashCode();
+      hash = (37 * hash) + CODE_FIELD_NUMBER;
+      hash = (53 * hash) + getCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Error parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Error parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Error parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -11745,36 +12849,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Error parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Error parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Error parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Error parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Error parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Error parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -11782,6 +12893,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Error prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -11789,7 +12901,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -11797,7 +12909,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Error}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Error)
         ucar.nc2.stream.NcStreamProto.ErrorOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -11805,7 +12917,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Error_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Error_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -11818,14 +12931,16 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         message_ = "";
@@ -11835,15 +12950,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Error_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Error getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Error.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Error build() {
         ucar.nc2.stream.NcStreamProto.Error result = buildPartial();
         if (!result.isInitialized()) {
@@ -11852,6 +12970,7 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Error buildPartial() {
         ucar.nc2.stream.NcStreamProto.Error result = new ucar.nc2.stream.NcStreamProto.Error(this);
         result.message_ = message_;
@@ -11860,6 +12979,39 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Error) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Error)other);
@@ -11878,14 +13030,17 @@ public final class NcStreamProto {
         if (other.getCode() != 0) {
           setCode(other.getCode());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11895,7 +13050,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Error) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -11906,7 +13061,7 @@ public final class NcStreamProto {
 
       private java.lang.Object message_ = "";
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
@@ -11921,7 +13076,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public com.google.protobuf.ByteString
           getMessageBytes() {
@@ -11937,7 +13092,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public Builder setMessage(
           java.lang.String value) {
@@ -11950,7 +13105,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public Builder clearMessage() {
         
@@ -11959,7 +13114,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public Builder setMessageBytes(
           com.google.protobuf.ByteString value) {
@@ -11975,13 +13130,13 @@ public final class NcStreamProto {
 
       private int code_ ;
       /**
-       * <code>optional uint32 code = 2;</code>
+       * <code>uint32 code = 2;</code>
        */
       public int getCode() {
         return code_;
       }
       /**
-       * <code>optional uint32 code = 2;</code>
+       * <code>uint32 code = 2;</code>
        */
       public Builder setCode(int value) {
         
@@ -11990,7 +13145,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 code = 2;</code>
+       * <code>uint32 code = 2;</code>
        */
       public Builder clearCode() {
         
@@ -11998,14 +13153,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -12024,20 +13181,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Error>
         PARSER = new com.google.protobuf.AbstractParser<Error>() {
+      @java.lang.Override
       public Error parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Error(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Error(input, extensionRegistry);
       }
     };
 
@@ -12050,6 +13199,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Error getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -12061,17 +13211,17 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional uint64 start = 1;</code>
+     * <code>uint64 start = 1;</code>
      */
     long getStart();
 
     /**
-     * <code>optional uint64 size = 2;</code>
+     * <code>uint64 size = 2;</code>
      */
     long getSize();
 
     /**
-     * <code>optional uint64 stride = 3;</code>
+     * <code>uint64 stride = 3;</code>
      */
     long getStride();
   }
@@ -12079,29 +13229,39 @@ public final class NcStreamProto {
    * Protobuf type {@code Range}
    */
   public  static final class Range extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Range)
       RangeOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Range.newBuilder() to construct.
-    private Range(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Range(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Range() {
-      start_ = 0L;
-      size_ = 0L;
-      stride_ = 0L;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Range();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Range(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -12110,12 +13270,6 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 8: {
 
               start_ = input.readUInt64();
@@ -12131,15 +13285,22 @@ public final class NcStreamProto {
               stride_ = input.readUInt64();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -12148,7 +13309,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Range_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Range_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -12158,7 +13320,7 @@ public final class NcStreamProto {
     public static final int START_FIELD_NUMBER = 1;
     private long start_;
     /**
-     * <code>optional uint64 start = 1;</code>
+     * <code>uint64 start = 1;</code>
      */
     public long getStart() {
       return start_;
@@ -12167,7 +13329,7 @@ public final class NcStreamProto {
     public static final int SIZE_FIELD_NUMBER = 2;
     private long size_;
     /**
-     * <code>optional uint64 size = 2;</code>
+     * <code>uint64 size = 2;</code>
      */
     public long getSize() {
       return size_;
@@ -12176,13 +13338,14 @@ public final class NcStreamProto {
     public static final int STRIDE_FIELD_NUMBER = 3;
     private long stride_;
     /**
-     * <code>optional uint64 stride = 3;</code>
+     * <code>uint64 stride = 3;</code>
      */
     public long getStride() {
       return stride_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -12192,6 +13355,7 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (start_ != 0L) {
@@ -12203,8 +13367,10 @@ public final class NcStreamProto {
       if (stride_ != 0L) {
         output.writeUInt64(3, stride_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -12222,11 +13388,63 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(3, stride_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Range)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Range other = (ucar.nc2.stream.NcStreamProto.Range) obj;
+
+      if (getStart()
+          != other.getStart()) return false;
+      if (getSize()
+          != other.getSize()) return false;
+      if (getStride()
+          != other.getStride()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + START_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getStart());
+      hash = (37 * hash) + SIZE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getSize());
+      hash = (37 * hash) + STRIDE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getStride());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Range parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Range parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Range parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -12250,36 +13468,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Range parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Range parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Range parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Range parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Range parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Range parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -12287,6 +13512,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Range prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -12294,7 +13520,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -12302,7 +13528,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Range}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Range)
         ucar.nc2.stream.NcStreamProto.RangeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -12310,7 +13536,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Range_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Range_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -12323,14 +13550,16 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         start_ = 0L;
@@ -12342,15 +13571,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Range_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Range getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Range.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Range build() {
         ucar.nc2.stream.NcStreamProto.Range result = buildPartial();
         if (!result.isInitialized()) {
@@ -12359,6 +13591,7 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Range buildPartial() {
         ucar.nc2.stream.NcStreamProto.Range result = new ucar.nc2.stream.NcStreamProto.Range(this);
         result.start_ = start_;
@@ -12368,6 +13601,39 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Range) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Range)other);
@@ -12388,14 +13654,17 @@ public final class NcStreamProto {
         if (other.getStride() != 0L) {
           setStride(other.getStride());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -12405,7 +13674,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Range) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -12416,13 +13685,13 @@ public final class NcStreamProto {
 
       private long start_ ;
       /**
-       * <code>optional uint64 start = 1;</code>
+       * <code>uint64 start = 1;</code>
        */
       public long getStart() {
         return start_;
       }
       /**
-       * <code>optional uint64 start = 1;</code>
+       * <code>uint64 start = 1;</code>
        */
       public Builder setStart(long value) {
         
@@ -12431,7 +13700,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint64 start = 1;</code>
+       * <code>uint64 start = 1;</code>
        */
       public Builder clearStart() {
         
@@ -12442,13 +13711,13 @@ public final class NcStreamProto {
 
       private long size_ ;
       /**
-       * <code>optional uint64 size = 2;</code>
+       * <code>uint64 size = 2;</code>
        */
       public long getSize() {
         return size_;
       }
       /**
-       * <code>optional uint64 size = 2;</code>
+       * <code>uint64 size = 2;</code>
        */
       public Builder setSize(long value) {
         
@@ -12457,7 +13726,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint64 size = 2;</code>
+       * <code>uint64 size = 2;</code>
        */
       public Builder clearSize() {
         
@@ -12468,13 +13737,13 @@ public final class NcStreamProto {
 
       private long stride_ ;
       /**
-       * <code>optional uint64 stride = 3;</code>
+       * <code>uint64 stride = 3;</code>
        */
       public long getStride() {
         return stride_;
       }
       /**
-       * <code>optional uint64 stride = 3;</code>
+       * <code>uint64 stride = 3;</code>
        */
       public Builder setStride(long value) {
         
@@ -12483,7 +13752,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint64 stride = 3;</code>
+       * <code>uint64 stride = 3;</code>
        */
       public Builder clearStride() {
         
@@ -12491,14 +13760,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -12517,20 +13788,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Range>
         PARSER = new com.google.protobuf.AbstractParser<Range>() {
+      @java.lang.Override
       public Range parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Range(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Range(input, extensionRegistry);
       }
     };
 
@@ -12543,6 +13806,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Range getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -12581,11 +13845,12 @@ public final class NcStreamProto {
    * Protobuf type {@code Section}
    */
   public  static final class Section extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Section)
       SectionOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Section.newBuilder() to construct.
-    private Section(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Section(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Section() {
@@ -12593,15 +13858,28 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Section();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Section(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -12610,32 +13888,34 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 range_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Range>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              range_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Range.parser(), extensionRegistry));
+              range_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Range.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           range_ = java.util.Collections.unmodifiableList(range_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -12644,7 +13924,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Section_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Section_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -12687,6 +13968,7 @@ public final class NcStreamProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -12696,13 +13978,16 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (int i = 0; i < range_.size(); i++) {
         output.writeMessage(1, range_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -12712,11 +13997,54 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, range_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Section)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Section other = (ucar.nc2.stream.NcStreamProto.Section) obj;
+
+      if (!getRangeList()
+          .equals(other.getRangeList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getRangeCount() > 0) {
+        hash = (37 * hash) + RANGE_FIELD_NUMBER;
+        hash = (53 * hash) + getRangeList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Section parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Section parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Section parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -12740,36 +14068,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Section parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Section parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Section parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Section parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Section parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Section parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -12777,6 +14112,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Section prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -12784,7 +14120,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -12792,7 +14128,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Section}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Section)
         ucar.nc2.stream.NcStreamProto.SectionOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -12800,7 +14136,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Section_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Section_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -12813,15 +14150,17 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getRangeFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         if (rangeBuilder_ == null) {
@@ -12833,15 +14172,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Section_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Section getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Section build() {
         ucar.nc2.stream.NcStreamProto.Section result = buildPartial();
         if (!result.isInitialized()) {
@@ -12850,11 +14192,12 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Section buildPartial() {
         ucar.nc2.stream.NcStreamProto.Section result = new ucar.nc2.stream.NcStreamProto.Section(this);
         int from_bitField0_ = bitField0_;
         if (rangeBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             range_ = java.util.Collections.unmodifiableList(range_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
@@ -12866,6 +14209,39 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Section) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Section)other);
@@ -12896,21 +14272,24 @@ public final class NcStreamProto {
               range_ = other.range_;
               bitField0_ = (bitField0_ & ~0x00000001);
               rangeBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getRangeFieldBuilder() : null;
             } else {
               rangeBuilder_.addAllMessages(other.range_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -12920,7 +14299,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Section) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -12933,13 +14312,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Range> range_ =
         java.util.Collections.emptyList();
       private void ensureRangeIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           range_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Range>(range_);
           bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Range, ucar.nc2.stream.NcStreamProto.Range.Builder, ucar.nc2.stream.NcStreamProto.RangeOrBuilder> rangeBuilder_;
 
       /**
@@ -13155,28 +14534,30 @@ public final class NcStreamProto {
            getRangeBuilderList() {
         return getRangeFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Range, ucar.nc2.stream.NcStreamProto.Range.Builder, ucar.nc2.stream.NcStreamProto.RangeOrBuilder> 
           getRangeFieldBuilder() {
         if (rangeBuilder_ == null) {
-          rangeBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          rangeBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Range, ucar.nc2.stream.NcStreamProto.Range.Builder, ucar.nc2.stream.NcStreamProto.RangeOrBuilder>(
                   range_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           range_ = null;
         }
         return rangeBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -13195,20 +14576,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Section>
         PARSER = new com.google.protobuf.AbstractParser<Section>() {
+      @java.lang.Override
       public Section parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Section(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Section(input, extensionRegistry);
       }
     };
 
@@ -13221,6 +14594,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Section getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -13232,91 +14606,91 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string varName = 1;</code>
-     *
      * <pre>
      * full escaped name.
      * </pre>
+     *
+     * <code>string varName = 1;</code>
      */
     java.lang.String getVarName();
     /**
-     * <code>optional string varName = 1;</code>
-     *
      * <pre>
      * full escaped name.
      * </pre>
+     *
+     * <code>string varName = 1;</code>
      */
     com.google.protobuf.ByteString
         getVarNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     /**
-     * <code>optional .Section section = 3;</code>
-     *
      * <pre>
      * not required for SEQUENCE
      * </pre>
+     *
+     * <code>.Section section = 3;</code>
      */
     boolean hasSection();
     /**
-     * <code>optional .Section section = 3;</code>
-     *
      * <pre>
      * not required for SEQUENCE
      * </pre>
+     *
+     * <code>.Section section = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.Section getSection();
     /**
-     * <code>optional .Section section = 3;</code>
-     *
      * <pre>
      * not required for SEQUENCE
      * </pre>
+     *
+     * <code>.Section section = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder();
 
     /**
-     * <code>optional bool bigend = 4;</code>
-     *
      * <pre>
      * [default=true] in proto2
      * </pre>
+     *
+     * <code>bool bigend = 4;</code>
      */
     boolean getBigend();
 
     /**
-     * <code>optional uint32 version = 5;</code>
-     *
      * <pre>
      * version=2 for proto2, &gt;=3 for proto3 (v5.0+)
      * </pre>
+     *
+     * <code>uint32 version = 5;</code>
      */
     int getVersion();
 
     /**
-     * <code>optional .Compress compress = 6;</code>
+     * <code>.Compress compress = 6;</code>
      */
     int getCompressValue();
     /**
-     * <code>optional .Compress compress = 6;</code>
+     * <code>.Compress compress = 6;</code>
      */
     ucar.nc2.stream.NcStreamProto.Compress getCompress();
 
     /**
-     * <code>optional bool vdata = 7;</code>
+     * <code>bool vdata = 7;</code>
      */
     boolean getVdata();
 
     /**
-     * <code>optional uint32 uncompressedSize = 8;</code>
+     * <code>uint32 uncompressedSize = 8;</code>
      */
     int getUncompressedSize();
 
@@ -13326,32 +14700,42 @@ public final class NcStreamProto {
    * Protobuf type {@code Data}
    */
   public  static final class Data extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Data)
       DataOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Data.newBuilder() to construct.
-    private Data(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Data(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Data() {
       varName_ = "";
       dataType_ = 0;
-      version_ = 0;
       compress_ = 0;
-      vdata_ = false;
-      uncompressedSize_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Data();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Data(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -13360,14 +14744,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               varName_ = s;
               break;
@@ -13417,15 +14795,22 @@ public final class NcStreamProto {
               uncompressedSize_ = input.readUInt32();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -13434,7 +14819,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Data_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Data_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -13447,16 +14833,23 @@ public final class NcStreamProto {
         implements com.google.protobuf.Internal.EnumLite {
       BIGEND(4),
       BIGENDPRESENT_NOT_SET(0);
-      private int value = 0;
+      private final int value;
       private BigendPresentCase(int value) {
         this.value = value;
       }
+      /**
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
       public static BigendPresentCase valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static BigendPresentCase forNumber(int value) {
         switch (value) {
           case 4: return BIGEND;
           case 0: return BIGENDPRESENT_NOT_SET;
-          default: throw new java.lang.IllegalArgumentException(
-            "Value is undefined for this oneof enum.");
+          default: return null;
         }
       }
       public int getNumber() {
@@ -13466,18 +14859,18 @@ public final class NcStreamProto {
 
     public BigendPresentCase
     getBigendPresentCase() {
-      return BigendPresentCase.valueOf(
+      return BigendPresentCase.forNumber(
           bigendPresentCase_);
     }
 
     public static final int VARNAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object varName_;
     /**
-     * <code>optional string varName = 1;</code>
-     *
      * <pre>
      * full escaped name.
      * </pre>
+     *
+     * <code>string varName = 1;</code>
      */
     public java.lang.String getVarName() {
       java.lang.Object ref = varName_;
@@ -13492,11 +14885,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string varName = 1;</code>
-     *
      * <pre>
      * full escaped name.
      * </pre>
+     *
+     * <code>string varName = 1;</code>
      */
     public com.google.protobuf.ByteString
         getVarNameBytes() {
@@ -13515,15 +14908,16 @@ public final class NcStreamProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
@@ -13531,31 +14925,31 @@ public final class NcStreamProto {
     public static final int SECTION_FIELD_NUMBER = 3;
     private ucar.nc2.stream.NcStreamProto.Section section_;
     /**
-     * <code>optional .Section section = 3;</code>
-     *
      * <pre>
      * not required for SEQUENCE
      * </pre>
+     *
+     * <code>.Section section = 3;</code>
      */
     public boolean hasSection() {
       return section_ != null;
     }
     /**
-     * <code>optional .Section section = 3;</code>
-     *
      * <pre>
      * not required for SEQUENCE
      * </pre>
+     *
+     * <code>.Section section = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Section getSection() {
       return section_ == null ? ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance() : section_;
     }
     /**
-     * <code>optional .Section section = 3;</code>
-     *
      * <pre>
      * not required for SEQUENCE
      * </pre>
+     *
+     * <code>.Section section = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
       return getSection();
@@ -13563,11 +14957,11 @@ public final class NcStreamProto {
 
     public static final int BIGEND_FIELD_NUMBER = 4;
     /**
-     * <code>optional bool bigend = 4;</code>
-     *
      * <pre>
      * [default=true] in proto2
      * </pre>
+     *
+     * <code>bool bigend = 4;</code>
      */
     public boolean getBigend() {
       if (bigendPresentCase_ == 4) {
@@ -13579,11 +14973,11 @@ public final class NcStreamProto {
     public static final int VERSION_FIELD_NUMBER = 5;
     private int version_;
     /**
-     * <code>optional uint32 version = 5;</code>
-     *
      * <pre>
      * version=2 for proto2, &gt;=3 for proto3 (v5.0+)
      * </pre>
+     *
+     * <code>uint32 version = 5;</code>
      */
     public int getVersion() {
       return version_;
@@ -13592,15 +14986,16 @@ public final class NcStreamProto {
     public static final int COMPRESS_FIELD_NUMBER = 6;
     private int compress_;
     /**
-     * <code>optional .Compress compress = 6;</code>
+     * <code>.Compress compress = 6;</code>
      */
     public int getCompressValue() {
       return compress_;
     }
     /**
-     * <code>optional .Compress compress = 6;</code>
+     * <code>.Compress compress = 6;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Compress getCompress() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.Compress result = ucar.nc2.stream.NcStreamProto.Compress.valueOf(compress_);
       return result == null ? ucar.nc2.stream.NcStreamProto.Compress.UNRECOGNIZED : result;
     }
@@ -13608,7 +15003,7 @@ public final class NcStreamProto {
     public static final int VDATA_FIELD_NUMBER = 7;
     private boolean vdata_;
     /**
-     * <code>optional bool vdata = 7;</code>
+     * <code>bool vdata = 7;</code>
      */
     public boolean getVdata() {
       return vdata_;
@@ -13617,13 +15012,14 @@ public final class NcStreamProto {
     public static final int UNCOMPRESSEDSIZE_FIELD_NUMBER = 8;
     private int uncompressedSize_;
     /**
-     * <code>optional uint32 uncompressedSize = 8;</code>
+     * <code>uint32 uncompressedSize = 8;</code>
      */
     public int getUncompressedSize() {
       return uncompressedSize_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -13633,10 +15029,11 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getVarNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, varName_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, varName_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -13660,15 +15057,17 @@ public final class NcStreamProto {
       if (uncompressedSize_ != 0) {
         output.writeUInt32(8, uncompressedSize_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getVarNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, varName_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, varName_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -13699,11 +15098,98 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(8, uncompressedSize_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Data)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Data other = (ucar.nc2.stream.NcStreamProto.Data) obj;
+
+      if (!getVarName()
+          .equals(other.getVarName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (hasSection() != other.hasSection()) return false;
+      if (hasSection()) {
+        if (!getSection()
+            .equals(other.getSection())) return false;
+      }
+      if (getVersion()
+          != other.getVersion()) return false;
+      if (compress_ != other.compress_) return false;
+      if (getVdata()
+          != other.getVdata()) return false;
+      if (getUncompressedSize()
+          != other.getUncompressedSize()) return false;
+      if (!getBigendPresentCase().equals(other.getBigendPresentCase())) return false;
+      switch (bigendPresentCase_) {
+        case 4:
+          if (getBigend()
+              != other.getBigend()) return false;
+          break;
+        case 0:
+        default:
+      }
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + VARNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getVarName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      if (hasSection()) {
+        hash = (37 * hash) + SECTION_FIELD_NUMBER;
+        hash = (53 * hash) + getSection().hashCode();
+      }
+      hash = (37 * hash) + VERSION_FIELD_NUMBER;
+      hash = (53 * hash) + getVersion();
+      hash = (37 * hash) + COMPRESS_FIELD_NUMBER;
+      hash = (53 * hash) + compress_;
+      hash = (37 * hash) + VDATA_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getVdata());
+      hash = (37 * hash) + UNCOMPRESSEDSIZE_FIELD_NUMBER;
+      hash = (53 * hash) + getUncompressedSize();
+      switch (bigendPresentCase_) {
+        case 4:
+          hash = (37 * hash) + BIGEND_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getBigend());
+          break;
+        case 0:
+        default:
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Data parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Data parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -13727,36 +15213,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Data parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Data parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Data parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Data parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Data parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Data parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -13764,6 +15257,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Data prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -13771,7 +15265,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -13779,7 +15273,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Data}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Data)
         ucar.nc2.stream.NcStreamProto.DataOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -13787,7 +15281,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Data_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Data_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -13800,14 +15295,16 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         varName_ = "";
@@ -13833,15 +15330,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Data_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Data getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Data.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Data build() {
         ucar.nc2.stream.NcStreamProto.Data result = buildPartial();
         if (!result.isInitialized()) {
@@ -13850,6 +15350,7 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Data buildPartial() {
         ucar.nc2.stream.NcStreamProto.Data result = new ucar.nc2.stream.NcStreamProto.Data(this);
         result.varName_ = varName_;
@@ -13871,6 +15372,39 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Data) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Data)other);
@@ -13913,14 +15447,17 @@ public final class NcStreamProto {
             break;
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -13930,7 +15467,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Data) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -13942,7 +15479,7 @@ public final class NcStreamProto {
       private java.lang.Object bigendPresent_;
       public BigendPresentCase
           getBigendPresentCase() {
-        return BigendPresentCase.valueOf(
+        return BigendPresentCase.forNumber(
             bigendPresentCase_);
       }
 
@@ -13956,11 +15493,11 @@ public final class NcStreamProto {
 
       private java.lang.Object varName_ = "";
       /**
-       * <code>optional string varName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string varName = 1;</code>
        */
       public java.lang.String getVarName() {
         java.lang.Object ref = varName_;
@@ -13975,11 +15512,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string varName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string varName = 1;</code>
        */
       public com.google.protobuf.ByteString
           getVarNameBytes() {
@@ -13995,11 +15532,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string varName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string varName = 1;</code>
        */
       public Builder setVarName(
           java.lang.String value) {
@@ -14012,11 +15549,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string varName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string varName = 1;</code>
        */
       public Builder clearVarName() {
         
@@ -14025,11 +15562,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string varName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string varName = 1;</code>
        */
       public Builder setVarNameBytes(
           com.google.protobuf.ByteString value) {
@@ -14045,13 +15582,13 @@ public final class NcStreamProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -14059,14 +15596,15 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -14078,7 +15616,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -14087,25 +15625,25 @@ public final class NcStreamProto {
         return this;
       }
 
-      private ucar.nc2.stream.NcStreamProto.Section section_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.stream.NcStreamProto.Section section_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> sectionBuilder_;
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
       public boolean hasSection() {
         return sectionBuilder_ != null || section_ != null;
       }
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Section getSection() {
         if (sectionBuilder_ == null) {
@@ -14115,11 +15653,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
       public Builder setSection(ucar.nc2.stream.NcStreamProto.Section value) {
         if (sectionBuilder_ == null) {
@@ -14135,11 +15673,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
       public Builder setSection(
           ucar.nc2.stream.NcStreamProto.Section.Builder builderForValue) {
@@ -14153,11 +15691,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
       public Builder mergeSection(ucar.nc2.stream.NcStreamProto.Section value) {
         if (sectionBuilder_ == null) {
@@ -14175,11 +15713,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
       public Builder clearSection() {
         if (sectionBuilder_ == null) {
@@ -14193,11 +15731,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Section.Builder getSectionBuilder() {
         
@@ -14205,11 +15743,11 @@ public final class NcStreamProto {
         return getSectionFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
         if (sectionBuilder_ != null) {
@@ -14220,17 +15758,17 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .Section section = 3;</code>
-       *
        * <pre>
        * not required for SEQUENCE
        * </pre>
+       *
+       * <code>.Section section = 3;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> 
           getSectionFieldBuilder() {
         if (sectionBuilder_ == null) {
-          sectionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          sectionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder>(
                   getSection(),
                   getParentForChildren(),
@@ -14241,11 +15779,11 @@ public final class NcStreamProto {
       }
 
       /**
-       * <code>optional bool bigend = 4;</code>
-       *
        * <pre>
        * [default=true] in proto2
        * </pre>
+       *
+       * <code>bool bigend = 4;</code>
        */
       public boolean getBigend() {
         if (bigendPresentCase_ == 4) {
@@ -14254,11 +15792,11 @@ public final class NcStreamProto {
         return false;
       }
       /**
-       * <code>optional bool bigend = 4;</code>
-       *
        * <pre>
        * [default=true] in proto2
        * </pre>
+       *
+       * <code>bool bigend = 4;</code>
        */
       public Builder setBigend(boolean value) {
         bigendPresentCase_ = 4;
@@ -14267,11 +15805,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool bigend = 4;</code>
-       *
        * <pre>
        * [default=true] in proto2
        * </pre>
+       *
+       * <code>bool bigend = 4;</code>
        */
       public Builder clearBigend() {
         if (bigendPresentCase_ == 4) {
@@ -14284,21 +15822,21 @@ public final class NcStreamProto {
 
       private int version_ ;
       /**
-       * <code>optional uint32 version = 5;</code>
-       *
        * <pre>
        * version=2 for proto2, &gt;=3 for proto3 (v5.0+)
        * </pre>
+       *
+       * <code>uint32 version = 5;</code>
        */
       public int getVersion() {
         return version_;
       }
       /**
-       * <code>optional uint32 version = 5;</code>
-       *
        * <pre>
        * version=2 for proto2, &gt;=3 for proto3 (v5.0+)
        * </pre>
+       *
+       * <code>uint32 version = 5;</code>
        */
       public Builder setVersion(int value) {
         
@@ -14307,11 +15845,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 version = 5;</code>
-       *
        * <pre>
        * version=2 for proto2, &gt;=3 for proto3 (v5.0+)
        * </pre>
+       *
+       * <code>uint32 version = 5;</code>
        */
       public Builder clearVersion() {
         
@@ -14322,13 +15860,13 @@ public final class NcStreamProto {
 
       private int compress_ = 0;
       /**
-       * <code>optional .Compress compress = 6;</code>
+       * <code>.Compress compress = 6;</code>
        */
       public int getCompressValue() {
         return compress_;
       }
       /**
-       * <code>optional .Compress compress = 6;</code>
+       * <code>.Compress compress = 6;</code>
        */
       public Builder setCompressValue(int value) {
         compress_ = value;
@@ -14336,14 +15874,15 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Compress compress = 6;</code>
+       * <code>.Compress compress = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Compress getCompress() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.Compress result = ucar.nc2.stream.NcStreamProto.Compress.valueOf(compress_);
         return result == null ? ucar.nc2.stream.NcStreamProto.Compress.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .Compress compress = 6;</code>
+       * <code>.Compress compress = 6;</code>
        */
       public Builder setCompress(ucar.nc2.stream.NcStreamProto.Compress value) {
         if (value == null) {
@@ -14355,7 +15894,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Compress compress = 6;</code>
+       * <code>.Compress compress = 6;</code>
        */
       public Builder clearCompress() {
         
@@ -14366,13 +15905,13 @@ public final class NcStreamProto {
 
       private boolean vdata_ ;
       /**
-       * <code>optional bool vdata = 7;</code>
+       * <code>bool vdata = 7;</code>
        */
       public boolean getVdata() {
         return vdata_;
       }
       /**
-       * <code>optional bool vdata = 7;</code>
+       * <code>bool vdata = 7;</code>
        */
       public Builder setVdata(boolean value) {
         
@@ -14381,7 +15920,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool vdata = 7;</code>
+       * <code>bool vdata = 7;</code>
        */
       public Builder clearVdata() {
         
@@ -14392,13 +15931,13 @@ public final class NcStreamProto {
 
       private int uncompressedSize_ ;
       /**
-       * <code>optional uint32 uncompressedSize = 8;</code>
+       * <code>uint32 uncompressedSize = 8;</code>
        */
       public int getUncompressedSize() {
         return uncompressedSize_;
       }
       /**
-       * <code>optional uint32 uncompressedSize = 8;</code>
+       * <code>uint32 uncompressedSize = 8;</code>
        */
       public Builder setUncompressedSize(int value) {
         
@@ -14407,7 +15946,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 uncompressedSize = 8;</code>
+       * <code>uint32 uncompressedSize = 8;</code>
        */
       public Builder clearUncompressedSize() {
         
@@ -14415,14 +15954,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -14441,20 +15982,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Data>
         PARSER = new com.google.protobuf.AbstractParser<Data>() {
+      @java.lang.Override
       public Data parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Data(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Data(input, extensionRegistry);
       }
     };
 
@@ -14467,6 +16000,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Data getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -14478,114 +16012,114 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated uint32 member = 1;</code>
-     *
      * <pre>
      * list of members present, if none then all, these are the index in Structure
      * </pre>
+     *
+     * <code>repeated uint32 member = 1;</code>
      */
     java.util.List<java.lang.Integer> getMemberList();
     /**
-     * <code>repeated uint32 member = 1;</code>
-     *
      * <pre>
      * list of members present, if none then all, these are the index in Structure
      * </pre>
+     *
+     * <code>repeated uint32 member = 1;</code>
      */
     int getMemberCount();
     /**
-     * <code>repeated uint32 member = 1;</code>
-     *
      * <pre>
      * list of members present, if none then all, these are the index in Structure
      * </pre>
+     *
+     * <code>repeated uint32 member = 1;</code>
      */
     int getMember(int index);
 
     /**
-     * <code>optional bytes data = 2;</code>
-     *
      * <pre>
      * fixed length data
      * </pre>
+     *
+     * <code>bytes data = 2;</code>
      */
     com.google.protobuf.ByteString getData();
 
     /**
-     * <code>repeated uint32 heapCount = 3;</code>
-     *
      * <pre>
      * heap String count
      * </pre>
+     *
+     * <code>repeated uint32 heapCount = 3;</code>
      */
     java.util.List<java.lang.Integer> getHeapCountList();
     /**
-     * <code>repeated uint32 heapCount = 3;</code>
-     *
      * <pre>
      * heap String count
      * </pre>
+     *
+     * <code>repeated uint32 heapCount = 3;</code>
      */
     int getHeapCountCount();
     /**
-     * <code>repeated uint32 heapCount = 3;</code>
-     *
      * <pre>
      * heap String count
      * </pre>
+     *
+     * <code>repeated uint32 heapCount = 3;</code>
      */
     int getHeapCount(int index);
 
     /**
-     * <code>repeated string sdata = 4;</code>
-     *
      * <pre>
      * Strings
      * </pre>
+     *
+     * <code>repeated string sdata = 4;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getSdataList();
     /**
-     * <code>repeated string sdata = 4;</code>
-     *
      * <pre>
      * Strings
      * </pre>
+     *
+     * <code>repeated string sdata = 4;</code>
      */
     int getSdataCount();
     /**
-     * <code>repeated string sdata = 4;</code>
-     *
      * <pre>
      * Strings
      * </pre>
+     *
+     * <code>repeated string sdata = 4;</code>
      */
     java.lang.String getSdata(int index);
     /**
-     * <code>repeated string sdata = 4;</code>
-     *
      * <pre>
      * Strings
      * </pre>
+     *
+     * <code>repeated string sdata = 4;</code>
      */
     com.google.protobuf.ByteString
         getSdataBytes(int index);
 
     /**
-     * <code>optional uint64 nrows = 5;</code>
-     *
      * <pre>
      * [default = 1] number of rows in this message
      * </pre>
+     *
+     * <code>uint64 nrows = 5;</code>
      */
     long getNrows();
 
     /**
-     * <code>optional uint32 rowLength = 6;</code>
-     *
      * <pre>
      * length in bytes of each row
      * </pre>
+     *
+     * <code>uint32 rowLength = 6;</code>
      */
     int getRowLength();
   }
@@ -14593,32 +16127,44 @@ public final class NcStreamProto {
    * Protobuf type {@code StructureData}
    */
   public  static final class StructureData extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:StructureData)
       StructureDataOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use StructureData.newBuilder() to construct.
-    private StructureData(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private StructureData(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private StructureData() {
-      member_ = java.util.Collections.emptyList();
+      member_ = emptyIntList();
       data_ = com.google.protobuf.ByteString.EMPTY;
-      heapCount_ = java.util.Collections.emptyList();
+      heapCount_ = emptyIntList();
       sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      nrows_ = 0L;
-      rowLength_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new StructureData();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private StructureData(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -14627,29 +16173,23 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 8: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                member_ = new java.util.ArrayList<java.lang.Integer>();
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                member_ = newIntList();
                 mutable_bitField0_ |= 0x00000001;
               }
-              member_.add(input.readUInt32());
+              member_.addInt(input.readUInt32());
               break;
             }
             case 10: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001) && input.getBytesUntilLimit() > 0) {
-                member_ = new java.util.ArrayList<java.lang.Integer>();
+              if (!((mutable_bitField0_ & 0x00000001) != 0) && input.getBytesUntilLimit() > 0) {
+                member_ = newIntList();
                 mutable_bitField0_ |= 0x00000001;
               }
               while (input.getBytesUntilLimit() > 0) {
-                member_.add(input.readUInt32());
+                member_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
@@ -14660,31 +16200,31 @@ public final class NcStreamProto {
               break;
             }
             case 24: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-                heapCount_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000004;
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                heapCount_ = newIntList();
+                mutable_bitField0_ |= 0x00000002;
               }
-              heapCount_.add(input.readUInt32());
+              heapCount_.addInt(input.readUInt32());
               break;
             }
             case 26: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
-                heapCount_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000004;
+              if (!((mutable_bitField0_ & 0x00000002) != 0) && input.getBytesUntilLimit() > 0) {
+                heapCount_ = newIntList();
+                mutable_bitField0_ |= 0x00000002;
               }
               while (input.getBytesUntilLimit() > 0) {
-                heapCount_.add(input.readUInt32());
+                heapCount_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 34: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 sdata_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000008;
+                mutable_bitField0_ |= 0x00000004;
               }
               sdata_.add(s);
               break;
@@ -14699,24 +16239,31 @@ public final class NcStreamProto {
               rowLength_ = input.readUInt32();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          member_ = java.util.Collections.unmodifiableList(member_);
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          member_.makeImmutable(); // C
         }
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-          heapCount_ = java.util.Collections.unmodifiableList(heapCount_);
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          heapCount_.makeImmutable(); // C
         }
-        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
           sdata_ = sdata_.getUnmodifiableView();
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -14725,136 +16272,136 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.StructureData.class, ucar.nc2.stream.NcStreamProto.StructureData.Builder.class);
     }
 
-    private int bitField0_;
     public static final int MEMBER_FIELD_NUMBER = 1;
-    private java.util.List<java.lang.Integer> member_;
+    private com.google.protobuf.Internal.IntList member_;
     /**
-     * <code>repeated uint32 member = 1;</code>
-     *
      * <pre>
      * list of members present, if none then all, these are the index in Structure
      * </pre>
+     *
+     * <code>repeated uint32 member = 1;</code>
      */
     public java.util.List<java.lang.Integer>
         getMemberList() {
       return member_;
     }
     /**
-     * <code>repeated uint32 member = 1;</code>
-     *
      * <pre>
      * list of members present, if none then all, these are the index in Structure
      * </pre>
+     *
+     * <code>repeated uint32 member = 1;</code>
      */
     public int getMemberCount() {
       return member_.size();
     }
     /**
-     * <code>repeated uint32 member = 1;</code>
-     *
      * <pre>
      * list of members present, if none then all, these are the index in Structure
      * </pre>
+     *
+     * <code>repeated uint32 member = 1;</code>
      */
     public int getMember(int index) {
-      return member_.get(index);
+      return member_.getInt(index);
     }
     private int memberMemoizedSerializedSize = -1;
 
     public static final int DATA_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString data_;
     /**
-     * <code>optional bytes data = 2;</code>
-     *
      * <pre>
      * fixed length data
      * </pre>
+     *
+     * <code>bytes data = 2;</code>
      */
     public com.google.protobuf.ByteString getData() {
       return data_;
     }
 
     public static final int HEAPCOUNT_FIELD_NUMBER = 3;
-    private java.util.List<java.lang.Integer> heapCount_;
+    private com.google.protobuf.Internal.IntList heapCount_;
     /**
-     * <code>repeated uint32 heapCount = 3;</code>
-     *
      * <pre>
      * heap String count
      * </pre>
+     *
+     * <code>repeated uint32 heapCount = 3;</code>
      */
     public java.util.List<java.lang.Integer>
         getHeapCountList() {
       return heapCount_;
     }
     /**
-     * <code>repeated uint32 heapCount = 3;</code>
-     *
      * <pre>
      * heap String count
      * </pre>
+     *
+     * <code>repeated uint32 heapCount = 3;</code>
      */
     public int getHeapCountCount() {
       return heapCount_.size();
     }
     /**
-     * <code>repeated uint32 heapCount = 3;</code>
-     *
      * <pre>
      * heap String count
      * </pre>
+     *
+     * <code>repeated uint32 heapCount = 3;</code>
      */
     public int getHeapCount(int index) {
-      return heapCount_.get(index);
+      return heapCount_.getInt(index);
     }
     private int heapCountMemoizedSerializedSize = -1;
 
     public static final int SDATA_FIELD_NUMBER = 4;
     private com.google.protobuf.LazyStringList sdata_;
     /**
-     * <code>repeated string sdata = 4;</code>
-     *
      * <pre>
      * Strings
      * </pre>
+     *
+     * <code>repeated string sdata = 4;</code>
      */
     public com.google.protobuf.ProtocolStringList
         getSdataList() {
       return sdata_;
     }
     /**
-     * <code>repeated string sdata = 4;</code>
-     *
      * <pre>
      * Strings
      * </pre>
+     *
+     * <code>repeated string sdata = 4;</code>
      */
     public int getSdataCount() {
       return sdata_.size();
     }
     /**
-     * <code>repeated string sdata = 4;</code>
-     *
      * <pre>
      * Strings
      * </pre>
+     *
+     * <code>repeated string sdata = 4;</code>
      */
     public java.lang.String getSdata(int index) {
       return sdata_.get(index);
     }
     /**
-     * <code>repeated string sdata = 4;</code>
-     *
      * <pre>
      * Strings
      * </pre>
+     *
+     * <code>repeated string sdata = 4;</code>
      */
     public com.google.protobuf.ByteString
         getSdataBytes(int index) {
@@ -14864,11 +16411,11 @@ public final class NcStreamProto {
     public static final int NROWS_FIELD_NUMBER = 5;
     private long nrows_;
     /**
-     * <code>optional uint64 nrows = 5;</code>
-     *
      * <pre>
      * [default = 1] number of rows in this message
      * </pre>
+     *
+     * <code>uint64 nrows = 5;</code>
      */
     public long getNrows() {
       return nrows_;
@@ -14877,17 +16424,18 @@ public final class NcStreamProto {
     public static final int ROWLENGTH_FIELD_NUMBER = 6;
     private int rowLength_;
     /**
-     * <code>optional uint32 rowLength = 6;</code>
-     *
      * <pre>
      * length in bytes of each row
      * </pre>
+     *
+     * <code>uint32 rowLength = 6;</code>
      */
     public int getRowLength() {
       return rowLength_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -14897,28 +16445,29 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (getMemberList().size() > 0) {
-        output.writeRawVarint32(10);
-        output.writeRawVarint32(memberMemoizedSerializedSize);
+        output.writeUInt32NoTag(10);
+        output.writeUInt32NoTag(memberMemoizedSerializedSize);
       }
       for (int i = 0; i < member_.size(); i++) {
-        output.writeUInt32NoTag(member_.get(i));
+        output.writeUInt32NoTag(member_.getInt(i));
       }
       if (!data_.isEmpty()) {
         output.writeBytes(2, data_);
       }
       if (getHeapCountList().size() > 0) {
-        output.writeRawVarint32(26);
-        output.writeRawVarint32(heapCountMemoizedSerializedSize);
+        output.writeUInt32NoTag(26);
+        output.writeUInt32NoTag(heapCountMemoizedSerializedSize);
       }
       for (int i = 0; i < heapCount_.size(); i++) {
-        output.writeUInt32NoTag(heapCount_.get(i));
+        output.writeUInt32NoTag(heapCount_.getInt(i));
       }
       for (int i = 0; i < sdata_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 4, sdata_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, sdata_.getRaw(i));
       }
       if (nrows_ != 0L) {
         output.writeUInt64(5, nrows_);
@@ -14926,8 +16475,10 @@ public final class NcStreamProto {
       if (rowLength_ != 0) {
         output.writeUInt32(6, rowLength_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -14937,7 +16488,7 @@ public final class NcStreamProto {
         int dataSize = 0;
         for (int i = 0; i < member_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(member_.get(i));
+            .computeUInt32SizeNoTag(member_.getInt(i));
         }
         size += dataSize;
         if (!getMemberList().isEmpty()) {
@@ -14955,7 +16506,7 @@ public final class NcStreamProto {
         int dataSize = 0;
         for (int i = 0; i < heapCount_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(heapCount_.get(i));
+            .computeUInt32SizeNoTag(heapCount_.getInt(i));
         }
         size += dataSize;
         if (!getHeapCountList().isEmpty()) {
@@ -14981,11 +16532,79 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(6, rowLength_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.StructureData)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.StructureData other = (ucar.nc2.stream.NcStreamProto.StructureData) obj;
+
+      if (!getMemberList()
+          .equals(other.getMemberList())) return false;
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (!getHeapCountList()
+          .equals(other.getHeapCountList())) return false;
+      if (!getSdataList()
+          .equals(other.getSdataList())) return false;
+      if (getNrows()
+          != other.getNrows()) return false;
+      if (getRowLength()
+          != other.getRowLength()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getMemberCount() > 0) {
+        hash = (37 * hash) + MEMBER_FIELD_NUMBER;
+        hash = (53 * hash) + getMemberList().hashCode();
+      }
+      hash = (37 * hash) + DATA_FIELD_NUMBER;
+      hash = (53 * hash) + getData().hashCode();
+      if (getHeapCountCount() > 0) {
+        hash = (37 * hash) + HEAPCOUNT_FIELD_NUMBER;
+        hash = (53 * hash) + getHeapCountList().hashCode();
+      }
+      if (getSdataCount() > 0) {
+        hash = (37 * hash) + SDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getSdataList().hashCode();
+      }
+      hash = (37 * hash) + NROWS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getNrows());
+      hash = (37 * hash) + ROWLENGTH_FIELD_NUMBER;
+      hash = (53 * hash) + getRowLength();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -15009,36 +16628,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.StructureData parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.StructureData parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -15046,6 +16672,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.StructureData prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -15053,7 +16680,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -15061,7 +16688,7 @@ public final class NcStreamProto {
      * Protobuf type {@code StructureData}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:StructureData)
         ucar.nc2.stream.NcStreamProto.StructureDataOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -15069,7 +16696,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -15082,24 +16710,26 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
-        member_ = java.util.Collections.emptyList();
+        member_ = emptyIntList();
         bitField0_ = (bitField0_ & ~0x00000001);
         data_ = com.google.protobuf.ByteString.EMPTY;
 
-        heapCount_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        heapCount_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000002);
         sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000004);
         nrows_ = 0L;
 
         rowLength_ = 0;
@@ -15107,15 +16737,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.StructureData getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.StructureData.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.StructureData build() {
         ucar.nc2.stream.NcStreamProto.StructureData result = buildPartial();
         if (!result.isInitialized()) {
@@ -15124,33 +16757,65 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.StructureData buildPartial() {
         ucar.nc2.stream.NcStreamProto.StructureData result = new ucar.nc2.stream.NcStreamProto.StructureData(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          member_ = java.util.Collections.unmodifiableList(member_);
+        if (((bitField0_ & 0x00000001) != 0)) {
+          member_.makeImmutable();
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.member_ = member_;
         result.data_ = data_;
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          heapCount_ = java.util.Collections.unmodifiableList(heapCount_);
-          bitField0_ = (bitField0_ & ~0x00000004);
+        if (((bitField0_ & 0x00000002) != 0)) {
+          heapCount_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.heapCount_ = heapCount_;
-        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((bitField0_ & 0x00000004) != 0)) {
           sdata_ = sdata_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.sdata_ = sdata_;
         result.nrows_ = nrows_;
         result.rowLength_ = rowLength_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.StructureData) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.StructureData)other);
@@ -15178,7 +16843,7 @@ public final class NcStreamProto {
         if (!other.heapCount_.isEmpty()) {
           if (heapCount_.isEmpty()) {
             heapCount_ = other.heapCount_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureHeapCountIsMutable();
             heapCount_.addAll(other.heapCount_);
@@ -15188,7 +16853,7 @@ public final class NcStreamProto {
         if (!other.sdata_.isEmpty()) {
           if (sdata_.isEmpty()) {
             sdata_ = other.sdata_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensureSdataIsMutable();
             sdata_.addAll(other.sdata_);
@@ -15201,14 +16866,17 @@ public final class NcStreamProto {
         if (other.getRowLength() != 0) {
           setRowLength(other.getRowLength());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -15218,7 +16886,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.StructureData) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -15228,77 +16896,78 @@ public final class NcStreamProto {
       }
       private int bitField0_;
 
-      private java.util.List<java.lang.Integer> member_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList member_ = emptyIntList();
       private void ensureMemberIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          member_ = new java.util.ArrayList<java.lang.Integer>(member_);
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          member_ = mutableCopy(member_);
           bitField0_ |= 0x00000001;
          }
       }
       /**
-       * <code>repeated uint32 member = 1;</code>
-       *
        * <pre>
        * list of members present, if none then all, these are the index in Structure
        * </pre>
+       *
+       * <code>repeated uint32 member = 1;</code>
        */
       public java.util.List<java.lang.Integer>
           getMemberList() {
-        return java.util.Collections.unmodifiableList(member_);
+        return ((bitField0_ & 0x00000001) != 0) ?
+                 java.util.Collections.unmodifiableList(member_) : member_;
       }
       /**
-       * <code>repeated uint32 member = 1;</code>
-       *
        * <pre>
        * list of members present, if none then all, these are the index in Structure
        * </pre>
+       *
+       * <code>repeated uint32 member = 1;</code>
        */
       public int getMemberCount() {
         return member_.size();
       }
       /**
-       * <code>repeated uint32 member = 1;</code>
-       *
        * <pre>
        * list of members present, if none then all, these are the index in Structure
        * </pre>
+       *
+       * <code>repeated uint32 member = 1;</code>
        */
       public int getMember(int index) {
-        return member_.get(index);
+        return member_.getInt(index);
       }
       /**
-       * <code>repeated uint32 member = 1;</code>
-       *
        * <pre>
        * list of members present, if none then all, these are the index in Structure
        * </pre>
+       *
+       * <code>repeated uint32 member = 1;</code>
        */
       public Builder setMember(
           int index, int value) {
         ensureMemberIsMutable();
-        member_.set(index, value);
+        member_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 member = 1;</code>
-       *
        * <pre>
        * list of members present, if none then all, these are the index in Structure
        * </pre>
+       *
+       * <code>repeated uint32 member = 1;</code>
        */
       public Builder addMember(int value) {
         ensureMemberIsMutable();
-        member_.add(value);
+        member_.addInt(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 member = 1;</code>
-       *
        * <pre>
        * list of members present, if none then all, these are the index in Structure
        * </pre>
+       *
+       * <code>repeated uint32 member = 1;</code>
        */
       public Builder addAllMember(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -15309,14 +16978,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated uint32 member = 1;</code>
-       *
        * <pre>
        * list of members present, if none then all, these are the index in Structure
        * </pre>
+       *
+       * <code>repeated uint32 member = 1;</code>
        */
       public Builder clearMember() {
-        member_ = java.util.Collections.emptyList();
+        member_ = emptyIntList();
         bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
@@ -15324,21 +16993,21 @@ public final class NcStreamProto {
 
       private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes data = 2;</code>
-       *
        * <pre>
        * fixed length data
        * </pre>
+       *
+       * <code>bytes data = 2;</code>
        */
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
       /**
-       * <code>optional bytes data = 2;</code>
-       *
        * <pre>
        * fixed length data
        * </pre>
+       *
+       * <code>bytes data = 2;</code>
        */
       public Builder setData(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -15350,11 +17019,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bytes data = 2;</code>
-       *
        * <pre>
        * fixed length data
        * </pre>
+       *
+       * <code>bytes data = 2;</code>
        */
       public Builder clearData() {
         
@@ -15363,77 +17032,78 @@ public final class NcStreamProto {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> heapCount_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList heapCount_ = emptyIntList();
       private void ensureHeapCountIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          heapCount_ = new java.util.ArrayList<java.lang.Integer>(heapCount_);
-          bitField0_ |= 0x00000004;
+        if (!((bitField0_ & 0x00000002) != 0)) {
+          heapCount_ = mutableCopy(heapCount_);
+          bitField0_ |= 0x00000002;
          }
       }
       /**
-       * <code>repeated uint32 heapCount = 3;</code>
-       *
        * <pre>
        * heap String count
        * </pre>
+       *
+       * <code>repeated uint32 heapCount = 3;</code>
        */
       public java.util.List<java.lang.Integer>
           getHeapCountList() {
-        return java.util.Collections.unmodifiableList(heapCount_);
+        return ((bitField0_ & 0x00000002) != 0) ?
+                 java.util.Collections.unmodifiableList(heapCount_) : heapCount_;
       }
       /**
-       * <code>repeated uint32 heapCount = 3;</code>
-       *
        * <pre>
        * heap String count
        * </pre>
+       *
+       * <code>repeated uint32 heapCount = 3;</code>
        */
       public int getHeapCountCount() {
         return heapCount_.size();
       }
       /**
-       * <code>repeated uint32 heapCount = 3;</code>
-       *
        * <pre>
        * heap String count
        * </pre>
+       *
+       * <code>repeated uint32 heapCount = 3;</code>
        */
       public int getHeapCount(int index) {
-        return heapCount_.get(index);
+        return heapCount_.getInt(index);
       }
       /**
-       * <code>repeated uint32 heapCount = 3;</code>
-       *
        * <pre>
        * heap String count
        * </pre>
+       *
+       * <code>repeated uint32 heapCount = 3;</code>
        */
       public Builder setHeapCount(
           int index, int value) {
         ensureHeapCountIsMutable();
-        heapCount_.set(index, value);
+        heapCount_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 heapCount = 3;</code>
-       *
        * <pre>
        * heap String count
        * </pre>
+       *
+       * <code>repeated uint32 heapCount = 3;</code>
        */
       public Builder addHeapCount(int value) {
         ensureHeapCountIsMutable();
-        heapCount_.add(value);
+        heapCount_.addInt(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 heapCount = 3;</code>
-       *
        * <pre>
        * heap String count
        * </pre>
+       *
+       * <code>repeated uint32 heapCount = 3;</code>
        */
       public Builder addAllHeapCount(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -15444,74 +17114,74 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated uint32 heapCount = 3;</code>
-       *
        * <pre>
        * heap String count
        * </pre>
+       *
+       * <code>repeated uint32 heapCount = 3;</code>
        */
       public Builder clearHeapCount() {
-        heapCount_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        heapCount_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
 
       private com.google.protobuf.LazyStringList sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureSdataIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           sdata_ = new com.google.protobuf.LazyStringArrayList(sdata_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000004;
          }
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public com.google.protobuf.ProtocolStringList
           getSdataList() {
         return sdata_.getUnmodifiableView();
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public int getSdataCount() {
         return sdata_.size();
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public java.lang.String getSdata(int index) {
         return sdata_.get(index);
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public com.google.protobuf.ByteString
           getSdataBytes(int index) {
         return sdata_.getByteString(index);
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public Builder setSdata(
           int index, java.lang.String value) {
@@ -15524,11 +17194,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public Builder addSdata(
           java.lang.String value) {
@@ -15541,11 +17211,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public Builder addAllSdata(
           java.lang.Iterable<java.lang.String> values) {
@@ -15556,24 +17226,24 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public Builder clearSdata() {
         sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string sdata = 4;</code>
-       *
        * <pre>
        * Strings
        * </pre>
+       *
+       * <code>repeated string sdata = 4;</code>
        */
       public Builder addSdataBytes(
           com.google.protobuf.ByteString value) {
@@ -15589,21 +17259,21 @@ public final class NcStreamProto {
 
       private long nrows_ ;
       /**
-       * <code>optional uint64 nrows = 5;</code>
-       *
        * <pre>
        * [default = 1] number of rows in this message
        * </pre>
+       *
+       * <code>uint64 nrows = 5;</code>
        */
       public long getNrows() {
         return nrows_;
       }
       /**
-       * <code>optional uint64 nrows = 5;</code>
-       *
        * <pre>
        * [default = 1] number of rows in this message
        * </pre>
+       *
+       * <code>uint64 nrows = 5;</code>
        */
       public Builder setNrows(long value) {
         
@@ -15612,11 +17282,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint64 nrows = 5;</code>
-       *
        * <pre>
        * [default = 1] number of rows in this message
        * </pre>
+       *
+       * <code>uint64 nrows = 5;</code>
        */
       public Builder clearNrows() {
         
@@ -15627,21 +17297,21 @@ public final class NcStreamProto {
 
       private int rowLength_ ;
       /**
-       * <code>optional uint32 rowLength = 6;</code>
-       *
        * <pre>
        * length in bytes of each row
        * </pre>
+       *
+       * <code>uint32 rowLength = 6;</code>
        */
       public int getRowLength() {
         return rowLength_;
       }
       /**
-       * <code>optional uint32 rowLength = 6;</code>
-       *
        * <pre>
        * length in bytes of each row
        * </pre>
+       *
+       * <code>uint32 rowLength = 6;</code>
        */
       public Builder setRowLength(int value) {
         
@@ -15650,11 +17320,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 rowLength = 6;</code>
-       *
        * <pre>
        * length in bytes of each row
        * </pre>
+       *
+       * <code>uint32 rowLength = 6;</code>
        */
       public Builder clearRowLength() {
         
@@ -15662,14 +17332,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -15688,20 +17360,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<StructureData>
         PARSER = new com.google.protobuf.AbstractParser<StructureData>() {
+      @java.lang.Override
       public StructureData parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new StructureData(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new StructureData(input, extensionRegistry);
       }
     };
 
@@ -15714,6 +17378,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.StructureData getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -15725,181 +17390,181 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * fullname for top, shortname for member
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * fullname for top, shortname for member
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     boolean hasSection();
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.Section getSection();
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder();
 
     /**
-     * <code>optional bool bigend = 4;</code>
+     * <code>bool bigend = 4;</code>
      */
     boolean getBigend();
 
     /**
-     * <code>optional uint32 version = 5;</code>
+     * <code>uint32 version = 5;</code>
      */
     int getVersion();
 
     /**
-     * <code>optional bool isVlen = 7;</code>
+     * <code>bool isVlen = 7;</code>
      */
     boolean getIsVlen();
 
     /**
-     * <code>optional uint32 nelems = 9;</code>
+     * <code>uint32 nelems = 9;</code>
      */
     int getNelems();
 
     /**
-     * <code>optional bytes primdata = 10;</code>
-     *
      * <pre>
      * oneof
      * </pre>
+     *
+     * <code>bytes primdata = 10;</code>
      */
     com.google.protobuf.ByteString getPrimdata();
 
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getStringdataList();
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     int getStringdataCount();
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     java.lang.String getStringdata(int index);
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     com.google.protobuf.ByteString
         getStringdataBytes(int index);
 
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * isVlen true
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     java.util.List<java.lang.Integer> getVlensList();
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * isVlen true
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     int getVlensCount();
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * isVlen true
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     int getVlens(int index);
 
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataType
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     java.util.List<com.google.protobuf.ByteString> getOpaquedataList();
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataType
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     int getOpaquedataCount();
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataType
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     com.google.protobuf.ByteString getOpaquedata(int index);
 
     /**
-     * <code>optional .ArrayStructureCol structdata = 14;</code>
-     *
      * <pre>
      * structures
      * </pre>
+     *
+     * <code>.ArrayStructureCol structdata = 14;</code>
      */
     boolean hasStructdata();
     /**
-     * <code>optional .ArrayStructureCol structdata = 14;</code>
-     *
      * <pre>
      * structures
      * </pre>
+     *
+     * <code>.ArrayStructureCol structdata = 14;</code>
      */
     ucar.nc2.stream.NcStreamProto.ArrayStructureCol getStructdata();
     /**
-     * <code>optional .ArrayStructureCol structdata = 14;</code>
-     *
      * <pre>
      * structures
      * </pre>
+     *
+     * <code>.ArrayStructureCol structdata = 14;</code>
      */
     ucar.nc2.stream.NcStreamProto.ArrayStructureColOrBuilder getStructdataOrBuilder();
   }
@@ -15907,36 +17572,46 @@ public final class NcStreamProto {
    * Protobuf type {@code DataCol}
    */
   public  static final class DataCol extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:DataCol)
       DataColOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use DataCol.newBuilder() to construct.
-    private DataCol(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private DataCol(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private DataCol() {
       name_ = "";
       dataType_ = 0;
-      bigend_ = false;
-      version_ = 0;
-      isVlen_ = false;
-      nelems_ = 0;
       primdata_ = com.google.protobuf.ByteString.EMPTY;
       stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      vlens_ = java.util.Collections.emptyList();
+      vlens_ = emptyIntList();
       opaquedata_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new DataCol();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private DataCol(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -15945,14 +17620,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
@@ -16002,39 +17671,39 @@ public final class NcStreamProto {
               break;
             }
             case 90: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 stringdata_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000100;
+                mutable_bitField0_ |= 0x00000001;
               }
               stringdata_.add(s);
               break;
             }
             case 96: {
-              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
-                vlens_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000200;
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                vlens_ = newIntList();
+                mutable_bitField0_ |= 0x00000002;
               }
-              vlens_.add(input.readUInt32());
+              vlens_.addInt(input.readUInt32());
               break;
             }
             case 98: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200) && input.getBytesUntilLimit() > 0) {
-                vlens_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000200;
+              if (!((mutable_bitField0_ & 0x00000002) != 0) && input.getBytesUntilLimit() > 0) {
+                vlens_ = newIntList();
+                mutable_bitField0_ |= 0x00000002;
               }
               while (input.getBytesUntilLimit() > 0) {
-                vlens_.add(input.readUInt32());
+                vlens_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 106: {
-              if (!((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 opaquedata_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
-                mutable_bitField0_ |= 0x00000400;
+                mutable_bitField0_ |= 0x00000004;
               }
               opaquedata_.add(input.readBytes());
               break;
@@ -16052,24 +17721,31 @@ public final class NcStreamProto {
 
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           stringdata_ = stringdata_.getUnmodifiableView();
         }
-        if (((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
-          vlens_ = java.util.Collections.unmodifiableList(vlens_);
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          vlens_.makeImmutable(); // C
         }
-        if (((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
-          opaquedata_ = java.util.Collections.unmodifiableList(opaquedata_);
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
+          opaquedata_ = java.util.Collections.unmodifiableList(opaquedata_); // C
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -16078,22 +17754,22 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.DataCol.class, ucar.nc2.stream.NcStreamProto.DataCol.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * fullname for top, shortname for member
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -16108,11 +17784,11 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * fullname for top, shortname for member
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -16131,15 +17807,16 @@ public final class NcStreamProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
@@ -16147,19 +17824,19 @@ public final class NcStreamProto {
     public static final int SECTION_FIELD_NUMBER = 3;
     private ucar.nc2.stream.NcStreamProto.Section section_;
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     public boolean hasSection() {
       return section_ != null;
     }
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Section getSection() {
       return section_ == null ? ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance() : section_;
     }
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
       return getSection();
@@ -16168,7 +17845,7 @@ public final class NcStreamProto {
     public static final int BIGEND_FIELD_NUMBER = 4;
     private boolean bigend_;
     /**
-     * <code>optional bool bigend = 4;</code>
+     * <code>bool bigend = 4;</code>
      */
     public boolean getBigend() {
       return bigend_;
@@ -16177,7 +17854,7 @@ public final class NcStreamProto {
     public static final int VERSION_FIELD_NUMBER = 5;
     private int version_;
     /**
-     * <code>optional uint32 version = 5;</code>
+     * <code>uint32 version = 5;</code>
      */
     public int getVersion() {
       return version_;
@@ -16186,7 +17863,7 @@ public final class NcStreamProto {
     public static final int ISVLEN_FIELD_NUMBER = 7;
     private boolean isVlen_;
     /**
-     * <code>optional bool isVlen = 7;</code>
+     * <code>bool isVlen = 7;</code>
      */
     public boolean getIsVlen() {
       return isVlen_;
@@ -16195,7 +17872,7 @@ public final class NcStreamProto {
     public static final int NELEMS_FIELD_NUMBER = 9;
     private int nelems_;
     /**
-     * <code>optional uint32 nelems = 9;</code>
+     * <code>uint32 nelems = 9;</code>
      */
     public int getNelems() {
       return nelems_;
@@ -16204,11 +17881,11 @@ public final class NcStreamProto {
     public static final int PRIMDATA_FIELD_NUMBER = 10;
     private com.google.protobuf.ByteString primdata_;
     /**
-     * <code>optional bytes primdata = 10;</code>
-     *
      * <pre>
      * oneof
      * </pre>
+     *
+     * <code>bytes primdata = 10;</code>
      */
     public com.google.protobuf.ByteString getPrimdata() {
       return primdata_;
@@ -16217,42 +17894,42 @@ public final class NcStreamProto {
     public static final int STRINGDATA_FIELD_NUMBER = 11;
     private com.google.protobuf.LazyStringList stringdata_;
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public com.google.protobuf.ProtocolStringList
         getStringdataList() {
       return stringdata_;
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public int getStringdataCount() {
       return stringdata_.size();
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public java.lang.String getStringdata(int index) {
       return stringdata_.get(index);
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public com.google.protobuf.ByteString
         getStringdataBytes(int index) {
@@ -16260,69 +17937,69 @@ public final class NcStreamProto {
     }
 
     public static final int VLENS_FIELD_NUMBER = 12;
-    private java.util.List<java.lang.Integer> vlens_;
+    private com.google.protobuf.Internal.IntList vlens_;
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * isVlen true
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     public java.util.List<java.lang.Integer>
         getVlensList() {
       return vlens_;
     }
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * isVlen true
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     public int getVlensCount() {
       return vlens_.size();
     }
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * isVlen true
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     public int getVlens(int index) {
-      return vlens_.get(index);
+      return vlens_.getInt(index);
     }
     private int vlensMemoizedSerializedSize = -1;
 
     public static final int OPAQUEDATA_FIELD_NUMBER = 13;
     private java.util.List<com.google.protobuf.ByteString> opaquedata_;
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataType
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     public java.util.List<com.google.protobuf.ByteString>
         getOpaquedataList() {
       return opaquedata_;
     }
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataType
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     public int getOpaquedataCount() {
       return opaquedata_.size();
     }
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataType
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     public com.google.protobuf.ByteString getOpaquedata(int index) {
       return opaquedata_.get(index);
@@ -16331,37 +18008,38 @@ public final class NcStreamProto {
     public static final int STRUCTDATA_FIELD_NUMBER = 14;
     private ucar.nc2.stream.NcStreamProto.ArrayStructureCol structdata_;
     /**
-     * <code>optional .ArrayStructureCol structdata = 14;</code>
-     *
      * <pre>
      * structures
      * </pre>
+     *
+     * <code>.ArrayStructureCol structdata = 14;</code>
      */
     public boolean hasStructdata() {
       return structdata_ != null;
     }
     /**
-     * <code>optional .ArrayStructureCol structdata = 14;</code>
-     *
      * <pre>
      * structures
      * </pre>
+     *
+     * <code>.ArrayStructureCol structdata = 14;</code>
      */
     public ucar.nc2.stream.NcStreamProto.ArrayStructureCol getStructdata() {
       return structdata_ == null ? ucar.nc2.stream.NcStreamProto.ArrayStructureCol.getDefaultInstance() : structdata_;
     }
     /**
-     * <code>optional .ArrayStructureCol structdata = 14;</code>
-     *
      * <pre>
      * structures
      * </pre>
+     *
+     * <code>.ArrayStructureCol structdata = 14;</code>
      */
     public ucar.nc2.stream.NcStreamProto.ArrayStructureColOrBuilder getStructdataOrBuilder() {
       return getStructdata();
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -16371,11 +18049,12 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -16399,14 +18078,14 @@ public final class NcStreamProto {
         output.writeBytes(10, primdata_);
       }
       for (int i = 0; i < stringdata_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 11, stringdata_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, stringdata_.getRaw(i));
       }
       if (getVlensList().size() > 0) {
-        output.writeRawVarint32(98);
-        output.writeRawVarint32(vlensMemoizedSerializedSize);
+        output.writeUInt32NoTag(98);
+        output.writeUInt32NoTag(vlensMemoizedSerializedSize);
       }
       for (int i = 0; i < vlens_.size(); i++) {
-        output.writeUInt32NoTag(vlens_.get(i));
+        output.writeUInt32NoTag(vlens_.getInt(i));
       }
       for (int i = 0; i < opaquedata_.size(); i++) {
         output.writeBytes(13, opaquedata_.get(i));
@@ -16414,15 +18093,17 @@ public final class NcStreamProto {
       if (structdata_ != null) {
         output.writeMessage(14, getStructdata());
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -16464,7 +18145,7 @@ public final class NcStreamProto {
         int dataSize = 0;
         for (int i = 0; i < vlens_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(vlens_.get(i));
+            .computeUInt32SizeNoTag(vlens_.getInt(i));
         }
         size += dataSize;
         if (!getVlensList().isEmpty()) {
@@ -16487,11 +18168,113 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(14, getStructdata());
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.DataCol)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.DataCol other = (ucar.nc2.stream.NcStreamProto.DataCol) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (hasSection() != other.hasSection()) return false;
+      if (hasSection()) {
+        if (!getSection()
+            .equals(other.getSection())) return false;
+      }
+      if (getBigend()
+          != other.getBigend()) return false;
+      if (getVersion()
+          != other.getVersion()) return false;
+      if (getIsVlen()
+          != other.getIsVlen()) return false;
+      if (getNelems()
+          != other.getNelems()) return false;
+      if (!getPrimdata()
+          .equals(other.getPrimdata())) return false;
+      if (!getStringdataList()
+          .equals(other.getStringdataList())) return false;
+      if (!getVlensList()
+          .equals(other.getVlensList())) return false;
+      if (!getOpaquedataList()
+          .equals(other.getOpaquedataList())) return false;
+      if (hasStructdata() != other.hasStructdata()) return false;
+      if (hasStructdata()) {
+        if (!getStructdata()
+            .equals(other.getStructdata())) return false;
+      }
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      if (hasSection()) {
+        hash = (37 * hash) + SECTION_FIELD_NUMBER;
+        hash = (53 * hash) + getSection().hashCode();
+      }
+      hash = (37 * hash) + BIGEND_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getBigend());
+      hash = (37 * hash) + VERSION_FIELD_NUMBER;
+      hash = (53 * hash) + getVersion();
+      hash = (37 * hash) + ISVLEN_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsVlen());
+      hash = (37 * hash) + NELEMS_FIELD_NUMBER;
+      hash = (53 * hash) + getNelems();
+      hash = (37 * hash) + PRIMDATA_FIELD_NUMBER;
+      hash = (53 * hash) + getPrimdata().hashCode();
+      if (getStringdataCount() > 0) {
+        hash = (37 * hash) + STRINGDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getStringdataList().hashCode();
+      }
+      if (getVlensCount() > 0) {
+        hash = (37 * hash) + VLENS_FIELD_NUMBER;
+        hash = (53 * hash) + getVlensList().hashCode();
+      }
+      if (getOpaquedataCount() > 0) {
+        hash = (37 * hash) + OPAQUEDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getOpaquedataList().hashCode();
+      }
+      if (hasStructdata()) {
+        hash = (37 * hash) + STRUCTDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getStructdata().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -16515,36 +18298,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.DataCol parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.DataCol parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -16552,6 +18342,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.DataCol prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -16559,7 +18350,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -16567,7 +18358,7 @@ public final class NcStreamProto {
      * Protobuf type {@code DataCol}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:DataCol)
         ucar.nc2.stream.NcStreamProto.DataColOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -16575,7 +18366,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -16588,14 +18380,16 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -16619,11 +18413,11 @@ public final class NcStreamProto {
         primdata_ = com.google.protobuf.ByteString.EMPTY;
 
         stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000100);
-        vlens_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000001);
+        vlens_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000002);
         opaquedata_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (structdataBuilder_ == null) {
           structdata_ = null;
         } else {
@@ -16633,15 +18427,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.DataCol getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.DataCol.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.DataCol build() {
         ucar.nc2.stream.NcStreamProto.DataCol result = buildPartial();
         if (!result.isInitialized()) {
@@ -16650,10 +18447,10 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.DataCol buildPartial() {
         ucar.nc2.stream.NcStreamProto.DataCol result = new ucar.nc2.stream.NcStreamProto.DataCol(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         result.dataType_ = dataType_;
         if (sectionBuilder_ == null) {
@@ -16666,19 +18463,19 @@ public final class NcStreamProto {
         result.isVlen_ = isVlen_;
         result.nelems_ = nelems_;
         result.primdata_ = primdata_;
-        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((bitField0_ & 0x00000001) != 0)) {
           stringdata_ = stringdata_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.stringdata_ = stringdata_;
-        if (((bitField0_ & 0x00000200) == 0x00000200)) {
-          vlens_ = java.util.Collections.unmodifiableList(vlens_);
-          bitField0_ = (bitField0_ & ~0x00000200);
+        if (((bitField0_ & 0x00000002) != 0)) {
+          vlens_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.vlens_ = vlens_;
-        if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        if (((bitField0_ & 0x00000004) != 0)) {
           opaquedata_ = java.util.Collections.unmodifiableList(opaquedata_);
-          bitField0_ = (bitField0_ & ~0x00000400);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.opaquedata_ = opaquedata_;
         if (structdataBuilder_ == null) {
@@ -16686,11 +18483,43 @@ public final class NcStreamProto {
         } else {
           result.structdata_ = structdataBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.DataCol) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.DataCol)other);
@@ -16730,7 +18559,7 @@ public final class NcStreamProto {
         if (!other.stringdata_.isEmpty()) {
           if (stringdata_.isEmpty()) {
             stringdata_ = other.stringdata_;
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000001);
           } else {
             ensureStringdataIsMutable();
             stringdata_.addAll(other.stringdata_);
@@ -16740,7 +18569,7 @@ public final class NcStreamProto {
         if (!other.vlens_.isEmpty()) {
           if (vlens_.isEmpty()) {
             vlens_ = other.vlens_;
-            bitField0_ = (bitField0_ & ~0x00000200);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureVlensIsMutable();
             vlens_.addAll(other.vlens_);
@@ -16750,7 +18579,7 @@ public final class NcStreamProto {
         if (!other.opaquedata_.isEmpty()) {
           if (opaquedata_.isEmpty()) {
             opaquedata_ = other.opaquedata_;
-            bitField0_ = (bitField0_ & ~0x00000400);
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensureOpaquedataIsMutable();
             opaquedata_.addAll(other.opaquedata_);
@@ -16760,14 +18589,17 @@ public final class NcStreamProto {
         if (other.hasStructdata()) {
           mergeStructdata(other.getStructdata());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -16777,7 +18609,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.DataCol) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -16789,11 +18621,11 @@ public final class NcStreamProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * fullname for top, shortname for member
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -16808,11 +18640,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * fullname for top, shortname for member
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -16828,11 +18660,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * fullname for top, shortname for member
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -16845,11 +18677,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * fullname for top, shortname for member
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -16858,11 +18690,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * fullname for top, shortname for member
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -16878,13 +18710,13 @@ public final class NcStreamProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -16892,14 +18724,15 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -16911,7 +18744,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -16920,17 +18753,17 @@ public final class NcStreamProto {
         return this;
       }
 
-      private ucar.nc2.stream.NcStreamProto.Section section_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.stream.NcStreamProto.Section section_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> sectionBuilder_;
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public boolean hasSection() {
         return sectionBuilder_ != null || section_ != null;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Section getSection() {
         if (sectionBuilder_ == null) {
@@ -16940,7 +18773,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public Builder setSection(ucar.nc2.stream.NcStreamProto.Section value) {
         if (sectionBuilder_ == null) {
@@ -16956,7 +18789,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public Builder setSection(
           ucar.nc2.stream.NcStreamProto.Section.Builder builderForValue) {
@@ -16970,7 +18803,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public Builder mergeSection(ucar.nc2.stream.NcStreamProto.Section value) {
         if (sectionBuilder_ == null) {
@@ -16988,7 +18821,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public Builder clearSection() {
         if (sectionBuilder_ == null) {
@@ -17002,7 +18835,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Section.Builder getSectionBuilder() {
         
@@ -17010,7 +18843,7 @@ public final class NcStreamProto {
         return getSectionFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
         if (sectionBuilder_ != null) {
@@ -17021,13 +18854,13 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> 
           getSectionFieldBuilder() {
         if (sectionBuilder_ == null) {
-          sectionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          sectionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder>(
                   getSection(),
                   getParentForChildren(),
@@ -17039,13 +18872,13 @@ public final class NcStreamProto {
 
       private boolean bigend_ ;
       /**
-       * <code>optional bool bigend = 4;</code>
+       * <code>bool bigend = 4;</code>
        */
       public boolean getBigend() {
         return bigend_;
       }
       /**
-       * <code>optional bool bigend = 4;</code>
+       * <code>bool bigend = 4;</code>
        */
       public Builder setBigend(boolean value) {
         
@@ -17054,7 +18887,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool bigend = 4;</code>
+       * <code>bool bigend = 4;</code>
        */
       public Builder clearBigend() {
         
@@ -17065,13 +18898,13 @@ public final class NcStreamProto {
 
       private int version_ ;
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public int getVersion() {
         return version_;
       }
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public Builder setVersion(int value) {
         
@@ -17080,7 +18913,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public Builder clearVersion() {
         
@@ -17091,13 +18924,13 @@ public final class NcStreamProto {
 
       private boolean isVlen_ ;
       /**
-       * <code>optional bool isVlen = 7;</code>
+       * <code>bool isVlen = 7;</code>
        */
       public boolean getIsVlen() {
         return isVlen_;
       }
       /**
-       * <code>optional bool isVlen = 7;</code>
+       * <code>bool isVlen = 7;</code>
        */
       public Builder setIsVlen(boolean value) {
         
@@ -17106,7 +18939,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool isVlen = 7;</code>
+       * <code>bool isVlen = 7;</code>
        */
       public Builder clearIsVlen() {
         
@@ -17117,13 +18950,13 @@ public final class NcStreamProto {
 
       private int nelems_ ;
       /**
-       * <code>optional uint32 nelems = 9;</code>
+       * <code>uint32 nelems = 9;</code>
        */
       public int getNelems() {
         return nelems_;
       }
       /**
-       * <code>optional uint32 nelems = 9;</code>
+       * <code>uint32 nelems = 9;</code>
        */
       public Builder setNelems(int value) {
         
@@ -17132,7 +18965,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 nelems = 9;</code>
+       * <code>uint32 nelems = 9;</code>
        */
       public Builder clearNelems() {
         
@@ -17143,21 +18976,21 @@ public final class NcStreamProto {
 
       private com.google.protobuf.ByteString primdata_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * oneof
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public com.google.protobuf.ByteString getPrimdata() {
         return primdata_;
       }
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * oneof
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public Builder setPrimdata(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -17169,11 +19002,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * oneof
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public Builder clearPrimdata() {
         
@@ -17184,59 +19017,59 @@ public final class NcStreamProto {
 
       private com.google.protobuf.LazyStringList stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureStringdataIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           stringdata_ = new com.google.protobuf.LazyStringArrayList(stringdata_);
-          bitField0_ |= 0x00000100;
+          bitField0_ |= 0x00000001;
          }
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public com.google.protobuf.ProtocolStringList
           getStringdataList() {
         return stringdata_.getUnmodifiableView();
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public int getStringdataCount() {
         return stringdata_.size();
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public java.lang.String getStringdata(int index) {
         return stringdata_.get(index);
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public com.google.protobuf.ByteString
           getStringdataBytes(int index) {
         return stringdata_.getByteString(index);
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder setStringdata(
           int index, java.lang.String value) {
@@ -17249,11 +19082,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addStringdata(
           java.lang.String value) {
@@ -17266,11 +19099,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addAllStringdata(
           java.lang.Iterable<java.lang.String> values) {
@@ -17281,24 +19114,24 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder clearStringdata() {
         stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addStringdataBytes(
           com.google.protobuf.ByteString value) {
@@ -17312,77 +19145,78 @@ public final class NcStreamProto {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> vlens_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList vlens_ = emptyIntList();
       private void ensureVlensIsMutable() {
-        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
-          vlens_ = new java.util.ArrayList<java.lang.Integer>(vlens_);
-          bitField0_ |= 0x00000200;
+        if (!((bitField0_ & 0x00000002) != 0)) {
+          vlens_ = mutableCopy(vlens_);
+          bitField0_ |= 0x00000002;
          }
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * isVlen true
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public java.util.List<java.lang.Integer>
           getVlensList() {
-        return java.util.Collections.unmodifiableList(vlens_);
+        return ((bitField0_ & 0x00000002) != 0) ?
+                 java.util.Collections.unmodifiableList(vlens_) : vlens_;
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * isVlen true
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public int getVlensCount() {
         return vlens_.size();
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * isVlen true
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public int getVlens(int index) {
-        return vlens_.get(index);
+        return vlens_.getInt(index);
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * isVlen true
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public Builder setVlens(
           int index, int value) {
         ensureVlensIsMutable();
-        vlens_.set(index, value);
+        vlens_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * isVlen true
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public Builder addVlens(int value) {
         ensureVlensIsMutable();
-        vlens_.add(value);
+        vlens_.addInt(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * isVlen true
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public Builder addAllVlens(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -17393,63 +19227,64 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * isVlen true
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public Builder clearVlens() {
-        vlens_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000200);
+        vlens_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
 
       private java.util.List<com.google.protobuf.ByteString> opaquedata_ = java.util.Collections.emptyList();
       private void ensureOpaquedataIsMutable() {
-        if (!((bitField0_ & 0x00000400) == 0x00000400)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           opaquedata_ = new java.util.ArrayList<com.google.protobuf.ByteString>(opaquedata_);
-          bitField0_ |= 0x00000400;
+          bitField0_ |= 0x00000004;
          }
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataType
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public java.util.List<com.google.protobuf.ByteString>
           getOpaquedataList() {
-        return java.util.Collections.unmodifiableList(opaquedata_);
+        return ((bitField0_ & 0x00000004) != 0) ?
+                 java.util.Collections.unmodifiableList(opaquedata_) : opaquedata_;
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataType
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public int getOpaquedataCount() {
         return opaquedata_.size();
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataType
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public com.google.protobuf.ByteString getOpaquedata(int index) {
         return opaquedata_.get(index);
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataType
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public Builder setOpaquedata(
           int index, com.google.protobuf.ByteString value) {
@@ -17462,11 +19297,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataType
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public Builder addOpaquedata(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -17478,11 +19313,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataType
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public Builder addAllOpaquedata(
           java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
@@ -17493,38 +19328,38 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataType
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public Builder clearOpaquedata() {
         opaquedata_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
 
-      private ucar.nc2.stream.NcStreamProto.ArrayStructureCol structdata_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.stream.NcStreamProto.ArrayStructureCol structdata_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.ArrayStructureCol, ucar.nc2.stream.NcStreamProto.ArrayStructureCol.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureColOrBuilder> structdataBuilder_;
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
       public boolean hasStructdata() {
         return structdataBuilder_ != null || structdata_ != null;
       }
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureCol getStructdata() {
         if (structdataBuilder_ == null) {
@@ -17534,11 +19369,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
       public Builder setStructdata(ucar.nc2.stream.NcStreamProto.ArrayStructureCol value) {
         if (structdataBuilder_ == null) {
@@ -17554,11 +19389,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
       public Builder setStructdata(
           ucar.nc2.stream.NcStreamProto.ArrayStructureCol.Builder builderForValue) {
@@ -17572,11 +19407,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
       public Builder mergeStructdata(ucar.nc2.stream.NcStreamProto.ArrayStructureCol value) {
         if (structdataBuilder_ == null) {
@@ -17594,11 +19429,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
       public Builder clearStructdata() {
         if (structdataBuilder_ == null) {
@@ -17612,11 +19447,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureCol.Builder getStructdataBuilder() {
         
@@ -17624,11 +19459,11 @@ public final class NcStreamProto {
         return getStructdataFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureColOrBuilder getStructdataOrBuilder() {
         if (structdataBuilder_ != null) {
@@ -17639,17 +19474,17 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .ArrayStructureCol structdata = 14;</code>
-       *
        * <pre>
        * structures
        * </pre>
+       *
+       * <code>.ArrayStructureCol structdata = 14;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.ArrayStructureCol, ucar.nc2.stream.NcStreamProto.ArrayStructureCol.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureColOrBuilder> 
           getStructdataFieldBuilder() {
         if (structdataBuilder_ == null) {
-          structdataBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          structdataBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.ArrayStructureCol, ucar.nc2.stream.NcStreamProto.ArrayStructureCol.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureColOrBuilder>(
                   getStructdata(),
                   getParentForChildren(),
@@ -17658,14 +19493,16 @@ public final class NcStreamProto {
         }
         return structdataBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -17684,20 +19521,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<DataCol>
         PARSER = new com.google.protobuf.AbstractParser<DataCol>() {
+      @java.lang.Override
       public DataCol parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new DataCol(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new DataCol(input, extensionRegistry);
       }
     };
 
@@ -17710,6 +19539,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.DataCol getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -17748,11 +19578,12 @@ public final class NcStreamProto {
    * Protobuf type {@code ArrayStructureCol}
    */
   public  static final class ArrayStructureCol extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:ArrayStructureCol)
       ArrayStructureColOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use ArrayStructureCol.newBuilder() to construct.
-    private ArrayStructureCol(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private ArrayStructureCol(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private ArrayStructureCol() {
@@ -17760,15 +19591,28 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ArrayStructureCol();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private ArrayStructureCol(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -17777,32 +19621,34 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 memberData_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.DataCol>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              memberData_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.DataCol.parser(), extensionRegistry));
+              memberData_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.DataCol.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           memberData_ = java.util.Collections.unmodifiableList(memberData_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -17811,7 +19657,8 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureCol_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureCol_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -17854,6 +19701,7 @@ public final class NcStreamProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -17863,13 +19711,16 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (int i = 0; i < memberData_.size(); i++) {
         output.writeMessage(1, memberData_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -17879,11 +19730,54 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, memberData_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.ArrayStructureCol)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.ArrayStructureCol other = (ucar.nc2.stream.NcStreamProto.ArrayStructureCol) obj;
+
+      if (!getMemberDataList()
+          .equals(other.getMemberDataList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getMemberDataCount() > 0) {
+        hash = (37 * hash) + MEMBERDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getMemberDataList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -17907,36 +19801,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureCol parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -17944,6 +19845,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.ArrayStructureCol prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -17951,7 +19853,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -17959,7 +19861,7 @@ public final class NcStreamProto {
      * Protobuf type {@code ArrayStructureCol}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:ArrayStructureCol)
         ucar.nc2.stream.NcStreamProto.ArrayStructureColOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -17967,7 +19869,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureCol_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureCol_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -17980,15 +19883,17 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getMemberDataFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         if (memberDataBuilder_ == null) {
@@ -18000,15 +19905,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureCol_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.ArrayStructureCol getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.ArrayStructureCol.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.ArrayStructureCol build() {
         ucar.nc2.stream.NcStreamProto.ArrayStructureCol result = buildPartial();
         if (!result.isInitialized()) {
@@ -18017,11 +19925,12 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.ArrayStructureCol buildPartial() {
         ucar.nc2.stream.NcStreamProto.ArrayStructureCol result = new ucar.nc2.stream.NcStreamProto.ArrayStructureCol(this);
         int from_bitField0_ = bitField0_;
         if (memberDataBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             memberData_ = java.util.Collections.unmodifiableList(memberData_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
@@ -18033,6 +19942,39 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.ArrayStructureCol) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.ArrayStructureCol)other);
@@ -18063,21 +20005,24 @@ public final class NcStreamProto {
               memberData_ = other.memberData_;
               bitField0_ = (bitField0_ & ~0x00000001);
               memberDataBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getMemberDataFieldBuilder() : null;
             } else {
               memberDataBuilder_.addAllMessages(other.memberData_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -18087,7 +20032,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.ArrayStructureCol) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -18100,13 +20045,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.DataCol> memberData_ =
         java.util.Collections.emptyList();
       private void ensureMemberDataIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           memberData_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.DataCol>(memberData_);
           bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.DataCol, ucar.nc2.stream.NcStreamProto.DataCol.Builder, ucar.nc2.stream.NcStreamProto.DataColOrBuilder> memberDataBuilder_;
 
       /**
@@ -18322,28 +20267,30 @@ public final class NcStreamProto {
            getMemberDataBuilderList() {
         return getMemberDataFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.DataCol, ucar.nc2.stream.NcStreamProto.DataCol.Builder, ucar.nc2.stream.NcStreamProto.DataColOrBuilder> 
           getMemberDataFieldBuilder() {
         if (memberDataBuilder_ == null) {
-          memberDataBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          memberDataBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.DataCol, ucar.nc2.stream.NcStreamProto.DataCol.Builder, ucar.nc2.stream.NcStreamProto.DataColOrBuilder>(
                   memberData_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           memberData_ = null;
         }
         return memberDataBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -18362,20 +20309,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<ArrayStructureCol>
         PARSER = new com.google.protobuf.AbstractParser<ArrayStructureCol>() {
+      @java.lang.Override
       public ArrayStructureCol parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new ArrayStructureCol(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new ArrayStructureCol(input, extensionRegistry);
       }
     };
 
@@ -18388,6 +20327,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.ArrayStructureCol getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -18399,173 +20339,173 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string fullName = 1;</code>
+     * <code>string fullName = 1;</code>
      */
     java.lang.String getFullName();
     /**
-     * <code>optional string fullName = 1;</code>
+     * <code>string fullName = 1;</code>
      */
     com.google.protobuf.ByteString
         getFullNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     boolean hasSection();
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.Section getSection();
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder();
 
     /**
-     * <code>optional bool bigend = 4;</code>
+     * <code>bool bigend = 4;</code>
      */
     boolean getBigend();
 
     /**
-     * <code>optional uint32 version = 5;</code>
+     * <code>uint32 version = 5;</code>
      */
     int getVersion();
 
     /**
-     * <code>optional bool isVlen = 7;</code>
+     * <code>bool isVlen = 7;</code>
      */
     boolean getIsVlen();
 
     /**
-     * <code>optional uint32 nelems = 9;</code>
+     * <code>uint32 nelems = 9;</code>
      */
     int getNelems();
 
     /**
-     * <code>optional bytes primdata = 10;</code>
-     *
      * <pre>
      * rectangular, primitive array
      * </pre>
+     *
+     * <code>bytes primdata = 10;</code>
      */
     com.google.protobuf.ByteString getPrimdata();
 
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getStringdataList();
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     int getStringdataCount();
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     java.lang.String getStringdata(int index);
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     com.google.protobuf.ByteString
         getStringdataBytes(int index);
 
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * vlen lengths
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     java.util.List<java.lang.Integer> getVlensList();
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * vlen lengths
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     int getVlensCount();
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * vlen lengths
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     int getVlens(int index);
 
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataTypes
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     java.util.List<com.google.protobuf.ByteString> getOpaquedataList();
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataTypes
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     int getOpaquedataCount();
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataTypes
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     com.google.protobuf.ByteString getOpaquedata(int index);
 
     /**
-     * <code>optional .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>.ArrayStructureRow structdata = 14;</code>
      */
     boolean hasStructdata();
     /**
-     * <code>optional .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>.ArrayStructureRow structdata = 14;</code>
      */
     ucar.nc2.stream.NcStreamProto.ArrayStructureRow getStructdata();
     /**
-     * <code>optional .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>.ArrayStructureRow structdata = 14;</code>
      */
     ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder getStructdataOrBuilder();
   }
@@ -18573,36 +20513,46 @@ public final class NcStreamProto {
    * Protobuf type {@code DataRow}
    */
   public  static final class DataRow extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:DataRow)
       DataRowOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use DataRow.newBuilder() to construct.
-    private DataRow(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private DataRow(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private DataRow() {
       fullName_ = "";
       dataType_ = 0;
-      bigend_ = false;
-      version_ = 0;
-      isVlen_ = false;
-      nelems_ = 0;
       primdata_ = com.google.protobuf.ByteString.EMPTY;
       stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      vlens_ = java.util.Collections.emptyList();
+      vlens_ = emptyIntList();
       opaquedata_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new DataRow();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private DataRow(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -18611,14 +20561,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               fullName_ = s;
               break;
@@ -18668,39 +20612,39 @@ public final class NcStreamProto {
               break;
             }
             case 90: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 stringdata_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000100;
+                mutable_bitField0_ |= 0x00000001;
               }
               stringdata_.add(s);
               break;
             }
             case 96: {
-              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
-                vlens_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000200;
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                vlens_ = newIntList();
+                mutable_bitField0_ |= 0x00000002;
               }
-              vlens_.add(input.readUInt32());
+              vlens_.addInt(input.readUInt32());
               break;
             }
             case 98: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200) && input.getBytesUntilLimit() > 0) {
-                vlens_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000200;
+              if (!((mutable_bitField0_ & 0x00000002) != 0) && input.getBytesUntilLimit() > 0) {
+                vlens_ = newIntList();
+                mutable_bitField0_ |= 0x00000002;
               }
               while (input.getBytesUntilLimit() > 0) {
-                vlens_.add(input.readUInt32());
+                vlens_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 106: {
-              if (!((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 opaquedata_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
-                mutable_bitField0_ |= 0x00000400;
+                mutable_bitField0_ |= 0x00000004;
               }
               opaquedata_.add(input.readBytes());
               break;
@@ -18718,24 +20662,31 @@ public final class NcStreamProto {
 
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           stringdata_ = stringdata_.getUnmodifiableView();
         }
-        if (((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
-          vlens_ = java.util.Collections.unmodifiableList(vlens_);
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          vlens_.makeImmutable(); // C
         }
-        if (((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
-          opaquedata_ = java.util.Collections.unmodifiableList(opaquedata_);
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
+          opaquedata_ = java.util.Collections.unmodifiableList(opaquedata_); // C
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -18744,18 +20695,18 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.DataRow.class, ucar.nc2.stream.NcStreamProto.DataRow.Builder.class);
     }
 
-    private int bitField0_;
     public static final int FULLNAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object fullName_;
     /**
-     * <code>optional string fullName = 1;</code>
+     * <code>string fullName = 1;</code>
      */
     public java.lang.String getFullName() {
       java.lang.Object ref = fullName_;
@@ -18770,7 +20721,7 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string fullName = 1;</code>
+     * <code>string fullName = 1;</code>
      */
     public com.google.protobuf.ByteString
         getFullNameBytes() {
@@ -18789,15 +20740,16 @@ public final class NcStreamProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
@@ -18805,19 +20757,19 @@ public final class NcStreamProto {
     public static final int SECTION_FIELD_NUMBER = 3;
     private ucar.nc2.stream.NcStreamProto.Section section_;
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     public boolean hasSection() {
       return section_ != null;
     }
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Section getSection() {
       return section_ == null ? ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance() : section_;
     }
     /**
-     * <code>optional .Section section = 3;</code>
+     * <code>.Section section = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
       return getSection();
@@ -18826,7 +20778,7 @@ public final class NcStreamProto {
     public static final int BIGEND_FIELD_NUMBER = 4;
     private boolean bigend_;
     /**
-     * <code>optional bool bigend = 4;</code>
+     * <code>bool bigend = 4;</code>
      */
     public boolean getBigend() {
       return bigend_;
@@ -18835,7 +20787,7 @@ public final class NcStreamProto {
     public static final int VERSION_FIELD_NUMBER = 5;
     private int version_;
     /**
-     * <code>optional uint32 version = 5;</code>
+     * <code>uint32 version = 5;</code>
      */
     public int getVersion() {
       return version_;
@@ -18844,7 +20796,7 @@ public final class NcStreamProto {
     public static final int ISVLEN_FIELD_NUMBER = 7;
     private boolean isVlen_;
     /**
-     * <code>optional bool isVlen = 7;</code>
+     * <code>bool isVlen = 7;</code>
      */
     public boolean getIsVlen() {
       return isVlen_;
@@ -18853,7 +20805,7 @@ public final class NcStreamProto {
     public static final int NELEMS_FIELD_NUMBER = 9;
     private int nelems_;
     /**
-     * <code>optional uint32 nelems = 9;</code>
+     * <code>uint32 nelems = 9;</code>
      */
     public int getNelems() {
       return nelems_;
@@ -18862,11 +20814,11 @@ public final class NcStreamProto {
     public static final int PRIMDATA_FIELD_NUMBER = 10;
     private com.google.protobuf.ByteString primdata_;
     /**
-     * <code>optional bytes primdata = 10;</code>
-     *
      * <pre>
      * rectangular, primitive array
      * </pre>
+     *
+     * <code>bytes primdata = 10;</code>
      */
     public com.google.protobuf.ByteString getPrimdata() {
       return primdata_;
@@ -18875,42 +20827,42 @@ public final class NcStreamProto {
     public static final int STRINGDATA_FIELD_NUMBER = 11;
     private com.google.protobuf.LazyStringList stringdata_;
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public com.google.protobuf.ProtocolStringList
         getStringdataList() {
       return stringdata_;
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public int getStringdataCount() {
       return stringdata_.size();
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public java.lang.String getStringdata(int index) {
       return stringdata_.get(index);
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public com.google.protobuf.ByteString
         getStringdataBytes(int index) {
@@ -18918,69 +20870,69 @@ public final class NcStreamProto {
     }
 
     public static final int VLENS_FIELD_NUMBER = 12;
-    private java.util.List<java.lang.Integer> vlens_;
+    private com.google.protobuf.Internal.IntList vlens_;
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * vlen lengths
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     public java.util.List<java.lang.Integer>
         getVlensList() {
       return vlens_;
     }
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * vlen lengths
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     public int getVlensCount() {
       return vlens_.size();
     }
     /**
-     * <code>repeated uint32 vlens = 12;</code>
-     *
      * <pre>
      * vlen lengths
      * </pre>
+     *
+     * <code>repeated uint32 vlens = 12;</code>
      */
     public int getVlens(int index) {
-      return vlens_.get(index);
+      return vlens_.getInt(index);
     }
     private int vlensMemoizedSerializedSize = -1;
 
     public static final int OPAQUEDATA_FIELD_NUMBER = 13;
     private java.util.List<com.google.protobuf.ByteString> opaquedata_;
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataTypes
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     public java.util.List<com.google.protobuf.ByteString>
         getOpaquedataList() {
       return opaquedata_;
     }
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataTypes
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     public int getOpaquedataCount() {
       return opaquedata_.size();
     }
     /**
-     * <code>repeated bytes opaquedata = 13;</code>
-     *
      * <pre>
      * opaque dataTypes
      * </pre>
+     *
+     * <code>repeated bytes opaquedata = 13;</code>
      */
     public com.google.protobuf.ByteString getOpaquedata(int index) {
       return opaquedata_.get(index);
@@ -18989,37 +20941,38 @@ public final class NcStreamProto {
     public static final int STRUCTDATA_FIELD_NUMBER = 14;
     private ucar.nc2.stream.NcStreamProto.ArrayStructureRow structdata_;
     /**
-     * <code>optional .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>.ArrayStructureRow structdata = 14;</code>
      */
     public boolean hasStructdata() {
       return structdata_ != null;
     }
     /**
-     * <code>optional .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>.ArrayStructureRow structdata = 14;</code>
      */
     public ucar.nc2.stream.NcStreamProto.ArrayStructureRow getStructdata() {
       return structdata_ == null ? ucar.nc2.stream.NcStreamProto.ArrayStructureRow.getDefaultInstance() : structdata_;
     }
     /**
-     * <code>optional .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>.ArrayStructureRow structdata = 14;</code>
      */
     public ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder getStructdataOrBuilder() {
       return getStructdata();
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -19029,11 +20982,12 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (!getFullNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, fullName_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, fullName_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -19057,14 +21011,14 @@ public final class NcStreamProto {
         output.writeBytes(10, primdata_);
       }
       for (int i = 0; i < stringdata_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 11, stringdata_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, stringdata_.getRaw(i));
       }
       if (getVlensList().size() > 0) {
-        output.writeRawVarint32(98);
-        output.writeRawVarint32(vlensMemoizedSerializedSize);
+        output.writeUInt32NoTag(98);
+        output.writeUInt32NoTag(vlensMemoizedSerializedSize);
       }
       for (int i = 0; i < vlens_.size(); i++) {
-        output.writeUInt32NoTag(vlens_.get(i));
+        output.writeUInt32NoTag(vlens_.getInt(i));
       }
       for (int i = 0; i < opaquedata_.size(); i++) {
         output.writeBytes(13, opaquedata_.get(i));
@@ -19072,15 +21026,17 @@ public final class NcStreamProto {
       if (structdata_ != null) {
         output.writeMessage(14, getStructdata());
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getFullNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, fullName_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, fullName_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -19122,7 +21078,7 @@ public final class NcStreamProto {
         int dataSize = 0;
         for (int i = 0; i < vlens_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(vlens_.get(i));
+            .computeUInt32SizeNoTag(vlens_.getInt(i));
         }
         size += dataSize;
         if (!getVlensList().isEmpty()) {
@@ -19145,11 +21101,113 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(14, getStructdata());
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.DataRow)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.DataRow other = (ucar.nc2.stream.NcStreamProto.DataRow) obj;
+
+      if (!getFullName()
+          .equals(other.getFullName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (hasSection() != other.hasSection()) return false;
+      if (hasSection()) {
+        if (!getSection()
+            .equals(other.getSection())) return false;
+      }
+      if (getBigend()
+          != other.getBigend()) return false;
+      if (getVersion()
+          != other.getVersion()) return false;
+      if (getIsVlen()
+          != other.getIsVlen()) return false;
+      if (getNelems()
+          != other.getNelems()) return false;
+      if (!getPrimdata()
+          .equals(other.getPrimdata())) return false;
+      if (!getStringdataList()
+          .equals(other.getStringdataList())) return false;
+      if (!getVlensList()
+          .equals(other.getVlensList())) return false;
+      if (!getOpaquedataList()
+          .equals(other.getOpaquedataList())) return false;
+      if (hasStructdata() != other.hasStructdata()) return false;
+      if (hasStructdata()) {
+        if (!getStructdata()
+            .equals(other.getStructdata())) return false;
+      }
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + FULLNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getFullName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      if (hasSection()) {
+        hash = (37 * hash) + SECTION_FIELD_NUMBER;
+        hash = (53 * hash) + getSection().hashCode();
+      }
+      hash = (37 * hash) + BIGEND_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getBigend());
+      hash = (37 * hash) + VERSION_FIELD_NUMBER;
+      hash = (53 * hash) + getVersion();
+      hash = (37 * hash) + ISVLEN_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsVlen());
+      hash = (37 * hash) + NELEMS_FIELD_NUMBER;
+      hash = (53 * hash) + getNelems();
+      hash = (37 * hash) + PRIMDATA_FIELD_NUMBER;
+      hash = (53 * hash) + getPrimdata().hashCode();
+      if (getStringdataCount() > 0) {
+        hash = (37 * hash) + STRINGDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getStringdataList().hashCode();
+      }
+      if (getVlensCount() > 0) {
+        hash = (37 * hash) + VLENS_FIELD_NUMBER;
+        hash = (53 * hash) + getVlensList().hashCode();
+      }
+      if (getOpaquedataCount() > 0) {
+        hash = (37 * hash) + OPAQUEDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getOpaquedataList().hashCode();
+      }
+      if (hasStructdata()) {
+        hash = (37 * hash) + STRUCTDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getStructdata().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -19173,36 +21231,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.DataRow parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.DataRow parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -19210,6 +21275,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.DataRow prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -19217,7 +21283,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -19225,7 +21291,7 @@ public final class NcStreamProto {
      * Protobuf type {@code DataRow}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:DataRow)
         ucar.nc2.stream.NcStreamProto.DataRowOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -19233,7 +21299,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -19246,14 +21313,16 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         fullName_ = "";
@@ -19277,11 +21346,11 @@ public final class NcStreamProto {
         primdata_ = com.google.protobuf.ByteString.EMPTY;
 
         stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000100);
-        vlens_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000001);
+        vlens_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000002);
         opaquedata_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (structdataBuilder_ == null) {
           structdata_ = null;
         } else {
@@ -19291,15 +21360,18 @@ public final class NcStreamProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.DataRow getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.DataRow.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.DataRow build() {
         ucar.nc2.stream.NcStreamProto.DataRow result = buildPartial();
         if (!result.isInitialized()) {
@@ -19308,10 +21380,10 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.DataRow buildPartial() {
         ucar.nc2.stream.NcStreamProto.DataRow result = new ucar.nc2.stream.NcStreamProto.DataRow(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.fullName_ = fullName_;
         result.dataType_ = dataType_;
         if (sectionBuilder_ == null) {
@@ -19324,19 +21396,19 @@ public final class NcStreamProto {
         result.isVlen_ = isVlen_;
         result.nelems_ = nelems_;
         result.primdata_ = primdata_;
-        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((bitField0_ & 0x00000001) != 0)) {
           stringdata_ = stringdata_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.stringdata_ = stringdata_;
-        if (((bitField0_ & 0x00000200) == 0x00000200)) {
-          vlens_ = java.util.Collections.unmodifiableList(vlens_);
-          bitField0_ = (bitField0_ & ~0x00000200);
+        if (((bitField0_ & 0x00000002) != 0)) {
+          vlens_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.vlens_ = vlens_;
-        if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        if (((bitField0_ & 0x00000004) != 0)) {
           opaquedata_ = java.util.Collections.unmodifiableList(opaquedata_);
-          bitField0_ = (bitField0_ & ~0x00000400);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.opaquedata_ = opaquedata_;
         if (structdataBuilder_ == null) {
@@ -19344,11 +21416,43 @@ public final class NcStreamProto {
         } else {
           result.structdata_ = structdataBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.DataRow) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.DataRow)other);
@@ -19388,7 +21492,7 @@ public final class NcStreamProto {
         if (!other.stringdata_.isEmpty()) {
           if (stringdata_.isEmpty()) {
             stringdata_ = other.stringdata_;
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000001);
           } else {
             ensureStringdataIsMutable();
             stringdata_.addAll(other.stringdata_);
@@ -19398,7 +21502,7 @@ public final class NcStreamProto {
         if (!other.vlens_.isEmpty()) {
           if (vlens_.isEmpty()) {
             vlens_ = other.vlens_;
-            bitField0_ = (bitField0_ & ~0x00000200);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureVlensIsMutable();
             vlens_.addAll(other.vlens_);
@@ -19408,7 +21512,7 @@ public final class NcStreamProto {
         if (!other.opaquedata_.isEmpty()) {
           if (opaquedata_.isEmpty()) {
             opaquedata_ = other.opaquedata_;
-            bitField0_ = (bitField0_ & ~0x00000400);
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensureOpaquedataIsMutable();
             opaquedata_.addAll(other.opaquedata_);
@@ -19418,14 +21522,17 @@ public final class NcStreamProto {
         if (other.hasStructdata()) {
           mergeStructdata(other.getStructdata());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -19435,7 +21542,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.DataRow) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -19447,7 +21554,7 @@ public final class NcStreamProto {
 
       private java.lang.Object fullName_ = "";
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>string fullName = 1;</code>
        */
       public java.lang.String getFullName() {
         java.lang.Object ref = fullName_;
@@ -19462,7 +21569,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>string fullName = 1;</code>
        */
       public com.google.protobuf.ByteString
           getFullNameBytes() {
@@ -19478,7 +21585,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>string fullName = 1;</code>
        */
       public Builder setFullName(
           java.lang.String value) {
@@ -19491,7 +21598,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>string fullName = 1;</code>
        */
       public Builder clearFullName() {
         
@@ -19500,7 +21607,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>string fullName = 1;</code>
        */
       public Builder setFullNameBytes(
           com.google.protobuf.ByteString value) {
@@ -19516,13 +21623,13 @@ public final class NcStreamProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -19530,14 +21637,15 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -19549,7 +21657,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -19558,17 +21666,17 @@ public final class NcStreamProto {
         return this;
       }
 
-      private ucar.nc2.stream.NcStreamProto.Section section_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.stream.NcStreamProto.Section section_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> sectionBuilder_;
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public boolean hasSection() {
         return sectionBuilder_ != null || section_ != null;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Section getSection() {
         if (sectionBuilder_ == null) {
@@ -19578,7 +21686,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public Builder setSection(ucar.nc2.stream.NcStreamProto.Section value) {
         if (sectionBuilder_ == null) {
@@ -19594,7 +21702,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public Builder setSection(
           ucar.nc2.stream.NcStreamProto.Section.Builder builderForValue) {
@@ -19608,7 +21716,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public Builder mergeSection(ucar.nc2.stream.NcStreamProto.Section value) {
         if (sectionBuilder_ == null) {
@@ -19626,7 +21734,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public Builder clearSection() {
         if (sectionBuilder_ == null) {
@@ -19640,7 +21748,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Section.Builder getSectionBuilder() {
         
@@ -19648,7 +21756,7 @@ public final class NcStreamProto {
         return getSectionFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
         if (sectionBuilder_ != null) {
@@ -19659,13 +21767,13 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .Section section = 3;</code>
+       * <code>.Section section = 3;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> 
           getSectionFieldBuilder() {
         if (sectionBuilder_ == null) {
-          sectionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          sectionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder>(
                   getSection(),
                   getParentForChildren(),
@@ -19677,13 +21785,13 @@ public final class NcStreamProto {
 
       private boolean bigend_ ;
       /**
-       * <code>optional bool bigend = 4;</code>
+       * <code>bool bigend = 4;</code>
        */
       public boolean getBigend() {
         return bigend_;
       }
       /**
-       * <code>optional bool bigend = 4;</code>
+       * <code>bool bigend = 4;</code>
        */
       public Builder setBigend(boolean value) {
         
@@ -19692,7 +21800,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool bigend = 4;</code>
+       * <code>bool bigend = 4;</code>
        */
       public Builder clearBigend() {
         
@@ -19703,13 +21811,13 @@ public final class NcStreamProto {
 
       private int version_ ;
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public int getVersion() {
         return version_;
       }
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public Builder setVersion(int value) {
         
@@ -19718,7 +21826,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 version = 5;</code>
+       * <code>uint32 version = 5;</code>
        */
       public Builder clearVersion() {
         
@@ -19729,13 +21837,13 @@ public final class NcStreamProto {
 
       private boolean isVlen_ ;
       /**
-       * <code>optional bool isVlen = 7;</code>
+       * <code>bool isVlen = 7;</code>
        */
       public boolean getIsVlen() {
         return isVlen_;
       }
       /**
-       * <code>optional bool isVlen = 7;</code>
+       * <code>bool isVlen = 7;</code>
        */
       public Builder setIsVlen(boolean value) {
         
@@ -19744,7 +21852,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool isVlen = 7;</code>
+       * <code>bool isVlen = 7;</code>
        */
       public Builder clearIsVlen() {
         
@@ -19755,13 +21863,13 @@ public final class NcStreamProto {
 
       private int nelems_ ;
       /**
-       * <code>optional uint32 nelems = 9;</code>
+       * <code>uint32 nelems = 9;</code>
        */
       public int getNelems() {
         return nelems_;
       }
       /**
-       * <code>optional uint32 nelems = 9;</code>
+       * <code>uint32 nelems = 9;</code>
        */
       public Builder setNelems(int value) {
         
@@ -19770,7 +21878,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 nelems = 9;</code>
+       * <code>uint32 nelems = 9;</code>
        */
       public Builder clearNelems() {
         
@@ -19781,21 +21889,21 @@ public final class NcStreamProto {
 
       private com.google.protobuf.ByteString primdata_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * rectangular, primitive array
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public com.google.protobuf.ByteString getPrimdata() {
         return primdata_;
       }
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * rectangular, primitive array
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public Builder setPrimdata(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -19807,11 +21915,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * rectangular, primitive array
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public Builder clearPrimdata() {
         
@@ -19822,59 +21930,59 @@ public final class NcStreamProto {
 
       private com.google.protobuf.LazyStringList stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureStringdataIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           stringdata_ = new com.google.protobuf.LazyStringArrayList(stringdata_);
-          bitField0_ |= 0x00000100;
+          bitField0_ |= 0x00000001;
          }
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public com.google.protobuf.ProtocolStringList
           getStringdataList() {
         return stringdata_.getUnmodifiableView();
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public int getStringdataCount() {
         return stringdata_.size();
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public java.lang.String getStringdata(int index) {
         return stringdata_.get(index);
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public com.google.protobuf.ByteString
           getStringdataBytes(int index) {
         return stringdata_.getByteString(index);
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder setStringdata(
           int index, java.lang.String value) {
@@ -19887,11 +21995,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addStringdata(
           java.lang.String value) {
@@ -19904,11 +22012,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addAllStringdata(
           java.lang.Iterable<java.lang.String> values) {
@@ -19919,24 +22027,24 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder clearStringdata() {
         stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addStringdataBytes(
           com.google.protobuf.ByteString value) {
@@ -19950,77 +22058,78 @@ public final class NcStreamProto {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> vlens_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList vlens_ = emptyIntList();
       private void ensureVlensIsMutable() {
-        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
-          vlens_ = new java.util.ArrayList<java.lang.Integer>(vlens_);
-          bitField0_ |= 0x00000200;
+        if (!((bitField0_ & 0x00000002) != 0)) {
+          vlens_ = mutableCopy(vlens_);
+          bitField0_ |= 0x00000002;
          }
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * vlen lengths
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public java.util.List<java.lang.Integer>
           getVlensList() {
-        return java.util.Collections.unmodifiableList(vlens_);
+        return ((bitField0_ & 0x00000002) != 0) ?
+                 java.util.Collections.unmodifiableList(vlens_) : vlens_;
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * vlen lengths
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public int getVlensCount() {
         return vlens_.size();
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * vlen lengths
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public int getVlens(int index) {
-        return vlens_.get(index);
+        return vlens_.getInt(index);
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * vlen lengths
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public Builder setVlens(
           int index, int value) {
         ensureVlensIsMutable();
-        vlens_.set(index, value);
+        vlens_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * vlen lengths
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public Builder addVlens(int value) {
         ensureVlensIsMutable();
-        vlens_.add(value);
+        vlens_.addInt(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * vlen lengths
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public Builder addAllVlens(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -20031,63 +22140,64 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated uint32 vlens = 12;</code>
-       *
        * <pre>
        * vlen lengths
        * </pre>
+       *
+       * <code>repeated uint32 vlens = 12;</code>
        */
       public Builder clearVlens() {
-        vlens_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000200);
+        vlens_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
 
       private java.util.List<com.google.protobuf.ByteString> opaquedata_ = java.util.Collections.emptyList();
       private void ensureOpaquedataIsMutable() {
-        if (!((bitField0_ & 0x00000400) == 0x00000400)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           opaquedata_ = new java.util.ArrayList<com.google.protobuf.ByteString>(opaquedata_);
-          bitField0_ |= 0x00000400;
+          bitField0_ |= 0x00000004;
          }
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataTypes
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public java.util.List<com.google.protobuf.ByteString>
           getOpaquedataList() {
-        return java.util.Collections.unmodifiableList(opaquedata_);
+        return ((bitField0_ & 0x00000004) != 0) ?
+                 java.util.Collections.unmodifiableList(opaquedata_) : opaquedata_;
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataTypes
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public int getOpaquedataCount() {
         return opaquedata_.size();
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataTypes
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public com.google.protobuf.ByteString getOpaquedata(int index) {
         return opaquedata_.get(index);
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataTypes
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public Builder setOpaquedata(
           int index, com.google.protobuf.ByteString value) {
@@ -20100,11 +22210,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataTypes
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public Builder addOpaquedata(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -20116,11 +22226,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataTypes
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public Builder addAllOpaquedata(
           java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
@@ -20131,38 +22241,38 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes opaquedata = 13;</code>
-       *
        * <pre>
        * opaque dataTypes
        * </pre>
+       *
+       * <code>repeated bytes opaquedata = 13;</code>
        */
       public Builder clearOpaquedata() {
         opaquedata_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
 
-      private ucar.nc2.stream.NcStreamProto.ArrayStructureRow structdata_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.stream.NcStreamProto.ArrayStructureRow structdata_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.ArrayStructureRow, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder> structdataBuilder_;
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
       public boolean hasStructdata() {
         return structdataBuilder_ != null || structdata_ != null;
       }
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow getStructdata() {
         if (structdataBuilder_ == null) {
@@ -20172,11 +22282,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
       public Builder setStructdata(ucar.nc2.stream.NcStreamProto.ArrayStructureRow value) {
         if (structdataBuilder_ == null) {
@@ -20192,11 +22302,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
       public Builder setStructdata(
           ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder builderForValue) {
@@ -20210,11 +22320,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
       public Builder mergeStructdata(ucar.nc2.stream.NcStreamProto.ArrayStructureRow value) {
         if (structdataBuilder_ == null) {
@@ -20232,11 +22342,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
       public Builder clearStructdata() {
         if (structdataBuilder_ == null) {
@@ -20250,11 +22360,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder getStructdataBuilder() {
         
@@ -20262,11 +22372,11 @@ public final class NcStreamProto {
         return getStructdataFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder getStructdataOrBuilder() {
         if (structdataBuilder_ != null) {
@@ -20277,17 +22387,17 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>.ArrayStructureRow structdata = 14;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.ArrayStructureRow, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder> 
           getStructdataFieldBuilder() {
         if (structdataBuilder_ == null) {
-          structdataBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          structdataBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.ArrayStructureRow, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder>(
                   getStructdata(),
                   getParentForChildren(),
@@ -20296,14 +22406,16 @@ public final class NcStreamProto {
         }
         return structdataBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -20322,20 +22434,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<DataRow>
         PARSER = new com.google.protobuf.AbstractParser<DataRow>() {
+      @java.lang.Override
       public DataRow parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new DataRow(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new DataRow(input, extensionRegistry);
       }
     };
 
@@ -20348,6 +22452,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.DataRow getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -20359,51 +22464,51 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string shortName = 1;</code>
+     * <code>string shortName = 1;</code>
      */
     java.lang.String getShortName();
     /**
-     * <code>optional string shortName = 1;</code>
+     * <code>string shortName = 1;</code>
      */
     com.google.protobuf.ByteString
         getShortNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     /**
-     * <code>repeated uint32 shape = 3;</code>
-     *
      * <pre>
      * or section?
      * </pre>
+     *
+     * <code>repeated uint32 shape = 3;</code>
      */
     java.util.List<java.lang.Integer> getShapeList();
     /**
-     * <code>repeated uint32 shape = 3;</code>
-     *
      * <pre>
      * or section?
      * </pre>
+     *
+     * <code>repeated uint32 shape = 3;</code>
      */
     int getShapeCount();
     /**
-     * <code>repeated uint32 shape = 3;</code>
-     *
      * <pre>
      * or section?
      * </pre>
+     *
+     * <code>repeated uint32 shape = 3;</code>
      */
     int getShape(int index);
 
     /**
-     * <code>optional bool isVlen = 4;</code>
+     * <code>bool isVlen = 4;</code>
      */
     boolean getIsVlen();
   }
@@ -20411,30 +22516,43 @@ public final class NcStreamProto {
    * Protobuf type {@code Member}
    */
   public  static final class Member extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Member)
       MemberOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Member.newBuilder() to construct.
-    private Member(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Member(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Member() {
       shortName_ = "";
       dataType_ = 0;
-      shape_ = java.util.Collections.emptyList();
-      isVlen_ = false;
+      shape_ = emptyIntList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Member();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Member(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -20443,14 +22561,8 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               shortName_ = s;
               break;
@@ -20462,22 +22574,22 @@ public final class NcStreamProto {
               break;
             }
             case 24: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-                shape_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000004;
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                shape_ = newIntList();
+                mutable_bitField0_ |= 0x00000001;
               }
-              shape_.add(input.readUInt32());
+              shape_.addInt(input.readUInt32());
               break;
             }
             case 26: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
-                shape_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000004;
+              if (!((mutable_bitField0_ & 0x00000001) != 0) && input.getBytesUntilLimit() > 0) {
+                shape_ = newIntList();
+                mutable_bitField0_ |= 0x00000001;
               }
               while (input.getBytesUntilLimit() > 0) {
-                shape_.add(input.readUInt32());
+                shape_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
@@ -20487,18 +22599,25 @@ public final class NcStreamProto {
               isVlen_ = input.readBool();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-          shape_ = java.util.Collections.unmodifiableList(shape_);
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          shape_.makeImmutable(); // C
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -20507,18 +22626,18 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_Member_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_Member_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Member.class, ucar.nc2.stream.NcStreamProto.Member.Builder.class);
     }
 
-    private int bitField0_;
     public static final int SHORTNAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object shortName_;
     /**
-     * <code>optional string shortName = 1;</code>
+     * <code>string shortName = 1;</code>
      */
     public java.lang.String getShortName() {
       java.lang.Object ref = shortName_;
@@ -20533,7 +22652,7 @@ public final class NcStreamProto {
       }
     }
     /**
-     * <code>optional string shortName = 1;</code>
+     * <code>string shortName = 1;</code>
      */
     public com.google.protobuf.ByteString
         getShortNameBytes() {
@@ -20552,64 +22671,66 @@ public final class NcStreamProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
 
     public static final int SHAPE_FIELD_NUMBER = 3;
-    private java.util.List<java.lang.Integer> shape_;
+    private com.google.protobuf.Internal.IntList shape_;
     /**
-     * <code>repeated uint32 shape = 3;</code>
-     *
      * <pre>
      * or section?
      * </pre>
+     *
+     * <code>repeated uint32 shape = 3;</code>
      */
     public java.util.List<java.lang.Integer>
         getShapeList() {
       return shape_;
     }
     /**
-     * <code>repeated uint32 shape = 3;</code>
-     *
      * <pre>
      * or section?
      * </pre>
+     *
+     * <code>repeated uint32 shape = 3;</code>
      */
     public int getShapeCount() {
       return shape_.size();
     }
     /**
-     * <code>repeated uint32 shape = 3;</code>
-     *
      * <pre>
      * or section?
      * </pre>
+     *
+     * <code>repeated uint32 shape = 3;</code>
      */
     public int getShape(int index) {
-      return shape_.get(index);
+      return shape_.getInt(index);
     }
     private int shapeMemoizedSerializedSize = -1;
 
     public static final int ISVLEN_FIELD_NUMBER = 4;
     private boolean isVlen_;
     /**
-     * <code>optional bool isVlen = 4;</code>
+     * <code>bool isVlen = 4;</code>
      */
     public boolean getIsVlen() {
       return isVlen_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -20619,34 +22740,37 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (!getShortNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, shortName_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, shortName_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
       }
       if (getShapeList().size() > 0) {
-        output.writeRawVarint32(26);
-        output.writeRawVarint32(shapeMemoizedSerializedSize);
+        output.writeUInt32NoTag(26);
+        output.writeUInt32NoTag(shapeMemoizedSerializedSize);
       }
       for (int i = 0; i < shape_.size(); i++) {
-        output.writeUInt32NoTag(shape_.get(i));
+        output.writeUInt32NoTag(shape_.getInt(i));
       }
       if (isVlen_ != false) {
         output.writeBool(4, isVlen_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getShortNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, shortName_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, shortName_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -20656,7 +22780,7 @@ public final class NcStreamProto {
         int dataSize = 0;
         for (int i = 0; i < shape_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(shape_.get(i));
+            .computeUInt32SizeNoTag(shape_.getInt(i));
         }
         size += dataSize;
         if (!getShapeList().isEmpty()) {
@@ -20670,11 +22794,66 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(4, isVlen_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.Member)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.Member other = (ucar.nc2.stream.NcStreamProto.Member) obj;
+
+      if (!getShortName()
+          .equals(other.getShortName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (!getShapeList()
+          .equals(other.getShapeList())) return false;
+      if (getIsVlen()
+          != other.getIsVlen()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SHORTNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getShortName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      if (getShapeCount() > 0) {
+        hash = (37 * hash) + SHAPE_FIELD_NUMBER;
+        hash = (53 * hash) + getShapeList().hashCode();
+      }
+      hash = (37 * hash) + ISVLEN_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsVlen());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Member parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Member parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.Member parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -20698,36 +22877,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.Member parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Member parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Member parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Member parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.Member parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.Member parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -20735,6 +22921,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Member prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -20742,7 +22929,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -20750,7 +22937,7 @@ public final class NcStreamProto {
      * Protobuf type {@code Member}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Member)
         ucar.nc2.stream.NcStreamProto.MemberOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -20758,7 +22945,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_Member_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Member_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -20771,36 +22959,41 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         shortName_ = "";
 
         dataType_ = 0;
 
-        shape_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        shape_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000001);
         isVlen_ = false;
 
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_Member_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Member getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.Member.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Member build() {
         ucar.nc2.stream.NcStreamProto.Member result = buildPartial();
         if (!result.isInitialized()) {
@@ -20809,23 +23002,55 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.Member buildPartial() {
         ucar.nc2.stream.NcStreamProto.Member result = new ucar.nc2.stream.NcStreamProto.Member(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.shortName_ = shortName_;
         result.dataType_ = dataType_;
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          shape_ = java.util.Collections.unmodifiableList(shape_);
-          bitField0_ = (bitField0_ & ~0x00000004);
+        if (((bitField0_ & 0x00000001) != 0)) {
+          shape_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.shape_ = shape_;
         result.isVlen_ = isVlen_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.Member) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.Member)other);
@@ -20847,7 +23072,7 @@ public final class NcStreamProto {
         if (!other.shape_.isEmpty()) {
           if (shape_.isEmpty()) {
             shape_ = other.shape_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           } else {
             ensureShapeIsMutable();
             shape_.addAll(other.shape_);
@@ -20857,14 +23082,17 @@ public final class NcStreamProto {
         if (other.getIsVlen() != false) {
           setIsVlen(other.getIsVlen());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -20874,7 +23102,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.Member) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -20886,7 +23114,7 @@ public final class NcStreamProto {
 
       private java.lang.Object shortName_ = "";
       /**
-       * <code>optional string shortName = 1;</code>
+       * <code>string shortName = 1;</code>
        */
       public java.lang.String getShortName() {
         java.lang.Object ref = shortName_;
@@ -20901,7 +23129,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string shortName = 1;</code>
+       * <code>string shortName = 1;</code>
        */
       public com.google.protobuf.ByteString
           getShortNameBytes() {
@@ -20917,7 +23145,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional string shortName = 1;</code>
+       * <code>string shortName = 1;</code>
        */
       public Builder setShortName(
           java.lang.String value) {
@@ -20930,7 +23158,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string shortName = 1;</code>
+       * <code>string shortName = 1;</code>
        */
       public Builder clearShortName() {
         
@@ -20939,7 +23167,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional string shortName = 1;</code>
+       * <code>string shortName = 1;</code>
        */
       public Builder setShortNameBytes(
           com.google.protobuf.ByteString value) {
@@ -20955,13 +23183,13 @@ public final class NcStreamProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -20969,14 +23197,15 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -20988,7 +23217,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -20997,77 +23226,78 @@ public final class NcStreamProto {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> shape_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList shape_ = emptyIntList();
       private void ensureShapeIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          shape_ = new java.util.ArrayList<java.lang.Integer>(shape_);
-          bitField0_ |= 0x00000004;
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          shape_ = mutableCopy(shape_);
+          bitField0_ |= 0x00000001;
          }
       }
       /**
-       * <code>repeated uint32 shape = 3;</code>
-       *
        * <pre>
        * or section?
        * </pre>
+       *
+       * <code>repeated uint32 shape = 3;</code>
        */
       public java.util.List<java.lang.Integer>
           getShapeList() {
-        return java.util.Collections.unmodifiableList(shape_);
+        return ((bitField0_ & 0x00000001) != 0) ?
+                 java.util.Collections.unmodifiableList(shape_) : shape_;
       }
       /**
-       * <code>repeated uint32 shape = 3;</code>
-       *
        * <pre>
        * or section?
        * </pre>
+       *
+       * <code>repeated uint32 shape = 3;</code>
        */
       public int getShapeCount() {
         return shape_.size();
       }
       /**
-       * <code>repeated uint32 shape = 3;</code>
-       *
        * <pre>
        * or section?
        * </pre>
+       *
+       * <code>repeated uint32 shape = 3;</code>
        */
       public int getShape(int index) {
-        return shape_.get(index);
+        return shape_.getInt(index);
       }
       /**
-       * <code>repeated uint32 shape = 3;</code>
-       *
        * <pre>
        * or section?
        * </pre>
+       *
+       * <code>repeated uint32 shape = 3;</code>
        */
       public Builder setShape(
           int index, int value) {
         ensureShapeIsMutable();
-        shape_.set(index, value);
+        shape_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 3;</code>
-       *
        * <pre>
        * or section?
        * </pre>
+       *
+       * <code>repeated uint32 shape = 3;</code>
        */
       public Builder addShape(int value) {
         ensureShapeIsMutable();
-        shape_.add(value);
+        shape_.addInt(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 3;</code>
-       *
        * <pre>
        * or section?
        * </pre>
+       *
+       * <code>repeated uint32 shape = 3;</code>
        */
       public Builder addAllShape(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -21078,28 +23308,28 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 3;</code>
-       *
        * <pre>
        * or section?
        * </pre>
+       *
+       * <code>repeated uint32 shape = 3;</code>
        */
       public Builder clearShape() {
-        shape_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        shape_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
 
       private boolean isVlen_ ;
       /**
-       * <code>optional bool isVlen = 4;</code>
+       * <code>bool isVlen = 4;</code>
        */
       public boolean getIsVlen() {
         return isVlen_;
       }
       /**
-       * <code>optional bool isVlen = 4;</code>
+       * <code>bool isVlen = 4;</code>
        */
       public Builder setIsVlen(boolean value) {
         
@@ -21108,7 +23338,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bool isVlen = 4;</code>
+       * <code>bool isVlen = 4;</code>
        */
       public Builder clearIsVlen() {
         
@@ -21116,14 +23346,16 @@ public final class NcStreamProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -21142,20 +23374,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<Member>
         PARSER = new com.google.protobuf.AbstractParser<Member>() {
+      @java.lang.Override
       public Member parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Member(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Member(input, extensionRegistry);
       }
     };
 
@@ -21168,6 +23392,7 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.Member getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -21203,132 +23428,132 @@ public final class NcStreamProto {
         int index);
 
     /**
-     * <code>optional uint64 nrows = 5;</code>
-     *
      * <pre>
      * number of rows in this message
      * </pre>
+     *
+     * <code>uint64 nrows = 5;</code>
      */
     long getNrows();
 
     /**
-     * <code>optional uint32 rowLength = 6;</code>
-     *
      * <pre>
      * length in bytes of each row
      * </pre>
+     *
+     * <code>uint32 rowLength = 6;</code>
      */
     int getRowLength();
 
     /**
-     * <code>optional bytes fixdata = 10;</code>
-     *
      * <pre>
      * fixed data
      * </pre>
+     *
+     * <code>bytes fixdata = 10;</code>
      */
     com.google.protobuf.ByteString getFixdata();
 
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getStringdataList();
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     int getStringdataCount();
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     java.lang.String getStringdata(int index);
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     com.google.protobuf.ByteString
         getStringdataBytes(int index);
 
     /**
-     * <code>repeated bytes bytedata = 13;</code>
-     *
      * <pre>
      * opaque dataType and vlens
      * </pre>
+     *
+     * <code>repeated bytes bytedata = 13;</code>
      */
     java.util.List<com.google.protobuf.ByteString> getBytedataList();
     /**
-     * <code>repeated bytes bytedata = 13;</code>
-     *
      * <pre>
      * opaque dataType and vlens
      * </pre>
+     *
+     * <code>repeated bytes bytedata = 13;</code>
      */
     int getBytedataCount();
     /**
-     * <code>repeated bytes bytedata = 13;</code>
-     *
      * <pre>
      * opaque dataType and vlens
      * </pre>
+     *
+     * <code>repeated bytes bytedata = 13;</code>
      */
     com.google.protobuf.ByteString getBytedata(int index);
 
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.ArrayStructureRow> 
         getStructdataList();
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     ucar.nc2.stream.NcStreamProto.ArrayStructureRow getStructdata(int index);
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     int getStructdataCount();
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder> 
         getStructdataOrBuilderList();
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder getStructdataOrBuilder(
         int index);
@@ -21337,17 +23562,16 @@ public final class NcStreamProto {
    * Protobuf type {@code ArrayStructureRow}
    */
   public  static final class ArrayStructureRow extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:ArrayStructureRow)
       ArrayStructureRowOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use ArrayStructureRow.newBuilder() to construct.
-    private ArrayStructureRow(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private ArrayStructureRow(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private ArrayStructureRow() {
       members_ = java.util.Collections.emptyList();
-      nrows_ = 0L;
-      rowLength_ = 0;
       fixdata_ = com.google.protobuf.ByteString.EMPTY;
       stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bytedata_ = java.util.Collections.emptyList();
@@ -21355,15 +23579,28 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ArrayStructureRow();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private ArrayStructureRow(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -21372,18 +23609,13 @@ public final class NcStreamProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 members_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Member>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              members_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Member.parser(), extensionRegistry));
+              members_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Member.parser(), extensionRegistry));
               break;
             }
             case 40: {
@@ -21402,51 +23634,59 @@ public final class NcStreamProto {
               break;
             }
             case 90: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 stringdata_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000010;
+                mutable_bitField0_ |= 0x00000002;
               }
               stringdata_.add(s);
               break;
             }
             case 106: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 bytedata_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
-                mutable_bitField0_ |= 0x00000020;
+                mutable_bitField0_ |= 0x00000004;
               }
               bytedata_.add(input.readBytes());
               break;
             }
             case 114: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
                 structdata_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.ArrayStructureRow>();
-                mutable_bitField0_ |= 0x00000040;
+                mutable_bitField0_ |= 0x00000008;
               }
-              structdata_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.ArrayStructureRow.parser(), extensionRegistry));
+              structdata_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.ArrayStructureRow.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           members_ = java.util.Collections.unmodifiableList(members_);
         }
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           stringdata_ = stringdata_.getUnmodifiableView();
         }
-        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-          bytedata_ = java.util.Collections.unmodifiableList(bytedata_);
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
+          bytedata_ = java.util.Collections.unmodifiableList(bytedata_); // C
         }
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((mutable_bitField0_ & 0x00000008) != 0)) {
           structdata_ = java.util.Collections.unmodifiableList(structdata_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -21455,14 +23695,14 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureRow_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureRow_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.ArrayStructureRow.class, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder.class);
     }
 
-    private int bitField0_;
     public static final int MEMBERS_FIELD_NUMBER = 1;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Member> members_;
     /**
@@ -21501,11 +23741,11 @@ public final class NcStreamProto {
     public static final int NROWS_FIELD_NUMBER = 5;
     private long nrows_;
     /**
-     * <code>optional uint64 nrows = 5;</code>
-     *
      * <pre>
      * number of rows in this message
      * </pre>
+     *
+     * <code>uint64 nrows = 5;</code>
      */
     public long getNrows() {
       return nrows_;
@@ -21514,11 +23754,11 @@ public final class NcStreamProto {
     public static final int ROWLENGTH_FIELD_NUMBER = 6;
     private int rowLength_;
     /**
-     * <code>optional uint32 rowLength = 6;</code>
-     *
      * <pre>
      * length in bytes of each row
      * </pre>
+     *
+     * <code>uint32 rowLength = 6;</code>
      */
     public int getRowLength() {
       return rowLength_;
@@ -21527,11 +23767,11 @@ public final class NcStreamProto {
     public static final int FIXDATA_FIELD_NUMBER = 10;
     private com.google.protobuf.ByteString fixdata_;
     /**
-     * <code>optional bytes fixdata = 10;</code>
-     *
      * <pre>
      * fixed data
      * </pre>
+     *
+     * <code>bytes fixdata = 10;</code>
      */
     public com.google.protobuf.ByteString getFixdata() {
       return fixdata_;
@@ -21540,42 +23780,42 @@ public final class NcStreamProto {
     public static final int STRINGDATA_FIELD_NUMBER = 11;
     private com.google.protobuf.LazyStringList stringdata_;
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public com.google.protobuf.ProtocolStringList
         getStringdataList() {
       return stringdata_;
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public int getStringdataCount() {
       return stringdata_.size();
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public java.lang.String getStringdata(int index) {
       return stringdata_.get(index);
     }
     /**
-     * <code>repeated string stringdata = 11;</code>
-     *
      * <pre>
      * string dataType
      * </pre>
+     *
+     * <code>repeated string stringdata = 11;</code>
      */
     public com.google.protobuf.ByteString
         getStringdataBytes(int index) {
@@ -21585,32 +23825,32 @@ public final class NcStreamProto {
     public static final int BYTEDATA_FIELD_NUMBER = 13;
     private java.util.List<com.google.protobuf.ByteString> bytedata_;
     /**
-     * <code>repeated bytes bytedata = 13;</code>
-     *
      * <pre>
      * opaque dataType and vlens
      * </pre>
+     *
+     * <code>repeated bytes bytedata = 13;</code>
      */
     public java.util.List<com.google.protobuf.ByteString>
         getBytedataList() {
       return bytedata_;
     }
     /**
-     * <code>repeated bytes bytedata = 13;</code>
-     *
      * <pre>
      * opaque dataType and vlens
      * </pre>
+     *
+     * <code>repeated bytes bytedata = 13;</code>
      */
     public int getBytedataCount() {
       return bytedata_.size();
     }
     /**
-     * <code>repeated bytes bytedata = 13;</code>
-     *
      * <pre>
      * opaque dataType and vlens
      * </pre>
+     *
+     * <code>repeated bytes bytedata = 13;</code>
      */
     public com.google.protobuf.ByteString getBytedata(int index) {
       return bytedata_.get(index);
@@ -21619,52 +23859,52 @@ public final class NcStreamProto {
     public static final int STRUCTDATA_FIELD_NUMBER = 14;
     private java.util.List<ucar.nc2.stream.NcStreamProto.ArrayStructureRow> structdata_;
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.ArrayStructureRow> getStructdataList() {
       return structdata_;
     }
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder> 
         getStructdataOrBuilderList() {
       return structdata_;
     }
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     public int getStructdataCount() {
       return structdata_.size();
     }
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     public ucar.nc2.stream.NcStreamProto.ArrayStructureRow getStructdata(int index) {
       return structdata_.get(index);
     }
     /**
-     * <code>repeated .ArrayStructureRow structdata = 14;</code>
-     *
      * <pre>
      * structure/seq dataType
      * </pre>
+     *
+     * <code>repeated .ArrayStructureRow structdata = 14;</code>
      */
     public ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder getStructdataOrBuilder(
         int index) {
@@ -21672,6 +23912,7 @@ public final class NcStreamProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -21681,6 +23922,7 @@ public final class NcStreamProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (int i = 0; i < members_.size(); i++) {
@@ -21696,7 +23938,7 @@ public final class NcStreamProto {
         output.writeBytes(10, fixdata_);
       }
       for (int i = 0; i < stringdata_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 11, stringdata_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, stringdata_.getRaw(i));
       }
       for (int i = 0; i < bytedata_.size(); i++) {
         output.writeBytes(13, bytedata_.get(i));
@@ -21704,8 +23946,10 @@ public final class NcStreamProto {
       for (int i = 0; i < structdata_.size(); i++) {
         output.writeMessage(14, structdata_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -21748,11 +23992,85 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(14, structdata_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.stream.NcStreamProto.ArrayStructureRow)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.stream.NcStreamProto.ArrayStructureRow other = (ucar.nc2.stream.NcStreamProto.ArrayStructureRow) obj;
+
+      if (!getMembersList()
+          .equals(other.getMembersList())) return false;
+      if (getNrows()
+          != other.getNrows()) return false;
+      if (getRowLength()
+          != other.getRowLength()) return false;
+      if (!getFixdata()
+          .equals(other.getFixdata())) return false;
+      if (!getStringdataList()
+          .equals(other.getStringdataList())) return false;
+      if (!getBytedataList()
+          .equals(other.getBytedataList())) return false;
+      if (!getStructdataList()
+          .equals(other.getStructdataList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getMembersCount() > 0) {
+        hash = (37 * hash) + MEMBERS_FIELD_NUMBER;
+        hash = (53 * hash) + getMembersList().hashCode();
+      }
+      hash = (37 * hash) + NROWS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getNrows());
+      hash = (37 * hash) + ROWLENGTH_FIELD_NUMBER;
+      hash = (53 * hash) + getRowLength();
+      hash = (37 * hash) + FIXDATA_FIELD_NUMBER;
+      hash = (53 * hash) + getFixdata().hashCode();
+      if (getStringdataCount() > 0) {
+        hash = (37 * hash) + STRINGDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getStringdataList().hashCode();
+      }
+      if (getBytedataCount() > 0) {
+        hash = (37 * hash) + BYTEDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getBytedataList().hashCode();
+      }
+      if (getStructdataCount() > 0) {
+        hash = (37 * hash) + STRUCTDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getStructdataList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -21776,36 +24094,43 @@ public final class NcStreamProto {
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.stream.NcStreamProto.ArrayStructureRow parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -21813,6 +24138,7 @@ public final class NcStreamProto {
     public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.ArrayStructureRow prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -21820,7 +24146,7 @@ public final class NcStreamProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -21828,7 +24154,7 @@ public final class NcStreamProto {
      * Protobuf type {@code ArrayStructureRow}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:ArrayStructureRow)
         ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -21836,7 +24162,8 @@ public final class NcStreamProto {
         return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureRow_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureRow_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -21849,16 +24176,18 @@ public final class NcStreamProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getMembersFieldBuilder();
           getStructdataFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         if (membersBuilder_ == null) {
@@ -21874,27 +24203,30 @@ public final class NcStreamProto {
         fixdata_ = com.google.protobuf.ByteString.EMPTY;
 
         stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000002);
         bytedata_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (structdataBuilder_ == null) {
           structdata_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           structdataBuilder_.clear();
         }
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.stream.NcStreamProto.internal_static_ArrayStructureRow_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow getDefaultInstanceForType() {
         return ucar.nc2.stream.NcStreamProto.ArrayStructureRow.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow build() {
         ucar.nc2.stream.NcStreamProto.ArrayStructureRow result = buildPartial();
         if (!result.isInitialized()) {
@@ -21903,12 +24235,12 @@ public final class NcStreamProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow buildPartial() {
         ucar.nc2.stream.NcStreamProto.ArrayStructureRow result = new ucar.nc2.stream.NcStreamProto.ArrayStructureRow(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         if (membersBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             members_ = java.util.Collections.unmodifiableList(members_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
@@ -21919,30 +24251,62 @@ public final class NcStreamProto {
         result.nrows_ = nrows_;
         result.rowLength_ = rowLength_;
         result.fixdata_ = fixdata_;
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           stringdata_ = stringdata_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.stringdata_ = stringdata_;
-        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((bitField0_ & 0x00000004) != 0)) {
           bytedata_ = java.util.Collections.unmodifiableList(bytedata_);
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.bytedata_ = bytedata_;
         if (structdataBuilder_ == null) {
-          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             structdata_ = java.util.Collections.unmodifiableList(structdata_);
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.structdata_ = structdata_;
         } else {
           result.structdata_ = structdataBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.stream.NcStreamProto.ArrayStructureRow) {
           return mergeFrom((ucar.nc2.stream.NcStreamProto.ArrayStructureRow)other);
@@ -21973,7 +24337,7 @@ public final class NcStreamProto {
               members_ = other.members_;
               bitField0_ = (bitField0_ & ~0x00000001);
               membersBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getMembersFieldBuilder() : null;
             } else {
               membersBuilder_.addAllMessages(other.members_);
@@ -21992,7 +24356,7 @@ public final class NcStreamProto {
         if (!other.stringdata_.isEmpty()) {
           if (stringdata_.isEmpty()) {
             stringdata_ = other.stringdata_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureStringdataIsMutable();
             stringdata_.addAll(other.stringdata_);
@@ -22002,7 +24366,7 @@ public final class NcStreamProto {
         if (!other.bytedata_.isEmpty()) {
           if (bytedata_.isEmpty()) {
             bytedata_ = other.bytedata_;
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensureBytedataIsMutable();
             bytedata_.addAll(other.bytedata_);
@@ -22013,7 +24377,7 @@ public final class NcStreamProto {
           if (!other.structdata_.isEmpty()) {
             if (structdata_.isEmpty()) {
               structdata_ = other.structdata_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureStructdataIsMutable();
               structdata_.addAll(other.structdata_);
@@ -22026,23 +24390,26 @@ public final class NcStreamProto {
               structdataBuilder_.dispose();
               structdataBuilder_ = null;
               structdata_ = other.structdata_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000008);
               structdataBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getStructdataFieldBuilder() : null;
             } else {
               structdataBuilder_.addAllMessages(other.structdata_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -22052,7 +24419,7 @@ public final class NcStreamProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.stream.NcStreamProto.ArrayStructureRow) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -22065,13 +24432,13 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Member> members_ =
         java.util.Collections.emptyList();
       private void ensureMembersIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           members_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Member>(members_);
           bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Member, ucar.nc2.stream.NcStreamProto.Member.Builder, ucar.nc2.stream.NcStreamProto.MemberOrBuilder> membersBuilder_;
 
       /**
@@ -22287,14 +24654,14 @@ public final class NcStreamProto {
            getMembersBuilderList() {
         return getMembersFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Member, ucar.nc2.stream.NcStreamProto.Member.Builder, ucar.nc2.stream.NcStreamProto.MemberOrBuilder> 
           getMembersFieldBuilder() {
         if (membersBuilder_ == null) {
-          membersBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          membersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Member, ucar.nc2.stream.NcStreamProto.Member.Builder, ucar.nc2.stream.NcStreamProto.MemberOrBuilder>(
                   members_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           members_ = null;
@@ -22304,21 +24671,21 @@ public final class NcStreamProto {
 
       private long nrows_ ;
       /**
-       * <code>optional uint64 nrows = 5;</code>
-       *
        * <pre>
        * number of rows in this message
        * </pre>
+       *
+       * <code>uint64 nrows = 5;</code>
        */
       public long getNrows() {
         return nrows_;
       }
       /**
-       * <code>optional uint64 nrows = 5;</code>
-       *
        * <pre>
        * number of rows in this message
        * </pre>
+       *
+       * <code>uint64 nrows = 5;</code>
        */
       public Builder setNrows(long value) {
         
@@ -22327,11 +24694,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint64 nrows = 5;</code>
-       *
        * <pre>
        * number of rows in this message
        * </pre>
+       *
+       * <code>uint64 nrows = 5;</code>
        */
       public Builder clearNrows() {
         
@@ -22342,21 +24709,21 @@ public final class NcStreamProto {
 
       private int rowLength_ ;
       /**
-       * <code>optional uint32 rowLength = 6;</code>
-       *
        * <pre>
        * length in bytes of each row
        * </pre>
+       *
+       * <code>uint32 rowLength = 6;</code>
        */
       public int getRowLength() {
         return rowLength_;
       }
       /**
-       * <code>optional uint32 rowLength = 6;</code>
-       *
        * <pre>
        * length in bytes of each row
        * </pre>
+       *
+       * <code>uint32 rowLength = 6;</code>
        */
       public Builder setRowLength(int value) {
         
@@ -22365,11 +24732,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional uint32 rowLength = 6;</code>
-       *
        * <pre>
        * length in bytes of each row
        * </pre>
+       *
+       * <code>uint32 rowLength = 6;</code>
        */
       public Builder clearRowLength() {
         
@@ -22380,21 +24747,21 @@ public final class NcStreamProto {
 
       private com.google.protobuf.ByteString fixdata_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes fixdata = 10;</code>
-       *
        * <pre>
        * fixed data
        * </pre>
+       *
+       * <code>bytes fixdata = 10;</code>
        */
       public com.google.protobuf.ByteString getFixdata() {
         return fixdata_;
       }
       /**
-       * <code>optional bytes fixdata = 10;</code>
-       *
        * <pre>
        * fixed data
        * </pre>
+       *
+       * <code>bytes fixdata = 10;</code>
        */
       public Builder setFixdata(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -22406,11 +24773,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional bytes fixdata = 10;</code>
-       *
        * <pre>
        * fixed data
        * </pre>
+       *
+       * <code>bytes fixdata = 10;</code>
        */
       public Builder clearFixdata() {
         
@@ -22421,59 +24788,59 @@ public final class NcStreamProto {
 
       private com.google.protobuf.LazyStringList stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureStringdataIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           stringdata_ = new com.google.protobuf.LazyStringArrayList(stringdata_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000002;
          }
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public com.google.protobuf.ProtocolStringList
           getStringdataList() {
         return stringdata_.getUnmodifiableView();
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public int getStringdataCount() {
         return stringdata_.size();
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public java.lang.String getStringdata(int index) {
         return stringdata_.get(index);
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public com.google.protobuf.ByteString
           getStringdataBytes(int index) {
         return stringdata_.getByteString(index);
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder setStringdata(
           int index, java.lang.String value) {
@@ -22486,11 +24853,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addStringdata(
           java.lang.String value) {
@@ -22503,11 +24870,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addAllStringdata(
           java.lang.Iterable<java.lang.String> values) {
@@ -22518,24 +24885,24 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder clearStringdata() {
         stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string stringdata = 11;</code>
-       *
        * <pre>
        * string dataType
        * </pre>
+       *
+       * <code>repeated string stringdata = 11;</code>
        */
       public Builder addStringdataBytes(
           com.google.protobuf.ByteString value) {
@@ -22551,48 +24918,49 @@ public final class NcStreamProto {
 
       private java.util.List<com.google.protobuf.ByteString> bytedata_ = java.util.Collections.emptyList();
       private void ensureBytedataIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           bytedata_ = new java.util.ArrayList<com.google.protobuf.ByteString>(bytedata_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000004;
          }
       }
       /**
-       * <code>repeated bytes bytedata = 13;</code>
-       *
        * <pre>
        * opaque dataType and vlens
        * </pre>
+       *
+       * <code>repeated bytes bytedata = 13;</code>
        */
       public java.util.List<com.google.protobuf.ByteString>
           getBytedataList() {
-        return java.util.Collections.unmodifiableList(bytedata_);
+        return ((bitField0_ & 0x00000004) != 0) ?
+                 java.util.Collections.unmodifiableList(bytedata_) : bytedata_;
       }
       /**
-       * <code>repeated bytes bytedata = 13;</code>
-       *
        * <pre>
        * opaque dataType and vlens
        * </pre>
+       *
+       * <code>repeated bytes bytedata = 13;</code>
        */
       public int getBytedataCount() {
         return bytedata_.size();
       }
       /**
-       * <code>repeated bytes bytedata = 13;</code>
-       *
        * <pre>
        * opaque dataType and vlens
        * </pre>
+       *
+       * <code>repeated bytes bytedata = 13;</code>
        */
       public com.google.protobuf.ByteString getBytedata(int index) {
         return bytedata_.get(index);
       }
       /**
-       * <code>repeated bytes bytedata = 13;</code>
-       *
        * <pre>
        * opaque dataType and vlens
        * </pre>
+       *
+       * <code>repeated bytes bytedata = 13;</code>
        */
       public Builder setBytedata(
           int index, com.google.protobuf.ByteString value) {
@@ -22605,11 +24973,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes bytedata = 13;</code>
-       *
        * <pre>
        * opaque dataType and vlens
        * </pre>
+       *
+       * <code>repeated bytes bytedata = 13;</code>
        */
       public Builder addBytedata(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -22621,11 +24989,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes bytedata = 13;</code>
-       *
        * <pre>
        * opaque dataType and vlens
        * </pre>
+       *
+       * <code>repeated bytes bytedata = 13;</code>
        */
       public Builder addAllBytedata(
           java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
@@ -22636,15 +25004,15 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated bytes bytedata = 13;</code>
-       *
        * <pre>
        * opaque dataType and vlens
        * </pre>
+       *
+       * <code>repeated bytes bytedata = 13;</code>
        */
       public Builder clearBytedata() {
         bytedata_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -22652,21 +25020,21 @@ public final class NcStreamProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.ArrayStructureRow> structdata_ =
         java.util.Collections.emptyList();
       private void ensureStructdataIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           structdata_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.ArrayStructureRow>(structdata_);
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000008;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.ArrayStructureRow, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder> structdataBuilder_;
 
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.ArrayStructureRow> getStructdataList() {
         if (structdataBuilder_ == null) {
@@ -22676,11 +25044,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public int getStructdataCount() {
         if (structdataBuilder_ == null) {
@@ -22690,11 +25058,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow getStructdata(int index) {
         if (structdataBuilder_ == null) {
@@ -22704,11 +25072,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder setStructdata(
           int index, ucar.nc2.stream.NcStreamProto.ArrayStructureRow value) {
@@ -22725,11 +25093,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder setStructdata(
           int index, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder builderForValue) {
@@ -22743,11 +25111,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder addStructdata(ucar.nc2.stream.NcStreamProto.ArrayStructureRow value) {
         if (structdataBuilder_ == null) {
@@ -22763,11 +25131,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder addStructdata(
           int index, ucar.nc2.stream.NcStreamProto.ArrayStructureRow value) {
@@ -22784,11 +25152,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder addStructdata(
           ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder builderForValue) {
@@ -22802,11 +25170,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder addStructdata(
           int index, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder builderForValue) {
@@ -22820,11 +25188,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder addAllStructdata(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.ArrayStructureRow> values) {
@@ -22839,16 +25207,16 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder clearStructdata() {
         if (structdataBuilder_ == null) {
           structdata_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           structdataBuilder_.clear();
@@ -22856,11 +25224,11 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public Builder removeStructdata(int index) {
         if (structdataBuilder_ == null) {
@@ -22873,22 +25241,22 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder getStructdataBuilder(
           int index) {
         return getStructdataFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder getStructdataOrBuilder(
           int index) {
@@ -22898,11 +25266,11 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder> 
            getStructdataOrBuilderList() {
@@ -22913,22 +25281,22 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder addStructdataBuilder() {
         return getStructdataFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.ArrayStructureRow.getDefaultInstance());
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder addStructdataBuilder(
           int index) {
@@ -22936,38 +25304,40 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.getDefaultInstance());
       }
       /**
-       * <code>repeated .ArrayStructureRow structdata = 14;</code>
-       *
        * <pre>
        * structure/seq dataType
        * </pre>
+       *
+       * <code>repeated .ArrayStructureRow structdata = 14;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder> 
            getStructdataBuilderList() {
         return getStructdataFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.ArrayStructureRow, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder> 
           getStructdataFieldBuilder() {
         if (structdataBuilder_ == null) {
-          structdataBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          structdataBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.ArrayStructureRow, ucar.nc2.stream.NcStreamProto.ArrayStructureRow.Builder, ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder>(
                   structdata_,
-                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           structdata_ = null;
         }
         return structdataBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -22986,20 +25356,12 @@ public final class NcStreamProto {
 
     private static final com.google.protobuf.Parser<ArrayStructureRow>
         PARSER = new com.google.protobuf.AbstractParser<ArrayStructureRow>() {
+      @java.lang.Override
       public ArrayStructureRow parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new ArrayStructureRow(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new ArrayStructureRow(input, extensionRegistry);
       }
     };
 
@@ -23012,108 +25374,109 @@ public final class NcStreamProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.stream.NcStreamProto.ArrayStructureRow getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Attribute_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Attribute_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Dimension_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Dimension_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Variable_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Variable_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Structure_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Structure_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_EnumTypedef_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_EnumTypedef_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_EnumTypedef_EnumType_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_EnumTypedef_EnumType_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Group_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Group_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Header_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Header_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Error_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Error_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Range_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Range_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Section_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Section_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Data_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Data_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_StructureData_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_StructureData_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_DataCol_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_DataCol_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_ArrayStructureCol_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_ArrayStructureCol_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_DataRow_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_DataRow_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Member_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Member_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_ArrayStructureRow_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_ArrayStructureRow_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
   }
-  private static com.google.protobuf.Descriptors.FileDescriptor
+  private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
     java.lang.String[] descriptorData = {
@@ -23126,7 +25489,7 @@ public final class NcStreamProto {
       "\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"a\n\tDimension\022\014\n\004" +
       "name\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\023\n\013isUnlimite" +
       "d\030\003 \001(\010\022\016\n\006isVlen\030\004 \001(\010\022\021\n\tisPrivate\030\005 \001" +
-      "(\010\"\234\001\n\010Variable\022\014\n\004name\030\001 \001(\t\022\033\n\010dataTyp",
+      "(\010\"\234\001\n\010Variable\022\014\n\004name\030\001 \001(\t\022\033\n\010dataTyp" +
       "e\030\002 \001(\0162\t.DataType\022\031\n\005shape\030\003 \003(\0132\n.Dime" +
       "nsion\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\020\n\010unsig" +
       "ned\030\005 \001(\010\022\014\n\004data\030\006 \001(\014\022\020\n\010enumType\030\007 \001(" +
@@ -23136,7 +25499,7 @@ public final class NcStreamProto {
       "\005 \003(\0132\t.Variable\022\033\n\007structs\030\006 \003(\0132\n.Stru" +
       "cture\"h\n\013EnumTypedef\022\014\n\004name\030\001 \001(\t\022\"\n\003ma" +
       "p\030\002 \003(\0132\025.EnumTypedef.EnumType\032\'\n\010EnumTy" +
-      "pe\022\014\n\004code\030\001 \001(\r\022\r\n\005value\030\002 \001(\t\"\270\001\n\005Grou",
+      "pe\022\014\n\004code\030\001 \001(\r\022\r\n\005value\030\002 \001(\t\"\270\001\n\005Grou" +
       "p\022\014\n\004name\030\001 \001(\t\022\030\n\004dims\030\002 \003(\0132\n.Dimensio" +
       "n\022\027\n\004vars\030\003 \003(\0132\t.Variable\022\033\n\007structs\030\004 " +
       "\003(\0132\n.Structure\022\030\n\004atts\030\005 \003(\0132\n.Attribut" +
@@ -23146,7 +25509,7 @@ public final class NcStreamProto {
       "t\030\004 \001(\0132\006.Group\022\017\n\007version\030\005 \001(\r\"&\n\005Erro" +
       "r\022\017\n\007message\030\001 \001(\t\022\014\n\004code\030\002 \001(\r\"4\n\005Rang" +
       "e\022\r\n\005start\030\001 \001(\004\022\014\n\004size\030\002 \001(\004\022\016\n\006stride" +
-      "\030\003 \001(\004\" \n\007Section\022\025\n\005range\030\001 \003(\0132\006.Range",
+      "\030\003 \001(\004\" \n\007Section\022\025\n\005range\030\001 \003(\0132\006.Range" +
       "\"\312\001\n\004Data\022\017\n\007varName\030\001 \001(\t\022\033\n\010dataType\030\002" +
       " \001(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Secti" +
       "on\022\020\n\006bigend\030\004 \001(\010H\000\022\017\n\007version\030\005 \001(\r\022\033\n" +
@@ -23156,7 +25519,7 @@ public final class NcStreamProto {
       "\n\004data\030\002 \001(\014\022\021\n\theapCount\030\003 \003(\r\022\r\n\005sdata" +
       "\030\004 \003(\t\022\r\n\005nrows\030\005 \001(\004\022\021\n\trowLength\030\006 \001(\r" +
       "\"\201\002\n\007DataCol\022\014\n\004name\030\001 \001(\t\022\033\n\010dataType\030\002" +
-      " \001(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Secti",
+      " \001(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Secti" +
       "on\022\016\n\006bigend\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006i" +
       "sVlen\030\007 \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030" +
       "\n \001(\014\022\022\n\nstringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r" +
@@ -23166,7 +25529,7 @@ public final class NcStreamProto {
       "Row\022\020\n\010fullName\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162" +
       "\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Section\022\016\n" +
       "\006bigend\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006isVlen" +
-      "\030\007 \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030\n \001(\014",
+      "\030\007 \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030\n \001(\014" +
       "\022\022\n\nstringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r\022\022\n\no" +
       "paquedata\030\r \003(\014\022&\n\nstructdata\030\016 \001(\0132\022.Ar" +
       "rayStructureRow\"W\n\006Member\022\021\n\tshortName\030\001" +
@@ -23176,7 +25539,7 @@ public final class NcStreamProto {
       "s\030\005 \001(\004\022\021\n\trowLength\030\006 \001(\r\022\017\n\007fixdata\030\n " +
       "\001(\014\022\022\n\nstringdata\030\013 \003(\t\022\020\n\010bytedata\030\r \003(" +
       "\014\022&\n\nstructdata\030\016 \003(\0132\022.ArrayStructureRo" +
-      "w*\325\001\n\010DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SH",
+      "w*\325\001\n\010DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SH" +
       "ORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006D" +
       "OUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SE" +
       "QUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020" +
@@ -23185,124 +25548,116 @@ public final class NcStreamProto {
       "\013\n\007DEFLATE\020\001B \n\017ucar.nc2.streamB\rNcStrea" +
       "mProtob\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_Attribute_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_Attribute_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Attribute_descriptor,
         new java.lang.String[] { "Name", "Type", "Len", "Data", "Sdata", "Unsigned", "DataType", });
     internal_static_Dimension_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_Dimension_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Dimension_descriptor,
         new java.lang.String[] { "Name", "Length", "IsUnlimited", "IsVlen", "IsPrivate", });
     internal_static_Variable_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_Variable_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Variable_descriptor,
         new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", "EnumType", });
     internal_static_Structure_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_Structure_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Structure_descriptor,
         new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Vars", "Structs", });
     internal_static_EnumTypedef_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_EnumTypedef_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EnumTypedef_descriptor,
         new java.lang.String[] { "Name", "Map", });
     internal_static_EnumTypedef_EnumType_descriptor =
       internal_static_EnumTypedef_descriptor.getNestedTypes().get(0);
     internal_static_EnumTypedef_EnumType_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EnumTypedef_EnumType_descriptor,
         new java.lang.String[] { "Code", "Value", });
     internal_static_Group_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_Group_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Group_descriptor,
         new java.lang.String[] { "Name", "Dims", "Vars", "Structs", "Atts", "Groups", "EnumTypes", });
     internal_static_Header_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_Header_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Header_descriptor,
         new java.lang.String[] { "Location", "Title", "Id", "Root", "Version", });
     internal_static_Error_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_Error_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Error_descriptor,
         new java.lang.String[] { "Message", "Code", });
     internal_static_Range_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_Range_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Range_descriptor,
         new java.lang.String[] { "Start", "Size", "Stride", });
     internal_static_Section_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_Section_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Section_descriptor,
         new java.lang.String[] { "Range", });
     internal_static_Data_descriptor =
       getDescriptor().getMessageTypes().get(10);
     internal_static_Data_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Data_descriptor,
         new java.lang.String[] { "VarName", "DataType", "Section", "Bigend", "Version", "Compress", "Vdata", "UncompressedSize", "BigendPresent", });
     internal_static_StructureData_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_StructureData_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StructureData_descriptor,
         new java.lang.String[] { "Member", "Data", "HeapCount", "Sdata", "Nrows", "RowLength", });
     internal_static_DataCol_descriptor =
       getDescriptor().getMessageTypes().get(12);
     internal_static_DataCol_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_DataCol_descriptor,
         new java.lang.String[] { "Name", "DataType", "Section", "Bigend", "Version", "IsVlen", "Nelems", "Primdata", "Stringdata", "Vlens", "Opaquedata", "Structdata", });
     internal_static_ArrayStructureCol_descriptor =
       getDescriptor().getMessageTypes().get(13);
     internal_static_ArrayStructureCol_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ArrayStructureCol_descriptor,
         new java.lang.String[] { "MemberData", });
     internal_static_DataRow_descriptor =
       getDescriptor().getMessageTypes().get(14);
     internal_static_DataRow_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_DataRow_descriptor,
         new java.lang.String[] { "FullName", "DataType", "Section", "Bigend", "Version", "IsVlen", "Nelems", "Primdata", "Stringdata", "Vlens", "Opaquedata", "Structdata", });
     internal_static_Member_descriptor =
       getDescriptor().getMessageTypes().get(15);
     internal_static_Member_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Member_descriptor,
         new java.lang.String[] { "ShortName", "DataType", "Shape", "IsVlen", });
     internal_static_ArrayStructureRow_descriptor =
       getDescriptor().getMessageTypes().get(16);
     internal_static_ArrayStructureRow_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ArrayStructureRow_descriptor,
         new java.lang.String[] { "Members", "Nrows", "RowLength", "Fixdata", "Stringdata", "Bytedata", "Structdata", });
   }

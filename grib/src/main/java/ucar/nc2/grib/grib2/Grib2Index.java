@@ -122,8 +122,6 @@ public class Grib2Index extends GribIndex {
 
       Grib2IndexProto.Grib2Index proto = Grib2IndexProto.Grib2Index.parseFrom(m);
       logger.debug("%s for %s%n", proto.getFilename(), filename);
-      int version = proto.getVersion();
-      boolean isProto3 = version >= 3;
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib2IndexProto.GribGdsSection pgds : proto.getGdsListList()) {

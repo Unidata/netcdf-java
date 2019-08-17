@@ -89,7 +89,7 @@ libraries["52n-xml-sampling-v20"] = "org.n52.sensorweb:52n-xml-sampling-v20:${ve
 
 //////////////////////////////////////////// Logging //////////////////////////////////////////
 
-versions["slf4j"] = "1.7.25"
+versions["slf4j"] = "1.7.28"
 
 libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
@@ -140,27 +140,23 @@ libraries["truth"] = "com.google.truth:truth:1.0"
 // See https://github.com/coverity/coverity-security-library
 libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 
-libraries["guava"] = "com.google.guava:guava:27.0.1-jre"
+libraries["guava"] = "com.google.guava:guava:28.0-jre"
 
-libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.2"
+libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.9"
 
-libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.5"
+libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.11"
 
-libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.2"
+libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.9"
 
 //// command line parser
 libraries["jcommander"] = "com.beust:jcommander:1.48"
 
 libraries["jdom2"] = "org.jdom:jdom2:2.0.6"
 
-//// used by FMRC - replace ?
-//// Latest version is 5.0.73. Can we upgrade?
-libraries["je"] = "com.sleepycat:je:4.0.92"
-
-libraries["jna"] = "net.java.dev.jna:jna:4.2.2"
+libraries["jna"] = "net.java.dev.jna:jna:5.4.0"
 
 // replace by javax.time
-libraries["joda-time"] = "joda-time:joda-time:2.9.4"
+libraries["joda-time"] = "joda-time:joda-time:2.10.3"
 
 // HTML scraper used in GRIB
 libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
@@ -168,7 +164,7 @@ libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
 //// Annotations
 libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.2"
 
-libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.6.1"
+libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.9.1"
 
 libraries["re2j"] = "com.google.re2j:re2j:1.3"
 

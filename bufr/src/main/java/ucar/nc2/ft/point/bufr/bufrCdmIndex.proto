@@ -68,6 +68,6 @@ message BufrIndex {
   uint64 nobs = 6;
 }
 
-//  cd c:/dev/github/thredds/bufr/src/main/java
+//  cd netcdf-java/bufr/src/main/java
 //  protoc --proto_path=. --java_out=. ucar/nc2/ft/point/bufr/bufrCdmIndex.proto
 

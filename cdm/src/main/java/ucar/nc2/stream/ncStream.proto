@@ -209,6 +209,5 @@ message ArrayStructureRow {
 }
 
 //////////////////////////////////
-// cd cdm/src/main/java
+// cd netcdf-java/cdm/src/main/java
 // protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
-// requires Protobuf 3+

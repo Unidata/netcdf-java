@@ -6,78 +6,84 @@ package ucar.nc2.ft2.coverage.remote;
 public final class CdmrFeatureProto {
   private CdmrFeatureProto() {}
   public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistryLite registry) {
+  }
+
+  public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions(
+        (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   /**
-   * Protobuf enum {@code AxisType}
-   *
    * <pre>
    * same as ucar.nc2.constants.AxisType
    * </pre>
+   *
+   * Protobuf enum {@code AxisType}
    */
   public enum AxisType
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
      * <code>RunTime = 0;</code>
      */
-    RunTime(0, 0),
+    RunTime(0),
     /**
      * <code>Ensemble = 1;</code>
      */
-    Ensemble(1, 1),
+    Ensemble(1),
     /**
      * <code>Time = 2;</code>
      */
-    Time(2, 2),
+    Time(2),
     /**
      * <code>GeoX = 3;</code>
      */
-    GeoX(3, 3),
+    GeoX(3),
     /**
      * <code>GeoY = 4;</code>
      */
-    GeoY(4, 4),
+    GeoY(4),
     /**
      * <code>GeoZ = 5;</code>
      */
-    GeoZ(5, 5),
+    GeoZ(5),
     /**
      * <code>Lat = 6;</code>
      */
-    Lat(6, 6),
+    Lat(6),
     /**
      * <code>Lon = 7;</code>
      */
-    Lon(7, 7),
+    Lon(7),
     /**
      * <code>Height = 8;</code>
      */
-    Height(8, 8),
+    Height(8),
     /**
      * <code>Pressure = 9;</code>
      */
-    Pressure(9, 9),
+    Pressure(9),
     /**
      * <code>RadialAzimuth = 10;</code>
      */
-    RadialAzimuth(10, 10),
+    RadialAzimuth(10),
     /**
      * <code>RadialDistance = 11;</code>
      */
-    RadialDistance(11, 11),
+    RadialDistance(11),
     /**
      * <code>RadialElevation = 12;</code>
      */
-    RadialElevation(12, 12),
+    RadialElevation(12),
     /**
      * <code>Spectral = 13;</code>
      */
-    Spectral(13, 13),
+    Spectral(13),
     /**
      * <code>TimeOffset = 14;</code>
      */
-    TimeOffset(14, 14),
-    UNRECOGNIZED(-1, -1),
+    TimeOffset(14),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -143,14 +149,22 @@ public final class CdmrFeatureProto {
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static AxisType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static AxisType forNumber(int value) {
       switch (value) {
         case 0: return RunTime;
         case 1: return Ensemble;
@@ -179,13 +193,13 @@ public final class CdmrFeatureProto {
         AxisType> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<AxisType>() {
             public AxisType findValueByNumber(int number) {
-              return AxisType.valueOf(number);
+              return AxisType.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -210,11 +224,9 @@ public final class CdmrFeatureProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private AxisType(int index, int value) {
-      this.index = index;
+    private AxisType(int value) {
       this.value = value;
     }
 
@@ -222,35 +234,35 @@ public final class CdmrFeatureProto {
   }
 
   /**
-   * Protobuf enum {@code AxisSpacing}
-   *
    * <pre>
    * same as CoverageCoordAxis.Spacing
    * </pre>
+   *
+   * Protobuf enum {@code AxisSpacing}
    */
   public enum AxisSpacing
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
      * <code>regularPoint = 0;</code>
      */
-    regularPoint(0, 0),
+    regularPoint(0),
     /**
      * <code>irregularPoint = 1;</code>
      */
-    irregularPoint(1, 1),
+    irregularPoint(1),
     /**
      * <code>contiguousInterval = 2;</code>
      */
-    contiguousInterval(2, 2),
+    contiguousInterval(2),
     /**
      * <code>discontiguousInterval = 3;</code>
      */
-    discontiguousInterval(3, 3),
+    discontiguousInterval(3),
     /**
      * <code>regularInterval = 4;</code>
      */
-    regularInterval(4, 4),
-    UNRECOGNIZED(-1, -1),
+    regularInterval(4),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -276,14 +288,22 @@ public final class CdmrFeatureProto {
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static AxisSpacing valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static AxisSpacing forNumber(int value) {
       switch (value) {
         case 0: return regularPoint;
         case 1: return irregularPoint;
@@ -302,13 +322,13 @@ public final class CdmrFeatureProto {
         AxisSpacing> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<AxisSpacing>() {
             public AxisSpacing findValueByNumber(int number) {
-              return AxisSpacing.valueOf(number);
+              return AxisSpacing.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -333,11 +353,9 @@ public final class CdmrFeatureProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private AxisSpacing(int index, int value) {
-      this.index = index;
+    private AxisSpacing(int value) {
       this.value = value;
     }
 
@@ -345,108 +363,116 @@ public final class CdmrFeatureProto {
   }
 
   /**
-   * Protobuf enum {@code DependenceType}
-   *
    * <pre>
    * same as CoverageCoordAxis.DependenceType
    * </pre>
+   *
+   * Protobuf enum {@code DependenceType}
    */
   public enum DependenceType
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
-     * <code>independent = 0;</code>
-     *
      * <pre>
      * has its own dimension, is a coordinate variable, eg x(x)
      * </pre>
-     */
-    independent(0, 0),
-    /**
-     * <code>dependent = 1;</code>
      *
+     * <code>independent = 0;</code>
+     */
+    independent(0),
+    /**
      * <pre>
      * aux coordinate, reftime(time) or time_bounds(time);
      * </pre>
-     */
-    dependent(1, 1),
-    /**
-     * <code>scalar = 2;</code>
      *
+     * <code>dependent = 1;</code>
+     */
+    dependent(1),
+    /**
      * <pre>
      * reftime
      * </pre>
-     */
-    scalar(2, 2),
-    /**
-     * <code>twoD = 3;</code>
      *
+     * <code>scalar = 2;</code>
+     */
+    scalar(2),
+    /**
      * <pre>
      * lat(x,y)
      * </pre>
-     */
-    twoD(3, 3),
-    /**
-     * <code>fmrcReg = 4;</code>
      *
+     * <code>twoD = 3;</code>
+     */
+    twoD(3),
+    /**
      * <pre>
      * time(reftime, hourOfDay)
      * </pre>
+     *
+     * <code>fmrcReg = 4;</code>
      */
-    fmrcReg(4, 4),
-    UNRECOGNIZED(-1, -1),
+    fmrcReg(4),
+    UNRECOGNIZED(-1),
     ;
 
     /**
-     * <code>independent = 0;</code>
-     *
      * <pre>
      * has its own dimension, is a coordinate variable, eg x(x)
      * </pre>
+     *
+     * <code>independent = 0;</code>
      */
     public static final int independent_VALUE = 0;
     /**
-     * <code>dependent = 1;</code>
-     *
      * <pre>
      * aux coordinate, reftime(time) or time_bounds(time);
      * </pre>
+     *
+     * <code>dependent = 1;</code>
      */
     public static final int dependent_VALUE = 1;
     /**
-     * <code>scalar = 2;</code>
-     *
      * <pre>
      * reftime
      * </pre>
+     *
+     * <code>scalar = 2;</code>
      */
     public static final int scalar_VALUE = 2;
     /**
-     * <code>twoD = 3;</code>
-     *
      * <pre>
      * lat(x,y)
      * </pre>
+     *
+     * <code>twoD = 3;</code>
      */
     public static final int twoD_VALUE = 3;
     /**
-     * <code>fmrcReg = 4;</code>
-     *
      * <pre>
      * time(reftime, hourOfDay)
      * </pre>
+     *
+     * <code>fmrcReg = 4;</code>
      */
     public static final int fmrcReg_VALUE = 4;
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static DependenceType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static DependenceType forNumber(int value) {
       switch (value) {
         case 0: return independent;
         case 1: return dependent;
@@ -465,13 +491,13 @@ public final class CdmrFeatureProto {
         DependenceType> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<DependenceType>() {
             public DependenceType findValueByNumber(int number) {
-              return DependenceType.valueOf(number);
+              return DependenceType.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -496,11 +522,9 @@ public final class CdmrFeatureProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private DependenceType(int index, int value) {
-      this.index = index;
+    private DependenceType(int value) {
       this.value = value;
     }
 
@@ -508,43 +532,43 @@ public final class CdmrFeatureProto {
   }
 
   /**
-   * Protobuf enum {@code Calendar}
-   *
    * <pre>
    * same as ucar.nc2.time.Calendar
    * </pre>
+   *
+   * Protobuf enum {@code Calendar}
    */
   public enum Calendar
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
      * <code>proleptic_gregorian = 0;</code>
      */
-    proleptic_gregorian(0, 0),
+    proleptic_gregorian(0),
     /**
      * <code>gregorian = 1;</code>
      */
-    gregorian(1, 1),
+    gregorian(1),
     /**
      * <code>noleap = 2;</code>
      */
-    noleap(2, 2),
+    noleap(2),
     /**
      * <code>all_leap = 3;</code>
      */
-    all_leap(3, 3),
+    all_leap(3),
     /**
      * <code>uniform30day = 4;</code>
      */
-    uniform30day(4, 4),
+    uniform30day(4),
     /**
      * <code>julian = 5;</code>
      */
-    julian(5, 5),
+    julian(5),
     /**
      * <code>none = 6;</code>
      */
-    none(6, 6),
-    UNRECOGNIZED(-1, -1),
+    none(6),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -578,14 +602,22 @@ public final class CdmrFeatureProto {
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static Calendar valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static Calendar forNumber(int value) {
       switch (value) {
         case 0: return proleptic_gregorian;
         case 1: return gregorian;
@@ -606,13 +638,13 @@ public final class CdmrFeatureProto {
         Calendar> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<Calendar>() {
             public Calendar findValueByNumber(int number) {
-              return Calendar.valueOf(number);
+              return Calendar.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -637,11 +669,9 @@ public final class CdmrFeatureProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private Calendar(int index, int value) {
-      this.index = index;
+    private Calendar(int value) {
       this.value = value;
     }
 
@@ -656,24 +686,24 @@ public final class CdmrFeatureProto {
     /**
      * <code>General = 0;</code>
      */
-    General(0, 0),
+    General(0),
     /**
      * <code>Curvilinear = 1;</code>
      */
-    Curvilinear(1, 1),
+    Curvilinear(1),
     /**
      * <code>Grid = 2;</code>
      */
-    Grid(2, 2),
+    Grid(2),
     /**
      * <code>Swath = 3;</code>
      */
-    Swath(3, 3),
+    Swath(3),
     /**
      * <code>Fmrc = 4;</code>
      */
-    Fmrc(4, 4),
-    UNRECOGNIZED(-1, -1),
+    Fmrc(4),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -699,14 +729,22 @@ public final class CdmrFeatureProto {
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static CoverageType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static CoverageType forNumber(int value) {
       switch (value) {
         case 0: return General;
         case 1: return Curvilinear;
@@ -725,13 +763,13 @@ public final class CdmrFeatureProto {
         CoverageType> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<CoverageType>() {
             public CoverageType findValueByNumber(int number) {
-              return CoverageType.valueOf(number);
+              return CoverageType.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -756,11 +794,9 @@ public final class CdmrFeatureProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private CoverageType(int index, int value) {
-      this.index = index;
+    private CoverageType(int value) {
       this.value = value;
     }
 
@@ -772,24 +808,24 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional bool isHoriz = 1;</code>
+     * <code>bool isHoriz = 1;</code>
      */
     boolean getIsHoriz();
 
     /**
-     * <code>optional string name = 2;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 2;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 2;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 2;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -822,29 +858,42 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code CoordTransform}
    */
   public  static final class CoordTransform extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CoordTransform)
       CoordTransformOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use CoordTransform.newBuilder() to construct.
-    private CoordTransform(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private CoordTransform(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private CoordTransform() {
-      isHoriz_ = false;
       name_ = "";
       params_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CoordTransform();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private CoordTransform(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -853,43 +902,45 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 8: {
 
               isHoriz_ = input.readBool();
               break;
             }
             case 18: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 params_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000001;
               }
-              params_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
+              params_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           params_ = java.util.Collections.unmodifiableList(params_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -898,18 +949,18 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordTransform_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordTransform_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder.class);
     }
 
-    private int bitField0_;
     public static final int ISHORIZ_FIELD_NUMBER = 1;
     private boolean isHoriz_;
     /**
-     * <code>optional bool isHoriz = 1;</code>
+     * <code>bool isHoriz = 1;</code>
      */
     public boolean getIsHoriz() {
       return isHoriz_;
@@ -918,11 +969,11 @@ public final class CdmrFeatureProto {
     public static final int NAME_FIELD_NUMBER = 2;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 2;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 2;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -937,11 +988,11 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string name = 2;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 2;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -993,6 +1044,7 @@ public final class CdmrFeatureProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -1002,19 +1054,22 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (isHoriz_ != false) {
         output.writeBool(1, isHoriz_);
       }
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
       }
       for (int i = 0; i < params_.size(); i++) {
         output.writeMessage(3, params_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -1025,17 +1080,69 @@ public final class CdmrFeatureProto {
           .computeBoolSize(1, isHoriz_);
       }
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
       }
       for (int i = 0; i < params_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, params_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform) obj;
+
+      if (getIsHoriz()
+          != other.getIsHoriz()) return false;
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getParamsList()
+          .equals(other.getParamsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ISHORIZ_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsHoriz());
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      if (getParamsCount() > 0) {
+        hash = (37 * hash) + PARAMS_FIELD_NUMBER;
+        hash = (53 * hash) + getParamsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1059,36 +1166,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -1096,6 +1210,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -1103,7 +1218,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -1111,7 +1226,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code CoordTransform}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:CoordTransform)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -1119,7 +1234,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordTransform_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordTransform_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -1132,15 +1248,17 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getParamsFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         isHoriz_ = false;
@@ -1149,22 +1267,25 @@ public final class CdmrFeatureProto {
 
         if (paramsBuilder_ == null) {
           params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           paramsBuilder_.clear();
         }
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordTransform_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform result = buildPartial();
         if (!result.isInitialized()) {
@@ -1173,26 +1294,58 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.isHoriz_ = isHoriz_;
         result.name_ = name_;
         if (paramsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             params_ = java.util.Collections.unmodifiableList(params_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.params_ = params_;
         } else {
           result.params_ = paramsBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform)other);
@@ -1215,7 +1368,7 @@ public final class CdmrFeatureProto {
           if (!other.params_.isEmpty()) {
             if (params_.isEmpty()) {
               params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureParamsIsMutable();
               params_.addAll(other.params_);
@@ -1228,23 +1381,26 @@ public final class CdmrFeatureProto {
               paramsBuilder_.dispose();
               paramsBuilder_ = null;
               params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
               paramsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getParamsFieldBuilder() : null;
             } else {
               paramsBuilder_.addAllMessages(other.params_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1254,7 +1410,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -1266,13 +1422,13 @@ public final class CdmrFeatureProto {
 
       private boolean isHoriz_ ;
       /**
-       * <code>optional bool isHoriz = 1;</code>
+       * <code>bool isHoriz = 1;</code>
        */
       public boolean getIsHoriz() {
         return isHoriz_;
       }
       /**
-       * <code>optional bool isHoriz = 1;</code>
+       * <code>bool isHoriz = 1;</code>
        */
       public Builder setIsHoriz(boolean value) {
         
@@ -1281,7 +1437,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional bool isHoriz = 1;</code>
+       * <code>bool isHoriz = 1;</code>
        */
       public Builder clearIsHoriz() {
         
@@ -1292,11 +1448,11 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 2;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 2;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -1311,11 +1467,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 2;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 2;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -1331,11 +1487,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 2;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 2;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -1348,11 +1504,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 2;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 2;</code>
        */
       public Builder clearName() {
         
@@ -1361,11 +1517,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 2;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 2;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -1382,13 +1538,13 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> params_ =
         java.util.Collections.emptyList();
       private void ensureParamsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           params_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>(params_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> paramsBuilder_;
 
       /**
@@ -1534,7 +1690,7 @@ public final class CdmrFeatureProto {
       public Builder clearParams() {
         if (paramsBuilder_ == null) {
           params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           paramsBuilder_.clear();
@@ -1604,28 +1760,30 @@ public final class CdmrFeatureProto {
            getParamsBuilderList() {
         return getParamsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
           getParamsFieldBuilder() {
         if (paramsBuilder_ == null) {
-          paramsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          paramsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder>(
                   params_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           params_ = null;
         }
         return paramsBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -1644,20 +1802,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<CoordTransform>
         PARSER = new com.google.protobuf.AbstractParser<CoordTransform>() {
+      @java.lang.Override
       public CoordTransform parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new CoordTransform(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new CoordTransform(input, extensionRegistry);
       }
     };
 
@@ -1670,6 +1820,7 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -1681,213 +1832,213 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> 
         getAttsList();
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index);
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     int getAttsCount();
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
         getAttsOrBuilderList();
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index);
 
     /**
-     * <code>optional .AxisType axisType = 4;</code>
+     * <code>.AxisType axisType = 4;</code>
      */
     int getAxisTypeValue();
     /**
-     * <code>optional .AxisType axisType = 4;</code>
+     * <code>.AxisType axisType = 4;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType getAxisType();
 
     /**
-     * <code>optional string units = 5;</code>
+     * <code>string units = 5;</code>
      */
     java.lang.String getUnits();
     /**
-     * <code>optional string units = 5;</code>
+     * <code>string units = 5;</code>
      */
     com.google.protobuf.ByteString
         getUnitsBytes();
 
     /**
-     * <code>optional string description = 6;</code>
+     * <code>string description = 6;</code>
      */
     java.lang.String getDescription();
     /**
-     * <code>optional string description = 6;</code>
+     * <code>string description = 6;</code>
      */
     com.google.protobuf.ByteString
         getDescriptionBytes();
 
     /**
-     * <code>optional .DependenceType depend = 7;</code>
+     * <code>.DependenceType depend = 7;</code>
      */
     int getDependValue();
     /**
-     * <code>optional .DependenceType depend = 7;</code>
+     * <code>.DependenceType depend = 7;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType getDepend();
 
     /**
-     * <code>repeated string dependsOn = 8;</code>
-     *
      * <pre>
      * depends on these axes, only for non-independent axes
      * </pre>
+     *
+     * <code>repeated string dependsOn = 8;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getDependsOnList();
     /**
-     * <code>repeated string dependsOn = 8;</code>
-     *
      * <pre>
      * depends on these axes, only for non-independent axes
      * </pre>
+     *
+     * <code>repeated string dependsOn = 8;</code>
      */
     int getDependsOnCount();
     /**
-     * <code>repeated string dependsOn = 8;</code>
-     *
      * <pre>
      * depends on these axes, only for non-independent axes
      * </pre>
+     *
+     * <code>repeated string dependsOn = 8;</code>
      */
     java.lang.String getDependsOn(int index);
     /**
-     * <code>repeated string dependsOn = 8;</code>
-     *
      * <pre>
      * depends on these axes, only for non-independent axes
      * </pre>
+     *
+     * <code>repeated string dependsOn = 8;</code>
      */
     com.google.protobuf.ByteString
         getDependsOnBytes(int index);
 
     /**
-     * <code>repeated uint32 shape = 9;</code>
-     *
      * <pre>
      * the shape of the axis (&gt;1D only)
      * </pre>
+     *
+     * <code>repeated uint32 shape = 9;</code>
      */
     java.util.List<java.lang.Integer> getShapeList();
     /**
-     * <code>repeated uint32 shape = 9;</code>
-     *
      * <pre>
      * the shape of the axis (&gt;1D only)
      * </pre>
+     *
+     * <code>repeated uint32 shape = 9;</code>
      */
     int getShapeCount();
     /**
-     * <code>repeated uint32 shape = 9;</code>
-     *
      * <pre>
      * the shape of the axis (&gt;1D only)
      * </pre>
+     *
+     * <code>repeated uint32 shape = 9;</code>
      */
     int getShape(int index);
 
     /**
-     * <code>optional int64 nvalues = 10;</code>
+     * <code>int64 nvalues = 10;</code>
      */
     long getNvalues();
 
     /**
-     * <code>optional .AxisSpacing spacing = 11;</code>
+     * <code>.AxisSpacing spacing = 11;</code>
      */
     int getSpacingValue();
     /**
-     * <code>optional .AxisSpacing spacing = 11;</code>
+     * <code>.AxisSpacing spacing = 11;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing getSpacing();
 
     /**
-     * <code>optional double startValue = 12;</code>
+     * <code>double startValue = 12;</code>
      */
     double getStartValue();
 
     /**
-     * <code>optional double endValue = 13;</code>
+     * <code>double endValue = 13;</code>
      */
     double getEndValue();
 
     /**
-     * <code>optional double resolution = 14;</code>
-     *
      * <pre>
      * resolution = (end-start) / (nvalues-1)
      * </pre>
+     *
+     * <code>double resolution = 14;</code>
      */
     double getResolution();
 
     /**
-     * <code>optional bytes values = 15;</code>
-     *
      * <pre>
      * big endian doubles; not used for regular, may be deferred
      * </pre>
+     *
+     * <code>bytes values = 15;</code>
      */
     com.google.protobuf.ByteString getValues();
   }
@@ -1895,11 +2046,12 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code CoordAxis}
    */
   public  static final class CoordAxis extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CoordAxis)
       CoordAxisOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use CoordAxis.newBuilder() to construct.
-    private CoordAxis(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private CoordAxis(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private CoordAxis() {
@@ -1911,25 +2063,34 @@ public final class CdmrFeatureProto {
       description_ = "";
       depend_ = 0;
       dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      shape_ = java.util.Collections.emptyList();
-      nvalues_ = 0L;
+      shape_ = emptyIntList();
       spacing_ = 0;
-      startValue_ = 0D;
-      endValue_ = 0D;
-      resolution_ = 0D;
       values_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CoordAxis();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private CoordAxis(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -1938,14 +2099,8 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
@@ -1957,11 +2112,12 @@ public final class CdmrFeatureProto {
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000001;
               }
-              atts_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
+              atts_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
               break;
             }
             case 32: {
@@ -1971,13 +2127,13 @@ public final class CdmrFeatureProto {
               break;
             }
             case 42: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               units_ = s;
               break;
             }
             case 50: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               description_ = s;
               break;
@@ -1989,31 +2145,31 @@ public final class CdmrFeatureProto {
               break;
             }
             case 66: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 dependsOn_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000080;
+                mutable_bitField0_ |= 0x00000002;
               }
               dependsOn_.add(s);
               break;
             }
             case 72: {
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-                shape_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000100;
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+                shape_ = newIntList();
+                mutable_bitField0_ |= 0x00000004;
               }
-              shape_.add(input.readUInt32());
+              shape_.addInt(input.readUInt32());
               break;
             }
             case 74: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100) && input.getBytesUntilLimit() > 0) {
-                shape_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000100;
+              if (!((mutable_bitField0_ & 0x00000004) != 0) && input.getBytesUntilLimit() > 0) {
+                shape_ = newIntList();
+                mutable_bitField0_ |= 0x00000004;
               }
               while (input.getBytesUntilLimit() > 0) {
-                shape_.add(input.readUInt32());
+                shape_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
@@ -2049,24 +2205,31 @@ public final class CdmrFeatureProto {
               values_ = input.readBytes();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           atts_ = java.util.Collections.unmodifiableList(atts_);
         }
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           dependsOn_ = dependsOn_.getUnmodifiableView();
         }
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-          shape_ = java.util.Collections.unmodifiableList(shape_);
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
+          shape_.makeImmutable(); // C
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -2075,22 +2238,22 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordAxis_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordAxis_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -2105,11 +2268,11 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -2128,15 +2291,16 @@ public final class CdmrFeatureProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
@@ -2144,52 +2308,52 @@ public final class CdmrFeatureProto {
     public static final int ATTS_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_;
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
       return atts_;
     }
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
         getAttsOrBuilderList() {
       return atts_;
     }
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     public int getAttsCount() {
       return atts_.size();
     }
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
       return atts_.get(index);
     }
     /**
-     * <code>repeated .Attribute atts = 3;</code>
-     *
      * <pre>
      * find calendar attribute here?
      * </pre>
+     *
+     * <code>repeated .Attribute atts = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index) {
@@ -2199,15 +2363,16 @@ public final class CdmrFeatureProto {
     public static final int AXISTYPE_FIELD_NUMBER = 4;
     private int axisType_;
     /**
-     * <code>optional .AxisType axisType = 4;</code>
+     * <code>.AxisType axisType = 4;</code>
      */
     public int getAxisTypeValue() {
       return axisType_;
     }
     /**
-     * <code>optional .AxisType axisType = 4;</code>
+     * <code>.AxisType axisType = 4;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType getAxisType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType.valueOf(axisType_);
       return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType.UNRECOGNIZED : result;
     }
@@ -2215,7 +2380,7 @@ public final class CdmrFeatureProto {
     public static final int UNITS_FIELD_NUMBER = 5;
     private volatile java.lang.Object units_;
     /**
-     * <code>optional string units = 5;</code>
+     * <code>string units = 5;</code>
      */
     public java.lang.String getUnits() {
       java.lang.Object ref = units_;
@@ -2230,7 +2395,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string units = 5;</code>
+     * <code>string units = 5;</code>
      */
     public com.google.protobuf.ByteString
         getUnitsBytes() {
@@ -2249,7 +2414,7 @@ public final class CdmrFeatureProto {
     public static final int DESCRIPTION_FIELD_NUMBER = 6;
     private volatile java.lang.Object description_;
     /**
-     * <code>optional string description = 6;</code>
+     * <code>string description = 6;</code>
      */
     public java.lang.String getDescription() {
       java.lang.Object ref = description_;
@@ -2264,7 +2429,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string description = 6;</code>
+     * <code>string description = 6;</code>
      */
     public com.google.protobuf.ByteString
         getDescriptionBytes() {
@@ -2283,15 +2448,16 @@ public final class CdmrFeatureProto {
     public static final int DEPEND_FIELD_NUMBER = 7;
     private int depend_;
     /**
-     * <code>optional .DependenceType depend = 7;</code>
+     * <code>.DependenceType depend = 7;</code>
      */
     public int getDependValue() {
       return depend_;
     }
     /**
-     * <code>optional .DependenceType depend = 7;</code>
+     * <code>.DependenceType depend = 7;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType getDepend() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.valueOf(depend_);
       return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.UNRECOGNIZED : result;
     }
@@ -2299,42 +2465,42 @@ public final class CdmrFeatureProto {
     public static final int DEPENDSON_FIELD_NUMBER = 8;
     private com.google.protobuf.LazyStringList dependsOn_;
     /**
-     * <code>repeated string dependsOn = 8;</code>
-     *
      * <pre>
      * depends on these axes, only for non-independent axes
      * </pre>
+     *
+     * <code>repeated string dependsOn = 8;</code>
      */
     public com.google.protobuf.ProtocolStringList
         getDependsOnList() {
       return dependsOn_;
     }
     /**
-     * <code>repeated string dependsOn = 8;</code>
-     *
      * <pre>
      * depends on these axes, only for non-independent axes
      * </pre>
+     *
+     * <code>repeated string dependsOn = 8;</code>
      */
     public int getDependsOnCount() {
       return dependsOn_.size();
     }
     /**
-     * <code>repeated string dependsOn = 8;</code>
-     *
      * <pre>
      * depends on these axes, only for non-independent axes
      * </pre>
+     *
+     * <code>repeated string dependsOn = 8;</code>
      */
     public java.lang.String getDependsOn(int index) {
       return dependsOn_.get(index);
     }
     /**
-     * <code>repeated string dependsOn = 8;</code>
-     *
      * <pre>
      * depends on these axes, only for non-independent axes
      * </pre>
+     *
+     * <code>repeated string dependsOn = 8;</code>
      */
     public com.google.protobuf.ByteString
         getDependsOnBytes(int index) {
@@ -2342,44 +2508,44 @@ public final class CdmrFeatureProto {
     }
 
     public static final int SHAPE_FIELD_NUMBER = 9;
-    private java.util.List<java.lang.Integer> shape_;
+    private com.google.protobuf.Internal.IntList shape_;
     /**
-     * <code>repeated uint32 shape = 9;</code>
-     *
      * <pre>
      * the shape of the axis (&gt;1D only)
      * </pre>
+     *
+     * <code>repeated uint32 shape = 9;</code>
      */
     public java.util.List<java.lang.Integer>
         getShapeList() {
       return shape_;
     }
     /**
-     * <code>repeated uint32 shape = 9;</code>
-     *
      * <pre>
      * the shape of the axis (&gt;1D only)
      * </pre>
+     *
+     * <code>repeated uint32 shape = 9;</code>
      */
     public int getShapeCount() {
       return shape_.size();
     }
     /**
-     * <code>repeated uint32 shape = 9;</code>
-     *
      * <pre>
      * the shape of the axis (&gt;1D only)
      * </pre>
+     *
+     * <code>repeated uint32 shape = 9;</code>
      */
     public int getShape(int index) {
-      return shape_.get(index);
+      return shape_.getInt(index);
     }
     private int shapeMemoizedSerializedSize = -1;
 
     public static final int NVALUES_FIELD_NUMBER = 10;
     private long nvalues_;
     /**
-     * <code>optional int64 nvalues = 10;</code>
+     * <code>int64 nvalues = 10;</code>
      */
     public long getNvalues() {
       return nvalues_;
@@ -2388,15 +2554,16 @@ public final class CdmrFeatureProto {
     public static final int SPACING_FIELD_NUMBER = 11;
     private int spacing_;
     /**
-     * <code>optional .AxisSpacing spacing = 11;</code>
+     * <code>.AxisSpacing spacing = 11;</code>
      */
     public int getSpacingValue() {
       return spacing_;
     }
     /**
-     * <code>optional .AxisSpacing spacing = 11;</code>
+     * <code>.AxisSpacing spacing = 11;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing getSpacing() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.valueOf(spacing_);
       return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.UNRECOGNIZED : result;
     }
@@ -2404,7 +2571,7 @@ public final class CdmrFeatureProto {
     public static final int STARTVALUE_FIELD_NUMBER = 12;
     private double startValue_;
     /**
-     * <code>optional double startValue = 12;</code>
+     * <code>double startValue = 12;</code>
      */
     public double getStartValue() {
       return startValue_;
@@ -2413,7 +2580,7 @@ public final class CdmrFeatureProto {
     public static final int ENDVALUE_FIELD_NUMBER = 13;
     private double endValue_;
     /**
-     * <code>optional double endValue = 13;</code>
+     * <code>double endValue = 13;</code>
      */
     public double getEndValue() {
       return endValue_;
@@ -2422,11 +2589,11 @@ public final class CdmrFeatureProto {
     public static final int RESOLUTION_FIELD_NUMBER = 14;
     private double resolution_;
     /**
-     * <code>optional double resolution = 14;</code>
-     *
      * <pre>
      * resolution = (end-start) / (nvalues-1)
      * </pre>
+     *
+     * <code>double resolution = 14;</code>
      */
     public double getResolution() {
       return resolution_;
@@ -2435,17 +2602,18 @@ public final class CdmrFeatureProto {
     public static final int VALUES_FIELD_NUMBER = 15;
     private com.google.protobuf.ByteString values_;
     /**
-     * <code>optional bytes values = 15;</code>
-     *
      * <pre>
      * big endian doubles; not used for regular, may be deferred
      * </pre>
+     *
+     * <code>bytes values = 15;</code>
      */
     public com.google.protobuf.ByteString getValues() {
       return values_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -2455,11 +2623,12 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -2471,23 +2640,23 @@ public final class CdmrFeatureProto {
         output.writeEnum(4, axisType_);
       }
       if (!getUnitsBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 5, units_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, units_);
       }
       if (!getDescriptionBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 6, description_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, description_);
       }
       if (depend_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.independent.getNumber()) {
         output.writeEnum(7, depend_);
       }
       for (int i = 0; i < dependsOn_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 8, dependsOn_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 8, dependsOn_.getRaw(i));
       }
       if (getShapeList().size() > 0) {
-        output.writeRawVarint32(74);
-        output.writeRawVarint32(shapeMemoizedSerializedSize);
+        output.writeUInt32NoTag(74);
+        output.writeUInt32NoTag(shapeMemoizedSerializedSize);
       }
       for (int i = 0; i < shape_.size(); i++) {
-        output.writeUInt32NoTag(shape_.get(i));
+        output.writeUInt32NoTag(shape_.getInt(i));
       }
       if (nvalues_ != 0L) {
         output.writeInt64(10, nvalues_);
@@ -2507,15 +2676,17 @@ public final class CdmrFeatureProto {
       if (!values_.isEmpty()) {
         output.writeBytes(15, values_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -2530,10 +2701,10 @@ public final class CdmrFeatureProto {
           .computeEnumSize(4, axisType_);
       }
       if (!getUnitsBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(5, units_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, units_);
       }
       if (!getDescriptionBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, description_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, description_);
       }
       if (depend_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.independent.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -2551,7 +2722,7 @@ public final class CdmrFeatureProto {
         int dataSize = 0;
         for (int i = 0; i < shape_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(shape_.get(i));
+            .computeUInt32SizeNoTag(shape_.getInt(i));
         }
         size += dataSize;
         if (!getShapeList().isEmpty()) {
@@ -2585,11 +2756,117 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(15, values_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (!getAttsList()
+          .equals(other.getAttsList())) return false;
+      if (axisType_ != other.axisType_) return false;
+      if (!getUnits()
+          .equals(other.getUnits())) return false;
+      if (!getDescription()
+          .equals(other.getDescription())) return false;
+      if (depend_ != other.depend_) return false;
+      if (!getDependsOnList()
+          .equals(other.getDependsOnList())) return false;
+      if (!getShapeList()
+          .equals(other.getShapeList())) return false;
+      if (getNvalues()
+          != other.getNvalues()) return false;
+      if (spacing_ != other.spacing_) return false;
+      if (java.lang.Double.doubleToLongBits(getStartValue())
+          != java.lang.Double.doubleToLongBits(
+              other.getStartValue())) return false;
+      if (java.lang.Double.doubleToLongBits(getEndValue())
+          != java.lang.Double.doubleToLongBits(
+              other.getEndValue())) return false;
+      if (java.lang.Double.doubleToLongBits(getResolution())
+          != java.lang.Double.doubleToLongBits(
+              other.getResolution())) return false;
+      if (!getValues()
+          .equals(other.getValues())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      if (getAttsCount() > 0) {
+        hash = (37 * hash) + ATTS_FIELD_NUMBER;
+        hash = (53 * hash) + getAttsList().hashCode();
+      }
+      hash = (37 * hash) + AXISTYPE_FIELD_NUMBER;
+      hash = (53 * hash) + axisType_;
+      hash = (37 * hash) + UNITS_FIELD_NUMBER;
+      hash = (53 * hash) + getUnits().hashCode();
+      hash = (37 * hash) + DESCRIPTION_FIELD_NUMBER;
+      hash = (53 * hash) + getDescription().hashCode();
+      hash = (37 * hash) + DEPEND_FIELD_NUMBER;
+      hash = (53 * hash) + depend_;
+      if (getDependsOnCount() > 0) {
+        hash = (37 * hash) + DEPENDSON_FIELD_NUMBER;
+        hash = (53 * hash) + getDependsOnList().hashCode();
+      }
+      if (getShapeCount() > 0) {
+        hash = (37 * hash) + SHAPE_FIELD_NUMBER;
+        hash = (53 * hash) + getShapeList().hashCode();
+      }
+      hash = (37 * hash) + NVALUES_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getNvalues());
+      hash = (37 * hash) + SPACING_FIELD_NUMBER;
+      hash = (53 * hash) + spacing_;
+      hash = (37 * hash) + STARTVALUE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getStartValue()));
+      hash = (37 * hash) + ENDVALUE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getEndValue()));
+      hash = (37 * hash) + RESOLUTION_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getResolution()));
+      hash = (37 * hash) + VALUES_FIELD_NUMBER;
+      hash = (53 * hash) + getValues().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -2613,36 +2890,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -2650,6 +2934,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -2657,7 +2942,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -2665,7 +2950,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code CoordAxis}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:CoordAxis)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -2673,7 +2958,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordAxis_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordAxis_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -2686,15 +2972,17 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getAttsFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -2703,7 +2991,7 @@ public final class CdmrFeatureProto {
 
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           attsBuilder_.clear();
         }
@@ -2716,9 +3004,9 @@ public final class CdmrFeatureProto {
         depend_ = 0;
 
         dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
-        shape_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000002);
+        shape_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000004);
         nvalues_ = 0L;
 
         spacing_ = 0;
@@ -2734,15 +3022,18 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordAxis_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis result = buildPartial();
         if (!result.isInitialized()) {
@@ -2751,16 +3042,16 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         result.dataType_ = dataType_;
         if (attsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             atts_ = java.util.Collections.unmodifiableList(atts_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.atts_ = atts_;
         } else {
@@ -2770,14 +3061,14 @@ public final class CdmrFeatureProto {
         result.units_ = units_;
         result.description_ = description_;
         result.depend_ = depend_;
-        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           dependsOn_ = dependsOn_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.dependsOn_ = dependsOn_;
-        if (((bitField0_ & 0x00000100) == 0x00000100)) {
-          shape_ = java.util.Collections.unmodifiableList(shape_);
-          bitField0_ = (bitField0_ & ~0x00000100);
+        if (((bitField0_ & 0x00000004) != 0)) {
+          shape_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.shape_ = shape_;
         result.nvalues_ = nvalues_;
@@ -2786,11 +3077,43 @@ public final class CdmrFeatureProto {
         result.endValue_ = endValue_;
         result.resolution_ = resolution_;
         result.values_ = values_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis)other);
@@ -2813,7 +3136,7 @@ public final class CdmrFeatureProto {
           if (!other.atts_.isEmpty()) {
             if (atts_.isEmpty()) {
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureAttsIsMutable();
               atts_.addAll(other.atts_);
@@ -2826,9 +3149,9 @@ public final class CdmrFeatureProto {
               attsBuilder_.dispose();
               attsBuilder_ = null;
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
               attsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getAttsFieldBuilder() : null;
             } else {
               attsBuilder_.addAllMessages(other.atts_);
@@ -2852,7 +3175,7 @@ public final class CdmrFeatureProto {
         if (!other.dependsOn_.isEmpty()) {
           if (dependsOn_.isEmpty()) {
             dependsOn_ = other.dependsOn_;
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureDependsOnIsMutable();
             dependsOn_.addAll(other.dependsOn_);
@@ -2862,7 +3185,7 @@ public final class CdmrFeatureProto {
         if (!other.shape_.isEmpty()) {
           if (shape_.isEmpty()) {
             shape_ = other.shape_;
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensureShapeIsMutable();
             shape_.addAll(other.shape_);
@@ -2887,14 +3210,17 @@ public final class CdmrFeatureProto {
         if (other.getValues() != com.google.protobuf.ByteString.EMPTY) {
           setValues(other.getValues());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2904,7 +3230,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -2916,11 +3242,11 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -2935,11 +3261,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -2955,11 +3281,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -2972,11 +3298,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -2985,11 +3311,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -3005,13 +3331,13 @@ public final class CdmrFeatureProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -3019,14 +3345,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -3038,7 +3365,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -3050,21 +3377,21 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>(atts_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
         if (attsBuilder_ == null) {
@@ -3074,11 +3401,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public int getAttsCount() {
         if (attsBuilder_ == null) {
@@ -3088,11 +3415,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
         if (attsBuilder_ == null) {
@@ -3102,11 +3429,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder setAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -3123,11 +3450,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder setAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -3141,11 +3468,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder addAtts(ucar.nc2.stream.NcStreamProto.Attribute value) {
         if (attsBuilder_ == null) {
@@ -3161,11 +3488,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder addAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -3182,11 +3509,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder addAtts(
           ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -3200,11 +3527,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder addAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -3218,11 +3545,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder addAllAtts(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Attribute> values) {
@@ -3237,16 +3564,16 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           attsBuilder_.clear();
@@ -3254,11 +3581,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public Builder removeAtts(int index) {
         if (attsBuilder_ == null) {
@@ -3271,22 +3598,22 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder getAttsBuilder(
           int index) {
         return getAttsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
           int index) {
@@ -3296,11 +3623,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
            getAttsOrBuilderList() {
@@ -3311,22 +3638,22 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder() {
         return getAttsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder(
           int index) {
@@ -3334,24 +3661,24 @@ public final class CdmrFeatureProto {
             index, ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
       }
       /**
-       * <code>repeated .Attribute atts = 3;</code>
-       *
        * <pre>
        * find calendar attribute here?
        * </pre>
+       *
+       * <code>repeated .Attribute atts = 3;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute.Builder> 
            getAttsBuilderList() {
         return getAttsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
           getAttsFieldBuilder() {
         if (attsBuilder_ == null) {
-          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder>(
                   atts_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           atts_ = null;
@@ -3361,13 +3688,13 @@ public final class CdmrFeatureProto {
 
       private int axisType_ = 0;
       /**
-       * <code>optional .AxisType axisType = 4;</code>
+       * <code>.AxisType axisType = 4;</code>
        */
       public int getAxisTypeValue() {
         return axisType_;
       }
       /**
-       * <code>optional .AxisType axisType = 4;</code>
+       * <code>.AxisType axisType = 4;</code>
        */
       public Builder setAxisTypeValue(int value) {
         axisType_ = value;
@@ -3375,14 +3702,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .AxisType axisType = 4;</code>
+       * <code>.AxisType axisType = 4;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType getAxisType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType.valueOf(axisType_);
         return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .AxisType axisType = 4;</code>
+       * <code>.AxisType axisType = 4;</code>
        */
       public Builder setAxisType(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisType value) {
         if (value == null) {
@@ -3394,7 +3722,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .AxisType axisType = 4;</code>
+       * <code>.AxisType axisType = 4;</code>
        */
       public Builder clearAxisType() {
         
@@ -3405,7 +3733,7 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object units_ = "";
       /**
-       * <code>optional string units = 5;</code>
+       * <code>string units = 5;</code>
        */
       public java.lang.String getUnits() {
         java.lang.Object ref = units_;
@@ -3420,7 +3748,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string units = 5;</code>
+       * <code>string units = 5;</code>
        */
       public com.google.protobuf.ByteString
           getUnitsBytes() {
@@ -3436,7 +3764,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string units = 5;</code>
+       * <code>string units = 5;</code>
        */
       public Builder setUnits(
           java.lang.String value) {
@@ -3449,7 +3777,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string units = 5;</code>
+       * <code>string units = 5;</code>
        */
       public Builder clearUnits() {
         
@@ -3458,7 +3786,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string units = 5;</code>
+       * <code>string units = 5;</code>
        */
       public Builder setUnitsBytes(
           com.google.protobuf.ByteString value) {
@@ -3474,7 +3802,7 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object description_ = "";
       /**
-       * <code>optional string description = 6;</code>
+       * <code>string description = 6;</code>
        */
       public java.lang.String getDescription() {
         java.lang.Object ref = description_;
@@ -3489,7 +3817,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>string description = 6;</code>
        */
       public com.google.protobuf.ByteString
           getDescriptionBytes() {
@@ -3505,7 +3833,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>string description = 6;</code>
        */
       public Builder setDescription(
           java.lang.String value) {
@@ -3518,7 +3846,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>string description = 6;</code>
        */
       public Builder clearDescription() {
         
@@ -3527,7 +3855,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>string description = 6;</code>
        */
       public Builder setDescriptionBytes(
           com.google.protobuf.ByteString value) {
@@ -3543,13 +3871,13 @@ public final class CdmrFeatureProto {
 
       private int depend_ = 0;
       /**
-       * <code>optional .DependenceType depend = 7;</code>
+       * <code>.DependenceType depend = 7;</code>
        */
       public int getDependValue() {
         return depend_;
       }
       /**
-       * <code>optional .DependenceType depend = 7;</code>
+       * <code>.DependenceType depend = 7;</code>
        */
       public Builder setDependValue(int value) {
         depend_ = value;
@@ -3557,14 +3885,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .DependenceType depend = 7;</code>
+       * <code>.DependenceType depend = 7;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType getDepend() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.valueOf(depend_);
         return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DependenceType depend = 7;</code>
+       * <code>.DependenceType depend = 7;</code>
        */
       public Builder setDepend(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType value) {
         if (value == null) {
@@ -3576,7 +3905,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .DependenceType depend = 7;</code>
+       * <code>.DependenceType depend = 7;</code>
        */
       public Builder clearDepend() {
         
@@ -3587,59 +3916,59 @@ public final class CdmrFeatureProto {
 
       private com.google.protobuf.LazyStringList dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureDependsOnIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           dependsOn_ = new com.google.protobuf.LazyStringArrayList(dependsOn_);
-          bitField0_ |= 0x00000080;
+          bitField0_ |= 0x00000002;
          }
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public com.google.protobuf.ProtocolStringList
           getDependsOnList() {
         return dependsOn_.getUnmodifiableView();
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public int getDependsOnCount() {
         return dependsOn_.size();
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public java.lang.String getDependsOn(int index) {
         return dependsOn_.get(index);
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public com.google.protobuf.ByteString
           getDependsOnBytes(int index) {
         return dependsOn_.getByteString(index);
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public Builder setDependsOn(
           int index, java.lang.String value) {
@@ -3652,11 +3981,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public Builder addDependsOn(
           java.lang.String value) {
@@ -3669,11 +3998,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public Builder addAllDependsOn(
           java.lang.Iterable<java.lang.String> values) {
@@ -3684,24 +4013,24 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public Builder clearDependsOn() {
         dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string dependsOn = 8;</code>
-       *
        * <pre>
        * depends on these axes, only for non-independent axes
        * </pre>
+       *
+       * <code>repeated string dependsOn = 8;</code>
        */
       public Builder addDependsOnBytes(
           com.google.protobuf.ByteString value) {
@@ -3715,77 +4044,78 @@ public final class CdmrFeatureProto {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> shape_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList shape_ = emptyIntList();
       private void ensureShapeIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
-          shape_ = new java.util.ArrayList<java.lang.Integer>(shape_);
-          bitField0_ |= 0x00000100;
+        if (!((bitField0_ & 0x00000004) != 0)) {
+          shape_ = mutableCopy(shape_);
+          bitField0_ |= 0x00000004;
          }
       }
       /**
-       * <code>repeated uint32 shape = 9;</code>
-       *
        * <pre>
        * the shape of the axis (&gt;1D only)
        * </pre>
+       *
+       * <code>repeated uint32 shape = 9;</code>
        */
       public java.util.List<java.lang.Integer>
           getShapeList() {
-        return java.util.Collections.unmodifiableList(shape_);
+        return ((bitField0_ & 0x00000004) != 0) ?
+                 java.util.Collections.unmodifiableList(shape_) : shape_;
       }
       /**
-       * <code>repeated uint32 shape = 9;</code>
-       *
        * <pre>
        * the shape of the axis (&gt;1D only)
        * </pre>
+       *
+       * <code>repeated uint32 shape = 9;</code>
        */
       public int getShapeCount() {
         return shape_.size();
       }
       /**
-       * <code>repeated uint32 shape = 9;</code>
-       *
        * <pre>
        * the shape of the axis (&gt;1D only)
        * </pre>
+       *
+       * <code>repeated uint32 shape = 9;</code>
        */
       public int getShape(int index) {
-        return shape_.get(index);
+        return shape_.getInt(index);
       }
       /**
-       * <code>repeated uint32 shape = 9;</code>
-       *
        * <pre>
        * the shape of the axis (&gt;1D only)
        * </pre>
+       *
+       * <code>repeated uint32 shape = 9;</code>
        */
       public Builder setShape(
           int index, int value) {
         ensureShapeIsMutable();
-        shape_.set(index, value);
+        shape_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 9;</code>
-       *
        * <pre>
        * the shape of the axis (&gt;1D only)
        * </pre>
+       *
+       * <code>repeated uint32 shape = 9;</code>
        */
       public Builder addShape(int value) {
         ensureShapeIsMutable();
-        shape_.add(value);
+        shape_.addInt(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 9;</code>
-       *
        * <pre>
        * the shape of the axis (&gt;1D only)
        * </pre>
+       *
+       * <code>repeated uint32 shape = 9;</code>
        */
       public Builder addAllShape(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -3796,28 +4126,28 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 9;</code>
-       *
        * <pre>
        * the shape of the axis (&gt;1D only)
        * </pre>
+       *
+       * <code>repeated uint32 shape = 9;</code>
        */
       public Builder clearShape() {
-        shape_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000100);
+        shape_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
 
       private long nvalues_ ;
       /**
-       * <code>optional int64 nvalues = 10;</code>
+       * <code>int64 nvalues = 10;</code>
        */
       public long getNvalues() {
         return nvalues_;
       }
       /**
-       * <code>optional int64 nvalues = 10;</code>
+       * <code>int64 nvalues = 10;</code>
        */
       public Builder setNvalues(long value) {
         
@@ -3826,7 +4156,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional int64 nvalues = 10;</code>
+       * <code>int64 nvalues = 10;</code>
        */
       public Builder clearNvalues() {
         
@@ -3837,13 +4167,13 @@ public final class CdmrFeatureProto {
 
       private int spacing_ = 0;
       /**
-       * <code>optional .AxisSpacing spacing = 11;</code>
+       * <code>.AxisSpacing spacing = 11;</code>
        */
       public int getSpacingValue() {
         return spacing_;
       }
       /**
-       * <code>optional .AxisSpacing spacing = 11;</code>
+       * <code>.AxisSpacing spacing = 11;</code>
        */
       public Builder setSpacingValue(int value) {
         spacing_ = value;
@@ -3851,14 +4181,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .AxisSpacing spacing = 11;</code>
+       * <code>.AxisSpacing spacing = 11;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing getSpacing() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.valueOf(spacing_);
         return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .AxisSpacing spacing = 11;</code>
+       * <code>.AxisSpacing spacing = 11;</code>
        */
       public Builder setSpacing(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing value) {
         if (value == null) {
@@ -3870,7 +4201,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .AxisSpacing spacing = 11;</code>
+       * <code>.AxisSpacing spacing = 11;</code>
        */
       public Builder clearSpacing() {
         
@@ -3881,13 +4212,13 @@ public final class CdmrFeatureProto {
 
       private double startValue_ ;
       /**
-       * <code>optional double startValue = 12;</code>
+       * <code>double startValue = 12;</code>
        */
       public double getStartValue() {
         return startValue_;
       }
       /**
-       * <code>optional double startValue = 12;</code>
+       * <code>double startValue = 12;</code>
        */
       public Builder setStartValue(double value) {
         
@@ -3896,7 +4227,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional double startValue = 12;</code>
+       * <code>double startValue = 12;</code>
        */
       public Builder clearStartValue() {
         
@@ -3907,13 +4238,13 @@ public final class CdmrFeatureProto {
 
       private double endValue_ ;
       /**
-       * <code>optional double endValue = 13;</code>
+       * <code>double endValue = 13;</code>
        */
       public double getEndValue() {
         return endValue_;
       }
       /**
-       * <code>optional double endValue = 13;</code>
+       * <code>double endValue = 13;</code>
        */
       public Builder setEndValue(double value) {
         
@@ -3922,7 +4253,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional double endValue = 13;</code>
+       * <code>double endValue = 13;</code>
        */
       public Builder clearEndValue() {
         
@@ -3933,21 +4264,21 @@ public final class CdmrFeatureProto {
 
       private double resolution_ ;
       /**
-       * <code>optional double resolution = 14;</code>
-       *
        * <pre>
        * resolution = (end-start) / (nvalues-1)
        * </pre>
+       *
+       * <code>double resolution = 14;</code>
        */
       public double getResolution() {
         return resolution_;
       }
       /**
-       * <code>optional double resolution = 14;</code>
-       *
        * <pre>
        * resolution = (end-start) / (nvalues-1)
        * </pre>
+       *
+       * <code>double resolution = 14;</code>
        */
       public Builder setResolution(double value) {
         
@@ -3956,11 +4287,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional double resolution = 14;</code>
-       *
        * <pre>
        * resolution = (end-start) / (nvalues-1)
        * </pre>
+       *
+       * <code>double resolution = 14;</code>
        */
       public Builder clearResolution() {
         
@@ -3971,21 +4302,21 @@ public final class CdmrFeatureProto {
 
       private com.google.protobuf.ByteString values_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes values = 15;</code>
-       *
        * <pre>
        * big endian doubles; not used for regular, may be deferred
        * </pre>
+       *
+       * <code>bytes values = 15;</code>
        */
       public com.google.protobuf.ByteString getValues() {
         return values_;
       }
       /**
-       * <code>optional bytes values = 15;</code>
-       *
        * <pre>
        * big endian doubles; not used for regular, may be deferred
        * </pre>
+       *
+       * <code>bytes values = 15;</code>
        */
       public Builder setValues(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -3997,11 +4328,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional bytes values = 15;</code>
-       *
        * <pre>
        * big endian doubles; not used for regular, may be deferred
        * </pre>
+       *
+       * <code>bytes values = 15;</code>
        */
       public Builder clearValues() {
         
@@ -4009,14 +4340,16 @@ public final class CdmrFeatureProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -4035,20 +4368,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<CoordAxis>
         PARSER = new com.google.protobuf.AbstractParser<CoordAxis>() {
+      @java.lang.Override
       public CoordAxis parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new CoordAxis(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new CoordAxis(input, extensionRegistry);
       }
     };
 
@@ -4061,6 +4386,7 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -4072,19 +4398,19 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * must be unique in dataset's CoordSys
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * must be unique in dataset's CoordSys
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -4092,7 +4418,7 @@ public final class CdmrFeatureProto {
     /**
      * <code>repeated string axisNames = 2;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getAxisNamesList();
     /**
      * <code>repeated string axisNames = 2;</code>
@@ -4111,7 +4437,7 @@ public final class CdmrFeatureProto {
     /**
      * <code>repeated string transformNames = 3;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getTransformNamesList();
     /**
      * <code>repeated string transformNames = 3;</code>
@@ -4128,11 +4454,11 @@ public final class CdmrFeatureProto {
         getTransformNamesBytes(int index);
 
     /**
-     * <code>optional .CoverageType coverageType = 5;</code>
+     * <code>.CoverageType coverageType = 5;</code>
      */
     int getCoverageTypeValue();
     /**
-     * <code>optional .CoverageType coverageType = 5;</code>
+     * <code>.CoverageType coverageType = 5;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType getCoverageType();
   }
@@ -4140,11 +4466,12 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code CoordSys}
    */
   public  static final class CoordSys extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CoordSys)
       CoordSysOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use CoordSys.newBuilder() to construct.
-    private CoordSys(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private CoordSys(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private CoordSys() {
@@ -4155,15 +4482,28 @@ public final class CdmrFeatureProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CoordSys();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private CoordSys(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -4172,32 +4512,26 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
             }
             case 18: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 axisNames_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000002;
+                mutable_bitField0_ |= 0x00000001;
               }
               axisNames_.add(s);
               break;
             }
             case 26: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 transformNames_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000002;
               }
               transformNames_.add(s);
               break;
@@ -4208,21 +4542,28 @@ public final class CdmrFeatureProto {
               coverageType_ = rawValue;
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           axisNames_ = axisNames_.getUnmodifiableView();
         }
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           transformNames_ = transformNames_.getUnmodifiableView();
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -4231,22 +4572,22 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordSys_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordSys_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * must be unique in dataset's CoordSys
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -4261,11 +4602,11 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * must be unique in dataset's CoordSys
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -4342,20 +4683,22 @@ public final class CdmrFeatureProto {
     public static final int COVERAGETYPE_FIELD_NUMBER = 5;
     private int coverageType_;
     /**
-     * <code>optional .CoverageType coverageType = 5;</code>
+     * <code>.CoverageType coverageType = 5;</code>
      */
     public int getCoverageTypeValue() {
       return coverageType_;
     }
     /**
-     * <code>optional .CoverageType coverageType = 5;</code>
+     * <code>.CoverageType coverageType = 5;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType getCoverageType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.valueOf(coverageType_);
       return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.UNRECOGNIZED : result;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -4365,29 +4708,32 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       for (int i = 0; i < axisNames_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, axisNames_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, axisNames_.getRaw(i));
       }
       for (int i = 0; i < transformNames_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 3, transformNames_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, transformNames_.getRaw(i));
       }
       if (coverageType_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.General.getNumber()) {
         output.writeEnum(5, coverageType_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       {
         int dataSize = 0;
@@ -4409,11 +4755,67 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(5, coverageType_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getAxisNamesList()
+          .equals(other.getAxisNamesList())) return false;
+      if (!getTransformNamesList()
+          .equals(other.getTransformNamesList())) return false;
+      if (coverageType_ != other.coverageType_) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      if (getAxisNamesCount() > 0) {
+        hash = (37 * hash) + AXISNAMES_FIELD_NUMBER;
+        hash = (53 * hash) + getAxisNamesList().hashCode();
+      }
+      if (getTransformNamesCount() > 0) {
+        hash = (37 * hash) + TRANSFORMNAMES_FIELD_NUMBER;
+        hash = (53 * hash) + getTransformNamesList().hashCode();
+      }
+      hash = (37 * hash) + COVERAGETYPE_FIELD_NUMBER;
+      hash = (53 * hash) + coverageType_;
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -4437,36 +4839,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -4474,6 +4883,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -4481,7 +4891,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -4489,7 +4899,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code CoordSys}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:CoordSys)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -4497,7 +4907,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordSys_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordSys_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -4510,36 +4921,41 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
 
         axisNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         transformNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         coverageType_ = 0;
 
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoordSys_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys result = buildPartial();
         if (!result.isInitialized()) {
@@ -4548,27 +4964,59 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((bitField0_ & 0x00000001) != 0)) {
           axisNames_ = axisNames_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.axisNames_ = axisNames_;
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           transformNames_ = transformNames_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.transformNames_ = transformNames_;
         result.coverageType_ = coverageType_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys)other);
@@ -4587,7 +5035,7 @@ public final class CdmrFeatureProto {
         if (!other.axisNames_.isEmpty()) {
           if (axisNames_.isEmpty()) {
             axisNames_ = other.axisNames_;
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000001);
           } else {
             ensureAxisNamesIsMutable();
             axisNames_.addAll(other.axisNames_);
@@ -4597,7 +5045,7 @@ public final class CdmrFeatureProto {
         if (!other.transformNames_.isEmpty()) {
           if (transformNames_.isEmpty()) {
             transformNames_ = other.transformNames_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureTransformNamesIsMutable();
             transformNames_.addAll(other.transformNames_);
@@ -4607,14 +5055,17 @@ public final class CdmrFeatureProto {
         if (other.coverageType_ != 0) {
           setCoverageTypeValue(other.getCoverageTypeValue());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4624,7 +5075,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -4636,11 +5087,11 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * must be unique in dataset's CoordSys
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -4655,11 +5106,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * must be unique in dataset's CoordSys
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -4675,11 +5126,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * must be unique in dataset's CoordSys
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -4692,11 +5143,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * must be unique in dataset's CoordSys
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -4705,11 +5156,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * must be unique in dataset's CoordSys
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -4725,9 +5176,9 @@ public final class CdmrFeatureProto {
 
       private com.google.protobuf.LazyStringList axisNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureAxisNamesIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           axisNames_ = new com.google.protobuf.LazyStringArrayList(axisNames_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
          }
       }
       /**
@@ -4798,7 +5249,7 @@ public final class CdmrFeatureProto {
        */
       public Builder clearAxisNames() {
         axisNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -4819,9 +5270,9 @@ public final class CdmrFeatureProto {
 
       private com.google.protobuf.LazyStringList transformNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureTransformNamesIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           transformNames_ = new com.google.protobuf.LazyStringArrayList(transformNames_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000002;
          }
       }
       /**
@@ -4892,7 +5343,7 @@ public final class CdmrFeatureProto {
        */
       public Builder clearTransformNames() {
         transformNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -4913,13 +5364,13 @@ public final class CdmrFeatureProto {
 
       private int coverageType_ = 0;
       /**
-       * <code>optional .CoverageType coverageType = 5;</code>
+       * <code>.CoverageType coverageType = 5;</code>
        */
       public int getCoverageTypeValue() {
         return coverageType_;
       }
       /**
-       * <code>optional .CoverageType coverageType = 5;</code>
+       * <code>.CoverageType coverageType = 5;</code>
        */
       public Builder setCoverageTypeValue(int value) {
         coverageType_ = value;
@@ -4927,14 +5378,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .CoverageType coverageType = 5;</code>
+       * <code>.CoverageType coverageType = 5;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType getCoverageType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.valueOf(coverageType_);
         return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .CoverageType coverageType = 5;</code>
+       * <code>.CoverageType coverageType = 5;</code>
        */
       public Builder setCoverageType(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType value) {
         if (value == null) {
@@ -4946,7 +5398,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .CoverageType coverageType = 5;</code>
+       * <code>.CoverageType coverageType = 5;</code>
        */
       public Builder clearCoverageType() {
         
@@ -4954,14 +5406,16 @@ public final class CdmrFeatureProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -4980,20 +5434,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<CoordSys>
         PARSER = new com.google.protobuf.AbstractParser<CoordSys>() {
+      @java.lang.Override
       public CoordSys parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new CoordSys(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new CoordSys(input, extensionRegistry);
       }
     };
 
@@ -5006,6 +5452,7 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -5017,21 +5464,21 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional int64 start = 1;</code>
+     * <code>int64 start = 1;</code>
      */
     long getStart();
 
     /**
-     * <code>optional int64 end = 2;</code>
+     * <code>int64 end = 2;</code>
      */
     long getEnd();
 
     /**
-     * <code>optional .Calendar calendar = 3;</code>
+     * <code>.Calendar calendar = 3;</code>
      */
     int getCalendarValue();
     /**
-     * <code>optional .Calendar calendar = 3;</code>
+     * <code>.Calendar calendar = 3;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar();
   }
@@ -5039,29 +5486,40 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code CalendarDateRange}
    */
   public  static final class CalendarDateRange extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CalendarDateRange)
       CalendarDateRangeOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use CalendarDateRange.newBuilder() to construct.
-    private CalendarDateRange(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private CalendarDateRange(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private CalendarDateRange() {
-      start_ = 0L;
-      end_ = 0L;
       calendar_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CalendarDateRange();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private CalendarDateRange(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -5070,12 +5528,6 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 8: {
 
               start_ = input.readInt64();
@@ -5092,15 +5544,22 @@ public final class CdmrFeatureProto {
               calendar_ = rawValue;
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -5109,7 +5568,8 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -5119,7 +5579,7 @@ public final class CdmrFeatureProto {
     public static final int START_FIELD_NUMBER = 1;
     private long start_;
     /**
-     * <code>optional int64 start = 1;</code>
+     * <code>int64 start = 1;</code>
      */
     public long getStart() {
       return start_;
@@ -5128,7 +5588,7 @@ public final class CdmrFeatureProto {
     public static final int END_FIELD_NUMBER = 2;
     private long end_;
     /**
-     * <code>optional int64 end = 2;</code>
+     * <code>int64 end = 2;</code>
      */
     public long getEnd() {
       return end_;
@@ -5137,20 +5597,22 @@ public final class CdmrFeatureProto {
     public static final int CALENDAR_FIELD_NUMBER = 3;
     private int calendar_;
     /**
-     * <code>optional .Calendar calendar = 3;</code>
+     * <code>.Calendar calendar = 3;</code>
      */
     public int getCalendarValue() {
       return calendar_;
     }
     /**
-     * <code>optional .Calendar calendar = 3;</code>
+     * <code>.Calendar calendar = 3;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.valueOf(calendar_);
       return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.UNRECOGNIZED : result;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -5160,6 +5622,7 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (start_ != 0L) {
@@ -5171,8 +5634,10 @@ public final class CdmrFeatureProto {
       if (calendar_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.proleptic_gregorian.getNumber()) {
         output.writeEnum(3, calendar_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -5190,11 +5655,61 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(3, calendar_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange) obj;
+
+      if (getStart()
+          != other.getStart()) return false;
+      if (getEnd()
+          != other.getEnd()) return false;
+      if (calendar_ != other.calendar_) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + START_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getStart());
+      hash = (37 * hash) + END_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getEnd());
+      hash = (37 * hash) + CALENDAR_FIELD_NUMBER;
+      hash = (53 * hash) + calendar_;
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5218,36 +5733,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -5255,6 +5777,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -5262,7 +5785,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -5270,7 +5793,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code CalendarDateRange}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:CalendarDateRange)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -5278,7 +5801,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -5291,14 +5815,16 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         start_ = 0L;
@@ -5310,15 +5836,18 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange result = buildPartial();
         if (!result.isInitialized()) {
@@ -5327,6 +5856,7 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange(this);
         result.start_ = start_;
@@ -5336,6 +5866,39 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange)other);
@@ -5356,14 +5919,17 @@ public final class CdmrFeatureProto {
         if (other.calendar_ != 0) {
           setCalendarValue(other.getCalendarValue());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5373,7 +5939,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -5384,13 +5950,13 @@ public final class CdmrFeatureProto {
 
       private long start_ ;
       /**
-       * <code>optional int64 start = 1;</code>
+       * <code>int64 start = 1;</code>
        */
       public long getStart() {
         return start_;
       }
       /**
-       * <code>optional int64 start = 1;</code>
+       * <code>int64 start = 1;</code>
        */
       public Builder setStart(long value) {
         
@@ -5399,7 +5965,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional int64 start = 1;</code>
+       * <code>int64 start = 1;</code>
        */
       public Builder clearStart() {
         
@@ -5410,13 +5976,13 @@ public final class CdmrFeatureProto {
 
       private long end_ ;
       /**
-       * <code>optional int64 end = 2;</code>
+       * <code>int64 end = 2;</code>
        */
       public long getEnd() {
         return end_;
       }
       /**
-       * <code>optional int64 end = 2;</code>
+       * <code>int64 end = 2;</code>
        */
       public Builder setEnd(long value) {
         
@@ -5425,7 +5991,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional int64 end = 2;</code>
+       * <code>int64 end = 2;</code>
        */
       public Builder clearEnd() {
         
@@ -5436,13 +6002,13 @@ public final class CdmrFeatureProto {
 
       private int calendar_ = 0;
       /**
-       * <code>optional .Calendar calendar = 3;</code>
+       * <code>.Calendar calendar = 3;</code>
        */
       public int getCalendarValue() {
         return calendar_;
       }
       /**
-       * <code>optional .Calendar calendar = 3;</code>
+       * <code>.Calendar calendar = 3;</code>
        */
       public Builder setCalendarValue(int value) {
         calendar_ = value;
@@ -5450,14 +6016,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Calendar calendar = 3;</code>
+       * <code>.Calendar calendar = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.valueOf(calendar_);
         return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .Calendar calendar = 3;</code>
+       * <code>.Calendar calendar = 3;</code>
        */
       public Builder setCalendar(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar value) {
         if (value == null) {
@@ -5469,7 +6036,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Calendar calendar = 3;</code>
+       * <code>.Calendar calendar = 3;</code>
        */
       public Builder clearCalendar() {
         
@@ -5477,14 +6044,16 @@ public final class CdmrFeatureProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -5503,20 +6072,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<CalendarDateRange>
         PARSER = new com.google.protobuf.AbstractParser<CalendarDateRange>() {
+      @java.lang.Override
       public CalendarDateRange parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new CalendarDateRange(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new CalendarDateRange(input, extensionRegistry);
       }
     };
 
@@ -5529,6 +6090,7 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -5540,22 +6102,22 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional double startx = 1;</code>
+     * <code>double startx = 1;</code>
      */
     double getStartx();
 
     /**
-     * <code>optional double starty = 2;</code>
+     * <code>double starty = 2;</code>
      */
     double getStarty();
 
     /**
-     * <code>optional double incx = 3;</code>
+     * <code>double incx = 3;</code>
      */
     double getIncx();
 
     /**
-     * <code>optional double incy = 4;</code>
+     * <code>double incy = 4;</code>
      */
     double getIncy();
   }
@@ -5563,30 +6125,39 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code Rectangle}
    */
   public  static final class Rectangle extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Rectangle)
       RectangleOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Rectangle.newBuilder() to construct.
-    private Rectangle(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Rectangle(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Rectangle() {
-      startx_ = 0D;
-      starty_ = 0D;
-      incx_ = 0D;
-      incy_ = 0D;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Rectangle();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Rectangle(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -5595,12 +6166,6 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 9: {
 
               startx_ = input.readDouble();
@@ -5621,15 +6186,22 @@ public final class CdmrFeatureProto {
               incy_ = input.readDouble();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -5638,7 +6210,8 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -5648,7 +6221,7 @@ public final class CdmrFeatureProto {
     public static final int STARTX_FIELD_NUMBER = 1;
     private double startx_;
     /**
-     * <code>optional double startx = 1;</code>
+     * <code>double startx = 1;</code>
      */
     public double getStartx() {
       return startx_;
@@ -5657,7 +6230,7 @@ public final class CdmrFeatureProto {
     public static final int STARTY_FIELD_NUMBER = 2;
     private double starty_;
     /**
-     * <code>optional double starty = 2;</code>
+     * <code>double starty = 2;</code>
      */
     public double getStarty() {
       return starty_;
@@ -5666,7 +6239,7 @@ public final class CdmrFeatureProto {
     public static final int INCX_FIELD_NUMBER = 3;
     private double incx_;
     /**
-     * <code>optional double incx = 3;</code>
+     * <code>double incx = 3;</code>
      */
     public double getIncx() {
       return incx_;
@@ -5675,13 +6248,14 @@ public final class CdmrFeatureProto {
     public static final int INCY_FIELD_NUMBER = 4;
     private double incy_;
     /**
-     * <code>optional double incy = 4;</code>
+     * <code>double incy = 4;</code>
      */
     public double getIncy() {
       return incy_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -5691,6 +6265,7 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (startx_ != 0D) {
@@ -5705,8 +6280,10 @@ public final class CdmrFeatureProto {
       if (incy_ != 0D) {
         output.writeDouble(4, incy_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -5728,11 +6305,72 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(4, incy_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle) obj;
+
+      if (java.lang.Double.doubleToLongBits(getStartx())
+          != java.lang.Double.doubleToLongBits(
+              other.getStartx())) return false;
+      if (java.lang.Double.doubleToLongBits(getStarty())
+          != java.lang.Double.doubleToLongBits(
+              other.getStarty())) return false;
+      if (java.lang.Double.doubleToLongBits(getIncx())
+          != java.lang.Double.doubleToLongBits(
+              other.getIncx())) return false;
+      if (java.lang.Double.doubleToLongBits(getIncy())
+          != java.lang.Double.doubleToLongBits(
+              other.getIncy())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + STARTX_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getStartx()));
+      hash = (37 * hash) + STARTY_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getStarty()));
+      hash = (37 * hash) + INCX_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getIncx()));
+      hash = (37 * hash) + INCY_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getIncy()));
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5756,36 +6394,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -5793,6 +6438,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -5800,7 +6446,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -5808,7 +6454,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code Rectangle}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Rectangle)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -5816,7 +6462,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -5829,14 +6476,16 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         startx_ = 0D;
@@ -5850,15 +6499,18 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle result = buildPartial();
         if (!result.isInitialized()) {
@@ -5867,6 +6519,7 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle(this);
         result.startx_ = startx_;
@@ -5877,6 +6530,39 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle)other);
@@ -5900,14 +6586,17 @@ public final class CdmrFeatureProto {
         if (other.getIncy() != 0D) {
           setIncy(other.getIncy());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5917,7 +6606,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -5928,13 +6617,13 @@ public final class CdmrFeatureProto {
 
       private double startx_ ;
       /**
-       * <code>optional double startx = 1;</code>
+       * <code>double startx = 1;</code>
        */
       public double getStartx() {
         return startx_;
       }
       /**
-       * <code>optional double startx = 1;</code>
+       * <code>double startx = 1;</code>
        */
       public Builder setStartx(double value) {
         
@@ -5943,7 +6632,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional double startx = 1;</code>
+       * <code>double startx = 1;</code>
        */
       public Builder clearStartx() {
         
@@ -5954,13 +6643,13 @@ public final class CdmrFeatureProto {
 
       private double starty_ ;
       /**
-       * <code>optional double starty = 2;</code>
+       * <code>double starty = 2;</code>
        */
       public double getStarty() {
         return starty_;
       }
       /**
-       * <code>optional double starty = 2;</code>
+       * <code>double starty = 2;</code>
        */
       public Builder setStarty(double value) {
         
@@ -5969,7 +6658,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional double starty = 2;</code>
+       * <code>double starty = 2;</code>
        */
       public Builder clearStarty() {
         
@@ -5980,13 +6669,13 @@ public final class CdmrFeatureProto {
 
       private double incx_ ;
       /**
-       * <code>optional double incx = 3;</code>
+       * <code>double incx = 3;</code>
        */
       public double getIncx() {
         return incx_;
       }
       /**
-       * <code>optional double incx = 3;</code>
+       * <code>double incx = 3;</code>
        */
       public Builder setIncx(double value) {
         
@@ -5995,7 +6684,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional double incx = 3;</code>
+       * <code>double incx = 3;</code>
        */
       public Builder clearIncx() {
         
@@ -6006,13 +6695,13 @@ public final class CdmrFeatureProto {
 
       private double incy_ ;
       /**
-       * <code>optional double incy = 4;</code>
+       * <code>double incy = 4;</code>
        */
       public double getIncy() {
         return incy_;
       }
       /**
-       * <code>optional double incy = 4;</code>
+       * <code>double incy = 4;</code>
        */
       public Builder setIncy(double value) {
         
@@ -6021,7 +6710,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional double incy = 4;</code>
+       * <code>double incy = 4;</code>
        */
       public Builder clearIncy() {
         
@@ -6029,14 +6718,16 @@ public final class CdmrFeatureProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -6055,20 +6746,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<Rectangle>
         PARSER = new com.google.protobuf.AbstractParser<Rectangle>() {
+      @java.lang.Override
       public Rectangle parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Rectangle(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Rectangle(input, extensionRegistry);
       }
     };
 
@@ -6081,6 +6764,7 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -6092,29 +6776,29 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
@@ -6143,31 +6827,31 @@ public final class CdmrFeatureProto {
         int index);
 
     /**
-     * <code>optional string coordSys = 5;</code>
+     * <code>string coordSys = 5;</code>
      */
     java.lang.String getCoordSys();
     /**
-     * <code>optional string coordSys = 5;</code>
+     * <code>string coordSys = 5;</code>
      */
     com.google.protobuf.ByteString
         getCoordSysBytes();
 
     /**
-     * <code>optional string units = 6;</code>
+     * <code>string units = 6;</code>
      */
     java.lang.String getUnits();
     /**
-     * <code>optional string units = 6;</code>
+     * <code>string units = 6;</code>
      */
     com.google.protobuf.ByteString
         getUnitsBytes();
 
     /**
-     * <code>optional string description = 7;</code>
+     * <code>string description = 7;</code>
      */
     java.lang.String getDescription();
     /**
-     * <code>optional string description = 7;</code>
+     * <code>string description = 7;</code>
      */
     com.google.protobuf.ByteString
         getDescriptionBytes();
@@ -6176,11 +6860,12 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code Coverage}
    */
   public  static final class Coverage extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Coverage)
       CoverageOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Coverage.newBuilder() to construct.
-    private Coverage(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Coverage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Coverage() {
@@ -6193,15 +6878,28 @@ public final class CdmrFeatureProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Coverage();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Coverage(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -6210,14 +6908,8 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
@@ -6229,43 +6921,51 @@ public final class CdmrFeatureProto {
               break;
             }
             case 34: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000001;
               }
-              atts_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
+              atts_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
               break;
             }
             case 42: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               coordSys_ = s;
               break;
             }
             case 50: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               units_ = s;
               break;
             }
             case 58: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               description_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           atts_ = java.util.Collections.unmodifiableList(atts_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -6274,22 +6974,22 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Coverage_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Coverage_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -6304,11 +7004,11 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
-     *
      * <pre>
      * short name, unique within dataset
      * </pre>
+     *
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -6327,15 +7027,16 @@ public final class CdmrFeatureProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
@@ -6378,7 +7079,7 @@ public final class CdmrFeatureProto {
     public static final int COORDSYS_FIELD_NUMBER = 5;
     private volatile java.lang.Object coordSys_;
     /**
-     * <code>optional string coordSys = 5;</code>
+     * <code>string coordSys = 5;</code>
      */
     public java.lang.String getCoordSys() {
       java.lang.Object ref = coordSys_;
@@ -6393,7 +7094,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string coordSys = 5;</code>
+     * <code>string coordSys = 5;</code>
      */
     public com.google.protobuf.ByteString
         getCoordSysBytes() {
@@ -6412,7 +7113,7 @@ public final class CdmrFeatureProto {
     public static final int UNITS_FIELD_NUMBER = 6;
     private volatile java.lang.Object units_;
     /**
-     * <code>optional string units = 6;</code>
+     * <code>string units = 6;</code>
      */
     public java.lang.String getUnits() {
       java.lang.Object ref = units_;
@@ -6427,7 +7128,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string units = 6;</code>
+     * <code>string units = 6;</code>
      */
     public com.google.protobuf.ByteString
         getUnitsBytes() {
@@ -6446,7 +7147,7 @@ public final class CdmrFeatureProto {
     public static final int DESCRIPTION_FIELD_NUMBER = 7;
     private volatile java.lang.Object description_;
     /**
-     * <code>optional string description = 7;</code>
+     * <code>string description = 7;</code>
      */
     public java.lang.String getDescription() {
       java.lang.Object ref = description_;
@@ -6461,7 +7162,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string description = 7;</code>
+     * <code>string description = 7;</code>
      */
     public com.google.protobuf.ByteString
         getDescriptionBytes() {
@@ -6478,6 +7179,7 @@ public final class CdmrFeatureProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -6487,10 +7189,11 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -6499,23 +7202,25 @@ public final class CdmrFeatureProto {
         output.writeMessage(4, atts_.get(i));
       }
       if (!getCoordSysBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 5, coordSys_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, coordSys_);
       }
       if (!getUnitsBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 6, units_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, units_);
       }
       if (!getDescriptionBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 7, description_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, description_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -6526,19 +7231,81 @@ public final class CdmrFeatureProto {
           .computeMessageSize(4, atts_.get(i));
       }
       if (!getCoordSysBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(5, coordSys_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, coordSys_);
       }
       if (!getUnitsBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, units_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, units_);
       }
       if (!getDescriptionBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(7, description_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, description_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (!getAttsList()
+          .equals(other.getAttsList())) return false;
+      if (!getCoordSys()
+          .equals(other.getCoordSys())) return false;
+      if (!getUnits()
+          .equals(other.getUnits())) return false;
+      if (!getDescription()
+          .equals(other.getDescription())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      if (getAttsCount() > 0) {
+        hash = (37 * hash) + ATTS_FIELD_NUMBER;
+        hash = (53 * hash) + getAttsList().hashCode();
+      }
+      hash = (37 * hash) + COORDSYS_FIELD_NUMBER;
+      hash = (53 * hash) + getCoordSys().hashCode();
+      hash = (37 * hash) + UNITS_FIELD_NUMBER;
+      hash = (53 * hash) + getUnits().hashCode();
+      hash = (37 * hash) + DESCRIPTION_FIELD_NUMBER;
+      hash = (53 * hash) + getDescription().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -6562,36 +7329,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -6599,6 +7373,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -6606,7 +7381,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -6614,7 +7389,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code Coverage}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Coverage)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -6622,7 +7397,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Coverage_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Coverage_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -6635,15 +7411,17 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getAttsFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -6652,7 +7430,7 @@ public final class CdmrFeatureProto {
 
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           attsBuilder_.clear();
         }
@@ -6665,15 +7443,18 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Coverage_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage result = buildPartial();
         if (!result.isInitialized()) {
@@ -6682,16 +7463,16 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         result.dataType_ = dataType_;
         if (attsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             atts_ = java.util.Collections.unmodifiableList(atts_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.atts_ = atts_;
         } else {
@@ -6700,11 +7481,43 @@ public final class CdmrFeatureProto {
         result.coordSys_ = coordSys_;
         result.units_ = units_;
         result.description_ = description_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage)other);
@@ -6727,7 +7540,7 @@ public final class CdmrFeatureProto {
           if (!other.atts_.isEmpty()) {
             if (atts_.isEmpty()) {
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureAttsIsMutable();
               atts_.addAll(other.atts_);
@@ -6740,9 +7553,9 @@ public final class CdmrFeatureProto {
               attsBuilder_.dispose();
               attsBuilder_ = null;
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
               attsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getAttsFieldBuilder() : null;
             } else {
               attsBuilder_.addAllMessages(other.atts_);
@@ -6761,14 +7574,17 @@ public final class CdmrFeatureProto {
           description_ = other.description_;
           onChanged();
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6778,7 +7594,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -6790,11 +7606,11 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -6809,11 +7625,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -6829,11 +7645,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -6846,11 +7662,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -6859,11 +7675,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
-       *
        * <pre>
        * short name, unique within dataset
        * </pre>
+       *
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -6879,13 +7695,13 @@ public final class CdmrFeatureProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -6893,14 +7709,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -6912,7 +7729,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -6924,13 +7741,13 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>(atts_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
@@ -7076,7 +7893,7 @@ public final class CdmrFeatureProto {
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           attsBuilder_.clear();
@@ -7146,14 +7963,14 @@ public final class CdmrFeatureProto {
            getAttsBuilderList() {
         return getAttsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
           getAttsFieldBuilder() {
         if (attsBuilder_ == null) {
-          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder>(
                   atts_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           atts_ = null;
@@ -7163,7 +7980,7 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object coordSys_ = "";
       /**
-       * <code>optional string coordSys = 5;</code>
+       * <code>string coordSys = 5;</code>
        */
       public java.lang.String getCoordSys() {
         java.lang.Object ref = coordSys_;
@@ -7178,7 +7995,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string coordSys = 5;</code>
+       * <code>string coordSys = 5;</code>
        */
       public com.google.protobuf.ByteString
           getCoordSysBytes() {
@@ -7194,7 +8011,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string coordSys = 5;</code>
+       * <code>string coordSys = 5;</code>
        */
       public Builder setCoordSys(
           java.lang.String value) {
@@ -7207,7 +8024,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string coordSys = 5;</code>
+       * <code>string coordSys = 5;</code>
        */
       public Builder clearCoordSys() {
         
@@ -7216,7 +8033,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string coordSys = 5;</code>
+       * <code>string coordSys = 5;</code>
        */
       public Builder setCoordSysBytes(
           com.google.protobuf.ByteString value) {
@@ -7232,7 +8049,7 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object units_ = "";
       /**
-       * <code>optional string units = 6;</code>
+       * <code>string units = 6;</code>
        */
       public java.lang.String getUnits() {
         java.lang.Object ref = units_;
@@ -7247,7 +8064,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string units = 6;</code>
+       * <code>string units = 6;</code>
        */
       public com.google.protobuf.ByteString
           getUnitsBytes() {
@@ -7263,7 +8080,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string units = 6;</code>
+       * <code>string units = 6;</code>
        */
       public Builder setUnits(
           java.lang.String value) {
@@ -7276,7 +8093,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string units = 6;</code>
+       * <code>string units = 6;</code>
        */
       public Builder clearUnits() {
         
@@ -7285,7 +8102,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string units = 6;</code>
+       * <code>string units = 6;</code>
        */
       public Builder setUnitsBytes(
           com.google.protobuf.ByteString value) {
@@ -7301,7 +8118,7 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object description_ = "";
       /**
-       * <code>optional string description = 7;</code>
+       * <code>string description = 7;</code>
        */
       public java.lang.String getDescription() {
         java.lang.Object ref = description_;
@@ -7316,7 +8133,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string description = 7;</code>
+       * <code>string description = 7;</code>
        */
       public com.google.protobuf.ByteString
           getDescriptionBytes() {
@@ -7332,7 +8149,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string description = 7;</code>
+       * <code>string description = 7;</code>
        */
       public Builder setDescription(
           java.lang.String value) {
@@ -7345,7 +8162,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string description = 7;</code>
+       * <code>string description = 7;</code>
        */
       public Builder clearDescription() {
         
@@ -7354,7 +8171,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string description = 7;</code>
+       * <code>string description = 7;</code>
        */
       public Builder setDescriptionBytes(
           com.google.protobuf.ByteString value) {
@@ -7367,14 +8184,16 @@ public final class CdmrFeatureProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -7393,20 +8212,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<Coverage>
         PARSER = new com.google.protobuf.AbstractParser<Coverage>() {
+      @java.lang.Override
       public Coverage parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Coverage(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Coverage(input, extensionRegistry);
       }
     };
 
@@ -7419,6 +8230,7 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -7430,11 +8242,11 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -7464,41 +8276,41 @@ public final class CdmrFeatureProto {
         int index);
 
     /**
-     * <code>optional .Rectangle latlonRect = 3;</code>
+     * <code>.Rectangle latlonRect = 3;</code>
      */
     boolean hasLatlonRect();
     /**
-     * <code>optional .Rectangle latlonRect = 3;</code>
+     * <code>.Rectangle latlonRect = 3;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getLatlonRect();
     /**
-     * <code>optional .Rectangle latlonRect = 3;</code>
+     * <code>.Rectangle latlonRect = 3;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder getLatlonRectOrBuilder();
 
     /**
-     * <code>optional .Rectangle projRect = 4;</code>
+     * <code>.Rectangle projRect = 4;</code>
      */
     boolean hasProjRect();
     /**
-     * <code>optional .Rectangle projRect = 4;</code>
+     * <code>.Rectangle projRect = 4;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getProjRect();
     /**
-     * <code>optional .Rectangle projRect = 4;</code>
+     * <code>.Rectangle projRect = 4;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder getProjRectOrBuilder();
 
     /**
-     * <code>optional .CalendarDateRange dateRange = 5;</code>
+     * <code>.CalendarDateRange dateRange = 5;</code>
      */
     boolean hasDateRange();
     /**
-     * <code>optional .CalendarDateRange dateRange = 5;</code>
+     * <code>.CalendarDateRange dateRange = 5;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDateRange();
     /**
-     * <code>optional .CalendarDateRange dateRange = 5;</code>
+     * <code>.CalendarDateRange dateRange = 5;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder getDateRangeOrBuilder();
 
@@ -7599,11 +8411,11 @@ public final class CdmrFeatureProto {
         int index);
 
     /**
-     * <code>optional .CoverageType coverageType = 10;</code>
+     * <code>.CoverageType coverageType = 10;</code>
      */
     int getCoverageTypeValue();
     /**
-     * <code>optional .CoverageType coverageType = 10;</code>
+     * <code>.CoverageType coverageType = 10;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType getCoverageType();
   }
@@ -7611,11 +8423,12 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code CoverageDataset}
    */
   public  static final class CoverageDataset extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CoverageDataset)
       CoverageDatasetOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use CoverageDataset.newBuilder() to construct.
-    private CoverageDataset(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private CoverageDataset(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private CoverageDataset() {
@@ -7629,15 +8442,28 @@ public final class CdmrFeatureProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CoverageDataset();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private CoverageDataset(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -7646,24 +8472,19 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-                mutable_bitField0_ |= 0x00000002;
+                mutable_bitField0_ |= 0x00000001;
               }
-              atts_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
+              atts_.add(
+                  input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.parser(), extensionRegistry));
               break;
             }
             case 26: {
@@ -7706,35 +8527,39 @@ public final class CdmrFeatureProto {
               break;
             }
             case 50: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 coordSys_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys>();
-                mutable_bitField0_ |= 0x00000020;
+                mutable_bitField0_ |= 0x00000002;
               }
-              coordSys_.add(input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.parser(), extensionRegistry));
+              coordSys_.add(
+                  input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.parser(), extensionRegistry));
               break;
             }
             case 58: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 coordTransforms_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform>();
-                mutable_bitField0_ |= 0x00000040;
+                mutable_bitField0_ |= 0x00000004;
               }
-              coordTransforms_.add(input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.parser(), extensionRegistry));
+              coordTransforms_.add(
+                  input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.parser(), extensionRegistry));
               break;
             }
             case 66: {
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
                 coordAxes_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis>();
-                mutable_bitField0_ |= 0x00000080;
+                mutable_bitField0_ |= 0x00000008;
               }
-              coordAxes_.add(input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.parser(), extensionRegistry));
+              coordAxes_.add(
+                  input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.parser(), extensionRegistry));
               break;
             }
             case 74: {
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+              if (!((mutable_bitField0_ & 0x00000010) != 0)) {
                 grids_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage>();
-                mutable_bitField0_ |= 0x00000100;
+                mutable_bitField0_ |= 0x00000010;
               }
-              grids_.add(input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage.parser(), extensionRegistry));
+              grids_.add(
+                  input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage.parser(), extensionRegistry));
               break;
             }
             case 80: {
@@ -7743,30 +8568,37 @@ public final class CdmrFeatureProto {
               coverageType_ = rawValue;
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           atts_ = java.util.Collections.unmodifiableList(atts_);
         }
-        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           coordSys_ = java.util.Collections.unmodifiableList(coordSys_);
         }
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
           coordTransforms_ = java.util.Collections.unmodifiableList(coordTransforms_);
         }
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((mutable_bitField0_ & 0x00000008) != 0)) {
           coordAxes_ = java.util.Collections.unmodifiableList(coordAxes_);
         }
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((mutable_bitField0_ & 0x00000010) != 0)) {
           grids_ = java.util.Collections.unmodifiableList(grids_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -7775,18 +8607,18 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataset_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataset_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -7801,7 +8633,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -7855,19 +8687,19 @@ public final class CdmrFeatureProto {
     public static final int LATLONRECT_FIELD_NUMBER = 3;
     private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle latlonRect_;
     /**
-     * <code>optional .Rectangle latlonRect = 3;</code>
+     * <code>.Rectangle latlonRect = 3;</code>
      */
     public boolean hasLatlonRect() {
       return latlonRect_ != null;
     }
     /**
-     * <code>optional .Rectangle latlonRect = 3;</code>
+     * <code>.Rectangle latlonRect = 3;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getLatlonRect() {
       return latlonRect_ == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.getDefaultInstance() : latlonRect_;
     }
     /**
-     * <code>optional .Rectangle latlonRect = 3;</code>
+     * <code>.Rectangle latlonRect = 3;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder getLatlonRectOrBuilder() {
       return getLatlonRect();
@@ -7876,19 +8708,19 @@ public final class CdmrFeatureProto {
     public static final int PROJRECT_FIELD_NUMBER = 4;
     private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle projRect_;
     /**
-     * <code>optional .Rectangle projRect = 4;</code>
+     * <code>.Rectangle projRect = 4;</code>
      */
     public boolean hasProjRect() {
       return projRect_ != null;
     }
     /**
-     * <code>optional .Rectangle projRect = 4;</code>
+     * <code>.Rectangle projRect = 4;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getProjRect() {
       return projRect_ == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.getDefaultInstance() : projRect_;
     }
     /**
-     * <code>optional .Rectangle projRect = 4;</code>
+     * <code>.Rectangle projRect = 4;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder getProjRectOrBuilder() {
       return getProjRect();
@@ -7897,19 +8729,19 @@ public final class CdmrFeatureProto {
     public static final int DATERANGE_FIELD_NUMBER = 5;
     private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange dateRange_;
     /**
-     * <code>optional .CalendarDateRange dateRange = 5;</code>
+     * <code>.CalendarDateRange dateRange = 5;</code>
      */
     public boolean hasDateRange() {
       return dateRange_ != null;
     }
     /**
-     * <code>optional .CalendarDateRange dateRange = 5;</code>
+     * <code>.CalendarDateRange dateRange = 5;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDateRange() {
       return dateRange_ == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.getDefaultInstance() : dateRange_;
     }
     /**
-     * <code>optional .CalendarDateRange dateRange = 5;</code>
+     * <code>.CalendarDateRange dateRange = 5;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder getDateRangeOrBuilder() {
       return getDateRange();
@@ -8058,20 +8890,22 @@ public final class CdmrFeatureProto {
     public static final int COVERAGETYPE_FIELD_NUMBER = 10;
     private int coverageType_;
     /**
-     * <code>optional .CoverageType coverageType = 10;</code>
+     * <code>.CoverageType coverageType = 10;</code>
      */
     public int getCoverageTypeValue() {
       return coverageType_;
     }
     /**
-     * <code>optional .CoverageType coverageType = 10;</code>
+     * <code>.CoverageType coverageType = 10;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType getCoverageType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.valueOf(coverageType_);
       return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.UNRECOGNIZED : result;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -8081,10 +8915,11 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       for (int i = 0; i < atts_.size(); i++) {
         output.writeMessage(2, atts_.get(i));
@@ -8113,15 +8948,17 @@ public final class CdmrFeatureProto {
       if (coverageType_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.General.getNumber()) {
         output.writeEnum(10, coverageType_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       for (int i = 0; i < atts_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -8159,11 +8996,112 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(10, coverageType_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getAttsList()
+          .equals(other.getAttsList())) return false;
+      if (hasLatlonRect() != other.hasLatlonRect()) return false;
+      if (hasLatlonRect()) {
+        if (!getLatlonRect()
+            .equals(other.getLatlonRect())) return false;
+      }
+      if (hasProjRect() != other.hasProjRect()) return false;
+      if (hasProjRect()) {
+        if (!getProjRect()
+            .equals(other.getProjRect())) return false;
+      }
+      if (hasDateRange() != other.hasDateRange()) return false;
+      if (hasDateRange()) {
+        if (!getDateRange()
+            .equals(other.getDateRange())) return false;
+      }
+      if (!getCoordSysList()
+          .equals(other.getCoordSysList())) return false;
+      if (!getCoordTransformsList()
+          .equals(other.getCoordTransformsList())) return false;
+      if (!getCoordAxesList()
+          .equals(other.getCoordAxesList())) return false;
+      if (!getGridsList()
+          .equals(other.getGridsList())) return false;
+      if (coverageType_ != other.coverageType_) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      if (getAttsCount() > 0) {
+        hash = (37 * hash) + ATTS_FIELD_NUMBER;
+        hash = (53 * hash) + getAttsList().hashCode();
+      }
+      if (hasLatlonRect()) {
+        hash = (37 * hash) + LATLONRECT_FIELD_NUMBER;
+        hash = (53 * hash) + getLatlonRect().hashCode();
+      }
+      if (hasProjRect()) {
+        hash = (37 * hash) + PROJRECT_FIELD_NUMBER;
+        hash = (53 * hash) + getProjRect().hashCode();
+      }
+      if (hasDateRange()) {
+        hash = (37 * hash) + DATERANGE_FIELD_NUMBER;
+        hash = (53 * hash) + getDateRange().hashCode();
+      }
+      if (getCoordSysCount() > 0) {
+        hash = (37 * hash) + COORDSYS_FIELD_NUMBER;
+        hash = (53 * hash) + getCoordSysList().hashCode();
+      }
+      if (getCoordTransformsCount() > 0) {
+        hash = (37 * hash) + COORDTRANSFORMS_FIELD_NUMBER;
+        hash = (53 * hash) + getCoordTransformsList().hashCode();
+      }
+      if (getCoordAxesCount() > 0) {
+        hash = (37 * hash) + COORDAXES_FIELD_NUMBER;
+        hash = (53 * hash) + getCoordAxesList().hashCode();
+      }
+      if (getGridsCount() > 0) {
+        hash = (37 * hash) + GRIDS_FIELD_NUMBER;
+        hash = (53 * hash) + getGridsList().hashCode();
+      }
+      hash = (37 * hash) + COVERAGETYPE_FIELD_NUMBER;
+      hash = (53 * hash) + coverageType_;
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -8187,36 +9125,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -8224,6 +9169,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -8231,7 +9177,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -8239,7 +9185,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code CoverageDataset}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:CoverageDataset)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDatasetOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -8247,7 +9193,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataset_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataset_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -8260,12 +9207,13 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getAttsFieldBuilder();
           getCoordSysFieldBuilder();
           getCoordTransformsFieldBuilder();
@@ -8273,13 +9221,14 @@ public final class CdmrFeatureProto {
           getGridsFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
 
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           attsBuilder_.clear();
         }
@@ -8303,25 +9252,25 @@ public final class CdmrFeatureProto {
         }
         if (coordSysBuilder_ == null) {
           coordSys_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
           coordSysBuilder_.clear();
         }
         if (coordTransformsBuilder_ == null) {
           coordTransforms_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
           coordTransformsBuilder_.clear();
         }
         if (coordAxesBuilder_ == null) {
           coordAxes_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           coordAxesBuilder_.clear();
         }
         if (gridsBuilder_ == null) {
           grids_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000010);
         } else {
           gridsBuilder_.clear();
         }
@@ -8330,15 +9279,18 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataset_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset result = buildPartial();
         if (!result.isInitialized()) {
@@ -8347,15 +9299,15 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.name_ = name_;
         if (attsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             atts_ = java.util.Collections.unmodifiableList(atts_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.atts_ = atts_;
         } else {
@@ -8377,47 +9329,79 @@ public final class CdmrFeatureProto {
           result.dateRange_ = dateRangeBuilder_.build();
         }
         if (coordSysBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             coordSys_ = java.util.Collections.unmodifiableList(coordSys_);
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.coordSys_ = coordSys_;
         } else {
           result.coordSys_ = coordSysBuilder_.build();
         }
         if (coordTransformsBuilder_ == null) {
-          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          if (((bitField0_ & 0x00000004) != 0)) {
             coordTransforms_ = java.util.Collections.unmodifiableList(coordTransforms_);
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.coordTransforms_ = coordTransforms_;
         } else {
           result.coordTransforms_ = coordTransformsBuilder_.build();
         }
         if (coordAxesBuilder_ == null) {
-          if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             coordAxes_ = java.util.Collections.unmodifiableList(coordAxes_);
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.coordAxes_ = coordAxes_;
         } else {
           result.coordAxes_ = coordAxesBuilder_.build();
         }
         if (gridsBuilder_ == null) {
-          if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          if (((bitField0_ & 0x00000010) != 0)) {
             grids_ = java.util.Collections.unmodifiableList(grids_);
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.grids_ = grids_;
         } else {
           result.grids_ = gridsBuilder_.build();
         }
         result.coverageType_ = coverageType_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset)other);
@@ -8437,7 +9421,7 @@ public final class CdmrFeatureProto {
           if (!other.atts_.isEmpty()) {
             if (atts_.isEmpty()) {
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureAttsIsMutable();
               atts_.addAll(other.atts_);
@@ -8450,9 +9434,9 @@ public final class CdmrFeatureProto {
               attsBuilder_.dispose();
               attsBuilder_ = null;
               atts_ = other.atts_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
               attsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getAttsFieldBuilder() : null;
             } else {
               attsBuilder_.addAllMessages(other.atts_);
@@ -8472,7 +9456,7 @@ public final class CdmrFeatureProto {
           if (!other.coordSys_.isEmpty()) {
             if (coordSys_.isEmpty()) {
               coordSys_ = other.coordSys_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureCoordSysIsMutable();
               coordSys_.addAll(other.coordSys_);
@@ -8485,9 +9469,9 @@ public final class CdmrFeatureProto {
               coordSysBuilder_.dispose();
               coordSysBuilder_ = null;
               coordSys_ = other.coordSys_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000002);
               coordSysBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getCoordSysFieldBuilder() : null;
             } else {
               coordSysBuilder_.addAllMessages(other.coordSys_);
@@ -8498,7 +9482,7 @@ public final class CdmrFeatureProto {
           if (!other.coordTransforms_.isEmpty()) {
             if (coordTransforms_.isEmpty()) {
               coordTransforms_ = other.coordTransforms_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureCoordTransformsIsMutable();
               coordTransforms_.addAll(other.coordTransforms_);
@@ -8511,9 +9495,9 @@ public final class CdmrFeatureProto {
               coordTransformsBuilder_.dispose();
               coordTransformsBuilder_ = null;
               coordTransforms_ = other.coordTransforms_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000004);
               coordTransformsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getCoordTransformsFieldBuilder() : null;
             } else {
               coordTransformsBuilder_.addAllMessages(other.coordTransforms_);
@@ -8524,7 +9508,7 @@ public final class CdmrFeatureProto {
           if (!other.coordAxes_.isEmpty()) {
             if (coordAxes_.isEmpty()) {
               coordAxes_ = other.coordAxes_;
-              bitField0_ = (bitField0_ & ~0x00000080);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureCoordAxesIsMutable();
               coordAxes_.addAll(other.coordAxes_);
@@ -8537,9 +9521,9 @@ public final class CdmrFeatureProto {
               coordAxesBuilder_.dispose();
               coordAxesBuilder_ = null;
               coordAxes_ = other.coordAxes_;
-              bitField0_ = (bitField0_ & ~0x00000080);
+              bitField0_ = (bitField0_ & ~0x00000008);
               coordAxesBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getCoordAxesFieldBuilder() : null;
             } else {
               coordAxesBuilder_.addAllMessages(other.coordAxes_);
@@ -8550,7 +9534,7 @@ public final class CdmrFeatureProto {
           if (!other.grids_.isEmpty()) {
             if (grids_.isEmpty()) {
               grids_ = other.grids_;
-              bitField0_ = (bitField0_ & ~0x00000100);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureGridsIsMutable();
               grids_.addAll(other.grids_);
@@ -8563,9 +9547,9 @@ public final class CdmrFeatureProto {
               gridsBuilder_.dispose();
               gridsBuilder_ = null;
               grids_ = other.grids_;
-              bitField0_ = (bitField0_ & ~0x00000100);
+              bitField0_ = (bitField0_ & ~0x00000010);
               gridsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getGridsFieldBuilder() : null;
             } else {
               gridsBuilder_.addAllMessages(other.grids_);
@@ -8575,14 +9559,17 @@ public final class CdmrFeatureProto {
         if (other.coverageType_ != 0) {
           setCoverageTypeValue(other.getCoverageTypeValue());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8592,7 +9579,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -8604,7 +9591,7 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -8619,7 +9606,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -8635,7 +9622,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -8648,7 +9635,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -8657,7 +9644,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -8674,13 +9661,13 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>(atts_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
@@ -8826,7 +9813,7 @@ public final class CdmrFeatureProto {
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
           atts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           attsBuilder_.clear();
@@ -8896,14 +9883,14 @@ public final class CdmrFeatureProto {
            getAttsBuilderList() {
         return getAttsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
           getAttsFieldBuilder() {
         if (attsBuilder_ == null) {
-          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder>(
                   atts_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           atts_ = null;
@@ -8911,17 +9898,17 @@ public final class CdmrFeatureProto {
         return attsBuilder_;
       }
 
-      private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle latlonRect_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle latlonRect_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder> latlonRectBuilder_;
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
       public boolean hasLatlonRect() {
         return latlonRectBuilder_ != null || latlonRect_ != null;
       }
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getLatlonRect() {
         if (latlonRectBuilder_ == null) {
@@ -8931,7 +9918,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
       public Builder setLatlonRect(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle value) {
         if (latlonRectBuilder_ == null) {
@@ -8947,7 +9934,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
       public Builder setLatlonRect(
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder builderForValue) {
@@ -8961,7 +9948,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
       public Builder mergeLatlonRect(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle value) {
         if (latlonRectBuilder_ == null) {
@@ -8979,7 +9966,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
       public Builder clearLatlonRect() {
         if (latlonRectBuilder_ == null) {
@@ -8993,7 +9980,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder getLatlonRectBuilder() {
         
@@ -9001,7 +9988,7 @@ public final class CdmrFeatureProto {
         return getLatlonRectFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder getLatlonRectOrBuilder() {
         if (latlonRectBuilder_ != null) {
@@ -9012,13 +9999,13 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional .Rectangle latlonRect = 3;</code>
+       * <code>.Rectangle latlonRect = 3;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder> 
           getLatlonRectFieldBuilder() {
         if (latlonRectBuilder_ == null) {
-          latlonRectBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          latlonRectBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder>(
                   getLatlonRect(),
                   getParentForChildren(),
@@ -9028,17 +10015,17 @@ public final class CdmrFeatureProto {
         return latlonRectBuilder_;
       }
 
-      private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle projRect_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle projRect_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder> projRectBuilder_;
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
       public boolean hasProjRect() {
         return projRectBuilder_ != null || projRect_ != null;
       }
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getProjRect() {
         if (projRectBuilder_ == null) {
@@ -9048,7 +10035,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
       public Builder setProjRect(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle value) {
         if (projRectBuilder_ == null) {
@@ -9064,7 +10051,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
       public Builder setProjRect(
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder builderForValue) {
@@ -9078,7 +10065,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
       public Builder mergeProjRect(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle value) {
         if (projRectBuilder_ == null) {
@@ -9096,7 +10083,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
       public Builder clearProjRect() {
         if (projRectBuilder_ == null) {
@@ -9110,7 +10097,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder getProjRectBuilder() {
         
@@ -9118,7 +10105,7 @@ public final class CdmrFeatureProto {
         return getProjRectFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder getProjRectOrBuilder() {
         if (projRectBuilder_ != null) {
@@ -9129,13 +10116,13 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional .Rectangle projRect = 4;</code>
+       * <code>.Rectangle projRect = 4;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder> 
           getProjRectFieldBuilder() {
         if (projRectBuilder_ == null) {
-          projRectBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          projRectBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder>(
                   getProjRect(),
                   getParentForChildren(),
@@ -9145,17 +10132,17 @@ public final class CdmrFeatureProto {
         return projRectBuilder_;
       }
 
-      private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange dateRange_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange dateRange_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder> dateRangeBuilder_;
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
       public boolean hasDateRange() {
         return dateRangeBuilder_ != null || dateRange_ != null;
       }
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDateRange() {
         if (dateRangeBuilder_ == null) {
@@ -9165,7 +10152,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
       public Builder setDateRange(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange value) {
         if (dateRangeBuilder_ == null) {
@@ -9181,7 +10168,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
       public Builder setDateRange(
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder builderForValue) {
@@ -9195,7 +10182,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
       public Builder mergeDateRange(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange value) {
         if (dateRangeBuilder_ == null) {
@@ -9213,7 +10200,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
       public Builder clearDateRange() {
         if (dateRangeBuilder_ == null) {
@@ -9227,7 +10214,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder getDateRangeBuilder() {
         
@@ -9235,7 +10222,7 @@ public final class CdmrFeatureProto {
         return getDateRangeFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder getDateRangeOrBuilder() {
         if (dateRangeBuilder_ != null) {
@@ -9246,13 +10233,13 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional .CalendarDateRange dateRange = 5;</code>
+       * <code>.CalendarDateRange dateRange = 5;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder> 
           getDateRangeFieldBuilder() {
         if (dateRangeBuilder_ == null) {
-          dateRangeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          dateRangeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder>(
                   getDateRange(),
                   getParentForChildren(),
@@ -9265,13 +10252,13 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys> coordSys_ =
         java.util.Collections.emptyList();
       private void ensureCoordSysIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           coordSys_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys>(coordSys_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000002;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder> coordSysBuilder_;
 
       /**
@@ -9417,7 +10404,7 @@ public final class CdmrFeatureProto {
       public Builder clearCoordSys() {
         if (coordSysBuilder_ == null) {
           coordSys_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           coordSysBuilder_.clear();
@@ -9487,14 +10474,14 @@ public final class CdmrFeatureProto {
            getCoordSysBuilderList() {
         return getCoordSysFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder> 
           getCoordSysFieldBuilder() {
         if (coordSysBuilder_ == null) {
-          coordSysBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          coordSysBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder>(
                   coordSys_,
-                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           coordSys_ = null;
@@ -9505,13 +10492,13 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform> coordTransforms_ =
         java.util.Collections.emptyList();
       private void ensureCoordTransformsIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           coordTransforms_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform>(coordTransforms_);
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000004;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder> coordTransformsBuilder_;
 
       /**
@@ -9657,7 +10644,7 @@ public final class CdmrFeatureProto {
       public Builder clearCoordTransforms() {
         if (coordTransformsBuilder_ == null) {
           coordTransforms_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           coordTransformsBuilder_.clear();
@@ -9727,14 +10714,14 @@ public final class CdmrFeatureProto {
            getCoordTransformsBuilderList() {
         return getCoordTransformsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder> 
           getCoordTransformsFieldBuilder() {
         if (coordTransformsBuilder_ == null) {
-          coordTransformsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          coordTransformsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder>(
                   coordTransforms_,
-                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           coordTransforms_ = null;
@@ -9745,13 +10732,13 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis> coordAxes_ =
         java.util.Collections.emptyList();
       private void ensureCoordAxesIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           coordAxes_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis>(coordAxes_);
-          bitField0_ |= 0x00000080;
+          bitField0_ |= 0x00000008;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder> coordAxesBuilder_;
 
       /**
@@ -9897,7 +10884,7 @@ public final class CdmrFeatureProto {
       public Builder clearCoordAxes() {
         if (coordAxesBuilder_ == null) {
           coordAxes_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           coordAxesBuilder_.clear();
@@ -9967,14 +10954,14 @@ public final class CdmrFeatureProto {
            getCoordAxesBuilderList() {
         return getCoordAxesFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder> 
           getCoordAxesFieldBuilder() {
         if (coordAxesBuilder_ == null) {
-          coordAxesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          coordAxesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder>(
                   coordAxes_,
-                  ((bitField0_ & 0x00000080) == 0x00000080),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           coordAxes_ = null;
@@ -9985,13 +10972,13 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage> grids_ =
         java.util.Collections.emptyList();
       private void ensureGridsIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (!((bitField0_ & 0x00000010) != 0)) {
           grids_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage>(grids_);
-          bitField0_ |= 0x00000100;
+          bitField0_ |= 0x00000010;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageOrBuilder> gridsBuilder_;
 
       /**
@@ -10137,7 +11124,7 @@ public final class CdmrFeatureProto {
       public Builder clearGrids() {
         if (gridsBuilder_ == null) {
           grids_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           gridsBuilder_.clear();
@@ -10207,14 +11194,14 @@ public final class CdmrFeatureProto {
            getGridsBuilderList() {
         return getGridsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageOrBuilder> 
           getGridsFieldBuilder() {
         if (gridsBuilder_ == null) {
-          gridsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          gridsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageOrBuilder>(
                   grids_,
-                  ((bitField0_ & 0x00000100) == 0x00000100),
+                  ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
                   isClean());
           grids_ = null;
@@ -10224,13 +11211,13 @@ public final class CdmrFeatureProto {
 
       private int coverageType_ = 0;
       /**
-       * <code>optional .CoverageType coverageType = 10;</code>
+       * <code>.CoverageType coverageType = 10;</code>
        */
       public int getCoverageTypeValue() {
         return coverageType_;
       }
       /**
-       * <code>optional .CoverageType coverageType = 10;</code>
+       * <code>.CoverageType coverageType = 10;</code>
        */
       public Builder setCoverageTypeValue(int value) {
         coverageType_ = value;
@@ -10238,14 +11225,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .CoverageType coverageType = 10;</code>
+       * <code>.CoverageType coverageType = 10;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType getCoverageType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.valueOf(coverageType_);
         return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .CoverageType coverageType = 10;</code>
+       * <code>.CoverageType coverageType = 10;</code>
        */
       public Builder setCoverageType(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType value) {
         if (value == null) {
@@ -10257,7 +11245,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .CoverageType coverageType = 10;</code>
+       * <code>.CoverageType coverageType = 10;</code>
        */
       public Builder clearCoverageType() {
         
@@ -10265,14 +11253,16 @@ public final class CdmrFeatureProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -10291,20 +11281,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<CoverageDataset>
         PARSER = new com.google.protobuf.AbstractParser<CoverageDataset>() {
+      @java.lang.Override
       public CoverageDataset parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new CoverageDataset(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new CoverageDataset(input, extensionRegistry);
       }
     };
 
@@ -10317,6 +11299,7 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataset getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -10328,144 +11311,144 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string coverageName = 1;</code>
-     *
      * <pre>
      * full escaped name.
      * </pre>
+     *
+     * <code>string coverageName = 1;</code>
      */
     java.lang.String getCoverageName();
     /**
-     * <code>optional string coverageName = 1;</code>
-     *
      * <pre>
      * full escaped name.
      * </pre>
+     *
+     * <code>string coverageName = 1;</code>
      */
     com.google.protobuf.ByteString
         getCoverageNameBytes();
 
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     int getDataTypeValue();
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     /**
-     * <code>optional bool bigend = 3;</code>
+     * <code>bool bigend = 3;</code>
      */
     boolean getBigend();
 
     /**
-     * <code>optional uint32 version = 4;</code>
-     *
      * <pre>
      * set to &gt;= 3 for proto3
      * </pre>
+     *
+     * <code>uint32 version = 4;</code>
      */
     int getVersion();
 
     /**
-     * <code>optional .Compress compress = 5;</code>
+     * <code>.Compress compress = 5;</code>
      */
     int getCompressValue();
     /**
-     * <code>optional .Compress compress = 5;</code>
+     * <code>.Compress compress = 5;</code>
      */
     ucar.nc2.stream.NcStreamProto.Compress getCompress();
 
     /**
-     * <code>optional uint64 uncompressedSize = 6;</code>
+     * <code>uint64 uncompressedSize = 6;</code>
      */
     long getUncompressedSize();
 
     /**
-     * <code>repeated uint32 shape = 7;</code>
-     *
      * <pre>
      * the shape of the returned array
      * </pre>
+     *
+     * <code>repeated uint32 shape = 7;</code>
      */
     java.util.List<java.lang.Integer> getShapeList();
     /**
-     * <code>repeated uint32 shape = 7;</code>
-     *
      * <pre>
      * the shape of the returned array
      * </pre>
+     *
+     * <code>repeated uint32 shape = 7;</code>
      */
     int getShapeCount();
     /**
-     * <code>repeated uint32 shape = 7;</code>
-     *
      * <pre>
      * the shape of the returned array
      * </pre>
+     *
+     * <code>repeated uint32 shape = 7;</code>
      */
     int getShape(int index);
 
     /**
-     * <code>repeated string axisName = 8;</code>
-     *
      * <pre>
      * each dimension corresponds to this axis
      * </pre>
+     *
+     * <code>repeated string axisName = 8;</code>
      */
-    com.google.protobuf.ProtocolStringList
+    java.util.List<java.lang.String>
         getAxisNameList();
     /**
-     * <code>repeated string axisName = 8;</code>
-     *
      * <pre>
      * each dimension corresponds to this axis
      * </pre>
+     *
+     * <code>repeated string axisName = 8;</code>
      */
     int getAxisNameCount();
     /**
-     * <code>repeated string axisName = 8;</code>
-     *
      * <pre>
      * each dimension corresponds to this axis
      * </pre>
+     *
+     * <code>repeated string axisName = 8;</code>
      */
     java.lang.String getAxisName(int index);
     /**
-     * <code>repeated string axisName = 8;</code>
-     *
      * <pre>
      * each dimension corresponds to this axis
      * </pre>
+     *
+     * <code>repeated string axisName = 8;</code>
      */
     com.google.protobuf.ByteString
         getAxisNameBytes(int index);
 
     /**
-     * <code>optional string coordSysName = 9;</code>
-     *
      * <pre>
      * must have coordAxes corresponding to shape
      * </pre>
+     *
+     * <code>string coordSysName = 9;</code>
      */
     java.lang.String getCoordSysName();
     /**
-     * <code>optional string coordSysName = 9;</code>
-     *
      * <pre>
      * must have coordAxes corresponding to shape
      * </pre>
+     *
+     * <code>string coordSysName = 9;</code>
      */
     com.google.protobuf.ByteString
         getCoordSysNameBytes();
 
     /**
-     * <code>optional bytes primdata = 10;</code>
-     *
      * <pre>
      * rectangular, primitive array
      * </pre>
+     *
+     * <code>bytes primdata = 10;</code>
      */
     com.google.protobuf.ByteString getPrimdata();
   }
@@ -10473,36 +11456,47 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code GeoReferencedArray}
    */
   public  static final class GeoReferencedArray extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:GeoReferencedArray)
       GeoReferencedArrayOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use GeoReferencedArray.newBuilder() to construct.
-    private GeoReferencedArray(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private GeoReferencedArray(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private GeoReferencedArray() {
       coverageName_ = "";
       dataType_ = 0;
-      bigend_ = false;
-      version_ = 0;
       compress_ = 0;
-      uncompressedSize_ = 0L;
-      shape_ = java.util.Collections.emptyList();
+      shape_ = emptyIntList();
       axisName_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       coordSysName_ = "";
       primdata_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new GeoReferencedArray();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private GeoReferencedArray(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -10511,14 +11505,8 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               coverageName_ = s;
               break;
@@ -10551,37 +11539,37 @@ public final class CdmrFeatureProto {
               break;
             }
             case 56: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-                shape_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000040;
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                shape_ = newIntList();
+                mutable_bitField0_ |= 0x00000001;
               }
-              shape_.add(input.readUInt32());
+              shape_.addInt(input.readUInt32());
               break;
             }
             case 58: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040) && input.getBytesUntilLimit() > 0) {
-                shape_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000040;
+              if (!((mutable_bitField0_ & 0x00000001) != 0) && input.getBytesUntilLimit() > 0) {
+                shape_ = newIntList();
+                mutable_bitField0_ |= 0x00000001;
               }
               while (input.getBytesUntilLimit() > 0) {
-                shape_.add(input.readUInt32());
+                shape_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 66: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 axisName_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000080;
+                mutable_bitField0_ |= 0x00000002;
               }
               axisName_.add(s);
               break;
             }
             case 74: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               coordSysName_ = s;
               break;
@@ -10591,21 +11579,28 @@ public final class CdmrFeatureProto {
               primdata_ = input.readBytes();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-          shape_ = java.util.Collections.unmodifiableList(shape_);
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          shape_.makeImmutable(); // C
         }
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           axisName_ = axisName_.getUnmodifiableView();
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -10614,22 +11609,22 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_GeoReferencedArray_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_GeoReferencedArray_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.Builder.class);
     }
 
-    private int bitField0_;
     public static final int COVERAGENAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object coverageName_;
     /**
-     * <code>optional string coverageName = 1;</code>
-     *
      * <pre>
      * full escaped name.
      * </pre>
+     *
+     * <code>string coverageName = 1;</code>
      */
     public java.lang.String getCoverageName() {
       java.lang.Object ref = coverageName_;
@@ -10644,11 +11639,11 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string coverageName = 1;</code>
-     *
      * <pre>
      * full escaped name.
      * </pre>
+     *
+     * <code>string coverageName = 1;</code>
      */
     public com.google.protobuf.ByteString
         getCoverageNameBytes() {
@@ -10667,15 +11662,16 @@ public final class CdmrFeatureProto {
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private int dataType_;
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public int getDataTypeValue() {
       return dataType_;
     }
     /**
-     * <code>optional .DataType dataType = 2;</code>
+     * <code>.DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
       return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
     }
@@ -10683,7 +11679,7 @@ public final class CdmrFeatureProto {
     public static final int BIGEND_FIELD_NUMBER = 3;
     private boolean bigend_;
     /**
-     * <code>optional bool bigend = 3;</code>
+     * <code>bool bigend = 3;</code>
      */
     public boolean getBigend() {
       return bigend_;
@@ -10692,11 +11688,11 @@ public final class CdmrFeatureProto {
     public static final int VERSION_FIELD_NUMBER = 4;
     private int version_;
     /**
-     * <code>optional uint32 version = 4;</code>
-     *
      * <pre>
      * set to &gt;= 3 for proto3
      * </pre>
+     *
+     * <code>uint32 version = 4;</code>
      */
     public int getVersion() {
       return version_;
@@ -10705,15 +11701,16 @@ public final class CdmrFeatureProto {
     public static final int COMPRESS_FIELD_NUMBER = 5;
     private int compress_;
     /**
-     * <code>optional .Compress compress = 5;</code>
+     * <code>.Compress compress = 5;</code>
      */
     public int getCompressValue() {
       return compress_;
     }
     /**
-     * <code>optional .Compress compress = 5;</code>
+     * <code>.Compress compress = 5;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Compress getCompress() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.stream.NcStreamProto.Compress result = ucar.nc2.stream.NcStreamProto.Compress.valueOf(compress_);
       return result == null ? ucar.nc2.stream.NcStreamProto.Compress.UNRECOGNIZED : result;
     }
@@ -10721,86 +11718,86 @@ public final class CdmrFeatureProto {
     public static final int UNCOMPRESSEDSIZE_FIELD_NUMBER = 6;
     private long uncompressedSize_;
     /**
-     * <code>optional uint64 uncompressedSize = 6;</code>
+     * <code>uint64 uncompressedSize = 6;</code>
      */
     public long getUncompressedSize() {
       return uncompressedSize_;
     }
 
     public static final int SHAPE_FIELD_NUMBER = 7;
-    private java.util.List<java.lang.Integer> shape_;
+    private com.google.protobuf.Internal.IntList shape_;
     /**
-     * <code>repeated uint32 shape = 7;</code>
-     *
      * <pre>
      * the shape of the returned array
      * </pre>
+     *
+     * <code>repeated uint32 shape = 7;</code>
      */
     public java.util.List<java.lang.Integer>
         getShapeList() {
       return shape_;
     }
     /**
-     * <code>repeated uint32 shape = 7;</code>
-     *
      * <pre>
      * the shape of the returned array
      * </pre>
+     *
+     * <code>repeated uint32 shape = 7;</code>
      */
     public int getShapeCount() {
       return shape_.size();
     }
     /**
-     * <code>repeated uint32 shape = 7;</code>
-     *
      * <pre>
      * the shape of the returned array
      * </pre>
+     *
+     * <code>repeated uint32 shape = 7;</code>
      */
     public int getShape(int index) {
-      return shape_.get(index);
+      return shape_.getInt(index);
     }
     private int shapeMemoizedSerializedSize = -1;
 
     public static final int AXISNAME_FIELD_NUMBER = 8;
     private com.google.protobuf.LazyStringList axisName_;
     /**
-     * <code>repeated string axisName = 8;</code>
-     *
      * <pre>
      * each dimension corresponds to this axis
      * </pre>
+     *
+     * <code>repeated string axisName = 8;</code>
      */
     public com.google.protobuf.ProtocolStringList
         getAxisNameList() {
       return axisName_;
     }
     /**
-     * <code>repeated string axisName = 8;</code>
-     *
      * <pre>
      * each dimension corresponds to this axis
      * </pre>
+     *
+     * <code>repeated string axisName = 8;</code>
      */
     public int getAxisNameCount() {
       return axisName_.size();
     }
     /**
-     * <code>repeated string axisName = 8;</code>
-     *
      * <pre>
      * each dimension corresponds to this axis
      * </pre>
+     *
+     * <code>repeated string axisName = 8;</code>
      */
     public java.lang.String getAxisName(int index) {
       return axisName_.get(index);
     }
     /**
-     * <code>repeated string axisName = 8;</code>
-     *
      * <pre>
      * each dimension corresponds to this axis
      * </pre>
+     *
+     * <code>repeated string axisName = 8;</code>
      */
     public com.google.protobuf.ByteString
         getAxisNameBytes(int index) {
@@ -10810,11 +11807,11 @@ public final class CdmrFeatureProto {
     public static final int COORDSYSNAME_FIELD_NUMBER = 9;
     private volatile java.lang.Object coordSysName_;
     /**
-     * <code>optional string coordSysName = 9;</code>
-     *
      * <pre>
      * must have coordAxes corresponding to shape
      * </pre>
+     *
+     * <code>string coordSysName = 9;</code>
      */
     public java.lang.String getCoordSysName() {
       java.lang.Object ref = coordSysName_;
@@ -10829,11 +11826,11 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string coordSysName = 9;</code>
-     *
      * <pre>
      * must have coordAxes corresponding to shape
      * </pre>
+     *
+     * <code>string coordSysName = 9;</code>
      */
     public com.google.protobuf.ByteString
         getCoordSysNameBytes() {
@@ -10852,17 +11849,18 @@ public final class CdmrFeatureProto {
     public static final int PRIMDATA_FIELD_NUMBER = 10;
     private com.google.protobuf.ByteString primdata_;
     /**
-     * <code>optional bytes primdata = 10;</code>
-     *
      * <pre>
      * rectangular, primitive array
      * </pre>
+     *
+     * <code>bytes primdata = 10;</code>
      */
     public com.google.protobuf.ByteString getPrimdata() {
       return primdata_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -10872,11 +11870,12 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (!getCoverageNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, coverageName_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, coverageName_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -10894,30 +11893,32 @@ public final class CdmrFeatureProto {
         output.writeUInt64(6, uncompressedSize_);
       }
       if (getShapeList().size() > 0) {
-        output.writeRawVarint32(58);
-        output.writeRawVarint32(shapeMemoizedSerializedSize);
+        output.writeUInt32NoTag(58);
+        output.writeUInt32NoTag(shapeMemoizedSerializedSize);
       }
       for (int i = 0; i < shape_.size(); i++) {
-        output.writeUInt32NoTag(shape_.get(i));
+        output.writeUInt32NoTag(shape_.getInt(i));
       }
       for (int i = 0; i < axisName_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 8, axisName_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 8, axisName_.getRaw(i));
       }
       if (!getCoordSysNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 9, coordSysName_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 9, coordSysName_);
       }
       if (!primdata_.isEmpty()) {
         output.writeBytes(10, primdata_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getCoverageNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, coverageName_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, coverageName_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -10943,7 +11944,7 @@ public final class CdmrFeatureProto {
         int dataSize = 0;
         for (int i = 0; i < shape_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(shape_.get(i));
+            .computeUInt32SizeNoTag(shape_.getInt(i));
         }
         size += dataSize;
         if (!getShapeList().isEmpty()) {
@@ -10962,17 +11963,98 @@ public final class CdmrFeatureProto {
         size += 1 * getAxisNameList().size();
       }
       if (!getCoordSysNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(9, coordSysName_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(9, coordSysName_);
       }
       if (!primdata_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(10, primdata_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray) obj;
+
+      if (!getCoverageName()
+          .equals(other.getCoverageName())) return false;
+      if (dataType_ != other.dataType_) return false;
+      if (getBigend()
+          != other.getBigend()) return false;
+      if (getVersion()
+          != other.getVersion()) return false;
+      if (compress_ != other.compress_) return false;
+      if (getUncompressedSize()
+          != other.getUncompressedSize()) return false;
+      if (!getShapeList()
+          .equals(other.getShapeList())) return false;
+      if (!getAxisNameList()
+          .equals(other.getAxisNameList())) return false;
+      if (!getCoordSysName()
+          .equals(other.getCoordSysName())) return false;
+      if (!getPrimdata()
+          .equals(other.getPrimdata())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + COVERAGENAME_FIELD_NUMBER;
+      hash = (53 * hash) + getCoverageName().hashCode();
+      hash = (37 * hash) + DATATYPE_FIELD_NUMBER;
+      hash = (53 * hash) + dataType_;
+      hash = (37 * hash) + BIGEND_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getBigend());
+      hash = (37 * hash) + VERSION_FIELD_NUMBER;
+      hash = (53 * hash) + getVersion();
+      hash = (37 * hash) + COMPRESS_FIELD_NUMBER;
+      hash = (53 * hash) + compress_;
+      hash = (37 * hash) + UNCOMPRESSEDSIZE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getUncompressedSize());
+      if (getShapeCount() > 0) {
+        hash = (37 * hash) + SHAPE_FIELD_NUMBER;
+        hash = (53 * hash) + getShapeList().hashCode();
+      }
+      if (getAxisNameCount() > 0) {
+        hash = (37 * hash) + AXISNAME_FIELD_NUMBER;
+        hash = (53 * hash) + getAxisNameList().hashCode();
+      }
+      hash = (37 * hash) + COORDSYSNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getCoordSysName().hashCode();
+      hash = (37 * hash) + PRIMDATA_FIELD_NUMBER;
+      hash = (53 * hash) + getPrimdata().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -10996,36 +12078,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -11033,6 +12122,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -11040,7 +12130,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -11048,7 +12138,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code GeoReferencedArray}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:GeoReferencedArray)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArrayOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -11056,7 +12146,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_GeoReferencedArray_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_GeoReferencedArray_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -11069,14 +12160,16 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         coverageName_ = "";
@@ -11091,10 +12184,10 @@ public final class CdmrFeatureProto {
 
         uncompressedSize_ = 0L;
 
-        shape_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000040);
+        shape_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000001);
         axisName_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000002);
         coordSysName_ = "";
 
         primdata_ = com.google.protobuf.ByteString.EMPTY;
@@ -11102,15 +12195,18 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_GeoReferencedArray_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray result = buildPartial();
         if (!result.isInitialized()) {
@@ -11119,33 +12215,65 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.coverageName_ = coverageName_;
         result.dataType_ = dataType_;
         result.bigend_ = bigend_;
         result.version_ = version_;
         result.compress_ = compress_;
         result.uncompressedSize_ = uncompressedSize_;
-        if (((bitField0_ & 0x00000040) == 0x00000040)) {
-          shape_ = java.util.Collections.unmodifiableList(shape_);
-          bitField0_ = (bitField0_ & ~0x00000040);
+        if (((bitField0_ & 0x00000001) != 0)) {
+          shape_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.shape_ = shape_;
-        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           axisName_ = axisName_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.axisName_ = axisName_;
         result.coordSysName_ = coordSysName_;
         result.primdata_ = primdata_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray)other);
@@ -11179,7 +12307,7 @@ public final class CdmrFeatureProto {
         if (!other.shape_.isEmpty()) {
           if (shape_.isEmpty()) {
             shape_ = other.shape_;
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000001);
           } else {
             ensureShapeIsMutable();
             shape_.addAll(other.shape_);
@@ -11189,7 +12317,7 @@ public final class CdmrFeatureProto {
         if (!other.axisName_.isEmpty()) {
           if (axisName_.isEmpty()) {
             axisName_ = other.axisName_;
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureAxisNameIsMutable();
             axisName_.addAll(other.axisName_);
@@ -11203,14 +12331,17 @@ public final class CdmrFeatureProto {
         if (other.getPrimdata() != com.google.protobuf.ByteString.EMPTY) {
           setPrimdata(other.getPrimdata());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11220,7 +12351,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -11232,11 +12363,11 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object coverageName_ = "";
       /**
-       * <code>optional string coverageName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string coverageName = 1;</code>
        */
       public java.lang.String getCoverageName() {
         java.lang.Object ref = coverageName_;
@@ -11251,11 +12382,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string coverageName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string coverageName = 1;</code>
        */
       public com.google.protobuf.ByteString
           getCoverageNameBytes() {
@@ -11271,11 +12402,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string coverageName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string coverageName = 1;</code>
        */
       public Builder setCoverageName(
           java.lang.String value) {
@@ -11288,11 +12419,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string coverageName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string coverageName = 1;</code>
        */
       public Builder clearCoverageName() {
         
@@ -11301,11 +12432,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string coverageName = 1;</code>
-       *
        * <pre>
        * full escaped name.
        * </pre>
+       *
+       * <code>string coverageName = 1;</code>
        */
       public Builder setCoverageNameBytes(
           com.google.protobuf.ByteString value) {
@@ -11321,13 +12452,13 @@ public final class CdmrFeatureProto {
 
       private int dataType_ = 0;
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public int getDataTypeValue() {
         return dataType_;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataTypeValue(int value) {
         dataType_ = value;
@@ -11335,14 +12466,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
         return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -11354,7 +12486,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .DataType dataType = 2;</code>
+       * <code>.DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         
@@ -11365,13 +12497,13 @@ public final class CdmrFeatureProto {
 
       private boolean bigend_ ;
       /**
-       * <code>optional bool bigend = 3;</code>
+       * <code>bool bigend = 3;</code>
        */
       public boolean getBigend() {
         return bigend_;
       }
       /**
-       * <code>optional bool bigend = 3;</code>
+       * <code>bool bigend = 3;</code>
        */
       public Builder setBigend(boolean value) {
         
@@ -11380,7 +12512,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional bool bigend = 3;</code>
+       * <code>bool bigend = 3;</code>
        */
       public Builder clearBigend() {
         
@@ -11391,21 +12523,21 @@ public final class CdmrFeatureProto {
 
       private int version_ ;
       /**
-       * <code>optional uint32 version = 4;</code>
-       *
        * <pre>
        * set to &gt;= 3 for proto3
        * </pre>
+       *
+       * <code>uint32 version = 4;</code>
        */
       public int getVersion() {
         return version_;
       }
       /**
-       * <code>optional uint32 version = 4;</code>
-       *
        * <pre>
        * set to &gt;= 3 for proto3
        * </pre>
+       *
+       * <code>uint32 version = 4;</code>
        */
       public Builder setVersion(int value) {
         
@@ -11414,11 +12546,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional uint32 version = 4;</code>
-       *
        * <pre>
        * set to &gt;= 3 for proto3
        * </pre>
+       *
+       * <code>uint32 version = 4;</code>
        */
       public Builder clearVersion() {
         
@@ -11429,13 +12561,13 @@ public final class CdmrFeatureProto {
 
       private int compress_ = 0;
       /**
-       * <code>optional .Compress compress = 5;</code>
+       * <code>.Compress compress = 5;</code>
        */
       public int getCompressValue() {
         return compress_;
       }
       /**
-       * <code>optional .Compress compress = 5;</code>
+       * <code>.Compress compress = 5;</code>
        */
       public Builder setCompressValue(int value) {
         compress_ = value;
@@ -11443,14 +12575,15 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Compress compress = 5;</code>
+       * <code>.Compress compress = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Compress getCompress() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.stream.NcStreamProto.Compress result = ucar.nc2.stream.NcStreamProto.Compress.valueOf(compress_);
         return result == null ? ucar.nc2.stream.NcStreamProto.Compress.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .Compress compress = 5;</code>
+       * <code>.Compress compress = 5;</code>
        */
       public Builder setCompress(ucar.nc2.stream.NcStreamProto.Compress value) {
         if (value == null) {
@@ -11462,7 +12595,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional .Compress compress = 5;</code>
+       * <code>.Compress compress = 5;</code>
        */
       public Builder clearCompress() {
         
@@ -11473,13 +12606,13 @@ public final class CdmrFeatureProto {
 
       private long uncompressedSize_ ;
       /**
-       * <code>optional uint64 uncompressedSize = 6;</code>
+       * <code>uint64 uncompressedSize = 6;</code>
        */
       public long getUncompressedSize() {
         return uncompressedSize_;
       }
       /**
-       * <code>optional uint64 uncompressedSize = 6;</code>
+       * <code>uint64 uncompressedSize = 6;</code>
        */
       public Builder setUncompressedSize(long value) {
         
@@ -11488,7 +12621,7 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional uint64 uncompressedSize = 6;</code>
+       * <code>uint64 uncompressedSize = 6;</code>
        */
       public Builder clearUncompressedSize() {
         
@@ -11497,77 +12630,78 @@ public final class CdmrFeatureProto {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> shape_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList shape_ = emptyIntList();
       private void ensureShapeIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
-          shape_ = new java.util.ArrayList<java.lang.Integer>(shape_);
-          bitField0_ |= 0x00000040;
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          shape_ = mutableCopy(shape_);
+          bitField0_ |= 0x00000001;
          }
       }
       /**
-       * <code>repeated uint32 shape = 7;</code>
-       *
        * <pre>
        * the shape of the returned array
        * </pre>
+       *
+       * <code>repeated uint32 shape = 7;</code>
        */
       public java.util.List<java.lang.Integer>
           getShapeList() {
-        return java.util.Collections.unmodifiableList(shape_);
+        return ((bitField0_ & 0x00000001) != 0) ?
+                 java.util.Collections.unmodifiableList(shape_) : shape_;
       }
       /**
-       * <code>repeated uint32 shape = 7;</code>
-       *
        * <pre>
        * the shape of the returned array
        * </pre>
+       *
+       * <code>repeated uint32 shape = 7;</code>
        */
       public int getShapeCount() {
         return shape_.size();
       }
       /**
-       * <code>repeated uint32 shape = 7;</code>
-       *
        * <pre>
        * the shape of the returned array
        * </pre>
+       *
+       * <code>repeated uint32 shape = 7;</code>
        */
       public int getShape(int index) {
-        return shape_.get(index);
+        return shape_.getInt(index);
       }
       /**
-       * <code>repeated uint32 shape = 7;</code>
-       *
        * <pre>
        * the shape of the returned array
        * </pre>
+       *
+       * <code>repeated uint32 shape = 7;</code>
        */
       public Builder setShape(
           int index, int value) {
         ensureShapeIsMutable();
-        shape_.set(index, value);
+        shape_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 7;</code>
-       *
        * <pre>
        * the shape of the returned array
        * </pre>
+       *
+       * <code>repeated uint32 shape = 7;</code>
        */
       public Builder addShape(int value) {
         ensureShapeIsMutable();
-        shape_.add(value);
+        shape_.addInt(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 7;</code>
-       *
        * <pre>
        * the shape of the returned array
        * </pre>
+       *
+       * <code>repeated uint32 shape = 7;</code>
        */
       public Builder addAllShape(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -11578,74 +12712,74 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated uint32 shape = 7;</code>
-       *
        * <pre>
        * the shape of the returned array
        * </pre>
+       *
+       * <code>repeated uint32 shape = 7;</code>
        */
       public Builder clearShape() {
-        shape_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000040);
+        shape_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
 
       private com.google.protobuf.LazyStringList axisName_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureAxisNameIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           axisName_ = new com.google.protobuf.LazyStringArrayList(axisName_);
-          bitField0_ |= 0x00000080;
+          bitField0_ |= 0x00000002;
          }
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public com.google.protobuf.ProtocolStringList
           getAxisNameList() {
         return axisName_.getUnmodifiableView();
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public int getAxisNameCount() {
         return axisName_.size();
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public java.lang.String getAxisName(int index) {
         return axisName_.get(index);
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public com.google.protobuf.ByteString
           getAxisNameBytes(int index) {
         return axisName_.getByteString(index);
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public Builder setAxisName(
           int index, java.lang.String value) {
@@ -11658,11 +12792,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public Builder addAxisName(
           java.lang.String value) {
@@ -11675,11 +12809,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public Builder addAllAxisName(
           java.lang.Iterable<java.lang.String> values) {
@@ -11690,24 +12824,24 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public Builder clearAxisName() {
         axisName_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string axisName = 8;</code>
-       *
        * <pre>
        * each dimension corresponds to this axis
        * </pre>
+       *
+       * <code>repeated string axisName = 8;</code>
        */
       public Builder addAxisNameBytes(
           com.google.protobuf.ByteString value) {
@@ -11723,11 +12857,11 @@ public final class CdmrFeatureProto {
 
       private java.lang.Object coordSysName_ = "";
       /**
-       * <code>optional string coordSysName = 9;</code>
-       *
        * <pre>
        * must have coordAxes corresponding to shape
        * </pre>
+       *
+       * <code>string coordSysName = 9;</code>
        */
       public java.lang.String getCoordSysName() {
         java.lang.Object ref = coordSysName_;
@@ -11742,11 +12876,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string coordSysName = 9;</code>
-       *
        * <pre>
        * must have coordAxes corresponding to shape
        * </pre>
+       *
+       * <code>string coordSysName = 9;</code>
        */
       public com.google.protobuf.ByteString
           getCoordSysNameBytes() {
@@ -11762,11 +12896,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string coordSysName = 9;</code>
-       *
        * <pre>
        * must have coordAxes corresponding to shape
        * </pre>
+       *
+       * <code>string coordSysName = 9;</code>
        */
       public Builder setCoordSysName(
           java.lang.String value) {
@@ -11779,11 +12913,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string coordSysName = 9;</code>
-       *
        * <pre>
        * must have coordAxes corresponding to shape
        * </pre>
+       *
+       * <code>string coordSysName = 9;</code>
        */
       public Builder clearCoordSysName() {
         
@@ -11792,11 +12926,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional string coordSysName = 9;</code>
-       *
        * <pre>
        * must have coordAxes corresponding to shape
        * </pre>
+       *
+       * <code>string coordSysName = 9;</code>
        */
       public Builder setCoordSysNameBytes(
           com.google.protobuf.ByteString value) {
@@ -11812,21 +12946,21 @@ public final class CdmrFeatureProto {
 
       private com.google.protobuf.ByteString primdata_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * rectangular, primitive array
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public com.google.protobuf.ByteString getPrimdata() {
         return primdata_;
       }
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * rectangular, primitive array
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public Builder setPrimdata(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -11838,11 +12972,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>optional bytes primdata = 10;</code>
-       *
        * <pre>
        * rectangular, primitive array
        * </pre>
+       *
+       * <code>bytes primdata = 10;</code>
        */
       public Builder clearPrimdata() {
         
@@ -11850,14 +12984,16 @@ public final class CdmrFeatureProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -11876,20 +13012,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<GeoReferencedArray>
         PARSER = new com.google.protobuf.AbstractParser<GeoReferencedArray>() {
+      @java.lang.Override
       public GeoReferencedArray parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new GeoReferencedArray(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new GeoReferencedArray(input, extensionRegistry);
       }
     };
 
@@ -11902,6 +13030,7 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -11913,133 +13042,133 @@ public final class CdmrFeatureProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis> 
         getCoordAxesList();
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis getCoordAxes(int index);
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     int getCoordAxesCount();
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder> 
         getCoordAxesOrBuilderList();
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder getCoordAxesOrBuilder(
         int index);
 
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys> 
         getCoordSysList();
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys getCoordSys(int index);
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     int getCoordSysCount();
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder> 
         getCoordSysOrBuilderList();
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder getCoordSysOrBuilder(
         int index);
 
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform> 
         getCoordTransformsList();
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform getCoordTransforms(int index);
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     int getCoordTransformsCount();
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder> 
         getCoordTransformsOrBuilderList();
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder getCoordTransformsOrBuilder(
         int index);
@@ -12072,11 +13201,12 @@ public final class CdmrFeatureProto {
    * Protobuf type {@code CoverageDataResponse}
    */
   public  static final class CoverageDataResponse extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CoverageDataResponse)
       CoverageDataResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use CoverageDataResponse.newBuilder() to construct.
-    private CoverageDataResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private CoverageDataResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private CoverageDataResponse() {
@@ -12087,15 +13217,28 @@ public final class CdmrFeatureProto {
     }
 
     @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CoverageDataResponse();
+    }
+
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private CoverageDataResponse(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -12104,65 +13247,70 @@ public final class CdmrFeatureProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 coordAxes_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              coordAxes_.add(input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.parser(), extensionRegistry));
+              coordAxes_.add(
+                  input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.parser(), extensionRegistry));
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 coordSys_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys>();
                 mutable_bitField0_ |= 0x00000002;
               }
-              coordSys_.add(input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.parser(), extensionRegistry));
+              coordSys_.add(
+                  input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.parser(), extensionRegistry));
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 coordTransforms_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform>();
                 mutable_bitField0_ |= 0x00000004;
               }
-              coordTransforms_.add(input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.parser(), extensionRegistry));
+              coordTransforms_.add(
+                  input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.parser(), extensionRegistry));
               break;
             }
             case 34: {
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
                 geoArray_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray>();
                 mutable_bitField0_ |= 0x00000008;
               }
-              geoArray_.add(input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.parser(), extensionRegistry));
+              geoArray_.add(
+                  input.readMessage(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           coordAxes_ = java.util.Collections.unmodifiableList(coordAxes_);
         }
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           coordSys_ = java.util.Collections.unmodifiableList(coordSys_);
         }
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
           coordTransforms_ = java.util.Collections.unmodifiableList(coordTransforms_);
         }
-        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((mutable_bitField0_ & 0x00000008) != 0)) {
           geoArray_ = java.util.Collections.unmodifiableList(geoArray_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -12171,7 +13319,8 @@ public final class CdmrFeatureProto {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -12181,52 +13330,52 @@ public final class CdmrFeatureProto {
     public static final int COORDAXES_FIELD_NUMBER = 1;
     private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis> coordAxes_;
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis> getCoordAxesList() {
       return coordAxes_;
     }
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     public java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder> 
         getCoordAxesOrBuilderList() {
       return coordAxes_;
     }
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     public int getCoordAxesCount() {
       return coordAxes_.size();
     }
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis getCoordAxes(int index) {
       return coordAxes_.get(index);
     }
     /**
-     * <code>repeated .CoordAxis coordAxes = 1;</code>
-     *
      * <pre>
      * may be shared if asking for multiple grids
      * </pre>
+     *
+     * <code>repeated .CoordAxis coordAxes = 1;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder getCoordAxesOrBuilder(
         int index) {
@@ -12236,52 +13385,52 @@ public final class CdmrFeatureProto {
     public static final int COORDSYS_FIELD_NUMBER = 2;
     private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys> coordSys_;
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys> getCoordSysList() {
       return coordSys_;
     }
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     public java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder> 
         getCoordSysOrBuilderList() {
       return coordSys_;
     }
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     public int getCoordSysCount() {
       return coordSys_.size();
     }
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys getCoordSys(int index) {
       return coordSys_.get(index);
     }
     /**
-     * <code>repeated .CoordSys coordSys = 2;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordSys coordSys = 2;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder getCoordSysOrBuilder(
         int index) {
@@ -12291,52 +13440,52 @@ public final class CdmrFeatureProto {
     public static final int COORDTRANSFORMS_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform> coordTransforms_;
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform> getCoordTransformsList() {
       return coordTransforms_;
     }
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     public java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder> 
         getCoordTransformsOrBuilderList() {
       return coordTransforms_;
     }
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     public int getCoordTransformsCount() {
       return coordTransforms_.size();
     }
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform getCoordTransforms(int index) {
       return coordTransforms_.get(index);
     }
     /**
-     * <code>repeated .CoordTransform coordTransforms = 3;</code>
-     *
      * <pre>
      *    "
      * </pre>
+     *
+     * <code>repeated .CoordTransform coordTransforms = 3;</code>
      */
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder getCoordTransformsOrBuilder(
         int index) {
@@ -12379,6 +13528,7 @@ public final class CdmrFeatureProto {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -12388,6 +13538,7 @@ public final class CdmrFeatureProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (int i = 0; i < coordAxes_.size(); i++) {
@@ -12402,8 +13553,10 @@ public final class CdmrFeatureProto {
       for (int i = 0; i < geoArray_.size(); i++) {
         output.writeMessage(4, geoArray_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -12425,11 +13578,72 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, geoArray_.get(i));
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse other = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse) obj;
+
+      if (!getCoordAxesList()
+          .equals(other.getCoordAxesList())) return false;
+      if (!getCoordSysList()
+          .equals(other.getCoordSysList())) return false;
+      if (!getCoordTransformsList()
+          .equals(other.getCoordTransformsList())) return false;
+      if (!getGeoArrayList()
+          .equals(other.getGeoArrayList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getCoordAxesCount() > 0) {
+        hash = (37 * hash) + COORDAXES_FIELD_NUMBER;
+        hash = (53 * hash) + getCoordAxesList().hashCode();
+      }
+      if (getCoordSysCount() > 0) {
+        hash = (37 * hash) + COORDSYS_FIELD_NUMBER;
+        hash = (53 * hash) + getCoordSysList().hashCode();
+      }
+      if (getCoordTransformsCount() > 0) {
+        hash = (37 * hash) + COORDTRANSFORMS_FIELD_NUMBER;
+        hash = (53 * hash) + getCoordTransformsList().hashCode();
+      }
+      if (getGeoArrayCount() > 0) {
+        hash = (37 * hash) + GEOARRAY_FIELD_NUMBER;
+        hash = (53 * hash) + getGeoArrayList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -12453,36 +13667,43 @@ public final class CdmrFeatureProto {
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -12490,6 +13711,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -12497,7 +13719,7 @@ public final class CdmrFeatureProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -12505,7 +13727,7 @@ public final class CdmrFeatureProto {
      * Protobuf type {@code CoverageDataResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:CoverageDataResponse)
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -12513,7 +13735,8 @@ public final class CdmrFeatureProto {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -12526,18 +13749,20 @@ public final class CdmrFeatureProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getCoordAxesFieldBuilder();
           getCoordSysFieldBuilder();
           getCoordTransformsFieldBuilder();
           getGeoArrayFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         if (coordAxesBuilder_ == null) {
@@ -12567,15 +13792,18 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse getDefaultInstanceForType() {
         return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse build() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse result = buildPartial();
         if (!result.isInitialized()) {
@@ -12584,11 +13812,12 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse buildPartial() {
         ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse(this);
         int from_bitField0_ = bitField0_;
         if (coordAxesBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             coordAxes_ = java.util.Collections.unmodifiableList(coordAxes_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
@@ -12597,7 +13826,7 @@ public final class CdmrFeatureProto {
           result.coordAxes_ = coordAxesBuilder_.build();
         }
         if (coordSysBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             coordSys_ = java.util.Collections.unmodifiableList(coordSys_);
             bitField0_ = (bitField0_ & ~0x00000002);
           }
@@ -12606,7 +13835,7 @@ public final class CdmrFeatureProto {
           result.coordSys_ = coordSysBuilder_.build();
         }
         if (coordTransformsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000004) != 0)) {
             coordTransforms_ = java.util.Collections.unmodifiableList(coordTransforms_);
             bitField0_ = (bitField0_ & ~0x00000004);
           }
@@ -12615,7 +13844,7 @@ public final class CdmrFeatureProto {
           result.coordTransforms_ = coordTransformsBuilder_.build();
         }
         if (geoArrayBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             geoArray_ = java.util.Collections.unmodifiableList(geoArray_);
             bitField0_ = (bitField0_ & ~0x00000008);
           }
@@ -12627,6 +13856,39 @@ public final class CdmrFeatureProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse) {
           return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse)other);
@@ -12657,7 +13919,7 @@ public final class CdmrFeatureProto {
               coordAxes_ = other.coordAxes_;
               bitField0_ = (bitField0_ & ~0x00000001);
               coordAxesBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getCoordAxesFieldBuilder() : null;
             } else {
               coordAxesBuilder_.addAllMessages(other.coordAxes_);
@@ -12683,7 +13945,7 @@ public final class CdmrFeatureProto {
               coordSys_ = other.coordSys_;
               bitField0_ = (bitField0_ & ~0x00000002);
               coordSysBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getCoordSysFieldBuilder() : null;
             } else {
               coordSysBuilder_.addAllMessages(other.coordSys_);
@@ -12709,7 +13971,7 @@ public final class CdmrFeatureProto {
               coordTransforms_ = other.coordTransforms_;
               bitField0_ = (bitField0_ & ~0x00000004);
               coordTransformsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getCoordTransformsFieldBuilder() : null;
             } else {
               coordTransformsBuilder_.addAllMessages(other.coordTransforms_);
@@ -12735,21 +13997,24 @@ public final class CdmrFeatureProto {
               geoArray_ = other.geoArray_;
               bitField0_ = (bitField0_ & ~0x00000008);
               geoArrayBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getGeoArrayFieldBuilder() : null;
             } else {
               geoArrayBuilder_.addAllMessages(other.geoArray_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -12759,7 +14024,7 @@ public final class CdmrFeatureProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -12772,21 +14037,21 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis> coordAxes_ =
         java.util.Collections.emptyList();
       private void ensureCoordAxesIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           coordAxes_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis>(coordAxes_);
           bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder> coordAxesBuilder_;
 
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis> getCoordAxesList() {
         if (coordAxesBuilder_ == null) {
@@ -12796,11 +14061,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public int getCoordAxesCount() {
         if (coordAxesBuilder_ == null) {
@@ -12810,11 +14075,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis getCoordAxes(int index) {
         if (coordAxesBuilder_ == null) {
@@ -12824,11 +14089,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder setCoordAxes(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis value) {
@@ -12845,11 +14110,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder setCoordAxes(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder builderForValue) {
@@ -12863,11 +14128,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder addCoordAxes(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis value) {
         if (coordAxesBuilder_ == null) {
@@ -12883,11 +14148,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder addCoordAxes(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis value) {
@@ -12904,11 +14169,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder addCoordAxes(
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder builderForValue) {
@@ -12922,11 +14187,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder addCoordAxes(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder builderForValue) {
@@ -12940,11 +14205,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder addAllCoordAxes(
           java.lang.Iterable<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis> values) {
@@ -12959,11 +14224,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder clearCoordAxes() {
         if (coordAxesBuilder_ == null) {
@@ -12976,11 +14241,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public Builder removeCoordAxes(int index) {
         if (coordAxesBuilder_ == null) {
@@ -12993,22 +14258,22 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder getCoordAxesBuilder(
           int index) {
         return getCoordAxesFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder getCoordAxesOrBuilder(
           int index) {
@@ -13018,11 +14283,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder> 
            getCoordAxesOrBuilderList() {
@@ -13033,22 +14298,22 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder addCoordAxesBuilder() {
         return getCoordAxesFieldBuilder().addBuilder(
             ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.getDefaultInstance());
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder addCoordAxesBuilder(
           int index) {
@@ -13056,24 +14321,24 @@ public final class CdmrFeatureProto {
             index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.getDefaultInstance());
       }
       /**
-       * <code>repeated .CoordAxis coordAxes = 1;</code>
-       *
        * <pre>
        * may be shared if asking for multiple grids
        * </pre>
+       *
+       * <code>repeated .CoordAxis coordAxes = 1;</code>
        */
       public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder> 
            getCoordAxesBuilderList() {
         return getCoordAxesFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder> 
           getCoordAxesFieldBuilder() {
         if (coordAxesBuilder_ == null) {
-          coordAxesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          coordAxesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxis.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordAxisOrBuilder>(
                   coordAxes_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           coordAxes_ = null;
@@ -13084,21 +14349,21 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys> coordSys_ =
         java.util.Collections.emptyList();
       private void ensureCoordSysIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           coordSys_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys>(coordSys_);
           bitField0_ |= 0x00000002;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder> coordSysBuilder_;
 
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys> getCoordSysList() {
         if (coordSysBuilder_ == null) {
@@ -13108,11 +14373,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public int getCoordSysCount() {
         if (coordSysBuilder_ == null) {
@@ -13122,11 +14387,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys getCoordSys(int index) {
         if (coordSysBuilder_ == null) {
@@ -13136,11 +14401,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder setCoordSys(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys value) {
@@ -13157,11 +14422,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder setCoordSys(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder builderForValue) {
@@ -13175,11 +14440,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder addCoordSys(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys value) {
         if (coordSysBuilder_ == null) {
@@ -13195,11 +14460,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder addCoordSys(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys value) {
@@ -13216,11 +14481,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder addCoordSys(
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder builderForValue) {
@@ -13234,11 +14499,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder addCoordSys(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder builderForValue) {
@@ -13252,11 +14517,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder addAllCoordSys(
           java.lang.Iterable<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys> values) {
@@ -13271,11 +14536,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder clearCoordSys() {
         if (coordSysBuilder_ == null) {
@@ -13288,11 +14553,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public Builder removeCoordSys(int index) {
         if (coordSysBuilder_ == null) {
@@ -13305,22 +14570,22 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder getCoordSysBuilder(
           int index) {
         return getCoordSysFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder getCoordSysOrBuilder(
           int index) {
@@ -13330,11 +14595,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder> 
            getCoordSysOrBuilderList() {
@@ -13345,22 +14610,22 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder addCoordSysBuilder() {
         return getCoordSysFieldBuilder().addBuilder(
             ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.getDefaultInstance());
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder addCoordSysBuilder(
           int index) {
@@ -13368,24 +14633,24 @@ public final class CdmrFeatureProto {
             index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.getDefaultInstance());
       }
       /**
-       * <code>repeated .CoordSys coordSys = 2;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordSys coordSys = 2;</code>
        */
       public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder> 
            getCoordSysBuilderList() {
         return getCoordSysFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder> 
           getCoordSysFieldBuilder() {
         if (coordSysBuilder_ == null) {
-          coordSysBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          coordSysBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSys.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordSysOrBuilder>(
                   coordSys_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           coordSys_ = null;
@@ -13396,21 +14661,21 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform> coordTransforms_ =
         java.util.Collections.emptyList();
       private void ensureCoordTransformsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           coordTransforms_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform>(coordTransforms_);
           bitField0_ |= 0x00000004;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder> coordTransformsBuilder_;
 
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform> getCoordTransformsList() {
         if (coordTransformsBuilder_ == null) {
@@ -13420,11 +14685,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public int getCoordTransformsCount() {
         if (coordTransformsBuilder_ == null) {
@@ -13434,11 +14699,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform getCoordTransforms(int index) {
         if (coordTransformsBuilder_ == null) {
@@ -13448,11 +14713,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder setCoordTransforms(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform value) {
@@ -13469,11 +14734,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder setCoordTransforms(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder builderForValue) {
@@ -13487,11 +14752,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder addCoordTransforms(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform value) {
         if (coordTransformsBuilder_ == null) {
@@ -13507,11 +14772,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder addCoordTransforms(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform value) {
@@ -13528,11 +14793,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder addCoordTransforms(
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder builderForValue) {
@@ -13546,11 +14811,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder addCoordTransforms(
           int index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder builderForValue) {
@@ -13564,11 +14829,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder addAllCoordTransforms(
           java.lang.Iterable<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform> values) {
@@ -13583,11 +14848,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder clearCoordTransforms() {
         if (coordTransformsBuilder_ == null) {
@@ -13600,11 +14865,11 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public Builder removeCoordTransforms(int index) {
         if (coordTransformsBuilder_ == null) {
@@ -13617,22 +14882,22 @@ public final class CdmrFeatureProto {
         return this;
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder getCoordTransformsBuilder(
           int index) {
         return getCoordTransformsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder getCoordTransformsOrBuilder(
           int index) {
@@ -13642,11 +14907,11 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public java.util.List<? extends ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder> 
            getCoordTransformsOrBuilderList() {
@@ -13657,22 +14922,22 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder addCoordTransformsBuilder() {
         return getCoordTransformsFieldBuilder().addBuilder(
             ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.getDefaultInstance());
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder addCoordTransformsBuilder(
           int index) {
@@ -13680,24 +14945,24 @@ public final class CdmrFeatureProto {
             index, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.getDefaultInstance());
       }
       /**
-       * <code>repeated .CoordTransform coordTransforms = 3;</code>
-       *
        * <pre>
        *    "
        * </pre>
+       *
+       * <code>repeated .CoordTransform coordTransforms = 3;</code>
        */
       public java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder> 
            getCoordTransformsBuilderList() {
         return getCoordTransformsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder> 
           getCoordTransformsFieldBuilder() {
         if (coordTransformsBuilder_ == null) {
-          coordTransformsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          coordTransformsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransform.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoordTransformOrBuilder>(
                   coordTransforms_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           coordTransforms_ = null;
@@ -13708,13 +14973,13 @@ public final class CdmrFeatureProto {
       private java.util.List<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray> geoArray_ =
         java.util.Collections.emptyList();
       private void ensureGeoArrayIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           geoArray_ = new java.util.ArrayList<ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray>(geoArray_);
           bitField0_ |= 0x00000008;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArrayOrBuilder> geoArrayBuilder_;
 
       /**
@@ -13930,28 +15195,30 @@ public final class CdmrFeatureProto {
            getGeoArrayBuilderList() {
         return getGeoArrayFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArrayOrBuilder> 
           getGeoArrayFieldBuilder() {
         if (geoArrayBuilder_ == null) {
-          geoArrayBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          geoArrayBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.Builder, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArrayOrBuilder>(
                   geoArray_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           geoArray_ = null;
         }
         return geoArrayBuilder_;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -13970,20 +15237,12 @@ public final class CdmrFeatureProto {
 
     private static final com.google.protobuf.Parser<CoverageDataResponse>
         PARSER = new com.google.protobuf.AbstractParser<CoverageDataResponse>() {
+      @java.lang.Override
       public CoverageDataResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new CoverageDataResponse(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new CoverageDataResponse(input, extensionRegistry);
       }
     };
 
@@ -13996,63 +15255,64 @@ public final class CdmrFeatureProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_CoordTransform_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_CoordTransform_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_CoordAxis_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_CoordAxis_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_CoordSys_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_CoordSys_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_CalendarDateRange_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_CalendarDateRange_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Rectangle_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Rectangle_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Coverage_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Coverage_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_CoverageDataset_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_CoverageDataset_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_GeoReferencedArray_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_GeoReferencedArray_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_CoverageDataResponse_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_CoverageDataResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
   }
-  private static com.google.protobuf.Descriptors.FileDescriptor
+  private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
     java.lang.String[] descriptorData = {
@@ -14065,7 +15325,7 @@ public final class CdmrFeatureProto {
       "\022\033\n\010axisType\030\004 \001(\0162\t.AxisType\022\r\n\005units\030\005" +
       " \001(\t\022\023\n\013description\030\006 \001(\t\022\037\n\006depend\030\007 \001(" +
       "\0162\017.DependenceType\022\021\n\tdependsOn\030\010 \003(\t\022\r\n" +
-      "\005shape\030\t \003(\r\022\017\n\007nvalues\030\n \001(\003\022\035\n\007spacing",
+      "\005shape\030\t \003(\r\022\017\n\007nvalues\030\n \001(\003\022\035\n\007spacing" +
       "\030\013 \001(\0162\014.AxisSpacing\022\022\n\nstartValue\030\014 \001(\001" +
       "\022\020\n\010endValue\030\r \001(\001\022\022\n\nresolution\030\016 \001(\001\022\016" +
       "\n\006values\030\017 \001(\014\"h\n\010CoordSys\022\014\n\004name\030\001 \001(\t" +
@@ -14075,7 +15335,7 @@ public final class CdmrFeatureProto {
       "end\030\002 \001(\003\022\033\n\010calendar\030\003 \001(\0162\t.Calendar\"G" +
       "\n\tRectangle\022\016\n\006startx\030\001 \001(\001\022\016\n\006starty\030\002 " +
       "\001(\001\022\014\n\004incx\030\003 \001(\001\022\014\n\004incy\030\004 \001(\001\"\205\001\n\010Cove" +
-      "rage\022\014\n\004name\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.D",
+      "rage\022\014\n\004name\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.D" +
       "ataType\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\020\n\010coo" +
       "rdSys\030\005 \001(\t\022\r\n\005units\030\006 \001(\t\022\023\n\013descriptio" +
       "n\030\007 \001(\t\"\303\002\n\017CoverageDataset\022\014\n\004name\030\001 \001(" +
@@ -14085,7 +15345,7 @@ public final class CdmrFeatureProto {
       "ateRange\022\033\n\010coordSys\030\006 \003(\0132\t.CoordSys\022(\n" +
       "\017coordTransforms\030\007 \003(\0132\017.CoordTransform\022" +
       "\035\n\tcoordAxes\030\010 \003(\0132\n.CoordAxis\022\030\n\005grids\030" +
-      "\t \003(\0132\t.Coverage\022#\n\014coverageType\030\n \001(\0162\r",
+      "\t \003(\0132\t.Coverage\022#\n\014coverageType\030\n \001(\0162\r" +
       ".CoverageType\"\350\001\n\022GeoReferencedArray\022\024\n\014" +
       "coverageName\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.D" +
       "ataType\022\016\n\006bigend\030\003 \001(\010\022\017\n\007version\030\004 \001(\r" +
@@ -14095,7 +15355,7 @@ public final class CdmrFeatureProto {
       "ta\030\n \001(\014\"\243\001\n\024CoverageDataResponse\022\035\n\tcoo" +
       "rdAxes\030\001 \003(\0132\n.CoordAxis\022\033\n\010coordSys\030\002 \003" +
       "(\0132\t.CoordSys\022(\n\017coordTransforms\030\003 \003(\0132\017" +
-      ".CoordTransform\022%\n\010geoArray\030\004 \003(\0132\023.GeoR",
+      ".CoordTransform\022%\n\010geoArray\030\004 \003(\0132\023.GeoR" +
       "eferencedArray*\323\001\n\010AxisType\022\013\n\007RunTime\020\000" +
       "\022\014\n\010Ensemble\020\001\022\010\n\004Time\020\002\022\010\n\004GeoX\020\003\022\010\n\004Ge" +
       "oY\020\004\022\010\n\004GeoZ\020\005\022\007\n\003Lat\020\006\022\007\n\003Lon\020\007\022\n\n\006Heig" +
@@ -14105,7 +15365,7 @@ public final class CdmrFeatureProto {
       "ing\022\020\n\014regularPoint\020\000\022\022\n\016irregularPoint\020" +
       "\001\022\026\n\022contiguousInterval\020\002\022\031\n\025discontiguo" +
       "usInterval\020\003\022\023\n\017regularInterval\020\004*S\n\016Dep" +
-      "endenceType\022\017\n\013independent\020\000\022\r\n\tdependen",
+      "endenceType\022\017\n\013independent\020\000\022\r\n\tdependen" +
       "t\020\001\022\n\n\006scalar\020\002\022\010\n\004twoD\020\003\022\013\n\007fmrcReg\020\004*t" +
       "\n\010Calendar\022\027\n\023proleptic_gregorian\020\000\022\r\n\tg" +
       "regorian\020\001\022\n\n\006noleap\020\002\022\014\n\010all_leap\020\003\022\020\n\014" +
@@ -14115,71 +15375,63 @@ public final class CdmrFeatureProto {
       "r.nc2.ft2.coverage.remoteB\020CdmrFeaturePr" +
       "otob\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           ucar.nc2.stream.NcStreamProto.getDescriptor(),
-        }, assigner);
+        });
     internal_static_CoordTransform_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_CoordTransform_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CoordTransform_descriptor,
         new java.lang.String[] { "IsHoriz", "Name", "Params", });
     internal_static_CoordAxis_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_CoordAxis_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CoordAxis_descriptor,
         new java.lang.String[] { "Name", "DataType", "Atts", "AxisType", "Units", "Description", "Depend", "DependsOn", "Shape", "Nvalues", "Spacing", "StartValue", "EndValue", "Resolution", "Values", });
     internal_static_CoordSys_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_CoordSys_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CoordSys_descriptor,
         new java.lang.String[] { "Name", "AxisNames", "TransformNames", "CoverageType", });
     internal_static_CalendarDateRange_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_CalendarDateRange_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CalendarDateRange_descriptor,
         new java.lang.String[] { "Start", "End", "Calendar", });
     internal_static_Rectangle_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_Rectangle_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Rectangle_descriptor,
         new java.lang.String[] { "Startx", "Starty", "Incx", "Incy", });
     internal_static_Coverage_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_Coverage_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Coverage_descriptor,
         new java.lang.String[] { "Name", "DataType", "Atts", "CoordSys", "Units", "Description", });
     internal_static_CoverageDataset_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_CoverageDataset_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CoverageDataset_descriptor,
         new java.lang.String[] { "Name", "Atts", "LatlonRect", "ProjRect", "DateRange", "CoordSys", "CoordTransforms", "CoordAxes", "Grids", "CoverageType", });
     internal_static_GeoReferencedArray_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_GeoReferencedArray_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_GeoReferencedArray_descriptor,
         new java.lang.String[] { "CoverageName", "DataType", "Bigend", "Version", "Compress", "UncompressedSize", "Shape", "AxisName", "CoordSysName", "Primdata", });
     internal_static_CoverageDataResponse_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_CoverageDataResponse_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CoverageDataResponse_descriptor,
         new java.lang.String[] { "CoordAxes", "CoordSys", "CoordTransforms", "GeoArray", });
     ucar.nc2.stream.NcStreamProto.getDescriptor();

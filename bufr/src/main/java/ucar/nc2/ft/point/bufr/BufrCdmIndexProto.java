@@ -6,7 +6,13 @@ package ucar.nc2.ft.point.bufr;
 public final class BufrCdmIndexProto {
   private BufrCdmIndexProto() {}
   public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistryLite registry) {
+  }
+
+  public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions(
+        (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   /**
    * Protobuf enum {@code FldAction}
@@ -16,28 +22,28 @@ public final class BufrCdmIndexProto {
     /**
      * <code>defa = 0;</code>
      */
-    defa(0, 0),
+    defa(0),
     /**
      * <code>none = 1;</code>
      */
-    none(1, 1),
+    none(1),
     /**
      * <code>remove = 2;</code>
      */
-    remove(2, 2),
+    remove(2),
     /**
      * <code>asMissing = 3;</code>
      */
-    asMissing(3, 3),
+    asMissing(3),
     /**
      * <code>asArray = 4;</code>
      */
-    asArray(4, 4),
+    asArray(4),
     /**
      * <code>concat = 5;</code>
      */
-    concat(5, 5),
-    UNRECOGNIZED(-1, -1),
+    concat(5),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -67,14 +73,22 @@ public final class BufrCdmIndexProto {
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static FldAction valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static FldAction forNumber(int value) {
       switch (value) {
         case 0: return defa;
         case 1: return none;
@@ -94,13 +108,13 @@ public final class BufrCdmIndexProto {
         FldAction> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<FldAction>() {
             public FldAction findValueByNumber(int number) {
-              return FldAction.valueOf(number);
+              return FldAction.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -125,11 +139,9 @@ public final class BufrCdmIndexProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private FldAction(int index, int value) {
-      this.index = index;
+    private FldAction(int value) {
       this.value = value;
     }
 
@@ -144,80 +156,80 @@ public final class BufrCdmIndexProto {
     /**
      * <code>def = 0;</code>
      */
-    def(0, 0),
+    def(0),
     /**
      * <code>lat = 1;</code>
      */
-    lat(1, 1),
+    lat(1),
     /**
      * <code>lon = 2;</code>
      */
-    lon(2, 2),
+    lon(2),
     /**
      * <code>height = 3;</code>
      */
-    height(3, 3),
+    height(3),
     /**
      * <code>heightAboveStation = 4;</code>
      */
-    heightAboveStation(4, 4),
+    heightAboveStation(4),
     /**
      * <code>heightOfStation = 5;</code>
      */
-    heightOfStation(5, 5),
+    heightOfStation(5),
     /**
      * <code>stationId = 10;</code>
      */
-    stationId(6, 10),
+    stationId(10),
     /**
      * <code>stationDesc = 11;</code>
      */
-    stationDesc(7, 11),
+    stationDesc(11),
     /**
      * <code>wmoId = 12;</code>
      */
-    wmoId(8, 12),
+    wmoId(12),
     /**
      * <code>wmoBlock = 13;</code>
      */
-    wmoBlock(9, 13),
+    wmoBlock(13),
     /**
      * <code>year = 15;</code>
      */
-    year(10, 15),
+    year(15),
     /**
      * <code>month = 16;</code>
      */
-    month(11, 16),
+    month(16),
     /**
      * <code>day = 17;</code>
      */
-    day(12, 17),
+    day(17),
     /**
      * <code>hour = 18;</code>
      */
-    hour(13, 18),
+    hour(18),
     /**
      * <code>minute = 19;</code>
      */
-    minute(14, 19),
+    minute(19),
     /**
      * <code>sec = 20;</code>
      */
-    sec(15, 20),
+    sec(20),
     /**
      * <code>doy = 21;</code>
      */
-    doy(16, 21),
+    doy(21),
     /**
      * <code>timeIncr = 22;</code>
      */
-    timeIncr(17, 22),
+    timeIncr(22),
     /**
      * <code>incrS = 23;</code>
      */
-    incrS(18, 23),
-    UNRECOGNIZED(-1, -1),
+    incrS(23),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -299,14 +311,22 @@ public final class BufrCdmIndexProto {
 
 
     public final int getNumber() {
-      if (index == -1) {
+      if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
     }
 
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
     public static FldType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static FldType forNumber(int value) {
       switch (value) {
         case 0: return def;
         case 1: return lat;
@@ -339,13 +359,13 @@ public final class BufrCdmIndexProto {
         FldType> internalValueMap =
           new com.google.protobuf.Internal.EnumLiteMap<FldType>() {
             public FldType findValueByNumber(int number) {
-              return FldType.valueOf(number);
+              return FldType.forNumber(number);
             }
           };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
+      return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptorForType() {
@@ -370,11 +390,9 @@ public final class BufrCdmIndexProto {
       return VALUES[desc.getIndex()];
     }
 
-    private final int index;
     private final int value;
 
-    private FldType(int index, int value) {
-      this.index = index;
+    private FldType(int value) {
       this.value = value;
     }
 
@@ -386,52 +404,52 @@ public final class BufrCdmIndexProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string id = 1;</code>
+     * <code>string id = 1;</code>
      */
     java.lang.String getId();
     /**
-     * <code>optional string id = 1;</code>
+     * <code>string id = 1;</code>
      */
     com.google.protobuf.ByteString
         getIdBytes();
 
     /**
-     * <code>optional double lat = 2;</code>
+     * <code>double lat = 2;</code>
      */
     double getLat();
 
     /**
-     * <code>optional double lon = 3;</code>
+     * <code>double lon = 3;</code>
      */
     double getLon();
 
     /**
-     * <code>optional double alt = 4;</code>
+     * <code>double alt = 4;</code>
      */
     double getAlt();
 
     /**
-     * <code>optional string desc = 5;</code>
+     * <code>string desc = 5;</code>
      */
     java.lang.String getDesc();
     /**
-     * <code>optional string desc = 5;</code>
+     * <code>string desc = 5;</code>
      */
     com.google.protobuf.ByteString
         getDescBytes();
 
     /**
-     * <code>optional string wmoId = 6;</code>
+     * <code>string wmoId = 6;</code>
      */
     java.lang.String getWmoId();
     /**
-     * <code>optional string wmoId = 6;</code>
+     * <code>string wmoId = 6;</code>
      */
     com.google.protobuf.ByteString
         getWmoIdBytes();
 
     /**
-     * <code>optional int32 count = 7;</code>
+     * <code>int32 count = 7;</code>
      */
     int getCount();
   }
@@ -439,33 +457,42 @@ public final class BufrCdmIndexProto {
    * Protobuf type {@code Station}
    */
   public  static final class Station extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Station)
       StationOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Station.newBuilder() to construct.
-    private Station(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Station(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Station() {
       id_ = "";
-      lat_ = 0D;
-      lon_ = 0D;
-      alt_ = 0D;
       desc_ = "";
       wmoId_ = "";
-      count_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Station();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Station(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -474,14 +501,8 @@ public final class BufrCdmIndexProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               id_ = s;
               break;
@@ -502,13 +523,13 @@ public final class BufrCdmIndexProto {
               break;
             }
             case 42: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               desc_ = s;
               break;
             }
             case 50: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               wmoId_ = s;
               break;
@@ -518,15 +539,22 @@ public final class BufrCdmIndexProto {
               count_ = input.readInt32();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -535,7 +563,8 @@ public final class BufrCdmIndexProto {
       return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Station_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Station_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
@@ -545,7 +574,7 @@ public final class BufrCdmIndexProto {
     public static final int ID_FIELD_NUMBER = 1;
     private volatile java.lang.Object id_;
     /**
-     * <code>optional string id = 1;</code>
+     * <code>string id = 1;</code>
      */
     public java.lang.String getId() {
       java.lang.Object ref = id_;
@@ -560,7 +589,7 @@ public final class BufrCdmIndexProto {
       }
     }
     /**
-     * <code>optional string id = 1;</code>
+     * <code>string id = 1;</code>
      */
     public com.google.protobuf.ByteString
         getIdBytes() {
@@ -579,7 +608,7 @@ public final class BufrCdmIndexProto {
     public static final int LAT_FIELD_NUMBER = 2;
     private double lat_;
     /**
-     * <code>optional double lat = 2;</code>
+     * <code>double lat = 2;</code>
      */
     public double getLat() {
       return lat_;
@@ -588,7 +617,7 @@ public final class BufrCdmIndexProto {
     public static final int LON_FIELD_NUMBER = 3;
     private double lon_;
     /**
-     * <code>optional double lon = 3;</code>
+     * <code>double lon = 3;</code>
      */
     public double getLon() {
       return lon_;
@@ -597,7 +626,7 @@ public final class BufrCdmIndexProto {
     public static final int ALT_FIELD_NUMBER = 4;
     private double alt_;
     /**
-     * <code>optional double alt = 4;</code>
+     * <code>double alt = 4;</code>
      */
     public double getAlt() {
       return alt_;
@@ -606,7 +635,7 @@ public final class BufrCdmIndexProto {
     public static final int DESC_FIELD_NUMBER = 5;
     private volatile java.lang.Object desc_;
     /**
-     * <code>optional string desc = 5;</code>
+     * <code>string desc = 5;</code>
      */
     public java.lang.String getDesc() {
       java.lang.Object ref = desc_;
@@ -621,7 +650,7 @@ public final class BufrCdmIndexProto {
       }
     }
     /**
-     * <code>optional string desc = 5;</code>
+     * <code>string desc = 5;</code>
      */
     public com.google.protobuf.ByteString
         getDescBytes() {
@@ -640,7 +669,7 @@ public final class BufrCdmIndexProto {
     public static final int WMOID_FIELD_NUMBER = 6;
     private volatile java.lang.Object wmoId_;
     /**
-     * <code>optional string wmoId = 6;</code>
+     * <code>string wmoId = 6;</code>
      */
     public java.lang.String getWmoId() {
       java.lang.Object ref = wmoId_;
@@ -655,7 +684,7 @@ public final class BufrCdmIndexProto {
       }
     }
     /**
-     * <code>optional string wmoId = 6;</code>
+     * <code>string wmoId = 6;</code>
      */
     public com.google.protobuf.ByteString
         getWmoIdBytes() {
@@ -674,13 +703,14 @@ public final class BufrCdmIndexProto {
     public static final int COUNT_FIELD_NUMBER = 7;
     private int count_;
     /**
-     * <code>optional int32 count = 7;</code>
+     * <code>int32 count = 7;</code>
      */
     public int getCount() {
       return count_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -690,10 +720,11 @@ public final class BufrCdmIndexProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, id_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
       }
       if (lat_ != 0D) {
         output.writeDouble(2, lat_);
@@ -705,23 +736,25 @@ public final class BufrCdmIndexProto {
         output.writeDouble(4, alt_);
       }
       if (!getDescBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 5, desc_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, desc_);
       }
       if (!getWmoIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 6, wmoId_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, wmoId_);
       }
       if (count_ != 0) {
         output.writeInt32(7, count_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, id_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
       }
       if (lat_ != 0D) {
         size += com.google.protobuf.CodedOutputStream
@@ -736,20 +769,91 @@ public final class BufrCdmIndexProto {
           .computeDoubleSize(4, alt_);
       }
       if (!getDescBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(5, desc_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, desc_);
       }
       if (!getWmoIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, wmoId_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, wmoId_);
       }
       if (count_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(7, count_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station other = (ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station) obj;
+
+      if (!getId()
+          .equals(other.getId())) return false;
+      if (java.lang.Double.doubleToLongBits(getLat())
+          != java.lang.Double.doubleToLongBits(
+              other.getLat())) return false;
+      if (java.lang.Double.doubleToLongBits(getLon())
+          != java.lang.Double.doubleToLongBits(
+              other.getLon())) return false;
+      if (java.lang.Double.doubleToLongBits(getAlt())
+          != java.lang.Double.doubleToLongBits(
+              other.getAlt())) return false;
+      if (!getDesc()
+          .equals(other.getDesc())) return false;
+      if (!getWmoId()
+          .equals(other.getWmoId())) return false;
+      if (getCount()
+          != other.getCount()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ID_FIELD_NUMBER;
+      hash = (53 * hash) + getId().hashCode();
+      hash = (37 * hash) + LAT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getLat()));
+      hash = (37 * hash) + LON_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getLon()));
+      hash = (37 * hash) + ALT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getAlt()));
+      hash = (37 * hash) + DESC_FIELD_NUMBER;
+      hash = (53 * hash) + getDesc().hashCode();
+      hash = (37 * hash) + WMOID_FIELD_NUMBER;
+      hash = (53 * hash) + getWmoId().hashCode();
+      hash = (37 * hash) + COUNT_FIELD_NUMBER;
+      hash = (53 * hash) + getCount();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -773,36 +877,43 @@ public final class BufrCdmIndexProto {
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -810,6 +921,7 @@ public final class BufrCdmIndexProto {
     public static Builder newBuilder(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -817,7 +929,7 @@ public final class BufrCdmIndexProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -825,7 +937,7 @@ public final class BufrCdmIndexProto {
      * Protobuf type {@code Station}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Station)
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.StationOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -833,7 +945,8 @@ public final class BufrCdmIndexProto {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Station_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Station_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -846,14 +959,16 @@ public final class BufrCdmIndexProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         id_ = "";
@@ -873,15 +988,18 @@ public final class BufrCdmIndexProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Station_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station getDefaultInstanceForType() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station build() {
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station result = buildPartial();
         if (!result.isInitialized()) {
@@ -890,6 +1008,7 @@ public final class BufrCdmIndexProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station buildPartial() {
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station result = new ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station(this);
         result.id_ = id_;
@@ -903,6 +1022,39 @@ public final class BufrCdmIndexProto {
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station) {
           return mergeFrom((ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station)other);
@@ -938,14 +1090,17 @@ public final class BufrCdmIndexProto {
         if (other.getCount() != 0) {
           setCount(other.getCount());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -955,7 +1110,7 @@ public final class BufrCdmIndexProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -966,7 +1121,7 @@ public final class BufrCdmIndexProto {
 
       private java.lang.Object id_ = "";
       /**
-       * <code>optional string id = 1;</code>
+       * <code>string id = 1;</code>
        */
       public java.lang.String getId() {
         java.lang.Object ref = id_;
@@ -981,7 +1136,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string id = 1;</code>
+       * <code>string id = 1;</code>
        */
       public com.google.protobuf.ByteString
           getIdBytes() {
@@ -997,7 +1152,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string id = 1;</code>
+       * <code>string id = 1;</code>
        */
       public Builder setId(
           java.lang.String value) {
@@ -1010,7 +1165,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string id = 1;</code>
+       * <code>string id = 1;</code>
        */
       public Builder clearId() {
         
@@ -1019,7 +1174,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string id = 1;</code>
+       * <code>string id = 1;</code>
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
@@ -1035,13 +1190,13 @@ public final class BufrCdmIndexProto {
 
       private double lat_ ;
       /**
-       * <code>optional double lat = 2;</code>
+       * <code>double lat = 2;</code>
        */
       public double getLat() {
         return lat_;
       }
       /**
-       * <code>optional double lat = 2;</code>
+       * <code>double lat = 2;</code>
        */
       public Builder setLat(double value) {
         
@@ -1050,7 +1205,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional double lat = 2;</code>
+       * <code>double lat = 2;</code>
        */
       public Builder clearLat() {
         
@@ -1061,13 +1216,13 @@ public final class BufrCdmIndexProto {
 
       private double lon_ ;
       /**
-       * <code>optional double lon = 3;</code>
+       * <code>double lon = 3;</code>
        */
       public double getLon() {
         return lon_;
       }
       /**
-       * <code>optional double lon = 3;</code>
+       * <code>double lon = 3;</code>
        */
       public Builder setLon(double value) {
         
@@ -1076,7 +1231,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional double lon = 3;</code>
+       * <code>double lon = 3;</code>
        */
       public Builder clearLon() {
         
@@ -1087,13 +1242,13 @@ public final class BufrCdmIndexProto {
 
       private double alt_ ;
       /**
-       * <code>optional double alt = 4;</code>
+       * <code>double alt = 4;</code>
        */
       public double getAlt() {
         return alt_;
       }
       /**
-       * <code>optional double alt = 4;</code>
+       * <code>double alt = 4;</code>
        */
       public Builder setAlt(double value) {
         
@@ -1102,7 +1257,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional double alt = 4;</code>
+       * <code>double alt = 4;</code>
        */
       public Builder clearAlt() {
         
@@ -1113,7 +1268,7 @@ public final class BufrCdmIndexProto {
 
       private java.lang.Object desc_ = "";
       /**
-       * <code>optional string desc = 5;</code>
+       * <code>string desc = 5;</code>
        */
       public java.lang.String getDesc() {
         java.lang.Object ref = desc_;
@@ -1128,7 +1283,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string desc = 5;</code>
+       * <code>string desc = 5;</code>
        */
       public com.google.protobuf.ByteString
           getDescBytes() {
@@ -1144,7 +1299,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string desc = 5;</code>
+       * <code>string desc = 5;</code>
        */
       public Builder setDesc(
           java.lang.String value) {
@@ -1157,7 +1312,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string desc = 5;</code>
+       * <code>string desc = 5;</code>
        */
       public Builder clearDesc() {
         
@@ -1166,7 +1321,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string desc = 5;</code>
+       * <code>string desc = 5;</code>
        */
       public Builder setDescBytes(
           com.google.protobuf.ByteString value) {
@@ -1182,7 +1337,7 @@ public final class BufrCdmIndexProto {
 
       private java.lang.Object wmoId_ = "";
       /**
-       * <code>optional string wmoId = 6;</code>
+       * <code>string wmoId = 6;</code>
        */
       public java.lang.String getWmoId() {
         java.lang.Object ref = wmoId_;
@@ -1197,7 +1352,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string wmoId = 6;</code>
+       * <code>string wmoId = 6;</code>
        */
       public com.google.protobuf.ByteString
           getWmoIdBytes() {
@@ -1213,7 +1368,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string wmoId = 6;</code>
+       * <code>string wmoId = 6;</code>
        */
       public Builder setWmoId(
           java.lang.String value) {
@@ -1226,7 +1381,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string wmoId = 6;</code>
+       * <code>string wmoId = 6;</code>
        */
       public Builder clearWmoId() {
         
@@ -1235,7 +1390,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string wmoId = 6;</code>
+       * <code>string wmoId = 6;</code>
        */
       public Builder setWmoIdBytes(
           com.google.protobuf.ByteString value) {
@@ -1251,13 +1406,13 @@ public final class BufrCdmIndexProto {
 
       private int count_ ;
       /**
-       * <code>optional int32 count = 7;</code>
+       * <code>int32 count = 7;</code>
        */
       public int getCount() {
         return count_;
       }
       /**
-       * <code>optional int32 count = 7;</code>
+       * <code>int32 count = 7;</code>
        */
       public Builder setCount(int value) {
         
@@ -1266,7 +1421,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional int32 count = 7;</code>
+       * <code>int32 count = 7;</code>
        */
       public Builder clearCount() {
         
@@ -1274,14 +1429,16 @@ public final class BufrCdmIndexProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -1300,20 +1457,12 @@ public final class BufrCdmIndexProto {
 
     private static final com.google.protobuf.Parser<Station>
         PARSER = new com.google.protobuf.AbstractParser<Station>() {
+      @java.lang.Override
       public Station parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Station(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Station(input, extensionRegistry);
       }
     };
 
@@ -1326,6 +1475,7 @@ public final class BufrCdmIndexProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -1337,16 +1487,16 @@ public final class BufrCdmIndexProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional uint32 fxy = 1;</code>
+     * <code>uint32 fxy = 1;</code>
      */
     int getFxy();
 
     /**
-     * <code>optional string name = 2;</code>
+     * <code>string name = 2;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 2;</code>
+     * <code>string name = 2;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -1376,69 +1526,69 @@ public final class BufrCdmIndexProto {
         int index);
 
     /**
-     * <code>optional .FldAction action = 4;</code>
+     * <code>.FldAction action = 4;</code>
      */
     int getActionValue();
     /**
-     * <code>optional .FldAction action = 4;</code>
+     * <code>.FldAction action = 4;</code>
      */
     ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction getAction();
 
     /**
-     * <code>optional .FldType type = 5;</code>
+     * <code>.FldType type = 5;</code>
      */
     int getTypeValue();
     /**
-     * <code>optional .FldType type = 5;</code>
+     * <code>.FldType type = 5;</code>
      */
     ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType getType();
 
     /**
-     * <code>optional uint32 min = 6;</code>
+     * <code>uint32 min = 6;</code>
      */
     int getMin();
 
     /**
-     * <code>optional uint32 max = 7;</code>
+     * <code>uint32 max = 7;</code>
      */
     int getMax();
 
     /**
-     * <code>optional string desc = 8;</code>
+     * <code>string desc = 8;</code>
      */
     java.lang.String getDesc();
     /**
-     * <code>optional string desc = 8;</code>
+     * <code>string desc = 8;</code>
      */
     com.google.protobuf.ByteString
         getDescBytes();
 
     /**
-     * <code>optional string units = 9;</code>
+     * <code>string units = 9;</code>
      */
     java.lang.String getUnits();
     /**
-     * <code>optional string units = 9;</code>
+     * <code>string units = 9;</code>
      */
     com.google.protobuf.ByteString
         getUnitsBytes();
 
     /**
-     * <code>optional int32 scale = 10;</code>
-     *
      * <pre>
      * bufr scale and offset
      * </pre>
+     *
+     * <code>int32 scale = 10;</code>
      */
     int getScale();
 
     /**
-     * <code>optional int32 reference = 11;</code>
+     * <code>int32 reference = 11;</code>
      */
     int getReference();
 
     /**
-     * <code>optional int32 bitWidth = 12;</code>
+     * <code>int32 bitWidth = 12;</code>
      */
     int getBitWidth();
   }
@@ -1446,38 +1596,46 @@ public final class BufrCdmIndexProto {
    * Protobuf type {@code Field}
    */
   public  static final class Field extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:Field)
       FieldOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use Field.newBuilder() to construct.
-    private Field(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Field(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private Field() {
-      fxy_ = 0;
       name_ = "";
       flds_ = java.util.Collections.emptyList();
       action_ = 0;
       type_ = 0;
-      min_ = 0;
-      max_ = 0;
       desc_ = "";
       units_ = "";
-      scale_ = 0;
-      reference_ = 0;
-      bitWidth_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Field();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private Field(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -1486,29 +1644,24 @@ public final class BufrCdmIndexProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 8: {
 
               fxy_ = input.readUInt32();
               break;
             }
             case 18: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 flds_ = new java.util.ArrayList<ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000001;
               }
-              flds_.add(input.readMessage(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.parser(), extensionRegistry));
+              flds_.add(
+                  input.readMessage(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.parser(), extensionRegistry));
               break;
             }
             case 32: {
@@ -1534,13 +1687,13 @@ public final class BufrCdmIndexProto {
               break;
             }
             case 66: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               desc_ = s;
               break;
             }
             case 74: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               units_ = s;
               break;
@@ -1560,18 +1713,25 @@ public final class BufrCdmIndexProto {
               bitWidth_ = input.readInt32();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           flds_ = java.util.Collections.unmodifiableList(flds_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -1580,18 +1740,18 @@ public final class BufrCdmIndexProto {
       return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Field_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Field_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.class, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder.class);
     }
 
-    private int bitField0_;
     public static final int FXY_FIELD_NUMBER = 1;
     private int fxy_;
     /**
-     * <code>optional uint32 fxy = 1;</code>
+     * <code>uint32 fxy = 1;</code>
      */
     public int getFxy() {
       return fxy_;
@@ -1600,7 +1760,7 @@ public final class BufrCdmIndexProto {
     public static final int NAME_FIELD_NUMBER = 2;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 2;</code>
+     * <code>string name = 2;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -1615,7 +1775,7 @@ public final class BufrCdmIndexProto {
       }
     }
     /**
-     * <code>optional string name = 2;</code>
+     * <code>string name = 2;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -1669,15 +1829,16 @@ public final class BufrCdmIndexProto {
     public static final int ACTION_FIELD_NUMBER = 4;
     private int action_;
     /**
-     * <code>optional .FldAction action = 4;</code>
+     * <code>.FldAction action = 4;</code>
      */
     public int getActionValue() {
       return action_;
     }
     /**
-     * <code>optional .FldAction action = 4;</code>
+     * <code>.FldAction action = 4;</code>
      */
     public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction getAction() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction result = ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction.valueOf(action_);
       return result == null ? ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction.UNRECOGNIZED : result;
     }
@@ -1685,15 +1846,16 @@ public final class BufrCdmIndexProto {
     public static final int TYPE_FIELD_NUMBER = 5;
     private int type_;
     /**
-     * <code>optional .FldType type = 5;</code>
+     * <code>.FldType type = 5;</code>
      */
     public int getTypeValue() {
       return type_;
     }
     /**
-     * <code>optional .FldType type = 5;</code>
+     * <code>.FldType type = 5;</code>
      */
     public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType getType() {
+      @SuppressWarnings("deprecation")
       ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType result = ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType.valueOf(type_);
       return result == null ? ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType.UNRECOGNIZED : result;
     }
@@ -1701,7 +1863,7 @@ public final class BufrCdmIndexProto {
     public static final int MIN_FIELD_NUMBER = 6;
     private int min_;
     /**
-     * <code>optional uint32 min = 6;</code>
+     * <code>uint32 min = 6;</code>
      */
     public int getMin() {
       return min_;
@@ -1710,7 +1872,7 @@ public final class BufrCdmIndexProto {
     public static final int MAX_FIELD_NUMBER = 7;
     private int max_;
     /**
-     * <code>optional uint32 max = 7;</code>
+     * <code>uint32 max = 7;</code>
      */
     public int getMax() {
       return max_;
@@ -1719,7 +1881,7 @@ public final class BufrCdmIndexProto {
     public static final int DESC_FIELD_NUMBER = 8;
     private volatile java.lang.Object desc_;
     /**
-     * <code>optional string desc = 8;</code>
+     * <code>string desc = 8;</code>
      */
     public java.lang.String getDesc() {
       java.lang.Object ref = desc_;
@@ -1734,7 +1896,7 @@ public final class BufrCdmIndexProto {
       }
     }
     /**
-     * <code>optional string desc = 8;</code>
+     * <code>string desc = 8;</code>
      */
     public com.google.protobuf.ByteString
         getDescBytes() {
@@ -1753,7 +1915,7 @@ public final class BufrCdmIndexProto {
     public static final int UNITS_FIELD_NUMBER = 9;
     private volatile java.lang.Object units_;
     /**
-     * <code>optional string units = 9;</code>
+     * <code>string units = 9;</code>
      */
     public java.lang.String getUnits() {
       java.lang.Object ref = units_;
@@ -1768,7 +1930,7 @@ public final class BufrCdmIndexProto {
       }
     }
     /**
-     * <code>optional string units = 9;</code>
+     * <code>string units = 9;</code>
      */
     public com.google.protobuf.ByteString
         getUnitsBytes() {
@@ -1787,11 +1949,11 @@ public final class BufrCdmIndexProto {
     public static final int SCALE_FIELD_NUMBER = 10;
     private int scale_;
     /**
-     * <code>optional int32 scale = 10;</code>
-     *
      * <pre>
      * bufr scale and offset
      * </pre>
+     *
+     * <code>int32 scale = 10;</code>
      */
     public int getScale() {
       return scale_;
@@ -1800,7 +1962,7 @@ public final class BufrCdmIndexProto {
     public static final int REFERENCE_FIELD_NUMBER = 11;
     private int reference_;
     /**
-     * <code>optional int32 reference = 11;</code>
+     * <code>int32 reference = 11;</code>
      */
     public int getReference() {
       return reference_;
@@ -1809,13 +1971,14 @@ public final class BufrCdmIndexProto {
     public static final int BITWIDTH_FIELD_NUMBER = 12;
     private int bitWidth_;
     /**
-     * <code>optional int32 bitWidth = 12;</code>
+     * <code>int32 bitWidth = 12;</code>
      */
     public int getBitWidth() {
       return bitWidth_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -1825,13 +1988,14 @@ public final class BufrCdmIndexProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (fxy_ != 0) {
         output.writeUInt32(1, fxy_);
       }
       if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, name_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
       }
       for (int i = 0; i < flds_.size(); i++) {
         output.writeMessage(3, flds_.get(i));
@@ -1849,10 +2013,10 @@ public final class BufrCdmIndexProto {
         output.writeUInt32(7, max_);
       }
       if (!getDescBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 8, desc_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 8, desc_);
       }
       if (!getUnitsBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 9, units_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 9, units_);
       }
       if (scale_ != 0) {
         output.writeInt32(10, scale_);
@@ -1863,8 +2027,10 @@ public final class BufrCdmIndexProto {
       if (bitWidth_ != 0) {
         output.writeInt32(12, bitWidth_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -1875,7 +2041,7 @@ public final class BufrCdmIndexProto {
           .computeUInt32Size(1, fxy_);
       }
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, name_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
       }
       for (int i = 0; i < flds_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -1898,10 +2064,10 @@ public final class BufrCdmIndexProto {
           .computeUInt32Size(7, max_);
       }
       if (!getDescBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(8, desc_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, desc_);
       }
       if (!getUnitsBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(9, units_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(9, units_);
       }
       if (scale_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -1915,11 +2081,96 @@ public final class BufrCdmIndexProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(12, bitWidth_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field other = (ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field) obj;
+
+      if (getFxy()
+          != other.getFxy()) return false;
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getFldsList()
+          .equals(other.getFldsList())) return false;
+      if (action_ != other.action_) return false;
+      if (type_ != other.type_) return false;
+      if (getMin()
+          != other.getMin()) return false;
+      if (getMax()
+          != other.getMax()) return false;
+      if (!getDesc()
+          .equals(other.getDesc())) return false;
+      if (!getUnits()
+          .equals(other.getUnits())) return false;
+      if (getScale()
+          != other.getScale()) return false;
+      if (getReference()
+          != other.getReference()) return false;
+      if (getBitWidth()
+          != other.getBitWidth()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + FXY_FIELD_NUMBER;
+      hash = (53 * hash) + getFxy();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      if (getFldsCount() > 0) {
+        hash = (37 * hash) + FLDS_FIELD_NUMBER;
+        hash = (53 * hash) + getFldsList().hashCode();
+      }
+      hash = (37 * hash) + ACTION_FIELD_NUMBER;
+      hash = (53 * hash) + action_;
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + type_;
+      hash = (37 * hash) + MIN_FIELD_NUMBER;
+      hash = (53 * hash) + getMin();
+      hash = (37 * hash) + MAX_FIELD_NUMBER;
+      hash = (53 * hash) + getMax();
+      hash = (37 * hash) + DESC_FIELD_NUMBER;
+      hash = (53 * hash) + getDesc().hashCode();
+      hash = (37 * hash) + UNITS_FIELD_NUMBER;
+      hash = (53 * hash) + getUnits().hashCode();
+      hash = (37 * hash) + SCALE_FIELD_NUMBER;
+      hash = (53 * hash) + getScale();
+      hash = (37 * hash) + REFERENCE_FIELD_NUMBER;
+      hash = (53 * hash) + getReference();
+      hash = (37 * hash) + BITWIDTH_FIELD_NUMBER;
+      hash = (53 * hash) + getBitWidth();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1943,36 +2194,43 @@ public final class BufrCdmIndexProto {
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -1980,6 +2238,7 @@ public final class BufrCdmIndexProto {
     public static Builder newBuilder(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -1987,7 +2246,7 @@ public final class BufrCdmIndexProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -1995,7 +2254,7 @@ public final class BufrCdmIndexProto {
      * Protobuf type {@code Field}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Field)
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -2003,7 +2262,8 @@ public final class BufrCdmIndexProto {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Field_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Field_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -2016,15 +2276,17 @@ public final class BufrCdmIndexProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getFldsFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         fxy_ = 0;
@@ -2033,7 +2295,7 @@ public final class BufrCdmIndexProto {
 
         if (fldsBuilder_ == null) {
           flds_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           fldsBuilder_.clear();
         }
@@ -2058,15 +2320,18 @@ public final class BufrCdmIndexProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_Field_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field getDefaultInstanceForType() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field build() {
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field result = buildPartial();
         if (!result.isInitialized()) {
@@ -2075,16 +2340,16 @@ public final class BufrCdmIndexProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field buildPartial() {
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field result = new ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.fxy_ = fxy_;
         result.name_ = name_;
         if (fldsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             flds_ = java.util.Collections.unmodifiableList(flds_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.flds_ = flds_;
         } else {
@@ -2099,11 +2364,43 @@ public final class BufrCdmIndexProto {
         result.scale_ = scale_;
         result.reference_ = reference_;
         result.bitWidth_ = bitWidth_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field) {
           return mergeFrom((ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field)other);
@@ -2126,7 +2423,7 @@ public final class BufrCdmIndexProto {
           if (!other.flds_.isEmpty()) {
             if (flds_.isEmpty()) {
               flds_ = other.flds_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureFldsIsMutable();
               flds_.addAll(other.flds_);
@@ -2139,9 +2436,9 @@ public final class BufrCdmIndexProto {
               fldsBuilder_.dispose();
               fldsBuilder_ = null;
               flds_ = other.flds_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
               fldsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getFldsFieldBuilder() : null;
             } else {
               fldsBuilder_.addAllMessages(other.flds_);
@@ -2177,14 +2474,17 @@ public final class BufrCdmIndexProto {
         if (other.getBitWidth() != 0) {
           setBitWidth(other.getBitWidth());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2194,7 +2494,7 @@ public final class BufrCdmIndexProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -2206,13 +2506,13 @@ public final class BufrCdmIndexProto {
 
       private int fxy_ ;
       /**
-       * <code>optional uint32 fxy = 1;</code>
+       * <code>uint32 fxy = 1;</code>
        */
       public int getFxy() {
         return fxy_;
       }
       /**
-       * <code>optional uint32 fxy = 1;</code>
+       * <code>uint32 fxy = 1;</code>
        */
       public Builder setFxy(int value) {
         
@@ -2221,7 +2521,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional uint32 fxy = 1;</code>
+       * <code>uint32 fxy = 1;</code>
        */
       public Builder clearFxy() {
         
@@ -2232,7 +2532,7 @@ public final class BufrCdmIndexProto {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 2;</code>
+       * <code>string name = 2;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -2247,7 +2547,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string name = 2;</code>
+       * <code>string name = 2;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -2263,7 +2563,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string name = 2;</code>
+       * <code>string name = 2;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -2276,7 +2576,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string name = 2;</code>
+       * <code>string name = 2;</code>
        */
       public Builder clearName() {
         
@@ -2285,7 +2585,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string name = 2;</code>
+       * <code>string name = 2;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -2302,13 +2602,13 @@ public final class BufrCdmIndexProto {
       private java.util.List<ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field> flds_ =
         java.util.Collections.emptyList();
       private void ensureFldsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           flds_ = new java.util.ArrayList<ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field>(flds_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder> fldsBuilder_;
 
       /**
@@ -2454,7 +2754,7 @@ public final class BufrCdmIndexProto {
       public Builder clearFlds() {
         if (fldsBuilder_ == null) {
           flds_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           fldsBuilder_.clear();
@@ -2524,14 +2824,14 @@ public final class BufrCdmIndexProto {
            getFldsBuilderList() {
         return getFldsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder> 
           getFldsFieldBuilder() {
         if (fldsBuilder_ == null) {
-          fldsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          fldsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder>(
                   flds_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           flds_ = null;
@@ -2541,13 +2841,13 @@ public final class BufrCdmIndexProto {
 
       private int action_ = 0;
       /**
-       * <code>optional .FldAction action = 4;</code>
+       * <code>.FldAction action = 4;</code>
        */
       public int getActionValue() {
         return action_;
       }
       /**
-       * <code>optional .FldAction action = 4;</code>
+       * <code>.FldAction action = 4;</code>
        */
       public Builder setActionValue(int value) {
         action_ = value;
@@ -2555,14 +2855,15 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional .FldAction action = 4;</code>
+       * <code>.FldAction action = 4;</code>
        */
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction getAction() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction result = ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction.valueOf(action_);
         return result == null ? ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .FldAction action = 4;</code>
+       * <code>.FldAction action = 4;</code>
        */
       public Builder setAction(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldAction value) {
         if (value == null) {
@@ -2574,7 +2875,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional .FldAction action = 4;</code>
+       * <code>.FldAction action = 4;</code>
        */
       public Builder clearAction() {
         
@@ -2585,13 +2886,13 @@ public final class BufrCdmIndexProto {
 
       private int type_ = 0;
       /**
-       * <code>optional .FldType type = 5;</code>
+       * <code>.FldType type = 5;</code>
        */
       public int getTypeValue() {
         return type_;
       }
       /**
-       * <code>optional .FldType type = 5;</code>
+       * <code>.FldType type = 5;</code>
        */
       public Builder setTypeValue(int value) {
         type_ = value;
@@ -2599,14 +2900,15 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional .FldType type = 5;</code>
+       * <code>.FldType type = 5;</code>
        */
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType getType() {
+        @SuppressWarnings("deprecation")
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType result = ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType.valueOf(type_);
         return result == null ? ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .FldType type = 5;</code>
+       * <code>.FldType type = 5;</code>
        */
       public Builder setType(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FldType value) {
         if (value == null) {
@@ -2618,7 +2920,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional .FldType type = 5;</code>
+       * <code>.FldType type = 5;</code>
        */
       public Builder clearType() {
         
@@ -2629,13 +2931,13 @@ public final class BufrCdmIndexProto {
 
       private int min_ ;
       /**
-       * <code>optional uint32 min = 6;</code>
+       * <code>uint32 min = 6;</code>
        */
       public int getMin() {
         return min_;
       }
       /**
-       * <code>optional uint32 min = 6;</code>
+       * <code>uint32 min = 6;</code>
        */
       public Builder setMin(int value) {
         
@@ -2644,7 +2946,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional uint32 min = 6;</code>
+       * <code>uint32 min = 6;</code>
        */
       public Builder clearMin() {
         
@@ -2655,13 +2957,13 @@ public final class BufrCdmIndexProto {
 
       private int max_ ;
       /**
-       * <code>optional uint32 max = 7;</code>
+       * <code>uint32 max = 7;</code>
        */
       public int getMax() {
         return max_;
       }
       /**
-       * <code>optional uint32 max = 7;</code>
+       * <code>uint32 max = 7;</code>
        */
       public Builder setMax(int value) {
         
@@ -2670,7 +2972,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional uint32 max = 7;</code>
+       * <code>uint32 max = 7;</code>
        */
       public Builder clearMax() {
         
@@ -2681,7 +2983,7 @@ public final class BufrCdmIndexProto {
 
       private java.lang.Object desc_ = "";
       /**
-       * <code>optional string desc = 8;</code>
+       * <code>string desc = 8;</code>
        */
       public java.lang.String getDesc() {
         java.lang.Object ref = desc_;
@@ -2696,7 +2998,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string desc = 8;</code>
+       * <code>string desc = 8;</code>
        */
       public com.google.protobuf.ByteString
           getDescBytes() {
@@ -2712,7 +3014,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string desc = 8;</code>
+       * <code>string desc = 8;</code>
        */
       public Builder setDesc(
           java.lang.String value) {
@@ -2725,7 +3027,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string desc = 8;</code>
+       * <code>string desc = 8;</code>
        */
       public Builder clearDesc() {
         
@@ -2734,7 +3036,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string desc = 8;</code>
+       * <code>string desc = 8;</code>
        */
       public Builder setDescBytes(
           com.google.protobuf.ByteString value) {
@@ -2750,7 +3052,7 @@ public final class BufrCdmIndexProto {
 
       private java.lang.Object units_ = "";
       /**
-       * <code>optional string units = 9;</code>
+       * <code>string units = 9;</code>
        */
       public java.lang.String getUnits() {
         java.lang.Object ref = units_;
@@ -2765,7 +3067,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string units = 9;</code>
+       * <code>string units = 9;</code>
        */
       public com.google.protobuf.ByteString
           getUnitsBytes() {
@@ -2781,7 +3083,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string units = 9;</code>
+       * <code>string units = 9;</code>
        */
       public Builder setUnits(
           java.lang.String value) {
@@ -2794,7 +3096,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string units = 9;</code>
+       * <code>string units = 9;</code>
        */
       public Builder clearUnits() {
         
@@ -2803,7 +3105,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string units = 9;</code>
+       * <code>string units = 9;</code>
        */
       public Builder setUnitsBytes(
           com.google.protobuf.ByteString value) {
@@ -2819,21 +3121,21 @@ public final class BufrCdmIndexProto {
 
       private int scale_ ;
       /**
-       * <code>optional int32 scale = 10;</code>
-       *
        * <pre>
        * bufr scale and offset
        * </pre>
+       *
+       * <code>int32 scale = 10;</code>
        */
       public int getScale() {
         return scale_;
       }
       /**
-       * <code>optional int32 scale = 10;</code>
-       *
        * <pre>
        * bufr scale and offset
        * </pre>
+       *
+       * <code>int32 scale = 10;</code>
        */
       public Builder setScale(int value) {
         
@@ -2842,11 +3144,11 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional int32 scale = 10;</code>
-       *
        * <pre>
        * bufr scale and offset
        * </pre>
+       *
+       * <code>int32 scale = 10;</code>
        */
       public Builder clearScale() {
         
@@ -2857,13 +3159,13 @@ public final class BufrCdmIndexProto {
 
       private int reference_ ;
       /**
-       * <code>optional int32 reference = 11;</code>
+       * <code>int32 reference = 11;</code>
        */
       public int getReference() {
         return reference_;
       }
       /**
-       * <code>optional int32 reference = 11;</code>
+       * <code>int32 reference = 11;</code>
        */
       public Builder setReference(int value) {
         
@@ -2872,7 +3174,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional int32 reference = 11;</code>
+       * <code>int32 reference = 11;</code>
        */
       public Builder clearReference() {
         
@@ -2883,13 +3185,13 @@ public final class BufrCdmIndexProto {
 
       private int bitWidth_ ;
       /**
-       * <code>optional int32 bitWidth = 12;</code>
+       * <code>int32 bitWidth = 12;</code>
        */
       public int getBitWidth() {
         return bitWidth_;
       }
       /**
-       * <code>optional int32 bitWidth = 12;</code>
+       * <code>int32 bitWidth = 12;</code>
        */
       public Builder setBitWidth(int value) {
         
@@ -2898,7 +3200,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional int32 bitWidth = 12;</code>
+       * <code>int32 bitWidth = 12;</code>
        */
       public Builder clearBitWidth() {
         
@@ -2906,14 +3208,16 @@ public final class BufrCdmIndexProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -2932,20 +3236,12 @@ public final class BufrCdmIndexProto {
 
     private static final com.google.protobuf.Parser<Field>
         PARSER = new com.google.protobuf.AbstractParser<Field>() {
+      @java.lang.Override
       public Field parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Field(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new Field(input, extensionRegistry);
       }
     };
 
@@ -2958,6 +3254,7 @@ public final class BufrCdmIndexProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -2969,11 +3266,11 @@ public final class BufrCdmIndexProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string filename = 1;</code>
+     * <code>string filename = 1;</code>
      */
     java.lang.String getFilename();
     /**
-     * <code>optional string filename = 1;</code>
+     * <code>string filename = 1;</code>
      */
     com.google.protobuf.ByteString
         getFilenameBytes();
@@ -3003,34 +3300,34 @@ public final class BufrCdmIndexProto {
         int index);
 
     /**
-     * <code>optional .Field root = 3;</code>
+     * <code>.Field root = 3;</code>
      */
     boolean hasRoot();
     /**
-     * <code>optional .Field root = 3;</code>
+     * <code>.Field root = 3;</code>
      */
     ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field getRoot();
     /**
-     * <code>optional .Field root = 3;</code>
+     * <code>.Field root = 3;</code>
      */
     ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder getRootOrBuilder();
 
     /**
-     * <code>optional uint64 start = 4;</code>
-     *
      * <pre>
      * msecs since epoch
      * </pre>
+     *
+     * <code>uint64 start = 4;</code>
      */
     long getStart();
 
     /**
-     * <code>optional uint64 end = 5;</code>
+     * <code>uint64 end = 5;</code>
      */
     long getEnd();
 
     /**
-     * <code>optional uint64 nobs = 6;</code>
+     * <code>uint64 nobs = 6;</code>
      */
     long getNobs();
   }
@@ -3038,31 +3335,42 @@ public final class BufrCdmIndexProto {
    * Protobuf type {@code BufrIndex}
    */
   public  static final class BufrIndex extends
-      com.google.protobuf.GeneratedMessage implements
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:BufrIndex)
       BufrIndexOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use BufrIndex.newBuilder() to construct.
-    private BufrIndex(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private BufrIndex(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private BufrIndex() {
       filename_ = "";
       stations_ = java.util.Collections.emptyList();
-      start_ = 0L;
-      end_ = 0L;
-      nobs_ = 0L;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new BufrIndex();
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private BufrIndex(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -3071,24 +3379,19 @@ public final class BufrCdmIndexProto {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               filename_ = s;
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 stations_ = new java.util.ArrayList<ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station>();
-                mutable_bitField0_ |= 0x00000002;
+                mutable_bitField0_ |= 0x00000001;
               }
-              stations_.add(input.readMessage(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station.parser(), extensionRegistry));
+              stations_.add(
+                  input.readMessage(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station.parser(), extensionRegistry));
               break;
             }
             case 26: {
@@ -3119,18 +3422,25 @@ public final class BufrCdmIndexProto {
               nobs_ = input.readUInt64();
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           stations_ = java.util.Collections.unmodifiableList(stations_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -3139,18 +3449,18 @@ public final class BufrCdmIndexProto {
       return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_BufrIndex_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_BufrIndex_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex.class, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex.Builder.class);
     }
 
-    private int bitField0_;
     public static final int FILENAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object filename_;
     /**
-     * <code>optional string filename = 1;</code>
+     * <code>string filename = 1;</code>
      */
     public java.lang.String getFilename() {
       java.lang.Object ref = filename_;
@@ -3165,7 +3475,7 @@ public final class BufrCdmIndexProto {
       }
     }
     /**
-     * <code>optional string filename = 1;</code>
+     * <code>string filename = 1;</code>
      */
     public com.google.protobuf.ByteString
         getFilenameBytes() {
@@ -3219,19 +3529,19 @@ public final class BufrCdmIndexProto {
     public static final int ROOT_FIELD_NUMBER = 3;
     private ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field root_;
     /**
-     * <code>optional .Field root = 3;</code>
+     * <code>.Field root = 3;</code>
      */
     public boolean hasRoot() {
       return root_ != null;
     }
     /**
-     * <code>optional .Field root = 3;</code>
+     * <code>.Field root = 3;</code>
      */
     public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field getRoot() {
       return root_ == null ? ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.getDefaultInstance() : root_;
     }
     /**
-     * <code>optional .Field root = 3;</code>
+     * <code>.Field root = 3;</code>
      */
     public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder getRootOrBuilder() {
       return getRoot();
@@ -3240,11 +3550,11 @@ public final class BufrCdmIndexProto {
     public static final int START_FIELD_NUMBER = 4;
     private long start_;
     /**
-     * <code>optional uint64 start = 4;</code>
-     *
      * <pre>
      * msecs since epoch
      * </pre>
+     *
+     * <code>uint64 start = 4;</code>
      */
     public long getStart() {
       return start_;
@@ -3253,7 +3563,7 @@ public final class BufrCdmIndexProto {
     public static final int END_FIELD_NUMBER = 5;
     private long end_;
     /**
-     * <code>optional uint64 end = 5;</code>
+     * <code>uint64 end = 5;</code>
      */
     public long getEnd() {
       return end_;
@@ -3262,13 +3572,14 @@ public final class BufrCdmIndexProto {
     public static final int NOBS_FIELD_NUMBER = 6;
     private long nobs_;
     /**
-     * <code>optional uint64 nobs = 6;</code>
+     * <code>uint64 nobs = 6;</code>
      */
     public long getNobs() {
       return nobs_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -3278,10 +3589,11 @@ public final class BufrCdmIndexProto {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getFilenameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, filename_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, filename_);
       }
       for (int i = 0; i < stations_.size(); i++) {
         output.writeMessage(2, stations_.get(i));
@@ -3298,15 +3610,17 @@ public final class BufrCdmIndexProto {
       if (nobs_ != 0L) {
         output.writeUInt64(6, nobs_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getFilenameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, filename_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, filename_);
       }
       for (int i = 0; i < stations_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -3328,11 +3642,82 @@ public final class BufrCdmIndexProto {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(6, nobs_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex)) {
+        return super.equals(obj);
+      }
+      ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex other = (ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex) obj;
+
+      if (!getFilename()
+          .equals(other.getFilename())) return false;
+      if (!getStationsList()
+          .equals(other.getStationsList())) return false;
+      if (hasRoot() != other.hasRoot()) return false;
+      if (hasRoot()) {
+        if (!getRoot()
+            .equals(other.getRoot())) return false;
+      }
+      if (getStart()
+          != other.getStart()) return false;
+      if (getEnd()
+          != other.getEnd()) return false;
+      if (getNobs()
+          != other.getNobs()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + FILENAME_FIELD_NUMBER;
+      hash = (53 * hash) + getFilename().hashCode();
+      if (getStationsCount() > 0) {
+        hash = (37 * hash) + STATIONS_FIELD_NUMBER;
+        hash = (53 * hash) + getStationsList().hashCode();
+      }
+      if (hasRoot()) {
+        hash = (37 * hash) + ROOT_FIELD_NUMBER;
+        hash = (53 * hash) + getRoot().hashCode();
+      }
+      hash = (37 * hash) + START_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getStart());
+      hash = (37 * hash) + END_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getEnd());
+      hash = (37 * hash) + NOBS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getNobs());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -3356,36 +3741,43 @@ public final class BufrCdmIndexProto {
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -3393,6 +3785,7 @@ public final class BufrCdmIndexProto {
     public static Builder newBuilder(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -3400,7 +3793,7 @@ public final class BufrCdmIndexProto {
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -3408,7 +3801,7 @@ public final class BufrCdmIndexProto {
      * Protobuf type {@code BufrIndex}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:BufrIndex)
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndexOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -3416,7 +3809,8 @@ public final class BufrCdmIndexProto {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_BufrIndex_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_BufrIndex_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
@@ -3429,22 +3823,24 @@ public final class BufrCdmIndexProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getStationsFieldBuilder();
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         filename_ = "";
 
         if (stationsBuilder_ == null) {
           stations_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           stationsBuilder_.clear();
         }
@@ -3463,15 +3859,18 @@ public final class BufrCdmIndexProto {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.internal_static_BufrIndex_descriptor;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex getDefaultInstanceForType() {
         return ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex.getDefaultInstance();
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex build() {
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex result = buildPartial();
         if (!result.isInitialized()) {
@@ -3480,15 +3879,15 @@ public final class BufrCdmIndexProto {
         return result;
       }
 
+      @java.lang.Override
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex buildPartial() {
         ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex result = new ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.filename_ = filename_;
         if (stationsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             stations_ = java.util.Collections.unmodifiableList(stations_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.stations_ = stations_;
         } else {
@@ -3502,11 +3901,43 @@ public final class BufrCdmIndexProto {
         result.start_ = start_;
         result.end_ = end_;
         result.nobs_ = nobs_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex) {
           return mergeFrom((ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex)other);
@@ -3526,7 +3957,7 @@ public final class BufrCdmIndexProto {
           if (!other.stations_.isEmpty()) {
             if (stations_.isEmpty()) {
               stations_ = other.stations_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureStationsIsMutable();
               stations_.addAll(other.stations_);
@@ -3539,9 +3970,9 @@ public final class BufrCdmIndexProto {
               stationsBuilder_.dispose();
               stationsBuilder_ = null;
               stations_ = other.stations_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
               stationsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getStationsFieldBuilder() : null;
             } else {
               stationsBuilder_.addAllMessages(other.stations_);
@@ -3560,14 +3991,17 @@ public final class BufrCdmIndexProto {
         if (other.getNobs() != 0L) {
           setNobs(other.getNobs());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3577,7 +4011,7 @@ public final class BufrCdmIndexProto {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -3589,7 +4023,7 @@ public final class BufrCdmIndexProto {
 
       private java.lang.Object filename_ = "";
       /**
-       * <code>optional string filename = 1;</code>
+       * <code>string filename = 1;</code>
        */
       public java.lang.String getFilename() {
         java.lang.Object ref = filename_;
@@ -3604,7 +4038,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string filename = 1;</code>
+       * <code>string filename = 1;</code>
        */
       public com.google.protobuf.ByteString
           getFilenameBytes() {
@@ -3620,7 +4054,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional string filename = 1;</code>
+       * <code>string filename = 1;</code>
        */
       public Builder setFilename(
           java.lang.String value) {
@@ -3633,7 +4067,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string filename = 1;</code>
+       * <code>string filename = 1;</code>
        */
       public Builder clearFilename() {
         
@@ -3642,7 +4076,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional string filename = 1;</code>
+       * <code>string filename = 1;</code>
        */
       public Builder setFilenameBytes(
           com.google.protobuf.ByteString value) {
@@ -3659,13 +4093,13 @@ public final class BufrCdmIndexProto {
       private java.util.List<ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station> stations_ =
         java.util.Collections.emptyList();
       private void ensureStationsIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           stations_ = new java.util.ArrayList<ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station>(stations_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
          }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.StationOrBuilder> stationsBuilder_;
 
       /**
@@ -3811,7 +4245,7 @@ public final class BufrCdmIndexProto {
       public Builder clearStations() {
         if (stationsBuilder_ == null) {
           stations_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           stationsBuilder_.clear();
@@ -3881,14 +4315,14 @@ public final class BufrCdmIndexProto {
            getStationsBuilderList() {
         return getStationsFieldBuilder().getBuilderList();
       }
-      private com.google.protobuf.RepeatedFieldBuilder<
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.StationOrBuilder> 
           getStationsFieldBuilder() {
         if (stationsBuilder_ == null) {
-          stationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          stationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Station.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.StationOrBuilder>(
                   stations_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           stations_ = null;
@@ -3896,17 +4330,17 @@ public final class BufrCdmIndexProto {
         return stationsBuilder_;
       }
 
-      private ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field root_ = null;
-      private com.google.protobuf.SingleFieldBuilder<
+      private ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field root_;
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder> rootBuilder_;
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
       public boolean hasRoot() {
         return rootBuilder_ != null || root_ != null;
       }
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field getRoot() {
         if (rootBuilder_ == null) {
@@ -3916,7 +4350,7 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
       public Builder setRoot(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field value) {
         if (rootBuilder_ == null) {
@@ -3932,7 +4366,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
       public Builder setRoot(
           ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder builderForValue) {
@@ -3946,7 +4380,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
       public Builder mergeRoot(ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field value) {
         if (rootBuilder_ == null) {
@@ -3964,7 +4398,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
       public Builder clearRoot() {
         if (rootBuilder_ == null) {
@@ -3978,7 +4412,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder getRootBuilder() {
         
@@ -3986,7 +4420,7 @@ public final class BufrCdmIndexProto {
         return getRootFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
       public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder getRootOrBuilder() {
         if (rootBuilder_ != null) {
@@ -3997,13 +4431,13 @@ public final class BufrCdmIndexProto {
         }
       }
       /**
-       * <code>optional .Field root = 3;</code>
+       * <code>.Field root = 3;</code>
        */
-      private com.google.protobuf.SingleFieldBuilder<
+      private com.google.protobuf.SingleFieldBuilderV3<
           ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder> 
           getRootFieldBuilder() {
         if (rootBuilder_ == null) {
-          rootBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          rootBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.Field.Builder, ucar.nc2.ft.point.bufr.BufrCdmIndexProto.FieldOrBuilder>(
                   getRoot(),
                   getParentForChildren(),
@@ -4015,21 +4449,21 @@ public final class BufrCdmIndexProto {
 
       private long start_ ;
       /**
-       * <code>optional uint64 start = 4;</code>
-       *
        * <pre>
        * msecs since epoch
        * </pre>
+       *
+       * <code>uint64 start = 4;</code>
        */
       public long getStart() {
         return start_;
       }
       /**
-       * <code>optional uint64 start = 4;</code>
-       *
        * <pre>
        * msecs since epoch
        * </pre>
+       *
+       * <code>uint64 start = 4;</code>
        */
       public Builder setStart(long value) {
         
@@ -4038,11 +4472,11 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional uint64 start = 4;</code>
-       *
        * <pre>
        * msecs since epoch
        * </pre>
+       *
+       * <code>uint64 start = 4;</code>
        */
       public Builder clearStart() {
         
@@ -4053,13 +4487,13 @@ public final class BufrCdmIndexProto {
 
       private long end_ ;
       /**
-       * <code>optional uint64 end = 5;</code>
+       * <code>uint64 end = 5;</code>
        */
       public long getEnd() {
         return end_;
       }
       /**
-       * <code>optional uint64 end = 5;</code>
+       * <code>uint64 end = 5;</code>
        */
       public Builder setEnd(long value) {
         
@@ -4068,7 +4502,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional uint64 end = 5;</code>
+       * <code>uint64 end = 5;</code>
        */
       public Builder clearEnd() {
         
@@ -4079,13 +4513,13 @@ public final class BufrCdmIndexProto {
 
       private long nobs_ ;
       /**
-       * <code>optional uint64 nobs = 6;</code>
+       * <code>uint64 nobs = 6;</code>
        */
       public long getNobs() {
         return nobs_;
       }
       /**
-       * <code>optional uint64 nobs = 6;</code>
+       * <code>uint64 nobs = 6;</code>
        */
       public Builder setNobs(long value) {
         
@@ -4094,7 +4528,7 @@ public final class BufrCdmIndexProto {
         return this;
       }
       /**
-       * <code>optional uint64 nobs = 6;</code>
+       * <code>uint64 nobs = 6;</code>
        */
       public Builder clearNobs() {
         
@@ -4102,14 +4536,16 @@ public final class BufrCdmIndexProto {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -4128,20 +4564,12 @@ public final class BufrCdmIndexProto {
 
     private static final com.google.protobuf.Parser<BufrIndex>
         PARSER = new com.google.protobuf.AbstractParser<BufrIndex>() {
+      @java.lang.Override
       public BufrIndex parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new BufrIndex(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
+        return new BufrIndex(input, extensionRegistry);
       }
     };
 
@@ -4154,33 +4582,34 @@ public final class BufrCdmIndexProto {
       return PARSER;
     }
 
+    @java.lang.Override
     public ucar.nc2.ft.point.bufr.BufrCdmIndexProto.BufrIndex getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Station_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Station_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Field_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Field_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_BufrIndex_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_BufrIndex_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
   }
-  private static com.google.protobuf.Descriptors.FileDescriptor
+  private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
     java.lang.String[] descriptorData = {
@@ -4193,7 +4622,7 @@ public final class BufrCdmIndexProto {
       "type\030\005 \001(\0162\010.FldType\022\013\n\003min\030\006 \001(\r\022\013\n\003max" +
       "\030\007 \001(\r\022\014\n\004desc\030\010 \001(\t\022\r\n\005units\030\t \001(\t\022\r\n\005s" +
       "cale\030\n \001(\005\022\021\n\treference\030\013 \001(\005\022\020\n\010bitWidt" +
-      "h\030\014 \001(\005\"y\n\tBufrIndex\022\020\n\010filename\030\001 \001(\t\022\032",
+      "h\030\014 \001(\005\"y\n\tBufrIndex\022\020\n\010filename\030\001 \001(\t\022\032" +
       "\n\010stations\030\002 \003(\0132\010.Station\022\024\n\004root\030\003 \001(\013" +
       "2\006.Field\022\r\n\005start\030\004 \001(\004\022\013\n\003end\030\005 \001(\004\022\014\n\004" +
       "nobs\030\006 \001(\004*S\n\tFldAction\022\010\n\004defa\020\000\022\010\n\004non" +
@@ -4203,38 +4632,30 @@ public final class BufrCdmIndexProto {
       "eStation\020\004\022\023\n\017heightOfStation\020\005\022\r\n\tstati" +
       "onId\020\n\022\017\n\013stationDesc\020\013\022\t\n\005wmoId\020\014\022\014\n\010wm" +
       "oBlock\020\r\022\010\n\004year\020\017\022\t\n\005month\020\020\022\007\n\003day\020\021\022\010" +
-      "\n\004hour\020\022\022\n\n\006minute\020\023\022\007\n\003sec\020\024\022\007\n\003doy\020\025\022\014",
+      "\n\004hour\020\022\022\n\n\006minute\020\023\022\007\n\003sec\020\024\022\007\n\003doy\020\025\022\014" +
       "\n\010timeIncr\020\026\022\t\n\005incrS\020\027B+\n\026ucar.nc2.ft.p" +
       "oint.bufrB\021BufrCdmIndexProtob\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_Station_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_Station_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Station_descriptor,
         new java.lang.String[] { "Id", "Lat", "Lon", "Alt", "Desc", "WmoId", "Count", });
     internal_static_Field_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_Field_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Field_descriptor,
         new java.lang.String[] { "Fxy", "Name", "Flds", "Action", "Type", "Min", "Max", "Desc", "Units", "Scale", "Reference", "BitWidth", });
     internal_static_BufrIndex_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_BufrIndex_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_BufrIndex_descriptor,
         new java.lang.String[] { "Filename", "Stations", "Root", "Start", "End", "Nobs", });
   }

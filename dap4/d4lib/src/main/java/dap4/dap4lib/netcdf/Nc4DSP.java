@@ -276,7 +276,11 @@ public class Nc4DSP extends AbstractDSP
                 // There is a bug in some versions of netcdf that does not
                 // handle NC_STRING correctly when the gid is invalid.
                 // Handle specially ; this is a temporary hack
-                tn.setSize(Pointer.SIZE);
+                //
+                // 8/16/2019 jlcaron upgrade to jna 5.4.0
+                // com.sun.jna.Pointer#SIZE is removed. Its use is replaced by
+                // com.sun.jna.Native#POINTER_SIZE to prevent a class loading deadlock, when JNA is initialized from multiple threads
+                tn.setSize(Native.POINTER_SIZE);
             } else {
                 SizeTByReference sizep = new SizeTByReference();
                 try {

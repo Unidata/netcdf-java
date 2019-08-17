@@ -4,6 +4,7 @@
 
 package dap4.dap4lib.netcdf;
 
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import dap4.core.data.DataCursor;
 import dap4.core.dmr.*;
@@ -453,7 +454,10 @@ public class Nc4Cursor extends AbstractCursor
             return ti.getSize();
         case String:
         case URL:
-            return Pointer.SIZE;
+            // 8/16/2019 jlcaron upgrade to jna 5.4.0
+            // com.sun.jna.Pointer#SIZE is removed. Its use is replaced by
+            // com.sun.jna.Native#POINTER_SIZE to prevent a class loading deadlock, when JNA is initialized from multiple threads
+            return Native.POINTER_SIZE;
         case Enum:
             return getElementSize((TypeNotes) ((Nc4DSP) getDSP()).find(ti.enumbase, NoteSort.TYPE));
         case Opaque:
