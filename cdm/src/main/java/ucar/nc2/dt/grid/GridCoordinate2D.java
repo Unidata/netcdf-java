@@ -216,7 +216,6 @@ public class GridCoordinate2D {
     if (sign != detIsPositive(x2, y2, x3, y3, wantLon, wantLat)) return false;
     if (sign != detIsPositive(x3, y3, x4, y4, wantLon, wantLat)) return false;
     return sign == detIsPositive(x4, y4, x1, y1, wantLon, wantLat);
-
   }
 
   private boolean detIsPositive(double x0, double y0, double x1, double y1, double x2, double y2) {
@@ -249,7 +248,7 @@ public class GridCoordinate2D {
       rectIndex[0] = Math.max( Math.min(row + drow, nrows-1), 0);
       rectIndex[1] = Math.max( Math.min(col + dcol, ncols-1), 0);
       if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
-      return (row != rectIndex[0]) || (col != rectIndex[1]); // nothing has changed
+      return (row != rectIndex[0]) || (col != rectIndex[1]);
     }
 
   }
@@ -307,7 +306,7 @@ public class GridCoordinate2D {
       rectIndex[0] = Math.max( Math.min(row + drow, nrows-1), 0);
       rectIndex[1] = Math.max( Math.min(col + dcol, ncols-1), 0);
       if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
-      return (row != rectIndex[0]) || (col != rectIndex[1]); // nothing has changed
+      return (row != rectIndex[0]) || (col != rectIndex[1]);
     }
 
   }
