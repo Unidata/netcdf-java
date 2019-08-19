@@ -293,8 +293,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       if (o == null || getClass() != o.getClass()) return false;
       TimeCoordWithInterval that = (TimeCoordWithInterval) o;
       if (interval != that.interval) return false;
-      if (!coord.equals(that.coord)) return false;
-      return true;
+      return coord.equals(that.coord);
     }
 
     @Override

@@ -134,8 +134,7 @@ public class Range implements RangeIterator {
     this.stride = stride;
     this.length = 1 + (last - first) / stride;
     this.last = first + (this.length - 1) * stride;
-    if (stride == 1)
-      assert this.last == last;
+    assert stride != 1 || this.last == last;
     assert this.length != 0;
   }
 

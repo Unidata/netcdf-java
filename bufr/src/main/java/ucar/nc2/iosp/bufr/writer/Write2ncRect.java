@@ -91,7 +91,7 @@ public class Write2ncRect {
     for (Variable v : recordStruct.getVariables()) {
       if (v.getDataType() != DataType.STRUCTURE) continue;
       String structName = N3iosp.makeValidNetcdfObjectName(v.getShortName());
-      int shape[] = v.getShape();
+      int[] shape = v.getShape();
 
       Dimension structDim = ncfile.addDimension(structName, shape[0]);
 

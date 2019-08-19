@@ -131,9 +131,8 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     CoordinateTime that = (CoordinateTime) o;
 
     if (code != that.code) return false;
-    if (!offsetSorted.equals(that.offsetSorted)) return false;
+    return offsetSorted.equals(that.offsetSorted);
 
-    return true;
   }
 
   @Override

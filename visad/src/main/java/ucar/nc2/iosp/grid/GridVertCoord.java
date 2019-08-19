@@ -193,7 +193,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @return if vert dimension should be used
    */
   boolean isVertDimensionUsed() {
-    return (getNLevels() == 1) ? isVerticalCoordinate : true;
+    return (getNLevels() != 1) || isVerticalCoordinate;
   }
 
   /**
@@ -293,7 +293,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     if (coordValues == null) {
       coordValues = new double[levels.size()];
       for (int i = 0; i < levels.size(); i++) {
-        LevelCoord lc = (LevelCoord) levels.get(i);
+        LevelCoord lc = levels.get(i);
         coordValues[i] = lc.mid;
       }
     }
@@ -324,7 +324,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
               2});
       ucar.ma2.Index ima = boundsArray.getIndex();
       for (int i = 0; i < coordValues.length; i++) {
-        LevelCoord lc = (LevelCoord) levels.get(i);
+        LevelCoord lc = levels.get(i);
         boundsArray.setDouble(ima.set(i, 0), lc.value1);
         boundsArray.setDouble(ima.set(i, 1), lc.value2);
       }
@@ -528,7 +528,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     }
 
     for (int i = 0; i < levels.size(); i++) {
-      LevelCoord lc = (LevelCoord) levels.get(i);
+      LevelCoord lc = levels.get(i);
       if (usesBounds) {
         if (ucar.nc2.util.Misc.nearlyEquals(lc.value1, val) && ucar.nc2.util.Misc.nearlyEquals(lc.value2, val2)) {
           return i;

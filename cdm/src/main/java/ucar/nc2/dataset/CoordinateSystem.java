@@ -115,8 +115,7 @@ public class CoordinateSystem {
       // collect dimensions
       List<Dimension> dims = axis.getDimensionsAll();
       for (Dimension dim : dims) {
-        if (!domain.contains(dim))
-          domain.add(dim);
+        domain.add(dim);
       }
     }
   }

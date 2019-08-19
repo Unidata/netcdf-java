@@ -199,11 +199,7 @@ public class GempakGridReader extends GempakFileReader {
     }
 
     // check to see if there are any grids that we can handle
-    if (gridIndex.getGridRecords().isEmpty()) {
-      return false;
-    }
-
-    return true;
+    return !gridIndex.getGridRecords().isEmpty();
 
   }
 
@@ -716,11 +712,11 @@ public class GempakGridReader extends GempakFileReader {
     List gridList = gridIndex.getGridRecords();
     System.out.println("\nGRID FILE: " + getFilename() + "\n");
     printNavBlock();
-    System.out.println("");
+    System.out.println();
     printAnalBlock();
     System.out.println("\nNumber of grids in file:  " + gridList.size());
     System.out.println("\nMaximum number of grids in file:  " + dmLabel.kcol);
-    System.out.println("");
+    System.out.println();
     if (printGrids) {
       printGrids();
     }

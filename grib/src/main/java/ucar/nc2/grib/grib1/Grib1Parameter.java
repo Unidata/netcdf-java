@@ -148,9 +148,8 @@ public class Grib1Parameter implements GribTables.Parameter {
     if (!Objects.equals(cfName, that.cfName)) return false;
     if (!Objects.equals(description, that.description)) return false;
     if (!Objects.equals(name, that.name)) return false;
-    if (!Objects.equals(unit, that.unit)) return false;
+    return Objects.equals(unit, that.unit);
 
-    return true;
   }
 
   @Override

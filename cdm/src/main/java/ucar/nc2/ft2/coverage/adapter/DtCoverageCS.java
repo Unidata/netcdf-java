@@ -146,8 +146,7 @@ public class DtCoverageCS {
    */
   public boolean isRegularSpatial() {
     if (!isRegularSpatial(getXHorizAxis())) return false;
-    if (!isRegularSpatial(getYHorizAxis())) return false;
-    return true;
+    return isRegularSpatial(getYHorizAxis());
   }
 
   private boolean isRegularSpatial(CoordinateAxis axis) {

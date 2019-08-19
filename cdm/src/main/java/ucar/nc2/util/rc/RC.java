@@ -100,9 +100,8 @@ public class RC {
     if (relation != 0) return relation;
     // 3. port number
     relation = (u1.getPort() - u2.getPort());
-    if (relation != 0) return relation;
+    return relation;
     // 4. note: all other fields are ignored
-    return 0;
   }
 
   // Match has different semantics than urlCompare
@@ -119,12 +118,10 @@ public class RC {
     if (!(url.getPath().startsWith(pattern.getPath())))
       return false; // e.g. pattern=y.org/a/b url=y.org/a
 
-    if (pattern.getPort() > 0 && pattern.getPort() != url.getPort())
-      return false;
+    return pattern.getPort() <= 0 || pattern.getPort() == url.getPort();
 
     // note: all other fields are ignored
 
-    return true;
   }
 
   static public class Triple implements Comparable {
@@ -156,7 +153,7 @@ public class RC {
 
     public boolean equals(Object o) {
       if (o == null || !(o instanceof Triple)) return false;
-      return (compareTo((Triple) o) == 0);
+      return (compareTo(o) == 0);
     }
 
     public int compareTo(Object o) {

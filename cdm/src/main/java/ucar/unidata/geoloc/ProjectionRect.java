@@ -469,9 +469,8 @@ public class ProjectionRect implements java.io.Serializable {
     if (Double.compare(that.height, height) != 0) return false;
     if (Double.compare(that.width, width) != 0) return false;
     if (Double.compare(that.x, x) != 0) return false;
-    if (Double.compare(that.y, y) != 0) return false;
+    return Double.compare(that.y, y) == 0;
 
-    return true;
   }
 
   @Override

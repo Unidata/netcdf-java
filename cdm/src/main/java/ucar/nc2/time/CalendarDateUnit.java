@@ -135,11 +135,8 @@ public class CalendarDateUnit {
     this.period = CalendarPeriod.of(1, periodField);
     this.baseDate = baseDate;
 
-    if (periodField == CalendarPeriod.Field.Month || periodField == CalendarPeriod.Field.Year) {
-      isCalendarField = true;
-    } else {
-      isCalendarField = false;
-    }
+    isCalendarField =
+        periodField == CalendarPeriod.Field.Month || periodField == CalendarPeriod.Field.Year;
   }
 
   // given a CalendarDate, find the values in this unit (secs, days, etc) from the baseDate

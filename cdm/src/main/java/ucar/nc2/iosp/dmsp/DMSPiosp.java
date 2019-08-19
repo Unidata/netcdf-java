@@ -737,16 +737,16 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       // The altitude of the satellite.
       // The satellites position.
       //-----
-      double subSatPoint[];
-      double surfaceNormal[] = new double[3];
+      double[] subSatPoint;
+      double[] surfaceNormal = new double[3];
       double satAltitude;
-      double satPoint[] = new double[3];
+      double[] satPoint = new double[3];
 
       //-----
       // Unit vectors in tangent plane pointing north and west.
       //-----
-      double north[] = new double[3];
-      double west[];
+      double[] north = new double[3];
+      double[] west;
       double projectMag;
 
       //-----
@@ -757,22 +757,22 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       double satHeadingAngle;
       double cosHeading;
       double sinHeading;
-      double satHeading[] = new double[3];
+      double[] satHeading = new double[3];
 
       //-----
       // Line in tangent plane perpendicular to the heading
       // (assume the scanner runs perpendicular to heading).
       // Point on scanLine that line-of-sight intersects.
       //-----
-      double scanLine[];
+      double[] scanLine;
       double scannerAngle;
-      double scanPoint[] = new double[3];
+      double[] scanPoint = new double[3];
       double scanPointMag;
 
       //-----
       // Parametric equation for the line-of-sight .
       //-----
-      double lineOfSightSlope[] = new double[3];
+      double[] lineOfSightSlope = new double[3];
       double lineParameter;
 
       //-----
@@ -795,12 +795,12 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       //-----
       // Parametric equation for the line-of-sight .
       //-----
-      double geolocatedPoint[] = new double[3];
+      double[] geolocatedPoint = new double[3];
       double gcLat, gcLon;
       double earthRadius;
 
       double scratch;
-      double scratchVec[] = new double[3];
+      double[] scratchVec = new double[3];
 
       int swathIndex, sampleIndex, currentSampleIndex;
 

@@ -17,8 +17,8 @@ public final class ASCII_CharStream
   int available;
   int tokenBegin;
   public int bufpos = -1;
-  private int bufline[];
-  private int bufcolumn[];
+  private int[] bufline;
+  private int[] bufcolumn;
 
   private int column = 0;
   private int line = 1;
@@ -35,8 +35,8 @@ public final class ASCII_CharStream
   private final void ExpandBuff(boolean wrapAround)
   {
      char[] newbuffer = new char[bufsize + 2048];
-     int newbufline[] = new int[bufsize + 2048];
-     int newbufcolumn[] = new int[bufsize + 2048];
+    int[] newbufline = new int[bufsize + 2048];
+    int[] newbufcolumn = new int[bufsize + 2048];
 
      try
      {

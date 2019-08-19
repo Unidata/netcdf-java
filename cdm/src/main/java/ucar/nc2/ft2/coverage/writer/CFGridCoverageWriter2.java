@@ -159,11 +159,9 @@ public class CFGridCoverageWriter2 {
     }
 
     Projection proj = horizCoordSys.getTransform().getProjection();
-    if (proj instanceof LatLonProjection) {  // Projection is a "fake"; we already have lat/lon.
-      return false;
-    }
+    // Projection is a "fake"; we already have lat/lon.
+    return !(proj instanceof LatLonProjection);
 
-    return true;
   }
 
   private boolean isLargeFile(long total_size) {

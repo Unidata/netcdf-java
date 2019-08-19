@@ -150,7 +150,7 @@ public class FeatureDatasetFactoryManager {
 
     // find out what type of Features
     try {
-      Method m = c.getMethod("getFeatureTypes", new Class[0]);
+      Method m = c.getMethod("getFeatureTypes");
       FeatureType[] result = (FeatureType[]) m.invoke(instance, new Object[0]);
       for (FeatureType ft : result) {
         if (userMode)

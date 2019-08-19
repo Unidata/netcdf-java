@@ -33,9 +33,7 @@ public class LastModifiedLimit implements MFileFilter {
     if (lastModified < 0) return true;  // means dont know - can happen for remote files
 
     long now = System.currentTimeMillis();
-    if (now - lastModified > lastModifiedLimitInMillis)
-      return true;
-    return false;
+    return now - lastModified > lastModifiedLimitInMillis;
   }
 
   public long getLastModifiedLimitInMillis() {

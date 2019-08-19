@@ -133,9 +133,8 @@ public class Documentation {
     if (!Objects.equals(inlineContent, that.inlineContent)) return false;
     if (!Objects.equals(title, that.title)) return false;
     if (!Objects.equals(type, that.type)) return false;
-    if (!Objects.equals(uri, that.uri)) return false;
+    return Objects.equals(uri, that.uri);
 
-    return true;
   }
 
   @Override

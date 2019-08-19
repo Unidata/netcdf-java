@@ -1771,10 +1771,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
     if (n == 2 && dimensions.size() == 2) {    // two dimensional
       Dimension firstd = dimensions.get(0);
-      if (shortName.equals(firstd.getShortName()) &&  // short names match
-              (getDataType() == DataType.CHAR)) {         // must be char valued (really a String)
-        return true;
-      }
+      // must be char valued (really a String)
+      return shortName.equals(firstd.getShortName()) &&  // short names match
+          (getDataType() == DataType.CHAR);
     }
 
     return false;

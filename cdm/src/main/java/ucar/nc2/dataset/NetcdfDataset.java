@@ -1595,7 +1595,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws IOException on read or write error
    */
   // LOOK: Can we use CFPointWriter.CommandLine for CLI parsing instead? Would that break existing scripts?
-  public static void main(String arg[]) throws IOException {
+  public static void main(String[] arg) throws IOException {
     String usage = "usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]";
     if (arg.length < 4) {
       System.out.println(usage);

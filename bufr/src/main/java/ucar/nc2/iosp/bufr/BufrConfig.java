@@ -384,9 +384,8 @@ public class BufrConfig {
       if (Double.compare(that.lon, lon) != 0) return false;
       if (desc != null ? !desc.equals(that.desc) : that.desc != null) return false;
       if (!name.equals(that.name)) return false;
-      if (wmoId != null ? !wmoId.equals(that.wmoId) : that.wmoId != null) return false;
+      return wmoId != null ? wmoId.equals(that.wmoId) : that.wmoId == null;
 
-      return true;
     }
 
     @Override

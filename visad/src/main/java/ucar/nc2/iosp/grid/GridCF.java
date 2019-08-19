@@ -46,66 +46,66 @@ public interface GridCF {
   /**
    * Radius of spherical earth
    */
-  public static final String EARTH_RADIUS = "earth_radius";
+  String EARTH_RADIUS = "earth_radius";
 
   /**
    * major axis of earth
    */
-  public static final String SEMI_MAJOR_AXIS  = "semi_major_axis";
+  String SEMI_MAJOR_AXIS  = "semi_major_axis";
 
   /**
    * minor axis of earth
    */
-  public static final String SEMI_MINOR_AXIS  = "semi_minor_axis";
+  String SEMI_MINOR_AXIS  = "semi_minor_axis";
 
 
   /**
    * grid_mapping_name
    */
-  public static final String GRID_MAPPING_NAME  = "grid_mapping_name";
+  String GRID_MAPPING_NAME  = "grid_mapping_name";
 
 
  /**
    * earth_shape
    */
-  public static final String EARTH_SHAPE  = "earth_shape";
+ String EARTH_SHAPE  = "earth_shape";
 
  /**
    * standard_parallel
    */
-  public static final String STANDARD_PARALLEL  = "standard_parallel";
+ String STANDARD_PARALLEL  = "standard_parallel";
 
   /**
    * longitude_of_central_meridian
    */
-  public static final String LONGITUDE_OF_CENTRAL_MERIDIAN  = "longitude_of_central_meridian";
+  String LONGITUDE_OF_CENTRAL_MERIDIAN  = "longitude_of_central_meridian";
 
   /**
    * latitude_of_projection_origin
    */
-  public static final String LATITUDE_OF_PROJECTION_ORIGIN  = "latitude_of_projection_origin";
+  String LATITUDE_OF_PROJECTION_ORIGIN  = "latitude_of_projection_origin";
 
   /**
    * longitude_of_projection_origin
    */
-  public static final String LONGITUDE_OF_PROJECTION_ORIGIN  = "longitude_of_projection_origin";
+  String LONGITUDE_OF_PROJECTION_ORIGIN  = "longitude_of_projection_origin";
 
   /**
    * straight_vertical_longitude_from_pole
    */
-  public static final String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE  = "straight_vertical_longitude_from_pole";
+  String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE  = "straight_vertical_longitude_from_pole";
 
   /**
    * scale_factor_at_projection_origin
    */
-  public static final String SCALE_FACTOR_AT_PROJECTION_ORIGIN  = "scale_factor_at_projection_origin";
+  String SCALE_FACTOR_AT_PROJECTION_ORIGIN  = "scale_factor_at_projection_origin";
 
 
   /**
    * LOOK bogus
    *
    */
-   public static enum VectorComponentFlag {
+  enum VectorComponentFlag {
      easterlyNortherlyRelative, gridRelative;
 
     static public String of(int val) {

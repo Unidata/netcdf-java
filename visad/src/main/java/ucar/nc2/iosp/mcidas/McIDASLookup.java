@@ -194,13 +194,9 @@ public final class McIDASLookup implements GridTableLookup {
       if (type == 141) {
         return true;
       }
-      if (type == 160) {
-        return true;
-      }
-    } else if (getLevelUnit(gr).equals("hPa")) {
-      return true;
-    }
-    return false;
+      return type == 160;
+    } else
+      return getLevelUnit(gr).equals("hPa");
   }
 
   /**
@@ -234,9 +230,8 @@ public final class McIDASLookup implements GridTableLookup {
       }
       if (type == 125) {
         return true;
-      } else if (getLevelUnit(gr).equals("hPa")) {
-        return false;
-      }
+      } else
+        return !getLevelUnit(gr).equals("hPa");
     }
     return true;
   }
@@ -261,10 +256,7 @@ public final class McIDASLookup implements GridTableLookup {
       return cust.isLayer( gr.getLevelType1());
     }
 
-    if (gr.getLevel2() == 0) {
-      return false;
-    }
-    return true;
+    return gr.getLevel2() != 0;
   }
 
   /**

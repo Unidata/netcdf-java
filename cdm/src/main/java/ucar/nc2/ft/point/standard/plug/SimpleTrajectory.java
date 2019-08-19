@@ -87,9 +87,7 @@ public class SimpleTrajectory extends TableConfigurerImpl {
         d = (Dimension) list.get(0);
         if ( ! d.getShortName().equals( timeDimName)) {return false;}
         units = var.findAttribute( "units").getStringValue();
-        if ( ! SimpleUnit.isCompatible( units, "meters")) {return false;}
-
-        return true;
+      return SimpleUnit.isCompatible(units, "meters");
 
     }
 

@@ -72,7 +72,7 @@ public class MMapRandomAccessFile extends RandomAccessFile {
     }
   }
 
-   public int readBytes( byte dst[], int offset, int length ) {
+   public int readBytes(byte[] dst, int offset, int length ) {
      if( endOfFile ) return -1;
 
      length = (int) Math.min( length, dataEnd - filePosition);
@@ -89,7 +89,7 @@ public class MMapRandomAccessFile extends RandomAccessFile {
      bufferModified = true;
   }
 
-  public void writeBytes( byte dst[], int offset, int length ) {
+  public void writeBytes(byte[] dst, int offset, int length ) {
     source.put(dst, offset, length);
     filePosition += length;
   }

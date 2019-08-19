@@ -216,7 +216,7 @@ public class TableAnalyzer {
         Method isMineMethod;
 
         try {
-          isMineMethod = c.getMethod("isMine", new Class[]{FeatureType.class, NetcdfDataset.class});
+          isMineMethod = c.getMethod("isMine", FeatureType.class, NetcdfDataset.class);
         } catch (NoSuchMethodException ex) {
           continue;
         }

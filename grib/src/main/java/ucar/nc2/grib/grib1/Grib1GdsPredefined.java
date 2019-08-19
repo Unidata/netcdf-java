@@ -85,8 +85,7 @@ public class Grib1GdsPredefined {
       if (!super.equals(o)) return false;
 
       NcepLatLon that = (NcepLatLon) o;
-      if (gridNumber != that.gridNumber) return false;
-      return true;
+      return gridNumber == that.gridNumber;
     }
 
     @Override
@@ -120,8 +119,7 @@ public class Grib1GdsPredefined {
       if (!super.equals(o)) return false;
 
       NcepPS that = (NcepPS) o;
-      if (gridNumber != that.gridNumber) return false;
-      return true;
+      return gridNumber == that.gridNumber;
     }
 
     @Override

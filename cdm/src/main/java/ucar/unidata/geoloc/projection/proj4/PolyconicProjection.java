@@ -249,9 +249,8 @@ public class PolyconicProjection extends ProjectionImpl {
     if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
     if (Double.compare(that.projectionLatitude, projectionLatitude) != 0) return false;
     if (Double.compare(that.projectionLongitude, projectionLongitude) != 0) return false;
-    if (!ellipsoid.equals(that.ellipsoid)) return false;
+    return ellipsoid.equals(that.ellipsoid);
 
-    return true;
   }
 
   @Override

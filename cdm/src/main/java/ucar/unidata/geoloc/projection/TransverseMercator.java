@@ -268,9 +268,8 @@ public class TransverseMercator extends ProjectionImpl {
     if (DoubleMath.fuzzyCompare(that.scale,         scale,         tolerance) != 0) return false;
 
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
-    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
-    return true;
   }
 
   @Override
@@ -501,8 +500,8 @@ public class TransverseMercator extends ProjectionImpl {
         toY = scale * (Math.atan2(Math.tan(lat), Math.cos(dlon)) - lat0) + falseNorthing;
       }
 
-      resultXA[i] = (double) toX;
-      resultYA[i] = (double) toY;
+      resultXA[i] = toX;
+      resultYA[i] = toY;
     }
     return to;
   }
@@ -535,8 +534,8 @@ public class TransverseMercator extends ProjectionImpl {
       toLon = Math.toDegrees(lon0 + Math.atan2(Math.sinh(x), Math.cos(d)));
       toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
 
-      toLatA[i] = (double) toLat;
-      toLonA[i] = (double) toLon;
+      toLatA[i] = toLat;
+      toLonA[i] = toLon;
     }
     return to;
   }

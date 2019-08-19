@@ -334,9 +334,8 @@ public class Stereographic extends ProjectionImpl {
     if (Double.compare(that.lont, lont) != 0) return false;
     if (Double.compare(that.scale, scale) != 0) return false;
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
-    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
-    return true;
   }
 
   @Override

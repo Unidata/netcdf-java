@@ -33,9 +33,8 @@ public class NdbcNetcdf4 extends TableConfigurerImpl  {
 
     if (null == ds.findAttValueIgnoreCase(null, "station_name", null)) return false;
     if (null == ds.findAttValueIgnoreCase(null, "nominal_latitude", null)) return false;
-    if (null == ds.findAttValueIgnoreCase(null, "nominal_longitude", null)) return false;
+    return null != ds.findAttValueIgnoreCase(null, "nominal_longitude", null);
 
-    return true;
   }
 
   /*

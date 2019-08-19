@@ -1069,7 +1069,7 @@ public class V5DStruct {
       @param maxval        one-element float array to put max value
   */
   private static void v5dCompressGrid(int nr, int nc, int nl,
-    int compressmode, float[] data, byte[] compdata1, float ga[], float gb[],
+    int compressmode, float[] data, byte[] compdata1, float[] ga, float[] gb,
     float[] minval, float[] maxval)
           throws BadFormException {
     int nrnc = nr * nc;
@@ -2398,7 +2398,7 @@ public class V5DStruct {
     else {
       // we're rewriting a header
       filler = FirstGridPos - (int) f.getFilePointer();
-      if (!write_tag(TAG_END, filler - 8, newfile)) return false;
+      return write_tag(TAG_END, filler - 8, newfile);
     }
 
     return true;

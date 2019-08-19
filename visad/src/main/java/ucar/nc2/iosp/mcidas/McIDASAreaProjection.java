@@ -390,9 +390,8 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
 
     if (elements != that.elements) return false;
     if (lines != that.lines) return false;
-    if (!anav.equals(that.anav)) return false;
+    return anav.equals(that.anav);
 
-    return true;
   }
 
   @Override

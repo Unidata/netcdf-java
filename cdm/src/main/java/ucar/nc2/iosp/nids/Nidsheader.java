@@ -384,33 +384,33 @@ class Nidsheader{
     int pcode16Number = 0;
     int pcode19Number = 0;
     int pcode20Number = 0;
-    int pkcode1Doff[] = null;
-    int pkcode2Doff[] = null;
-    int pkcode8Doff[] = null;
-    int pkcode1Size[] = null;
-    int pkcode2Size[] = null;
-    int pkcode8Size[] = null;
-    int pkcode4Doff[] = null;
-    int pkcode5Doff[] = null;
-    int pkcode10Doff[] = null;
-    int pkcode10Dlen[] = null;
-    int pkcode6Doff[] = null;
-    int pkcode6Dlen[] = null;
-    int pkcode25Doff[] = null;
-    int pkcode12Doff[] = null;
-    int pkcode13Doff[] = null;
-    int pkcode14Doff[] = null;
-    int pkcode12Dlen[] = null;
-    int pkcode13Dlen[] = null;
-    int pkcode14Dlen[] = null;
-    int pkcode15Dlen[] = null;
-    int pkcode15Doff[] = null;
-    int pkcode16Dlen[] = null;
-    int pkcode16Doff[] = null;
-    int pkcode19Dlen[] = null;
-    int pkcode19Doff[] = null;
-    int pkcode20Dlen[] = null;
-    int pkcode20Doff[] = null;
+    int[] pkcode1Doff = null;
+    int[] pkcode2Doff = null;
+    int[] pkcode8Doff = null;
+    int[] pkcode1Size = null;
+    int[] pkcode2Size = null;
+    int[] pkcode8Size = null;
+    int[] pkcode4Doff = null;
+    int[] pkcode5Doff = null;
+    int[] pkcode10Doff = null;
+    int[] pkcode10Dlen = null;
+    int[] pkcode6Doff = null;
+    int[] pkcode6Dlen = null;
+    int[] pkcode25Doff = null;
+    int[] pkcode12Doff = null;
+    int[] pkcode13Doff = null;
+    int[] pkcode14Doff = null;
+    int[] pkcode12Dlen = null;
+    int[] pkcode13Dlen = null;
+    int[] pkcode14Dlen = null;
+    int[] pkcode15Dlen = null;
+    int[] pkcode15Doff = null;
+    int[] pkcode16Dlen = null;
+    int[] pkcode16Doff = null;
+    int[] pkcode19Dlen = null;
+    int[] pkcode19Doff = null;
+    int[] pkcode20Dlen = null;
+    int[] pkcode20Doff = null;
     // Get product symbology header (needed to get image shape)
     ifloop:
     if (pinfo.offsetToSymbologyBlock != 0) {
@@ -794,14 +794,14 @@ class Nidsheader{
     }
 
     if (pinfo.offsetToGraphicBlock != 0) {
-      int gpkcode1Doff[] = null;
-      int gpkcode2Doff[] = null;
-      int gpkcode10Doff[] = null;
-      int gpkcode10Dlen[] = null;
-      int gpkcode8Doff[] = null;
-      int gpkcode1Size[] = null;
-      int gpkcode2Size[] = null;
-      int gpkcode8Size[] = null;
+      int[] gpkcode1Doff = null;
+      int[] gpkcode2Doff = null;
+      int[] gpkcode10Doff = null;
+      int[] gpkcode10Dlen = null;
+      int[] gpkcode8Doff = null;
+      int[] gpkcode1Size = null;
+      int[] gpkcode2Size = null;
+      int[] gpkcode8Size = null;
       int gpcode1Number = 0;
       int gpcode10Number = 0;
       int gpcode8Number = 0;
@@ -2957,7 +2957,7 @@ class Nidsheader{
     int i;
     int word = 0;
 
-    int bv[] = new int[num];
+    int[] bv = new int[num];
 
     for (i = 0; i < num; i++) {
       bv[i] = convertunsignedByte2Short(b[i]);
@@ -2983,7 +2983,7 @@ class Nidsheader{
     int i;
     int word = 0;
 
-    int bv[] = new int[num];
+    int[] bv = new int[num];
 
     for (i = 0; i < num; i++) {
       bv[i] = convertunsignedByte2Short(b[i]);

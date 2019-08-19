@@ -91,7 +91,7 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
     return convertToLong(result);
   }
 
-  private int[] fillRightmost(int shape[], int maxElements) {
+  private int[] fillRightmost(int[] shape, int maxElements) {
     // fill up rightmost dimensions first, until maxElements is reached
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(shape);
     return index.computeChunkShape(maxElements);

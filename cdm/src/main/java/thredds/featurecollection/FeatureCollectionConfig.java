@@ -755,8 +755,7 @@ public class FeatureCollectionConfig {
       boolean hasProb = (prob != Integer.MIN_VALUE); // record has prob
       boolean isMine = !needProb || hasProb && (this.prob == prob);
       if (this.id == id && isMine) { // first match in the filter list is used
-        if (this.intvLength != intvLength)
-          return true; // remove the ones whose intervals dont match
+        return this.intvLength != intvLength; // remove the ones whose intervals dont match
       }
       return false;
     }

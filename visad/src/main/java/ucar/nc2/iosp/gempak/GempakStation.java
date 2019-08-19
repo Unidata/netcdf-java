@@ -449,7 +449,7 @@ public class GempakStation implements Station {
   public String getWmoId() {
     String wmoID = "";
     if (!(stnm == GempakConstants.IMISSD)) {
-      wmoID = String.valueOf((int) (stnm / 10));
+      wmoID = String.valueOf(stnm / 10);
     }
     return wmoID;
   }

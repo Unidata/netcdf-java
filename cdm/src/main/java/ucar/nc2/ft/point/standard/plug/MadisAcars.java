@@ -36,10 +36,9 @@ public class MadisAcars extends Madis {
     if (ds.findVariable(vn.lat) == null) return false;
     if (ds.findVariable(vn.lon) == null) return false;
     if (ds.findVariable(vn.obsTime) == null) return false;
-    if (ds.findVariable(TRAJ_ID) == null) return false;
+     return ds.findVariable(TRAJ_ID) != null;
 
-    return true;
-  }
+   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     VNames vn = getVariableNames(ds, errlog);

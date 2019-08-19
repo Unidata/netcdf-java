@@ -181,7 +181,7 @@ public class NcStreamWriterChannel {
     return size;
   }
 
-  static public void main2(String args[]) throws InvalidRangeException {
+  static public void main2(String[] args) throws InvalidRangeException {
     int[] totalShape = new int[]{1, 40, 530, 240};
     int[] chunkShape = new int[]{1, 1, 530, 240};
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(totalShape);

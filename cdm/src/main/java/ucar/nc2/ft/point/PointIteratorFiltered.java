@@ -123,10 +123,9 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
           if ((filter_date != null) && !filter_date.includes(pointFeat.getObservationTimeAsCalendarDate()))
             return false;
 
-          if ((filter_bb != null) && !filter_bb.contains(pointFeat.getLocation().getLatitude(), pointFeat.getLocation().getLongitude()))
-            return false;
+          return (filter_bb == null) || filter_bb.contains(pointFeat.getLocation().getLatitude(),
+              pointFeat.getLocation().getLongitude());
 
-          return true;
         }
     }
 

@@ -235,8 +235,7 @@ public class BufrTables {
       if ((this.subcenter >= 0) && (subcenter >= 0) && (subcenter != this.subcenter)) return false;
       if ((this.master >= 0) && (master >= 0) && (master != this.master)) return false;
       if ((this.local >= 0) && (local >= 0) && (local != this.local)) return false;
-      if ((this.cat >= 0) && (cat >= 0) && (cat != this.cat)) return false;
-      return true;
+      return (this.cat < 0) || (cat < 0) || (cat == this.cat);
     }
 
     public String getName() {

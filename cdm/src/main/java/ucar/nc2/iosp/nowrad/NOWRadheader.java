@@ -48,7 +48,7 @@ public class NOWRadheader {
     final static int                NEXVI        = 6;        // Vert. Integrated Liquid Water
     final static int                NOWRADHF     = 0;        // 2km Base Reflectivity
     final static int                USRADHF      = 1;        // 8km Base Reflectivity
-    static public String            mons[]       = {
+    static public String[] mons = {
         "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
     };
     static private org.slf4j.Logger log          = org.slf4j.LoggerFactory.getLogger(NOWRadheader.class);

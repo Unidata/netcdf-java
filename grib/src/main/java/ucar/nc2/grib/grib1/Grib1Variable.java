@@ -102,7 +102,7 @@ public class Grib1Variable {
 
     if (useCenter && pds.getParameterNumber() > 127) {
       if (pds.getCenter() != pds2.getCenter()) return false;
-      if (pds.getSubCenter() != pds2.getSubCenter()) return false;
+      return pds.getSubCenter() == pds2.getSubCenter();
     }
 
     return true;

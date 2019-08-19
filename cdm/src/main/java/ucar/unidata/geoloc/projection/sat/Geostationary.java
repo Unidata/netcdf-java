@@ -219,9 +219,8 @@ public class Geostationary extends ProjectionImpl {
 
     if (!navigation.equals(that.navigation)) return false;
 
-    if (!(geoCoordinateScaleFactor == that.geoCoordinateScaleFactor)) return false;
+    return geoCoordinateScaleFactor == that.geoCoordinateScaleFactor;
 
-    return true;
   }
 
   @Override

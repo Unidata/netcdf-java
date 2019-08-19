@@ -229,8 +229,7 @@ public abstract class CollectionAbstract implements MCollection {
 
   public class MyStreamFilter implements DirectoryStream.Filter<Path> {
     public boolean accept(Path entry) throws IOException {
-      if (sfilter != null && !sfilter.accept(entry)) return false;
-      return true;
+      return sfilter == null || sfilter.accept(entry);
     }
   }
 

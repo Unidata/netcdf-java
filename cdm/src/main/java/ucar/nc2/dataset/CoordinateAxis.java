@@ -350,7 +350,7 @@ public class CoordinateAxis extends VariableDS {
       if (!getAxisType().equals(o.getAxisType())) return false;
 
     if (getPositive() != null)
-      if (!getPositive().equals(o.getPositive())) return false;
+      return getPositive().equals(o.getPositive());
 
     return true;
   }

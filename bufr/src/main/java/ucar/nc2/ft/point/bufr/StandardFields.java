@@ -170,17 +170,16 @@ public class StandardFields {
       if (typeMap.get(BufrCdmIndexProto.FldType.lat) == null) return false;
       if (typeMap.get(BufrCdmIndexProto.FldType.lon) == null) return false;
       if (typeMap.get(BufrCdmIndexProto.FldType.stationId) != null) return true;
-      if (typeMap.get(BufrCdmIndexProto.FldType.wmoId) != null) return true;
-      return false;
+      return typeMap.get(BufrCdmIndexProto.FldType.wmoId) != null;
     }
 
     public boolean hasTime() {
       if (typeMap.get(BufrCdmIndexProto.FldType.year) == null) return false;
       if (typeMap.get(BufrCdmIndexProto.FldType.month) == null) return false;
-      if (typeMap.get(BufrCdmIndexProto.FldType.day) == null && typeMap.get(BufrCdmIndexProto.FldType.doy) == null) return false;
+      return typeMap.get(BufrCdmIndexProto.FldType.day) != null
+          || typeMap.get(BufrCdmIndexProto.FldType.doy) != null;
       //if (typeMap.get(BufrCdmIndexProto.FldType.hour) == null) return false;  // LOOK could assume 0:0 ??
       //if (typeMap.get(BufrCdmIndexProto.FldType.minute) == null) return false;
-      return true;
     }
 
     @Override

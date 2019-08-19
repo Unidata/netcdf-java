@@ -440,7 +440,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     int srcDataWidth = data.getShape()[1];
     int BBoxHeight = (int) ((swathInfo[3] - swathInfo[2]) / swathInfo[1] + 0.5);
     int BBoxWidth = (int) ((swathInfo[5] - swathInfo[4]) / swathInfo[0] + 0.5);
-    int BBoxShape[] = {BBoxHeight, BBoxWidth};  //[height, width]
+    int[] BBoxShape = {BBoxHeight, BBoxWidth};  //[height, width]
     Array bBoxArray = Array.factory(DataType.FLOAT, BBoxShape);
     double startLon, startLat;  //upper left and lower right
     startLon = swathInfo[4];
@@ -614,7 +614,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     // element5: maxLon
     // element6: width of the boundingBox
     // element7: height of the boundingBox
-    double increment[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    double[] increment = {0, 0, 0, 0, 0, 0, 0, 0};
     IndexIterator latIter = lat.getIndexIterator();
     IndexIterator lonIter = lon.getIndexIterator();
 

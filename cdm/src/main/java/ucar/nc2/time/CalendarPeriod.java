@@ -260,9 +260,8 @@ public class CalendarPeriod {
     CalendarPeriod that = (CalendarPeriod) o;
 
     if (value != that.value) return false;
-    if (field != that.field) return false;
+    return field == that.field;
 
-    return true;
   }
 
   @Override

@@ -79,15 +79,13 @@ public class CalendarDateRange {
 
   public boolean intersects(CalendarDate start, CalendarDate end)  {
     if (startDt.isAfter(end.getDateTime())) return false;
-    if (endDt.isBefore(start.getDateTime())) return false;
-    return true;
+    return !endDt.isBefore(start.getDateTime());
   }
 
   public boolean includes(CalendarDate cd) {
     DateTime dt = cd.getDateTime();
     if (startDt.isAfter(dt)) return false;
-    if (endDt.isBefore(dt)) return false;
-    return true;
+    return !endDt.isBefore(dt);
   }
 
   public CalendarDateRange intersect(CalendarDateRange clip) {

@@ -343,9 +343,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (isRegular != that.isRegular) return false;
     if (!Objects.equals(otime, that.otime)) return false;
     if (!Objects.equals(regTimes, that.regTimes)) return false;
-    if (!Objects.equals(times, that.times)) return false;
+    return Objects.equals(times, that.times);
 
-    return true;
   }
 
   @Override
@@ -782,9 +781,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
       if (refDate != time2D.refDate) return false;
       if (!Objects.equals(time, time2D.time)) return false;
-      if (!Objects.equals(tinv, time2D.tinv)) return false;
+      return Objects.equals(tinv, time2D.tinv);
 
-      return true;
     }
 
     @Override

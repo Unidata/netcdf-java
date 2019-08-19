@@ -126,9 +126,8 @@ public class Access {                 // (5)
     if (dataSize != access.dataSize) return false;
     if (!Objects.equals(dataFormatS, access.dataFormatS)) return false;
     if (!Objects.equals(service, access.service)) return false;
-    if (!Objects.equals(urlPath, access.urlPath)) return false;
+    return Objects.equals(urlPath, access.urlPath);
 
-    return true;
   }
 
   @Override

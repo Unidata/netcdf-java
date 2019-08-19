@@ -87,9 +87,7 @@ public class DatasetUrl {
             && alpha.indexOf(cs) >= 0 && "/\\".indexOf(ce1) >= 0)
       return false; // looks like windows drive letter
     // If trailing colon is not followed by alpha or /, then assume not url
-    if (slashalpha.indexOf(ce1) < 0)
-      return false;
-    return true;
+    return slashalpha.indexOf(ce1) >= 0;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -121,13 +119,13 @@ public class DatasetUrl {
     String fragment = null;
     int pos = trueurl.lastIndexOf('#');
     if (pos >= 0) {
-      fragment = trueurl.substring(pos + 1, trueurl.length());
+      fragment = trueurl.substring(pos + 1);
       trueurl = trueurl.substring(0, pos);
     }
     pos = location.lastIndexOf('?');
     String query = null;
     if (pos >= 0) {
-      query = trueurl.substring(pos + 1, trueurl.length());
+      query = trueurl.substring(pos + 1);
       trueurl = trueurl.substring(0, pos);
     }
     if (fragment != null)
@@ -371,8 +369,7 @@ public class DatasetUrl {
 
     if (!checkCdmr) {
       ServiceType result = checkIfCdmr(location);
-      if (result != null)
-        return result;
+      return result;
     }
     return null;
   }

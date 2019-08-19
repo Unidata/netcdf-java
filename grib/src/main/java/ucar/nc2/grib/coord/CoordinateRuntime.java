@@ -191,9 +191,8 @@ public class CoordinateRuntime implements Coordinate {
     CoordinateRuntime that = (CoordinateRuntime) o;
 
     if (!periodName.equals(that.periodName)) return false;
-    if (!Arrays.equals(runtimes, that.runtimes)) return false;
+    return Arrays.equals(runtimes, that.runtimes);
 
-    return true;
   }
 
   @Override

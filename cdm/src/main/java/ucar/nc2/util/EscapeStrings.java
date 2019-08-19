@@ -231,7 +231,7 @@ public class EscapeStrings {
     ret.append(authority);
     if (path != null && path.length() > 0) {
       // Encode pieces between '/'
-      String pieces[] = path.split("[/]", -1);
+      String[] pieces = path.split("[/]", -1);
       for (int i = 0; i < pieces.length; i++) {
         String p = pieces[i];
         if (p == null) {
@@ -442,7 +442,7 @@ public class EscapeStrings {
         start = pos + 1;
       }
     }
-    result.add(escapedName.substring(start, escapedName.length())); // remaining
+    result.add(escapedName.substring(start)); // remaining
     return result;
   }
 

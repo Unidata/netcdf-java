@@ -24,9 +24,7 @@ import java.util.Formatter;
 public class Iridl extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    if (!ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, "").equalsIgnoreCase("IRIDL"))
-      return false;
-    return true;
+    return ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, "").equalsIgnoreCase("IRIDL");
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {

@@ -20,7 +20,8 @@ import java.net.URL;
  * @author Russ Rew
  */
 public class BeLeDataInputStream extends DataInputStream {
-  private byte w[] = new byte[8]; // work array for buffering bytes
+
+  private byte[] w = new byte[8]; // work array for buffering bytes
   private static final int kLongs = 128; // arbitrary, probably big enough
   private long[] longWorkSpace = new long[kLongs];
   private byte[] byteWorkSpace = new byte[8 * kLongs];
@@ -131,7 +132,7 @@ public class BeLeDataInputStream extends DataInputStream {
    * @param lbuf the buffer into which the longs are read
    * @param n    the number of little-endian longs to read
    */
-  public final void readLELongs(long lbuf[], int n) throws IOException {
+  public final void readLELongs(long[] lbuf, int n) throws IOException {
     int nLeft = n;
     int lCount = 0;
     int nToRead = kLongs;

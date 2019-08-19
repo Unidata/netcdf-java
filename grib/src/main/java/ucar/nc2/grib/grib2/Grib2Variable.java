@@ -137,9 +137,8 @@ public class Grib2Variable {
     boolean error = (genType == 6 || genType == 7);
     boolean error2 = (genType2 == 6 || genType2 == 7);
     if (error != error2) return false;
-    if (useGenType && (genType != genType2)) return false;
+    return !useGenType || (genType == genType2);
 
-    return true;
   }
 
 

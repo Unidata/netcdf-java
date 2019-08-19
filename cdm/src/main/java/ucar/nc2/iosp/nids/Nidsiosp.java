@@ -799,7 +799,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
       int f = (val) & (1023);
 
       if( e== 0) {
-           deco =(float) Math.pow(-1, s) * 2 * (0.f +(float) (f/1024.f)) ;
+           deco =(float) Math.pow(-1, s) * 2 * (0.f + (f/1024.f)) ;
       } else {
            deco = (float) (Math.pow(-1, s) *Math.pow(2, e-16)*(1 + (f/1024.f)));
       }
@@ -1805,7 +1805,7 @@ short arrowHeadValue = 0;    */
     int i;
     int word = 0;
 
-    int bv[] = new int[num];
+    int[] bv = new int[num];
 
     for (i = 0; i < num; i++) {
       bv[i] = DataType.unsignedByteToShort(b[offset + i]);
@@ -1829,7 +1829,7 @@ short arrowHeadValue = 0;    */
     int i;
     int word = 0;
 
-    int bv[] = new int[num];
+    int[] bv = new int[num];
 
     for (i = 0; i < num; i++) {
       bv[i] = DataType.unsignedByteToShort(b[offset + i]);

@@ -160,11 +160,8 @@ public class Sinusoidal extends ProjectionImpl {
         if (Double.compare(that.falseEasting, falseEasting) != 0) {
             return false;
         }
-        if (Double.compare(that.falseNorthing, falseNorthing) != 0) {
-            return false;
-        }
+      return Double.compare(that.falseNorthing, falseNorthing) == 0;
 
-        return true;
     }
 
     @Override

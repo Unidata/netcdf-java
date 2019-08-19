@@ -128,10 +128,8 @@ public class LogReader {
       if (chain != null && !chain.pass(log))
         return false;
 
-      if ((log.date < start) || (log.date > end))
-        return false;
+      return (log.date >= start) && (log.date <= end);
 
-      return true;
     }
   }
 
@@ -168,9 +166,8 @@ public class LogReader {
         return false;
 
       int status = log.getStatus();
-      if ((status < 400) || (status >= 1000)) return false;
+      return (status >= 400) && (status < 1000);
 
-      return true;
     }
   }
 

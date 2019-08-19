@@ -394,9 +394,8 @@ public class DerivedUnitImpl extends UnitImpl implements DerivedUnit, DerivableU
             return false;
         }
         final DerivedUnit that = (DerivedUnit) object;
-        return (this instanceof BaseUnit && that instanceof BaseUnit)
-                ? false
-                : dimension.equals(that.getDimension());
+        return (!(this instanceof BaseUnit) || !(that instanceof BaseUnit)) && dimension
+            .equals(that.getDimension());
     }
 
     /**

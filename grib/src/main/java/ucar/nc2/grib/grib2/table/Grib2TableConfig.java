@@ -148,9 +148,8 @@ class Grib2TableConfig {
     if (!id.equals(that.id)) return false;
     if (!name.equals(that.name)) return false;
     if (!Objects.equals(path, that.path)) return false;
-    if (type != that.type) return false;
+    return type == that.type;
 
-    return true;
   }
 
   @Override
