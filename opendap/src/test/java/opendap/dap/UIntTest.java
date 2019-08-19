@@ -113,7 +113,7 @@ public class UIntTest {
 
   @Test
   public void testStuff() throws Exception {
-    File outFile = File.createTempFile("UIntTest", "txt");
+    File outFile = File.createTempFile("UIntTest", "bin");
 
     UIntTest b = new UIntTest();
     try (FileOutputStream fp = new FileOutputStream(outFile);

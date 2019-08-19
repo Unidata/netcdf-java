@@ -5,6 +5,7 @@
 
 package ucar.ui.prefs;
 
+import java.awt.HeadlessException;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -76,23 +77,27 @@ public class TestPanelStore {
 
   @Test
   public void testStuff() {
-    JFrame frame = new JFrame("Test PrefPanelStore");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        try {
-          xstore.save();
-          System.out.println("write xstore");
-        } catch (java.io.IOException ioe) { ioe.printStackTrace(); }
-        System.exit(0);
-      }
-    });
+    try {
+      JFrame frame = new JFrame("Test PrefPanelStore");
+      frame.addWindowListener(new WindowAdapter() {
+        public void windowClosing(WindowEvent e) {
+          try {
+            xstore.save();
+            System.out.println("write xstore");
+          } catch (java.io.IOException ioe) { ioe.printStackTrace(); }
+          System.exit(0);
+        }
+      });
 
-    TestPanelStore tp = new TestPanelStore();
-    PrefPanel pp = tp.makePP();
+      TestPanelStore tp = new TestPanelStore();
+      PrefPanel pp = tp.makePP();
 
-    frame.getContentPane().add(pp);
-    frame.pack();
-    frame.setLocation(300, 300);
-    frame.setVisible(true);
+      frame.getContentPane().add(pp);
+      frame.pack();
+      frame.setLocation(300, 300);
+      frame.setVisible(true);
+    } catch (HeadlessException e) {
+      // ok to fail if there is no display
+    }
   }
 }
