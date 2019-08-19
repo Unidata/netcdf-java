@@ -289,7 +289,7 @@ public class RuntimeConfigParser {
               Class nc4IospClass = RuntimeConfigParser.class.getClassLoader()
                   .loadClass(nc4IospClassName);
               Method method = nc4IospClass
-                  .getMethod("setLibraryAndPath", new Class[]{String.class, String.class});
+                  .getMethod("setLibraryAndPath", String.class, String.class);
               method.invoke(null, path, name); // static method has null for object
             } catch (Throwable e) {
               errlog.append(nc4IospClassName + " is not on classpath\n");

@@ -51,12 +51,11 @@ public class CompareNetcdf2 {
       if (name.equals(Nc4.NETCDF4_COORDINATES)) return false;  // ??
       if (name.equals(Nc4.NETCDF4_STRICT)) return false;
 
-      if(name.startsWith("_")) return false;
+      return !name.startsWith("_");
 
       // not implemented yet
       //if (att.getDataType().isEnum()) return false;
 
-      return true;
     }
 
     @Override
@@ -679,7 +678,7 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  public static void main(String arg[]) throws IOException {
+  public static void main(String[] arg) throws IOException {
     String usage = "usage: ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData]";
     if (arg.length < 2) {
       System.out.println(usage);

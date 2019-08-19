@@ -545,9 +545,7 @@ public class NcStreamDataCol {
 
     DataType dataType = NcStream.convertDataType(dproto.getDataType());
     Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
-    if (!dproto.getIsVlen()) {
-      assert dproto.getNelems() == section.computeSize();
-    }
+    assert dproto.getIsVlen() || dproto.getNelems() == section.computeSize();
 
     // special cases
     if (dproto.getIsVlen()) {
@@ -669,9 +667,7 @@ public class NcStreamDataCol {
     String name = memberData.getName();
     DataType dataType = NcStream.convertDataType(memberData.getDataType());
     Section section = NcStream.decodeSection(memberData.getSection());
-    if (!memberData.getIsVlen()) {
-      assert memberData.getNelems() == section.computeSize();
-    }
+    assert memberData.getIsVlen() || memberData.getNelems() == section.computeSize();
     // the dproto section includes parents, remove them
     Section msection = section.removeFirst(parentSection);
     if (memberData.getIsVlen())

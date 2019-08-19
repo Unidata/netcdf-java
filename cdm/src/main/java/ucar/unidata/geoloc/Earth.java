@@ -179,10 +179,9 @@ public class Earth implements Serializable {
     Earth earth = (Earth) o;
 
     if (Double.compare(earth.equatorRadius, equatorRadius) != 0) return false;
-    if (Double.compare(earth.poleRadius, poleRadius) != 0) return false;
+    return Double.compare(earth.poleRadius, poleRadius) == 0;
     // if (name != null ? !name.equals(earth.name) : earth.name != null) return false;
 
-    return true;
   }
 
   @Override

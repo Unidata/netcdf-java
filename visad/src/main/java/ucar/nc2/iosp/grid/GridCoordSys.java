@@ -271,7 +271,7 @@ public class GridCoordSys {
 
     double[] data = new double[nlevs];
     for (int i = 0; i < levels.size(); i++) {
-      Double d = (Double) levels.get(i);
+      Double d = levels.get(i);
       data[i] = d.doubleValue();
     }
     Array dataArray = Array.factory(DataType.DOUBLE, new int[]{nlevs}, data);

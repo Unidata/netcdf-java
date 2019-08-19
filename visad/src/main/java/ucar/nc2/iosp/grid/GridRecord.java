@@ -20,42 +20,42 @@ public interface GridRecord {
    *
    * @return the first vertical level value
    */
-  public double getLevel1();
+  double getLevel1();
 
   /**
    * Get the second vertical level of this GridRecord
    *
    * @return the second vertical level value
    */
-  public double getLevel2();
+  double getLevel2();
 
   /**
    * Get the vertical level type of this GridRecord
    *
    * @return vertical level type
    */
-  public int getLevelType1();
+  int getLevelType1();
 
   /**
    * Get the vertical level type of this GridRecord
    *
    * @return vertical level type
    */
-  public int getLevelType2();
+  int getLevelType2();
 
   /**
    * Get the first reference time of this GridRecord
    *
    * @return reference time
    */
-  public Date getReferenceTime();
+  Date getReferenceTime();
 
   /**
    * Get the valid time for this GridRecord.
    *
    * @return valid time
    */
-  public Date getValidTime();
+  Date getValidTime();
 
   /**
    * Get valid time offset of this GridRecord
@@ -69,35 +69,35 @@ public interface GridRecord {
    *
    * @return parameter name
    */
-  public String getParameterName();
+  String getParameterName();
 
   /**
    * Get the parameter description
    *
    * @return parameter description
    */
-  public String getParameterDescription();
+  String getParameterDescription();
 
   /**
    * Get the grid def record id
    *
    * @return parameter name
    */
-  public String getGridDefRecordId();
+  String getGridDefRecordId();
 
   /**
    * Get the decimal scale of the values
    *
    * @return decimal scale
    */
-  public int getDecimalScale();
+  int getDecimalScale();
 
   /**
    * Get the time unit as a code, which should be Grib2 table 4.4.
    *
    * @return the time unit as a code
    */
-  public int getTimeUnit();
+  int getTimeUnit();
 
 
   /**
@@ -107,21 +107,21 @@ public interface GridRecord {
    *
    * @return the time unit as a String
    */
-  public String getTimeUdunitName();
+  String getTimeUdunitName();
 
   /**
    * A hash code to group records into a CDM variable
    *
    * @return group hash code
    */
-  public int cdmVariableHash();
+  int cdmVariableHash();
 
   /**
    * A unique name for the CDM variable, must be consistent with cdmVariableHash
    *
    * @return unique CDM variable name
    */
-  public String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat);
+  String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat);
 
 }
 

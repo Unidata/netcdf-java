@@ -188,9 +188,8 @@ public class AlbersEqualArea extends ProjectionImpl {
     if (Double.compare(that.par1, par1) != 0) return false;
     if (Double.compare(that.par2, par2) != 0) return false;
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
-    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
-    return true;
   }
 
   @Override

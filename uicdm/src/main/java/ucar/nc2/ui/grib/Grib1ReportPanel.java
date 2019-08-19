@@ -648,18 +648,16 @@ public class Grib1ReportPanel extends ReportPanel {
       if (isLayer != gridMatch.isLayer) return false;
       if (level != gridMatch.level) return false;
       if (prob != gridMatch.prob) return false;
-      if (probLimit != gridMatch.probLimit) return false;
+      return probLimit == gridMatch.probLimit;
 
-      return true;
     }
 
     public boolean altMatch(GridMatch gridMatch) {
       if (!altMatchNoProb(gridMatch)) return false;
 
       if (probLimit / 1000 == gridMatch.probLimit) return true;
-      if (probLimit == gridMatch.probLimit / 1000) return true;
+      return probLimit == gridMatch.probLimit / 1000;
 
-      return false;
     }
 
     public boolean altMatchNoProb(Object o) {
@@ -673,9 +671,8 @@ public class Grib1ReportPanel extends ReportPanel {
       if (isError != gridMatch.isError) return false;
       if (isLayer != gridMatch.isLayer) return false;
       if (level != gridMatch.level) return false;
-      if (prob != gridMatch.prob) return false;
+      return prob == gridMatch.prob;
 
-      return true;
     }
 
 

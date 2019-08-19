@@ -228,7 +228,7 @@ public class Format {
     int dotInd = mantissa.indexOf('.');
     if (dotInd == -1) {
       number = new StringBuilder(mantissa);
-      fraction = new StringBuilder("");
+      fraction = new StringBuilder();
     } else {
       number = new StringBuilder(mantissa.substring(0, dotInd));
       fraction = new StringBuilder(mantissa.substring(dotInd + 1));
@@ -258,7 +258,7 @@ public class Format {
       if (((numFigs == 0) || number.toString().equals("0"))
               && (fracFigs > 0)) {
         numFigs = 0;
-        number = new StringBuilder("");
+        number = new StringBuilder();
         for (int i = 0; i < fraction.length(); ++i) {
           if (fraction.charAt(i) != '0') {
             break;

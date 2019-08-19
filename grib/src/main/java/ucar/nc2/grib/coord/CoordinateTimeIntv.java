@@ -154,9 +154,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     CoordinateTimeIntv that = (CoordinateTimeIntv) o;
 
     if (code != that.code) return false;
-    if (!timeIntervals.equals(that.timeIntervals)) return false;
+    return timeIntervals.equals(that.timeIntervals);
 
-    return true;
   }
 
   @Override

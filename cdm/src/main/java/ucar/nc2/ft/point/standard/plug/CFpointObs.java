@@ -394,9 +394,7 @@ public class CFpointObs extends TableConfigurerImpl {
             //zDim = z.getDimension(0);
           }
         } else { // 1d time
-          if (z.getRank() == 1) {
-            assert !time.getDimension(0).equals(z.getDimension(0)) : "time and z dimensions must be different";
-          }
+          assert z.getRank() != 1 || !time.getDimension(0).equals(z.getDimension(0)) : "time and z dimensions must be different";
         }
 
         TableConfig profileTable = makeMultidimInner(ds, stationTable, info.childDim, info, errlog);
@@ -1477,8 +1475,8 @@ public class CFpointObs extends TableConfigurerImpl {
         // if axis is structure member, try pulling dimension out of parent structure
         if (axis.getParentStructure() != null) {
           Structure parent = axis.getParentStructure();
-          if ((outer != null) && (parent.getRank() == 1) && (outer.equals(parent.getDimension(0))))
-            return true;
+          return (outer != null) && (parent.getRank() == 1) && (outer
+              .equals(parent.getDimension(0)));
         }
         return false;
       }

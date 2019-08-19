@@ -538,7 +538,7 @@ public class FileWriter2 {
    * @param arg -in fileIn -out fileOut [-netcdf4]
    * @throws IOException on read or write error
    */
-  public static void main(String arg[]) throws IOException {
+  public static void main(String[] arg) throws IOException {
     if (arg.length < 4) {
       usage();
       System.exit(0);

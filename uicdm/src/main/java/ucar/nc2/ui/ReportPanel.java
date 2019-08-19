@@ -102,8 +102,7 @@ public abstract class ReportPanel extends JPanel {
         public boolean accept(MFile mfile) {
           String suffix = mfile.getName();
           if (suffix.contains(".ncx")) return false;
-          if (suffix.contains(".gbx")) return false;
-          return true;
+          return !suffix.contains(".gbx");
         }
       });
       return filteredCollection;

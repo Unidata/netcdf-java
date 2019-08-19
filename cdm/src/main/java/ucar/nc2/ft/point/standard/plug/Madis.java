@@ -35,9 +35,8 @@ public class Madis extends TableConfigurerImpl  {
     VNames vn = getVariableNames(ds, null);    
     if (ds.findVariable(vn.lat) == null) return false;
     if (ds.findVariable(vn.lon) == null) return false;
-    if (ds.findVariable(vn.obsTime) == null) return false;
+    return ds.findVariable(vn.obsTime) != null;
 
-    return true;
   }
 
   /*

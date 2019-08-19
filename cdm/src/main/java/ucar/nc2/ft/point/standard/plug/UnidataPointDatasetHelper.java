@@ -176,7 +176,7 @@ public class UnidataPointDatasetHelper {
     if (a == AxisType.Height) {
       Variable v = findVariable( ds, "altitude");
       if (null == v) v = findVariable( ds, "depth");
-      if (v != null) return v;
+      return v;
     }
 
     // I think the CF part is done by the CoordSysBuilder adding the _CoordinateAxisType attrinutes.

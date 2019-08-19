@@ -378,9 +378,9 @@ public class Cinrad2Record {
     String clon = din.readString(16);
     String clat = din.readString(16);
     // latlon
-    int lon = (int)din.readInt();
-    int lat = (int)din.readInt();
-    int hhh = (int)din.readInt();
+    int lon = din.readInt();
+    int lat = din.readInt();
+    int hhh = din.readInt();
 
     din.skipBytes(4);
 
@@ -467,9 +467,9 @@ public class Cinrad2Record {
     String clon = din.readString(16);
     String clat = din.readString(16);
     // latlon
-    int lon = (int)din.readInt();
-    int lat = (int)din.readInt();
-    int hhh = (int)din.readInt();
+    int lon = din.readInt();
+    int lat = din.readInt();
+    int hhh = din.readInt();
 
     din.skipBytes(40);
 

@@ -140,9 +140,8 @@ public class CoordinateEns implements Coordinate {
     CoordinateEns that = (CoordinateEns) o;
 
     if (code != that.code) return false;
-    if (!ensSorted.equals(that.ensSorted)) return false;
+    return ensSorted.equals(that.ensSorted);
 
-    return true;
   }
 
   @Override

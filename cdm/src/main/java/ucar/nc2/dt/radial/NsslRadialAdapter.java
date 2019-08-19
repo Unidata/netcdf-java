@@ -161,10 +161,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
       isVolume = false;
       return;
     }
-    if (format.equals("true"))
-      isVolume = true;
-    else
-      isVolume = false;
+    isVolume = format.equals("true");
   }
 
   public boolean isVolume() {

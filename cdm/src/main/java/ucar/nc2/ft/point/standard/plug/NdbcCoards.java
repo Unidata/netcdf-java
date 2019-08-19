@@ -39,9 +39,8 @@ public class NdbcCoards extends TableConfigurerImpl  {
     //if (ds.findVariable("lon") == null) return false;
 
     // DODS wont have record !!
-    if (!ds.hasUnlimitedDimension()) return false;
+    return ds.hasUnlimitedDimension();
 
-    return true;
   }
 
   /*

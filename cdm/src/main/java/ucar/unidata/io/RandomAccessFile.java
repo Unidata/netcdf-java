@@ -230,7 +230,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   /**
    * The buffer used for reading the data.
    */
-  protected byte buffer[];
+  protected byte[] buffer;
 
   /**
    * The offset in bytes of the start of the buffer, from the start of the file.
@@ -636,7 +636,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *         more data due to the end of the file being reached.
    * @throws IOException if an I/O error occurrs.
    */
-  public int readBytes(byte b[], int off, int len) throws IOException {
+  public int readBytes(byte[] b, int off, int len) throws IOException {
 
     // Check for end of file.
     if (endOfFile) {
@@ -758,7 +758,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *         more data due to the end of the file being reached.
    * @throws IOException if an I/O error occurrs.
    */
-  public int read(byte b[], int off, int len) throws IOException {
+  public int read(byte[] b, int off, int len) throws IOException {
     return readBytes(b, off, len);
   }
 
@@ -771,7 +771,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *         more data due to the end of the file being reached.
    * @throws IOException if an I/O error occurrs.
    */
-  public int read(byte b[]) throws IOException {
+  public int read(byte[] b) throws IOException {
     return readBytes(b, 0, b.length);
   }
 
@@ -799,7 +799,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *                      all the bytes.
    * @throws IOException  if an I/O error occurs.
    */
-  public final void readFully(byte b[]) throws IOException {
+  public final void readFully(byte[] b) throws IOException {
     readFully(b, 0, b.length);
   }
 
@@ -816,7 +816,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *                      all the bytes.
    * @throws IOException  if an I/O error occurs.
    */
-  public final void readFully(byte b[], int off, int len) throws IOException {
+  public final void readFully(byte[] b, int off, int len) throws IOException {
     int n = 0;
     while (n < len) {
       int count = this.read(b, off + n, len - n);
@@ -918,7 +918,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @param len the length of the data.
    * @throws IOException if an I/O error occurrs.
    */
-  public void writeBytes(byte b[], int off, int len) throws IOException {
+  public void writeBytes(byte[] b, int off, int len) throws IOException {
     // If the amount of data is small (less than a full buffer)...
     if (len < buffer.length) {
 
@@ -979,7 +979,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @param b the data.
    * @throws IOException if an I/O error occurs.
    */
-  public void write(byte b[]) throws IOException {
+  public void write(byte[] b) throws IOException {
     writeBytes(b, 0, b.length);
   }
 
@@ -992,7 +992,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @param len the number of bytes to write.
    * @throws IOException if an I/O error occurs.
    */
-  public void write(byte b[], int off, int len) throws IOException {
+  public void write(byte[] b, int off, int len) throws IOException {
     writeBytes(b, off, len);
   }
 
@@ -1743,7 +1743,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @param len the number of characters to write.
    * @throws IOException if an I/O error occurs.
    */
-  public final void writeBytes(char b[], int off, int len) throws IOException {
+  public final void writeBytes(char[] b, int off, int len) throws IOException {
     for (int i = off; i < len; i++) {
       write((byte) b[i]);
     }

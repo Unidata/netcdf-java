@@ -136,7 +136,7 @@ public class SystemMenu extends JMenu {
         final AbstractAction exitAction = new AbstractAction() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                toolsui.exit();
+                ToolsUI.exit();
             }
         };
         BAMutil.setActionProperties(exitAction, "Exit", "Exit", false, 'X', -1);

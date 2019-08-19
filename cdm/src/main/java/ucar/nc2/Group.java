@@ -662,7 +662,7 @@ public class Group extends CDMNode implements AttributeContainer {
       path = path.substring(1);
 
     // iteratively create path
-    String pieces[] = path.split("/");
+    String[] pieces = path.split("/");
     if (ignorelast) pieces[pieces.length - 1] = null;
 
     Group current = (isabsolute ? ncfile.getRootGroup() : this);

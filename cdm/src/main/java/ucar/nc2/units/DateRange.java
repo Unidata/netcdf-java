@@ -159,9 +159,8 @@ public class DateRange {
     if (isEmpty) return false;
 
     if (getStart().after(d)) return false;
-    if (getEnd().before(d)) return false;
+    return !getEnd().before(d);
 
-    return true;
   }
 
   /**
@@ -185,9 +184,8 @@ public class DateRange {
     if (isEmpty) return false;
 
     if (getStart().after(end_want)) return false;
-    if (getEnd().before(start_want)) return false;
+    return !getEnd().before(start_want);
 
-    return true;
   }
 
   /**
@@ -453,8 +451,7 @@ public class DateRange {
     if (useStart && !start.equals(oo.start)) return false;
     if (useEnd && !end.equals(oo.end)) return false;
     if (useDuration && !duration.equals(oo.duration)) return false;
-    if (useResolution && !resolution.equals(oo.resolution)) return false;
-    return true;
+    return !useResolution || resolution.equals(oo.resolution);
   }
 
   /**

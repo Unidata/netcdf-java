@@ -272,8 +272,8 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 		//Tools.log("zoomToFit invoked");
 		sclPic.setScaleSize( getSize() );
 		// prevent useless rescale events when the picture is not ready
-		if ( sclPic.getStatusCode() == sclPic.LOADED 
-		  || sclPic.getStatusCode() == sclPic.READY ) {
+		if ( sclPic.getStatusCode() == ScalablePicture.LOADED
+		  || sclPic.getStatusCode() == ScalablePicture.READY) {
 			sclPic.createScaledPictureInThread( Thread.MAX_PRIORITY );
 		}
 	}

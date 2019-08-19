@@ -253,9 +253,8 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
     if (Double.compare(that.lon0rad, lon0rad) != 0) return false;
     if (Double.compare(that.par1rad, par1rad) != 0) return false;
     if (Double.compare(that.par2rad, par2rad) != 0) return false;
-    if (!earth.equals(that.earth)) return false;
+    return earth.equals(that.earth);
 
-    return true;
   }
 
   @Override
@@ -417,11 +416,7 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
    * @return true when the line between pt1 and pt2 crosses the seam.
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
-      return true;
-    }
-
-    return false;
+    return ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2);
 
     /* opposite signed X values, larger then 5000 km  LOOK ????
     return (pt1.getX() * pt2.getX() < 0)

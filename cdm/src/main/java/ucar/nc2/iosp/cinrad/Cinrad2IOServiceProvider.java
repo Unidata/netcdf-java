@@ -38,10 +38,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
       String stationId = loc.substring(posFirst,posFirst+4);
       NexradStationDB.init();
       NexradStationDB.Station station = NexradStationDB.get("K"+ stationId);
-      if(station != null )
-          return true;
-      else 
-        return false;
+      return station != null;
     } catch (IOException ioe) {
         return false;
     }
@@ -79,8 +76,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
           int year = cal.get(Calendar.YEAR);
           cal.setTime(new Date());
           int cyear = cal.get(Calendar.YEAR);
-          if(year < 1990 || year > cyear )  return false;
-          return true;
+        return year >= 1990 && year <= cyear;
       } catch (IOException ioe) {
           return false;
       }

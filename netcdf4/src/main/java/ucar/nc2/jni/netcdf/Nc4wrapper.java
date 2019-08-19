@@ -52,9 +52,9 @@ public class Nc4wrapper implements Nc4prototypes
     static protected void err(String cc, int c) {log.error("Serial failure: "+cc+": counter != "+c+"\n");}
 
     static protected void ce() {if(counter != 0) err("ce",0); counter = 1;}
-    static protected void cx() {if(counter != 1) err("cx",1); counter=0;};
+    static protected void cx() {if(counter != 1) err("cx",1); counter=0;}
 
-    private Nc4prototypes nc4 = null;
+  private Nc4prototypes nc4 = null;
 
     public Nc4wrapper(Nc4prototypes nc4) {this.nc4 = nc4;}
 

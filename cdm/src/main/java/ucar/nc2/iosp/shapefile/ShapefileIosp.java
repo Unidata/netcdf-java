@@ -39,9 +39,7 @@ public class ShapefileIosp extends AbstractIOServiceProvider {
     raf.seek(28);
     raf.order(ByteOrder.LITTLE_ENDIAN);
     int version = raf.readInt();
-    if (version != VERSION)
-      return false;
-    return true;
+    return version == VERSION;
   }
 
   @Override

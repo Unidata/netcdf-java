@@ -138,9 +138,8 @@ public final class Factor implements Serializable {
 		}
 		else {
 			final Factor that = (Factor) object;
-			equals = getExponent() != that.getExponent()
-					? false
-					: getExponent() == 0 || getBase().equals(that.getBase());
+			equals = getExponent() == that.getExponent() && (getExponent() == 0 || getBase()
+          .equals(that.getBase()));
 		}
 		return equals;
 	}

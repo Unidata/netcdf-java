@@ -194,7 +194,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     List<List<Level2Record>> secondGroup = new ArrayList<>(groups.size());
 
     for (List<Level2Record> o : groups) {
-      Level2Record firstRecord = (Level2Record) o.get(0);
+      Level2Record firstRecord = o.get(0);
       int ol = o.size();
 
       if (ol >= 720) {

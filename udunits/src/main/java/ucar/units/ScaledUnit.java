@@ -375,8 +375,7 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
         }
         ScaledUnit that = (ScaledUnit) object;
         if (Double.compare(that._scale, _scale) != 0) return false;
-        if (!_unit.equals(that._unit)) return false;
-        return true;
+        return _unit.equals(that._unit);
     }
 
   /**

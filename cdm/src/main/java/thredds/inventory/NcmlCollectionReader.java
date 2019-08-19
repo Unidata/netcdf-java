@@ -210,8 +210,7 @@ public class NcmlCollectionReader {
     if (elem.getChildren("variable", ncmlNS).size() > 0) return true;
     if (elem.getChildren("dimension", ncmlNS).size() > 0) return true;
     if (elem.getChildren("group", ncmlNS).size() > 0) return true;
-    if (elem.getChildren("remove",ncmlNS).size() > 0) return true;
-    return false;
+    return elem.getChildren("remove", ncmlNS).size() > 0;
   }
 
   public Element getNcmlOuter() {

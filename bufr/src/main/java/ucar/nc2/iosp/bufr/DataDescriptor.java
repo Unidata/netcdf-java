@@ -145,8 +145,7 @@ public class DataDescriptor {
 
   public boolean isLocal() {
     if ((f == 0) || (f == 3)) {
-      if ((x >= 48) || (y >= 192))
-        return true;
+      return (x >= 48) || (y >= 192);
     }
     return false;
   }
@@ -345,9 +344,8 @@ public class DataDescriptor {
     if (fxy != that.fxy) return false;
     if (replication != that.replication) return false;
     if (type != that.type) return false;
-    if (subKeys != null ? !subKeys.equals(that.subKeys) : that.subKeys != null) return false;
+    return subKeys != null ? subKeys.equals(that.subKeys) : that.subKeys == null;
 
-    return true;
   }
 
   public int hashCode2() {

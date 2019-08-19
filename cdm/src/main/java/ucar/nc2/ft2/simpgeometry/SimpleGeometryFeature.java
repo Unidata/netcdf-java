@@ -67,8 +67,8 @@ public class SimpleGeometryFeature implements VariableSimpleIF{
   public void setCoordSys (SimpleGeometryCS coordSys) {
     if (this.coordSys != null) throw new RuntimeException("Can't change coordSys once set");
     this.coordSys = coordSys;
-    
-    String axesStrList[] = null;
+
+    String[] axesStrList = null;
     
     // Find the name of the axes specific to this geometry
     axesStrList = coordSysName.split(" ");

@@ -1368,7 +1368,8 @@ public class H4header extends NCheader
   }
 
   static class DataChunk {
-    int origin[];
+
+    int[] origin;
     TagData data;
 
     DataChunk(int[] origin, int[] chunk_length, TagData data) {

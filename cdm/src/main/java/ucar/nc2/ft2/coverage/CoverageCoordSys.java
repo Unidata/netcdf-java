@@ -333,8 +333,7 @@ public class CoverageCoordSys {
     CoverageCoordAxis xaxis = getXAxis();
     CoverageCoordAxis yaxis = getYAxis();
     if (xaxis == null || !(xaxis instanceof CoverageCoordAxis1D) || !xaxis.isRegular()) return false;
-    if (yaxis == null || !(yaxis instanceof CoverageCoordAxis1D) || !yaxis.isRegular()) return false;
-    return true;
+    return yaxis != null && yaxis instanceof CoverageCoordAxis1D && yaxis.isRegular();
   }
 
   public ProjectionImpl getProjection() {

@@ -275,11 +275,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
     storedBlockCRC = bsGetInt32();
 
-    if (bsR(1) == 1) {
-      blockRandomised = true;
-    } else {
-      blockRandomised = false;
-    }
+    blockRandomised = bsR(1) == 1;
 
     //        currBlockNo++;
     getAndMoveToFrontDecode();
@@ -427,18 +423,14 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   }
 
   private void recvDecodingTables() {
-    char len[][] = new char[N_GROUPS][MAX_ALPHA_SIZE];
+    char[][] len = new char[N_GROUPS][MAX_ALPHA_SIZE];
     int i, j, t, nGroups, nSelectors, alphaSize;
     int minLen, maxLen;
     boolean[] inUse16 = new boolean[16];
 
     /* Receive the mapping table */
     for (i = 0; i < 16; i++) {
-      if (bsR(1) == 1) {
-        inUse16[i] = true;
-      } else {
-        inUse16[i] = false;
-      }
+      inUse16[i] = bsR(1) == 1;
     }
 
     for (i = 0; i < 256; i++) {

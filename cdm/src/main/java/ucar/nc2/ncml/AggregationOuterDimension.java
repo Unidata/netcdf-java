@@ -757,10 +757,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     private boolean isNeeded(int wantStart, int wantStop) {
       if (wantStart >= wantStop)
         return false;
-      if ((wantStart >= aggEnd) || (wantStop <= aggStart))
-        return false;
+      return (wantStart < aggEnd) && (wantStop > aggStart);
 
-      return true;
     }
 
     /* @Override

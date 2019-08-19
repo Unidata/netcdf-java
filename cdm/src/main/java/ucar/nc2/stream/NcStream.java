@@ -776,7 +776,7 @@ public class NcStream {
     return builder.build();
   }
 
-  public static ArrayStructureBB decodeArrayStructure(StructureMembers sm, int shape[], byte[] proto) throws java.io.IOException {
+  public static ArrayStructureBB decodeArrayStructure(StructureMembers sm, int[] shape, byte[] proto) throws java.io.IOException {
     NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
     builder.mergeFrom(proto);
     long size = 0;

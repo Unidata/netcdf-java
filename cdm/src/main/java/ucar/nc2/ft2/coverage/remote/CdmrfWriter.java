@@ -409,7 +409,7 @@ public class CdmrfWriter {
     builder.setVersion(3); // set to >= 3 for proto3
     builder.setBigend(ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN);
 
-    int shape[] = geoArray.getData().getShape();
+    int[] shape = geoArray.getData().getShape();
     for (int aShape : shape) builder.addShape(aShape);
 
     CoverageCoordSys csys = geoArray.getCoordSysForData();

@@ -391,8 +391,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     for (CoordinateAxis axis : coordAxes) {
       List<Dimension> dims = axis.getDimensionsAll();
       for (Dimension dim : dims) {
-        if (!domain.contains(dim))
-          domain.add(dim);
+        domain.add(dim);
       }
     }
 
@@ -540,8 +539,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       List<Dimension> dims = axis.getDimensionsAll();
       for (Dimension dim : dims) {
         dim.setShared(true); // make them shared (section will make them unshared)
-        if (!domain.contains(dim))
-          domain.add(dim);
+        domain.add(dim);
       }
     }
     
@@ -749,9 +747,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   @Override
   public boolean isRegularSpatial() {
     if (!isRegularSpatial(getXHorizAxis())) return false;
-    if (!isRegularSpatial(getYHorizAxis())) return false;
+    return isRegularSpatial(getYHorizAxis());
     //if (!isRegularSpatial(getVerticalAxis())) return false; LOOK removed July 30, 2006 for WCS
-    return true;
   }
 
   private boolean isRegularSpatial(CoordinateAxis axis) {
@@ -1181,7 +1178,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     } else if ((xaxis instanceof CoordinateAxis2D) && (yaxis instanceof CoordinateAxis2D) && isLatLon()) {
       CoordinateAxis2D lon_axis = (CoordinateAxis2D) xaxis;
       CoordinateAxis2D lat_axis = (CoordinateAxis2D) yaxis;
-      int shape[] = lon_axis.getShape();
+      int[] shape = lon_axis.getShape();
       int nj = shape[0];
       int ni = shape[1];
 

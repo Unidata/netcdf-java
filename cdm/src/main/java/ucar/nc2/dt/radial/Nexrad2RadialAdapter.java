@@ -165,10 +165,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
    // return true;
     Dimension r = nds.findDimension("scanR_HI");
     Dimension v = nds.findDimension("scanV_HI");
-    if(r != null || v != null)
-        return true;
-    else
-        return false;
+    return r != null || v != null;
   }
 
   public boolean isStationary() {

@@ -338,11 +338,8 @@ public abstract class Grib1Gds {
     if (ny != Grib1Gds.ny) {
       return false;
     }
-    if (template != Grib1Gds.template) {
-      return false;
-    }
+    return template == Grib1Gds.template;
 
-    return true;
   }
 
   @Override
@@ -518,10 +515,7 @@ public abstract class Grib1Gds {
       if (!Misc.nearlyEquals(deltaLat, other.deltaLat)) {
         return false;
       }
-      if (!Misc.nearlyEquals(deltaLon, other.deltaLon)) {
-        return false;
-      }
-      return true;
+      return Misc.nearlyEquals(deltaLon, other.deltaLon);
     }
 
     @Override
@@ -708,10 +702,7 @@ public abstract class Grib1Gds {
       }
 
       GaussianLatLon that = (GaussianLatLon) o;
-      if (nparellels != that.nparellels) {
-        return false;
-      }
-      return true;
+      return nparellels == that.nparellels;
     }
 
     @Override
@@ -821,11 +812,8 @@ public abstract class Grib1Gds {
         return false;
       }
 
-      if (projCenterFlag != that.projCenterFlag) {
-        return false;
-      }
+      return projCenterFlag == that.projCenterFlag;
 
-      return true;
     }
 
     @Override
@@ -1032,11 +1020,8 @@ public abstract class Grib1Gds {
       if (!Misc.nearlyEquals(latin1, that.latin1)) {
         return false;
       }
-      if (!Misc.nearlyEquals(latin2, that.latin2)) {
-        return false;
-      }
+      return Misc.nearlyEquals(latin2, that.latin2);
 
-      return true;
     }
 
     @Override
@@ -1200,11 +1185,8 @@ public abstract class Grib1Gds {
       if (!Misc.nearlyEquals(dY, that.dY)) {
         return false;
       }
-      if (!Misc.nearlyEquals(dX, that.dX)) {
-        return false;
-      }
+      return Misc.nearlyEquals(dX, that.dX);
 
-      return true;
     }
 
     @Override

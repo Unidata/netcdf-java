@@ -39,9 +39,8 @@ public abstract class GridEnsembleCoord {
       EnsCoord ensCoord = (EnsCoord) o;
 
       if (number != ensCoord.number) return false;
-      if (type != ensCoord.type) return false;
+      return type == ensCoord.type;
 
-      return true;
     }
 
     @Override

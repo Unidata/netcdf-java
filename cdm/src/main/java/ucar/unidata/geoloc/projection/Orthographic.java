@@ -100,9 +100,8 @@ public class Orthographic extends ProjectionImpl {
     if (Double.compare(that.lat0, lat0) != 0) return false;
     if (Double.compare(that.lon0, lon0) != 0) return false;
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
-    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
-    return true;
   }
 
   @Override

@@ -429,8 +429,7 @@ public class GridIndexToNC {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       VertCollection that = (VertCollection) o;
-      if (!vc.equals(that.vc)) return false;
-      return true;
+      return vc.equals(that.vc);
     }
 
     @Override

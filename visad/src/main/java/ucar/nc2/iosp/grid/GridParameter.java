@@ -144,9 +144,8 @@ public class GridParameter {
     if (cf_name != null ? !cf_name.equals(that.cf_name) : that.cf_name != null) return false;
     if (description != null ? !description.equals(that.description) : that.description != null) return false;
     if (name != null ? !name.equals(that.name) : that.name != null) return false;
-    if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+    return unit != null ? unit.equals(that.unit) : that.unit == null;
 
-    return true;
   }
 
   @Override

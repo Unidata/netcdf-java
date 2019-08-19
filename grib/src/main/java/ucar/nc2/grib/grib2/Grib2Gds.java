@@ -424,8 +424,7 @@ public abstract class Grib2Gds {
         return false;   // allow some slop, reletive to grid size
       if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
       if (!Misc.nearlyEqualsAbs(la2, other.la2, maxReletiveErrorPos * deltaLat)) return false;
-      if (!Misc.nearlyEqualsAbs(lo2, other.lo2, maxReletiveErrorPos * deltaLon)) return false;
-      return true;
+      return Misc.nearlyEqualsAbs(lo2, other.lo2, maxReletiveErrorPos * deltaLon);
     }
 
     @Override
@@ -752,9 +751,8 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
       if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
       if (!Misc.nearlyEqualsAbs(lad, that.lad, maxReletiveErrorPos * dY)) return false;
       if (!Misc.nearlyEquals(dY, that.dY)) return false;
-      if (!Misc.nearlyEquals(dX, that.dX)) return false;
+      return Misc.nearlyEquals(dX, that.dX);
 
-      return true;
     }
 
     @Override
@@ -894,9 +892,8 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       if (!Misc.nearlyEquals(dY, that.dY)) return false;
       if (!Misc.nearlyEquals(dX, that.dX)) return false;
 
-      if (projCenterFlag != that.projCenterFlag) return false;
+      return projCenterFlag == that.projCenterFlag;
 
-      return true;
     }
 
     @Override
@@ -1064,9 +1061,8 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
       if (!Misc.nearlyEquals(dY, that.dY)) return false;
       if (!Misc.nearlyEquals(dX, that.dX)) return false;
       if (!Misc.nearlyEquals(latin1, that.latin1)) return false;
-      if (!Misc.nearlyEquals(latin2, that.latin2)) return false;
+      return Misc.nearlyEquals(latin2, that.latin2);
 
-      return true;
     }
 
     @Override
@@ -1294,9 +1290,8 @@ some records differ only by:
 
       GaussLatLon that = (GaussLatLon) o;
 
-      if (Nparellels != that.Nparellels) return false;
+      return Nparellels == that.Nparellels;
 
-      return true;
     }
 
     @Override
@@ -1458,9 +1453,8 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
       if (Float.compare(that.Yp, Yp) != 0) return false;
       if (Float.compare(that.dX, dX) != 0) return false;
       if (Float.compare(that.dY, dY) != 0) return false;
-      if (flags != that.flags) return false;
+      return flags == that.flags;
 
-      return true;
     }
 
     @Override
@@ -1634,9 +1628,8 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
       CurvilinearOrthogonal that = (CurvilinearOrthogonal) o;
 
-      if (flags != that.flags) return false;
+      return flags == that.flags;
 
-      return true;
     }
 
     @Override

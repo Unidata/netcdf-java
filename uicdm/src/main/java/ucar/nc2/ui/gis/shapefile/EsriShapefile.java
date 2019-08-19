@@ -203,9 +203,7 @@ public class EsriShapefile {
     int c3 = is.read();
     int c4 = is.read();
     is.reset();
-    if (c1 == 'P' && c2 == 'K' && c3 == 0x03 && c4 == 0x04)
-      return true;
-    return false;
+    return c1 == 'P' && c2 == 'K' && c3 == 0x03 && c4 == 0x04;
   }
 
   private void init(Rectangle2D bBox) throws IOException {

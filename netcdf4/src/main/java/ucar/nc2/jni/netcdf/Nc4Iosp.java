@@ -9,6 +9,7 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -816,14 +817,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           throw new ForbiddenConversionException("Illegal enum const: " + lval);
         econsts[i] = name;
       }
-      data = Array.factory(DataType.STRING, new int[]{len}, (Object) econsts);
+      data = Array.factory(DataType.STRING, new int[]{len}, econsts);
     }
     Attribute a = new Attribute(attname,data);
     a.setEnumType(userType.e);
     return a;
   }
 
-  private Array convertByteBuffer(ByteBuffer bb, int baseType, int shape[]) throws IOException {
+  private Array convertByteBuffer(ByteBuffer bb, int baseType, int[] shape) throws IOException {
 
     switch (baseType) {
       case Nc4prototypes.NC_BYTE:
@@ -2609,7 +2610,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         Map<Integer, String> emap = en.getMap();
         for(Map.Entry<Integer, String> entry : emap.entrySet()) {
             IntByReference val = new IntByReference(entry.getKey());
-            ret = nc4.nc_insert_enum(g4.grpid, typeid, (String) entry.getValue(), val);
+            ret = nc4.nc_insert_enum(g4.grpid, typeid, entry.getValue(), val);
             if(ret != 0)
                 throw new IOException(nc4.nc_strerror(ret) + " on\n" + entry.getValue());
             if(DEBUG) System.out.printf(" added enum type member %s: %d%n",
@@ -2695,7 +2696,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         int elemSize;
         if (att.isString()) {
           String val = att.getStringValue();
-          elemSize = val.getBytes(CDM.UTF8).length;
+          elemSize = val.getBytes(StandardCharsets.UTF_8).length;
           if (elemSize == 0) elemSize = 1;
         } else {
           elemSize = att.getDataType().getSize() * att.getLength();
@@ -2725,7 +2726,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
         if (att.isString()) {  // String gets turned into array of char; otherwise no way to pass in
           String val = att.getStringValue();
-          int len = val.getBytes(CDM.UTF8).length;
+          int len = val.getBytes(StandardCharsets.UTF_8).length;
           if (len == 0) len = 1;
           ret = nc4.nc_insert_array_compound(grpid, typeid, memberName, new SizeT(bb.position()), field_typeid, 1, new int[]{len});
 
@@ -2741,7 +2742,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           int elemSize;
           if (att.isString()) {
             String val = att.getStringValue();
-            elemSize = val.getBytes(CDM.UTF8).length;
+            elemSize = val.getBytes(StandardCharsets.UTF_8).length;
           } else {
             elemSize = att.getDataType().getSize() * att.getLength();
           }
@@ -2751,7 +2752,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         // place the values in a ByteBuffer
         if (att.isString()) {
           String val = att.getStringValue();
-          byte[] sby = val.getBytes(CDM.UTF8);
+          byte[] sby = val.getBytes(StandardCharsets.UTF_8);
           for (byte b : sby)
             bb.put(b);
           if (sby.length == 0) bb.put((byte) 0); // empyy string has a 0

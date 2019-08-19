@@ -170,11 +170,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       }
     }
 
-    if (cp <= 0x7f && Character.isWhitespace(cp)) {  // trailing spaces disallowed
-      return false;
-    }
+    // trailing spaces disallowed
+    return cp > 0x7f || !Character.isWhitespace(cp);
 
-    return true;
   }
 
   /**

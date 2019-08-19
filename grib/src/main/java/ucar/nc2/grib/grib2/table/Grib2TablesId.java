@@ -22,8 +22,7 @@ public class Grib2TablesId {
     if (subCenter != -1 && id.subCenter != subCenter) return false;
     if (masterVersion != -1 && id.masterVersion != masterVersion) return false;
     if (localVersion != -1 && id.localVersion != localVersion) return false;
-    if (genProcessId != -1 && id.genProcessId != genProcessId) return false;
-    return true;
+    return genProcessId == -1 || id.genProcessId == genProcessId;
   }
 
   @Override
@@ -37,9 +36,8 @@ public class Grib2TablesId {
     if (genProcessId != that.genProcessId) return false;
     if (localVersion != that.localVersion) return false;
     if (masterVersion != that.masterVersion) return false;
-    if (subCenter != that.subCenter) return false;
+    return subCenter == that.subCenter;
 
-    return true;
   }
 
   @Override

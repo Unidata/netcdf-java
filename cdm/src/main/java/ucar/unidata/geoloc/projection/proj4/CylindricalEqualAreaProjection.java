@@ -167,9 +167,8 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
     if (Double.compare(that.scaleFactor, scaleFactor) != 0) return false;
     if (!Objects.equals(earth, that.earth)) return false;
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
-    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
-    return true;
   }
 
   @Override

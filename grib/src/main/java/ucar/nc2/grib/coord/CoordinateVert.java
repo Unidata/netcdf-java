@@ -165,9 +165,8 @@ public class CoordinateVert implements Coordinate {
     CoordinateVert that = (CoordinateVert) o;
 
     if (code != that.code) return false;
-    if (!levelSorted.equals(that.levelSorted)) return false;
+    return levelSorted.equals(that.levelSorted);
 
-    return true;
   }
 
   @Override

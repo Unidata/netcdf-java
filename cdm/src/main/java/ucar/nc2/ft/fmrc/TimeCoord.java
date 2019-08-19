@@ -395,9 +395,8 @@ public class TimeCoord implements Comparable {
       Tinv tinv = (Tinv) o;
 
       if (!Misc.nearlyEquals(b2, tinv.b2)) return false;
-      if (!Misc.nearlyEquals(b1, tinv.b1)) return false;
+      return Misc.nearlyEquals(b1, tinv.b1);
 
-      return true;
     }
 
     @Override

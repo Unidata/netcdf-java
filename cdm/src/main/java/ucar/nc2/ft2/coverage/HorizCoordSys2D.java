@@ -221,8 +221,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       if (wantLat < latEdge.get(row, col)) return false;
       if (wantLat > latEdge.get(row + 1, col)) return false;
       if (wantLon < lonEdge.get(row, col)) return false;
-      if (wantLon > lonEdge.get(row, col + 1)) return false;
-      return true;
+      return !(wantLon > lonEdge.get(row, col + 1));
     }
 
     /**
@@ -285,9 +284,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
       boolean sign = detIsPositive(x1, y1, x2, y2, wantLon, wantLat);
       if (sign != detIsPositive(x2, y2, x3, y3, wantLon, wantLat)) return false;
       if (sign != detIsPositive(x3, y3, x4, y4, wantLon, wantLat)) return false;
-      if (sign != detIsPositive(x4, y4, x1, y1, wantLon, wantLat)) return false;
+      return sign == detIsPositive(x4, y4, x1, y1, wantLon, wantLat);
 
-      return true;
     }
 
     private boolean detIsPositive(double x0, double y0, double x1, double y1, double x2, double y2) {
@@ -320,10 +318,9 @@ public class HorizCoordSys2D extends HorizCoordSys {
         rectIndex[0] = Math.max(Math.min(row + drow, nrows - 1), 0);
         rectIndex[1] = Math.max(Math.min(col + dcol, ncols - 1), 0);
         if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
-        if ((row == rectIndex[0]) && (col == rectIndex[1])) return false; // nothing has changed
+        return (row != rectIndex[0]) || (col != rectIndex[1]); // nothing has changed
       }
 
-      return true;
     }
 
     /**
@@ -381,10 +378,9 @@ public class HorizCoordSys2D extends HorizCoordSys {
         rectIndex[0] = Math.max(Math.min(row + drow, nrows - 1), 0);
         rectIndex[1] = Math.max(Math.min(col + dcol, ncols - 1), 0);
         if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
-        if ((row == rectIndex[0]) && (col == rectIndex[1])) return false; // nothing has changed
+        return (row != rectIndex[0]) || (col != rectIndex[1]); // nothing has changed
       }
 
-      return true;
     }
 
     private boolean incr(double wantLat, double wantLon, int[] rectIndex) {
@@ -444,7 +440,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       double minx = LatLonPointImpl.lonNormalFrom(llpt.getLongitude(), lonMinMax.min);
       double maxx = LatLonPointImpl.lonNormalFrom(urpt.getLongitude(), lonMinMax.min);
 
-      int shape[] = lonAxis2D.getShape();
+      int[] shape = lonAxis2D.getShape();
       int ny = shape[0];
       int nx = shape[1];
       int minCol = Integer.MAX_VALUE, minRow = Integer.MAX_VALUE;

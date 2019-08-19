@@ -41,9 +41,8 @@ public class Suomi extends CoordSysBuilder {
     if (desc == null || (!desc.equals("Time delta from start_time") && !desc.equals("PWV window midpoint time delta from start_time"))) return false;
 
     if (null == ncfile.findGlobalAttribute( "start_date")) return false;
-    if (null == ncfile.findGlobalAttribute( "start_time")) return false;
+    return null != ncfile.findGlobalAttribute("start_time");
 
-    return true;
   }
 
   public Suomi() {

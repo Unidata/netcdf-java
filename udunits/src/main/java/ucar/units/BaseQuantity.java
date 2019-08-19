@@ -190,14 +190,10 @@ public abstract class BaseQuantity implements Base, Comparable<BaseQuantity>,
 	 */
 	@Override
 	public boolean equals(final Object object) {
-		return this == object
-				? true
-				: !(object instanceof BaseQuantity)
-						? false
-						: getName().equalsIgnoreCase(
-								((BaseQuantity) object).getName())
-								&& (getSymbol() == null || getSymbol().equals(
-										((BaseQuantity) object).getSymbol()));
+		return this == object || object instanceof BaseQuantity && (getName().equalsIgnoreCase(
+        ((BaseQuantity) object).getName())
+        && (getSymbol() == null || getSymbol().equals(
+        ((BaseQuantity) object).getSymbol())));
 	}
 
 	/**

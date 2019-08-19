@@ -280,8 +280,7 @@ public class Message {
     if (ids.getCenterId() != o.ids.getCenterId()) return false;
     //if (ids.getSubCenter_id() != o.ids.getSubCenter_id()) return false;
     if (ids.getCategory() != o.ids.getCategory()) return false;
-    if (ids.getSubCategory() != o.ids.getSubCategory()) return false;
-    return true;
+    return ids.getSubCategory() == o.ids.getSubCategory();
   }
 
     ////////////////////////////////////////////////////////////////////

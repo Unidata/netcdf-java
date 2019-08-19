@@ -109,7 +109,7 @@ public abstract class N3streamWriter {
     // we have to calculate how big the header is before we can actually write it
     // so we set stream = null
     for (Variable item : vars) {
-      Variable var = (Variable) item;
+      Variable var = item;
       if (var instanceof Structure) {
         continue;
       }
@@ -124,7 +124,7 @@ public abstract class N3streamWriter {
 
     // do all non-record variables first
     for (Variable value : vars) {
-      Variable var = (Variable) value;
+      Variable var = value;
       //if (var instanceof Structure) continue;
 
       if (!var.isUnlimited()) {
@@ -147,7 +147,7 @@ public abstract class N3streamWriter {
 
     // do all record variables
     for (Variable variable : vars) {
-      Variable var = (Variable) variable;
+      Variable var = variable;
 
       if (var.isUnlimited()) {
         if (var instanceof Structure) {

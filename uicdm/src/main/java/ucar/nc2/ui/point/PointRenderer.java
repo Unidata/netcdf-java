@@ -124,9 +124,7 @@ public class PointRenderer implements Renderer {
     ucar.unidata.geoloc.EarthLocation loc2 = obs2.getLocation();
     if (loc1.getLatitude() != loc2.getLatitude())
       return false;
-    if (loc1.getLongitude() != loc2.getLongitude())
-      return false;
-    return true;
+    return loc1.getLongitude() == loc2.getLongitude();
   }
 
   public void setDeclutter(boolean declut) { declutter = declut; }

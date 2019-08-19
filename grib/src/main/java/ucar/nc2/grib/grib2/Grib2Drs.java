@@ -130,11 +130,8 @@ public abstract class Grib2Drs {
       if (originalType != type0.originalType) {
         return false;
       }
-      if (Float.compare(type0.referenceValue, referenceValue) != 0) {
-        return false;
-      }
+      return Float.compare(type0.referenceValue, referenceValue) == 0;
 
-      return true;
     }
 
     @Override
@@ -293,11 +290,8 @@ public abstract class Grib2Drs {
       if (Float.compare(type2.secondaryMissingValue, secondaryMissingValue) != 0) {
         return false;
       }
-      if (splittingMethod != type2.splittingMethod) {
-        return false;
-      }
+      return splittingMethod == type2.splittingMethod;
 
-      return true;
     }
 
     @Override
@@ -376,11 +370,8 @@ public abstract class Grib2Drs {
       if (descriptorSpatial != type3.descriptorSpatial) {
         return false;
       }
-      if (orderSpatial != type3.orderSpatial) {
-        return false;
-      }
+      return orderSpatial == type3.orderSpatial;
 
-      return true;
     }
 
     @Override
@@ -438,11 +429,8 @@ public abstract class Grib2Drs {
       if (compressionMethod != type40.compressionMethod) {
         return false;
       }
-      if (compressionRatio != type40.compressionRatio) {
-        return false;
-      }
+      return compressionRatio == type40.compressionRatio;
 
-      return true;
     }
 
     @Override
@@ -595,11 +583,8 @@ public abstract class Grib2Drs {
       if (lengthOfSection7 != type50002.lengthOfSection7) {
         return false;
       }
-      if (section7 != type50002.section7) {
-        return false;
-      }
+      return section7 == type50002.section7;
 
-      return true;
     }
 
     @Override

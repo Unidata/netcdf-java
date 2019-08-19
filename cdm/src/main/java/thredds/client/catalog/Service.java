@@ -135,9 +135,8 @@ public class Service {            // (7)
     if (nestedServices != null ? !nestedServices.equals(service.nestedServices) : service.nestedServices != null) return false;
     if (properties != null ? !properties.equals(service.properties) : service.properties != null) return false;
     if (suffix != null ? !suffix.equals(service.suffix) : service.suffix != null) return false;
-    if (typeS != null ? !typeS.equals(service.typeS) : service.typeS != null) return false;
+    return typeS != null ? typeS.equals(service.typeS) : service.typeS == null;
 
-    return true;
   }
 
   @Override

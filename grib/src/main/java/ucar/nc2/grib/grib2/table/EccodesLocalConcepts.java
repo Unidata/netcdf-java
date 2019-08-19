@@ -379,7 +379,7 @@ class EccodesLocalConcepts {
 
     f.format(FORMAT, "code", "name", "shortName", "paramId", "units", "cfName", "cfVarName");
     f.format("%s%n", StringUtil2.padRight("-", 120, "-"));
-    for (LocalConcept lc : sorted) {;
+    for (LocalConcept lc : sorted) {
       f.format(FORMAT, lc.getCode(), lc.paramName, lc.shortName, lc.paramId, lc.units, lc.cfName, lc.cfVarName);
       lc.bag.show(f);
       attNames.addAll(lc.bag.atts.keySet());

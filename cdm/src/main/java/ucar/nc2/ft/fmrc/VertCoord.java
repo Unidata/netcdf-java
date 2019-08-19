@@ -227,9 +227,8 @@ public class VertCoord implements Comparable {
       LevelCoord that = (LevelCoord) o;
 
       if (!ucar.nc2.util.Misc.nearlyEquals(that.value1, value1)) return false;
-      if (!ucar.nc2.util.Misc.nearlyEquals(that.value2, value2)) return false;
+      return ucar.nc2.util.Misc.nearlyEquals(that.value2, value2);
 
-      return true;
     }
 
     @Override

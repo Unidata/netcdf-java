@@ -240,7 +240,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
     int base = 1;
     int i;
     int word = 0;
-    int bv[] = new int[num];
+    int[] bv = new int[num];
 
     for (i = 0; i < num; i++) {
       bv[i] = DataType.unsignedByteToShort(b[i]);
@@ -314,7 +314,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
     int base = 1;
     int i;
     int word = 0;
-    int bv[] = new int[num];
+    int[] bv = new int[num];
 
     for (i = 0; i < num; i++) {
       bv[i] = DataType.unsignedByteToShort(b[offset + i]);
@@ -335,7 +335,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
     int base = 1;
     int i;
     int word = 0;
-    int bv[] = new int[num];
+    int[] bv = new int[num];
 
     for (i = 0; i < num; i++) {
       bv[i] = DataType.unsignedByteToShort(b[offset + i]);

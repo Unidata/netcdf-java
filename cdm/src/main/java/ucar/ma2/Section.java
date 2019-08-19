@@ -913,7 +913,7 @@ public class Section {
    * @param shape range must fit within this shape, rank must match.
    * @return error message if illegal, null if all ok
    */
-  public String checkInRange(int shape[]) {
+  public String checkInRange(int[] shape) {
     if (list.size() != shape.length)
       return "Number of ranges in section (" + list.size() + ") must be = " + shape.length;
 
