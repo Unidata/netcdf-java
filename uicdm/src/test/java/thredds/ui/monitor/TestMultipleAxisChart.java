@@ -1,6 +1,7 @@
 package thredds.ui.monitor;
 
 import java.awt.BorderLayout;
+import java.awt.HeadlessException;
 import javax.swing.JFrame;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.RegularTimePeriod;
@@ -164,11 +165,15 @@ public class TestMultipleAxisChart {
 
     demo.finish(new java.awt.Dimension(600, 270));
 
-    JFrame frame = new JFrame("Demovabulous ");
-    frame.getContentPane().add(demo, BorderLayout.CENTER);
-    frame.setSize(640, 480);
-    frame.setVisible(true);
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    try {
+      JFrame frame = new JFrame("Demovabulous ");
+      frame.getContentPane().add(demo, BorderLayout.CENTER);
+      frame.setSize(640, 480);
+      frame.setVisible(true);
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    } catch (HeadlessException e) {
+      // ok to fail if there is no display
+    }
   }
 
 

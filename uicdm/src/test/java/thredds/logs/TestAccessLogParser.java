@@ -19,6 +19,4 @@ public class TestAccessLogParser {
     LogReader.Log log = p.parseLog(line);
     System.out.printf("%s%n", log);
   }
-
-
 }
