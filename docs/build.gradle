@@ -17,9 +17,9 @@ apply plugin: 'base'
 apply plugin: 'com.github.jruby-gradle.base'
 
 dependencies {
-    jrubyExec 'rubygems:jekyll:3.4.0'
+    jrubyExec 'rubygems:jekyll:3.8.6'
     // Without this, we get: LoadError: no such file to load -- bundler
-    jrubyExec 'rubygems:bundler:1.14.4'
+    jrubyExec 'rubygems:bundler:2.0.2'
 }
 
 ext {
