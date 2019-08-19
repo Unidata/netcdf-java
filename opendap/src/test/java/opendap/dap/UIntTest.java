@@ -42,103 +42,89 @@ package opendap.dap;
 import java.io.*;
 import org.junit.Test;
 
-class UIntTest {
+public class UIntTest {
+
+  private void sendIt(DataOutputStream fp) throws Exception {
+    short s;
+    byte b;
+    int i;
+    long l;
+
+    s = ((short) 65500);
+    DAPNode.log.debug("\nShort assigned to 65500.    System thinks of it as: " + s);
+    fp.writeShort(s);
+    DAPNode.log.debug("Wrote it to disk. ");
+
+    s = ((short) 65537);
+    DAPNode.log.debug("\nShort assigned to 65537.    System thinks of it as: " + s);
+    fp.writeShort(s);
+    DAPNode.log.debug("Wrote it to disk. ");
+
+    i = ((int) 4294967040L);
+    DAPNode.log.debug("\nInt assigned to 4294967040. System thinks of it as: " + i);
+    fp.writeInt(i);
+    DAPNode.log.debug("Wrote it to disk. ");
+
+    i = ((int) 4294967298L);
+    DAPNode.log.debug("\nInt assigned to 4294967298. System thinks of it as: " + i);
+    fp.writeInt(i);
+    DAPNode.log.debug("Wrote it to disk. ");
+
+  }
 
 
-    UIntTest() {
+  private void getIt(DataInputStream fp) throws Exception {
+    short s;
+    int i1, i2;
+    long l;
+
+    DAPNode.log.debug("\nReading data...");
+    s = fp.readShort();
+    DAPNode.log.debug("System read short from file as: " + s);
+    i1 = ((int) s);
+    DAPNode.log.debug("Converted short to int: " + i1);
+    i1 = i1 & 0xFFFF;
+    DAPNode.log.debug("And'd with 0xFFFF (represented as an int in memory): " + i1);
+
+    DAPNode.log.debug("\nReading data...");
+    s = fp.readShort();
+    DAPNode.log.debug("System read short from file as: " + s);
+    i1 = ((int) s);
+    DAPNode.log.debug("Converted short to int: " + i1);
+    i1 = i1 & 0xFFFF;
+    DAPNode.log.debug("And'd with 0xFFFF (represented as an int in memory): " + i1);
+
+    DAPNode.log.debug("\nReading data...");
+    i2 = fp.readInt();
+    DAPNode.log.debug("\nSystem read int from file as: " + i2);
+    l = ((long) i2);
+    DAPNode.log.debug("Converted int to long: " + l);
+    l = l & 0xFFFFFFFFL;
+    DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
+
+    DAPNode.log.debug("\nReading data...");
+    i2 = fp.readInt();
+    DAPNode.log.debug("\nSystem read int from file as: " + i2);
+    l = ((long) i2);
+    DAPNode.log.debug("Converted int to long: " + l);
+    l = l & 0xFFFFFFFFL;
+    DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
+  }
+
+  @Test
+  public void testStuff() throws Exception {
+    File outFile = File.createTempFile("UIntTest", "txt");
+
+    UIntTest b = new UIntTest();
+    try (FileOutputStream fp = new FileOutputStream(outFile);
+        DataOutputStream sink = new DataOutputStream(fp)) {
+      b.sendIt(sink);
     }
-
-
-    public void sendIt(DataOutputStream fp) throws Exception {
-
-        short s;
-        byte b;
-        int i;
-        long l;
-
-        s = ((short) 65500);
-        DAPNode.log.debug("\nShort assigned to 65500.    System thinks of it as: " + s);
-        fp.writeShort(s);
-        DAPNode.log.debug("Wrote it to disk. ");
-
-        s = ((short) 65537);
-        DAPNode.log.debug("\nShort assigned to 65537.    System thinks of it as: " + s);
-        fp.writeShort(s);
-        DAPNode.log.debug("Wrote it to disk. ");
-
-
-        i = ((int) 4294967040L);
-        DAPNode.log.debug("\nInt assigned to 4294967040. System thinks of it as: " + i);
-        fp.writeInt(i);
-        DAPNode.log.debug("Wrote it to disk. ");
-
-        i = ((int) 4294967298L);
-        DAPNode.log.debug("\nInt assigned to 4294967298. System thinks of it as: " + i);
-        fp.writeInt(i);
-        DAPNode.log.debug("Wrote it to disk. ");
-
+    try (FileInputStream ifp = new FileInputStream(outFile);
+        DataInputStream source = new DataInputStream(ifp)) {
+      b.getIt(source);
     }
-
-
-    public void getIt(DataInputStream fp) throws Exception {
-
-        short s;
-        int i1, i2;
-        long l;
-
-
-        DAPNode.log.debug("\nReading data...");
-        s = fp.readShort();
-        DAPNode.log.debug("System read short from file as: " + s);
-        i1 = ((int) s);
-        DAPNode.log.debug("Converted short to int: " + i1);
-        i1 = i1 & 0xFFFF;
-        DAPNode.log.debug("And'd with 0xFFFF (represented as an int in memory): " + i1);
-
-        DAPNode.log.debug("\nReading data...");
-        s = fp.readShort();
-        DAPNode.log.debug("System read short from file as: " + s);
-        i1 = ((int) s);
-        DAPNode.log.debug("Converted short to int: " + i1);
-        i1 = i1 & 0xFFFF;
-        DAPNode.log.debug("And'd with 0xFFFF (represented as an int in memory): " + i1);
-
-
-        DAPNode.log.debug("\nReading data...");
-        i2 = fp.readInt();
-        DAPNode.log.debug("\nSystem read int from file as: " + i2);
-        l = ((long) i2);
-        DAPNode.log.debug("Converted int to long: " + l);
-        l = l & 0xFFFFFFFFL;
-        DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
-
-        DAPNode.log.debug("\nReading data...");
-        i2 = fp.readInt();
-        DAPNode.log.debug("\nSystem read int from file as: " + i2);
-        l = ((long) i2);
-        DAPNode.log.debug("Converted int to long: " + l);
-        l = l & 0xFFFFFFFFL;
-        DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
-    }
-
-    @Test
-    public void testStuff() throws Exception {
-
-        UIntTest b = new UIntTest();
-        File f = new File("UIntTest.bin");
-        try (
-            FileOutputStream fp = new FileOutputStream(f);
-            DataOutputStream sink = new DataOutputStream(fp);
-        ) {
-            b.sendIt(sink);
-        }
-        try (
-            FileInputStream ifp = new FileInputStream(f);
-            DataInputStream source = new DataInputStream(ifp);
-        ) {
-            b.getIt(source);
-        }
-    }
+  }
 
 }
 
