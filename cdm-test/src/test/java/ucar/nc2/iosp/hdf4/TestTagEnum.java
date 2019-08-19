@@ -6,14 +6,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestTagEnum {
 
   @Test
   public void testStuff() throws IOException {
-    try (FileInputStream ios = new FileInputStream(TestDir.cdmLocalTestDataDir + "hdf4/HDF4.2r1/hdf/src/htags.h")) {
+    try (FileInputStream ios = new FileInputStream(TestDir.cdmUnitTestDir + "hdf4/HDF4.2r1/hdf/src/htags.h")) {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
       while (true) {
         String line = dataIS.readLine();

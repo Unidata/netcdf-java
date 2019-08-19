@@ -3,13 +3,16 @@ package ucar.nc2.ft.point.standard;
 import java.io.IOException;
 import java.util.Formatter;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestTableAnalyzer {
 
   static void doit(String filename) throws IOException {
-    filename = TestDir.cdmTestDataDir + filename;
+    filename = TestDir.cdmUnitTestDir + filename;
     System.out.println(filename);
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     TableAnalyzer csa = TableAnalyzer.factory(null, null, ncd);
