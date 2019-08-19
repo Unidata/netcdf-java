@@ -2,11 +2,14 @@ package ucar.nc2.dt.grid;
 
 import java.io.IOException;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestGridCoordinate2D {
 
   private static void doOne(GridCoordinate2D g2d, double wantLat, double wantLon) {

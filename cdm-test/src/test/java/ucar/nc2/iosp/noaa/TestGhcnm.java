@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
@@ -18,12 +19,10 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Sequence;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestGhcnm {
-
-
-  /////////////////////////////////////////////////////////////////////////////////
-  // debug
 
   static private NetcdfFile open(String filename) throws IOException {
     Ghcnm iosp = new Ghcnm();
@@ -57,7 +56,7 @@ public class TestGhcnm {
     System.out.printf(" counts=%d dups=%d%n", count, countDups);
   }
 
-
+  // LOOK make into test
   static public void main2(String args[]) throws IOException {
     Set<Integer> stns = new HashSet<>(10 * 1000);
     stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv", stns, false);
@@ -125,7 +124,7 @@ public class TestGhcnm {
     System.out.printf("DONE %d == %d msecs%n", balony, took);
   }
 
-  @Test
+  // LOOK make into test
   public void testStuff() throws IOException {
     readData("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");
     readDataRegexp("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");

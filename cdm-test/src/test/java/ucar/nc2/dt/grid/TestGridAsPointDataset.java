@@ -2,11 +2,14 @@ package ucar.nc2.dt.grid;
 
 import java.io.IOException;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestGridAsPointDataset {
   @Test
   public void testStuff() throws IOException {
