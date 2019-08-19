@@ -587,12 +587,12 @@ public class GradsDataDescriptorFile {
   private void swapByteOrder() {
     // NB: we are setting bigEndian to be opposite the system arch
     String arch = System.getProperty("os.arch");
-    // Utrix, VAX, DECOS
-    bigEndian = arch.equals("x86") ||                    // Windows, Linux
-        arch.equals("arm") ||                // Window CE
-        arch.equals("x86_64") ||         // Windows64, Mac OS-X
+
+    bigEndian = arch.equals("x86") ||   // Windows, Linux
+        arch.equals("arm") ||          // Window CE
+        arch.equals("x86_64") ||      // Windows64, Mac OS-X
         arch.equals("amd64") ||      // Linux64?
-        arch.equals("alpha");
+        arch.equals("alpha");       // Utrix, VAX, DECOS
   }
 
   /**
