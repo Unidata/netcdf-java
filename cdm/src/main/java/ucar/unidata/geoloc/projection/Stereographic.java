@@ -158,7 +158,7 @@ public class Stereographic extends ProjectionImpl {
    */
   private double getScaleFactor(double lat_ts, boolean north) {
     double e = 0.081819191;
-    double tf = 1.0, mf = 1.0, k0 = 1.0;
+    double tf, mf, k0;
     double root = (1 + e * Math.sin(lat_ts)) / (1 - e * Math.sin(lat_ts));
     double power = e / 2;
 

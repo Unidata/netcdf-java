@@ -990,7 +990,7 @@ public class N3header extends NCheader
     long vsize; // size of array in bytes. if isRecord, size per record.
     long begin; // offset of start of data from start of file
     boolean isRecord; // is it a record variable?
-    long attsPos = 0; //  attributes start here - used for update
+    long attsPos; //  attributes start here - used for update
 
     Vinfo(long vsize, long begin, boolean isRecord, long attsPos) {
       this.vsize = vsize;

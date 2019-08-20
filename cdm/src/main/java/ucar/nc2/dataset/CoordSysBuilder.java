@@ -81,7 +81,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static private List<Convention> conventionList = new ArrayList<>();
   static private Map<String, String> ncmlHash = new HashMap<>();
   static private boolean useMaximalCoordSys = true;
-  static private boolean userMode = false;
+  static private boolean userMode;
 
   /**
    * Allow plug-ins to determine if it owns a file based on the file's Convention attribute.

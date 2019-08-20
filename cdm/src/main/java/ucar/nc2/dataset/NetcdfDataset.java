@@ -1196,7 +1196,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if ((hasRecord == null) || !hasRecord) return false;
 
     Variable orgV = this.orgFile.getRootGroup().findVariable("record");
-    if ((orgV == null) || !(orgV instanceof Structure)) return false;
+    if (!(orgV instanceof Structure)) return false;
     Structure orgStructure = (Structure) orgV;
 
     Dimension udim = getUnlimitedDimension();
@@ -1260,10 +1260,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return v1.getShortName().compareToIgnoreCase(v2.getShortName());
       else
         return cs1.compareToIgnoreCase(cs2);
-    }
-
-    public boolean equals(Object obj) {
-      return (this == obj);
     }
   }
 

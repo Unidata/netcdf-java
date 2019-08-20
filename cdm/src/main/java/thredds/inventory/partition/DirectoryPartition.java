@@ -72,11 +72,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     }
 
     // sort collection by name
-    result.sort(new Comparator<MCollection>() {
-      public int compare(MCollection o1, MCollection o2) {
-        return o1.getCollectionName().compareTo(o2.getCollectionName());
-      }
-    });
+    result.sort((o1, o2) -> o1.getCollectionName().compareTo(o2.getCollectionName()));
 
     return result;
   }

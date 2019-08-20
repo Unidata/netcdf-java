@@ -589,12 +589,12 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     // illumination. Telescope pixel values are replaced by Photo Multiplier Tube (PMT)
     // values at night. -- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html
 
-    private String name = null;
-    private String longName = null;
-    private String units = null;
-    private DataType dataType = null;
-    private int byteOffsetInRecord = -1;
-    private int numElementsInRecord = 0;
+    private String name;
+    private String longName;
+    private String units;
+    private DataType dataType;
+    private int byteOffsetInRecord;
+    private int numElementsInRecord;
 
     private VariableInfo(String name, String long_name, String units,
                          DataType dataType, int byteOffsetInRecord,
@@ -643,15 +643,14 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     }
 
     public String toString() {
-      StringBuilder retVal = new StringBuilder();
-      retVal.append("Variable(").append(this.getName()).append(",")
-              .append(this.getLongName()).append(",")
-              .append(this.getUnits()).append(",")
-              .append(this.getDataType()).append(",")
-              .append(this.getByteOffsetInRecord()).append(",")
-              .append(this.getNumElementsInRecord()).append(")");
 
-      return (retVal.toString());
+      String retVal = "Variable(" + this.getName() + ","
+          + this.getLongName() + ","
+          + this.getUnits() + ","
+          + this.getDataType() + ","
+          + this.getByteOffsetInRecord() + ","
+          + this.getNumElementsInRecord() + ")";
+      return (retVal);
     }
   }
 

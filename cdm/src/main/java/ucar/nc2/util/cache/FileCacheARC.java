@@ -603,7 +603,7 @@ public class FileCacheARC implements FileCacheIF {
   public void showTracking(Formatter format) {
     if (track == null) return;
     List<Tracker> all = new ArrayList<>(track.size());
-    for (Tracker val : track.values()) all.add(val);
+    all.addAll(track.values());
     Collections.sort(all);       // LOOK what should we sort by ??
     int count = 0;
     int countAll = 0;

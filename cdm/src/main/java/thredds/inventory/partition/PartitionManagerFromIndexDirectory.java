@@ -34,9 +34,7 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
     this.root = directory.getPath();
     this.partIndexFiles = new ArrayList<>();
 
-    File[] files = directory.listFiles( new FilenameFilter() {
-      public boolean accept(File dir, String name) { return name.endsWith(suffix); }
-    });
+    File[] files = directory.listFiles((dir, name1) -> name1.endsWith(suffix));
     if (files != null) {
       Collections.addAll(partIndexFiles, files);
     }
@@ -101,20 +99,19 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
 
   @Override
   public CloseableIterator<MFile> getFileIterator() {
-    return new CloseableIterator() {
+    return new CloseableIterator<MFile>() {
       @Override
       public boolean hasNext() {
         return false;
       }
 
       @Override
-      public Object next() {
+      public MFile next() {
         return null;
       }
 
       @Override
       public void close() {
-
       }
     };
   }

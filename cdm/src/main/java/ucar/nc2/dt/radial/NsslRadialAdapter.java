@@ -252,23 +252,22 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   public String getInfo() {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append("Netcdfs2Dataset\n");
-    sbuff.append(super.getDetailInfo());
-    sbuff.append("\n\n");
-    sbuff.append(parseInfo.toString());
-    return sbuff.toString();
+    String sbuff = "Netcdfs2Dataset\n"
+        + super.getDetailInfo()
+        + "\n\n"
+        + parseInfo.toString();
+    return sbuff;
   }
 
   private class Netcdf2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
-    ArrayList sweeps;
+    ArrayList<Netcdf2Sweep> sweeps;
     int nsweeps;
     String name;
 
     private Netcdf2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
       super(v.getShortName(), v0.getAttributes());
 
-      sweeps = new ArrayList();
+      sweeps = new ArrayList<>();
       nsweeps = 0;
       name = v.getShortName();
       int[] shape = v0.getShape();
@@ -295,7 +294,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
     public float[] readAllData() throws IOException {
       Array allData;
-      Sweep spn = (Sweep) sweeps.get(0);
+      Sweep spn = sweeps.get(0);
       Variable v = spn.getsweepVar();
       try {
         allData = v.read();
@@ -311,9 +310,8 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
 
     public Sweep getSweep(int sweepNo) {
-      return (Sweep) sweeps.get(sweepNo);
+      return sweeps.get(sweepNo);
     }
-
 
     public void clearVariableMemory() {
       // doing nothing

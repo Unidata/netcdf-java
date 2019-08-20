@@ -344,8 +344,9 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       case USHORT: return UINT;
       case INT:    return LONG;
       case UINT:   return ULONG;
-      case LONG:   return DOUBLE;
-      case ULONG:  return DOUBLE;
+      case LONG:
+      case ULONG:
+        return DOUBLE;
       default:     return dataType;
     }
   }

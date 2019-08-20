@@ -188,9 +188,9 @@ public class CFPolygon implements Polygon  {
 	public Polygon setupPolygon(NetcdfDataset dataset, Variable polyvar, int index)
 	{
 		this.points.clear();
-		Array xPts = null;
-		Array yPts = null;
-		Variable nodeCounts = null;
+		Array xPts;
+		Array yPts;
+		Variable nodeCounts;
 		Variable partNodeCounts = null;
 		Variable interiorRings = null;
 

@@ -42,11 +42,7 @@ public class RafNimbus extends TableConfigurerImpl {
     obsTable.time = coordAxis.getFullName();
     obsTable.structName = obsIsStruct ? "record" : innerDim.getShortName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
-    CoordSysEvaluator.findCoords(obsTable, ds, new CoordSysEvaluator.Predicate() {
-      public boolean match(CoordinateAxis axis) {
-        return innerDim.equals(axis.getDimension(0));
-      }
-    });
+    CoordSysEvaluator.findCoords(obsTable, ds, axis -> innerDim.equals(axis.getDimension(0)));
 
     topTable.addChild(obsTable);
     return topTable;

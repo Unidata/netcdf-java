@@ -157,8 +157,8 @@ public class GradsDimension {
                 vals[i] = Double.parseDouble(levels.get(i));
             }
         } else if (mapping.equalsIgnoreCase(LINEAR)) {
-            double start = 0;
-            double inc   = 0;
+            double start;
+            double inc;
             start = Double.parseDouble(levels.get(0));
             inc   = Double.parseDouble(levels.get(1));
             for (int i = 0; i < size; i++) {
@@ -194,27 +194,26 @@ public class GradsDimension {
      * @return a String representation of this object
      */
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Dimension: ");
-        buf.append(name.toUpperCase());
-        buf.append("\n");
-        buf.append("\tSize: ");
-        buf.append(size);
-        buf.append("\n");
-        buf.append("\tLevels Size: ");
-        buf.append(levels.size());
-        buf.append("\n");
-        buf.append("\tMappingType: ");
-        buf.append(mapping.toUpperCase());
-        buf.append("\n");
-        buf.append("\tLevels: ");
-        buf.append(levels.toString());
-        buf.append("\n");
-        buf.append("\tUnits: ");
-        buf.append(unitName);
-        buf.append("\n");
 
-        return buf.toString();
+      String buf = "Dimension: "
+          + name.toUpperCase()
+          + "\n"
+          + "\tSize: "
+          + size
+          + "\n"
+          + "\tLevels Size: "
+          + levels.size()
+          + "\n"
+          + "\tMappingType: "
+          + mapping.toUpperCase()
+          + "\n"
+          + "\tLevels: "
+          + levels.toString()
+          + "\n"
+          + "\tUnits: "
+          + unitName
+          + "\n";
+      return buf;
     }
 }
 

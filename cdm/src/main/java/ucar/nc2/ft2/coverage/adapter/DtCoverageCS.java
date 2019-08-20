@@ -393,7 +393,7 @@ public class DtCoverageCS {
 
   public CalendarDateRange getCalendarDateRange() {
     CoordinateAxis timeTaxis = getTimeAxis();
-    if (timeTaxis != null && timeTaxis instanceof CoordinateAxis1DTime)
+    if (timeTaxis instanceof CoordinateAxis1DTime)
       return ((CoordinateAxis1DTime) timeTaxis).getCalendarDateRange();
 
     CoordinateAxis1DTime rtaxis = getRunTimeAxis();

@@ -129,7 +129,7 @@ public class NcmlCollectionReader {
 
   NcmlCollectionReader(String ncmlLocation, Element netcdfElem) {
 
-    if (netcdfElem.equals(Catalog.ncmlNSHttps)) {
+    if (netcdfElem.getNamespace().equals(Catalog.ncmlNSHttps)) {
       this.ncmlNS = Catalog.ncmlNSHttps;
     } else {
       this.ncmlNS = Catalog.ncmlNS;

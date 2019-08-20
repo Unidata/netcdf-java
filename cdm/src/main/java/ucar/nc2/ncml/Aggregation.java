@@ -414,7 +414,7 @@ public abstract class Aggregation {
     }
 
     // sort using Aggregation.Dataset as Comparator.
-    // Sort by date if it exists, else filename.
+    // Sort by date if it exists, else sort by filename.
     Collections.sort(datasets);
 
       /* optionally extract the date
@@ -448,9 +448,7 @@ public abstract class Aggregation {
     // add the explicit datasets - these need to be kept in order
     // LOOK - should they be before or after scanned? Does it make sense to mix scan and explicit?
     // AggFmrcSingle sets explicit datasets - the scan is empty
-    for (Aggregation.Dataset dataset : explicitDatasets) {
-      datasets.add(dataset);
-    }
+    datasets.addAll(explicitDatasets);
 
     // Remove unreadable files (i.e. due to permissions) from the aggregation.
     // LOOK: Is this logic we should install "upstream", perhaps in MFileCollectionManager?
@@ -542,7 +540,7 @@ public abstract class Aggregation {
   /**
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    */
-  public class Dataset implements Comparable {
+  public class Dataset implements Comparable<Dataset> {
     MFile mfile;
     protected String id; // id attribute on the netcdf element
 
@@ -725,9 +723,8 @@ public abstract class Aggregation {
     }
 
     @Override
-    public int compareTo(Object o) {
-      Dataset other = (Dataset) o;
-      return getLocation().compareTo( other.getLocation());
+    public int compareTo(Dataset o) {
+      return getLocation().compareTo( o.getLocation());
     }
   } // class Dataset
 

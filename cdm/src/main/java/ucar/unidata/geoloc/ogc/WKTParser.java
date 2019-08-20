@@ -5,13 +5,13 @@
 
 package ucar.unidata.geoloc.ogc;
 
+import java.util.HashMap;
+import java.util.Map;
 import ucar.nc2.units.SimpleUnit;
 
-import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.*;
 
-import java.io.IOException;
 import java.text.ParseException;
 
 /**
@@ -84,7 +84,7 @@ public class WKTParser {
   /**
    * projection parameters
    */
-  private java.util.HashMap parameters = new java.util.HashMap();
+  private HashMap<String, Double> parameters = new HashMap<>();
 
   /**
    * projection unit name
@@ -148,12 +148,6 @@ public class WKTParser {
     }
   }
 
-  /**
-   * _more_
-   *
-   * @return _more_
-   * @throws ParseException _more_
-   */
   private char getChar() throws ParseException {
     try {
       int val = reader.read();
@@ -169,12 +163,6 @@ public class WKTParser {
 
   }
 
-  /**
-   * _more_
-   *
-   * @param literal _more_
-   * @throws ParseException _more_
-   */
   private void eatLiteral(String literal) throws ParseException {
     int n = literal.length();
     for (int i = 0; i < n; i++) {
@@ -185,12 +173,6 @@ public class WKTParser {
     }
   }
 
-  /**
-   * _more_
-   *
-   * @return _more_
-   * @throws ParseException _more_
-   */
   private double eatReal() throws ParseException {
     StringBuilder b = new StringBuilder();
     for (; ; ) {
@@ -209,12 +191,6 @@ public class WKTParser {
     }
   }
 
-  /**
-   * _more_
-   *
-   * @return _more_
-   * @throws ParseException _more_
-   */
   private String eatString() throws ParseException {
     StringBuilder b = new StringBuilder();
     if (getChar() != '"') {
@@ -230,13 +206,6 @@ public class WKTParser {
     return b.toString();
   }
 
-
-  /**
-   * _more_
-   *
-   * @return _more_
-   * @throws ParseException _more_
-   */
   private String eatTerm() throws ParseException {
     StringBuilder b = new StringBuilder();
     for (; ; ) {
@@ -249,44 +218,24 @@ public class WKTParser {
     return b.toString();
   }
 
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatComma() throws ParseException {
     if (getChar() != ',') {
       throw new ParseException("expected comma", position);
     }
   }
 
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatOpenBrace() throws ParseException {
     if (getChar() != '[') {
       throw new ParseException("expected [", position);
     }
   }
 
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatCloseBrace() throws ParseException {
     if (getChar() != ']') {
       throw new ParseException("expected ]", position);
     }
   }
 
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void parseProjcs() throws ParseException {
     eatLiteral("PROJCS[");
     projName = eatString();
@@ -315,12 +264,6 @@ public class WKTParser {
     }
   }
 
-
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatParameter() throws ParseException {
     eatOpenBrace();
     String parameterName = eatString();
@@ -330,12 +273,6 @@ public class WKTParser {
     parameters.put(parameterName.toLowerCase(), value);
   }
 
-
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatProjcsUnit() throws ParseException {
     eatOpenBrace();
     projUnitName = eatString();
@@ -344,23 +281,12 @@ public class WKTParser {
     eatCloseBrace();
   }
 
-
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatProjectionType() throws ParseException {
     eatOpenBrace();
     projectionType = eatString();
     eatCloseBrace();
   }
 
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void parseGeogcs() throws ParseException {
     eatLiteral("GEOGCS[");
     geogcsName = eatString();
@@ -387,12 +313,6 @@ public class WKTParser {
     }
   }
 
-
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatDatum() throws ParseException {
     eatOpenBrace();
     datumName = eatString();
@@ -401,12 +321,6 @@ public class WKTParser {
     eatCloseBrace();
   }
 
-
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatPrimem() throws ParseException {
     eatOpenBrace();
     primeMeridianName = eatString();
@@ -415,11 +329,6 @@ public class WKTParser {
     eatCloseBrace();
   }
 
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatSpheroid() throws ParseException {
     eatLiteral("SPHEROID");
     eatOpenBrace();
@@ -431,11 +340,6 @@ public class WKTParser {
     eatCloseBrace();
   }
 
-  /**
-   * _more_
-   *
-   * @throws ParseException _more_
-   */
   private void eatUnit() throws ParseException {
     eatOpenBrace();
     geogUnitName = eatString();
@@ -540,7 +444,7 @@ public class WKTParser {
    * @return True if the parameter is present.
    */
   public boolean hasParameter(String name) {
-    return (parameters.get(name.toLowerCase()) != null);
+    return (parameters.containsKey(name.toLowerCase()));
   }
 
 
@@ -552,7 +456,7 @@ public class WKTParser {
    * @return The value of the parameter, as a double.
    */
   public double getParameter(String name) {
-    Double val = (Double) parameters.get(name.toLowerCase());
+    Double val = parameters.get(name.toLowerCase());
     if (val == null) {
       throw new IllegalArgumentException("no parameter called " + name);
     }
@@ -614,7 +518,6 @@ public class WKTParser {
    *
    * @param srp The parsed OGC WKT spatial reference text.
    * @return The ProjectionImpl class.
-   * @throws java.text.ParseException If the OGIS spatial reference text was not parseable.
    */
   public static ProjectionImpl convertWKTToProjection(WKTParser srp) {
     if (!srp.isPlanarProjection()) {

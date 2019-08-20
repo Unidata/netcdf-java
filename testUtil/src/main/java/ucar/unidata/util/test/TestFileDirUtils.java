@@ -83,8 +83,8 @@ public class TestFileDirUtils
                  newFile.exists());
 
     // Make sure the new file is directly contained in the parent directory, not a subdirectory.
-    Assert.assertTrue( "Multiple levels not allowed in file name <" + fileName + ">.",
-                newFile.getParentFile().equals( parentDir ) );
+    Assert.assertEquals("Multiple levels not allowed in file name <" + fileName + ">.",
+        newFile.getParentFile(), parentDir);
 
     try {
       Assert.assertTrue( "Failed to create new file [" + newFile.getAbsolutePath() + "].",

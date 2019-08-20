@@ -42,8 +42,6 @@ public class FslWindProfiler extends CoordSysBuilder {
           v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
           break;
         case "staElev":
-          v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-          break;
         case "levels":
           v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
           break;

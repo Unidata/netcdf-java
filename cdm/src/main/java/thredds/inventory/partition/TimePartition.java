@@ -36,7 +36,7 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
 
     List<MCollection> result = new ArrayList<>();
     CollectionListRange curr = null;
-    CalendarDate startDate = null;
+    CalendarDate startDate;
     CalendarDate endDate = null;
 
     for (MFile mfile : getFilesSorted()) {

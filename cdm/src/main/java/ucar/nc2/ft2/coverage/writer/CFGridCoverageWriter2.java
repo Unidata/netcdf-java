@@ -374,7 +374,7 @@ public class CFGridCoverageWriter2 {
         if (show) System.out.printf("CFGridCoverageWriter2 write axis %s%n", v.getNameAndDimensions());
         writer.write(v, axis.getCoordsAsArray());
       } else {
-        logger.error("CFGridCoverageWriter2 No variable for %s%n", axis.getName());
+        logger.error("CFGridCoverageWriter2 No variable for {}%n", axis.getName());
       }
 
       if (axis.isInterval()) {

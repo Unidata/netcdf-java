@@ -34,8 +34,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   ///////////////////////////////////////////////////////////////////////////////////
 
   private String url;
-  private HTTPSession session = null;
-  private long total_length = 0;
+  private HTTPSession session;
+  private long total_length;
 
   public HTTPRandomAccessFile(String url) throws IOException {
     this(url, defaultHTTPBufferSize);

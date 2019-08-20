@@ -70,11 +70,10 @@ public class EPSG_OGC_CF_Helper {
     }
 
     public String toString() {
-      StringBuilder buf = new StringBuilder();
-      buf.append("[[OGC: ").append(this.name())
-              .append("] [EPSG ").append(this.getEpsgCode()).append(": ").append(this.getEpsgName())
-              .append("] [CF: ").append(this.getCfName()).append("]]");
-      return buf.toString();
+      String buf = "[[OGC: " + this.name()
+          + "] [EPSG " + this.getEpsgCode() + ": " + this.getEpsgName()
+          + "] [CF: " + this.getCfName() + "]]";
+      return buf;
     }
 
     public static ProjectionStandardsInfo getProjectionByOgcName(String ogcName) {
@@ -125,7 +124,6 @@ public class EPSG_OGC_CF_Helper {
       return ProjectionStandardsInfo.Unknown.getOgcName();
     }
     if (paramName.equalsIgnoreCase("LatLon")) {
-      paramName = "latitude_longitude";
       return "OGC:CRS84";
     }
 

@@ -10,7 +10,7 @@ import java.util.*;
  *
  * @author caron
  */
-class IFDEntry implements Comparable {
+class IFDEntry implements Comparable<IFDEntry> {
   protected Tag tag;
   protected FieldType type;
   protected int count;
@@ -83,8 +83,8 @@ class IFDEntry implements Comparable {
     geokeys.add( geokey);
   }
 
-  public int compareTo( Object o) {
-    return tag.compareTo( ((IFDEntry)o).tag);
+  public int compareTo( IFDEntry o) {
+    return tag.compareTo(o.tag);
   }
 
   @Override

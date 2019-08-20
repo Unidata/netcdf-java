@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -321,7 +322,7 @@ public class HorizCoordSys {
   private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end) {
     if (wantMin <= wantMax) {
       if (wantMin > end && wantMax > end) // none A.1
-        return Collections.EMPTY_LIST;
+        return ImmutableList.of();
 
       if (wantMin < end && wantMax < end) // A.2
         return Lists.newArrayList(new MAMath.MinMax(wantMin, wantMax));
@@ -341,8 +342,8 @@ public class HorizCoordSys {
     }
 
     // otherwise shouldnt get to this
-    logger.error("longitude want [%f,%f] does not intersect axis [%f,%f]", wantMin, wantMax, start, end);
-    return Collections.EMPTY_LIST;
+    logger.error("longitude want [{},{}] does not intersect axis [{},{}]", wantMin, wantMax, start, end);
+    return ImmutableList.of();
   }
 
   // return y, x range

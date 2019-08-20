@@ -8,7 +8,6 @@ import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;

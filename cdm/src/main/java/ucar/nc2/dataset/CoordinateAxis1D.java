@@ -541,7 +541,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
         return bounded ? n - 1 : -1;
 
       // do a binary search to find the nearest index
-      int mid = low;
+      int mid;
       while (high > low + 1) {
         mid = (low + high) / 2;
         double midVal = this.edge[mid];
@@ -561,7 +561,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
         return bounded ? n - 1 : -1;
 
       // do a binary search to find the nearest index
-      int mid = low;
+      int mid;
       while (high > low + 1) {
         mid = (low + high) / 2;
         double midVal = this.edge[mid];

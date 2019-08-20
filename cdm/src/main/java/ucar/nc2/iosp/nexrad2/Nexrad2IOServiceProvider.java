@@ -169,7 +169,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   public void makeVariable2(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, Level2VolumeScan vScan) {
-      List<List<Level2Record>> groups = null;
+      List<List<Level2Record>> groups;
 
       if( shortName.startsWith("Reflectivity"))
         groups = vScan.getHighResReflectivityGroups();

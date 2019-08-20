@@ -239,7 +239,6 @@ public class Ray {
         int dataRead1 = nwords * 2;
         int pos = 0;
         if (cur_len % REC_SIZE == 0) {
-          pos = 0;
           break;
         }
         raf.seek(cur_len);

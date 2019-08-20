@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -745,8 +746,7 @@ public class NcStream {
         } else if (ho instanceof String[]) {
           String[] hos = (String[]) ho;
           count.add(hos.length);
-          for (String s : hos)
-            ss.add(s);
+          ss.addAll(Arrays.asList(hos));
         }
       }
     }

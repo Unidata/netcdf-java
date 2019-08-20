@@ -49,7 +49,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   ////////////////////////////////////////////////////////////////
   private final CoordinateAxisTimeHelper helper;
-  private List<CalendarDate> cdates = null;
+  private List<CalendarDate> cdates;
 
   // for section and slice
   @Override

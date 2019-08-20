@@ -100,8 +100,8 @@ public class SimpleGeometryReader {
 		if(ds.findGlobalAttribute(CF.CONVENTIONS) != null)
 			if(ucar.nc2.dataset.conv.CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
 			{
-				Attribute geometryTypeAttr = null;
-				String geometry_type = null;
+				Attribute geometryTypeAttr;
+				String geometry_type;
 				
 				geometryTypeAttr = geometryVar.findAttribute(CF.GEOMETRY_TYPE);
 				if(geometryTypeAttr == null) return null;

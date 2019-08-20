@@ -5,6 +5,7 @@
 
 package ucar.nc2.ft.fmrc;
 
+import java.util.stream.Collectors;
 import ucar.nc2.dataset.CoordinateAxis1D;
 
 import javax.annotation.concurrent.Immutable;
@@ -13,7 +14,7 @@ import java.util.*;
 /**
  * Represents a vertical coordinate shared among variables.
  */
-public class VertCoord implements Comparable {
+public class VertCoord implements Comparable<VertCoord> {
   private String name, units;
   private int id; // unique id
   private double[] values1, values2;
@@ -116,9 +117,8 @@ public class VertCoord implements Comparable {
     return true;
   }
 
-  public int compareTo(Object o) {
-    VertCoord other = (VertCoord) o;
-    return name.compareTo(other.name);
+  public int compareTo(VertCoord o) {
+    return name.compareTo(o.name);
   }
 
   @Override
@@ -166,8 +166,7 @@ public class VertCoord implements Comparable {
     }
 
     // now create a sorted list, transfer to values array
-    List<LevelCoord> valueList = Arrays.asList((LevelCoord[]) valueSet.toArray(new LevelCoord[valueSet.size()]));
-    Collections.sort(valueList);
+    List<LevelCoord> valueList =  valueSet.stream().sorted().collect(Collectors.toList());
     double[] values1 = new double[valueList.size()];
     double[] values2 = new double[valueList.size()];
     boolean has_values2 = false;
@@ -191,7 +190,7 @@ public class VertCoord implements Comparable {
   }
 
   @Immutable
-  static private class LevelCoord implements Comparable {
+  static private class LevelCoord implements Comparable<LevelCoord> {
     final double mid;
     final double value1;
     final double value2;
@@ -202,10 +201,8 @@ public class VertCoord implements Comparable {
       mid = (value2 == 0) ? value1 : (value1 + value2) / 2;
     }
 
-    public int compareTo(Object o) {
-      LevelCoord other = (LevelCoord) o;
-      //if (nearlyEquals(value1, other.value1) && nearlyEquals(value2, other.value2)) return 0;
-      return Double.compare(mid, other.mid);
+    public int compareTo(LevelCoord o) {
+      return Double.compare(mid, o.mid);
     }
 
     public boolean equals2(Object oo) {

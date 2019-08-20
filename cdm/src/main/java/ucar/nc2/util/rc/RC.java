@@ -124,7 +124,7 @@ public class RC {
 
   }
 
-  static public class Triple implements Comparable {
+  static public class Triple implements Comparable<Triple> {
     public String key; // also sort key
     public String value;
     public URL url;
@@ -152,13 +152,12 @@ public class RC {
     }
 
     public boolean equals(Object o) {
-      if (o == null || !(o instanceof Triple)) return false;
-      return (compareTo(o) == 0);
+      if (!(o instanceof Triple)) return false;
+      return (compareTo((Triple) o) == 0);
     }
 
-    public int compareTo(Object o) {
-      if (o == null) throw new NullPointerException();
-      Triple t = (Triple) o;
+    public int compareTo(Triple t) {
+      if (t == null) throw new NullPointerException();
       int relation = key.compareTo(t.key);
       if (relation != 0) return relation;
       relation = urlCompare(this.url, t.url);
@@ -257,7 +256,8 @@ public class RC {
     for (String loc : locations) {
       if (loc == null) continue;
       String dir = loc.replace('\\', '/');
-      if (dir.endsWith("/")) dir = dir.substring(0, dir.length() - 1);
+      if (dir.endsWith("/")) {
+      }
       for (String rcpath : rcfilelist) {
         String filepath = loc + "/" + rcpath;
         if (rc0.load(filepath)) found1 = true;

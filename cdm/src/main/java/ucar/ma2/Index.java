@@ -121,7 +121,7 @@ public class Index implements Cloneable {
 
   protected int[] current; // current element's index, used only for the general case
 
-  protected boolean hasvlen = false;
+  protected boolean hasvlen;
 
   /**
    * General case Index - use when you want to manipulate current elements yourself

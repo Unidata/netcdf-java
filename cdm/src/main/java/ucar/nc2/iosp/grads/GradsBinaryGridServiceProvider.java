@@ -227,7 +227,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
               ? ensDim.getSize()
               : 1;
       GradsTimeDimension timeDim = gradsDDF.getTimeDimension();
-      int numtimes = 0;
+      int numtimes;
       if (gradsDDF.isTemplate()) {
         int[] timesPerFile =
                 gradsDDF.getTimeStepsPerFile(dataFile.getLocation());
@@ -399,7 +399,6 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         }
       }
     }
-    zDims = null;
     for (GradsVariable var : vars) {
       String coords = "latitude longitude";
       int nl = var.getNumLevels();

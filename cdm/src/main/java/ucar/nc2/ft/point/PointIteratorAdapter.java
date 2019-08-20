@@ -68,13 +68,12 @@ public class PointIteratorAdapter extends PointIteratorAbstract {
 
     /**
      * Finishes bounds calculation, {@link #setCalculateBounds if it has been enabled}. Do not attempt to retrieve
-     * bounds information (via {@link #getBoundingBox}, {@link #getDateRange}, {@link #getCalendarDateRange}, or
-     * {@link #getCount}) before this method has been invoked or {@link #hasNext} returns {@code false}.
+     * bounds information before this method has been invoked or {@link #hasNext} returns {@code false}.
      * <p/>
      * This method is idempotent, meaning that calls after the first have no effect.
      */
     @Override
     public void close() {
-        finishCalcBounds();  // Method is idempotent.
+        finishCalcBounds();
     }
 }

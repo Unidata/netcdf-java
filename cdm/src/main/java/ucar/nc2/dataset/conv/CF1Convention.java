@@ -474,13 +474,13 @@ public class CF1Convention extends CSMConvention {
     try {
       String units = v.getUnitsString();
       CalendarDateUnit cd = CalendarDateUnit.of(null, units);
-      if (cd != null) {
-        return AxisType.Time;
-      }
+      // parsed successfully, what could go wrong?
+      return AxisType.Time;
     } catch (Throwable t) {
       // ignore
     }
 
+    // dunno
     return null;
   }
 

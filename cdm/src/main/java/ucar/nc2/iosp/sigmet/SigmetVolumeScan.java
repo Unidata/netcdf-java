@@ -57,36 +57,36 @@ public class SigmetVolumeScan {
             nsweep = 1,
             nray = 0,
             byteoff = 0;
-    int nwords = 0,
-            end_words = 0,
+    int nwords,
+            end_words,
             data_read = 0,
-            num_zero = 0,
+            num_zero,
             rays_count = 0,
             nb = 0,
             pos = 0,
             pos_ray_hdr = 0,
             t = 0;
-    short a0 = 0,
-            a00 = 0,
-            dty = 1;
+    short a0,
+            a00,
+            dty;
     short beg_az = 0,
             beg_elev = 0,
             end_az = 0,
             end_elev = 0,
             num_bins = 0,
             time_start_sw = 0;
-    float az = 0.0f,
-            elev = 0.0f,
+    float az,
+            elev,
             d = 0.0f,
-            step = 0.0f;
+            step;
     //     byte      data          = 0;
     boolean beg_rec = true,
             end_rec = true,
             read_ray_hdr = true,
             begin = true;
-    int cur_len = len,
+    int cur_len,
             beg = 1,
-            kk = 0,
+            kk,
             col = 0,
             nu = 0,
             bt0 = 0,
@@ -129,8 +129,6 @@ public class SigmetVolumeScan {
     short[] data_type = new short[nparams];
     // float[] dd           = new float[bins];
     num_gates = new int[number_sweeps];
-    end_sweep = (int) number_sweeps;
-    end_ray = (int) num_rays;
     base_time = new int[nparams * number_sweeps];
     year = new short[nparams * number_sweeps];
     month = new short[nparams * number_sweeps];
@@ -152,7 +150,7 @@ public class SigmetVolumeScan {
 
     while (len < fileLength) {
       int rayoffset = 0;
-      int rayoffset1 = 0;
+      int rayoffset1;
       int datalen = 0;
 
       cur_len = len;
@@ -170,7 +168,6 @@ public class SigmetVolumeScan {
         byteoff = raf.readShort();
         len = len + 2;            // cur_len+4
         nray = raf.readShort();
-        len = len + 2;            // cur_len+6
 
         // ---- end of <raw_prod_bhdr> -------------
         cur_len = cur_len + 12;
@@ -208,8 +205,6 @@ public class SigmetVolumeScan {
 
         cur_len = cur_len + nparams * 76;
       }
-
-      len = cur_len;
 
       if (end_rec) {
 
@@ -259,11 +254,8 @@ public class SigmetVolumeScan {
 
       if (nparams > 1) {
         kk = rays_count % nparams;
-        col = rays_count / nparams;
         dty = data_type[kk];
       } else if (number_sweeps > 1) {
-        kk = nsweep - 1;
-        col = rays_count % irays;
       }
 
       String var_name = data_name[dty];
@@ -437,7 +429,6 @@ public class SigmetVolumeScan {
             pos = 0;
             beg_rec = true;
             end_rec = false;
-            len = cur_len;
             read_ray_hdr = false;
 
             break;
@@ -455,7 +446,6 @@ public class SigmetVolumeScan {
               pos = ii + 1;
               beg_rec = true;
               end_rec = false;
-              len = cur_len;
               read_ray_hdr = false;
               raf.seek(cur_len);
               break;
@@ -480,7 +470,6 @@ public class SigmetVolumeScan {
             read_ray_hdr = false;
             pos = 0;
             data_read = 0;
-            len = cur_len;
 
             break;
           }
@@ -574,7 +563,6 @@ public class SigmetVolumeScan {
         rays_count = 0;
         nb = 0;
         cur_len = REC_SIZE * (nrec + 1);
-        len = cur_len;
         read_ray_hdr = true;
       }
 
@@ -711,8 +699,8 @@ public class SigmetVolumeScan {
    * @param r the array of Ray objects in a sweep. Its length=number_rays
    */
   void checkSort(Ray[] r) {
-    int j = 0, n = 0, n1 = 0, n2 = 0;
-    short time1 = 0, time2 = 0;
+    int j = 0, n = 0, n1, n2;
+    short time1, time2;
     int[] k1 = new int[300];
     int[] k2 = new int[300];
     //      define the groups of rays with the same "time". For ex.:
@@ -731,7 +719,6 @@ public class SigmetVolumeScan {
     if (k2[j] < r.length - 1) {
       k1[j] = k2[j - 1] + 1;
       k2[j] = r.length - 1;
-      n = j + 1;
     }
 
     //      if different groups have the same value of "time" (may be 2 and more groups) -

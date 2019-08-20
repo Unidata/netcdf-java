@@ -132,7 +132,7 @@ public class GridDatasetInv {
 
       if (this.runDate == null) {
         this.runDate = gds.getCalendarDateStart(); // LOOK not really right
-        logger.warn("GridDatasetInv using gds.getStartDate() for run date = {}", runTimeString,
+        logger.warn("GridDatasetInv using gds.getStartDate() for run date = {} in {}", runTimeString,
             location);
       }
     }
@@ -260,7 +260,7 @@ public class GridDatasetInv {
   /**
    * A Grid variable has a name, timeCoord and optionally a Vertical and Ensemble Coordinate
    */
-  public class Grid implements Comparable {
+  public class Grid implements Comparable<Grid> {
     final String name;
     TimeCoord tc = null; // time coordinates reletive to getRunDate()
     EnsCoord ec = null; // optional
@@ -286,9 +286,8 @@ public class GridDatasetInv {
       return (vc == null) ? "" : vc.getName();
     }
 
-    public int compareTo(Object o) {
-      Grid other = (Grid) o;
-      return name.compareTo(other.name);
+    public int compareTo(Grid o) {
+      return name.compareTo(o.name);
     }
 
     public int countTotal() {

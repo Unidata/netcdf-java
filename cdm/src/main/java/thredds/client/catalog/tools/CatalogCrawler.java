@@ -423,66 +423,62 @@ public class CatalogCrawler {
       FilterDatasetScan filter = new FilterDatasetScan(pw, cmdLine.skipDatasetScan, cmdLine.catrefLevel);
       CancelTask task = null;
 
-      CatalogCrawler crawler = new CatalogCrawler(cmdLine.type, -1, filter, new Listener() {
+      CatalogCrawler crawler = new CatalogCrawler(cmdLine.type, -1, filter, (dd, context) -> {
+        c.datasets++;
 
-        public void getDataset(Dataset dd, Object context) {
-          c.datasets++;
-
-          if (cmdLine.showNames) {
-            Service s = dd.getServiceDefault();
-            String sname = (s == null) ? "none" : s.getName();
-            pw.format("  Dataset '%s' service=%s%n", dd.getName(), sname);
-          }
-
-          if (cmdLine.openDataset && dd.hasAccess()) {
-            Service s = dd.getServiceDefault();
-            if (s == null || s.getServiceTypeName().equalsIgnoreCase(ServiceType.HTTPServer.name())) // skip files
-              return;
-
-            DataFactory fac = new DataFactory();
-            try ( DataFactory.Result result = fac.openFeatureDataset(dd, task)) {
-              if (result.fatalError) {
-                pw.format("  Dataset fatalError=%s%n", result.errLog);
-                c.failFc++;
-              } else {
-                pw.format("  Dataset '%s' opened as type=%s%n", dd.getName(), result.featureDataset.getFeatureType());
-                c.openFc++;
-                if (cmdLine.readRandom && result.featureDataset instanceof FeatureDatasetCoverage) {
-                  readRandom((FeatureDatasetCoverage) result.featureDataset, pw);
-                }
-              }
-            } catch (IOException e) {
-              e.printStackTrace(pw);
-              c.failException++;
-
-            } catch (InvalidRangeException e) {
-              e.printStackTrace();
-              c.failException++;
-            }
-
-            // opendap
-            Access opendap = dd.getAccess(ServiceType.OPENDAP);
-            if (opendap != null) {
-              if (readAccess(opendap, fac, pw))
-                c.openOdap++;
-              else
-                c.failOdap++;
-            } else {
-              // System.out.printf("HEY%n");
-            }
-
-            // cdmremote
-            Access cdmremote = dd.getAccess(ServiceType.CdmRemote);
-            if (cdmremote != null) {
-              if (readAccess(cdmremote, fac, pw))
-                c.openCdmr++;
-              else
-                c.failCdmr++;
-            }
-
-          }
+        if (cmdLine.showNames) {
+          Service s = dd.getServiceDefault();
+          String sname = (s == null) ? "none" : s.getName();
+          pw.format("  Dataset '%s' service=%s%n", dd.getName(), sname);
         }
 
+        if (cmdLine.openDataset && dd.hasAccess()) {
+          Service s = dd.getServiceDefault();
+          if (s == null || s.getServiceTypeName().equalsIgnoreCase(ServiceType.HTTPServer.name())) // skip files
+            return;
+
+          DataFactory fac = new DataFactory();
+          try ( DataFactory.Result result = fac.openFeatureDataset(dd, task)) {
+            if (result.fatalError) {
+              pw.format("  Dataset fatalError=%s%n", result.errLog);
+              c.failFc++;
+            } else {
+              pw.format("  Dataset '%s' opened as type=%s%n", dd.getName(), result.featureDataset.getFeatureType());
+              c.openFc++;
+              if (cmdLine.readRandom && result.featureDataset instanceof FeatureDatasetCoverage) {
+                readRandom((FeatureDatasetCoverage) result.featureDataset, pw);
+              }
+            }
+          } catch (IOException e) {
+            e.printStackTrace(pw);
+            c.failException++;
+
+          } catch (InvalidRangeException e) {
+            e.printStackTrace();
+            c.failException++;
+          }
+
+          // opendap
+          Access opendap = dd.getAccess(ServiceType.OPENDAP);
+          if (opendap != null) {
+            if (readAccess(opendap, fac, pw))
+              c.openOdap++;
+            else
+              c.failOdap++;
+          } else {
+            // System.out.printf("HEY%n");
+          }
+
+          // cdmremote
+          Access cdmremote = dd.getAccess(ServiceType.CdmRemote);
+          if (cdmremote != null) {
+            if (readAccess(cdmremote, fac, pw))
+              c.openCdmr++;
+            else
+              c.failCdmr++;
+          }
+
+        }
       }, task, pw, null);
 
       int count = 0;

@@ -108,15 +108,15 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
   }
 
   @Override
-  public List getLocalFieldAsList(String fldName) {
+  public List<Object> getLocalFieldAsList(String fldName) {
     Object value = flds.get(fldName);
     if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
+      if (value instanceof List) return (List<Object>) value;
+      List<Object> result = new ArrayList<>(1);
       result.add(value);
       return result;
     }
-    return new ArrayList(0);
+    return new ArrayList<>(0);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

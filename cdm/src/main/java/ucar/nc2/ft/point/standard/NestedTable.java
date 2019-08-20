@@ -635,7 +635,7 @@ public class NestedTable {
       for (Join j : t.extraJoins) {
         sdata.add(j.getJoinData(cursor));
       }
-      cursor.tableData[level] = StructureDataFactory.make(sdata.toArray(new StructureData[sdata.size()]));  // LOOK should try to consolidate
+      cursor.tableData[level] = StructureDataFactory.make(sdata);  // LOOK should try to consolidate
     }
   }
 

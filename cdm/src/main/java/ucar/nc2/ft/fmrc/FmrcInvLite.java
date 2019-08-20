@@ -240,7 +240,7 @@ public class FmrcInvLite implements java.io.Serializable {
       // fill twoD time coordinate from the sequence of time coordinates
       int runIdx = 0;
       for (TimeCoord timeCoord : timeList) {
-        TimeCoord tc = null;
+        TimeCoord tc;
         if (hasMissingTimes) {
           tc = timeCoord;
           double tc_offset = FmrcInv.getOffsetInHours(base, tc.getRunDate());

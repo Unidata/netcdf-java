@@ -141,12 +141,10 @@ public class H5diag {
     DataBTree btree = vinfo.btree;
     if (btree == null || vinfo.useFillValue) {
       f.format("%s not chunked%n", v.getShortName());
-      return;
     }
   }
 
   public void deflate(Formatter f, DataBTree btree) throws IOException {
-
     int count = 0;
     long total = 0;
     DataBTree.DataChunkIterator iter = btree.getDataChunkIteratorFilter(null);
@@ -155,7 +153,6 @@ public class H5diag {
       total += dc.size;
       count++;
     }
-
   }
 
 }

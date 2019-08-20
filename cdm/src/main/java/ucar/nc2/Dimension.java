@@ -126,9 +126,9 @@ public class Dimension extends CDMNode implements Comparable {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private boolean isUnlimited = false;
-  private boolean isVariableLength = false;
-  private boolean isShared = true; // shared means its in a group dimension list.
+  private boolean isUnlimited;
+  private boolean isVariableLength;
+  private boolean isShared; // shared means its in a group dimension list.
   private int length;
 
   /**

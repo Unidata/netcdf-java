@@ -128,7 +128,7 @@ public class GeotiffWriter implements Closeable {
   void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
                         double yInc, int imageNumber) throws IOException {
 
-    int nextStart = 0;
+    int nextStart;
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
     // get rid of this when all projections are implemented
@@ -509,7 +509,7 @@ public class GeotiffWriter implements Closeable {
     Index ilon = lon.getIndex();
     int[] lonShape = lon.getShape();
     IndexIterator lonIter = lon.getIndexIterator();
-    double xlon = 0.0;
+    double xlon;
 
     LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(ilon.set(0)));
     LatLonPoint pN = new LatLonPointImpl(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
@@ -576,7 +576,7 @@ public class GeotiffWriter implements Closeable {
     }
 
     // write the data first
-    int nextStart = 0;
+    int nextStart;
     MAMath.MinMax dataMinMax = MAMath.getMinMaxSkipMissingData(data, array);
     if (greyScale) {
       ArrayByte result = replaceMissingValuesAndScale(array, data, dataMinMax);

@@ -378,14 +378,13 @@ public class Bearing {
      * @return return a nice format of this Bearing
      */
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Azimuth: ");
-        buf.append(azimuth);
-        buf.append(" Back azimuth: ");
-        buf.append(backazimuth);
-        buf.append(" Distance: ");
-        buf.append(distance);
-        return buf.toString();
+        String buf = "Azimuth: "
+            + azimuth
+            + " Back azimuth: "
+            + backazimuth
+            + " Distance: "
+            + distance;
+        return buf;
     }
 
     /**
@@ -554,7 +553,6 @@ public class Bearing {
         C     = ((-3. * C2A + 4.) * F + 4.) * C2A * F / 16.;
         D     = ((E * CY * C + CZ) * SY * C + Y) * SA;
         GLON2 = GLON1 + X - (1. - C) * D * F;
-        BAZ   = (Math.atan2(SA, BAZ) + Math.PI) * deg;
         result.setLatitude(GLAT2 * deg);
         result.setLongitude(GLON2 * deg);
         return result;

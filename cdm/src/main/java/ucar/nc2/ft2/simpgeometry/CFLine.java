@@ -173,9 +173,9 @@ public class CFLine implements Line {
 	public Line setupLine(NetcdfDataset dataset, Variable var, int index)
 	{
 		this.points.clear();
-		Array xPts = null;
-		Array yPts = null;
-		Variable nodeCounts = null;
+		Array xPts;
+		Array yPts;
+		Variable nodeCounts;
 		Variable partNodeCounts = null;
 
 		List<CoordinateAxis> axes = dataset.getCoordinateAxes();

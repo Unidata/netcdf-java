@@ -18,7 +18,6 @@ import ucar.nc2.*;
 import ucar.ma2.DataType;
 
 import java.util.*;
-import java.io.IOException;
 
 /**
  * Gempak Point Obs data.
@@ -341,7 +340,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
 
     // check dimensions
-    Dimension stationDim = null;
+    Dimension stationDim;
 
     if (lat.getDimension(0) != lon.getDimension(0)) {
       errlog.format("GempakCdm: Lat and Lon coordinate must have same size");

@@ -43,8 +43,7 @@ public class RangeComposite implements RangeIterator {
   @Override
   public java.util.Iterator<Integer> iterator() {
     Collection<Iterable<Integer>> iters = new ArrayList<>();
-    for (RangeIterator r : ranges)
-      iters.add(r);
+    iters.addAll(ranges);
 
     return new CompositeIterator<>(iters);
   }

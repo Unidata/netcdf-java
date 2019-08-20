@@ -239,26 +239,25 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
   }
 
   public String getInfo() {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append("LevelII2Dataset\n");
-    sbuff.append(super.getDetailInfo());
-    sbuff.append("\n\n");
-    sbuff.append(parseInfo.toString());
-    return sbuff.toString();
+    String sbuff = "LevelII2Dataset\n"
+        + super.getDetailInfo()
+        + "\n\n"
+        + parseInfo.toString();
+    return sbuff;
   }
 
 
   private class LevelII2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     int nsweeps;
     int nsweepsHR;
-    ArrayList sweeps;
+    ArrayList<LevelII2Sweep> sweeps;
     String name;
 
     private LevelII2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
       super(v.getShortName(), v0.getAttributes());
 
       nsweepsHR = 0;
-      sweeps = new ArrayList();
+      sweeps = new ArrayList<>();
       name = v.getShortName();
       if(isHighResolution(nds)) {
           String vname = v0.getFullNameEscaped();
@@ -304,7 +303,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
     }
 
     public Sweep getSweep(int sweepNo) {
-       return (Sweep) sweeps.get(sweepNo);
+       return sweeps.get(sweepNo);
     }
 
     public int getNumRadials() {
@@ -576,7 +575,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
      }
 
      private void setMeanAzi(String aziName,  int swpNumber) {
-       Array aziData = null;
+       Array aziData;
 
        if (getType() != null) {
           try {

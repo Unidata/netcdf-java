@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import java.util.stream.Collectors;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -28,7 +29,7 @@ import ucar.nc2.util.Misc;
  * Represents a list of offset times shared among variables
  * Tracks a list of variables that all have the same list of offset times.
  */
-public class TimeCoord implements Comparable {
+public class TimeCoord implements Comparable<TimeCoord> {
   static public final TimeCoord EMPTY = new TimeCoord(CalendarDate.of(new Date()), new double[0]);
 
   private CalendarDate runDate;
@@ -64,9 +65,9 @@ public class TimeCoord implements Comparable {
     this.runDate = runDate;
     this.axisName = axis.getFullName();
 
-    DateUnit unit = null;
-    Attribute atrCal = null;
-    Calendar cal = null;
+    DateUnit unit;
+    Attribute atrCal;
+    Calendar cal;
     
     try {
       unit = new DateUnit(axis.getUnitsString());
@@ -272,9 +273,8 @@ public class TimeCoord implements Comparable {
     return -1;
   }
 
-  public int compareTo(Object o) {
-    TimeCoord ot = (TimeCoord) o;
-    return id - ot.id;
+  public int compareTo(TimeCoord o) {
+    return Integer.compare(id, o.id);
   }
 
   /////////////////////////////////////////////
@@ -328,11 +328,10 @@ public class TimeCoord implements Comparable {
         offsets.add(off);
     }
 
-    // extract into a List
-    List<Double> offsetList = Arrays.asList((Double[]) offsets.toArray(new Double[offsets.size()]));
+    // extract into a List and sort
+    List<Double> offsetList = offsets.stream().sorted().collect(Collectors.toList());
 
-    // sort and extract into double[]
-    Collections.sort(offsetList);
+    // extract into double[]
     double[] offset = new double[offsetList.size()];
     int count = 0;
     for (double off : offsetList)
@@ -354,11 +353,10 @@ public class TimeCoord implements Comparable {
         offsets.add(new Tinv(tc.bound1[i], tc.bound2[i]));
     }
 
-    // extract into a List
-    List<Tinv> bounds = Arrays.asList((Tinv[]) offsets.toArray(new Tinv[offsets.size()]));
+    // extract into a List and sort
+    List<Tinv> bounds = offsets.stream().sorted().collect(Collectors.toList());
 
-    // sort and extract into double[] bounds arrays
-    Collections.sort(bounds);
+    // extract into double[] bounds arrays
     int n = bounds.size();
     double[] bounds1 = new double[n];
     double[] bounds2 = new double[n];

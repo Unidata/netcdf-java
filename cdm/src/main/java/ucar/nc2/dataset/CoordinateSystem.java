@@ -114,9 +114,7 @@ public class CoordinateSystem {
 
       // collect dimensions
       List<Dimension> dims = axis.getDimensionsAll();
-      for (Dimension dim : dims) {
-        domain.add(dim);
-      }
+      domain.addAll(dims);
     }
   }
 
@@ -395,9 +393,7 @@ public class CoordinateSystem {
   public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable axis : axes) {
-      for (Dimension dim : axis.getDimensions()) {
-          domain.add(dim);
-      }
+      domain.addAll(axis.getDimensions());
     }
     return domain;
   }
@@ -405,9 +401,7 @@ public class CoordinateSystem {
   public static int countDomain(Variable[] axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable axis : axes) {
-      for (Dimension dim : axis.getDimensions()) {
-          domain.add(dim);
-      }
+      domain.addAll(axis.getDimensions());
     }
     return domain.size();
   }

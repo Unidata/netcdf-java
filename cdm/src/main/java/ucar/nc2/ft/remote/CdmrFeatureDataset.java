@@ -112,18 +112,12 @@ public class CdmrFeatureDataset {
 
   static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
     org.jdom2.Document doc;
-    InputStream in = null;
-    try {
-      in = CdmRemote.sendQuery(null, endpoint, "req=capabilities");
+    try (InputStream in = CdmRemote.sendQuery(null, endpoint, "req=capabilities")) {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(in);  // LOOK closes in when done ??
 
     } catch (Throwable t) {
       throw new IOException(t);
-
-    } finally {
-      //if (in != null)
-      //  in.close();
     }
 
     if (showXML) {

@@ -308,7 +308,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     ArrayList<Variable> varList = new ArrayList<>();
 
     Variable[][] v = new Variable[nparams][number_sweeps];
-    String var_name = "";
+    String var_name;
     for (int j = 0; j < nparams; j++) {
       int tp = type[j];
       var_name = data_name[tp];
@@ -351,7 +351,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     // add "time" variable
     Variable[] time = new Variable[number_sweeps];
     String tm = "time";
-    String tm_name = "";
+    String tm_name;
     for (int j = 0; j < number_sweeps; j++) {
       tm_name = tm;
       if (number_sweeps > 1) {
@@ -371,7 +371,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     // add "elevationR" variable
     Variable[] elevationR = new Variable[number_sweeps];
     String ele = "elevationR";
-    String ele_name = "";
+    String ele_name;
     for (int j = 0; j < number_sweeps; j++) {
       ele_name = ele;
       if (number_sweeps > 1) {
@@ -391,7 +391,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     // add "azimuthR" variable
     Variable[] azimuthR = new Variable[number_sweeps];
     String azim = "azimuthR";
-    String azim_name = "";
+    String azim_name;
     for (int j = 0; j < number_sweeps; j++) {
       azim_name = azim;
       if (number_sweeps > 1) {
@@ -411,7 +411,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     // add "distanceR" variable
     Variable[] distanceR = new Variable[number_sweeps];
     String dName = "distanceR";
-    String dist_name = "";
+    String dist_name;
     for (int j = 0; j < number_sweeps; j++) {
       dist_name = dName;
       if (number_sweeps > 1) {
@@ -450,7 +450,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("num_data_types", nparams));
     ncfile.addAttribute(null, new Attribute("number_sweeps", number_sweeps));
     String sn = "start_sweep";
-    String snn = "";
+    String snn;
     for (int j = 0; j < number_sweeps; j++) {
       snn = sn;
       if (number_sweeps > 1) {
@@ -493,7 +493,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     String def_datafile = "SIGMET-IRIS";
     Short header_length = 80;
     Short ray_header_length = 6;
-    int ngates = 0;
+    int ngates;
 
     float radar_lat = recHdr.get("radar_lat").floatValue(); //System.out.println("rad_lat="+radar_lat);
     float radar_lon = recHdr.get("radar_lon").floatValue(); //System.out.println("rad_lon="+radar_lon);
@@ -947,7 +947,7 @@ channel.close();
     // output in deg
     float azim0 = calcAngle(az0);
     float azim1 = calcAngle(az1);
-    float d = 0.0f;
+    float d;
     d = Math.abs(azim0 - azim1);
     if ((az0 < 0) & (az1 > 0)) {
       d = Math.abs(360.0f - azim0) + Math.abs(azim1);

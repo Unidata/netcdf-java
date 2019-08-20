@@ -16,7 +16,7 @@ import ucar.nc2.Variable;
 public class SimpleGeometryIndexFinder {
 	
 	private final int INVALID_INDEX = -10;	// default invalid index before any lookups have been done
-	private Array nodeCount = null;
+	private Array nodeCount;
 	private int pastIndex;
 	private int previousEnd;
 	private int previousBegin;

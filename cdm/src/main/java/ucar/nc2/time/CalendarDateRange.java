@@ -114,9 +114,7 @@ public class CalendarDateRange {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append(start).append(" - ").append(end);
-    return sb.toString();
+    return start + " - " + end;
   }
 
 

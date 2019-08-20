@@ -331,10 +331,6 @@ public class CoordinateAxis extends VariableDS {
 
       return t1.axisOrder() - t2.axisOrder();
     }
-
-    public boolean equals(Object obj) {
-      return (this == obj);
-    }
   }
 
   /**

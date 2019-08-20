@@ -212,25 +212,24 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
   }
 
   public String getInfo() {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append("UF2Dataset\n");
-    sbuff.append(super.getDetailInfo());
-    sbuff.append("\n\n");
-    sbuff.append(parseInfo.toString());
-    return sbuff.toString();
+    String sbuff = "UF2Dataset\n"
+        + super.getDetailInfo()
+        + "\n\n"
+        + parseInfo.toString();
+    return sbuff;
   }
 
   private class UF2Variable extends AbstractRadialAdapter.MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     int nsweeps;
 
-    ArrayList sweeps;
+    ArrayList<UF2Sweep> sweeps;
     String name;
 
     private UF2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
       super(v.getShortName(), v0.getAttributes());
 
 
-      sweeps = new ArrayList();
+      sweeps = new ArrayList<>();
       name = v.getShortName();
 
 
@@ -256,7 +255,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     }
 
     public RadialDatasetSweep.Sweep getSweep(int sweepNo) {
-       return (RadialDatasetSweep.Sweep) sweeps.get(sweepNo);
+       return sweeps.get(sweepNo);
     }
 
     public int getNumRadials() {
@@ -268,7 +267,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     public float[] readAllData() throws IOException {
       Array allData;
       Array hrData = null;
-      RadialDatasetSweep.Sweep spn = (RadialDatasetSweep.Sweep)sweeps.get(sweeps.size()-1);
+      RadialDatasetSweep.Sweep spn = sweeps.get(sweeps.size()-1);
       Variable v = spn.getsweepVar();
       try {
         allData = v.read();
@@ -281,9 +280,6 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     }
 
     public void clearVariableMemory() {
-        for(int i = 0; i < nsweeps; i++) {
-
-        }
     }
 
 

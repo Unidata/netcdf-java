@@ -326,8 +326,8 @@ public abstract class CFPointWriter implements Closeable {
   protected final CFPointWriterConfig config;
   protected NetcdfFileWriter writer;
 
-  protected CalendarDateUnit timeUnit = null;
-  protected String altUnits = null;
+  protected CalendarDateUnit timeUnit;
+  protected String altUnits;
   protected String altitudeCoordinateName = altName;
 
   protected final boolean noTimeCoverage;

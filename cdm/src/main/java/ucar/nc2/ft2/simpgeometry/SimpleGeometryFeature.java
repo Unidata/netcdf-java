@@ -1,5 +1,6 @@
 package ucar.nc2.ft2.simpgeometry;
 
+import java.util.Arrays;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
@@ -68,7 +69,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF{
     if (this.coordSys != null) throw new RuntimeException("Can't change coordSys once set");
     this.coordSys = coordSys;
 
-    String[] axesStrList = null;
+    String[] axesStrList;
     
     // Find the name of the axes specific to this geometry
     axesStrList = coordSysName.split(" ");
@@ -78,9 +79,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF{
     
     if(axesStrList != null) {
 
-      for (String s : axesStrList) {
-        axesStrActualList.add(s);
-      }
+      axesStrActualList.addAll(Arrays.asList(axesStrList));
     
     	// Set up x Axis
     	for(CoordinateAxis xAx : coordSys.getSimpleGeometryX()) {

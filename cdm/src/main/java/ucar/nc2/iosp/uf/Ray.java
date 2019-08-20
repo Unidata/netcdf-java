@@ -23,7 +23,7 @@ public class Ray {
   /**
    * moment identifier
    */
-  long data_msecs = 0;
+  long data_msecs;
 
   UF_mandatory_header2 uf_header2;
   UF_optional_header uf_opt_header;
@@ -111,7 +111,6 @@ public class Ray {
       case "PS":
       case "PF":
       case "PX":
-        return "Power";
       case "MN":
       case "MS":
       case "MF":

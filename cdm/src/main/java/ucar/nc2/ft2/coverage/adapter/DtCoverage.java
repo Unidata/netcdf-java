@@ -34,7 +34,7 @@ public class DtCoverage implements IsMissingEvaluator {
   private final DtCoverageDataset dataset;
   private final DtCoverageCS gcs;
   private final VariableDS vs;
-  private int xDimOrgIndex = -1, yDimOrgIndex = -1, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
+  private int xDimOrgIndex, yDimOrgIndex, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
   private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1, rtDimNewIndex = -1;
   private final List<Dimension> mydims;
 

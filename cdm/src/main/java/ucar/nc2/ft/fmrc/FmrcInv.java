@@ -5,6 +5,7 @@
 
 package ucar.nc2.ft.fmrc;
 
+import java.util.stream.Collectors;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -147,12 +148,10 @@ public class FmrcInv {
     }
 
     // create the overall list of forecast times
-    forecastTimeList = Arrays.asList((CalendarDate[]) forecastTimeHash.toArray(new CalendarDate[forecastTimeHash.size()]));
-    Collections.sort(forecastTimeList);
+    forecastTimeList = forecastTimeHash.stream().sorted().collect(Collectors.toList());
 
     // create the overall list of offsets - may be zero
-    List<Double> offsetsAll = Arrays.asList((Double[]) offsetHash.toArray(new Double[offsetHash.size()]));
-    Collections.sort(offsetsAll);
+    List<Double> offsetsAll = offsetHash.stream().sorted().collect(Collectors.toList());
     int counto = 0;
     double[] offs = new double[offsetsAll.size()];
     for (double off : offsetsAll) offs[counto++] = off;
@@ -160,8 +159,7 @@ public class FmrcInv {
     tcOffAll.setOffsetTimes(offs);
 
     // create the overall list of offsets - may be zero
-    List<TimeCoord.Tinv> intervalAll = Arrays.asList((TimeCoord.Tinv[]) intervalHash.toArray(new TimeCoord.Tinv[intervalHash.size()]));
-    Collections.sort(intervalAll);
+    List<TimeCoord.Tinv> intervalAll = intervalHash.stream().sorted().collect(Collectors.toList());
     tcIntAll = new TimeCoord(baseDate);
     tcIntAll.setBounds(intervalAll);
   }
@@ -536,14 +534,12 @@ public class FmrcInv {
             timeList.add(tc);
         }
         // sort by run Date
-        timeList.sort(new Comparator<TimeCoord>() {
-          public int compare(TimeCoord o1, TimeCoord o2) {
-            if (o1 == null || o1.getRunDate() == null)
-              return -1;
-            if (o2 == null || o2.getRunDate() == null)
-              return 1;
-            return o1.getRunDate().compareTo(o2.getRunDate());
-          }
+        timeList.sort((o1, o2) -> {
+          if (o1 == null || o1.getRunDate() == null)
+            return -1;
+          if (o2 == null || o2.getRunDate() == null)
+            return 1;
+          return o1.getRunDate().compareTo(o2.getRunDate());
         });
         // here again the timeList has differing runDates
         timeCoordUnion = TimeCoord.makeUnion(timeList, baseDate); // create the union of all offsets used by this grid

@@ -57,7 +57,7 @@ public class NCheader
     checkFileType(ucar.unidata.io.RandomAccessFile raf)
             throws IOException
     {
-        int format = 0;
+        int format;
 
         byte[] magic = new byte[MAGIC_NUMBER_LEN];
 
@@ -70,7 +70,7 @@ public class NCheader
         if(raf.readBytes(magic, 0, MAGIC_NUMBER_LEN) < MAGIC_NUMBER_LEN)
             return 0; // unknown
         // Some version of CDF
-        int hdrlen = 0;
+        int hdrlen;
         hdrlen = CDF1HEAD.length; // all CDF headers are assumed to be same length
         format = 0;
         if(memequal(CDF1HEAD, magic, CDF1HEAD.length))

@@ -141,7 +141,7 @@ class GeoKey  {
 
   /** Type-safe enumeration of GeoKeys */
   static class Tag implements Comparable {
-    static private HashMap map = new HashMap();
+    static private Map<Integer, Tag> map = new HashMap<>();
 
     static public final Tag GTModelTypeGeoKey = new Tag("GTModelTypeGeoKey", 1024);
     static public final Tag GTRasterTypeGeoKey = new Tag("GTRasterTypeGeoKey", 1025);
@@ -201,14 +201,13 @@ class GeoKey  {
     static public final Tag GeoKey_ProjFalseOriginLat = new Tag("GeoKey_ProjFalseOriginLat", 3085);
 
     static Tag get( int code) {
-      return (Tag) map.get(code);
+      return map.get(code);
     }
 
     static Tag getOrMake( int code) {
       Tag tag = Tag.get( code);
       return (tag != null) ? tag : new Tag( code);
     }
-
 
     String name;
     int code;
@@ -237,7 +236,7 @@ class GeoKey  {
 
   /** Type-safe enumeration of GeoKey values */
   static class TagValue implements Comparable {
-    static private HashMap map = new HashMap();
+    static private Map<String, TagValue> map = new HashMap<>();
 
     static public final TagValue ModelType_Projected = new TagValue(Tag.GTModelTypeGeoKey, "Projected", 1);
     static public final TagValue ModelType_Geographic = new TagValue(Tag.GTModelTypeGeoKey, "Geographic", 2);
@@ -277,7 +276,7 @@ class GeoKey  {
 
     static TagValue get( Tag tag, int code) {
       if (tag == null) return null;
-      return (TagValue) map.get( tag.name+code);
+      return map.get( tag.name+code);
     }
 
     private Tag tag;

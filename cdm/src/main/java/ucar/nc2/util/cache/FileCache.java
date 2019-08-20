@@ -587,7 +587,7 @@ public class FileCache implements FileCacheIF {
   public void showTracking(Formatter format) {
     if (track == null) return;
     List<Tracker> all = new ArrayList<>(track.size());
-    for (Tracker val : track.values()) all.add(val);
+    all.addAll(track.values());
     Collections.sort(all);
     int seq = 0;
     int countAll = 0;
@@ -768,8 +768,8 @@ public class FileCache implements FileCacheIF {
       FileCacheable ncfile; // actually final, but we null it out for gc
       final AtomicBoolean isLocked = new AtomicBoolean(true);
       int countAccessed = 0;
-      long lastModified = 0;
-      long lastAccessed = 0;
+      long lastModified;
+      long lastAccessed;
 
       private CacheFile(FileCacheable ncfile) {
         this.ncfile = ncfile;

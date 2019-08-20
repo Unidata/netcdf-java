@@ -607,7 +607,7 @@ public class Attribute extends CDMNode
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if ((o == null) || !(o instanceof Attribute)) return false;
+    if (!(o instanceof Attribute)) return false;
 
     final Attribute att = (Attribute) o;
 

@@ -362,9 +362,6 @@ public class NUWGConvention extends CoordSysBuilder {
     public int compare(NavInfo n1, NavInfo n2) {
       return n1.getName().compareTo( n2.getName());
     }
-    public boolean equals(Object obj) {
-      return (this == obj);
-    }
   }
 
   private class NavInfo {
@@ -490,7 +487,7 @@ public class NUWGConvention extends CoordSysBuilder {
   // encapsolates GRIB-specific processing
   private class Grib1 {
     private String grid_name;
-    private int grid_code = 0;
+    private int grid_code;
     private ProjectionCT ct;
 
     private  int nx, ny;

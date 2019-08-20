@@ -717,13 +717,6 @@ public abstract class Array {
       case ENUM1:
       case UBYTE:
       case BYTE:
-        size = bb.limit();
-        if (shape == null) shape = new int[]{size};
-        result = factory(dtype, shape);
-        for (int i = 0; i < size; i++)
-          result.setByte(i, bb.get(i));
-        return result;
-
       case CHAR:
         size = bb.limit();
         if (shape == null) shape = new int[]{size};

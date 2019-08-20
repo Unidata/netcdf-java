@@ -122,7 +122,7 @@ public class CFGridWriter2 {
         continue;
       GridDatatype gridOrg = gds.findGridDatatype(gridName);
       if (gridOrg == null) {
-        log.debug("writeOrTestSize cant find grid %s - skipping%n", gridName);
+        log.debug("writeOrTestSize cant find grid {} - skipping%n", gridName);
         continue;
       }
 

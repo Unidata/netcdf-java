@@ -6,6 +6,7 @@
 package ucar.nc2.util.net;
 
 import java.net.*;
+import java.util.Map;
 
 /**
  * how do we know if URLStreamHandlerFactory has already been set?
@@ -16,7 +17,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
   static public org.slf4j.Logger log = ucar.httpservices.HTTPSession.log;
 
   //////////////////////////////////////////////////////////////////////////
-  static private java.util.HashMap hash = new java.util.HashMap();
+  static private Map<String, URLStreamHandler> map = new java.util.HashMap<>();
   static private boolean installed = false;
 
   static public void install() {
@@ -27,12 +28,11 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
       }
     } catch (Error e) {
       log.error("Error installing URLStreamHandlerFactory "+e.getMessage());
-      // Log.errorG("Error installing URLStreamHandlerFactory "+e.getMessage());
     }
   }
 
   static public void register(String protocol, URLStreamHandler sh) {
-    hash.put( protocol.toLowerCase(), sh);
+    map.put( protocol.toLowerCase(), sh);
   }
 
   static public URL makeURL( String urlString) throws MalformedURLException {
@@ -46,7 +46,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
     // install failed, use alternate form of URL constructor
     try {
       URI uri = new URI( urlString);
-      URLStreamHandler h = (URLStreamHandler) hash.get( uri.getScheme().toLowerCase());
+      URLStreamHandler h = map.get( uri.getScheme().toLowerCase());
       return new URL( parent, urlString, h);
     } catch (URISyntaxException e) {
       throw new MalformedURLException(e.getMessage());
@@ -56,7 +56,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
   }
 
   public URLStreamHandler createURLStreamHandler(String protocol) {
-    return (URLStreamHandler) hash.get( protocol.toLowerCase());
+    return map.get( protocol.toLowerCase());
   }
 
 }

@@ -21,7 +21,6 @@ import java.io.*;
 import java.util.*;
 
 public class Doradeheader {
-  private boolean debug = false;
   private ucar.nc2.NetcdfFile ncfile;
   private float[] lat_min, lat_max, lon_min, lon_max, hi_max, hi_min;
 
@@ -43,8 +42,6 @@ public class Doradeheader {
     DoradePARM[] parms = mySweep.getParamList();
     int nRays = mySweep.getNRays();
 
-    if (debug) System.out.println(parms.length + " params in file");
-
     int numSensor = mySweep.getNSensors();
     int[] ncells = new int[numSensor];
     Dimension[] gateDim = new Dimension[numSensor];
@@ -59,20 +56,19 @@ public class Doradeheader {
       }
     }
 
-    ArrayList[] dims = new ArrayList[numSensor];
-    ArrayList dims1 = new ArrayList();
-    ArrayList[] dims2 = new ArrayList[numSensor];
-    int nCells = mySweep.getNCells(0);
+    ArrayList<Dimension>[] dims = new ArrayList[numSensor];
+    ArrayList<Dimension> dims1 = new ArrayList<>();
+    ArrayList<Dimension>[] dims2 = new ArrayList[numSensor];
+    int nCells;
 
     //  Dimension sensorDim = new Dimension("sensor", numSensor, true);
     //  ncfile.addDimension( null, sensorDim);
     Dimension radialDim = new Dimension("radial", nRays);
     ncfile.addDimension(null, radialDim);
 
-
     for (int i = 0; i < numSensor; i++) {
-      dims[i] = new ArrayList();
-      dims2[i] = new ArrayList();
+      dims[i] = new ArrayList<>();
+      dims2[i] = new ArrayList<>();
       dims[i].add(radialDim);
       dims[i].add(gateDim[i]);
       dims2[i].add(gateDim[i]);
@@ -136,7 +132,6 @@ public class Doradeheader {
     lName = "azimuth angle in degrees: 0 = true north, 90 = east";
     att = new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString());
     addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
-
 
     // add gate coordinate variable
     for (int i = 0; i < numSensor; i++) {
@@ -228,7 +223,6 @@ public class Doradeheader {
         nCells = parms[p].getNCells();
         int ii = getGateDimsIndex(nCells, gateDim, numSensor);
 
-        if (debug) System.out.println("Param " + p + " name " + pval + " and ncel " + nCells);
         addVariable(ncfile, dims[ii], parms[p]);
       }
     } catch (Exception ex) {
@@ -307,7 +301,6 @@ public class Doradeheader {
        */
   }
 
-
   void addNCAttributes(NetcdfFile nc, DoradeSweep mySweep) {
     nc.addAttribute(null, new Attribute("summary", "Dorade radar data " +
             "from radar " + mySweep.getSensorName(0) + " in the project " + mySweep.getProjectName()));
@@ -341,86 +334,4 @@ public class Doradeheader {
     else
       nc.addAttribute(null, new Attribute("IsStationary", "1"));
   }
-
-  // Return the string of entity ID for the Dorade image file
-  DataType getDataType(int format) {
-    DataType p;
-
-    switch (format) {
-      case 1:    // 8-bit signed integer format.
-        p = DataType.SHORT;
-        break;
-      case 2:  // 16-bit signed integer format.
-        p = DataType.FLOAT;
-        break;
-      case 3:    // 32-bit signed integer format.
-        p = DataType.LONG;
-        break;
-      case 4:   // 32-bit IEEE float format.
-        p = DataType.FLOAT;
-        break;
-      case 5:   //  16-bit IEEE float format.
-        p = DataType.DOUBLE;
-        break;
-      default:
-        p = null;
-        break;
-    } //end of switch
-    return p;
-  }
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
-/* Change History:
-   $Log: Doradeheader.java,v $
-   Revision 1.5  2006/04/19 20:24:09  yuanho
-   radial dataset sweep for all radar dataset
-
-   Revision 1.4  2005/08/08 22:45:32  yuanho
-   spelling bug fix
-
-   Revision 1.3  2005/08/03 21:50:45  yuanho
-   called IsDoradeSweep to check input file, adding global atts.
-
-   Revision 1.2  2005/05/11 00:10:03  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.1  2005/04/26 19:39:06  yuanho
-   iosp for dorade format radar data
-
-   Revision 1.8  2004/12/15 22:35:25  caron
-   add _unsigned
-
-   Revision 1.7  2004/12/07 22:13:28  yuanho
-   add phyElem for 1hour and total precipitation
-
-   Revision 1.6  2004/12/07 22:13:15  yuanho
-   add phyElem for 1hour and total precipitation
-
-   Revision 1.5  2004/12/07 01:29:31  caron
-   redo convention parsing, use _Coordinate encoding.
-
-   Revision 1.4  2004/10/29 00:14:11  caron
-   no message
-
-   Revision 1.3  2004/10/19 15:17:22  yuanho
-   Dorade header DxKm update
-
-   Revision 1.2  2004/10/15 23:18:34  yuanho
-   Dorade projection update
-
-   Revision 1.1  2004/10/13 22:57:57  yuanho
-   no message
-
-   Revision 1.4  2004/08/16 20:53:45  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:17  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.2  2004/07/06 19:28:10  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
- */

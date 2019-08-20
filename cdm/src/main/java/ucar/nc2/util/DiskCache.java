@@ -65,7 +65,7 @@ import java.util.*;
  */
 public class DiskCache {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
-  static private String root = null;
+  static private String root;
   static private boolean standardPolicy = false;
   static private boolean checkExist = false;
 
