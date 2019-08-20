@@ -11,6 +11,9 @@ then
     echo "build netcdf-java and publish artifacts to local maven repository"
     $TRAVIS_BUILD_DIR/gradlew publishToMavenLocal
 
+    # find netcdf-java version as specified in the PR
+    NCJ_VERSION=$($TRAVIS_BUILD_DIR/gradlew properties -q | grep "^version:" | awk '{print $2}')
+
     # clone latest tds repo
     TDS_BUILD_DIR=$TRAVIS_BUILD_DIR/tds_git_repo
     echo "Clone the TDS repo..."
@@ -18,8 +21,10 @@ then
 
     # tell tds build to use snapshots from the local maven repo
     echo "Tell the TDS build to look in the local maven repository for artifacts first..."
-    sed -i 's/\/\/mavenLocal()/mavenLocal()/g' $TDS_BUILD_DIR/build.gradle
     sed -i 's/\/\/mavenLocal()/mavenLocal()/g' $TDS_BUILD_DIR/gradle/any/dependencies.gradle
+
+    # make sure we are using the version of netCDF-Java specified in the PR to build the TDS
+    sed -i 's/versions\["ncj"\] =.*$/versions["ncj"] ="'${NCJ_VERSION}'"/g' $TDS_BUILD_DIR/gradle/any/dependencies.gradle
 
     # setup env vars for tds build
     CONTENT_ROOT="-Dtds.content.root.path=$TDS_BUILD_DIR/tds/src/test/content"
