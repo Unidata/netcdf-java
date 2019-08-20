@@ -1,6 +1,6 @@
 ---
-title: Upgrading to netCDF-Java version 5.0
-last_updated: 2019-07-23
+title: Upgrading to netCDF-Java version 5.x
+last_updated: 2019-08-20
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: upgrade_to_50.html
@@ -20,7 +20,11 @@ Deprecated classes and methods have been removed, and the module structure and t
 Java WebStart has been deprecated as of [Java 9](https://www.oracle.com/technetwork/java/javase/9-deprecated-features-3745636.html#JDK-8184998){:target="_blank"}.
 As such, we no longer utilize WebStart.
 
-## netCDF-Java API Changes
+## Quick Navigation
+* [Summary of changes for v5.0.x](#netcdf-java-api-changes-50x)
+* [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
+
+## netCDF-Java API Changes (5.0.x)
 
 ### Unsigned Types
 
@@ -219,3 +223,26 @@ shared and allowing them to be private is confusing and error-prone.
 * TDS and CDM now use `thredds.server.catalog` and `thredds.client.catalog`. The APIs are different, but with equivalent functionality to thredds.catalog.
 * `thredds.client.DatasetNode` now has `getDatasetsLogical()` and `getDatasetsLocal()` that does or does not dereference a `CatalogRef`, respectively.
   You can also use `getDatasets()` which includes a dereferenced catalog if it has already been read.
+
+## netCDF-Java API Changes (5.1.x)
+
+### Many checked exceptions removed
+
+Many unneeded checked Exceptions were removed in 5.1.
+In some cases, you may need to change your code to remove Exception handling.
+For example, the `buildFrom*` methods from `thredds.client.catalog.builder.CatalogBuilder` no longer throw `IOException`s.
+
+### CFGridCoverageWriter2
+
+* The `writeOrTestSize` method of `CFGridCoverageWriter2` has been refactored into two new methods:
+  * Check size of file before writing:
+    ~~~java
+    ucar.nc2.util.Optional<Long> getSizeOfOutput(CoverageCollection gdsOrg, List<String> gridNames,
+                                                 SubsetParams subset, boolean tryToAddLatLon2D)
+    ~~~
+  * Write file and return size:
+    ~~~java
+    ucar.nc2.util.Optional<Long> write(CoverageCollection gdsOrg, List<String> gridNames,
+                                       SubsetParams subset, boolean tryToAddLatLon2D,
+                                       NetcdfFileWriter writer)
+    ~~~

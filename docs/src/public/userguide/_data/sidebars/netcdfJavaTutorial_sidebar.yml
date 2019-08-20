@@ -4,7 +4,7 @@
 entries:
 - title: Sidebar
   product: netCDF-Java Tutorial and Reference Documentation
-  version: 5.0
+  version: 5.1
   folders:
 
   - title:
@@ -46,6 +46,10 @@ entries:
 
     - title: Using netCDF-Java Maven Artifacts
       url: /using_netcdf_java_artifacts.html
+      output: web, pdf
+
+    - title: 5.x Changes
+      url: /upgrade_to_50.html
       output: web, pdf
 
   - title: Working with CDM datasets
@@ -268,8 +272,4 @@ entries:
 
     - title: ToolsUI Reference
       url: /toolsui_ref.html
-      output: web, pdf
-
-    - title: 5.0 Changes
-      url: /upgrade_to_50.html
       output: web, pdf
