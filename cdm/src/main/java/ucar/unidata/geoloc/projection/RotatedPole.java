@@ -68,8 +68,8 @@ public class RotatedPole extends ProjectionImpl {
 
   private void buildRotationMatrices() {
 
-    double betaRad = 0.;
-    double gammaRad = 0.;
+    double betaRad;
+    double gammaRad;
 
     if (northPole.getY() == 90.) {
       betaRad  = 0.;

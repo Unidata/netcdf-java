@@ -45,9 +45,6 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   public boolean isValidFile( RandomAccessFile raf) {
-      int data_msecs = 0;
-      short data_julian_date = 0;
-
       try{
           if(isCINRAD(raf)) {
             Cinrad2Record.MISSING_DATA = (byte) 0;
@@ -64,9 +61,9 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
           raf.skipBytes(12);
           // data header
           byte [] b4 = raf.readBytes(4);
-          data_msecs    = bytesToInt(b4, true);
+          int data_msecs    = bytesToInt(b4, true);
           byte [] b2 =  raf.readBytes(2);
-          data_julian_date  = (short)bytesToShort(b2, true);
+          short data_julian_date  = (short)bytesToShort(b2, true);
           if (data_msecs > 86400000) return false;
           java.util.Date dd =Cinrad2Record.getDate(data_julian_date,data_msecs);
 
@@ -277,7 +274,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addDimension( null, scanDim);
     ncfile.addDimension( null, gateDim);
 
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     dims.add( scanDim);
     dims.add( radialDim);
     dims.add( gateDim);
@@ -311,7 +308,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     //if (!isCC)
     //  v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
-    ArrayList dim2 = new ArrayList();
+    ArrayList<Dimension> dim2 = new ArrayList<>();
     dim2.add( scanDim);
     dim2.add( radialDim);
 
@@ -321,7 +318,6 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     timeVar.setDataType(DataType.INT);
     timeVar.setDimensions(dim2);
     ncfile.addVariable(null, timeVar);
-
 
     // int julianDays = volScan.getTitleJulianDays();
     // Date d = Cinrad2Record.getDate( julianDays, 0);

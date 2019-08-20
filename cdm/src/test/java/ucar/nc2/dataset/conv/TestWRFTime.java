@@ -31,7 +31,7 @@ public class TestWRFTime {
     	Array times = tca.read();
     	ncd.close();
     	// if the date/time string cannot be parsed (in this case, 2008-06-27_00:00:00)
-    	// the the time will come back as 0 seconds after going through the WRFConvention
+    	// the time will come back as 0 seconds after going through the WRFConvention
     	// coordinate system builder class.
     	assert times.getInt(0) != 0;
     	// first date in this file is 1214524800 [seconds since 1970-01-01T00:00:00],

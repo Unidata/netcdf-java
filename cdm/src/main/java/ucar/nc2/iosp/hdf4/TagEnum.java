@@ -4,14 +4,6 @@
  */
 package ucar.nc2.iosp.hdf4;
 
-import ucar.nc2.constants.CDM;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.util.StringTokenizer;
-
 /**
  * @author caron
  * @since Jul 18, 2007

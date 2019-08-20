@@ -179,18 +179,13 @@ public class Level2Record {
   static public String getDatatypeUnits(int datatype) {
     switch (datatype) {
       case REFLECTIVITY:
+      case REFLECTIVITY_HIGH:
+      case DIFF_REFLECTIVITY_HIGH:
         return "dBz";
 
       case VELOCITY_HI:
       case VELOCITY_LOW:
       case SPECTRUM_WIDTH:
-        return "m/s";
-
-      case REFLECTIVITY_HIGH:
-        return "dBz";
-      case DIFF_REFLECTIVITY_HIGH:
-        return "dBz";
-
       case VELOCITY_HIGH:
       case SPECTRUM_WIDTH_HIGH:
         return "m/s";
@@ -251,12 +246,11 @@ public class Level2Record {
   public float getDatatypeScaleFactor(int datatype) {
     switch (datatype) {
       case REFLECTIVITY:
-        return 0.5f;
-      case VELOCITY_LOW:
-        return 1.0f;
       case VELOCITY_HI:
       case SPECTRUM_WIDTH:
         return 0.5f;
+      case VELOCITY_LOW:
+        return 1.0f;
       case REFLECTIVITY_HIGH:
         return 1 / reflectHR_scale;
       case VELOCITY_HIGH:
@@ -403,14 +397,14 @@ public class Level2Record {
   boolean hasHighResPHIData;
   boolean hasHighResRHOData;
   // message header
-  short message_size = 0;
-  byte id_channel = 0;
-  public byte message_type = 0;
-  short id_sequence = 0;
-  short mess_julian_date = 0;
-  int mess_msecs = 0;
-  short seg_count = 0;
-  short seg_number = 0;
+  short message_size;
+  byte id_channel;
+  public byte message_type;
+  short id_sequence;
+  short mess_julian_date;
+  int mess_msecs;
+  short seg_count;
+  short seg_number;
 
   // radar data header
   int data_msecs = 0;

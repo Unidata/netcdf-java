@@ -98,7 +98,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   static boolean debugStructureIterator = false;
   static boolean loadWarnings = false;
 
-  private static boolean userLoads = false;
+  private static boolean userLoads;
 
   private static StringLocker stringLocker = new StringLocker();
 
@@ -110,106 +110,106 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     try {
       registerIOProvider("ucar.nc2.stream.NcStreamIosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class NcStreamIosp: {}", e);
+      if (loadWarnings) log.info("Cant load class NcStreamIosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class H5iosp: {}", e);
+      if (loadWarnings) log.info("Cant load class H5iosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.hdf4.H4iosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class H4iosp: {}", e);
+      if (loadWarnings) log.info("Cant load class H4iosp", e);
     }
 
         // LOOK can we just load Grib through the ServiceLoader ??
     try {
       registerIOProvider("ucar.nc2.grib.collection.Grib1Iosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Grib1Iosp: {}", e);
+      if (loadWarnings) log.info("Cant load class Grib1Iosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.grib.collection.Grib2Iosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Grib2Iosp: {}", e);
+      if (loadWarnings) log.info("Cant load class Grib2Iosp", e);
     }
     try {
       Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp2");
       registerIOProvider(iosp);
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load resource: {}", e);
+      if (loadWarnings) log.info("Cant load resource", e);
     }
 
     try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Nexrad2IOServiceProvider: {}", e);
+      if (loadWarnings) log.info("Cant load class Nexrad2IOServiceProvider", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.nids.Nidsiosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Nidsiosp: {}", e);
+      if (loadWarnings) log.info("Cant load class Nidsiosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.nowrad.NOWRadiosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class NOWRadiosp: {}", e);
+      if (loadWarnings) log.info("Cant load class NOWRadiosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.misc.GtopoIosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class GtopoIosp: {}", e);
+      if (loadWarnings) log.info("Cant load class GtopoIosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.misc.NmcObsLegacy");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class NmcObsLegacy: {}", e);
+      if (loadWarnings) log.info("Cant load class NmcObsLegacy", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.gini.Giniiosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Giniiosp: {}", e);
+      if (loadWarnings) log.info("Cant load class Giniiosp", e);
     }
     try {
         registerIOProvider("ucar.nc2.iosp.sigmet.SigmetIOServiceProvider");
     } catch (Throwable e) {
-        if (loadWarnings) log.info("Cant load class SigmetIOServiceProvider: {}", e);
+        if (loadWarnings) log.info("Cant load class SigmetIOServiceProvider", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.uf.UFiosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class UFiosp: {}", e);
+      if (loadWarnings) log.info("Cant load class UFiosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.misc.Uspln");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Uspln: {}", e);
+      if (loadWarnings) log.info("Cant load class Uspln", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.misc.Nldn");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Nldn: {}", e);
+      if (loadWarnings) log.info("Cant load class Nldn", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.fysat.Fysatiosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Fysatiosp: {}", e);
+      if (loadWarnings) log.info("Cant load class Fysatiosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.uamiv.UAMIVServiceProvider");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class UAMIVServiceProvider: {}", e);
+      if (loadWarnings) log.info("Cant load class UAMIVServiceProvider", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.noaa.Ghcnm2");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Ghcnm2: {}", e);
+      if (loadWarnings) log.info("Cant load class Ghcnm2", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.noaa.IgraPor");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class IgraPor: {}", e);
+      if (loadWarnings) log.info("Cant load class IgraPor", e);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -218,42 +218,42 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     try {
       registerIOProvider("ucar.nc2.iosp.dmsp.DMSPiosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: {}", e);
+      if (loadWarnings) log.info("Cant load class", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.dorade.Doradeiosp");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Doradeiosp: {}", e);
+      if (loadWarnings) log.info("Cant load class Doradeiosp", e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
       registerIOProvider("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
       registerIOProvider("ucar.nc2.iosp.gempak.GempakSoundingIOSP");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Gempak...: {}", e);
+      if (loadWarnings) log.info("Cant load class Gempak...", e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
       registerIOProvider("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class GempakGridServiceProvider: {}", e);
+      if (loadWarnings) log.info("Cant load class GempakGridServiceProvider", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class GradsBinaryGridServiceProvider: {}", e);
+      if (loadWarnings) log.info("Cant load class GradsBinaryGridServiceProvider", e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.AreaServiceProvider");
       registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class AreaServiceProvider: {}", e);
+      if (loadWarnings) log.info("Cant load class AreaServiceProvider", e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
       registerIOProvider("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class McIDASGridServiceProvider: {}", e);
+      if (loadWarnings) log.info("Cant load class McIDASGridServiceProvider", e);
     }
 
     ////////////////////////////////
@@ -261,7 +261,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     try {
       registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
     } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class Cinrad2IOServiceProvider: {}", e);
+      if (loadWarnings) log.info("Cant load class Cinrad2IOServiceProvider", e);
     }
 
     userLoads = true;
@@ -1850,12 +1850,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
     if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
       Variable v = rootGroup.findVariable("record");
-      boolean gotit = (v != null) && (v instanceof Structure);
+      boolean gotit = (v instanceof Structure);
       return gotit || makeRecordStructure();
 
     } else if (message == IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE) {
       Variable v = rootGroup.findVariable("record");
-      boolean gotit = (v != null) && (v instanceof Structure);
+      boolean gotit = (v instanceof Structure);
       if (gotit) {
         rootGroup.remove(v);
         variables.remove(v);

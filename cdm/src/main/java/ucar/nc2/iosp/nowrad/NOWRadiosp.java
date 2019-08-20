@@ -88,7 +88,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
     // subset
     Object data;
     Array outputData;
-    byte[] vdata = null;
+    byte[] vdata;
     NOWRadheader.Vinfo vinfo;
     ByteBuffer bos;
     List<Range> ranges = section.getRanges();
@@ -119,7 +119,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
   public Object readOneScanData(ByteBuffer bos, NOWRadheader.Vinfo vinfo, String vName) {
     int doff = (int) vinfo.hoff;
     int npixel = vinfo.yt * vinfo.xt;
-    byte[] rdata = null;
+    byte[] rdata;
     byte[] ldata = new byte[vinfo.xt];
     byte[] pdata = new byte[npixel];
     byte[] b2 = new byte[2];
@@ -144,7 +144,6 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
       // line number
       if (newline) {
         bos.get(b2);
-        linenum = (DataType.unsignedByteToShort(b2[1]) << 8) + DataType.unsignedByteToShort(b2[0]);
 
         // System.out.println("Line Number = " + linenum);
       }

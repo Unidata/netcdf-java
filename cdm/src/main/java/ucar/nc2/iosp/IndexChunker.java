@@ -117,8 +117,9 @@ public class IndexChunker {
     }
 
     // delete merged
-    for (int i = 0; i < merge; i++)
-      dimList.remove(0);
+    if (merge > 0) {
+      dimList.subList(0, merge).clear();
+    }
     if (debug) System.out.println(" final= " + this);
 
     // how many elements can we do at a time?

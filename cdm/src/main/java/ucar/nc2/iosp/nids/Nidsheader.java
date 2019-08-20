@@ -435,7 +435,6 @@ class Nidsheader{
         break ifloop;
 
       }
-      hedsiz += 10;
 
       // Symbology layer
       int klayer = pinfo.offsetToSymbologyBlock * 2 + 10;
@@ -778,7 +777,7 @@ class Nidsheader{
 
         int ppos = bos.position();
 
-        ArrayList dims = new ArrayList();
+        ArrayList<Dimension> dims = new ArrayList<>();
         Dimension tbDim = new Dimension("pageNumber", npage);
         ncfile.addDimension(null, tbDim);
         dims.add(tbDim);
@@ -873,7 +872,6 @@ class Nidsheader{
           //  }
 
         }
-        ppos = ppos + lpage + 4;
         clen = clen + lpage + 4;
       }
 
@@ -925,7 +923,7 @@ class Nidsheader{
       vlen = vlen + dlen[i];
     }
 
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     Dimension sDim = new Dimension("graphicSymbolSize", vlen);
     ncfile.addDimension(null, sDim);
     dims.add(sDim);
@@ -963,7 +961,7 @@ class Nidsheader{
 
   int pcode_25(int[] pos, int hoff, int len, boolean isZ) {
 
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
 
     Dimension sDim = new Dimension("circleSize", len);
     ncfile.addDimension(null, sDim);
@@ -1003,7 +1001,7 @@ class Nidsheader{
 
   int pcode_6n7(int[] pos, int[] dlen, int hoff, int len, boolean isZ, String vname, int code) {
 
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
 
     int vlen = 0;
     for (int i = 0; i < len; i++) {
@@ -1053,7 +1051,7 @@ class Nidsheader{
    */
 
   int pcode_4(int[] pos, int hoff, int len, boolean isZ) {
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     //int vlen =len;
 
     Dimension sDim = new Dimension("windBarbSize", len);
@@ -1136,7 +1134,7 @@ class Nidsheader{
    */
 
   int pcode_5(int[] pos, int hoff, int len, boolean isZ) {
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     //int vlen =len;
 
     Dimension sDim = new Dimension("windBarbSize", len);
@@ -1192,7 +1190,7 @@ class Nidsheader{
       boolean isZ) {
     //int vlen = len;
 
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     Dimension sDim = new Dimension("textStringSize" + abbre + code, len);
     ncfile.addDimension(null, sDim);
     dims.add(sDim);
@@ -1239,7 +1237,7 @@ class Nidsheader{
    */
   int pcode_10n9(int[] pos, int[] dlen, int hoff, int len, boolean isZ) {
 
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     Variable v;
 
     int vlen = 0;
@@ -1295,7 +1293,7 @@ class Nidsheader{
   int pcode_DPA(ByteBuffer bos, int pos, int hoff, int hedsiz, boolean isZ, int slayer, int code) {
     byte[] b2 = new byte[2];
     int soff;
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     bos.position(pos);
     bos.get(b2, 0, 2);  // reserved
     bos.get(b2, 0, 2);  // reserved
@@ -1409,7 +1407,7 @@ class Nidsheader{
   int pcode_raster(ByteBuffer bos, short pkcode, int hoff, int hedsiz, boolean isZ, byte[] data) {
     byte[] b2 = new byte[2];
     int soff;
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     int iscale = 1;                         /* data scale                    */
     int ival;
 
@@ -1564,7 +1562,7 @@ class Nidsheader{
       short[] threshold) {
     byte[] b2 = new byte[2];
     int soff;
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     int iscale = 1;                         /* data scale                    */
     int ival;
 
@@ -1762,9 +1760,7 @@ class Nidsheader{
     return soff;
   }
 
-  /**
-   * for level3 176 product
-   */
+  /** for level3 176 product */
   private List parseComponents(ByteBuffer datainput) {
     ArrayList arraylist = null;
     int i = datainput.getInt();
@@ -1780,9 +1776,7 @@ class Nidsheader{
     return arraylist;
   }
 
-  /**
-   * for level3 176 product
-   */
+  /** for level3 176 product */
   private ArrayList parseData(ByteBuffer datainput) {
     ArrayList arraylist = new ArrayList();
     int numRadials;
@@ -1825,9 +1819,7 @@ class Nidsheader{
     return arraylist;
   }
 
-  /**
-   * for level3 176 product
-   */
+  /** for level3 176 product */
   private List parseParameters(ByteBuffer datainput) {
     ArrayList arraylist = new ArrayList();
     int i = datainput.getInt();
@@ -1842,13 +1834,9 @@ class Nidsheader{
 
         return arraylist;
     }
-    /**
-     * for level3 176 product
-     *
-     * @param s
-     * @return  attributes
-     */
-    public HashMap addAttributePairs(String s) {
+
+    /** for level3 176 product */
+    private HashMap addAttributePairs(String s) {
         HashMap attributes = new HashMap();
         for(Matcher matcher = PARAM_PATTERN.matcher(s);
             matcher.find(); attributes.put(matcher.group(1).trim(), matcher.group(2).trim()));
@@ -1856,9 +1844,7 @@ class Nidsheader{
     return attributes;
   }
 
-  /**
-   * for level3 176 product
-   */
+  /** for level3 176 product */
   static String readInString(ByteBuffer datainput) {
     StringBuilder stringbuffer = new StringBuilder();
     int i = datainput.getInt();
@@ -1885,7 +1871,7 @@ class Nidsheader{
       short[] threshold) throws IOException {
     byte[] b2 = new byte[2];
     int soff = 0;
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     int iscale = 1;                         /* data scale                    */
     bos.get(b2, 0, 2);
     bos.get(b2, 0, 2);
@@ -2891,7 +2877,7 @@ class Nidsheader{
         buf.get(b2, 0, 2);
       }
     }
-    ArrayList dims = new ArrayList();
+    ArrayList<Dimension> dims = new ArrayList<>();
     Dimension tbDim = new Dimension("pageNumber", numPages);
     ncfile.addDimension(null, tbDim);
     dims.add(tbDim);
@@ -3243,7 +3229,6 @@ class Nidsheader{
     //tInt = (Integer)convert(b4, DataType.INT, -1);
     offsetToTabularBlock = getInt(b4, 4);
     //ncfile.addAttribute(null, new Attribute("offset_tabular_block",new Integer(offsetToTabularBlock)));
-    off += 4;
 
     return new Pinfo(divider, latitude, longitude, height, pcode, opmode, threshold,
         sequenceNumber, volumeScanNumber, volumeScanDate, volumeScanTime,
@@ -3940,21 +3925,14 @@ class Nidsheader{
     }
   }
 
-
   // product info for reading/writing
   static class Pinfo {
-
     short divider, pcode, opmode, sequenceNumber, volumeScanNumber, volumeScanDate, productDate;
-    //        double latitude, longitude;
     double height; // meters
     int volumeScanTime, productTime;
     short p1, p2, p3, p4, p5, p6, p7, p8, p9, p10;
     int offsetToSymbologyBlock, offsetToGraphicBlock, offsetToTabularBlock;
     short[] threshold;
-
-    Pinfo() {
-      // do nothing ;
-    }
 
     Pinfo(short divider, double latitude, double longitude, double height, short pcode,
         short opmode, short[] threshold,

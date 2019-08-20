@@ -280,11 +280,10 @@ public class DMSPHeader
 
     // Add some general metadata in global attributes.
     this.ncFile.addAttribute( null, new Attribute( "title",
-                                                   new StringBuilder("NGDC archived ")
-                                                   .append( datasetIdAtt.getStringValue())
-                                                   .append( " data with start time ")
-                                                   .append( startDateAtt.getStringValue())
-                                                   .toString()));
+        "NGDC archived "
+            + datasetIdAtt.getStringValue()
+            + " data with start time "
+            + startDateAtt.getStringValue()));
     this.ncFile.addAttribute( null, new Attribute( "Convention", _Coordinate.Convention));
 
     // Add some THREDDS specific metadata in global attributes.
@@ -295,20 +294,18 @@ public class DMSPHeader
     this.ncFile.addAttribute( null, new Attribute( "thredds_publisher_url", "http://dmsp.ngdc.noaa.gov/"));
     this.ncFile.addAttribute( null, new Attribute( "thredds_publisher_email", "ngdc.dmsp@noaa.gov"));
     this.ncFile.addAttribute( null, new Attribute( "thredds_summary",
-                                                   new StringBuilder("This dataset contains data from the DMSP ").append( spacecraftIdAtt.getStringValue())
-                                                   .append( " satellite OLS instrument and includes both visible smooth and thermal smooth imagery with 2.7km resolution.")
-                                                   .append( " The start time for this data is ").append( startDateAtt.getStringValue())
-                                                   .append( " and the northerly equatorial crossing longitude is ").append( startLongitudeAtt.getNumericValue())
-                                                   .append( ".  The DMSP satellite is a polar-orbiting satellite crossing the equator, depending on the satellite, at either dawn/dusk or noon/midnight.")
-                                                   .append( " This data is in the NOAA/NGDC DMSP archive format.")
-                                                   .toString()));
+        "This dataset contains data from the DMSP " + spacecraftIdAtt.getStringValue()
+            + " satellite OLS instrument and includes both visible smooth and thermal smooth imagery with 2.7km resolution."
+            + " The start time for this data is " + startDateAtt.getStringValue()
+            + " and the northerly equatorial crossing longitude is " + startLongitudeAtt.getNumericValue()
+            + ".  The DMSP satellite is a polar-orbiting satellite crossing the equator, depending on the satellite, at either dawn/dusk or noon/midnight."
+            + " This data is in the NOAA/NGDC DMSP archive format."));
     this.ncFile.addAttribute( null, new Attribute( "thredds_history", ""));
     this.ncFile.addAttribute( null, new Attribute( "thredds_timeCoverage_start", startDateAtt.getStringValue()));
     this.ncFile.addAttribute( null, new Attribute( "thredds_timeCoverage_end", endDateAtt.getStringValue()));
     this.ncFile.addAttribute( null, new Attribute( "thredds_geospatialCoverage",
-                                                   new StringBuilder("Polar orbit with northerly equatorial crossing at longitude ")
-                                                   .append( ascendingNodeAtt.getNumericValue()).append( ".")
-                                                   .toString()));
+        "Polar orbit with northerly equatorial crossing at longitude "
+            + ascendingNodeAtt.getNumericValue() + "."));
 
 
     // Set position of random access file to just after header record(s).
@@ -348,10 +345,10 @@ public class DMSPHeader
     // Drop the end-of-header marker and the line feed ('\n') proceeding it.
     header = fullHeader.substring( 0, endOfHeaderIndex - 1 ).split( "\n" );
 
-    int lineSeperatorIndex = 0;
-    String curHeaderLine = null;
-    String curHeaderTitle = null;
-    String curHeaderValue = null;
+    int lineSeperatorIndex;
+    String curHeaderLine;
+    String curHeaderTitle;
+    String curHeaderValue;
     for (String aHeader : this.header) {
       curHeaderLine = aHeader.trim();
       lineSeperatorIndex = curHeaderLine.indexOf(':');
@@ -606,59 +603,48 @@ public class DMSPHeader
    */
   public String toString()
   {
-    StringBuilder retVal = new StringBuilder();
 
-    retVal.append( HeaderInfoTitle.FILE_ID.toString() );
-    retVal.append( ": ");
-    retVal.append( this.fileIdAtt.getStringValue());
-    retVal.append( "\n");
-
-    retVal.append( HeaderInfoTitle.DATA_SET_ID.toString() );
-    retVal.append( ": " );
-    retVal.append( this.datasetIdAtt.getStringValue() );
-    retVal.append( "\n" );
-
-    retVal.append( HeaderInfoTitle.RECORD_BYTES.toString() );
-    retVal.append( ": " );
-    retVal.append( this.recordSizeInBytes );
-    retVal.append( "\n" );
-
-    retVal.append( HeaderInfoTitle.NUM_HEADER_RECORDS.toString() );
-    retVal.append( ": " );
-    retVal.append( this.numHeaderRecords );
-    retVal.append( "\n" );
-
-    retVal.append( HeaderInfoTitle.NUM_RECORDS.toString() );
-    retVal.append( ": " );
-    retVal.append( this.numRecords );
-    retVal.append( "\n" );
-
-    retVal.append( HeaderInfoTitle.SUBORBIT_HISTORY.toString() );
-    retVal.append( ": " );
-    retVal.append( this.suborbitHistoryAtt.getStringValue() );
-    retVal.append( "\n" );
-
-    retVal.append( HeaderInfoTitle.PROCESSING_SYSTEM.toString() );
-    retVal.append( ": " );
-    retVal.append( this.processingSystemAtt.getStringValue() );
-    retVal.append( "\n" );
-
-    retVal.append( HeaderInfoTitle.PROCESSING_DATE.toString() );
-    retVal.append( ": " );
-    retVal.append( DateFormatHandler.ALT_DATE_TIME.getDateTimeStringFromDate( this.processingDate ) );
-    retVal.append( "\n" );
-
-    retVal.append( HeaderInfoTitle.SPACECRAFT_ID.toString() );
-    retVal.append( ": " );
-    retVal.append( this.spacecraftIdAtt.getStringValue() );
-    retVal.append( "\n" );
-
-    retVal.append( HeaderInfoTitle.NORAD_ID.toString() );
-    retVal.append( ": " );
-    retVal.append( this.noradIdAtt.getStringValue() );
-    retVal.append( "\n" );
-
-    return ( retVal.toString() );
+    String retVal = HeaderInfoTitle.FILE_ID.toString()
+        + ": "
+        + this.fileIdAtt.getStringValue()
+        + "\n"
+        + HeaderInfoTitle.DATA_SET_ID.toString()
+        + ": "
+        + this.datasetIdAtt.getStringValue()
+        + "\n"
+        + HeaderInfoTitle.RECORD_BYTES.toString()
+        + ": "
+        + this.recordSizeInBytes
+        + "\n"
+        + HeaderInfoTitle.NUM_HEADER_RECORDS.toString()
+        + ": "
+        + this.numHeaderRecords
+        + "\n"
+        + HeaderInfoTitle.NUM_RECORDS.toString()
+        + ": "
+        + this.numRecords
+        + "\n"
+        + HeaderInfoTitle.SUBORBIT_HISTORY.toString()
+        + ": "
+        + this.suborbitHistoryAtt.getStringValue()
+        + "\n"
+        + HeaderInfoTitle.PROCESSING_SYSTEM.toString()
+        + ": "
+        + this.processingSystemAtt.getStringValue()
+        + "\n"
+        + HeaderInfoTitle.PROCESSING_DATE.toString()
+        + ": "
+        + DateFormatHandler.ALT_DATE_TIME.getDateTimeStringFromDate(this.processingDate)
+        + "\n"
+        + HeaderInfoTitle.SPACECRAFT_ID.toString()
+        + ": "
+        + this.spacecraftIdAtt.getStringValue()
+        + "\n"
+        + HeaderInfoTitle.NORAD_ID.toString()
+        + ": "
+        + this.noradIdAtt.getStringValue()
+        + "\n";
+    return (retVal);
   }
 
   /**
@@ -672,7 +658,7 @@ public class DMSPHeader
     public final static DateFormatHandler ISO_DATE_TIME = new DateFormatHandler( "yyyy-MM-dd\'T\'HH:mm:ss.SSS'Z'" );
     public final static DateFormatHandler ALT_DATE_TIME = new DateFormatHandler( "EEE MMM dd HH:mm:ss yyyy" );
 
-    private String dateTimeFormatString = null;
+    private String dateTimeFormatString;
 
     private DateFormatHandler( String dateTimeFormatString )
     {
@@ -690,7 +676,7 @@ public class DMSPHeader
     public Date getDateFromDateTimeString( String dateTimeString )
             throws ParseException
     {
-      Date theDate = null;
+      Date theDate;
 
       SimpleDateFormat dateFormat = new SimpleDateFormat( this.dateTimeFormatString, Locale.US );
       dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );

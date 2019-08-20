@@ -5,8 +5,6 @@
 package ucar.unidata.util;
 
 
-import java.util.Formatter;
-
 /**
  * static formatting utilities. Replace with standard java library when possible.
  *
@@ -251,7 +249,6 @@ public class Format {
         int chop = fracFigs - fixed_decimals;  // LOOK should round !!
         fraction.setLength(fraction.length() - chop);
       }
-      fracFigs = fixed_decimals;
 
     } else {
       // Don't count leading zeros in the fraction, if no number
@@ -281,7 +278,6 @@ public class Format {
         // Want fewer figures in the fraction; chop (should round? )
         int chop = Math.min(sigFigs - min_sigFigs, fracFigs);
         fraction.setLength(fraction.length() - chop);
-        fracFigs -= chop;
       }
     }
 
@@ -335,7 +331,7 @@ public class Format {
    * @return formatted string
    */
   public static String formatByteSize(double size) {
-    String unit = null;
+    String unit;
     if (size > 1.0e15) {
       unit = "Pbytes";
       size *= 1.0e-15;

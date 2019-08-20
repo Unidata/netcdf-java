@@ -303,7 +303,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
     // check if its cached
     Object spObj = mainv.getSPobject();
-    if (spObj != null && spObj instanceof CacheVar) {
+    if (spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
       Array cacheArray = pv.read(section, cancelTask);
       return MAMath.convert(cacheArray, dtype); // // cache may keep data as different type
@@ -372,7 +372,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
 
     Object spObj = mainv.getSPobject();
-    if (spObj != null && spObj instanceof CacheVar) {
+    if (spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
       try {
         Array cacheArray = pv.read(mainv.getShapeAsSection(), cancelTask);
@@ -818,12 +818,12 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       }
     }
 
-    public int compareTo(Object o) {
-      if (coordValueDate == null)
+    @Override
+    public int compareTo(Dataset o) {
+      if (o instanceof DatasetOuterDimension && coordValueDate != null) {
+        return coordValueDate.compareTo(((DatasetOuterDimension)o).coordValueDate);
+      } else {
         return super.compareTo(o);
-      else {
-        DatasetOuterDimension other = (DatasetOuterDimension) o;
-        return coordValueDate.compareTo(other.coordValueDate);
       }
     }
   }

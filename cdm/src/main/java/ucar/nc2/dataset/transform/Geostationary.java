@@ -136,7 +136,7 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
         isSweepX =  fixed_angle.equals("y");
 
       // scales less than zero indicate no scaling of axis (i.e. map coords have units of radians)
-      double geoCoordinateScaeFactor = defaultScaleFactor;
+      double geoCoordinateScaeFactor;
 
       geoCoordinateScaeFactor = getScaleFactor(geoCoordinateUnits);
 

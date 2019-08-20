@@ -33,7 +33,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       return false;
 
     FeatureType ft = FeatureDatasetFactoryManager.findFeatureType( ds);
-    if ((ft == null) || ((ft != FeatureType.STATION) && (ft != FeatureType.POINT)))
+    if (((ft != FeatureType.STATION) && (ft != FeatureType.POINT)))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);

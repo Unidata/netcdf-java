@@ -9,7 +9,7 @@ package ucar.nc2.util;
  * Maintains indentation level for printing nested structures.
  */
 public class Indent {
-  private int nspaces = 0;
+  private int nspaces;
 
   private int level = 0;
   private StringBuilder blanks;

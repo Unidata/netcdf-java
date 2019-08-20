@@ -128,7 +128,7 @@ public class GradsTimeDimension extends GradsDimension {
         int      inc     = 0;
         double[] vals    = new double[getSize()];
         String   tstart  = levels.get(0).trim().toLowerCase();
-        String   pattern = null;
+        String   pattern;
         if (tstart.contains(":")) {                     // HH:mmZddMMMyyyy
             pattern = dateFormats[0];
         } else if (tstart.contains("z")) {              // mmZddMMMyyyy

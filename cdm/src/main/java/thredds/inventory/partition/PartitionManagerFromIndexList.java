@@ -75,14 +75,14 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
 
   @Override
   public CloseableIterator<MFile> getFileIterator() {
-    return new CloseableIterator() {
+    return new CloseableIterator<MFile>() {
       @Override
       public boolean hasNext() {
         return false;
       }
 
       @Override
-      public Object next() {
+      public MFile next() {
         return null;
       }
 

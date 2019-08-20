@@ -91,11 +91,7 @@ public class CollectionGlob extends CollectionAbstract {
   public static DirectoryStream newDirectoryStream(Path dir, String glob) throws IOException {
     FileSystem fs = dir.getFileSystem();
     final PathMatcher matcher = fs.getPathMatcher("glob:" + glob);
-    DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {
-        public boolean accept(Path entry)  {
-            return matcher.matches(entry.getFileName());
-        }
-    };
+    DirectoryStream.Filter<Path> filter = entry -> matcher.matches(entry.getFileName());
     return fs.provider().newDirectoryStream(dir, filter);
   }
 

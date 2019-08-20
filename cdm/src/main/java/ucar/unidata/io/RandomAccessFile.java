@@ -5,6 +5,7 @@
 
 package ucar.unidata.io;
 
+import java.util.stream.Collectors;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
@@ -118,10 +119,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    */
   static public List<String> getAllFiles() {
     if (null == allFiles) return null;
-    List<String> result = new ArrayList<>();
-    result.addAll(allFiles);
-    Collections.sort(result);
-    return result;
+    return allFiles.stream().sorted().collect(Collectors.toList());
   }
 
   /**

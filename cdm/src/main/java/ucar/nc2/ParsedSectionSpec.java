@@ -152,8 +152,8 @@ public class ParsedSectionSpec {
 
   ///////////////////////////////////////////////////////////////////////////
   // Modify to allow setting after creation
-  public Variable v = null;        // the variable
-  public Section section = null;   // section for this variable, filled in from variable if needed
+  public Variable v;        // the variable
+  public Section section;   // section for this variable, filled in from variable if needed
   public ParsedSectionSpec child = null; // if not null, v is a Structure, and this is one of its members
 
   public ParsedSectionSpec(Variable v, Section section)

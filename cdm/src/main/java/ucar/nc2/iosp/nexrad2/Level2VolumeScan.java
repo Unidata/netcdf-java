@@ -58,7 +58,7 @@ public class Level2VolumeScan {
   // Data file
   RandomAccessFile raf;
 
-  private String dataFormat = null; // ARCHIVE2 or AR2V0001
+  private String dataFormat; // ARCHIVE2 or AR2V0001
   private int title_julianDay; // days since 1/1/70
   private int title_msecs; // milliseconds since midnight
   private String stationId; // 4 letter station assigned by ICAO

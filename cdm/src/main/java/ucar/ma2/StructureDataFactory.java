@@ -4,6 +4,8 @@
  */
 package ucar.ma2;
 
+import com.google.common.collect.Iterables;
+
 /**
  * Convenience routines for constructing one-off StructureData objects
  *
@@ -52,6 +54,27 @@ public class StructureDataFactory {
     if (count == 1) return result;
 
     // combine
+    StructureDataComposite result2 = new StructureDataComposite();
+    for (StructureData sdata : sdatas) {
+      if (sdata != null)
+        result2.add(sdata);
+    }
+    return result2;
+  }
+
+  static public StructureData make(Iterable<StructureData> sdatas) {
+    // look for singleton
+    int count = 0;
+    StructureData result = null;
+    for (StructureData sdata : sdatas) {
+      if (sdata != null) {
+        count++;
+        result = sdata;
+      }
+    }
+    if (count == 1) return result;
+
+    // if multiple, combine into StructureDataComposite
     StructureDataComposite result2 = new StructureDataComposite();
     for (StructureData sdata : sdatas) {
       if (sdata != null)

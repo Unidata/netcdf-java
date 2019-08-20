@@ -358,8 +358,6 @@ public class GeoTiff implements Closeable {
         buffer.putShort((short) v);
         return 2;
       case 4:
-        buffer.putInt(v);
-        return 4;
       case 5:
         buffer.putInt(v);
         return 4;
@@ -566,13 +564,11 @@ public class GeoTiff implements Closeable {
   private int readIntValue(ByteBuffer buffer, IFDEntry ifd) {
     switch (ifd.type.code) {
       case 1:
-        return (int) buffer.get();
       case 2:
         return (int) buffer.get();
       case 3:
         return readUShortValue(buffer);
       case 4:
-        return buffer.getInt();
       case 5:
         return buffer.getInt();
     }

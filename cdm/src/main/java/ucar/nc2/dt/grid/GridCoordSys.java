@@ -144,8 +144,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     //int countRangeRank = 2;
 
     CoordinateAxis z = cs.getHeightAxis();
-    if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getPressureAxis();
-    if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
+    if (!(z instanceof CoordinateAxis1D)) z = cs.getPressureAxis();
+    if (!(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
     if ((z != null) && !(z instanceof CoordinateAxis1D)) {
       if (sbuff != null) {
         sbuff.format("%s: Z axis must be 1D%n", cs.getName());
@@ -294,8 +294,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
    // LOOK: require 1D vertical - need to generalize to nD vertical.
     CoordinateAxis z_oneD = hAxis = cs.getHeightAxis();
-    if ((z_oneD == null) || !(z_oneD instanceof CoordinateAxis1D)) z_oneD = pAxis = cs.getPressureAxis();
-    if ((z_oneD == null) || !(z_oneD instanceof CoordinateAxis1D)) z_oneD = zAxis = cs.getZaxis();
+    if (!(z_oneD instanceof CoordinateAxis1D)) z_oneD = pAxis = cs.getPressureAxis();
+    if (!(z_oneD instanceof CoordinateAxis1D)) z_oneD = zAxis = cs.getZaxis();
     if ((z_oneD != null) && !(z_oneD instanceof CoordinateAxis1D))
       z_oneD = null;
 
@@ -390,9 +390,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     // collect dimensions
     for (CoordinateAxis axis : coordAxes) {
       List<Dimension> dims = axis.getDimensionsAll();
-      for (Dimension dim : dims) {
-        domain.add(dim);
-      }
+      domain.addAll(dims);
     }
 
     // WRF NMM
@@ -1376,7 +1374,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       CoordinateAxis1DTime taxis = getTimeAxisForRun(i);
       if (taxis == null) throw new IllegalStateException();
       List<CalendarDate> times = taxis.getCalendarDates();
-      for (CalendarDate time : times) dates.add(time);
+      dates.addAll(times);
     }
 
     // sorted list

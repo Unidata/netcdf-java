@@ -27,7 +27,7 @@ import java.util.Formatter;
 public class CoordTransBuilder {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordTransBuilder.class);
   static private List<Transform> transformList = new ArrayList<>();
-  static private boolean userMode = false;
+  static private boolean userMode;
 
   static private final boolean loadWarnings = false;
 

@@ -183,7 +183,7 @@ public class TimeDuration {
       return getValue(tdayUnit);
 
     } catch (Exception e) {
-      log.error("Illegal time unit =", unit, e);
+      log.error("Illegal time unit = {}", unit, e);
       return -1;
     }
   }

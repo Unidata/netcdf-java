@@ -123,7 +123,7 @@ public class GradsUtil {
     public static double[] getGaussianLatitudes(String type, int start,
             int num)
             throws IllegalArgumentException {
-        double[] baseArray = null;
+        double[] baseArray;
         start--;  // it's one based
         if (type.equalsIgnoreCase(GAUST62)) {
             baseArray = gltst62;

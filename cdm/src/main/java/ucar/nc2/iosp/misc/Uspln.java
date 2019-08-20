@@ -361,7 +361,7 @@ public class Uspln extends AbstractLightningIOSP {
    */
   int readAllData(RandomAccessFile raf)
           throws IOException, NumberFormatException, ParseException {
-    ArrayList offsetList = new ArrayList();
+    ArrayList<Long> offsetList = new ArrayList<>();
 
     java.text.SimpleDateFormat isoDateTimeFormat =
             new java.text.SimpleDateFormat(TIME_FORMAT);
@@ -433,7 +433,7 @@ public class Uspln extends AbstractLightningIOSP {
 
     offsets = new long[count];
     for (int i = 0; i < offsetList.size(); i++) {
-      Long off = (Long) offsetList.get(i);
+      Long off = offsetList.get(i);
       offsets[i] = off;
     }
 

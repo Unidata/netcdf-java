@@ -159,7 +159,7 @@ public class CalendarDuration {
     return value;
   }
 
-  /**
+  /*
    * Get the duration in seconds
    * @return the duration in seconds
    *

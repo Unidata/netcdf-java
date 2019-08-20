@@ -141,10 +141,10 @@ public class CFPoint implements Point{
 	{
 		// Points are much simpler, node_count is used multigeometries so it's a bit different
 		// No need for the index finder here, unless there is a multipoint
-		Array xPts = null;
-		Array yPts = null;
+		Array xPts;
+		Array yPts;
 		int ind = index;
-		Variable nodeCounts = null;
+		Variable nodeCounts;
 		boolean multi = false;
 		SimpleGeometryIndexFinder indexFinder = null;
 

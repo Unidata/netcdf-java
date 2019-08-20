@@ -13,9 +13,10 @@ public enum FeatureCollectionType {
 
   public FeatureType getFeatureType() {
     switch (this) {
-      case GRIB1: return FeatureType.GRID;
-      case GRIB2: return FeatureType.GRID;
-      case GRID: return FeatureType.GRID;
+      case GRIB1:
+      case GRIB2:
+      case GRID:
+        return FeatureType.GRID;
       case FMRC: return FeatureType.FMRC;
       case Point: return FeatureType.POINT;
       case Station: return FeatureType.STATION;

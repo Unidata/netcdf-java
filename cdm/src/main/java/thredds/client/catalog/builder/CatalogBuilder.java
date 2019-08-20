@@ -382,7 +382,7 @@ public class CatalogBuilder {
       }
       catch (URISyntaxException e) {
         errlog.format("readCatalog(): bad catalog specified base URI='%s' %n", catSpecifiedBaseURL);
-        logger.debug("bad catalog specified base URI='{}'");
+        logger.debug("bad catalog specified base URI='{}'", catSpecifiedBaseURL);
       }
     }
 

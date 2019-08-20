@@ -42,8 +42,8 @@ public class Cinrad2VolumeScan {
   // Data file
   RandomAccessFile raf;
 
-  private String dataFormat = null; // ARCHIVE2 or AR2V0001
-  private String volumeNo = null;  // volume number (1 to 999)
+  private String dataFormat; // ARCHIVE2 or AR2V0001
+  private String volumeNo;  // volume number (1 to 999)
   private int title_julianDay; // days since 1/1/70
   private int title_msecs; // milliseconds since midnight
   private String stationId; // 4 letter station assigned by ICAO
@@ -134,8 +134,8 @@ public class Cinrad2VolumeScan {
       raf.seek(Cinrad2Record.FILE_HEADER_SIZE);
     }
 
-    ArrayList reflectivity = new ArrayList();
-    ArrayList doppler = new ArrayList();
+    ArrayList<Cinrad2Record> reflectivity = new ArrayList<>();
+    ArrayList<Cinrad2Record> doppler = new ArrayList<>();
 
     int recno = 0;
     int sweepN = 1;

@@ -138,7 +138,7 @@ public class FmrInv implements Comparable<FmrInv> {
    * @author caron
    * @since Jan 12, 2010
    */
-  public class GridVariable implements Comparable {
+  public class GridVariable implements Comparable<GridVariable> {
     private final String name;
     private final List<GridDatasetInv.Grid> gridList = new ArrayList<>();
     VertCoord vertCoordUnion = null; // union of vert coords
@@ -169,9 +169,8 @@ public class FmrInv implements Comparable<FmrInv> {
 
     public TimeCoord getTimeCoord() { return timeCoordUnion; }
 
-    public int compareTo(Object o) {
-      GridVariable uv = (GridVariable) o;
-      return name.compareTo(uv.name);
+    public int compareTo(GridVariable o) {
+      return name.compareTo(o.name);
     }
 
     public int getNVerts() {

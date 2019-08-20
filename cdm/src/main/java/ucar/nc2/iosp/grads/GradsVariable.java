@@ -152,21 +152,20 @@ public class GradsVariable {
      * @return a String representation of this object
      */
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Variable: ");
-        buf.append(varName);
-        buf.append("\n");
-        buf.append("\tNum levels: ");
-        buf.append(numLevs);
-        buf.append("\n");
-        buf.append("\tUnit: ");
-        buf.append(unit);
-        buf.append("\n");
-        buf.append("\tDescription: ");
-        buf.append(description);
-        buf.append("\n");
 
-        return buf.toString();
+      String buf = "Variable: "
+          + varName
+          + "\n"
+          + "\tNum levels: "
+          + numLevs
+          + "\n"
+          + "\tUnit: "
+          + unit
+          + "\n"
+          + "\tDescription: "
+          + description
+          + "\n";
+      return buf;
     }
 }
 

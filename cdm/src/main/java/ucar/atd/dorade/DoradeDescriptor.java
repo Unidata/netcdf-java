@@ -113,7 +113,7 @@ abstract class DoradeDescriptor {
       int descLen = grabInt(lenBytes, 0, littleEndianData);
       file.readFully(new byte[descLen - 8]);
     } catch (java.io.EOFException eofex) {
-      return; // just leave the file at EOF
+      // just leave the file at EOF
     } catch (Exception ex) {
       throw new DescriptorException(ex);
     }

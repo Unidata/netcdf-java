@@ -283,7 +283,7 @@ public class FeatureCollectionConfig {
         else try {
           this.updateType = CollectionUpdateType.valueOf(rewriteS);
         } catch (Throwable t) {
-          log.error("Bad updateType= {} in {}", rewriteS);
+          log.error("Bad updateType= {}", rewriteS);
         }
 
         // user has placed an update/tdm element in the catalog

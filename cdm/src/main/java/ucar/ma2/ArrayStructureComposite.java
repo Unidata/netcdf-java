@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * @since Nov 19, 2009
  */
 public class ArrayStructureComposite extends ArrayStructure {
-  private List<ArrayStructure> compose = new ArrayList<>();
+  private List<ArrayStructure> compose;
   private int[] start;
 
   public ArrayStructureComposite(StructureMembers members, List<ArrayStructure> c, int total) {

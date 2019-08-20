@@ -332,8 +332,8 @@ public class CoverageCoordSys {
   public boolean isRegularSpatial() {
     CoverageCoordAxis xaxis = getXAxis();
     CoverageCoordAxis yaxis = getYAxis();
-    if (xaxis == null || !(xaxis instanceof CoverageCoordAxis1D) || !xaxis.isRegular()) return false;
-    return yaxis != null && yaxis instanceof CoverageCoordAxis1D && yaxis.isRegular();
+    if (!(xaxis instanceof CoverageCoordAxis1D) || !xaxis.isRegular()) return false;
+    return yaxis instanceof CoverageCoordAxis1D && yaxis.isRegular();
   }
 
   public ProjectionImpl getProjection() {

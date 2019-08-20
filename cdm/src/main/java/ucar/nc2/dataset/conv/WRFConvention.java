@@ -342,15 +342,9 @@ map_proj =  1: Lambert Conformal
   private String normalize(String units) {
     switch (units) {
       case "fraction":
-        units = "";
-        break;
       case "dimensionless":
-        units = "";
-        break;
-      case "NA":
-        units = "";
-        break;
       case "-":
+      case "NA":
         units = "";
         break;
       default:
@@ -560,9 +554,7 @@ map_proj =  1: Lambert Conformal
       final String wrfDateWithUnderscore = "([\\-\\d]{10})_";
       final Pattern wrfDateWithUnderscorePattern = Pattern.compile(wrfDateWithUnderscore);
       Matcher m = wrfDateWithUnderscorePattern.matcher(testTimeStr);
-      if (wrfDateWithUnderscorePattern.matcher(testTimeStr) != null) {
-    	  isCanonicalIsoStr = false;  
-      }
+      isCanonicalIsoStr = m.matches();
       
       while (iter.hasNext()) {
         String dateS = iter.next();

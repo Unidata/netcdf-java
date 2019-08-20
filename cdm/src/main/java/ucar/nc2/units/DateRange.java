@@ -473,7 +473,5 @@ public class DateRange {
     }
     return hashCode;
   }
-
-  private int hashCode = 0; // Bloch, item 8
-
+  private int hashCode; // Bloch, item 8
 }

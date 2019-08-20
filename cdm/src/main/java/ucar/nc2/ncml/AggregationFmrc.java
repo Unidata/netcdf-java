@@ -93,11 +93,6 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
   @Override
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
-    DateExtractor dateExtractor = null;
-    if (runMatcher != null)
-      dateExtractor = new DateExtractorFromName(runMatcher, false); // uses path
-    if (dateExtractor == null && dateFormatMark != null)
-      dateExtractor = new DateExtractorFromName(dateFormatMark, true);
     fmrc = new Fmrc(datasetManager, new FeatureCollectionConfig());
 
     // fill in the ncDataset

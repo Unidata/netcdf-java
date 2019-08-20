@@ -13,8 +13,6 @@ import ucar.nc2.dataset.*;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 
-import java.io.IOException;
-
 /**
  * NsslRadarMosaicConvention Convention.
  *

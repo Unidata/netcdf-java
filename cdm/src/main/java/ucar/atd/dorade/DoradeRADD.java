@@ -243,42 +243,41 @@ class DoradeRADD extends DoradeDescriptor {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("DoradeRADD{");
-    sb.append("radarName='").append(radarName).append('\'');
-    sb.append(", radarConstant=").append(radarConstant);
-    sb.append(", peakPower=").append(peakPower);
-    sb.append(", noisePower=").append(noisePower);
-    sb.append(", rcvrGain=").append(rcvrGain);
-    sb.append(", antennaGain=").append(antennaGain);
-    sb.append(", systemGain=").append(systemGain);
-    sb.append(", hBeamWidth=").append(hBeamWidth);
-    sb.append(", vBeamWidth=").append(vBeamWidth);
-    sb.append(", radarTypeNdx=").append(radarTypeNdx);
-    sb.append(", scanMode=").append(scanMode);
-    sb.append(", rotVelocity=").append(rotVelocity);
-    sb.append(", scanParam0=").append(scanParam0);
-    sb.append(", scanParam1=").append(scanParam1);
-    sb.append(", nParams=").append(nParams);
-    sb.append(", nAdditionalDescriptors=").append(nAdditionalDescriptors);
-    sb.append(", compressionScheme=").append(compressionScheme);
-    sb.append(", dataReductionMethod=").append(dataReductionMethod);
-    sb.append(", reductionBound0=").append(reductionBound0);
-    sb.append(", reductionBound1=").append(reductionBound1);
-    sb.append(", longitude=").append(longitude);
-    sb.append(", latitude=").append(latitude);
-    sb.append(", altitude=").append(altitude);
-    sb.append(", unambiguousVelocity=").append(unambiguousVelocity);
-    sb.append(", unambiguousRange=").append(unambiguousRange);
-    sb.append(", nFrequencies=").append(nFrequencies);
-    sb.append(", nPRTs=").append(nPRTs);
-    sb.append(", frequencies=").append(Arrays.toString(frequencies));
-    sb.append(", PRTs=").append(Arrays.toString(PRTs));
-    sb.append(", myPARMs=").append(Arrays.toString(myPARMs));
-    sb.append(", myCELV=").append(myCELV);
-    sb.append(", myCFAC=").append(myCFAC);
-    sb.append(", nCells=").append(nCells);
-    sb.append('}');
-    return sb.toString();
+    String sb = "DoradeRADD{" + "radarName='" + radarName + '\''
+        + ", radarConstant=" + radarConstant
+        + ", peakPower=" + peakPower
+        + ", noisePower=" + noisePower
+        + ", rcvrGain=" + rcvrGain
+        + ", antennaGain=" + antennaGain
+        + ", systemGain=" + systemGain
+        + ", hBeamWidth=" + hBeamWidth
+        + ", vBeamWidth=" + vBeamWidth
+        + ", radarTypeNdx=" + radarTypeNdx
+        + ", scanMode=" + scanMode
+        + ", rotVelocity=" + rotVelocity
+        + ", scanParam0=" + scanParam0
+        + ", scanParam1=" + scanParam1
+        + ", nParams=" + nParams
+        + ", nAdditionalDescriptors=" + nAdditionalDescriptors
+        + ", compressionScheme=" + compressionScheme
+        + ", dataReductionMethod=" + dataReductionMethod
+        + ", reductionBound0=" + reductionBound0
+        + ", reductionBound1=" + reductionBound1
+        + ", longitude=" + longitude
+        + ", latitude=" + latitude
+        + ", altitude=" + altitude
+        + ", unambiguousVelocity=" + unambiguousVelocity
+        + ", unambiguousRange=" + unambiguousRange
+        + ", nFrequencies=" + nFrequencies
+        + ", nPRTs=" + nPRTs
+        + ", frequencies=" + Arrays.toString(frequencies)
+        + ", PRTs=" + Arrays.toString(PRTs)
+        + ", myPARMs=" + Arrays.toString(myPARMs)
+        + ", myCELV=" + myCELV
+        + ", myCFAC=" + myCFAC
+        + ", nCells=" + nCells
+        + '}';
+    return sb;
   }
 
   /**

@@ -68,7 +68,7 @@ public class RadialCoordSys {
   private Array aziData, elevData, radialData, timeData;
 
   private String name;
-  private ArrayList coordAxes = new ArrayList();
+  private ArrayList<CoordinateAxis> coordAxes = new ArrayList<>();
   private ucar.nc2.units.DateUnit dateUnit;
   private ucar.unidata.geoloc.EarthLocation origin;
   private LatLonRect bb;

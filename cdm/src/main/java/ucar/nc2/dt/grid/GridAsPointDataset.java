@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import java.util.stream.Collectors;
 import ucar.ma2.Array;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -40,14 +41,12 @@ public class GridAsPointDataset {
 
         List<CalendarDate> timeDates = timeAxis.getCalendarDates();
         //for (Date timeDate : timeDates)
-        for (CalendarDate timeDate : timeDates)
-        	dateHash.add( timeDate );
+        dateHash.addAll(timeDates);
       }
     }
     
     // -->if dateHash is HashSet<Date> hashSet.toArray returns Date[], not CalendarDate[] ???
-    dates = Arrays.asList( dateHash.toArray(new CalendarDate[dateHash.size()]));   
-    Collections.sort(dates);
+    dates = dateHash.stream().sorted().collect(Collectors.toList());
   }
 
   public List<CalendarDate> getDates() { return dates; }

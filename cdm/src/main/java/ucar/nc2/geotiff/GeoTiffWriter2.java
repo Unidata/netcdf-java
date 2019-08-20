@@ -758,7 +758,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     }
 
     //checking if the 0 point and the N point are the same point
-    int spoint = 0;
+    int spoint;
     if (p0.getLongitude() == pN.getLongitude()) {
       spoint = shape[1] - count - 1;
     } else {
@@ -767,7 +767,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
 
     if ((count > 0) && (shape[1] > count)) {
       for (int j = 1; j < shape[1]; j++) {
-        int jj = 0;
+        int jj;
 
         if (j >= count) {
           jj = j - count;

@@ -212,17 +212,11 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     } else {
       int retChar = currentChar;
       switch (currentState) {
-        case START_BLOCK_STATE:
-          break;
-        case RAND_PART_A_STATE:
-          break;
         case RAND_PART_B_STATE:
           setupRandPartB();
           break;
         case RAND_PART_C_STATE:
           setupRandPartC();
-          break;
-        case NO_RAND_PART_A_STATE:
           break;
         case NO_RAND_PART_B_STATE:
           setupNoRandPartB();
@@ -646,7 +640,6 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         if (last >= limitLast) {
           blockOverrun();
         }
-        continue;
       } else {
         char tmp;
         last++;
@@ -711,7 +704,6 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
           }
           nextSym = perm[zt][zvec - base[zt][zn]];
         }
-        continue;
       }
     }
   }
@@ -733,9 +725,6 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
       tt[cftab[ch]] = i;
       cftab[ch]++;
     }
-    cftab = null;
-
-    tPos = tt[origPtr];
 
     count = 0;
     i2 = 0;

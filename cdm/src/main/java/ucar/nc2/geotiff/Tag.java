@@ -11,8 +11,8 @@ import java.util.*;
  * @author caron
  */
 
-class Tag implements Comparable {
-  static private HashMap map = new HashMap();
+class Tag implements Comparable<Tag> {
+  static private Map<Integer, Tag> map = new HashMap<>();
 
   // general tiff tags
   static public final Tag NewSubfileType = new Tag("NewSubfileType", 254);
@@ -62,7 +62,7 @@ class Tag implements Comparable {
    * @return Tag or null if no match.
    */
   static Tag get( int code) {
-    return (Tag) map.get(code);
+    return map.get(code);
   }
 
   private String name;
@@ -88,8 +88,8 @@ class Tag implements Comparable {
   public String toString() { return name == null ? code+" " : code+" ("+name+")"; }
 
   /** sort by number */
-  public int compareTo( Object o) {
-    return code - ((Tag) o).getCode();
+  public int compareTo( Tag o) {
+    return Integer.compare(code, o.getCode());
   }
 
 }

@@ -41,7 +41,7 @@ import java.util.ServiceLoader;
 public class FeatureDatasetFactoryManager {
 
   static private List<Factory> factoryList = new ArrayList<>();
-  static private boolean userMode = false;
+  static private boolean userMode;
   static private boolean debug = false;
 
   // search in the order added

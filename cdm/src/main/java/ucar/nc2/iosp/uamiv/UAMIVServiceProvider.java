@@ -173,10 +173,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     *
     */
     if (bdate < 70000) {
-      edate = edate + 2000000;
       bdate = bdate + 2000000;
     } else {
-      edate = edate + 1900000;
       bdate = bdate + 1900000;
     }
 

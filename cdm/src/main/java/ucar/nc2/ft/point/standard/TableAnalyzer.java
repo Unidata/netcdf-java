@@ -62,7 +62,7 @@ public class TableAnalyzer {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
 
   static private final List<Configurator> conventionList = new ArrayList<>();
-  static private boolean userMode = false;
+  static private boolean userMode;
   static private final boolean debug = false;
 
   // search in the order added
@@ -71,11 +71,8 @@ public class TableAnalyzer {
     registerAnalyzer("CDM", CdmDirect.class, null);
     registerAnalyzer(CDM.CF_EXTENDED, CFpointObsExt.class, null);
 
-    registerAnalyzer("CF-1.", CFpointObs.class, new ConventionNameOk() {
-      @Override
-      public boolean isMatch(String convName, String wantName) {
-        return convName.startsWith(wantName); //  && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
-      }
+    registerAnalyzer("CF-1.", CFpointObs.class, (convName, wantName) -> {
+      return convName.startsWith(wantName); //  && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
     });
 
     registerAnalyzer("GEMPAK/CDM", GempakCdm.class, null);
@@ -457,8 +454,7 @@ public class TableAnalyzer {
     Set<Dimension> dimSet = new HashSet<>(10);
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if ((axis.getAxisType() == AxisType.Lat) || (axis.getAxisType() == AxisType.Lon)|| (axis.getAxisType() == AxisType.Time))
-        for (Dimension dim : axis.getDimensions())
-          dimSet.add(dim);
+        dimSet.addAll(axis.getDimensions());
     }
 
     // lat, lon, time all use same dimension - use it
@@ -468,11 +464,7 @@ public class TableAnalyzer {
       st.structureType = obsDim.isUnlimited() ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       st.structName = obsDim.isUnlimited() ? "record" : obsDim.getShortName();
       st.dimName = obsDim.getShortName();
-      CoordSysEvaluator.findCoords(st, ds, new CoordSysEvaluator.Predicate() {
-        public boolean match(CoordinateAxis axis) {
-          return obsDim.equals(axis.getDimension(0));
-        }
-      });
+      CoordSysEvaluator.findCoords(st, ds, axis -> obsDim.equals(axis.getDimension(0)));
 
       CoordinateAxis time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
       if ((time != null) && (time.getRank() == 0)) {

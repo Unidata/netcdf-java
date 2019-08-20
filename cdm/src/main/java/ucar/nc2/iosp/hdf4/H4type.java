@@ -52,6 +52,7 @@ public class H4type {
     DataType dt;
     switch (type) {
       case 3:
+      case 21:
         dt = DataType.UBYTE;
         break;
       case 4:
@@ -65,9 +66,6 @@ public class H4type {
         break;
       case 20:
         dt =  DataType.BYTE;
-        break;
-      case 21:
-        dt =  DataType.UBYTE;
         break;
       case 22:
         dt =  DataType.SHORT;

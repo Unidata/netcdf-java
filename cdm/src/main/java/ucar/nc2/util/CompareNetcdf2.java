@@ -97,9 +97,9 @@ public class CompareNetcdf2 {
   /////////
 
   private Formatter f;
-  private boolean showCompare = false;
-  private boolean showEach = false;
-  private boolean compareData = false;
+  private boolean showCompare;
+  private boolean showEach;
+  private boolean compareData;
 
   public CompareNetcdf2() {
     this(new Formatter(System.out));

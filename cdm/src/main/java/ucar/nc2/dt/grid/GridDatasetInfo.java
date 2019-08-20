@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java.util.stream.Collectors;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -402,13 +403,10 @@ public class GridDatasetInfo {
 
 		for (ucar.nc2.dt.GridDataset.Gridset gridset : gds.getGridsets()) {
 			GridCoordSystem gcs = gridset.getGeoCoordSystem();
-			for (CoordinateAxis axe : gcs.getCoordinateAxes())
-				axesHash.add(axe);
+      axesHash.addAll(gcs.getCoordinateAxes());
 		}
 
-		List<CoordinateAxis> list = Arrays.asList((CoordinateAxis[]) axesHash.toArray( new CoordinateAxis[ axesHash.size()]));
-		Collections.sort(list);
-		return list;
+		return axesHash.stream().sorted().collect(Collectors.toList());
 	}
 
 	private List<CoordinateTransform> getCoordTransforms(ucar.nc2.dt.GridDataset gds) {
@@ -416,13 +414,10 @@ public class GridDatasetInfo {
 
 		for (ucar.nc2.dt.GridDataset.Gridset gridset : gds.getGridsets()) {
 			GridCoordSystem gcs = gridset.getGeoCoordSystem();
-			for (CoordinateTransform axe : gcs.getCoordinateTransforms())
-				ctHash.add(axe);
+      ctHash.addAll(gcs.getCoordinateTransforms());
 		}
 
-		List<CoordinateTransform> list = Arrays.asList((CoordinateTransform[]) ctHash.toArray( new CoordinateTransform[ ctHash.size()]));
-		Collections.sort(list);
-		return list;
+		return ctHash.stream().sorted().collect(Collectors.toList());
 	}
 
 	/* private List getDimensions(ucar.nc2.dt.GridDataset gds) {

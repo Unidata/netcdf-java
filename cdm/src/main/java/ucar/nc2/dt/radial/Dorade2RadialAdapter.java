@@ -196,7 +196,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
   }
 
   private class Dorade2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {//extends VariableSimpleAdapter {
-    ArrayList sweeps;
+    ArrayList<Dorade2Sweep> sweeps;
     String name;
 
     float azi;
@@ -214,7 +214,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
     private Dorade2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
       super(v.getShortName(), v0.getAttributes());
-      sweeps = new ArrayList();
+      sweeps = new ArrayList<>();
       name = v.getShortName();
 
       int[] shape = v0.getShape();

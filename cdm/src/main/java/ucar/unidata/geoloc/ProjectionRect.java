@@ -297,7 +297,7 @@ public class ProjectionRect implements java.io.Serializable {
    * @return {@code true} if this bounding box contains {@code rect}.
    */
   public boolean contains(ProjectionRect rect) {
-    boolean contained = false;
+    boolean contained;
     // The old ProjectionRect class was based off of java.awt.Rectangle.
     // If the rectangles were the same, .contains(rect) returned true.
     // This check makes sure the old behavior is preserved.

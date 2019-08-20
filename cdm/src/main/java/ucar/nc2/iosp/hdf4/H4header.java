@@ -588,8 +588,8 @@ public class H4header extends NCheader
         dimTag = (TagRIDimension) tag;
       if (tag.code == 302)
         data = tag;
-      if (tag.code == 301)
-        palette = (TagRIPalette) tag;
+      if (tag.code == 301) {
+      }
     }
     if (dimTag == null) {
       log.warn("Image Group "+group.tag()+" missing dimension tag");
@@ -1796,10 +1796,9 @@ public class H4header extends NCheader
     }
 
     public String detail() {
-      StringBuilder sbuff = new StringBuilder(super.detail());
-      sbuff.append("   min= ").append(getMin(dt));
-      sbuff.append("   max= ").append(getMax(dt));
-      return sbuff.toString();
+      String sbuff = super.detail() + "   min= " + getMin(dt)
+          + "   max= " + getMax(dt);
+      return sbuff;
     }
   }
 

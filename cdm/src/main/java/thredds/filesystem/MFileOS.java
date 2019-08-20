@@ -121,11 +121,10 @@ public class MFileOS implements MFile {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("MFileOS{");
-    sb.append("file=").append(file.getPath());
-    sb.append(", lastModified=").append(lastModified);
-    sb.append('}');
-    return sb.toString();
+    String sb = "MFileOS{" + "file=" + file.getPath()
+        + ", lastModified=" + lastModified
+        + '}';
+    return sb;
   }
 
   public File getFile() {

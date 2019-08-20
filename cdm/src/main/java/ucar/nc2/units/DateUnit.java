@@ -83,7 +83,7 @@ public class DateUnit { // extends SimpleUnit {
   ////////////////////////////////////////////////////////////////////////
   private double value;
   private String udunitString;
-  private TimeUnit timeUnit = null;
+  private TimeUnit timeUnit;
   private Unit uu;
 
   static public DateUnit getUnixDateUnit() {

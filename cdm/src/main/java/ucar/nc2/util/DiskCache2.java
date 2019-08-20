@@ -470,17 +470,16 @@ public class DiskCache2 {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("DiskCache2");
-    sb.append("{cachePathPolicy=").append(cachePathPolicy);
-    sb.append(", alwaysUseCache=").append(alwaysUseCache);
-    sb.append(", cachePathPolicyParam='").append(cachePathPolicyParam).append('\'');
-    sb.append(", root='").append(root).append('\'');
-    sb.append(", scourEveryMinutes=").append(scourEveryMinutes);
-    sb.append(", persistMinutes=").append(persistMinutes);
-    sb.append(", fail=").append(fail);
-    sb.append('}');
-    return sb.toString();
+    String sb = "DiskCache2"
+        + "{cachePathPolicy=" + cachePathPolicy
+        + ", alwaysUseCache=" + alwaysUseCache
+        + ", cachePathPolicyParam='" + cachePathPolicyParam + '\''
+        + ", root='" + root + '\''
+        + ", scourEveryMinutes=" + scourEveryMinutes
+        + ", persistMinutes=" + persistMinutes
+        + ", fail=" + fail
+        + '}';
+    return sb;
   }
 
 }

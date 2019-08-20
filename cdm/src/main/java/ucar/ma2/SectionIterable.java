@@ -51,8 +51,7 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
 
   public SectionIterable(Section section, int[] fullShape) {
     this.ranges = new ArrayList<>();
-    for (Range r : section.getRanges())
-      this.ranges.add(r);
+    this.ranges.addAll(section.getRanges());
     this.fullShape = fullShape;
   }
 

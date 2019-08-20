@@ -230,7 +230,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
 
   public ProjectionPoint projectInverse(double x, double y, ProjectionPointImpl lp) {
     double lpx = 0.;
-    double lpy = 0.;
+    double lpy;
 
     if (earth.isSpherical()) {
       double c, rh, sinc, cosc;

@@ -181,14 +181,13 @@ public class Sinusoidal extends ProjectionImpl {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Sinusoidal");
-        sb.append("{earthRadius=").append(earthRadius);
-        sb.append(", centMeridian=").append(centMeridian);
-        sb.append(", falseEasting=").append(falseEasting);
-        sb.append(", falseNorthing=").append(falseNorthing);
-        sb.append('}');
-        return sb.toString();
+      String sb = "Sinusoidal"
+          + "{earthRadius=" + earthRadius
+          + ", centMeridian=" + centMeridian
+          + ", falseEasting=" + falseEasting
+          + ", falseNorthing=" + falseNorthing
+          + '}';
+      return sb;
     }
 
     /**

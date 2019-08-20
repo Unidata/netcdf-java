@@ -519,9 +519,6 @@ public class H5header extends NCheader
               case 2:
                 basetype = DataType.ENUM2;
                 break;
-              case 4:
-                basetype = DataType.ENUM4;
-                break;
               default:
                 basetype = DataType.ENUM4;
                 break;
@@ -3008,10 +3005,9 @@ public class H5header extends NCheader
     }
 
     public String toString() {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append(" btreeAddress=").append(btreeAddress);
-      sbuff.append(" nameHeapAddress=").append(nameHeapAddress);
-      return sbuff.toString();
+      String sbuff = " btreeAddress=" + btreeAddress
+          + " nameHeapAddress=" + nameHeapAddress;
+      return sbuff;
     }
 
     public String getName() {
@@ -3500,14 +3496,13 @@ public class H5header extends NCheader
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("StructureMember");
-      sb.append("{name='").append(name).append('\'');
-      sb.append(", offset=").append(offset);
-      sb.append(", dims=").append(dims);
-      sb.append(", mdt=").append(mdt);
-      sb.append('}');
-      return sb.toString();
+      String sb = "StructureMember"
+          + "{name='" + name + '\''
+          + ", offset=" + offset
+          + ", dims=" + dims
+          + ", mdt=" + mdt
+          + '}';
+      return sb;
     }
   }
 
@@ -4587,12 +4582,7 @@ public class H5header extends NCheader
   // debug - hdf5Table
   public List<DataObject> getDataObjects() {
     ArrayList<DataObject> result = new ArrayList<>(addressMap.values());
-    result.sort(new Comparator<DataObject>() {
-      public int compare(DataObject o1, DataObject o2) {
-        // return (int) (o1.address - o2.address);
-        return (Long.compare(o1.address, o2.address));
-      }
-    });
+    result.sort((o1, o2) -> Long.compare(o1.address, o2.address));
     return result;
   }
 

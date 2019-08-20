@@ -211,23 +211,21 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
   }
 
   public String getInfo() {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append("Nids2Dataset\n");
-    sbuff.append(super.getDetailInfo());
-    sbuff.append("\n\n");
-    sbuff.append(parseInfo.toString());
-    return sbuff.toString();
+    String sbuff = "Nids2Dataset\n"
+        + super.getDetailInfo()
+        + "\n\n"
+        + parseInfo.toString();
+    return sbuff;
   }
 
 
   private class Nids2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
-    ArrayList sweeps;
+    ArrayList<Nids2Sweep> sweeps;
     String name;
-
 
     private Nids2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
       super(v.getShortName(), v0.getAttributes());
-      sweeps = new ArrayList();
+      sweeps = new ArrayList<>();
       name = v.getShortName();
 
       int[] shape = v0.getShape();
@@ -239,7 +237,6 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
       count--;
 
       sweeps.add(new Nids2Sweep(nds, v0, 0, nrays, ngates));
-      //sweep = new Sweep[nsweeps];
     }
 
     public String toString() {
@@ -264,7 +261,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
     public Sweep getSweep(int sn) {
       if (sn != 0) return null;
-      return (Sweep) sweeps.get(sn);
+      return sweeps.get(sn);
     }
 
     public void clearVariableMemory() {
@@ -347,7 +344,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
       /* a 2D array nradials * ngates   */
       public float[] readData() throws IOException {
-        Array allData = null;
+        Array allData;
         int[] shape = sweepVar.getShape();
         int[] origind = new int[sweepVar.getRank()];
         try {

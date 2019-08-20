@@ -1015,22 +1015,22 @@ public class GradsDataDescriptorFile {
     /**
      * start time index (0 based)
      */
-    protected int startTimeIndex = 0;
+    protected int startTimeIndex;
 
     /**
      * end time index (0 based)
      */
-    protected int endTimeIndex = 0;
+    protected int endTimeIndex;
 
     /**
      * number of times
      */
-    protected int numTimes = 0;
+    protected int numTimes;
 
     /**
      * substitution string
      */
-    protected String subString = null;
+    protected String subString;
 
     /**
      * Create a new Chsub

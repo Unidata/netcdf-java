@@ -15,7 +15,6 @@ import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.*;
 
 import java.util.*;
-import java.io.IOException;
 
 /**
  * CDM direct, used when we are implementing the IOSP.

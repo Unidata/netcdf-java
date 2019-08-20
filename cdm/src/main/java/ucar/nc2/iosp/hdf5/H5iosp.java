@@ -346,7 +346,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     int recSize = layout.getElemSize();
     if (recSize < calcSize) {
-      log.error("calcSize = %d actualSize = %d%n", calcSize, recSize);
+      log.error("calcSize = {} actualSize = {}%n", calcSize, recSize);
       throw new IOException("H5iosp illegal structure size " + s.getFullName());
     }
     sm.setStructureSize(recSize);

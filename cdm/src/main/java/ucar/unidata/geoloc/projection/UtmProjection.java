@@ -5,7 +5,6 @@
 package ucar.unidata.geoloc.projection;
 
 import ucar.nc2.constants.CF;
-import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 
 import java.io.Serializable;

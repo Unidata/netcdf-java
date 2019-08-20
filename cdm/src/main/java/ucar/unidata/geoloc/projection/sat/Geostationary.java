@@ -64,7 +64,7 @@ public class Geostationary extends ProjectionImpl {
   private boolean isGeoCoordinateScaled = false;
   private double geoCoordinateScaleFactor;
 
-  GEOSTransform navigation = null;
+  GEOSTransform navigation;
 
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
                        double semi_major_axis, double inv_flattening, boolean isSweepX) {
@@ -175,7 +175,8 @@ public class Geostationary extends ProjectionImpl {
     double y = satCoords[1];
 
     // scale back to required units of x, y (we need them in radians)
-    if (isGeoCoordinateScaled) x = x * geoCoordinateScaleFactor;
+    if (isGeoCoordinateScaled) {
+    }
 
     destPoint.setLocation(satCoords[0], satCoords[1]);
     return destPoint;

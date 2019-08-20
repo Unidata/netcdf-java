@@ -136,26 +136,21 @@ public class ControllerOS7 implements MController {
       return FileVisitResult.CONTINUE;
     }
 
-    // If there is some error accessing
-    // the file, let the user know.
-    // If you don't override this method
-    // and an error occurs, an IOException
-    // is thrown.
+    // If there is some error accessing the file, let the user know.
+    // If you don't override this method and an error occurs, an IOException is thrown.
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) {
-      System.err.println(exc);
       return FileVisitResult.CONTINUE;
     }
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder("PrintFiles{");
-      sb.append("countFiles=").append(countFiles);
-      sb.append(", countDirs=").append(countDirs);
-      sb.append(", countOther=").append(countOther);
-      sb.append(", countSyms=").append(countSyms);
-      sb.append('}');
-      return sb.toString();
+      String sb = "PrintFiles{" + "countFiles=" + countFiles
+          + ", countDirs=" + countDirs
+          + ", countOther=" + countOther
+          + ", countSyms=" + countSyms
+          + '}';
+      return sb;
     }
   }
 

@@ -261,7 +261,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
         else {
           // if array, check to see if all of the values are
           // approximately the same
-          Array gar = null;
+          Array gar;
           try {
             gar = lat.read();
             Object firstVal = gar.getObject(0);
@@ -360,12 +360,11 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
    * @return _more_
    */
   public String getInfo() {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append("CFRadial2Dataset\n");
-    sbuff.append(super.getDetailInfo());
-    sbuff.append("\n\n");
-    sbuff.append(parseInfo.toString());
-    return sbuff.toString();
+    String sbuff = "CFRadial2Dataset\n"
+        + super.getDetailInfo()
+        + "\n\n"
+        + parseInfo.toString();
+    return sbuff;
   }
 
 

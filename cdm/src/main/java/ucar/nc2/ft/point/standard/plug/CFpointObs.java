@@ -5,7 +5,6 @@
 
 package ucar.nc2.ft.point.standard.plug;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -1465,21 +1464,19 @@ public class CFpointObs extends TableConfigurerImpl {
   // class, I don't understand enough of the code base to anticipate implementation artifacts.
 
   protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer) {
-    Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
-      public boolean match(CoordinateAxis axis) {
-        if ((outer == null) && (axis.getRank() == 0))
-          return true;
-        if ((outer != null) && (axis.getRank() == 1) && (outer.equals(axis.getDimension(0))))
-          return true;
+    Variable var = CoordSysEvaluator.findCoordByType(ds, type, axis -> {
+      if ((outer == null) && (axis.getRank() == 0))
+        return true;
+      if ((outer != null) && (axis.getRank() == 1) && (outer.equals(axis.getDimension(0))))
+        return true;
 
-        // if axis is structure member, try pulling dimension out of parent structure
-        if (axis.getParentStructure() != null) {
-          Structure parent = axis.getParentStructure();
-          return (outer != null) && (parent.getRank() == 1) && (outer
-              .equals(parent.getDimension(0)));
-        }
-        return false;
+      // if axis is structure member, try pulling dimension out of parent structure
+      if (axis.getParentStructure() != null) {
+        Structure parent = axis.getParentStructure();
+        return (outer != null) && (parent.getRank() == 1) && (outer
+            .equals(parent.getDimension(0)));
       }
+      return false;
     });
     if (var == null) return null;
     return var.getFullName();

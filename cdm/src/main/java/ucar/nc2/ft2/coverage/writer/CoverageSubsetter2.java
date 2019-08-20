@@ -31,8 +31,7 @@ public class CoverageSubsetter2 {
       orgCoverages.add(orgGrid);
       CoverageCoordSys cs = orgGrid.getCoordSys();
       orgCoordSys.put(cs.getName(), cs);
-      for (String tname : cs.getTransformNames())
-        coordTransformSet.add(tname);
+      coordTransformSet.addAll(cs.getTransformNames());
     }
 
     // LOOK bail out if any fail, make more robust
@@ -57,12 +56,10 @@ public class CoverageSubsetter2 {
     List<Coverage> coverages = new ArrayList<>();
     List<CoverageTransform> coordTransforms = new ArrayList<>();
 
-    for (CoverageCoordSys subsetCs : subsetCFCoordSys.values()) {
-      coordSys.add( subsetCs);
-    }
+    coordSys.addAll(subsetCFCoordSys.values());
 
-    for (CoverageCoordAxis subsetAxis : subsetCoordAxes.values())
-      coordAxes.add( subsetAxis);               // must use a copy, because of setDataset()
+    // must use a copy, because of setDataset()
+    coordAxes.addAll(subsetCoordAxes.values());
 
     for (Coverage orgCov : orgCoverages) {
       // must substitute subsetCS
