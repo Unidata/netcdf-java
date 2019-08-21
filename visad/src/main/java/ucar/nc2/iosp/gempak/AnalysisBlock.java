@@ -7,6 +7,8 @@
 package ucar.nc2.iosp.gempak;
 
 
+import com.google.common.base.MoreObjects;
+
 /**
  * Class to hold the Grid Analysis Block
  *
@@ -40,20 +42,11 @@ public class AnalysisBlock {
         vals = values;
     }
 
-    /**
-     * Print out the analysis block
-     *
-     * @return  a String representation of this
-     */
+    @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        if ((vals != null) && false) {
-            // TODO:  fill this in
-        } else {
-            buf.append("\n\tUNKNOWN ANALYSIS TYPE");
-        }
-        return buf.toString();
+        return MoreObjects.toStringHelper(this)
+            .add("vals", vals)
+            .toString();
     }
-
 }
 

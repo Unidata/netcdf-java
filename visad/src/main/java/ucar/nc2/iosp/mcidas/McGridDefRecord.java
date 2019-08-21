@@ -24,11 +24,6 @@ public class McGridDefRecord extends GridDefRecord {
   int[] vals = null;
 
   /**
-   * projection type
-   */
-  //private String proj;
-
-  /**
    * Navigation type for pseudo-mercator grids
    */
   private static final int PSEUDO_MERCATOR = 1;
@@ -57,11 +52,6 @@ public class McGridDefRecord extends GridDefRecord {
    * Navigation type for lambert conformal tangent grids
    */
   private static final int LAMBERT_CONFORMAL_TANGENT = 6;
-
-  /**
-   * Earth radius
-   */
- // private static final double EARTH_RADIUS = 6371.23;
 
   /**
    * Create a new grid nav block
@@ -156,9 +146,6 @@ public class McGridDefRecord extends GridDefRecord {
     private double xblon;
     */
 
-  /** static debug count */
-  // private static int cnt = 0;
-
   /**
    * Set the parameters for the GDS
    */
@@ -222,14 +209,7 @@ public class McGridDefRecord extends GridDefRecord {
 
         case PSEUDO_MERCATOR:
         case PSEUDO_MERCATOR_GENERAL:
-          glamx = vals[34] / 10000.;
-          glomx = -vals[35] / 10000.;
-          glamn = vals[34] / 10000.;
-          glomn = -vals[35] / 10000.;
           ginct = vals[38] / 10000.;
-          gincn = (navType == PSEUDO_MERCATOR_GENERAL)
-                  ? vals[39] / 10000.
-                  : ginct;
           addParam("Latin", String.valueOf(20));
           //addParam(DX, String.valueOf(gincn));
           //addParam(DY, String.valueOf(ginct));
@@ -243,8 +223,6 @@ public class McGridDefRecord extends GridDefRecord {
           break;
 
         case PS_OR_LAMBERT_CONIC:
-          xrowi = vals[34] / 10000.;  // row # of the North pole*10000
-          xcoli = vals[35] / 10000.;  // col # of the North pole*10000
           xspace = vals[36];  // column spacing at standard lat (m)
           xqlon = -vals[37] / 10000.;  // lon parallel to cols (deg*10000)
           xt1 = vals[38] / 10000.;  // first standard lat
@@ -279,8 +257,6 @@ public class McGridDefRecord extends GridDefRecord {
           break;
 
         case EQUIDISTANT:
-          xrowi = 1.;
-          xcoli = 1.;
           glamx = vals[34] / 10000.;   // lat of (1,1) degrees*10000
           glomx = -vals[35] / 10000.;  // lon of (1,1) degrees*10000
           //xrot  = -xrad*vals[36]/10000.; // clockwise rotation of col 1
@@ -304,8 +280,6 @@ public class McGridDefRecord extends GridDefRecord {
           break;
 
         case LAMBERT_CONFORMAL_TANGENT:
-          xrowi = vals[34] / 10000.;  // lat at (1,1)
-          xcoli = vals[35] / 10000.;  // lon at (1,1)
           xspace = vals[36];  // column spacing at standard lat (m)
           xqlon = -vals[37] / 10000.;  // lon parallel to cols (deg*10000)
           xt1 = vals[38] / 10000.;  // standard lat 1

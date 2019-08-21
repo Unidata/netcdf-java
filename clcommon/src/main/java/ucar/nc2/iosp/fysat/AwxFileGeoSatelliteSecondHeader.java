@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ucar.nc2.iosp.fysat;
 
 import ucar.nc2.iosp.fysat.util.EndianByteBuffer;
@@ -78,7 +75,7 @@ extends AwxFileSecondHeader {
 		dataLengthOfColorTable = byteBuffer.getShort();
 		dataLengthOfCalibration = byteBuffer.getShort();
 		dataLengthOfGeolocation = byteBuffer.getShort();
-		reserved = byteBuffer.getShort();; 
+		reserved = byteBuffer.getShort();
 	}
 
 }

@@ -58,13 +58,6 @@ public interface GridRecord {
   Date getValidTime();
 
   /**
-   * Get valid time offset of this GridRecord
-   *
-   * @return time offset in minutes from getReferenceTime()
-   *
-  public int getValidTimeOffset(); */
-
-  /**
    * Get the parameter name
    *
    * @return parameter name

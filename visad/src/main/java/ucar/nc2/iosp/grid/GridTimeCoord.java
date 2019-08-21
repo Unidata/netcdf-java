@@ -64,7 +64,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
 
      // non - interval case
     // get list of unique valid times
-    times = new ArrayList<Date>();
+    times = new ArrayList<>();
     for (GridRecord gr : records) {
       Date validTime = gr.getValidTime();
       if (validTime == null) validTime = gr.getReferenceTime();
@@ -89,7 +89,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     }
 
     // first create a new list
-    List<Date> timeList = new ArrayList<Date>(records.size());
+    List<Date> timeList = new ArrayList<>(records.size());
     for (GridRecord record : records) {
       Date validTime = record.getValidTime();
       if (validTime == null)
@@ -144,7 +144,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     DateFormatter formatter = new DateFormatter();
     String refDate = formatter.toDateTimeStringISO(baseDate);
     String udunit = timeUdunit + " since " + refDate;
-    DateUnit dateUnit = null;
+    DateUnit dateUnit;
     try {
       dateUnit = new DateUnit(udunit);
     } catch (Exception e) {
@@ -153,7 +153,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     }
 
     // create the data
-    Array coordArray = null;
+    Array coordArray;
     Array boundsArray = null;
     int ntimes = getNTimes();
     coordData = new int[ntimes];

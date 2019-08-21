@@ -54,12 +54,7 @@ public final class FysatHeader {
     return this.readPIB(raf);// not FY Satellite AWX product file
   }
 
-  /**
-   * Read the header and populate the ncfile
-   *
-   * @param raf
-   * @throws IOException
-   */
+  /** Read the header and populate the ncfile */
   boolean readPIB(RandomAccessFile raf) throws IOException {
 
     this.firstHeader = new AwxFileFirstHeader();
@@ -91,29 +86,23 @@ public final class FysatHeader {
     byteBuffer = new EndianByteBuffer(buf, this.firstHeader.byteOrder);
     switch (this.firstHeader.typeOfProduct) {
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_UNDEFINED:
+      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_POLARSAT_IMAGE:
+      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GRAPH_ANALIYSIS:
+      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_DISCREET:
         throw new UnsupportedDatasetException();
+
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GEOSAT_IMAGE:
         secondHeader = new AwxFileGeoSatelliteSecondHeader();
         secondHeader.fillHeader(byteBuffer);
         break;
-      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_POLARSAT_IMAGE:
-        throw new UnsupportedDatasetException();
 
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GRID:
         secondHeader = new AwxFileGridProductSecondHeader();
         secondHeader.fillHeader(byteBuffer);
-
         break;
-      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_DISCREET:
-        throw new UnsupportedDatasetException();
-
-      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GRAPH_ANALIYSIS:
-        throw new UnsupportedDatasetException();
-
     }
 
     return true;
-
   }
 
   void read(RandomAccessFile raf, NetcdfFile ncfile) throws IOException {
@@ -136,6 +125,10 @@ public final class FysatHeader {
     switch (this.firstHeader.typeOfProduct) {
 
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_UNDEFINED:
+
+      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GRAPH_ANALIYSIS:
+      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_DISCREET:
+      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_POLARSAT_IMAGE:
         throw new UnsupportedDatasetException();
 
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GEOSAT_IMAGE: {
@@ -241,8 +234,8 @@ public final class FysatHeader {
         ncfile.addAttribute(null, new Attribute("geospatial_lat_max", geoSatelliteSecondHeader.latitudeOfNorth));
         ncfile.addAttribute(null, new Attribute("geospatial_lon_min", geoSatelliteSecondHeader.longitudeOfWest));
         ncfile.addAttribute(null, new Attribute("geospatial_lon_max", geoSatelliteSecondHeader.longitudeOfEast));
-        ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
-        ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", (float) 0.0));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", (float) 0.0));
         ncfile.addAttribute(null, new Attribute("sample_ratio", geoSatelliteSecondHeader.sampleRatio));
         ncfile.addAttribute(null, new Attribute("horizontal_resolution", geoSatelliteSecondHeader.horizontalResolution));
         ncfile.addAttribute(null, new Attribute("vertical_resolution", geoSatelliteSecondHeader.verticalResolution));
@@ -443,8 +436,6 @@ public final class FysatHeader {
         }
         break;
       }
-      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_POLARSAT_IMAGE:
-        throw new UnsupportedDatasetException();
 
       case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GRID: {
         AwxFileGridProductSecondHeader gridprocuctSecondHeader = (AwxFileGridProductSecondHeader) this.secondHeader;
@@ -540,8 +531,8 @@ public final class FysatHeader {
         ncfile.addAttribute(null, new Attribute("geospatial_lat_max", gridprocuctSecondHeader.leftTopLat));
         ncfile.addAttribute(null, new Attribute("geospatial_lon_min", gridprocuctSecondHeader.leftTopLon));
         ncfile.addAttribute(null, new Attribute("geospatial_lon_max", gridprocuctSecondHeader.rightBottomLon));
-        ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
-        ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", (float) 0.0));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", (float) 0.0));
 
         ncfile.addAttribute(null, new Attribute("spacing_unit", gridprocuctSecondHeader.getSpacingUnit()));
         ncfile.addAttribute(null, new Attribute("horizontal_spacing", gridprocuctSecondHeader.horizontalSpacing));
@@ -721,11 +712,6 @@ public final class FysatHeader {
         //
         break;
       }
-      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_DISCREET:
-        throw new UnsupportedDatasetException();
-
-      case AwxFileFirstHeader.AWX_PRODUCT_TYPE_GRAPH_ANALIYSIS:
-        throw new UnsupportedDatasetException();
     }
 
 
@@ -853,25 +839,26 @@ public final class FysatHeader {
 
     switch (feature) {
       case 1:
+      case 506:
+      case 19:
+      case 11:
         unit = "K";
         break;
       case 2:
-        unit = "";
-        break;
+      case 507:
+      case 501:
+      case 18:
+      case 13:
+      case 12:
+      case 7:
+      case 6:
+      case 5:
       case 3:
         unit = "";
         break;
       case 4:
+      case 504:
         unit = "W/m2";
-        break;
-      case 5:
-        unit = "";
-        break;
-      case 6:
-        unit = "";
-        break;
-      case 7:
-        unit = "";
         break;
       case 8:
         unit = "kg/m3";
@@ -880,16 +867,8 @@ public final class FysatHeader {
         unit = "hour";
         break;
       case 10:
+      case 505:
         unit = "hPa";
-        break;
-      case 11:
-        unit = "K";
-        break;
-      case 12:
-        unit = "";
-        break;
-      case 13:
-        unit = "";
         break;
       case 14:
         unit = "mm/hour";
@@ -903,32 +882,11 @@ public final class FysatHeader {
       case 17:
         unit = "mm/(24 hour)";
         break;
-      case 18:
-        unit = "";
-        break;
-      case 19:
-        unit = "K";
-        break;
-      case 501:
-        unit = "";
-        break;
       case 502:
         unit = "mm";
         break;
       case 503:
         unit = "Db";
-        break;
-      case 504:
-        unit = "W/m2";
-        break;
-      case 505:
-        unit = "hPa";
-        break;
-      case 506:
-        unit = "K";
-        break;
-      case 507:
-        unit = "";
         break;
       default: {
         System.out.println("Unsupported Satellite Grid Procuct Dataset!");

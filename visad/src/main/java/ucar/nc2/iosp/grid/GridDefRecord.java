@@ -289,17 +289,17 @@ public abstract class GridDefRecord {
   /**
    * A Map to hold grid parameter definitions of String
    */
-  private final Map<String, String> paramStr = new HashMap<String, String>();
+  private final Map<String, String> paramStr = new HashMap<>();
 
   /**
    * A Map to hold grid parameter definitions of Integer
    */
-  private final Map<String, Integer> paramInt = new HashMap<String, Integer>();
+  private final Map<String, Integer> paramInt = new HashMap<>();
 
   /**
    * A Map to hold grid parameter definitions of Double
    */
-  private final Map<String, Double> paramDbl = new HashMap<String, Double>();
+  private final Map<String, Double> paramDbl = new HashMap<>();
 
   /**
    * String of all parameters with their values
@@ -356,7 +356,7 @@ public abstract class GridDefRecord {
    */
   public final void addParam(String key, int value) {
     //System.out.println(" adding " + key + " = " + value);
-    paramInt.put(key, new Integer(value));
+    paramInt.put(key, value);
     paramStr.put(key, Integer.toString(value));
   }
 
@@ -379,7 +379,7 @@ public abstract class GridDefRecord {
    */
   public final void addParam(String key, float value) {
     //System.out.println(" adding " + key + " = " + value);
-    paramDbl.put(key, new Double (value));
+    paramDbl.put(key, (double) value);
     paramStr.put(key, Float.toString(value));
   }
 
@@ -391,7 +391,7 @@ public abstract class GridDefRecord {
    */
   public final void addParam(String key, double value) {
     //System.out.println(" adding " + key + " = " + value);
-    paramDbl.put(key, new Double (value));
+    paramDbl.put(key, value);
     paramStr.put(key, Double.toString(value));
   }
 
@@ -447,7 +447,7 @@ public abstract class GridDefRecord {
   public final int getInt(String key) {
     Integer result = paramInt.get(key);
     if (result != null) {
-      return result.intValue();
+      return result;
     } else {
       String value = paramStr.get(key);
       if (value != null) {
@@ -457,9 +457,9 @@ public abstract class GridDefRecord {
           // number might be written as int like 65.0
           double dvalue = getDouble( key );
           if ( ! Double.isNaN(dvalue )) {
-            result = new Integer( (int) dvalue );
+            result = (int) dvalue;
             paramInt.put(key, result);
-            return result.intValue();
+            return result;
           }
           e.printStackTrace();
           if( debug )
@@ -467,7 +467,7 @@ public abstract class GridDefRecord {
           return UNDEFINED;
         }
         paramInt.put(key, result);
-        return result.intValue();
+        return result;
       } else {
         if( debug )
           System.out.println( key +" value not found");
@@ -488,7 +488,7 @@ public abstract class GridDefRecord {
   public final double getDouble(String key) {
     Double result = paramDbl.get(key);
     if (result != null) {
-      return result.doubleValue();
+      return result;
     } else {
       String value = paramStr.get(key);
       if (value != null) {
@@ -501,7 +501,7 @@ public abstract class GridDefRecord {
           return Double.NaN;
         }
         paramDbl.put(key, result);
-        return result.doubleValue();
+        return result;
       } else {
         if( debug )
           System.out.println( key +" value not found");

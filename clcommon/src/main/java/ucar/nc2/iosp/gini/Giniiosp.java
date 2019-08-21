@@ -213,9 +213,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
     if ((b0 & 0xf) == Z_DEFLATED) {
       if ((b0 >> 4) + 8 <= DEF_WBITS) {
-        if ((((b0 << 8) + b1) % 31) == 0) {
-          return true;
-        }
+        return (((b0 << 8) + b1) % 31) == 0;
       }
     }
 

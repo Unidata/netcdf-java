@@ -71,13 +71,7 @@ public class GridHorizCoordSys {
   /**
    * flags
    */
-  private boolean isLatLon = true, isGaussian = false;
-
-
-  /**
-   * GridVertCoordSys
-   */
-  //HashMap vcsHash = new HashMap(30); // GridVertCoordSys
+  private boolean isLatLon, isGaussian = false;
 
   /**
    * starting. incr values of prjection coordinates, used to generate the projection coordinate axis values
@@ -731,11 +725,6 @@ public class GridHorizCoordSys {
    * Make a Mercator projection
    */
   private void makeMercator() {
-    /**
-     * Construct a Mercator Projection.
-     * @param lon0 longitude of origin (degrees)
-     * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
-     */
     double Latin = gds.getDouble(GridDefRecord.LAD);
     // name depends on Grib version 1 or 2
     if (Double.isNaN(Latin))

@@ -8,7 +8,6 @@ package ucar.nc2.iosp.vis5d;
 
 
 import ucar.nc2.iosp.grid.*;
-import ucar.nc2.iosp.mcidas.McGridDefRecord;
 
 
 /**
@@ -121,32 +120,14 @@ public class Vis5DGridDefRecord extends GridDefRecord {
 
       case PROJ_ROTATED:
         addParam(PROJ, "ROTATED");
-        NorthBound = projargs[0];
-        WestBound = projargs[1];
-        RowInc = projargs[2];
-        ColInc = projargs[3];
-        CentralLat = projargs[4];
-        CentralLon = projargs[5];
-        Rotation = projargs[6];
         break;
 
       case PROJ_LAMBERT:
         addParam(PROJ, "LAMBERT");
-        Lat1 = projargs[0];
-        Lat2 = projargs[1];
-        PoleRow = projargs[2];
-        PoleCol = projargs[3];
-        CentralLon = projargs[4];
-        ColInc = projargs[5];
         break;
 
       case PROJ_STEREO:
         addParam(PROJ, "STEREO");
-        CentralLat = projargs[0];
-        CentralLon = projargs[1];
-        CentralRow = projargs[2];
-        CentralCol = projargs[3];
-        ColInc = projargs[4];
         break;
 
     }

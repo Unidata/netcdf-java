@@ -54,7 +54,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
    */
   private static final String V5D = "V5D";
 
-  /** from vis5d-4.3/src/v5d.h */
+  /* from vis5d-4.3/src/v5d.h */
 
   /**
    * maximum number of varaiables
@@ -495,7 +495,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                                         float[] vert_args)
           throws IOException {
 
-    String vert_unit = null;
+    String vert_unit;
     String vert_type;
     ArrayFloat.D1 data = new ArrayFloat.D1(n_levels);
     AxisType axisType = null;

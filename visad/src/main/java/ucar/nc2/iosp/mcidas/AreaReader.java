@@ -397,7 +397,7 @@ public class AreaReader {
           pixel[1][0] = (double) geoYRange.element(j);
           latLon = nav.toLatLon(pixel);
 
-          if (varname.equals("lat")) {
+          if (varname.equals("latitude")) {
             dataArray.setFloat(dataIndex.set(j, i), (float) (latLon[0][0]));
           } else {
             dataArray.setFloat(dataIndex.set(j, i), (float) (latLon[1][0]));
@@ -644,16 +644,22 @@ public class AreaReader {
    */
   private int getCalType(String calName) {
     int calTypeOut = Calibrator.CAL_NONE;
-    if (calName.trim().equals("ALB")) {
-      calTypeOut = Calibrator.CAL_ALB;
-    } else if (calName.trim().equals("BRIT")) {
-      calTypeOut = Calibrator.CAL_BRIT;
-    } else if (calName.trim().equals("RAD")) {
-      calTypeOut = Calibrator.CAL_RAD;
-    } else if (calName.trim().equals("RAW")) {
-      calTypeOut = Calibrator.CAL_RAW;
-    } else if (calName.trim().equals("TEMP")) {
-      calTypeOut = Calibrator.CAL_TEMP;
+    switch (calName.trim()) {
+      case "ALB":
+        calTypeOut = Calibrator.CAL_ALB;
+        break;
+      case "BRIT":
+        calTypeOut = Calibrator.CAL_BRIT;
+        break;
+      case "RAD":
+        calTypeOut = Calibrator.CAL_RAD;
+        break;
+      case "RAW":
+        calTypeOut = Calibrator.CAL_RAW;
+        break;
+      case "TEMP":
+        calTypeOut = Calibrator.CAL_TEMP;
+        break;
     }
     return calTypeOut;
   }

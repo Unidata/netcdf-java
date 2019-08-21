@@ -32,10 +32,10 @@ public class GempakGridRecord implements GridRecord {
     public String time2;
 
     /** Level 1 */
-    public int level1 = GempakConstants.IMISSD;
+    public int level1;
 
     /** Level 2 */
-    public int level2 = GempakConstants.IMISSD;
+    public int level2;
 
     /** coordinate type */
     public int ivcord;
@@ -89,7 +89,7 @@ public class GempakGridRecord implements GridRecord {
             ymd += 19000000;
         }
         int hms = times1[1] * 100;  // need to add seconds
-        refTime = new Date(McIDASUtil.mcDateHmsToSecs(ymd, hms) * 1000l);
+        refTime = new Date(McIDASUtil.mcDateHmsToSecs(ymd, hms) * 1000L);
         int offset = times1[2] % 100000;
         if ((offset == 0) || (offset % 100 == 0)) {  // 0 or no minutes
             validOffset = (offset / 100) * 60;

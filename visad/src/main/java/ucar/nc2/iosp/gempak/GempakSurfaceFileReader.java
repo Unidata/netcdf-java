@@ -193,8 +193,8 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
     } else {
       builder.append("\t");
       float[] data = rd.data;
-      for (int i = 0; i < data.length; i++) {
-        builder.append( StringUtil2.padLeft( Format.formatDouble(data[i], 7, 1), 7));
+      for (float datum : data) {
+        builder.append(StringUtil2.padLeft(Format.formatDouble(datum, 7, 1), 7));
         builder.append("\t");
       }
       int[] header = rd.header;

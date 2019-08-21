@@ -76,7 +76,7 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
   public int getLevelType1() {
     // TODO:  flush this out
     int gribLevel = getDirBlock()[51];
-    int levelType = 0;
+    int levelType;
     if (!((gribLevel == McIDASUtil.MCMISSING) || (gribLevel == 0))) {
       levelType = gribLevel;
     } else {

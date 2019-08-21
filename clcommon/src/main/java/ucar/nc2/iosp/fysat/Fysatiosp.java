@@ -109,7 +109,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   }
 
-  public Array readDataOld(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
+  public Array readDataOld(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException {
     int start_l, stride_l, stop_l;
     int start_p, stride_p, stop_p;
     if (origin == null) origin = new int[v2.getRank()];

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ucar.nc2.iosp.fysat;
 
 import java.io.IOException;
@@ -12,9 +9,6 @@ import java.io.IOException;
 public class UnsupportedDatasetException
 extends IOException
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
