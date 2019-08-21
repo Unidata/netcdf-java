@@ -28,12 +28,8 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
   private final int version, discipline, category;
   private final ImmutableMap<Integer, Entry> paramMap;
 
-  public static EccodesCodeTable factory(int version, int discipline, int category) {
-    try {
+  public static EccodesCodeTable factory(int version, int discipline, int category) throws IOException {
       return new EccodesCodeTable(version, discipline, category);
-    } catch (Exception e) {
-      return null;
-    }
   }
 
   private EccodesCodeTable(int version, int discipline, int category) throws IOException {

@@ -59,7 +59,9 @@ class EccodesLocalConcepts {
           localConcept.merge(part);
         }
       }
-      conceptsBuilder.put(localConcept.getKey(), localConcept);
+      if (localConcept != null) {
+        conceptsBuilder.put(localConcept.getKey(), localConcept);
+      }
     }
     localConcepts = conceptsBuilder.build();
   }
@@ -164,10 +166,12 @@ class EccodesLocalConcepts {
                 .iterator();
             String name = tokens.next();
             String valueS = clean(tokens.next());
-            Integer value;
+            int value;
             try {
               value = Integer.parseInt(valueS);
-              current.addAttribute(name, value);
+              if (current != null) {
+                current.addAttribute(name, value);
+              }
             } catch (Exception e) {
               logger.warn("Table {}/{} line {}", tableId, conceptType, line);
             }

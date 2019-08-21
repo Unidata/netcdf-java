@@ -510,7 +510,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
         countGroups++;
       }
     } catch (EOFException ioe) {
-      logger.warn("Only did %d groups out of %d%n", countGroups, NG);
+      logger.warn("Only did {} groups out of {}", countGroups, NG);
     }
 
     int offset4 = (int) (raf.getFilePointer() - this.startPos);
@@ -640,7 +640,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     //int simplepackSizeInBits = nPts * info.numberOfBits;
     //int simplepackSizeInBytes = (simplepackSizeInBits +7) / 8;
     //f.format(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
-    logger.debug("%s", f);
+    logger.debug("{}", f);
   }
 
     /* Grib1 second order packing - unfinished.

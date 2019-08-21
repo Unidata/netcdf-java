@@ -54,7 +54,7 @@ class Grib2TableConfig {
 
           String[] flds = line.split(";");
           if (flds.length < 7) {
-            logger.warn("%d BAD format == %s%n", count, line);
+            logger.warn("{} BAD format == {}", count, line);
             continue;
           }
 
@@ -75,7 +75,7 @@ class Grib2TableConfig {
             result.add(table);
 
           } catch (Exception e) {
-            logger.warn("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
+            logger.warn("{} {} BAD line == {} : {}", count, fldidx, line, e.getMessage());
           }
         }
       }

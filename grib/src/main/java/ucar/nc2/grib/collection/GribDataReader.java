@@ -101,7 +101,7 @@ public abstract class GribDataReader {
       // addRecord(sourceIndex, count++);
       GribCollectionImmutable.Record record = vindex.getRecordAt(sourceIndex);
       if (Grib.debugRead)
-        logger.debug("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
+        logger.debug("GribIosp debugRead sourceIndex={} resultIndex={} record is null={}", sourceIndex, resultIndex, record == null);
       if (record != null)
         records.add( new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys()));
       resultIndex++;

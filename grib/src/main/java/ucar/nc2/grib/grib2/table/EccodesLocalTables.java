@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -121,11 +120,16 @@ public class EccodesLocalTables extends LocalTables {
 
     int discipline = Integer.parseInt(tokens.next());
     int category = Integer.parseInt(tokens.next());
-    EccodesCodeTable ecmwfCodeTable = EccodesCodeTable.factory(LATEST_VERSION, discipline, category);
-    localTables.put(tableName, ecmwfCodeTable);
+    try {
+      EccodesCodeTable ecmwfCodeTable = EccodesCodeTable.factory(LATEST_VERSION, discipline, category);
+      localTables.put(tableName, ecmwfCodeTable);
 
-    Grib2CodeTableInterface.Entry entry = ecmwfCodeTable.getEntry(code);
-    return (entry == null) ? null : entry.getName();
+      Grib2CodeTableInterface.Entry entry = ecmwfCodeTable.getEntry(code);
+      return (entry == null) ? null : entry.getName();
+    } catch (IOException e) {
+      logger.warn("No such EccodesCodeTable {} {} {}", LATEST_VERSION, discipline, category);
+    }
+    return null;
   }
 
   EccodesLocalConcepts localConcepts;
@@ -140,7 +144,7 @@ public class EccodesLocalTables extends LocalTables {
         }
       }
     } catch (IOException e) {
-      logger.warn("EccodesLocalTables failed on %s", path, e);
+      logger.warn("EccodesLocalTables failed on {}", path, e);
     }
   }
 

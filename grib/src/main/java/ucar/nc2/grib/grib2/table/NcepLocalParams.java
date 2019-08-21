@@ -97,7 +97,7 @@ class NcepLocalParams {
     }
 
     private boolean readParameterTableXml(String path) {
-      if (debugOpen) logger.debug("readParameterTableXml table %s%n", path);
+      if (debugOpen) logger.debug("readParameterTableXml table {}", path);
       try (InputStream is = GribResourceReader.getInputStream(path)) {
         SAXBuilder builder = new SAXBuilder();
         org.jdom2.Document doc = builder.build(is);
@@ -112,7 +112,7 @@ class NcepLocalParams {
     }
 
     private boolean readParameterTableFromResource(String resource) {
-      if (debugOpen) logger.debug("readParameterTableFromResource from resource %s%n", resource);
+      if (debugOpen) logger.debug("readParameterTableFromResource from resource {}", resource);
       ClassLoader cl = this.getClass().getClassLoader();
       try (InputStream is = cl.getResourceAsStream(resource)) {
         if (is == null) {
@@ -174,7 +174,7 @@ class NcepLocalParams {
         //   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev) {
         Grib2Parameter parameter = new Grib2Parameter(discipline, category, code, name, units, abbrev, desc);
         result.put(parameter.getNumber(), parameter);
-        if (debug) logger.debug(" %s%n", parameter);
+        if (debug) logger.debug(" {}", parameter);
       }
       return result;
     }

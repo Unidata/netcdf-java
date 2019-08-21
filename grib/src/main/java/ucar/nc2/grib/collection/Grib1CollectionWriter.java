@@ -228,7 +228,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       raf.write(b);  // message  - all in one gulp
 
       logger.debug("  write GribCollectionIndex= {} bytes", b.length);
-      logger.debug("  file size =  %d bytes", raf.length());
+      logger.debug("  file size =  {} bytes", raf.length());
       return true;
 
     } finally {

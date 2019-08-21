@@ -188,7 +188,7 @@ public class Grib1RecordScanner {
       Grib1SectionGridDefinition gds = pds.gdsExists() ? new Grib1SectionGridDefinition(raf)
           : new Grib1SectionGridDefinition(pds);
       if (!pds.gdsExists() && debugGds) {
-        log.warn(" NO GDS: center = %d, GridDefinition=%d file=%s%n", pds.getCenter(),
+        log.warn(" NO GDS: center = {}, GridDefinition={} file={}", pds.getCenter(),
             pds.getGridDefinition(), raf.getLocation());
       }
 
@@ -231,7 +231,7 @@ public class Grib1RecordScanner {
 
       // check that end section is correct
       boolean foundEnding = checkEnding(ending);
-      log.debug(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
+      log.debug(" read until {} grib ending at {} header ='{}' foundEnding={}",
             raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
 
       if (!foundEnding && (allowBadIsLength || is.isMessageLengthFixed)) {

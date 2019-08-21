@@ -221,7 +221,7 @@ public class CoordinateSharer<T> {
         f.format("%nprev:%n");
         for (Coordinate c :  prev)
           f.format(" %d == (%s) %s%n", c.hashCode(), c, c.getName());
-        logger.error("CoordinateSharer cant find coordinate %s (%s)", coord.getName(), f, new Throwable());
+        logger.error("CoordinateSharer cant find coordinate {} ({})", coord.getName(), f, new Throwable());
       } else {
         result.add(idx);
       }

@@ -48,7 +48,6 @@ public class Grib1GdsPredefined {
       case 61:
         return new NcepLatLon(gridNumber, 91, 45, 0.0F, 0.0F, 90.0F, 180.0F, 2.0F, 2.0F, (byte) 0x88, (byte) 64);
       case 62:
-        return new NcepLatLon(gridNumber, 91, 45, -90.0F, 0.0F, 0.0F, 180.0F, 2.0F, 2.0F, (byte) 0x88, (byte) 64);
       case 63:
         return new NcepLatLon(gridNumber, 91, 45, -90.0F, 0.0F, 0.0F, 180.0F, 2.0F, 2.0F, (byte) 0x88, (byte) 64);
       case 64:

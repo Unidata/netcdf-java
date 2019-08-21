@@ -186,8 +186,6 @@ class NcepLocalTables extends LocalTables {
         return new VertCoordType(code, "0.1 C", null, true);
 
       case 237:
-        return new VertCoordType(code, "m", null, true);
-
       case 238:
         return new VertCoordType(code, "m", null, true);
 

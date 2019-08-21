@@ -92,7 +92,7 @@ public class Grib2RecordScanner {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     lastPos = 0;
 
-    if (debugRepeat) logger.debug(" Grib2RecordScanner %s%n", raf.getLocation());
+    if (debugRepeat) logger.debug(" Grib2RecordScanner {}", raf.getLocation());
   }
 
   private Grib2RecordScanner(RandomAccessFile raf, long startFrom) throws IOException {
@@ -132,7 +132,7 @@ public class Grib2RecordScanner {
 
     if (more) {
       int sizeHeader = (int) (gribStart - lastPos);  // wmo headers are embedded between records in some idd streams
-      if (debugEnding) logger.debug("bytes between last and next=%d%n", sizeHeader);
+      if (debugEnding) logger.debug("bytes between last and next={}", sizeHeader);
       if (sizeHeader > 100) sizeHeader = 100;   // maximum 100 bytes; more is likely to be garbage
       long goBack = gribStart-sizeHeader;
       header = new byte[sizeHeader];
@@ -176,7 +176,7 @@ public class Grib2RecordScanner {
       long pos = raf.getFilePointer();
       long ending = is.getEndPos();
       if (pos+34 < ending) { // give it 30 bytes of slop
-        if (debugRepeat) logger.debug(" REPEAT AT %d != %d%n", pos+4, ending);
+        if (debugRepeat) logger.debug(" REPEAT AT {} != {}", pos+4, ending);
         repeatPos = pos;
         repeatRecord = new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing); // this assumes immutable sections
         // track bms in case its a repeat
@@ -185,7 +185,7 @@ public class Grib2RecordScanner {
         return new Grib2Record(repeatRecord); // GribRecord isnt immutable; still, may not be necessary
       }
 
-      if (debug) logger.debug(" read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
+      if (debug) logger.debug(" read until {} grib ending at {} header ='{}'", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
 
       // check that end section is correct
       boolean foundEnding = true;
@@ -196,13 +196,13 @@ public class Grib2RecordScanner {
           badEndings++;
           //String clean = StringUtil2.cleanup(header);
           //if (clean.length() > 40) clean = clean.substring(0,40) + "...";
-          if (debug) logger.debug(" **missing End of GRIB message at pos=%d start= %d%n", ending, is.getStartPos());
+          if (debug) logger.debug(" **missing End of GRIB message at pos={} start= {}", ending, is.getStartPos());
           logger
               .warn("Missing End of GRIB message {} starting at pos={} is.ending={} data.ending={} file={}", badEndings, is.getStartPos(),ending,dataSection.getEndingPosition(),raf.getLocation());
           break;
         }
       }
-      if (debug) logger.debug(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
+      if (debug) logger.debug(" read until {} grib ending at {} header ='{}' foundEnding={}",
               raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
 
       if (foundEnding || debugEnding) {
@@ -261,7 +261,7 @@ public class Grib2RecordScanner {
       repeatRecord.repeat = section;
 
     } else {
-      if (debugRepeat) logger.debug(" REPEAT Terminate %d%n", section);
+      if (debugRepeat) logger.debug(" REPEAT Terminate {}", section);
       lastPos = repeatPos; // start next scan from here
       repeatPos = -1;
       repeatRecord = null;
@@ -277,7 +277,7 @@ public class Grib2RecordScanner {
         throw new IllegalStateException("No bms in repeating section");
       repeatRecord.setBms(repeatBms, true);
       //debug
-      if (debugRepeat) logger.debug("replaced bms %d%n", section);
+      if (debugRepeat) logger.debug("replaced bms {}", section);
       repeatRecord.repeat += 1000;
 
     } else if (bms.getBitMapIndicator() == 0) {
@@ -301,12 +301,12 @@ public class Grib2RecordScanner {
     long pos = raf.getFilePointer();
     long ending = repeatRecord.getIs().getEndPos();
     if (pos+34 < ending) { // give it 30 bytes of slop
-      if (debugRepeat) logger.debug(" REPEAT AGAIN %d != %d%n", pos+4, ending);
+      if (debugRepeat) logger.debug(" REPEAT AGAIN {} != {}", pos+4, ending);
       repeatPos = pos;
       return true;
     }
 
-    if (debug) logger.debug(" REPEAT read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
+    if (debug) logger.debug(" REPEAT read until {} grib ending at {} header ='{}'", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
 
     // check that end section is correct
     raf.seek(ending-4);
@@ -314,13 +314,13 @@ public class Grib2RecordScanner {
       if (raf.read() != 55) {
         String clean = StringUtil2.cleanup(header);
         if (clean.length() > 40) clean = clean.substring(0,40) + "...";
-        logger.warn("  REPEAT Missing End of GRIB message at pos=" + ending + " header= " + clean+" for="+raf.getLocation());
+        logger.warn("  REPEAT Missing End of GRIB message at pos= {}, header={} for= {}", ending, clean, raf.getLocation());
         break;
       }
     }
     lastPos = raf.getFilePointer();
 
-    if (debugRepeat) logger.debug(" REPEAT DONE%n");
+    if (debugRepeat) logger.debug(" REPEAT DONE");
     repeatPos = -1; // no more repeats in this record
     return true;
   }

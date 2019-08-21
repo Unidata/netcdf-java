@@ -67,6 +67,16 @@ public class Grib1ParamLevel {
         break;
 
       case 100:
+      case 103:
+      case 105:
+      case 160:
+      case 126:
+      case 125:
+      case 117:
+      case 115:
+      case 113:
+      case 111:
+      case 109:
         value1 = pds1112;
         value2 = GribNumbers.MISSING;
         break;
@@ -76,39 +86,22 @@ public class Grib1ParamLevel {
         value2 = pds12 * 10;
         break;
 
-      case 103:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
-        break;
-
       case 104:
-        value1 = (pds11 * 100);  // convert hm to m
-        value2 = (pds12 * 100);
-        break;
-
-      case 105:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
-        break;
-
       case 106:
         value1 = (pds11 * 100);  // convert hm to m
         value2 = (pds12 * 100);
         break;
 
       case 107:
+      case 119:
         value1 = (float) (pds1112 * 0.0001);
         value2 = GribNumbers.MISSING;
         break;
 
       case 108:
+      case 120:
         value1 = (float) (pds11 * 0.01);
         value2 = (float) (pds12 * 0.01);
-        break;
-
-      case 109:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
         break;
 
       case 110:
@@ -116,19 +109,9 @@ public class Grib1ParamLevel {
         value2 = pds12;
         break;
 
-      case 111:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
-        break;
-
       case 112:
         value1 = pds11;
         value2 = pds12;
-        break;
-
-      case 113:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
         break;
 
       case 114:
@@ -136,44 +119,14 @@ public class Grib1ParamLevel {
         value2 = 475 - pds12;
         break;
 
-      case 115:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
-        break;
-
       case 116:
         value1 = pds11;
         value2 = pds12;
         break;
 
-      case 117:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
-        break;
-
-      case 119:
-        value1 = (float) (pds1112 * 0.0001);
-        value2 = GribNumbers.MISSING;
-        break;
-
-      case 120:
-        value1 = (float) (pds11 * 0.01);
-        value2 = (float) (pds12 * 0.01);
-        break;
-
       case 121:
         value1 = 1100 - pds11;
         value2 = 1100 - pds12;
-        break;
-
-      case 125:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
-       break;
-
-      case 126:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
         break;
 
       case 128:
@@ -185,11 +138,6 @@ public class Grib1ParamLevel {
         //value1 = pds11*10; // convert from kPa to hPa - who uses kPa???
         value1 = pds11;  // 388 nows says it is hPA
         value2 = 1100 - pds12;
-        break;
-
-      case 160:
-        value1 = pds1112;
-        value2 = GribNumbers.MISSING;
         break;
     }
   }

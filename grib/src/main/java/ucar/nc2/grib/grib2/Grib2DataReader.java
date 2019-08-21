@@ -783,7 +783,7 @@ public class Grib2DataReader {
       for (int i = 0, j = 0; i < totalNPoints; i++) {
         if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           if (j >= idata.length) {
-            logger.warn("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
+            logger.warn("HEY jj2000 data count {} < bitmask count {}, i={}, totalNPoints={}",
                     idata.length, j, i, totalNPoints);
             break;
           }
@@ -840,8 +840,8 @@ public class Grib2DataReader {
       for (int i = 0, j = 0; i < totalNPoints; i++) {
         if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           if (j >= idata.length) {
-            logger.warn("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
-                    idata.length, j, i, totalNPoints);
+            logger.warn("HEY jj2000 data count {} < bitmask count {}, i={}, totalNPoints={}",
+                idata.length, j, i, totalNPoints);
             break;
           }
           result[i] = idata[j];
@@ -891,7 +891,7 @@ public class Grib2DataReader {
     BufferedImage image = ImageIO.read(in);
 
     if (nb != image.getColorModel().getPixelSize()) {
-      logger.debug("PNG pixel size disagrees with grib number of bits: ",
+      logger.debug("PNG pixel size {} disagrees with grib number of bits {}",
           image.getColorModel().getPixelSize(), nb);
     }
 
