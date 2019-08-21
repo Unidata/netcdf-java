@@ -71,7 +71,7 @@ public class BufrConfig {
     }
   } */
 
-  private BufrConfig(RandomAccessFile raf) throws IOException {
+  private BufrConfig(RandomAccessFile raf) {
     this.filename =  raf.getLocation();
     try {
       scanBufrFile(raf);
@@ -382,9 +382,9 @@ public class BufrConfig {
       if (Double.compare(that.alt, alt) != 0) return false;
       if (Double.compare(that.lat, lat) != 0) return false;
       if (Double.compare(that.lon, lon) != 0) return false;
-      if (desc != null ? !desc.equals(that.desc) : that.desc != null) return false;
+      if (!Objects.equals(desc, that.desc)) return false;
       if (!name.equals(that.name)) return false;
-      return wmoId != null ? wmoId.equals(that.wmoId) : that.wmoId == null;
+      return Objects.equals(wmoId, that.wmoId);
 
     }
 
@@ -487,9 +487,11 @@ public class BufrConfig {
     }
 
     public void setAction(String action) {
-      BufrCdmIndexProto.FldAction act = BufrCdmIndexProto.FldAction.valueOf(action);
-      if (act != null)
-        this.action = act;
+      try {
+        this.action = BufrCdmIndexProto.FldAction.valueOf(action);
+      } catch (Exception e) {
+        log.warn("Unknown action {}", action);
+      }
     }
 
     public void setAction(BufrCdmIndexProto.FldAction action) {

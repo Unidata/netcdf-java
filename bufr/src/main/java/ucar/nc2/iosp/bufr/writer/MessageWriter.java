@@ -23,11 +23,6 @@ import ucar.nc2.iosp.bufr.Message;
  * @since 6/12/13
  */
 public class MessageWriter { // implements Callable<IndexerTask> {
-  //private static String rootDir = "./";
-  //static void setRootDir( String _rootDir) {
-  //  rootDir = _rootDir;
-  //}
-
   private final WritableByteChannel wbc;
   private final FileOutputStream fos;
 
@@ -35,11 +30,10 @@ public class MessageWriter { // implements Callable<IndexerTask> {
   private long lastModified;
 
   /**
-   *
+   * Writer to a single file.
    * @param file    Write to this file
    * @param fileno  not used
    * @param bufrTableMessages list of BUFR messages containing tables; written first
-   * @throws IOException
    */
   MessageWriter(File file, short fileno, List<Message> bufrTableMessages) throws IOException {
     fos = new FileOutputStream(file, true); // append

@@ -200,7 +200,7 @@ public class Bufr2Xml {
     }
   }
 
-  void writeVariable(VariableDS v, Array mdata) throws XMLStreamException, IOException {
+  void writeVariable(VariableDS v, Array mdata) throws XMLStreamException {
     staxWriter.writeCharacters("\n");
     staxWriter.writeCharacters(indent.toString());
 

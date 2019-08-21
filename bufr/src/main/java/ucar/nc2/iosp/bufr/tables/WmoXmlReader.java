@@ -364,7 +364,7 @@ public class WmoXmlReader {
         int w = seq / 1000;
         int x = w % 100;
         String seqName = Util.cleanName(elem.getChildTextNormalize(elems[1]));
-        currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
+        currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<>());
         currSeqno = seq;
       }
 

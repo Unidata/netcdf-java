@@ -61,9 +61,9 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
 
   @Override
-  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     IOServiceProvider iosp = ncd.getIosp();
-    return (iosp != null && iosp instanceof BufrIosp2) ? true : null;
+    return (iosp instanceof BufrIosp2) ? true : null;
   }
 
   @Override
@@ -110,14 +110,14 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     }
   }
 
-  private void processSeq(Structure struct, Element parent) throws IOException {
+  private void processSeq(Structure struct, Element parent) {
     if (parent == null || struct == null) return;
     List<Variable> vars = struct.getVariables();
     for (Element child : parent.getChildren("fld", Catalog.ncmlNS)) {
       String idxS = child.getAttributeValue("idx");
       int idx = Integer.parseInt(idxS);
       if (idx < 0 || idx >= vars.size()) {
-        log.error("Bad index = %s", child);
+        log.error("Bad index = {}", child);
         continue;
       }
       Variable want = vars.get(idx);
@@ -179,7 +179,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       }
 
       @Override
-      protected StationHelper createStationHelper() throws IOException {
+      protected StationHelper createStationHelper() {
         StationHelper stationHelper = new StationHelper();
         for (BufrCdmIndexProto.Station s : index.stations)
           stationHelper.addStation(new BufrStation(s));
@@ -200,13 +200,13 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
         @Nonnull
         @Override
-        public StructureData getFeatureData() throws IOException {
+        public StructureData getFeatureData() {
           return StructureData.EMPTY;
         }
 
         // iterates over the records for this station
         public class BufrStationIterator extends PointIteratorFromStructureData {
-          public BufrStationIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
+          public BufrStationIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) {
             super(structIter, filter);
           }
 
@@ -233,12 +233,12 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
           @Nonnull
           @Override
-          public StructureData getDataAll() throws IOException {
+          public StructureData getDataAll() {
             return sdata;
           }
           @Nonnull
           @Override
-           public StructureData getFeatureData() throws IOException {
+           public StructureData getFeatureData() {
              return sdata;
            }
 
@@ -281,7 +281,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         public class BufrRecordIterator extends PointIteratorFromStructureData {
           int countHere = 0;
 
-          public BufrRecordIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
+          public BufrRecordIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) {
             super(structIter, filter);
           }
 
@@ -315,12 +315,12 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
           @Nonnull
           @Override
-          public StructureData getDataAll() throws IOException {
+          public StructureData getDataAll() {
             return sdata;
           }
           @Nonnull
           @Override
-          public StructureData getFeatureData() throws IOException {
+          public StructureData getFeatureData() {
              return sdata;
            }
 
@@ -400,9 +400,6 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           if (act == null) {
             sm.addMember(m);
 
-          } else if (act.what == BufrCdmIndexProto.FldAction.remove) {
-            continue;
-
           } else if (act.what == BufrCdmIndexProto.FldAction.asMissing) {
             ArraySequence seq = sdata.getArraySequence(m);
             StructureDataIterator iter = seq.getStructureDataIterator();
@@ -435,7 +432,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         for (StructureMembers.Member m : sdata.getMembers()) {
           Action act = actions.get(m.getName());
           if (act == null) {
-            continue;
+            // do nothing
 
           } else if (act.what == BufrCdmIndexProto.FldAction.remove) {
             this.members.hideMember(m) ;

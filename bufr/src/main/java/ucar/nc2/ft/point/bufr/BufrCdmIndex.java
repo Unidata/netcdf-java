@@ -90,7 +90,7 @@ public class BufrCdmIndex {
 
       Map<String,BufrConfig.BufrStation> smaps = config.getStationMap();
       if (smaps != null) {
-        List<BufrConfig.BufrStation> stations = new ArrayList<BufrConfig.BufrStation>(smaps.values());
+        List<BufrConfig.BufrStation> stations = new ArrayList<>(smaps.values());
         Collections.sort(stations);
         for (BufrConfig.BufrStation s : stations) {
           indexBuilder.addStations(buildStation(s));
@@ -103,7 +103,7 @@ public class BufrCdmIndex {
       NcStream.writeVInt(raf, b.length); // message size
       raf.write(b);  // message  - all in one gulp
 
-      log.debug("  file size =  %d bytes", raf.length());
+      log.debug("  file size = {} bytes", raf.length());
       return true;
     }
   }
@@ -146,7 +146,7 @@ public class BufrCdmIndex {
       //System.out.printf("  write BufrCdmIndexProto= %d bytes", b.length);
       //showProtoRoot(rootf);
 
-      log.debug("  file size =  %d bytes", raf.length());
+      log.debug("  file size = {} bytes", raf.length());
       return true;
     }
   }
@@ -212,7 +212,7 @@ public class BufrCdmIndex {
   public long start, end;
   public long nobs;
 
-  protected boolean readIndex(RandomAccessFile raf) throws IOException {
+  protected boolean readIndex(RandomAccessFile raf) {
     this.idxFilename = raf.getLocation();
 
     try {

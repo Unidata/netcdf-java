@@ -9,16 +9,12 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.wmo.CommonCodeTable;
-import ucar.unidata.util.StringUtil2;
 
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 /**
  * Read BUFR Code / Flag tables.

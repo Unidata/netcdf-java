@@ -30,11 +30,11 @@ public class BufrSplitter {
   private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io
           .KMPMatch(new byte[]{'B', 'U', 'F', 'R'});
 
-  File dirOut;
-  MessageDispatchDDS dispatcher;
+  private File dirOut;
+  private MessageDispatchDDS dispatcher;
   Formatter out;
 
-  public BufrSplitter(String dirName, Formatter out) throws IOException {
+  private BufrSplitter(String dirName, Formatter out) throws IOException {
     this.out = out;
     dirOut = new File(dirName);
     if (dirOut.exists() && !dirOut.isDirectory())  {
@@ -66,13 +66,12 @@ public class BufrSplitter {
   int bad_msgs = 0;
 
   // process all the bytes in the stream
-  public void processStream(InputStream is) throws IOException {
+  private void processStream(InputStream is) throws IOException {
     int pos = -1;
     Buffer b = null;
-    while (true) {
+    while (b == null || !b.done) {
       b = (pos < 0) ? readBuffer(is) : readBuffer(is, b, pos);
       pos = processBuffer(b, is);
-      if (b.done) break;
     }
   }
 
@@ -81,7 +80,6 @@ public class BufrSplitter {
    * @param b buffer of input data
    * @param is InputStream to read
    * @return pos in the buffer we got to
-   * @throws IOException
    */
   private int processBuffer(Buffer b, InputStream is) throws IOException {
     int start = 0;
@@ -192,8 +190,7 @@ public class BufrSplitter {
 
   }
 
-  void processMessageTask(MessageTask mtask) {
-    //out.format("    %d start process %n", mtask.id);
+  private void processMessageTask(MessageTask mtask) {
     try {
       Message m = getMessage(new InMemoryRandomAccessFile("BUFR", mtask.mess));
       if (null == m) return;
@@ -311,22 +308,22 @@ public class BufrSplitter {
 
   private static class CommandLine {
     @Parameter(names = {"--fileSpec"}, description = "File specification", required = true)
-    public File fileSpec;
+    File fileSpec;
 
     @Parameter(names = {"--dirOut"}, description = "Output directory", required = true)
-    public File dirOut;
+    File dirOut;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
-    public boolean help = false;
+    boolean help = false;
 
     private final JCommander jc;
 
-    public CommandLine(String progName, String[] args) throws ParameterException {
+    CommandLine(String progName, String[] args) throws ParameterException {
       this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
       jc.setProgramName(progName);           // Displayed in the usage information.
     }
 
-    public void printUsage() {
+    void printUsage() {
       jc.usage();
     }
   }

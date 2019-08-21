@@ -96,7 +96,7 @@ public class EmbeddedTable {
     }
   }
 
-  private void addTableEntryB(StructureData sdata) throws IOException {
+  private void addTableEntryB(StructureData sdata) {
     String name = "", units = "", signScale = null, signRef = null;
     int scale = 0, refVal = 0, width = 0;
     short x1 = 0, y1 = 0;
@@ -109,34 +109,47 @@ public class EmbeddedTable {
       if (showB) System.out.printf("%s == %s%n" ,v, data);
 
       Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
-      if (att.getStringValue().equals("0-0-10")) {
-        sdata.getScalarString(m);
-      } else if (att.getStringValue().equals("0-0-11")) {
-        String x = sdata.getScalarString(m);
-        x1 = Short.parseShort(x.trim());
-      } else if (att.getStringValue().equals("0-0-12")) {
-        String y = sdata.getScalarString(m);
-        y1 = Short.parseShort(y.trim());
-      } else if (att.getStringValue().equals("0-0-13")) {
-        name = sdata.getScalarString(m);
-      } else if (att.getStringValue().equals("0-0-14")) {
-        name += sdata.getScalarString(m);  // append both lines
-      } else if (att.getStringValue().equals("0-0-15")) {
-        units = sdata.getScalarString(m);
-        units = WmoXmlReader.cleanUnit(units.trim());
-      } else if (att.getStringValue().equals("0-0-16")) {
-        signScale = sdata.getScalarString(m).trim();
-      } else if (att.getStringValue().equals("0-0-17")) {
-        String scaleS = sdata.getScalarString(m);
-        scale = Integer.parseInt(scaleS.trim());
-      } else if (att.getStringValue().equals("0-0-18")) {
-        signRef = sdata.getScalarString(m).trim();
-      } else if (att.getStringValue().equals("0-0-19")) {
-        String refS = sdata.getScalarString(m);
-        refVal = Integer.parseInt(refS.trim());
-      } else if (att.getStringValue().equals("0-0-20")) {
-        String widthS = sdata.getScalarString(m);
-        width = Integer.parseInt(widthS.trim());
+      switch (att.getStringValue()) {
+        case "0-0-10":
+          sdata.getScalarString(m);
+          break;
+        case "0-0-11":
+          String x = sdata.getScalarString(m);
+          x1 = Short.parseShort(x.trim());
+          break;
+        case "0-0-12":
+          String y = sdata.getScalarString(m);
+          y1 = Short.parseShort(y.trim());
+          break;
+        case "0-0-13":
+          name = sdata.getScalarString(m);
+          break;
+        case "0-0-14":
+          name += sdata.getScalarString(m);  // append both lines
+
+          break;
+        case "0-0-15":
+          units = sdata.getScalarString(m);
+          units = WmoXmlReader.cleanUnit(units.trim());
+          break;
+        case "0-0-16":
+          signScale = sdata.getScalarString(m).trim();
+          break;
+        case "0-0-17":
+          String scaleS = sdata.getScalarString(m);
+          scale = Integer.parseInt(scaleS.trim());
+          break;
+        case "0-0-18":
+          signRef = sdata.getScalarString(m).trim();
+          break;
+        case "0-0-19":
+          String refS = sdata.getScalarString(m);
+          refVal = Integer.parseInt(refS.trim());
+          break;
+        case "0-0-20":
+          String widthS = sdata.getScalarString(m);
+          width = Integer.parseInt(widthS.trim());
+          break;
       }
     }
     if (showB) System.out.printf("%n");
@@ -175,16 +188,21 @@ public class EmbeddedTable {
       Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
       if (att != null) {
         if (showD) System.out.printf("%s == %s%n" ,v, sdata.getScalarString(m));
-        if (att.getStringValue().equals("0-0-10")) {
-          sdata.getScalarString(m);
-        } else if (att.getStringValue().equals("0-0-11")) {
-          String x = sdata.getScalarString(m);
-          x1 = Short.parseShort(x.trim());
-        } else if (att.getStringValue().equals("0-0-12")) {
-          String y = sdata.getScalarString(m);
-          y1 = Short.parseShort(y.trim());
-        } else if (att.getStringValue().equals("2-5-64")) {
-          name = sdata.getScalarString(m);
+        switch (att.getStringValue()) {
+          case "0-0-10":
+            sdata.getScalarString(m);
+            break;
+          case "0-0-11":
+            String x = sdata.getScalarString(m);
+            x1 = Short.parseShort(x.trim());
+            break;
+          case "0-0-12":
+            String y = sdata.getScalarString(m);
+            y1 = Short.parseShort(y.trim());
+            break;
+          case "2-5-64":
+            name = sdata.getScalarString(m);
+            break;
         }
       }
     }

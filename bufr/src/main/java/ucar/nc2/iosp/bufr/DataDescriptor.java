@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import java.util.Objects;
 import ucar.nc2.iosp.bufr.tables.TableC;
 import ucar.nc2.iosp.bufr.tables.TableB;
 
@@ -57,14 +58,14 @@ public class DataDescriptor {
     this.x = (fxy & 0x3F00) >> 8;
     this.y = fxy & 0xFF;
 
-    TableB.Descriptor db = null;
+    TableB.Descriptor db;
     if (f == 0) {
       db = lookup.getDescriptorTableB(fxy);
       if (db != null)
         setDescriptor(db);
       else {
         bad = true;
-        if (f != 1) this.name = "*NOT FOUND";
+        this.name = "*NOT FOUND";
       }
     }
 
@@ -344,7 +345,7 @@ public class DataDescriptor {
     if (fxy != that.fxy) return false;
     if (replication != that.replication) return false;
     if (type != that.type) return false;
-    return subKeys != null ? subKeys.equals(that.subKeys) : that.subKeys == null;
+    return Objects.equals(subKeys, that.subKeys);
 
   }
 

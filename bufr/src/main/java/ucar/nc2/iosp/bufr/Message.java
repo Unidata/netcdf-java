@@ -129,7 +129,7 @@ public class Message {
     return usesLocalTable(root);
   }
 
-  private boolean usesLocalTable(DataDescriptor dds) throws IOException {
+  private boolean usesLocalTable(DataDescriptor dds) {
     for (DataDescriptor key : dds.getSubKeys()) {
       if (key.isLocal()) return true;
       if ((key.getSubKeys() != null) && usesLocalTable(key)) return true;
@@ -141,9 +141,8 @@ public class Message {
    * Check if this message contains a BUFR table
    *
    * @return true if message contains a BUFR table
-   * @throws IOException on read error
    */
-  public boolean containsBufrTable() throws IOException {
+  public boolean containsBufrTable() {
     for (Short key : dds.getDataDescriptors()) {
       if (Descriptor.isBufrTable(key))
         return true;
@@ -155,9 +154,8 @@ public class Message {
    * Check if all descriptors were found in the tables.
    *
    * @return true if all dds were found.
-   * @throws IOException on read error
    */
-  public boolean isTablesComplete() throws IOException {
+  public boolean isTablesComplete() {
     DataDescriptor root = getRootDataDescriptor();
     return !root.isBad;
   }
@@ -169,7 +167,7 @@ public class Message {
   ////////////////////////////////////////////////////////////////////////
   // bit counting
 
-  public boolean isBitCountOk() throws IOException {
+  public boolean isBitCountOk() {
     getRootDataDescriptor(); // make sure root is calculated
     getTotalBits(); // make sure bits are counted
     //int nbitsGiven = 8 * (dataSection.getDataLength() - 4);

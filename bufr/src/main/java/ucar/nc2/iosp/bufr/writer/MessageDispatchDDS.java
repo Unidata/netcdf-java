@@ -61,12 +61,10 @@ public class MessageDispatchDDS {
   WritableByteChannel sampleWbc;
   WritableByteChannel allWbc;
 
-  //private final CompletionService<IndexerTask> executor;
-
   /**
-   * @param configFilename
-   * @param dispatchDir
-   * @throws IOException
+   * Dispatch BUFR Messages based on their DDS.
+   * @param configFilename Dispatch configuration file.
+   * @param dispatchDir Write to this directory.
    */
   MessageDispatchDDS(String configFilename, File dispatchDir) throws IOException {
     this.dispatchDir = dispatchDir;
@@ -102,7 +100,7 @@ public class MessageDispatchDDS {
 
             String[] toke = line.split(",");
             //String hashS = toke[0].substring(2); // remove the "0x"
-            Integer hash = Integer.parseInt(toke[0]);
+            int hash = Integer.parseInt(toke[0]);
             String bitsOk = (toke.length > 8) ? toke[7].trim() : "";
             typeMap.put(hash, new MessType(hash, toke[1], toke[2], toke[3], bitsOk));
           }
@@ -168,7 +166,7 @@ public class MessageDispatchDDS {
     }
   }
 
-  boolean checkIfBad(Message m) {
+  private boolean checkIfBad(Message m) {
     boolean isBad;
     try {
       isBad = m.isTablesComplete() && !m.isBitCountOk();
@@ -195,7 +193,7 @@ public class MessageDispatchDDS {
     return isBad;
   }
 
-  void writeSample(Message m, WritableByteChannel wbc) {
+  private void writeSample(Message m, WritableByteChannel wbc) {
     if (!writeSamples) return;
 
     try {
@@ -240,7 +238,7 @@ public class MessageDispatchDDS {
         Formatter cfg = new Formatter(cout, CDM.utf8Charset.name());
         cfg.format("#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
         List<MessType> mtypes = new ArrayList<>(typeMap.values());
-        Collections.sort(mtypes, new MessTypeSorter());
+        mtypes.sort(new MessTypeSorter());
         for (MessType mtype : mtypes) {
           if (mtype.proto == null) {
             if (out != null) out.format(" MessType %s count=%d fileout= %s%n", mtype.name, mtype.count, mtype.fileout);
@@ -295,7 +293,7 @@ public class MessageDispatchDDS {
         this.index = index.trim();
         if (!ignore && !this.index.equalsIgnoreCase("no")) {
           try {
-            // LOOK indexer = BerkeleyDBIndexer.factory( dispatchDir + fileout, index);
+            // TODO indexer = BerkeleyDBIndexer.factory( dispatchDir + fileout, index);
           } catch (Exception e) {
             logger.error("Cant open BerkeleyDBIndexer", e);
           }

@@ -171,7 +171,7 @@ public class BufrTableLookup {
     return tlookup.getMode();
   }
 
-  public void showMissingFields(List<Short> ddsList, Formatter out) throws IOException {
+  public void showMissingFields(List<Short> ddsList, Formatter out) {
     for (short fxy : ddsList) {
       int f = (fxy & 0xC000) >> 14;
       if (f == 3) {
@@ -190,7 +190,7 @@ public class BufrTableLookup {
     short id = Descriptor.getFxy(fxy);
     List<Short> seq = getDescriptorListTableD(id);
     if (seq == null) return null;
-    List<String> result = new ArrayList<String>(seq.size());
+    List<String> result = new ArrayList<>(seq.size());
     for (Short s : seq)
       result.add(Descriptor.makeString(s));
     return result;

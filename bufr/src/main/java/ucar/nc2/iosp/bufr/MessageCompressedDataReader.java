@@ -180,7 +180,7 @@ public class MessageCompressedDataReader {
     }
   }
 
-  private void associateMessage2Members(StructureMembers members, DataDescriptor parent, HashMap<DataDescriptor, StructureMembers.Member> map) throws IOException {
+  private void associateMessage2Members(StructureMembers members, DataDescriptor parent, HashMap<DataDescriptor, StructureMembers.Member> map) {
     for (DataDescriptor dkey : parent.getSubKeys()) {
       if (dkey.name == null) {
         //System.out.printf("ass skip %s%n", dkey);
@@ -412,16 +412,17 @@ public class MessageCompressedDataReader {
 
         if (req.wantRow(dataset)) {
           if (isDpiField) {
-            DataDescriptor dpiDD = req.dpiTracker.getDpiDD(req.outerRow);
+            if (dataDpi != null) {
+              DataDescriptor dpiDD = req.dpiTracker.getDpiDD(req.outerRow);
+              StructureMembers sms = dataDpi.getStructureMembers();
+              StructureMembers.Member m0 = sms.getMember(0);
+              IndexIterator iter2 = (IndexIterator) m0.getDataObject();
+              iter2.setObjectNext(dpiDD.getName());
 
-            StructureMembers sms = dataDpi.getStructureMembers();
-            StructureMembers.Member m0 = sms.getMember(0);
-            IndexIterator iter2 = (IndexIterator) m0.getDataObject();
-            iter2.setObjectNext(dpiDD.getName());
-
-            StructureMembers.Member m1 = sms.getMember(1);
-            iter2 = (IndexIterator) m1.getDataObject();
-            iter2.setFloatNext(dpiDD.convert( value));
+              StructureMembers.Member m1 = sms.getMember(1);
+              iter2 = (IndexIterator) m1.getDataObject();
+              iter2.setFloatNext(dpiDD.convert(value));
+            }
           } else if (iter != null) {
             iter.setLongNext(value);
           }

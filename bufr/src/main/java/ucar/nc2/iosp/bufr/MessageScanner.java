@@ -43,14 +43,14 @@ public class MessageScanner {
 
   /////////////////////////////////
 
-  private ucar.unidata.io.RandomAccessFile raf = null;
+  private ucar.unidata.io.RandomAccessFile raf;
   private boolean useEmbeddedTables;
 
   private int countMsgs = 0;
   private int countObs = 0;
   private byte[] header;
   private long startPos = 0;
-  private long lastPos = 0;
+  private long lastPos;
   private boolean debug = false;
 
   private EmbeddedTable embedTable = null;
@@ -150,10 +150,10 @@ public class MessageScanner {
       if (raf.read() != 55) {
         raf.seek(dataPos + dataLength-1); // see if byte before is a '7'
         if (raf.read() != 55) {
-          log.warn("Missing End of BUFR message at pos= {} header= {} edition=() file= {}", ending, cleanup(header), is.getBufrEdition(), raf.getLocation());
+          log.warn("Missing End of BUFR message at pos= {} header= {} edition={} file= {}", ending, cleanup(header), is.getBufrEdition(), raf.getLocation());
           return null;
         } else {
-          log.info("End of BUFR message off-by-one at pos= {} header= {} edition=() file= {}", ending, cleanup(header), is.getBufrEdition(), raf.getLocation());
+          log.info("End of BUFR message off-by-one at pos= {} header= {} edition={} file= {}", ending, cleanup(header), is.getBufrEdition(), raf.getLocation());
           lastPos--;
         }
       }

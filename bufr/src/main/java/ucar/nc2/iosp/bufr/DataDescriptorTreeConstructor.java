@@ -39,7 +39,7 @@ public class DataDescriptorTreeConstructor {
     List<DataDescriptor> tree = replicate(keys);
 
     // flatten the compounds
-    root.subKeys = new ArrayList<DataDescriptor>();
+    root.subKeys = new ArrayList<>();
     flatten(root.subKeys, tree);
 
     // process the operators
@@ -55,7 +55,7 @@ public class DataDescriptorTreeConstructor {
   private List<DataDescriptor> decode(List<Short> keyDesc, BufrTableLookup lookup) {
     if (keyDesc == null) return null;
 
-    List<DataDescriptor> keys = new ArrayList<DataDescriptor>();
+    List<DataDescriptor> keys = new ArrayList<>();
     for (short id : keyDesc) {
       DataDescriptor dd = new DataDescriptor(id, lookup);
       keys.add( dd);
@@ -74,12 +74,12 @@ public class DataDescriptorTreeConstructor {
 
   // look for replication, move replicated items into subtree
   private List<DataDescriptor> replicate(List<DataDescriptor> keys) {
-    List<DataDescriptor> tree = new ArrayList<DataDescriptor>();
+    List<DataDescriptor> tree = new ArrayList<>();
     Iterator<DataDescriptor> dkIter = keys.iterator();
     while (dkIter.hasNext()) {
       DataDescriptor dk = dkIter.next();
       if (dk.f == 1) {
-        dk.subKeys = new ArrayList<DataDescriptor>();
+        dk.subKeys = new ArrayList<>();
         dk.replication = dk.y; // replication count
 
         if (dk.replication == 0) { // delayed replication
@@ -204,7 +204,7 @@ public class DataDescriptorTreeConstructor {
     }
 
     if (flatten) {
-      List<DataDescriptor> result = new ArrayList<DataDescriptor>(tree.size());
+      List<DataDescriptor> result = new ArrayList<>(tree.size());
       for (DataDescriptor key : tree) {
         if (isNcepDRP(key)) {
           result.addAll(key.subKeys); // remove f3604
@@ -339,7 +339,7 @@ public class DataDescriptorTreeConstructor {
         flatten(result, key.subKeys);
 
       } else if (key.f == 1) { // flatten the subtrees
-        List<DataDescriptor> subTree = new ArrayList<DataDescriptor>();
+        List<DataDescriptor> subTree = new ArrayList<>();
         flatten(subTree, key.subKeys);
         key.subKeys = subTree;
         result.add(key);
@@ -397,7 +397,7 @@ public class DataDescriptorTreeConstructor {
           iter.remove();
           if ((dd.y != 0) && iter.hasNext()) {  // fnmoc using 2-6-0 as cancel (apparently)
             DataDescriptor next = iter.next();
-            next.bitWidth = dd.y;
+            next.bitWidth = dd.y; // LOOK should it be dd.bitWidth??
           }
 
         } else if (dd.x == 7) {
@@ -447,7 +447,7 @@ public class DataDescriptorTreeConstructor {
           }
         }
 
-        if ((dd.f == 0) && (assField != null)) {
+        if (assField != null) {
           assField.nfields++;
           dd.assField = assField;
           assField.dataFldName = dd.name;
@@ -548,12 +548,11 @@ public class DataDescriptorTreeConstructor {
 
   static class DataPresentIndicator {
     DataDescriptor dataPresent; // replication of bit present field
-    List<DataDescriptor> linear = new ArrayList<DataDescriptor>(); // linear list of dds
+    List<DataDescriptor> linear; // linear list of dds
 
     DataPresentIndicator(List<DataDescriptor> tree, DataDescriptor dpi_dd) {
       this.dataPresent = dpi_dd;
-
-      linear = new ArrayList<DataDescriptor>();
+      linear = new ArrayList<>();
       linearize(tree);
     }
 
