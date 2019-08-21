@@ -2,6 +2,7 @@ package ucar.nc2.grib.grib2.tools;
 
 import com.google.common.collect.ImmutableList;
 import java.io.File;
+import java.io.IOException;
 import java.util.Formatter;
 import ucar.nc2.grib.grib2.table.EccodesCodeTable;
 import ucar.nc2.grib.grib2.table.Grib2CodeTableInterface;
@@ -55,7 +56,7 @@ public class EcmwfCodeTableCompare {
     }
   }
 
-  public static void readCodeTable(int discipline, int category) {
+  public static void readCodeTable(int discipline, int category) throws IOException {
     WmoCodeFlagTables tables = WmoCodeFlagTables.getInstance();
     String tableName = String.format("%d.%d", discipline, category);
     TableType type = tables.getTableType(tableName);
