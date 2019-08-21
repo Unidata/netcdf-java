@@ -11,7 +11,6 @@ import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.BufrNumbers;
 import ucar.nc2.util.Indent;
-import ucar.nc2.Variable;
 import ucar.nc2.*;
 import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
@@ -169,7 +168,7 @@ public class BufrDataProcess {
     indent.decr();
   }
 
-  private void processVariable(Variable v, Array mdata, Counter count) throws IOException {
+  private void processVariable(Variable v, Array mdata, Counter count) {
     String name = v.getShortName();
     String units = v.getUnitsString();
     Attribute bwAtt = v.findAttribute("BUFR:bitWidth");

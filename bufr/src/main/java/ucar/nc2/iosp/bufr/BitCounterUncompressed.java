@@ -6,13 +6,13 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.util.Indent;
 
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Map;
 import java.util.HashMap;
 
 /**
  * Counts the size of nested tables, for uncompressed messages.
+ *
  * A top-level BitCounterUncompressed counts bits for one row = obs = dataset.
  *   obs = new BitCounterUncompressed(root, 1, 0);
  * @author caron
@@ -37,7 +37,7 @@ public class BitCounterUncompressed implements BitCounter {
    * @param nrows numbers of rows in the table, equals 1 for top level
    * @param replicationCountSize number of bits taken up by the count variable (non-zero only for sequences)
    */
-  public BitCounterUncompressed(DataDescriptor parent, int nrows, int replicationCountSize) {
+  BitCounterUncompressed(DataDescriptor parent, int nrows, int replicationCountSize) {
     this.parent = parent;
     this.nrows = nrows;
     this.replicationCountSize = replicationCountSize;
@@ -46,7 +46,7 @@ public class BitCounterUncompressed implements BitCounter {
   // not used yet
   public void setBitOffset(DataDescriptor dkey) {
     if (bitPosition == null)
-      bitPosition = new HashMap<DataDescriptor, Integer>(2 * parent.getSubKeys().size());
+      bitPosition = new HashMap<>(2 * parent.getSubKeys().size());
     bitPosition.put(dkey, bitOffset);
     bitOffset += dkey.getBitWidth();
   }
@@ -63,15 +63,12 @@ public class BitCounterUncompressed implements BitCounter {
    * @param replicationCountSize number of bits taken up by the count (non-zero for sequences)
    * @return  nested ReplicationCounter
    */
-  public BitCounterUncompressed makeNested(DataDescriptor subKey, int n, int row, int replicationCountSize) {
+  BitCounterUncompressed makeNested(DataDescriptor subKey, int n, int row, int replicationCountSize) {
     if (subCounters == null)
-      subCounters = new HashMap<DataDescriptor, BitCounterUncompressed[]>(5); // assumes DataDescriptor.equals is ==
+      subCounters = new HashMap<>(5); // assumes DataDescriptor.equals is ==
 
-    BitCounterUncompressed[] subCounter = subCounters.get(subKey);
-    if (subCounter == null) {
-      subCounter = new BitCounterUncompressed[nrows]; // one for each row in this table
-      subCounters.put(subKey, subCounter);
-    }
+    // one for each row in this table
+    BitCounterUncompressed[] subCounter = subCounters.computeIfAbsent(subKey, k -> new BitCounterUncompressed[nrows]);
 
     BitCounterUncompressed rc = new BitCounterUncompressed(subKey, n, replicationCountSize);
     subCounter[row] = rc;

@@ -213,12 +213,12 @@ public class BufrTables {
 
   private static Format getFormat(String formatS, String line) {
     if (formatS.length() == 0) return null;
-    Format result = Format.valueOf(formatS);
-    if (result == null) {
-      if (showReadErrs) System.out.printf("BAD format = %s line == %s%n", formatS, line);
+    try {
+      return Format.valueOf(formatS);
+    } catch (Exception e) {
+      if (showReadErrs) log.warn("BAD format = {} line == {}%n", formatS, line);
       return null;
     }
-    return result;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -960,7 +960,7 @@ public class BufrTables {
           int x = fxy % 100;
           int f1 = fxy / 100;
           if (f1 != 3) log.error("Bad table " + t.getName() + " entry=<" + line + ">");
-          else currDesc = t.addDescriptor((short) x, (short) y, "", new ArrayList<Short>());
+          else currDesc = t.addDescriptor((short) x, (short) y, "", new ArrayList<>());
           startMode = false;
           continue;
 
@@ -1026,7 +1026,7 @@ public class BufrTables {
         if (flds[0].trim().length() != 0) {
           int x = Integer.parseInt(flds[1].trim());
           int y = Integer.parseInt(flds[2].trim());
-          currDesc = t.addDescriptor((short) x, (short) y, name, new ArrayList<Short>());
+          currDesc = t.addDescriptor((short) x, (short) y, name, new ArrayList<>());
         }
 
         if (currDesc != null){
@@ -1093,7 +1093,7 @@ public class BufrTables {
           int w = seq / 1000;
           int x = w % 100;
           seqName = StringUtil2.remove(seqName, '"');
-          currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
+          currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<>());
           currSeqno = seq;
         }
 
@@ -1225,7 +1225,7 @@ public class BufrTables {
           short x = Short.parseShort(clean(xyflds[1]));
           short y = Short.parseShort(clean(xyflds[2]));
           String seqName = (flds.length > 3) ? flds[3].trim() : "";
-          currDesc = t.addDescriptor(x, y, seqName, new ArrayList<Short>());
+          currDesc = t.addDescriptor(x, y, seqName, new ArrayList<>());
           //System.out.printf("Add seq %s = %d %d %s %n", fxys, x, y, seqName);
         } else if (currDesc != null) {
           fxys = StringUtil2.remove(flds[1], '>');
@@ -1269,7 +1269,6 @@ public class BufrTables {
       line = line.trim();
       if (line.startsWith("#") || line.length() == 0)
         continue;
-      //System.out.println("Table D line =" + line);
 
       try {
         String fxys;
@@ -1283,7 +1282,7 @@ public class BufrTables {
           int y = fxy % 1000;
           fxy /= 1000;
           int x = fxy % 100;
-          currDesc = t.addDescriptor((short) x, (short) y, "", new ArrayList<Short>());
+          currDesc = t.addDescriptor((short) x, (short) y, "", new ArrayList<>());
           //System.out.printf("Add seq %s = %d %d%n", fxys, x, y);
           n = Integer.parseInt(flds[1].trim());
           fxys = flds[2].trim();
@@ -1297,11 +1296,10 @@ public class BufrTables {
         int x = fxy % 100;
         fxy /= 100;
         fxy = (fxy << 14) + (x << 8) + y;
-        currDesc.addFeature((short) fxy);
+        if (currDesc != null) {
+          currDesc.addFeature((short) fxy);
+        }
         n--;
-        //System.out.printf("Add %s = %d %d %d%n", fxys, f, x, y);
-        //if (count > 10) break;
-        //count++;
 
       } catch (Exception e) {
         log.error("Bad table " + t.getName() + " entry=<" + line + ">", e);

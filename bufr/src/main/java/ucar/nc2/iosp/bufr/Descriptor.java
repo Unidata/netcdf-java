@@ -75,10 +75,10 @@ public class Descriptor {
       if (b == null) out.format("%-8s: NOT FOUND!!", makeString(fxy) );
       else out.format("%-8s: %s", b.getFxy(), b.getName());
 
-    } else if (f == 1)
+    } else if (f == 1) {
       out.format("%-8s: %s", makeString(fxy), descType[1]);
 
-    else if (f == 2) {
+    } else if (f == 2) {
       int x = (fxy & 0x3F00) >> 8;
       out.format("%-8s: Operator= %s", makeString(fxy), TableC.getOperatorName(x));
 
@@ -97,10 +97,10 @@ public class Descriptor {
       if (b == null) return("**NOT FOUND!!");
       else return b.getName();
 
-    } else if (f == 1)
+    } else if (f == 1) {
       return descType[1];
 
-    else if (f == 2) {
+    } else if (f == 2) {
       int x = (fxy & 0x3F00) >> 8;
       return TableC.getOperatorName(x);
 

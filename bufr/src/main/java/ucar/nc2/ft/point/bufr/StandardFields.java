@@ -27,9 +27,9 @@ import java.util.*;
  */
 public class StandardFields {
   private static int nflds = 50;
-  private static Map<BufrCdmIndexProto.FldType, List<String>> type2Flds = new HashMap<BufrCdmIndexProto.FldType, List<String>>(2*nflds);
-  private static Map<String, TypeAndOrder> fld2type = new HashMap<String, TypeAndOrder>(2*nflds);
-  private static Map<Integer, Map<String, BufrCdmIndexProto.FldType>> locals = new HashMap<Integer, Map<String, BufrCdmIndexProto.FldType>>(10);
+  private static Map<BufrCdmIndexProto.FldType, List<String>> type2Flds = new HashMap<>(2 * nflds);
+  private static Map<String, TypeAndOrder> fld2type = new HashMap<>(2 * nflds);
+  private static Map<Integer, Map<String, BufrCdmIndexProto.FldType>> locals = new HashMap<>(10);
 
   static {
          // first choice
@@ -77,7 +77,7 @@ public class StandardFields {
     ncep.put("0-1-198", BufrCdmIndexProto.FldType.stationId);
     locals.put(7, ncep); */
 
-    Map<String, BufrCdmIndexProto.FldType> uu = new HashMap<String, BufrCdmIndexProto.FldType>(10);
+    Map<String, BufrCdmIndexProto.FldType> uu = new HashMap<>(10);
     uu.put("0-1-194", BufrCdmIndexProto.FldType.stationId);
     locals.put(59, uu);
   }
@@ -93,11 +93,7 @@ public class StandardFields {
   }
 
   private static void addField(String fld, BufrCdmIndexProto.FldType type) {
-    List<String> list = type2Flds.get(type);
-    if (list == null) {
-      list = new ArrayList<String>();
-      type2Flds.put(type, list);
-    }
+    List<String> list = type2Flds.computeIfAbsent(type, k -> new ArrayList<>());
     list.add(fld); // keep in order
 
     TypeAndOrder tao = new TypeAndOrder(type, list.size()-1);
@@ -133,7 +129,7 @@ public class StandardFields {
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  public static StandardFieldsFromMessage extract(Message m) throws IOException {
+  public static StandardFieldsFromMessage extract(Message m) {
     StandardFieldsFromMessage result = new StandardFieldsFromMessage();
     extract(m.ids.getCenterId(), m.getRootDataDescriptor(), result);
     return result;
@@ -150,7 +146,7 @@ public class StandardFields {
 
   public static class StandardFieldsFromMessage {
 
-    Map<BufrCdmIndexProto.FldType, List<DataDescriptor>> typeMap = new TreeMap<BufrCdmIndexProto.FldType, List<DataDescriptor>>();
+    Map<BufrCdmIndexProto.FldType, List<DataDescriptor>> typeMap = new TreeMap<>();
 
     void match(int center, DataDescriptor dds) {
       String name = dds.getFxyName();
@@ -158,11 +154,7 @@ public class StandardFields {
       if (type == null) return;
 
       // got a match
-      List<DataDescriptor> list = typeMap.get(type);
-      if (list == null) {
-        list = new ArrayList<DataDescriptor>(3);
-        typeMap.put(type, list);
-      }
+      List<DataDescriptor> list = typeMap.computeIfAbsent(type, k -> new ArrayList<>(3));
       list.add(dds);
     }
 
@@ -227,7 +219,7 @@ public class StandardFields {
       }
     }
 
-    private Map<BufrCdmIndexProto.FldType, Field> map = new HashMap<BufrCdmIndexProto.FldType, Field>();
+    private Map<BufrCdmIndexProto.FldType, Field> map = new HashMap<>();
 
     public StandardFieldsFromStructure(int center, Structure obs) {
       // run through all available fields - LOOK we are not recursing into sub sequences

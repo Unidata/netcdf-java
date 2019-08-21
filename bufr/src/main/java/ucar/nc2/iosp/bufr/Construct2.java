@@ -85,7 +85,7 @@ class Construct2 {
     return recordStructure;
   }
 
-  private void makeObsRecord(BufrConfig bufrConfig) throws IOException {
+  private void makeObsRecord(BufrConfig bufrConfig) {
     recordStructure = new Sequence(ncfile, null, null, BufrIosp2.obsRecord);
     ncfile.addVariable(null, recordStructure);
 
@@ -385,7 +385,7 @@ class Construct2 {
 
   // force globally unique variable names, even when they are in different Structures.
   // this allows us to promote structure members without worrying about name collisions
-  private Map<String, Integer> names = new HashMap<String, Integer>(100);
+  private Map<String, Integer> names = new HashMap<>(100);
   private String findGloballyUniqueName(String want, String def) {
     if (want == null) return def + tempNo++;
 
@@ -420,15 +420,7 @@ class Construct2 {
         break;
 
       case height:
-        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-        coordinates.format("%s ", v.getShortName());
-        break;
-
       case heightOfStation:
-        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-        coordinates.format("%s ", v.getShortName());
-        break;
-
       case heightAboveStation:
         v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
         coordinates.format("%s ", v.getShortName());

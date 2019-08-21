@@ -119,13 +119,13 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   private int nelems = -1;
 
   @Override
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) {
     //return new ArraySequence(obsStructure.makeStructureMembers(), getStructureIterator(null, -1), nelems);
     return new ArraySequence(obsStructure.makeStructureMembers(), new SeqIter(), nelems);
   }
 
   @Override
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
     return isSingle ? new SeqIterSingle() : new SeqIter();
   }
 

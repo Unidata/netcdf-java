@@ -20,14 +20,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * Class Description
+ * Read data for uncompressed messages.
  *
- * @author caron
- * @since Nov 15, 2009
- */
-
-
-/*
   Within one message there are n obs (datasets) and s fields in each dataset.
   For uncompressed datasets, storage order is data(obs, fld) (fld varying fastest) :
 
@@ -73,7 +67,7 @@ public class MessageUncompressedDataReader {
    * @return  ArraySTructure with all the data from the message in it.
    * @throws IOException on read error
    */
-  public ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException {
+  ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException {
     // transfer info from proto message
     DataDescriptor.transferInfo(proto.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
@@ -89,10 +83,6 @@ public class MessageUncompressedDataReader {
 
     boolean addTime = false; // (s.findVariable(BufrIosp2.TIME_NAME) != null);
     readData(abb, m, raf, null, addTime, f);
-
-    //Formatter ff = new Formatter(System.out);
-    //abb.showInternalMembers(ff, "");
-    //abb.showInternal(ff, "");
     return abb;
   }
 
@@ -128,9 +118,7 @@ public class MessageUncompressedDataReader {
       DebugOut out = (f == null) ? null : new DebugOut(f);
 
       req.setRow(i);
-      int timePos = 0;
       if (req.wantRow() && addTime) {
-        timePos = req.bb.position();
         req.bb.putInt(0); // placeholder for time assumes an int
         count++;
       }
@@ -205,9 +193,6 @@ public class MessageUncompressedDataReader {
 
         if (req.wantRow()) {
           int index = req.abb.addObjectToHeap(seq);
-          // todo: make logger not system.out
-          if (req.bb.position() >= req.bb.limit())
-            System.out.println("Bufr HEY");
           req.bb.putInt(index); // an index into the Heap
         }
         continue;
@@ -247,13 +232,6 @@ public class MessageUncompressedDataReader {
       if (out != null)
         out.f.format("%4d %s read %s (%s %s) bitWidth=%d end at= 0x%x raw=%d convert=%f%n",
                 out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.getUnits(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
-
-      /* if (bbtest == null && req.abb != null && req.bb != null) {
-        if ("obs.seq1".equals(req.abb.getStructureMembers().getName()))
-          bbtest = req.bb;  
-      } else {
-        System.out.printf("%d%n", bbtest.get(10));
-      } */
     }
 
   }
@@ -335,8 +313,6 @@ public class MessageUncompressedDataReader {
 
       // for the obs structure
       int[] shape = new int[]{count};
-      //if (count <= 0)
-      //    System.out.println("HEY");
 
       // allocate ArrayStructureBB for outer structure
       // LOOK why is this different from ArrayStructureBB.setOffsets() ?
@@ -377,6 +353,6 @@ public class MessageUncompressedDataReader {
       }
     }
 
-    return req.wantRow() ? new ArraySequence(members, abb.getStructureDataIterator(), count) : null;
+    return abb != null ? new ArraySequence(members, abb.getStructureDataIterator(), count) : null;
   }
 }

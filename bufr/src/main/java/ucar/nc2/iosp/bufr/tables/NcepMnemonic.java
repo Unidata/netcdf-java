@@ -14,8 +14,6 @@ import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
-import ucar.nc2.util.IO;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.lang.Integer;
@@ -46,8 +44,7 @@ public class NcepMnemonic {
   /**
    * Read NCEP mnemonic BUFR tables.
    *
-   * @return boolean
-   * @throws IOException
+   * @return true on success.
    */
   public static boolean read(InputStream ios, BufrTables.Tables tables) throws IOException {
     if (ios == null)
@@ -243,7 +240,8 @@ public class NcepMnemonic {
         m = fields5.matcher(line);
         if (m.find()) {
           if (m.group(1).equals("")) {
-            continue;
+            // do nothing
+
           } else if (number.containsKey(m.group(1).trim())) { // add descriptor to tableB
             String fxy = number.get(m.group(1).trim());
             String X = fxy.substring(1, 3);

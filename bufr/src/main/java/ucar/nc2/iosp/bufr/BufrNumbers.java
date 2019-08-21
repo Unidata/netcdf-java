@@ -21,7 +21,6 @@ final public class BufrNumbers {
     long accum = 0;
     for (int i = 0; i < 65; i++) {
       missing_value[i] = accum;
-      //System.out.printf("BufrNumbers %2d : %20d = %s %n", i, accum, Long.toBinaryString(accum));
       accum = accum * 2 + 1;
     }
   }
@@ -34,49 +33,27 @@ final public class BufrNumbers {
     return BufrNumbers.missing_value[bitWidth];
   }
 
-  /**
-   * if missing value is not defined use this value.
-   */
-  public static final int UNDEFINED = -9999;
+  /** if missing value is not defined use this value. */
+  private static final int UNDEFINED = -9999;
 
-  /**
-   * Convert 2 bytes into a signed integer.
-   *
-   * @param raf
-   * @return integer value
-   * @throws IOException
-   */
-  public static int int2(RandomAccessFile raf) throws IOException {
+  /** Convert 2 bytes into a signed integer. */
+  static int int2(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
 
     return int2(a, b);
   }
 
-  /**
-   * convert 2 bytes to a signed integer.
-   *
-   * @param a
-   * @param b
-   * @return int
-   */
-  public static int int2(int a, int b) {
-    //System.out.println( "a=" + a );
-    //System.out.println( "b=" + b );
+  /** Convert 2 bytes to a signed integer. */
+  private static int int2(int a, int b) {
     if ((a == 0xff && b == 0xff)) // all bits set to one
       return UNDEFINED;
 
     return (1 - ((a & 128) >> 6)) * ((a & 127) << 8 | b);
   }
 
-  /**
-   * Convert 3 bytes into a signed integer.
-   *
-   * @param raf
-   * @return integer value
-   * @throws IOException
-   */
-  public static int int3(RandomAccessFile raf) throws IOException {
+  /** Read 3 bytes and turn into a signed integer. */
+  static int int3(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
     int c = raf.read();
@@ -84,25 +61,12 @@ final public class BufrNumbers {
     return int3(a, b, c);
   }
 
-  /**
-   * Convert 3 bytes to signed integer.
-   *
-   * @param a
-   * @param b
-   * @param c
-   * @return int
-   */
+  /** Convert 3 bytes to signed integer. */
   private static int int3(int a, int b, int c) {
     return (1 - ((a & 128) >> 6)) * ((a & 127) << 16 | b << 8 | c);
   }
 
-  /**
-   * Convert 4 bytes into a signed integer.
-   *
-   * @param raf
-   * @return integer value
-   * @throws IOException
-   */
+  /** Convert 4 bytes into a signed integer. */
   public static int int4(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
@@ -112,15 +76,7 @@ final public class BufrNumbers {
     return int4(a, b, c, d);
   }
 
-  /**
-   * Convert 4 bytes into a signed integer.
-   *
-   * @param a
-   * @param b
-   * @param c
-   * @param d
-   * @return int
-   */
+  /** Convert 4 bytes into a signed integer. */
   private static int int4(int a, int b, int c, int d) {
     // all bits set to ones
     if (a == 0xff && b == 0xff && c == 0xff && d == 0xff)
@@ -129,38 +85,20 @@ final public class BufrNumbers {
     return (1 - ((a & 128) >> 6)) * ((a & 127) << 24 | b << 16 | c << 8 | d);
   } // end int4
 
-  /**
-   * Convert 2 bytes into an unsigned integer.
-   *
-   * @param raf
-   * @return integer value
-   * @throws IOException
-   */
-  public static int uint2(RandomAccessFile raf) throws IOException {
+  /** Convert 2 bytes into an unsigned integer. */
+  static int uint2(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
 
     return uint2(a, b);
   }
 
-  /**
-   * convert 2 bytes to an unsigned integer.
-   *
-   * @param a
-   * @param b
-   * @return unsigned int
-   */
+  /** Convert 2 bytes to an unsigned integer. */
   private static int uint2(int a, int b) {
     return a << 8 | b;
   }
 
-  /**
-   * Convert 3 bytes into an unsigned integer.
-   *
-   * @param raf
-   * @return integer
-   * @throws IOException
-   */
+  /** Read 3 bytes and convert into an unsigned integer. */
   public static int uint3(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
@@ -169,58 +107,12 @@ final public class BufrNumbers {
     return uint3(a, b, c);
   }
 
-  /**
-   * Convert 3 bytes into an unsigned int.
-   *
-   * @param a
-   * @param b
-   * @param c
-   * @return unsigned integer
-   */
-  public static int uint3(int a, int b, int c) {
+  /** Convert 3 bytes into an unsigned int. */
+  private static int uint3(int a, int b, int c) {
     return a << 16 | b << 8 | c;
   }
 
-// --Commented out by Inspection START (12/5/05 4:21 PM):
-//  /**
-//    * Convert 4 bytes into an unsigned integer.
-//    * @param raf
-//    * @return integer value
-//    * @throws IOException
-//    */
-//   public static int uint4(RandomAccessFile raf) throws IOException
-//   {
-//     int a = raf.read();
-//     int b = raf.read();
-//     int c = raf.read();
-//     int d = raf.read();
-//
-//     return uint4(a, b, c, d);
-//   }
-// --Commented out by Inspection STOP (12/5/05 4:21 PM)
-
-// --Commented out by Inspection START (12/5/05 4:21 PM):
-//    /**
-//     * Convert 4 bytes to  an unsigned int.
-//     * @param a
-//     * @param b
-//     * @param c
-//     * @param d
-//     * @return unsigned int
-//     */
-//   private static int uint4(int a, int b, int c, int d)
-//   {
-//      return  a << 32 | b << 16 | c << 8 | d;
-//   }
-// --Commented out by Inspection STOP (12/5/05 4:21 PM)
-
-  /**
-   * Convert 4 bytes into a float value.
-   *
-   * @param raf
-   * @return float value
-   * @throws IOException
-   */
+  /** Read 4 bytes and convert into a float value. */
   public static float float4(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
@@ -230,15 +122,7 @@ final public class BufrNumbers {
     return float4(a, b, c, d);
   }
 
-  /**
-   * Convert 4 bytes to a float.
-   *
-   * @param a
-   * @param b
-   * @param c
-   * @param d
-   * @return float
-   */
+  /** Convert 4 bytes to a float. */
   private static float float4(int a, int b, int c, int d) {
     int sgn, mant, exp;
 
@@ -251,13 +135,7 @@ final public class BufrNumbers {
     return (float) (sgn * Math.pow(16.0, exp - 6) * mant);
   }
 
-  /**
-   * Convert 8 bytes into a signed long.
-   *
-   * @param raf RandomAccessFile
-   * @return long value
-   * @throws IOException
-   */
+  /** Read 8 bytes and convert into a signed long. */
   public static long int8(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
@@ -269,6 +147,5 @@ final public class BufrNumbers {
     int h = raf.read();
 
     return (1 - ((a & 128) >> 6)) * ((long)(a & 127) << 56 | (long) b << 48 | (long) c << 40 | (long) d << 32 | e << 24 | f << 16 | g << 8 | h);
-
    }
 }
