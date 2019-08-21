@@ -16,7 +16,6 @@ import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.time.CalendarDate;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -176,18 +175,20 @@ public class StandardFields {
 
     @Override
     public String toString() {
-      Formatter f = new Formatter();
-      for (BufrCdmIndexProto.FldType type : typeMap.keySet()) {
-        f.format(" %20s: ", type);
-        List<DataDescriptor> list = typeMap.get(type);
-        for (DataDescriptor dds : list) {
-          f.format(" %s", dds.getName());
-          if (dds.getDesc() != null) f.format("=%s", dds.getDesc());
-          f.format(",");
+      try (Formatter f = new Formatter()) {
+        for (BufrCdmIndexProto.FldType type : typeMap.keySet()) {
+          f.format(" %20s: ", type);
+          List<DataDescriptor> list = typeMap.get(type);
+          for (DataDescriptor dds : list) {
+            f.format(" %s", dds.getName());
+            if (dds.getDesc() != null)
+              f.format("=%s", dds.getDesc());
+            f.format(",");
+          }
+          f.format(" %n");
         }
-        f.format(" %n");
+        return f.toString();
       }
-      return f.toString();
     }
   }
 
