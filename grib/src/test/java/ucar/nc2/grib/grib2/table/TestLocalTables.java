@@ -38,7 +38,7 @@ public class TestLocalTables {
   }
 
   @Test
-  public void testEcmwfCodeTables() {
+  public void testEcmwfCodeTables() throws IOException {
     ImmutableSet<String> tableOverrides = ImmutableSet.of("4.230", "4.233", "4.192", "5.40000", "5.50002");
 
     Grib2Tables ecmwfTable = Grib2Tables.factory(98, -1, -1, -1, -1);
@@ -55,8 +55,7 @@ public class TestLocalTables {
       int discipline = Integer.parseInt(tokens.next());
       int category = Integer.parseInt(tokens.next());
 
-      EccodesCodeTable ecmwfCodeTable = EccodesCodeTable
-          .factory(LATEST_VERSION, discipline, category);
+      EccodesCodeTable ecmwfCodeTable = EccodesCodeTable.factory(LATEST_VERSION, discipline, category);
       assertThat(ecmwfCodeTable).isNotNull();
       for (Grib2CodeTableInterface.Entry entry : ecmwfCodeTable.getEntries()) {
         assertThat(ecmwfTable.getCodeTableValue(tableName, entry.getCode())).isEqualTo(entry.getName());
