@@ -147,8 +147,6 @@ class Construct2 {
     dkey.refersTo = struct;
   }
 
-  private int seqNum = 1;
-
   private void addSequence(Structure parent, BufrConfig.FieldConverter fld) {
 
     DataDescriptor dkey = fld.dds;
@@ -440,17 +438,22 @@ class Construct2 {
   private void annotateObs(Sequence recordStructure) {
     StandardFields.StandardFieldsFromStructure extract = new StandardFields.StandardFieldsFromStructure(centerId, recordStructure);
 
-    Formatter f = new Formatter();
-    String name = extract.getFieldName(BufrCdmIndexProto.FldType.lat);
-    if (name != null) f.format("%s ", name);
-    name = extract.getFieldName(BufrCdmIndexProto.FldType.lon);
-    if (name != null) f.format("%s ", name);
-    name = extract.getFieldName(BufrCdmIndexProto.FldType.height);
-    if (name != null) f.format("%s ", name);
-    name = extract.getFieldName(BufrCdmIndexProto.FldType.heightAboveStation);
-    if (name != null) f.format("%s ", name);
+    try (Formatter f = new Formatter()) {
+      String name = extract.getFieldName(BufrCdmIndexProto.FldType.lat);
+      if (name != null)
+        f.format("%s ", name);
+      name = extract.getFieldName(BufrCdmIndexProto.FldType.lon);
+      if (name != null)
+        f.format("%s ", name);
+      name = extract.getFieldName(BufrCdmIndexProto.FldType.height);
+      if (name != null)
+        f.format("%s ", name);
+      name = extract.getFieldName(BufrCdmIndexProto.FldType.heightAboveStation);
+      if (name != null)
+        f.format("%s ", name);
 
-    recordStructure.addAttribute(new Attribute("coordinates", f.toString()));
+      recordStructure.addAttribute(new Attribute("coordinates", f.toString()));
+    }
   }
 
 
