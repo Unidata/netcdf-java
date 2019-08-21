@@ -25,17 +25,17 @@ public final class GridIndex {
   /**
    * Contains GridRecords
    */
-  private final List<GridRecord> index = new ArrayList<GridRecord>();
+  private final List<GridRecord> index = new ArrayList<>();
 
   /**
    * Contains list of grid definitions (mostly projection info)
    */
-  private final List<GridDefRecord> gcs = new ArrayList<GridDefRecord>();
+  private final List<GridDefRecord> gcs = new ArrayList<>();
 
   /**
    * contains global attributes of the Index.
    */
-  private final Map<String, String> atts = new HashMap<String, String>();
+  private final Map<String, String> atts = new HashMap<>();
 
   /**
    * Constructor for creating an Index from the Grid file.

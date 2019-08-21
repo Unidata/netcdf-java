@@ -521,9 +521,10 @@ public class GridVariable {
     int count = 0;
     int total = recordTracker.length;
 
-    for (int i = 0; i < total; i++) {
-      if (recordTracker[i] == null)
+    for (GridRecord gridRecord : recordTracker) {
+      if (gridRecord == null) {
         count++;
+      }
     }
 
     f.format("  MISSING= %d / %d for %s%n", count, total, name);

@@ -50,9 +50,8 @@ public class ImageDatasetFactory {
    *   file: javax.imageio.ImageIO.read()
    * @param location open from this location
    * @return a BufferedImage
-   * @throws java.io.IOException on read error
    */
-  public BufferedImage open( String location) throws java.io.IOException {
+  public BufferedImage open( String location) {
     log = new StringBuffer();
 
     if (location.startsWith("http:")) {
@@ -61,13 +60,8 @@ public class ImageDatasetFactory {
         currentFile = null;
         return javax.imageio.ImageIO.read(url);
 
-      } catch (MalformedURLException e) {
-        log.append(e.getMessage());
-        //e.printStackTrace();
-        return null;
       } catch (IOException e) {
         log.append(e.getMessage());
-        //e.printStackTrace();
         return null;
       }
     }
@@ -86,13 +80,8 @@ public class ImageDatasetFactory {
         currentDir = null;
         return javax.imageio.ImageIO.read(f);
 
-      } catch (MalformedURLException e) {
-        log.append(e.getMessage());
-        //e.printStackTrace();
-        return null;
       } catch (IOException e) {
         log.append(e.getMessage());
-        //e.printStackTrace();
         return null;
       }
     }

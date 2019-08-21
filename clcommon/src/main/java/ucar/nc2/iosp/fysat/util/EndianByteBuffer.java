@@ -1,16 +1,16 @@
 package ucar.nc2.iosp.fysat.util;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.Buffer;
 import java.nio.ByteOrder;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class EndianByteBuffer {
 	
 	public static short LITTLE_ENDIAN = 0; // non_zero for little endian , suit for intel model
 	public static short BIG_ENDIAN = -1;// non_zero for big endian , suit for motoroal model
-	private short awxEndian = EndianByteBuffer.LITTLE_ENDIAN;
+	private short awxEndian;
 	
 	private ByteBuffer byteBuffer;
 	
@@ -103,13 +103,8 @@ public class EndianByteBuffer {
 		
 		byteBuffer.get(buf);
 		String v = null ;
-		try {
-			v = new String(buf, "US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return v; 
+		v = new String(buf, StandardCharsets.US_ASCII);
+		return v;
 	}
 	
 	public short[] getShortArray(){

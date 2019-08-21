@@ -10,8 +10,6 @@ package ucar.nc2.iosp.gempak;
 import ucar.nc2.iosp.grid.*;
 
 import ucar.nc2.*;
-import ucar.nc2.iosp.grid.GridIndexToNC;
-import ucar.nc2.iosp.grid.GridServiceProvider;
 
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;

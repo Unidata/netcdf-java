@@ -8,18 +8,11 @@ package ucar.nc2.rewrite;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Class Description.
- *
- * @author caron
- * @since 4/8/13
- */
+/** Rewrite a NetcdfFile to netcdf-4. Experimental. */
 public class Rewrite {
-
   static final boolean NETCDF4 = true;
 
   NetcdfFile ncIn;

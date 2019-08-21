@@ -29,11 +29,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/**
- * User: rkambic
- * Date: Feb 24, 2010
- * Time: 2:33:40 PM
- */
 
 package ucar.nc2.iosp.grid;
 

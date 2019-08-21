@@ -58,7 +58,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   /**
    * levels
    */
-  protected List<LevelCoord> levels = new ArrayList<LevelCoord>();  // LevelCoord
+  protected List<LevelCoord> levels = new ArrayList<>();  // LevelCoord
 
   /**
    * Create a new GridVertCoord with the given name.
@@ -205,7 +205,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   boolean matchLevels(List<GridRecord> records) {
 
     // first create a new list
-    List<LevelCoord> levelList = new ArrayList<LevelCoord>(records.size());
+    List<LevelCoord> levelList = new ArrayList<>(records.size());
     for (GridRecord record : records) {
       LevelCoord lc = new LevelCoord(record.getLevel1(), record.getLevel2());
       if (!levelList.contains(lc)) {
@@ -439,7 +439,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   /**
    * A level coordinate
    */
-  protected class LevelCoord implements Comparable {
+  protected class LevelCoord implements Comparable<LevelCoord> {
 
     /**
      * midpoint
@@ -470,19 +470,11 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     /**
      * Compare to another LevelCoord
      *
-     * @param o another LevelCoord
+     * @param other another LevelCoord
      * @return the comparison
      */
-    public int compareTo(Object o) {
-      LevelCoord other = (LevelCoord) o;
-      // if (nearlyEquals(value1, other.value1) && nearlyEquals(value2, other.value2)) return 0;
-      if (mid < other.mid) {
-        return -1;
-      }
-      if (mid > other.mid) {
-        return 1;
-      }
-      return 0;
+    public int compareTo(LevelCoord other) {
+      return Double.compare(mid, other.mid);
     }
 
     /**

@@ -47,42 +47,42 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
 
-  static public final boolean DEBUG = false;
+  public static final boolean DEBUG = false;
 
-  static public int NC_TURN_OFF_LOGGING = -1;
+  public static int NC_TURN_OFF_LOGGING = -1;
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
-  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  static private Nc4prototypes nc4 = null;
-  static public final String JNA_PATH = "jna.library.path";
-  static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
-  static public final String JNA_LOG_LEVEL = "jna.library.loglevel";
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
+  private static org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  private static Nc4prototypes nc4 = null;
+  public static final String JNA_PATH = "jna.library.path";
+  public static final String JNA_PATH_ENV = "JNA_PATH"; // environment var
+  public static final String JNA_LOG_LEVEL = "jna.library.loglevel";
 
-  static public final String TRANSLATECONTROL = "ucar.translate";
-  static public final String TRANSLATE_NONE = "none";
-  static public final String TRANSLATE_NC4 = "nc4";
+  public static final String TRANSLATECONTROL = "ucar.translate";
+  public static final String TRANSLATE_NONE = "none";
+  public static final String TRANSLATE_NC4 = "nc4";
 
   // Define reserved attributes   (see Nc4DSP)
-  static public final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
+  public static final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
   // Not yet implemented
-  static public final String UCARTAGVLEN = "_edu.ucar.isvlen";
-  static public final String UCARTAGORIGTYPE = "_edu.ucar.orig.type";
+  public static final String UCARTAGVLEN = "_edu.ucar.isvlen";
+  public static final String UCARTAGORIGTYPE = "_edu.ucar.orig.type";
 
-  static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
+  protected static String DEFAULTNETCDF4LIBNAME = "netcdf";
 
-  static private String jnaPath = null;
-  static private String libName = DEFAULTNETCDF4LIBNAME;
+  private static String jnaPath = null;
+  private static String libName = DEFAULTNETCDF4LIBNAME;
 
-  static private int log_level = 0;
+  private static int log_level = 0;
 
   // TODO: These flags currently control debug messages that are printed to STDOUT. They ought to be logged to SLF4J.
   // We could use SLF4J markers to filter which debug-level messages are printed.
   // See http://stackoverflow.com/questions/12201112/can-i-add-custom-levels-to-slf4j
-  static private final boolean debugCompound = false;
-  static private final boolean debugCompoundAtt = false;
-  static private final boolean debugDim = false;
-  static private final boolean debugUserTypes = false;
-  static private final boolean debugWrite = false;
+  private static final boolean debugCompound = false;
+  private static final boolean debugCompoundAtt = false;
+  private static final boolean debugDim = false;
+  private static final boolean debugUserTypes = false;
+  private static final boolean debugWrite = false;
 
   /**
    * set the path and name of the netcdf c library.
@@ -91,7 +91,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @param jna_path path to shared libraries
    * @param lib_name library name
    */
-  static public void setLibraryAndPath(String jna_path, String lib_name) {
+  public static void setLibraryAndPath(String jna_path, String lib_name) {
     lib_name = nullify(lib_name);
 
     if (lib_name == null) {
@@ -115,7 +115,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     jnaPath = jna_path;
   }
 
-  static private Nc4prototypes load() {
+  private static Nc4prototypes load() {
     if (nc4 == null) {
       if (jnaPath == null) {
         setLibraryAndPath(null, null);
@@ -123,7 +123,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       try {
         // jna_path may still be null, but try to load anyway;
         // the necessary libs may be on the system PATH or on LD_LIBRARY_PATH
-        nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+        nc4 = Native.load(libName, Nc4prototypes.class);
         // Make the library synchronized
         //nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
 	    nc4 = new Nc4wrapper(nc4);
@@ -137,8 +137,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       String slevel = nullify(System.getProperty(JNA_LOG_LEVEL));
       if (slevel != null) {
         try {
-          int newlevel = Integer.parseInt(slevel);
-          log_level = newlevel;
+          log_level = Integer.parseInt(slevel);
         } catch (NumberFormatException nfe) {
           // no change
         }
@@ -166,14 +165,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    *
    * @return true if present
    */
-  static public synchronized boolean isClibraryPresent() {
+  public static synchronized boolean isClibraryPresent() {
     if (isClibraryPresent == null) {
        isClibraryPresent = load() != null;
     }
     return isClibraryPresent;
   }
 
-  static public synchronized Nc4prototypes getCLibrary()
+  public static synchronized Nc4prototypes getCLibrary()
   {
       return isClibraryPresent() ? nc4 : null;
   }
@@ -182,7 +181,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * Set the log level for loaded library.
    * Do nothing if set_log_level is not available.
    */
-  static public synchronized int setLogLevel(int level)
+  public static synchronized int setLogLevel(int level)
   {
     int oldlevel = -1;
     log_level = level;
@@ -204,17 +203,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @param s the string to check for length
    * @return null if s.length() == 0, s otherwise
    */
-  static protected String nullify(String s) {
+  protected static String nullify(String s) {
     if (s != null && s.length() == 0) s = null;
     return s;
   }
 
-  static private boolean useHdfEos = false;
+  private static boolean useHdfEos = false;
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
   }
 
-  static public void setDebugFlags(DebugFlags flags) {
+  public static void setDebugFlags(DebugFlags flags) {
   }
 
   //////////////////////////////////////////////////
@@ -790,7 +789,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
     Array data = null;
-    if(false) {
+    if (false) {
       /* This is incorrect; CDM technically does not support
       enum valued attributes (see Attribute.java).*/
       data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
@@ -872,7 +871,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     decodeCompoundData(len, userType, bbuff);
 
     // if its a Structure, distribute to matching fields
-    if ((v != null) && (v instanceof Structure)) {
+    if (v instanceof Structure) {
       Structure s = (Structure) v;
       for (Field fld : userType.flds) {
         Variable mv = s.findVariable(fld.name);
@@ -1012,7 +1011,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     for (int i = 0; i < varids.length; i++) {
       int varno = varids[i];
-      if (varno != i) log.error("HEY varno=%d i=%d%n", varno, i);
+      if (varno != i) log.error("makeVariables varno={} is not equal to {}", varno, i);
 
       byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
       IntByReference xtypep = new IntByReference();
@@ -1160,12 +1159,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int ret = nc4.nc_inq_var(grpid, varno, name, xtypep, ndimsp, null, nattsp);
     if(ret != 0)
       throw new IOException("nc_inq_var faild: code="+ret);
-    String vname = makeString(name);
-    return vname;
+    return makeString(name);
   }
   //////////////////////////////////////////////////////////////////////////
 
-  static private class Vinfo {
+  private static class Vinfo {
     final Group4 g4;
     int varid, typeid;
     UserType utype; // may be null
@@ -1177,7 +1175,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
-  static private class Group4 {
+  private static class Group4 {
     final int grpid;
     final Group g;
     final Group4 parent;
@@ -1269,18 +1267,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("UserType");
-      sb.append("{grpid=").append(grpid);
-      sb.append(", typeid=").append(typeid);
-      sb.append(", name='").append(name).append('\'');
-      sb.append(", size=").append(size);
-      sb.append(", baseTypeid=").append(baseTypeid);
-      sb.append(", nfields=").append(nfields);
-      sb.append(", typeClass=").append(typeClass);
-      sb.append(", e=").append(e);
-      sb.append('}');
-      return sb.toString();
+      String sb = "UserType"
+          + "{grpid=" + grpid
+          + ", typeid=" + typeid
+          + ", name='" + name + '\''
+          + ", size=" + size
+          + ", baseTypeid=" + baseTypeid
+          + ", nfields=" + nfields
+          + ", typeClass=" + typeClass
+          + ", e=" + e
+          + '}';
+      return sb;
     }
 
     void readFields() throws IOException {
@@ -1497,7 +1494,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
 
-  static public void
+  public static void
   dumpbytes(byte[] bytes, int start, int len, String tag) {
     System.err.println("++++++++++ " + tag + " ++++++++++ ");
     int stop = start + len;
@@ -1857,11 +1854,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       if (fld.ctype.dt == DataType.STRUCTURE) {
         UserType nested_utype = userTypes.get(fld.fldtypeid);
-        StringBuilder partfqn = new StringBuilder();
-        partfqn.append(EscapeStrings.backslashEscapeCDMString(varname,"."));
-        partfqn.append(".");
-        partfqn.append(EscapeStrings.backslashEscapeCDMString(fld.name,"."));
-        StructureMembers nested_sm = createStructureMembers(nested_utype,partfqn.toString());
+        String partfqn = EscapeStrings.backslashEscapeCDMString(varname, ".")
+            + "."
+            + EscapeStrings.backslashEscapeCDMString(fld.name, ".");
+        StructureMembers nested_sm = createStructureMembers(nested_utype, partfqn);
         m.setStructureMembers(nested_sm);
       }
     }
@@ -1964,10 +1960,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     Object data;
     switch (dt) {
       case BOOLEAN: /*byte[]*/
-        data = p.getByteArray(0, n);
-        break;
       case ENUM1:
-      case BYTE: /*byte[]*/
+      case BYTE:
         data = p.getByteArray(0, n);
         break;
       case ENUM2:
@@ -2179,7 +2173,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return to;
   }
 
-  static public String show(SizeT[] inta) {
+  public static String show(SizeT[] inta) {
     if (inta == null) return "null";
     Formatter f = new Formatter();
     for (SizeT i : inta) f.format("%d, ", i.longValue());
@@ -2469,10 +2463,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // a type must be created for each structure.
     // LOOK we should look for variables with the same structure type.
     for (Variable v : g4.g.getVariables()) {
-      switch (v.getDataType()) {
-        case STRUCTURE:
-          createCompoundType(g4, (Structure) v);
-          break;
+      if (v.getDataType() == DataType.STRUCTURE) {
+        createCompoundType(g4, (Structure) v);
       }
     }
 
@@ -3472,14 +3464,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
-  static public long
+  public static long
   getNativeAddr(int pos, ByteBuffer buf) {
     return (NativeLong.SIZE == (Integer.SIZE / 8) ? buf.getInt(pos) : buf.getLong(pos));
   }
 
   @Override
   public Object sendIospMessage(Object message) {
-     if(message != null && message instanceof Map) {
+     if (message instanceof Map) {
        Map map = (Map)message;
           // See if we can extract some controls
        for(Object okey: map.keySet()) {

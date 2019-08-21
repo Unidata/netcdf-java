@@ -477,7 +477,7 @@ public class GempakGridReader extends GempakFileReader {
       //    Get the integer from the buffer.
       //
       int jshft = nbits + ibit - 33;
-      int idat = 0;
+      int idat;
       idat = (jshft < 0)
               ? idata[iword] >>> Math.abs(jshft)
               : idata[iword] << jshft;
@@ -487,7 +487,7 @@ public class GempakGridReader extends GempakFileReader {
       //
       if (jshft > 0) {
         jshft -= 32;
-        int idat2 = 0;
+        int idat2;
         idat2 = idata[iword + 1] >>> Math.abs(jshft);
         idat = idat | idat2;
       }
@@ -892,7 +892,6 @@ public class GempakGridReader extends GempakFileReader {
    *
    * @param nb number of bits
    * @return int of BinaryDataSection section
-   * @throws IOException
    */
   private int bits2UInt(int nb) throws IOException {
     int bitsLeft = nb;

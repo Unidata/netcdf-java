@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ucar.nc2.iosp.fysat;
 
 import ucar.nc2.iosp.fysat.util.EndianByteBuffer;
@@ -10,11 +7,8 @@ import ucar.nc2.iosp.fysat.util.EndianByteBuffer;
  *
  */
 public final class AwxFileGridProductSecondHeader extends AwxFileSecondHeader {
-	
-	/**
-	 * 
-	 */		
-		String satelliteName; 
+
+		String satelliteName;
 		short gridFeature;
 		short byteAmountofData;
 		short dataBaseValue;

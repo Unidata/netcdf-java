@@ -7,6 +7,7 @@
 package ucar.nc2.iosp.gempak;
 
 
+import com.google.common.base.MoreObjects;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
@@ -502,7 +503,7 @@ public class GempakFileReader implements GempakConstants {
    * @return byte offset to that word
    */
   public static long getOffset(int fortranWord) {
-    return (fortranWord - 1) * 4l;
+    return (fortranWord - 1) * 4L;
   }
 
   /**
@@ -690,40 +691,32 @@ public class GempakFileReader implements GempakConstants {
       return true;
     }
 
-    /**
-     * Get a String representation of this.
-     *
-     * @return a String representation of this.
-     */
+    @Override
     public String toString() {
-      StringBuilder buf = new StringBuilder();
-
-      buf.append("GEMPAK file label:\n");
-      buf.append("\tVersion: " + kversn + "\n");
-      buf.append("\t# File keys: " + kfhdrs + "\n");
-      buf.append("\tptr to file keys: " + kpfile + "\n");
-      buf.append("\t# rows: " + krow + "\n");
-      buf.append("\t# row keys: " + krkeys + "\n");
-      buf.append("\tptr to row  keys: " + kprkey + "\n");
-      buf.append("\tprt to row header: " + kprowh + "\n");
-      buf.append("\t# cols: " + kcol + "\n");
-      buf.append("\t# cols keys: " + kckeys + "\n");
-      buf.append("\tptr to col keys: " + kpckey + "\n");
-      buf.append("\tptr to col header: " + kpcolh + "\n");
-      buf.append("\t# parts: " + kprt + "\n");
-      buf.append("\tptr part info: " + kppart + "\n");
-      buf.append("\tptr to data mgmt record: " + kpdmgt + "\n");
-      buf.append("\tlen of data mgmt record: " + kldmgt + "\n");
-      buf.append("\tdata pointer: " + kpdata + "\n");
-      buf.append("\tfile type: " + kftype + "\n");
-      buf.append("\tfile source: " + kfsrce + "\n");
-      buf.append("\tmachine type: " + kmachn + "\n");
-      buf.append("\tinteger missing value: " + kmissd + "\n");
-      buf.append("\tfloat missing value: " + smissd + "\n");
-      buf.append("\tswap? " + needToSwap);
-      buf.append("\tswap flags: " + kvmst);
-      return buf.toString();
-
+      return MoreObjects.toStringHelper(this)
+          .add("kversn", kversn)
+          .add("kfhdrs", kfhdrs)
+          .add("kpfile", kpfile)
+          .add("krow", krow)
+          .add("krkeys", krkeys)
+          .add("kprkey", kprkey)
+          .add("kprowh", kprowh)
+          .add("kcol", kcol)
+          .add("kckeys", kckeys)
+          .add("kpckey", kpckey)
+          .add("kpcolh", kpcolh)
+          .add("kprt", kprt)
+          .add("kppart", kppart)
+          .add("kpdmgt", kpdmgt)
+          .add("kldmgt", kldmgt)
+          .add("kpdata", kpdata)
+          .add("kftype", kftype)
+          .add("kfsrce", kfsrce)
+          .add("kmachn", kmachn)
+          .add("kmissd", kmissd)
+          .add("smissd", smissd)
+          .add("kvmst", kvmst)
+          .toString();
     }
 
   }
@@ -945,23 +938,6 @@ public class GempakFileReader implements GempakConstants {
       }
       part.kwordp = (itotal - 1) / 32 + 1;
     }
-
-    /**
-     * Get a String representation of this object.
-     * @return a String representation of this object.
-     * public String toString() {
-     *   StringBuffer buf = new StringBuffer();
-     *   buf.append("Param name = ");
-     *   buf.append(kprmnm);
-     *   buf.append("; scale = ");
-     *   buf.append(kscale);
-     *   buf.append("; offset = ");
-     *   buf.append(koffst);
-     *   buf.append("; bits = ");
-     *   buf.append(kbits);
-     *   return buf.toString();
-     * }
-     */
   }
 
   /**
@@ -1502,7 +1478,7 @@ public class GempakFileReader implements GempakConstants {
                        int decimalScale)
           throws IOException {
 
-    int ipoint = -1;
+    int ipoint;
     if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1)
             || (icol > dmLabel.kcol)) {
       System.out.println("bad row/column number " + irow + "/" + icol);

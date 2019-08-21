@@ -98,13 +98,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
-   * This controls what happens when sync() is called on a GRIB file. The main use of sync() is when you are using
-   * NetcdfFile object caching. Before NetcdfFile is returned from a cache hit, sync() is called on it.
-   * Default is IndexExtendMode.extend.
-   *
-   * @param mode IndexExtendMode when sync() is called. Same meaning as setIndexExtendMode(IndexExtendMode mode)
-   */
-  /**
    * This controls what happens when a GRIB file is synced (usually from FileCache), and the data or index file has changed
    *  since the file was placed in the cache.
    * <ol>

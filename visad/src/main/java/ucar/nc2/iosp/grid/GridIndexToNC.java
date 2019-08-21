@@ -89,11 +89,7 @@ public class GridIndexToNC {
 
         // keep track of all products with same parameter name == "simple name"
         String simpleName = gridRecord.getParameterDescription();
-        List<GridVariable> plist = hcs.productHash.get(simpleName);
-        if (null == plist) {
-          plist = new ArrayList<>();
-          hcs.productHash.put(simpleName, plist);
-        }
+        List<GridVariable> plist = hcs.productHash.computeIfAbsent(simpleName, k -> new ArrayList<>());
         plist.add(pv);
 
       } /* else if ( lookup instanceof Grib2GridTableLookup ) {
@@ -183,7 +179,7 @@ public class GridIndexToNC {
 
         String lastVertDesc = null;
         List<GridVariable> gribvars = new ArrayList<>(hcs.varHash.values());
-        Collections.sort(gribvars, new CompareGridVariableByVertName());
+        gribvars.sort(new CompareGridVariableByVertName());
 
         for (GridVariable gv : gribvars) {
           String vertDesc = gv.getVertName();
@@ -324,7 +320,7 @@ public class GridIndexToNC {
 
       // add vertical dimensions, give them unique names
       Collections.sort(vertCoords);
-      int vcIndex = 0;
+      int vcIndex;
       String listName = null;
       int start = 0;
       for (vcIndex = 0; vcIndex < vertCoords.size(); vcIndex++) {
@@ -483,19 +479,8 @@ public class GridIndexToNC {
    * @author IDV Development Team
    * @version $Revision: 1.3 $
    */
-  static private class CompareGridVariableByVertName implements Comparator {
-
-    /**
-     * Compare the two lists of names
-     *
-     * @param o1 first list
-     * @param o2 second list
-     * @return comparison
-     */
-    public int compare(Object o1, Object o2) {
-      GridVariable gv1 = (GridVariable) o1;
-      GridVariable gv2 = (GridVariable) o2;
-
+  static private class CompareGridVariableByVertName implements Comparator<GridVariable> {
+    public int compare(GridVariable gv1, GridVariable gv2) {
       return gv1.getVertName().compareToIgnoreCase(gv2.getVertName());
     }
   }

@@ -73,11 +73,6 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
   /**
    * list of parameters
    */
-  // private List<GempakParameter> params;
-
-  /**
-   * list of parameters
-   */
   private Map<String, List<GempakParameter>> partParamMap = new HashMap<>();
 
   /**
@@ -210,7 +205,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
     }
     if (unique && !fileDates.isEmpty()) {
       SortedSet<String> uniqueTimes =
-              Collections.synchronizedSortedSet(new TreeSet<String>());
+              Collections.synchronizedSortedSet(new TreeSet<>());
       uniqueTimes.addAll(fileDates);
       fileDates.clear();
       fileDates.addAll(uniqueTimes);

@@ -41,11 +41,8 @@ public final class GempakUtil {
         if (iftime[start] < 100000000) {
             intdtf[0] = iftime[start];
             intdtf[1] = iftime[start + 1];
-            intdtf[2] = 0;
 
-            //  Otherwise, decode date/time and forecast info from the
-            //  two integers. 
-
+            //  Otherwise, decode date/time and forecast info from the two integers.
         } else {
 
             //  The first word contains MMDDYYHHMM.  This must be turned

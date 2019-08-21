@@ -143,7 +143,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       List<StructureMembers.Member> mbers =
               members.getMembers();
       int i = 0;
-      int numBytes = 0;
+      int numBytes;
       int totalNumBytes = 0;
       for (StructureMembers.Member member : mbers) {
         member.setDataParam(4 * i++);

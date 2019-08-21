@@ -11,6 +11,8 @@
 package ucar.nc2.iosp.vis5d;
 
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
@@ -531,13 +533,10 @@ public class V5DStruct {
 
       vert_sys[0] = v.VerticalSystem;
 
-      for ( int kk = 0; kk < maxNl; kk++) {
-        vert_args[kk] = v.VertArgs[kk];
-      }
+      if (maxNl >= 0)
+        System.arraycopy(v.VertArgs, 0, vert_args, 0, maxNl);
 
       // compute times
-      first_day = v5dYYDDDtoDays(v.DateStamp[0]);
-      first_time = v5dHHMMSStoSeconds(v.TimeStamp[0]);
       for (i=0; i<v.NumTimes; i++) {
         day = v5dYYDDDtoDays(v.DateStamp[i]);
         time = v5dHHMMSStoSeconds(v.TimeStamp[i]);
@@ -551,9 +550,7 @@ public class V5DStruct {
 
       map_proj[0] = v.Projection;
 
-      for (int kk = 0; kk < MAXPROJARGS; kk++) {
-        projargs[kk] = v.ProjArgs[kk];
-      }
+      System.arraycopy(v.ProjArgs, 0, projargs, 0, MAXPROJARGS);
     }
     else {  //- trouble with file
       // v == null
@@ -705,28 +702,6 @@ public class V5DStruct {
     ss = seconds % 60;
     return hh * 10000 + mm * 100 + ss;
   }
-
-  /** Open a v5d file for reading.
-      @return null if error, else a pointer to a new V5DStruct
-  private static V5DStruct v5dOpenFile(String filename)
-          throws IOException, BadFormException {
-    RandomAccessFile fd = 
-      (filename.toLowerCase().startsWith("http"))
-          ? new HTTPRandomAccessFile(new URL(filename), DEFAULT_HTTP_BUFFER )
-          : new RandomAccessFile(filename, "r", DEFAULT_FILE_BUFFER);
-
-    if (fd == null) {
-      // error
-      return null;
-    }
-
-    V5DStruct v = new V5DStruct();
-
-    v.FileDesc = fd;
-    v.Mode = 'r';
-    return (v.read_v5d_header() ? v : null);
-  }
-  */
 
   /** Open a v5d file for reading.
       @return null if error, else a pointer to a new V5DStruct
@@ -1009,7 +984,7 @@ public class V5DStruct {
   }
 
   /** Verifies that a certain condition holds */
-  private static final void V5Dassert(boolean b)
+  private static void V5Dassert(boolean b)
           throws BadFormException {
     if (!b) {
       throw new BadFormException("Warning: assert failed");
@@ -1062,7 +1037,7 @@ public class V5DStruct {
       @param nl            number of levels of grid
       @param compressmode  1, 2 or 4 bytes per grid point
       @param data          array of [nr*nc*nl] floats
-      @param compdata1      array of [nr*nc*nl*compressmode] bytes for results
+      @param compdata1     array of [nr*nc*nl*compressmode] bytes for results
       @param ga            array to put ga decompression values
       @param gb            array to put gb decompression values
       @param minval        one-element float array to put min value
@@ -1127,13 +1102,20 @@ public class V5DStruct {
           }
         }
       }
-    }
 
-    else {
+    } else if (compressmode == 4) {
+      // Original code
       // compressmode==4
       // other machines: just copy 4-byte IEEE floats
       // CTR: I have no idea if this works properly in Java...
-      System.arraycopy(compdata1, 0, data, 0, nrncnl*4);
+      // jlcaron: looks like the src and dest is reversed.
+      // System.arraycopy(compdata1, 0, data, 0, nrncnl*4);
+
+      // Replace 8/19/2019 jlcaron. not sure about byte order
+      ByteBuffer bb = ByteBuffer.wrap(compdata1);
+      for (int i=0; i<nrncnl; i++) {
+        bb.putFloat(data[i]);
+      }
     }
   }
 
@@ -2219,7 +2201,7 @@ public class V5DStruct {
       /*-TDR, bug? factor should be 1 
       bytes = Nr * Nc * Nl[vr] * 2; // sizeof(unsigned char);
        */
-      bytes = Nr * Nc * Nl[vr] * 1; // sizeof(unsigned char);
+      bytes = Nr * Nc * Nl[vr]; // sizeof(unsigned char);
     }
     else if (CompressMode == 2) {
       bytes = Nr * Nc * Nl[vr] * 2; // sizeof(unsigned short);

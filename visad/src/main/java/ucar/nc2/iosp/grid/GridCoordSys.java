@@ -52,12 +52,12 @@ public class GridCoordSys {
   /**
    * flag for not using the vertical
    */
-  boolean dontUseVertical = false;
+  boolean dontUseVertical;
 
   /**
    * postive direction
    */
-  String positive = "up";
+  String positive;
 
   /**
    * units
@@ -78,7 +78,7 @@ public class GridCoordSys {
     this.record = record;
     this.verticalName = name;
     this.lookup = lookup;
-    this.levels = new ArrayList<Double>();
+    this.levels = new ArrayList<>();
 
     dontUseVertical = !lookup.isVerticalCoordinate(record);
     positive = lookup.isPositiveUp(record)
@@ -138,7 +138,7 @@ public class GridCoordSys {
    */
   void addLevels(List<GridRecord> records) {
     for (GridRecord record : records) {
-      Double d = new Double(record.getLevel1());
+      Double d = record.getLevel1();
       if (!levels.contains(d)) {
         levels.add(d);
       }
@@ -172,9 +172,9 @@ public class GridCoordSys {
   boolean matchLevels(List<GridRecord> records) {
 
     // first create a new list
-    List<Double> levelList = new ArrayList<Double>(records.size());
+    List<Double> levelList = new ArrayList<>(records.size());
     for (GridRecord record : records) {
-      Double d = new Double(record.getLevel1());
+      Double d = record.getLevel1();
       if (!levelList.contains(d)) {
         levelList.add(d);
       }
@@ -272,7 +272,7 @@ public class GridCoordSys {
     double[] data = new double[nlevs];
     for (int i = 0; i < levels.size(); i++) {
       Double d = levels.get(i);
-      data[i] = d.doubleValue();
+      data[i] = d;
     }
     Array dataArray = Array.factory(DataType.DOUBLE, new int[]{nlevs}, data);
 
@@ -317,7 +317,7 @@ public class GridCoordSys {
    * @return the index or -1
    */
   int getIndex(GridRecord record) {
-    Double d = new Double(record.getLevel1());
+    Double d = record.getLevel1();
     return levels.indexOf(d);
   }
 }

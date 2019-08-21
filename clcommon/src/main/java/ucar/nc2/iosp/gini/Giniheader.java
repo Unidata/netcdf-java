@@ -156,22 +156,22 @@ class Giniheader {
     bos.position(0);
 
     //sat_id = (int )( raf.readByte());
-    Byte nv = bos.get();
+    byte nv = bos.get();
     att = new Attribute("source_id", nv);
     ncfile.addAttribute(null, att);
 
     nv = bos.get();
-    ent_id = nv.intValue();
+    ent_id = (int) nv;
     att = new Attribute("entity_id", nv);
     ncfile.addAttribute(null, att);
 
     nv = bos.get();
-    sec_id = nv.intValue();
+    sec_id = (int) nv;
     att = new Attribute("sector_id", nv);
     ncfile.addAttribute(null, att);
 
     nv = bos.get();
-    phys_elem = nv.intValue();
+    phys_elem = (int) nv;
     att = new Attribute("phys_elem", nv);
     ncfile.addAttribute(null, att);
 
@@ -219,7 +219,7 @@ class Giniheader {
     bos.get();   /* skip a byte for hundreds of seconds */
 
     nv = bos.get();
-    proj = nv.intValue();
+    proj = (int) nv;
 
     /*
     ** Get grid dimensions
@@ -347,7 +347,7 @@ class Giniheader {
         ** Check high bit of octet for North or South projection center
         */
         nv = bos.get();
-        pole = nv.intValue();
+        pole = (int) nv;
         pole = (pole > 127) ? -1 : 1;
         att = new Attribute("ProjCenter", pole);
         ncfile.addAttribute(null, att);
@@ -765,20 +765,14 @@ class Giniheader {
         name = "IR";
         break;
       case 13:
-        name = "LI";
-        break;
-      case 14:
-        name = "PW";
-        break;
-      case 15:
-        name = "SFC_T";
-        break;
       case 16:
         name = "LI";
         break;
+      case 14:
       case 17:
         name = "PW";
         break;
+      case 15:
       case 18:
         name = "SFC_T";
         break;
@@ -891,10 +885,6 @@ class Giniheader {
       case 26:
         return "kft";
       case 27:
-        if (ent_id == 99)
-          return "dBz";
-        else
-          return "N/A";
       case 28:
         if (ent_id == 99)
           return "dBz";
@@ -903,7 +893,6 @@ class Giniheader {
       case 29:
         return "kg m-2";
       case 30:
-        return "IN";
       case 31:
         return "IN";
       default:
