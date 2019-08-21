@@ -12,7 +12,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
@@ -716,11 +715,7 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getComplete() {
-      try {
-        return m.isTablesComplete() ? "true" : "false";
-      } catch (IOException e) {
-        return "exception";
-      }
+      return m.isTablesComplete() ? "true" : "false";
     }
 
     public String getBitsOk() {
