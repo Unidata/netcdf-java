@@ -17,26 +17,24 @@ import java.util.Formatter;
  */
 public class Descriptor {
 
-  static public String makeString(short fxy) {
+  public static String makeString(short fxy) {
     int f = (fxy & 0xC000) >> 14;
     int x = (fxy & 0x3F00) >> 8;
     int y = fxy & 0xFF;
     return makeString(f,x,y);
   }
 
-  static public String makeString(int f, int x, int y) {
-    Formatter out = new Formatter();
-    out.format("%d-%d-%d",f,x,y);
-    return out.toString();
+  public static String makeString(int f, int x, int y) {
+    return String.format("%d-%d-%d",f,x,y);
   }
 
-  static public boolean isWmoRange(short fxy) {
+  public static boolean isWmoRange(short fxy) {
     int x = (fxy & 0x3F00) >> 8;
     int y = fxy & 0xFF;
     return (x < 48 && y < 192);
   }
 
-  static public short getFxy(String name) {
+  public static short getFxy(String name) {
     String[] tok = name.split("-");
     int f = (tok.length > 0) ? Integer.parseInt(tok[0]) : 0;
     int x = (tok.length > 1) ? Integer.parseInt(tok[1]) : 0;
@@ -44,7 +42,7 @@ public class Descriptor {
     return (short) ((f << 14) + (x << 8) + (y));
   }
 
-  static public short getFxy2(String fxxyyy) {
+  public static short getFxy2(String fxxyyy) {
     int fxy = Integer.parseInt(fxxyyy.trim());
     int y = fxy % 1000;
     fxy /= 1000;
@@ -54,20 +52,20 @@ public class Descriptor {
   }
 
   // contains a BUFR table entry
-  static public boolean isBufrTable(short fxy) {
+  public static boolean isBufrTable(short fxy) {
     int f = (fxy & 0xC000) >> 14;
     int x = (fxy & 0x3F00) >> 8;
     int y = (fxy & 0xFF);
     return (f == 0) && (x == 0) && (y < 13);
   }
 
-  static public short getFxy(short f, short x, short y) {
+  public static short getFxy(short f, short x, short y) {
     return (short) ((f << 14) + (x << 8) + (y));
   }
 
-  static private final String[] descType = {"tableB", "replication", "tableC-operators", "tableD"};
+  private static final String[] descType = {"tableB", "replication", "tableC-operators", "tableD"};
 
-  static public void show(Formatter out, short fxy, BufrTableLookup lookup) {
+  public static void show(Formatter out, short fxy, BufrTableLookup lookup) {
     int f = (fxy & 0xC000) >> 14;
 
     if (f == 0) {
@@ -89,7 +87,7 @@ public class Descriptor {
     }
   }
 
-  static public String getName(short fxy, BufrTableLookup lookup) {
+  public static String getName(short fxy, BufrTableLookup lookup) {
     int f = (fxy & 0xC000) >> 14;
 
     if (f == 0) {
