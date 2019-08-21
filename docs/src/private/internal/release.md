@@ -13,6 +13,14 @@ If you are unsure, check `git remote -v`.
 **Note 1**: If you are releasing a new patch version to a previous release due to security fixes, it's assumed that things look good on Jenkins and you are up-to-date.
 If so, you can skip to step 4.
 
+1. Make sure userguide is up-to-date:
+   - `docs/src/public/userguide/_data/topnav.yml`
+       - Update netcdf-java javadoc link to point to release version.
+   - `docs/src/public/userguide/_data/sidebars/netcdfJavaTutorial_sidebar.yml`
+       - Update version referenced in sidebar `version` attribute (near the top of the file).
+   - `docs/src/public/userguide/pages/netcdfJava/UpgradeTo50.md`
+       - make sure changes for minor version are documented.
+
 1. Ensure that there are no uncommitted changes, e.g.
    - `git checkout master`
    - `git status`
