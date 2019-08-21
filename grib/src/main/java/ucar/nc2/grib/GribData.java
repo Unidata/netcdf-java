@@ -369,7 +369,7 @@ public class GribData {
     int count = 0;
     for (int b : data) {
       if (b < 0 || b > n - 1) {
-        logger.warn("BAD %d at index %d; max=%d%n", b, count, n - 1);
+        logger.warn("BAD {} at index {}; max={}", b, count, n - 1);
         // just skip
       } else {
         p[b]++;

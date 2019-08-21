@@ -6,8 +6,6 @@
 package ucar.nc2.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
-import java.util.List;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.Grib2Parameter;

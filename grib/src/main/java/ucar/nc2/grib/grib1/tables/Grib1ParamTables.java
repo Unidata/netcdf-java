@@ -335,7 +335,7 @@ public class Grib1ParamTables {
 
       Grib1ParamTableReader prevTable = tableMap.get(key);
       if (prevTable != null) {
-        logger.warn("***Duplicate Table for %s%n   %s%n   %s%n", prevTable.getPath(), table.getPath());
+        logger.warn("***Duplicate Table for {} == {}", prevTable.getPath(), table.getPath());
       }
 
       tableMap.put(key, table); // assume we would get the same table in any thread, so race condition is ok

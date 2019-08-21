@@ -278,7 +278,7 @@ TBLE2 cptec_254_params[] = {
         Grib1Parameter parameter = new Grib1Parameter(this, p1, m.group(4), m.group(2),
             m.group(3));
         result.put(parameter.getNumber(), parameter);
-        logger.debug(" %s%n", parameter);
+        logger.debug(" {}", parameter);
       }
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
@@ -295,7 +295,7 @@ TBLE2 cptec_254_params[] = {
     try {
       return Integer.parseInt(want.trim());
     } catch (NumberFormatException e) {
-      logger.warn("BAD %s (%s)%n", line, path);
+      logger.warn("BAD {} ({})", line, path);
       return -1;
     }
   }
@@ -390,7 +390,7 @@ TBLE2 cptec_254_params[] = {
         }
         Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units1);
         result.put(parameter.getNumber(), parameter);
-        logger.debug(" %s (%s)%n", parameter, notes);
+        logger.debug("readParameterTableEcmwf {} ({})", parameter, notes);
       }
       return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
@@ -481,7 +481,7 @@ TBLE2 cptec_254_params[] = {
         }
         Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, unit);
         result.put(parameter.getNumber(), parameter);
-        logger.debug(" %s%n", parameter);
+        logger.debug(" {}", parameter);
       }
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
@@ -539,7 +539,7 @@ TBLE2 cptec_254_params[] = {
         Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTableReader.this, code, name, desc,
             units, cf);
         result.put(parameter.getNumber(), parameter);
-        logger.debug(" %s%n", parameter);
+        logger.debug(" {}", parameter);
       }
       return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
@@ -574,7 +574,7 @@ TBLE2 cptec_254_params[] = {
         try {
           code = Integer.parseInt(elem1.getChildText("grib1Id"));
         } catch (NumberFormatException e) {
-          logger.warn("BAD number= %s%n", elem1.getChildText("grib1Id"));
+          logger.warn("BAD number= {}", elem1.getChildText("grib1Id"));
           continue;
         }
         String desc = elem1.getChildText("description");
@@ -591,7 +591,7 @@ TBLE2 cptec_254_params[] = {
         Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTableReader.this, code, name, desc,
             units, null);
         result.put(parameter.getNumber(), parameter);
-        logger.debug(" %s%n", parameter);
+        logger.debug(" {}", parameter);
       }
       useName = true;
       return result;
@@ -624,7 +624,7 @@ TBLE2 cptec_254_params[] = {
 
         Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units);
         result.put(parameter.getNumber(), parameter);
-        logger.debug(" %s%n", parameter);
+        logger.debug(" {}", parameter);
       }
       return Collections.unmodifiableMap(result);  // all at once - thread safe
     }

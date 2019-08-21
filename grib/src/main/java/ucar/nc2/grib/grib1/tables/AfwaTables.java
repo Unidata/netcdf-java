@@ -130,15 +130,13 @@ public class AfwaTables extends Grib1Customizer {
 
     switch (levelType) {
       case 210:
+      case 246:
         return new Grib1ParamLevel(this, levelType, (float) pds1112, GribNumbers.MISSING);
 
       case 218:
          return new Grib1ParamLevel(this, levelType, (float) pds11 + 200, (float) pds12 + 200);
 
-      case 246:
-        return new Grib1ParamLevel(this, levelType, (float) pds1112, GribNumbers.MISSING);
-
-       default:
+      default:
         return new Grib1ParamLevel(this, pds);
     }
   }

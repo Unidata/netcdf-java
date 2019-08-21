@@ -302,12 +302,16 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
       case 11:
       case 12:
+      case 117:
+      case 237:
+      case 238:
         return new VertCoordType(code, "m", null, true);
 
       case 20:
         return new VertCoordType(code, "K", null, false);
 
       case 100:
+      case 119:
         return new VertCoordType(code, "Pa", null, false);
 
       case 102:
@@ -333,13 +337,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
         return new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
 
       case 114:
-        return new VertCoordType(code, "numeric", null, false);
-
-      case 117:
-        return new VertCoordType(code, "m", null, true);
-
-      case 119:
-        return new VertCoordType(code, "Pa", null, false); // ??
+        return new VertCoordType(code, "numeric", null, false);// ??
 
       case 160:
         return new VertCoordType(code, "m", "sea level", false);
@@ -350,12 +348,6 @@ Code Table Code table 4.7 - Derived forecast (4.7)
       // LOOK NCEP specific
       case 235:
         return new VertCoordType(code, "0.1 C", null, true);
-
-      case 237:
-        return new VertCoordType(code, "m", null, true);
-
-      case 238:
-        return new VertCoordType(code, "m", null, true);
 
       default:
         return new VertCoordType(code, null, null, true);

@@ -341,7 +341,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
       if (Grib.debugRead)
-        logger.debug("%nPartitionCollection.getDataRecord index wanted = (%s) on %s type=%s%n",
+        logger.debug("PartitionCollection.getDataRecord index wanted = ({}) on {} type={}",
                 Misc.showInts(indexWanted), indexFilename, group.ds.gctype);
 
       // find the runtime index
@@ -356,7 +356,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         Object val = runtime.getValue(firstIndex);
         masterIdx = masterRuntime.getIndex(val);
         if (Grib.debugRead)
-          logger.debug("  TwoD firstIndex = %d val=%s masterIdx=%d %n", firstIndex, val, masterIdx);
+          logger.debug("  TwoD firstIndex = {} val={} masterIdx={}", firstIndex, val, masterIdx);
 
       } else if (group.ds.gctype == Type.Best) {
         // find the partition from the "time2runtime" array in the time coordinate
@@ -365,7 +365,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
           throw new IllegalStateException("Type.Best must have time coordinate");
         }
         masterIdx = time.getMasterRuntimeIndex(firstIndex) - 1;
-        if (Grib.debugRead) logger.debug("  Best firstIndex = %d masterIdx=%d %n", firstIndex, masterIdx);
+        if (Grib.debugRead) logger.debug("  Best firstIndex = {} masterIdx={}", firstIndex, masterIdx);
 
       } else if (group.ds.gctype == Type.MRUTP) {
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinateTime();
@@ -375,7 +375,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         Object val = time2D.getRefDate(firstIndex);
         masterIdx = masterRuntime.getIndex(val);
 
-        if (Grib.debugRead) logger.debug("  MRUTP firstIndex = %d masterIdx=%d %n", firstIndex, masterIdx);
+        if (Grib.debugRead) logger.debug("  MRUTP firstIndex = {} masterIdx={}", firstIndex, masterIdx);
 
       } else {
         throw new IllegalStateException("Unknown gctype= " + group.ds.gctype + " on " + indexFilename);
@@ -389,7 +389,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // find the 2D vi in that partition
       GribCollectionImmutable.VariableIndex vindex2Dpart = getVindex2D(partno); // the 2D component variable in the partno partition
       if (vindex2Dpart == null) return null; // missing
-      if (Grib.debugRead) logger.debug("  compVindex2D = %s%n", vindex2Dpart.toStringFrom());
+      if (Grib.debugRead) logger.debug("  compVindex2D = {}", vindex2Dpart.toStringFrom());
 
       if (isPartitionOfPartitions) {
         VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) vindex2Dpart;
@@ -409,7 +409,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         return null;
       }
 
-      if (Grib.debugRead) logger.debug("  result success: partno=%d fileno=%d %n", partno, record.fileno);
+      if (Grib.debugRead) logger.debug("  result success: partno={} fileno={}", partno, record.fileno);
       return new DataRecord(PartitionCollectionImmutable.this, partno, vindex2Dpart.group.getGdsHorizCoordSys(), record);
     }
 
@@ -424,14 +424,14 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     private DataRecord getDataRecordPofP(int[] indexWanted, VariableIndexPartitioned compVindex2Dp) throws IOException {
       if (group.getType() == Type.Best) {
         int[] indexWantedP = translateIndexBest(indexWanted, compVindex2Dp);
-        if (Grib.debugRead) logger.debug("  (Best) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
+        if (Grib.debugRead) logger.debug("  (Best) getDataRecordPofP= {}", Misc.showInts(indexWantedP));
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
 
       } else {
         // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
-        if (Grib.debugRead) logger.debug("  (2D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
+        if (Grib.debugRead) logger.debug("  (2D) getDataRecordPofP= {}", Misc.showInts(indexWantedP));
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
 
@@ -469,7 +469,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       int partWant = vip.partnoSA.findIdx(partno); // which partition ? index into PartitionCollectionImmutable.partitions[]. variable doesnt have to exist in all partitions
       if (partWant < 0 || partWant >= vip.nparts) {
-        if (Grib.debugRead) logger.debug("  cant find partition=%d in vip=%s%n", partno, vip);
+        if (Grib.debugRead) logger.debug("  cant find partition={} in vip={}", partno, vip);
         return null;
       }
       // LOOK was partVar = new PartitionForVariable2D(partnoSA.get(idx), groupnoSA.get(idx), varnoSA.get(idx));
@@ -621,7 +621,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         if (time2D == null) throw new IllegalStateException("CoordinateTime2D has no time2D");
         CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1]);
         if (Grib.debugRead)
-          logger.debug("  translateIndex2D[runIdx=%d, timeIdx=%d] in componentVar coords = (%s,%s) %n",
+          logger.debug("  translateIndex2D[runIdx={}, timeIdx={}] in componentVar coords = ({}, {})",
                   wholeIndex[0], wholeIndex[1], (want == null) ? "null" : want.getRefDate(), want);
         if (want == null) {
           // time2D.getOrgValue(wholeIndex[0], wholeIndex[1], Grib.debugRead); // debug
@@ -638,7 +638,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       while (countDim < wholeIndex.length) {
         int idx = wholeIndex[countDim];
         int resultIdx = matchCoordinate(getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim));
-        if (Grib.debugRead) logger.debug("  translateIndex2D[idx=%d] resultIdx= %d %n", idx, resultIdx);
+        if (Grib.debugRead) logger.debug("  translateIndex2D[idx={}] resultIdx= {}", idx, resultIdx);
         if (resultIdx < 0) {   // partition variable doesnt have a coordinate value that is in the "whole" variable
           return null;
         }
@@ -678,7 +678,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // find the 2D vi in that partition
       GribCollectionImmutable.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
       if (compVindex2D == null) return null; // missing
-      if (Grib.debugRead) logger.debug("  compVindex2D = %s%n", compVindex2D.toStringFrom());
+      if (Grib.debugRead) logger.debug("  compVindex2D = {}", compVindex2D.toStringFrom());
 
       if (isPartitionOfPartitions) {
         VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) compVindex2D;
@@ -690,7 +690,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (record == null)
         return null;
 
-      if (Grib.debugRead) logger.debug("  result success: partno=%d fileno=%d %n", partno, record.fileno);
+      if (Grib.debugRead) logger.debug("  result success: partno={} fileno={}", partno, record.fileno);
       DataRecord dr = new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record);
       if (GribDataReader.validator != null) dr.validation = coords;
       return dr;

@@ -273,7 +273,7 @@ public class GribCdmIndex implements IndexReader {
     }
 
     boolean changed = updatePartition(isGrib1, dcm, updateType, logger, errlog);
-    if (errlog != null) errlog.format("PartitionCollection %s was recreated %s%n", dcm.getCollectionName(), changed);
+    if (errlog != null) errlog.format("PartitionCollection %s was recreated{}", dcm.getCollectionName(), changed);
     return changed;
   }
 
@@ -334,7 +334,7 @@ public class GribCdmIndex implements IndexReader {
       CollectionUpdateType updateType, FeatureCollectionConfig.PartitionType ptype,
       Logger logger, Formatter errlog) throws IOException {
 
-    logger.debug("GribCdmIndex.updateGribCollection %s %s%n", dcm.getCollectionName(), updateType);
+    logger.debug("GribCdmIndex.updateGribCollection {} {}", dcm.getCollectionName(), updateType);
     if (!isUpdateNeeded(dcm.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.GRIB1 : GribCollectionType.GRIB2), logger)) return false;
 
     boolean changed;
@@ -366,7 +366,7 @@ public class GribCdmIndex implements IndexReader {
 
   private static boolean updateTimePartition(boolean isGrib1, TimePartition tp, CollectionUpdateType updateType, Logger logger) throws IOException {
 
-    logger.debug("GribCdmIndex.updateTimePartition %s %s%n", tp.getRoot(), updateType);
+    logger.debug("GribCdmIndex.updateTimePartition {} {}", tp.getRoot(), updateType);
     if (!isUpdateNeeded(tp.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger)) return false;
 
     long start = System.currentTimeMillis();
@@ -388,7 +388,7 @@ public class GribCdmIndex implements IndexReader {
 
       long took = System.currentTimeMillis() - start;
       errlog.format(" INFO updateTimePartition %s took %d msecs%n", tp.getRoot(), took);
-      logger.debug("GribCdmIndex.updateTimePartition complete (%s) on %s errlog=%s%n", changed, tp.getRoot(), errlog);
+      logger.debug("GribCdmIndex.updateTimePartition complete ({}) on {} errlog={}", changed, tp.getRoot(), errlog);
       return changed;
 
     } catch (IllegalStateException t) {
@@ -433,7 +433,7 @@ public class GribCdmIndex implements IndexReader {
                                                           CollectionUpdateType updateType,
                                                           Logger logger) throws IOException {
 
-    logger.debug("GribCdmIndex.updateDirectoryCollectionRecurse %s %s%n", dpart.getRoot(), updateType);
+    logger.debug("GribCdmIndex.updateDirectoryCollectionRecurse {} {}", dpart.getRoot(), updateType);
     if (!isUpdateNeeded(dpart.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger)) return false;
 
     long start = System.currentTimeMillis();
@@ -467,7 +467,7 @@ public class GribCdmIndex implements IndexReader {
 
       long took = System.currentTimeMillis() - start;
       errlog.format(" INFO updateDirectoryCollectionRecurse %s took %d msecs%n", dpart.getRoot(), took);
-      logger.debug("GribCdmIndex.updateDirectoryCollectionRecurse complete (%s) on %s errlog=%s%n", changed, dpart.getRoot(), errlog);
+      logger.debug("GribCdmIndex.updateDirectoryCollectionRecurse complete ({}) on {} errlog={}", changed, dpart.getRoot(), errlog);
       return changed;
 
     } catch (IllegalStateException t) {
@@ -504,7 +504,7 @@ public class GribCdmIndex implements IndexReader {
           dcm.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
 
         boolean changed = updateGribCollection(isGrib1, dcm, updateType, FeatureCollectionConfig.PartitionType.directory, logger, errlog);
-        logger.debug("  GribCdmIndex.updateDirectoryPartition was updated=%s on %s%n", changed, dirPath);
+        logger.debug("  GribCdmIndex.updateDirectoryPartition was updated={} on {}", changed, dirPath);
         return changed;
       }
     }
@@ -532,7 +532,7 @@ public class GribCdmIndex implements IndexReader {
       if (specp.getFilter() != null)
         partition.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
 
-      logger.debug("GribCdmIndex.updateFilePartition %s %s%n", partition.getCollectionName(), updateType);
+      logger.debug("GribCdmIndex.updateFilePartition {} {}", partition.getCollectionName(), updateType);
       if (!isUpdateNeeded(partition.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger))
         return false;
 
@@ -832,7 +832,7 @@ public class GribCdmIndex implements IndexReader {
   /// IndexReader interface
   @Override
   public boolean readChildren(Path indexFile, AddChildCallback callback) throws IOException {
-    logger.debug("GribCdmIndex.readChildren %s%n", indexFile);
+    logger.debug("GribCdmIndex.readChildren {}", indexFile);
     try (RandomAccessFile raf = RandomAccessFile.acquire(indexFile.toString())) {
       GribCollectionType type = getType(raf);
       if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
@@ -852,7 +852,7 @@ public class GribCdmIndex implements IndexReader {
 
   @Override
   public boolean isPartition(Path indexFile) throws IOException {
-    logger.debug("GribCdmIndex.isPartition %s%n", indexFile);
+    logger.debug("GribCdmIndex.isPartition {}", indexFile);
     try (RandomAccessFile raf = RandomAccessFile.acquire(indexFile.toString())) {
       GribCollectionType type = getType(raf);
       return (type == GribCollectionType.Partition1) || (type == GribCollectionType.Partition2);
@@ -861,7 +861,7 @@ public class GribCdmIndex implements IndexReader {
 
   @Override
   public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException {
-    logger.debug("GribCdmIndex.readMFiles %s%n", indexFile);
+    logger.debug("GribCdmIndex.readMFiles {}", indexFile);
     try (RandomAccessFile raf = RandomAccessFile.acquire(indexFile.toString())) {
       // GribCollectionType type = getType(raf);
       // if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
@@ -1025,13 +1025,13 @@ public class GribCdmIndex implements IndexReader {
         String location = cmdLine.inputFile.getAbsolutePath();
         FeatureCollectionConfig config = reader.readConfigFromFile(location);
         boolean changed = GribCdmIndex.updateGribCollection(config, cmdLine.updateType, classLogger);
-        System.out.printf("changed = %s%n", changed);
+        System.out.printf("changed ={}", changed);
 
       } catch (Exception e) {
         System.out.printf("%s = %s %n", e.getClass().getName(), e.getMessage());
         String err = errlog.toString();
         if (err.length() > 0)
-          System.out.printf(" errlog=%s%n", err);
+          System.out.printf(" errlog={}", err);
         e.printStackTrace();
       }
 
