@@ -40,7 +40,6 @@ public final class ConversionException extends UnitException implements
 	 *            The unit to which a conversion was attempted.
 	 */
 	public ConversionException(final Unit fromUnit, final Unit toUnit) {
-		this("Can't convert from unit \"" + fromUnit + "\" to unit \"" + toUnit
-				+ "\"");
+		this("Can't convert from unit \"" + fromUnit + "\" to unit \"" + toUnit + "\"");
 	}
 }

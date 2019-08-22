@@ -140,7 +140,7 @@ public class ParseException extends Exception {
     } else {
       b.append("Was expecting one of:").append(eol).append("    ");
     }
-    expected.append(expected.toString());
+    b.append(expected.toString());
     return b.toString();
   }
 

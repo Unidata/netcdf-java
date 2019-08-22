@@ -7,6 +7,8 @@
 /* JavaCCOptions:STATIC=false */
 package ucar.units;
 
+import java.io.InputStreamReader;
+
 /**
  * An implementation of interface CharStream, where the stream is assumed to
  * contain only ASCII characters (without unicode processing).
@@ -24,8 +26,8 @@ public class SimpleCharStream
   protected int[] bufline;
   protected int[] bufcolumn;
 
-  protected int column = 0;
-  protected int line = 1;
+  protected int column;
+  protected int line;
 
   protected boolean prevCharIsCR = false;
   protected boolean prevCharIsLF = false;
@@ -125,7 +127,6 @@ public class SimpleCharStream
         }
         else
            maxNextCharInd += i;
-        return;
      }
      catch(java.io.IOException e) {
         --bufpos;
@@ -317,14 +318,14 @@ public class SimpleCharStream
   public SimpleCharStream(java.io.InputStream dstream, String encoding, int startline,
   int startcolumn, int buffersize) throws java.io.UnsupportedEncodingException
   {
-     this(encoding == null ? new java.io.InputStreamReader(dstream) : new java.io.InputStreamReader(dstream, encoding), startline, startcolumn, buffersize);
+     this(encoding == null ? new InputStreamReader(dstream) : new InputStreamReader(dstream, encoding), startline, startcolumn, buffersize);
   }
 
   /** Constructor. */
   public SimpleCharStream(java.io.InputStream dstream, int startline,
   int startcolumn, int buffersize)
   {
-     this(new java.io.InputStreamReader(dstream), startline, startcolumn, buffersize);
+     this(new InputStreamReader(dstream), startline, startcolumn, buffersize);
   }
 
   /** Constructor. */
@@ -357,14 +358,14 @@ public class SimpleCharStream
   public void ReInit(java.io.InputStream dstream, String encoding, int startline,
                           int startcolumn, int buffersize) throws java.io.UnsupportedEncodingException
   {
-     ReInit(encoding == null ? new java.io.InputStreamReader(dstream) : new java.io.InputStreamReader(dstream, encoding), startline, startcolumn, buffersize);
+     ReInit(encoding == null ? new InputStreamReader(dstream) : new InputStreamReader(dstream, encoding), startline, startcolumn, buffersize);
   }
 
   /** Reinitialise. */
   public void ReInit(java.io.InputStream dstream, int startline,
                           int startcolumn, int buffersize)
   {
-     ReInit(new java.io.InputStreamReader(dstream), startline, startcolumn, buffersize);
+     ReInit(new InputStreamReader(dstream), startline, startcolumn, buffersize);
   }
 
   /** Reinitialise. */
@@ -442,8 +443,8 @@ public class SimpleCharStream
         len = bufsize - tokenBegin + bufpos + 1 + inBuf;
      }
 
-     int i = 0, j = 0, k = 0;
-     int nextColDiff = 0, columnDiff = 0;
+     int i = 0, j = 0, k;
+     int nextColDiff, columnDiff = 0;
 
      while (i < len &&
             bufline[j = start % bufsize] == bufline[k = ++start % bufsize])
