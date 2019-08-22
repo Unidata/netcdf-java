@@ -42,9 +42,8 @@ public final class UnitSystemManager implements Serializable {
 	 * @throws UnitSystemException
 	 *             <code>instance()</code> was called earlier.
 	 */
-	public static synchronized void setInstance(final UnitSystem instance)
-			throws UnitSystemException {
-		if (instance != null) {
+	public static synchronized void setInstance(final UnitSystem instance) throws UnitSystemException {
+		if (UnitSystemManager.instance != null) {
 			throw new UnitSystemException("Unit system already used");
 		}
 		UnitSystemManager.instance = instance;

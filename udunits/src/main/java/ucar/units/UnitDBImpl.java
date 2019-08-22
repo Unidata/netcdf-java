@@ -5,7 +5,6 @@
 package ucar.units;
 
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -51,11 +50,7 @@ public class UnitDBImpl implements UnitDB, Serializable {
 	 *            The expected number of symbols.
 	 */
 	protected UnitDBImpl(final int nameCount, final int symbolCount) {
-		unitSet = new TreeSet<>(new Comparator<Unit>() {
-			public int compare(final Unit obj1, final Unit obj2) {
-				return (obj1).getName().compareTo((obj2).getName());
-			}
-		});
+		unitSet = new TreeSet<>((obj1, obj2) -> (obj1).getName().compareTo((obj2).getName()));
 		nameMap = new Hashtable<>(nameCount + 1);
 		symbolMap = new Hashtable<>(symbolCount + 1);
 	}
@@ -289,8 +284,7 @@ public class UnitDBImpl implements UnitDB, Serializable {
 	 *         <code>next()</code> method returns objects of type
 	 *         <code>Unit</code>.
 	 */
-	@SuppressWarnings("unchecked")
-	public final Iterator getIterator() {
+	public final Iterator<Unit>	 getIterator() {
 		return unitSet.iterator();
 	}
 

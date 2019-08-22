@@ -11,8 +11,7 @@ import java.io.Serializable;
  * 
  * @author Steven R. Emmerson
  */
-public abstract class BaseQuantity implements Base, Comparable<BaseQuantity>,
-		Serializable {
+public abstract class BaseQuantity implements Base, Comparable<BaseQuantity>, Serializable {
 	private static final long						serialVersionUID	= 1L;
 
 	/**

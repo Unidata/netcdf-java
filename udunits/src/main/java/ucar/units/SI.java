@@ -525,11 +525,11 @@ public final class SI extends UnitSystemImpl {
               .divideBy(kilogram)));
       rad = du("rad", "rd", new ScaledUnit(1e-2, gray));
       rem = du("rem", "rem", new ScaledUnit(1e-2, sievert));
-    } catch (final UnitException e) {
-      final String reason = e.getMessage();
-      System.err.println("Couldn't initialize class SI" + reason == null
-              ? ""
-              : (": " + reason));
+
+    } catch (UnitException e) {
+      String reason = e.getMessage();
+      System.err.printf("Couldn't initialize class SI %s",
+          reason == null ? "" : (": " + reason));
     }
 
     AMOUNT_OF_SUBSTANCE_UNIT = mole;

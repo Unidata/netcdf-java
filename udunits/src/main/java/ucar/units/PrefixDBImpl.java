@@ -158,8 +158,7 @@ public class PrefixDBImpl implements PrefixDB, Serializable {
 	 * @return An iterator over the entries in the database. The objects
 	 *         returned by the iterator will be of type <code>Prefix</code>.
 	 */
-	@SuppressWarnings("unchecked")
-	public Iterator iterator() {
+	public Iterator<Prefix> iterator() {
 		return nameSet.iterator();
 	}
 

@@ -12,7 +12,6 @@ package ucar.units;
 
 public final class ASCII_CharStream
 {
-  public static final boolean staticFlag = false;
   int bufsize;
   int available;
   int tokenBegin;
@@ -20,8 +19,8 @@ public final class ASCII_CharStream
   private int[] bufline;
   private int[] bufcolumn;
 
-  private int column = 0;
-  private int line = 1;
+  private int column;
+  private int line;
 
   private boolean prevCharIsCR = false;
   private boolean prevCharIsLF = false;
@@ -32,7 +31,7 @@ public final class ASCII_CharStream
   private int maxNextCharInd = 0;
   private int inBuf = 0;
 
-  private final void ExpandBuff(boolean wrapAround)
+  private void ExpandBuff(boolean wrapAround)
   {
      char[] newbuffer = new char[bufsize + 2048];
     int[] newbufline = new int[bufsize + 2048];
@@ -82,7 +81,7 @@ public final class ASCII_CharStream
      tokenBegin = 0;
   }
 
-  private final void FillBuff() throws java.io.IOException
+  private void FillBuff() throws java.io.IOException
   {
      if (maxNextCharInd == available)
      {
@@ -116,7 +115,6 @@ public final class ASCII_CharStream
         }
         else
            maxNextCharInd += i;
-        return;
      }
      catch(java.io.IOException e) {
         --bufpos;
@@ -136,7 +134,7 @@ public final class ASCII_CharStream
      return c;
   }
 
-  private final void UpdateLineColumn(char c)
+  private void UpdateLineColumn(char c)
   {
      column++;
 
@@ -347,8 +345,8 @@ public final class ASCII_CharStream
         len = bufsize - tokenBegin + bufpos + 1 + inBuf;
      }
 
-     int i = 0, j = 0, k = 0;
-     int nextColDiff = 0, columnDiff = 0;
+     int i = 0, j = 0, k;
+     int nextColDiff, columnDiff = 0;
 
      while (i < len &&
             bufline[j = start % bufsize] == bufline[k = ++start % bufsize])
