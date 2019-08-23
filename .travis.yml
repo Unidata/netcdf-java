@@ -26,6 +26,7 @@ env:
   matrix:
     - TASK=test-ncj
     - TASK=test-tds
+    - TASK=spotless
 
 addons:
   # See the note in travis/after_script.sh about the environment variables that Travis artifact uploading requires.
@@ -39,6 +40,13 @@ addons:
 jdk:
   - openjdk8
   - oraclejdk8
+
+matrix:
+  # only need to run spotless check on once
+  # so exclude one of the two JDKs
+  exclude:
+  - jdk: oraclejdk8
+    env: TASK=spotless
 
 # Skip the installation step entirely; we don't need it for Gradle builds.
 # https://docs.travis-ci.com/user/customizing-the-build#Skipping-the-Installation-Step
