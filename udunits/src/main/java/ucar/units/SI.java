@@ -20,9 +20,9 @@ public final class SI extends UnitSystemImpl {
    */
   private static/* final */ SI si;
 
-	/*
+  /*
    * Units corresponding to base quantities:
-	 */
+   */
 
   /**
    * The unit corresponding to the quantity of amount of substance.
@@ -69,9 +69,9 @@ public final class SI extends UnitSystemImpl {
    */
   public static final Unit TIME_UNIT;
 
-	/*
+  /*
    * Base units:
-	 */
+   */
 
   /**
    * Base unit of electric current. The ampere is that constant current which,
@@ -107,12 +107,12 @@ public final class SI extends UnitSystemImpl {
    * Base unit of length. The meter is the length of the path travelled by
    * light in vacuum during a time interval of 1/299 792 458 of a second.
    */
-  public static final BaseUnit METER;              // NIST
+  public static final BaseUnit METER; // NIST
 
   /**
    * Synonym for <code>METER</code>.
    */
-  public static final BaseUnit METRE;              // ISO
+  public static final BaseUnit METRE; // ISO
 
   /**
    * Base unit of amount of substance. The mole is the amount of substance of
@@ -128,12 +128,12 @@ public final class SI extends UnitSystemImpl {
    */
   public static final BaseUnit SECOND;
 
-	/*
+  /*
    * Supplementary units: These units are more accurately referred to as
-	 * "dimensionless derived units" -- for the purposes of this Java package,
-	 * however, they are BaseUnit-s. Note, however, that their <code>
-	 * isDimensionless()</code> method will return <code>true</code>.
-	 */
+   * "dimensionless derived units" -- for the purposes of this Java package,
+   * however, they are BaseUnit-s. Note, however, that their <code>
+   * isDimensionless()</code> method will return <code>true</code>.
+   */
 
   /**
    * Base unit of angular measure. The radian is the plane angle between two
@@ -150,9 +150,9 @@ public final class SI extends UnitSystemImpl {
    */
   public static final BaseUnit STERADIAN;
 
-	/*
+  /*
    * Derived units with special names and symbols:
-	 */
+   */
 
   /**
    * Special derived unit for the quantity of frequency.
@@ -237,10 +237,10 @@ public final class SI extends UnitSystemImpl {
    */
   public static final Unit LUX;
 
-	/*
-	 * Derived units with special names and symbols admitted for reasons of
-	 * safegarding human health.
-	 */
+  /*
+   * Derived units with special names and symbols admitted for reasons of
+   * safegarding human health.
+   */
 
   /**
    * Special derived unit for the quantity of activity of a radionuclide.
@@ -260,11 +260,11 @@ public final class SI extends UnitSystemImpl {
    */
   public static final Unit SIEVERT;
 
-	/*
-	 * Units outside the SI but accepted for use with the SI according to the
-	 * USA National Institute of Standards and Technology (see
-	 * <http://physics.nist.gov/cuu/Units/>):
-	 */
+  /*
+   * Units outside the SI but accepted for use with the SI according to the
+   * USA National Institute of Standards and Technology (see
+   * <http://physics.nist.gov/cuu/Units/>):
+   */
 
   /**
    * Special derived unit -- accepted for use with the SI -- for the quantity
@@ -306,29 +306,29 @@ public final class SI extends UnitSystemImpl {
    * Special derived unit -- accepted for use with the SI -- for the quantity
    * of volume.
    */
-  public static final Unit LITER;              // NIST
+  public static final Unit LITER; // NIST
 
   /**
    * Synomym for <code>LITER</code>.
    */
-  public static final Unit LITRE;              // ISO
+  public static final Unit LITRE; // ISO
 
   /**
    * Special derived unit -- accepted for use with the SI -- for the quantity
    * of mass.
    */
-  public static final Unit METRIC_TON;          // NIST
+  public static final Unit METRIC_TON; // NIST
 
   /**
    * Synomym for <code>METRIC_TON</code>.
    */
-  public static final Unit TONNE;              // ISO
+  public static final Unit TONNE; // ISO
 
-	/*
-	 * Units outside the SI but temporarily accepted for use with the SI
-	 * according to the USA National Institute of Standards and Technology (see
-	 * <http://physics.nist.gov/cuu/Units/>):
-	 */
+  /*
+   * Units outside the SI but temporarily accepted for use with the SI
+   * according to the USA National Institute of Standards and Technology (see
+   * <http://physics.nist.gov/cuu/Units/>):
+   */
 
   /**
    * Special derived unit -- temporarily accepted for use with the SI -- for
@@ -378,11 +378,11 @@ public final class SI extends UnitSystemImpl {
    */
   public static final Unit GAL;
 
-	/*
-	 * Units outside the SI but temporarily accepted for use with the SI until
-	 * the year 2000 according to the USA National Institute of Standards and
-	 * Technology (see <http://physics.nist.gov/cuu/Units/>):
-	 */
+  /*
+   * Units outside the SI but temporarily accepted for use with the SI until
+   * the year 2000 according to the USA National Institute of Standards and
+   * Technology (see <http://physics.nist.gov/cuu/Units/>):
+   */
 
   /**
    * Special derived unit -- temporarily accepted for use with the SI until
@@ -474,8 +474,7 @@ public final class SI extends UnitSystemImpl {
       steradian = bu("steradian", "sr", BaseQuantity.SOLID_ANGLE);
 
       hertz = du("hertz", "Hz", second.raiseTo(-1));
-      newton = du("newton", "N", kilogram.multiplyBy(meter).divideBy(
-              second.raiseTo(2)));
+      newton = du("newton", "N", kilogram.multiplyBy(meter).divideBy(second.raiseTo(2)));
       pascal = du("pascal", "Pa", newton.divideBy(meter.raiseTo(2)));
       joule = du("joule", "J", newton.multiplyBy(meter));
       watt = du("watt", "W", joule.divideBy(second));
@@ -487,8 +486,7 @@ public final class SI extends UnitSystemImpl {
       weber = du("weber", "Wb", volt.multiplyBy(second));
       tesla = du("tesla", "T", weber.divideBy(meter.raiseTo(2)));
       henry = du("henry", "H", weber.divideBy(ampere));
-      degree_celsius = du("degree celsius", "Cel", new OffsetUnit(kelvin,
-              273.15));
+      degree_celsius = du("degree celsius", "Cel", new OffsetUnit(kelvin, 273.15));
       lumen = du("lumen", "lm", candela.multiplyBy(steradian));
       lux = du("lux", "lx", lumen.divideBy(meter.raiseTo(2)));
 
@@ -499,37 +497,30 @@ public final class SI extends UnitSystemImpl {
       minute = du("minute", "min", new ScaledUnit(60, second));
       hour = du("hour", "h", new ScaledUnit(60, minute));
       day = du("day", "d", new ScaledUnit(24, hour));
-      arc_degree = du("arc degree", "deg", new ScaledUnit(Math.PI / 180,
-              radian));
-      arc_minute = du("arc minute", "'", new ScaledUnit(1. / 60.,
-              arc_degree));
-      arc_second = du("arc second", "\"", new ScaledUnit(1. / 60.,
-              arc_minute));
+      arc_degree = du("arc degree", "deg", new ScaledUnit(Math.PI / 180, radian));
+      arc_minute = du("arc minute", "'", new ScaledUnit(1. / 60., arc_degree));
+      arc_second = du("arc second", "\"", new ScaledUnit(1. / 60., arc_minute));
       liter = du("liter", "L", new ScaledUnit(1e-3, meter.raiseTo(3)));
       // exact. However, from 1901 to 1964, 1 liter = 1.000028 dm3
       metric_ton = du("metric ton", "t", new ScaledUnit(1e3, kilogram));
 
-      nautical_mile = du("nautical mile", "nmi", new ScaledUnit(1852,
-              meter));
+      nautical_mile = du("nautical mile", "nmi", new ScaledUnit(1852, meter));
       knot = du("knot", "kt", nautical_mile.divideBy(hour));
       angstrom = du("angstrom", null, new ScaledUnit(1e-10, meter));
       are = du("are", "are", new ScaledUnit(10, meter).raiseTo(2));
       hectare = du("hectare", "ha", new ScaledUnit(100, are));
       barn = du("barn", "b", new ScaledUnit(1e-28, meter.raiseTo(2)));
       bar = du("bar", "bar", new ScaledUnit(1e5, pascal));
-      gal = du("gal", "Gal", new ScaledUnit(1e-2, meter).divideBy(second
-              .raiseTo(2)));
+      gal = du("gal", "Gal", new ScaledUnit(1e-2, meter).divideBy(second.raiseTo(2)));
 
       curie = du("curie", "Ci", new ScaledUnit(3.7e10, becquerel));
-      roentgen = du("roentgen", "R", new ScaledUnit(2.58e-4, coulomb
-              .divideBy(kilogram)));
+      roentgen = du("roentgen", "R", new ScaledUnit(2.58e-4, coulomb.divideBy(kilogram)));
       rad = du("rad", "rd", new ScaledUnit(1e-2, gray));
       rem = du("rem", "rem", new ScaledUnit(1e-2, sievert));
 
     } catch (UnitException e) {
       String reason = e.getMessage();
-      System.err.printf("Couldn't initialize class SI %s",
-          reason == null ? "" : (": " + reason));
+      System.err.printf("Couldn't initialize class SI %s", reason == null ? "" : (": " + reason));
     }
 
     AMOUNT_OF_SUBSTANCE_UNIT = mole;
@@ -598,36 +589,32 @@ public final class SI extends UnitSystemImpl {
   /**
    * Factory method for constructing a base unit.
    *
-   * @param name     The name of the unit.
-   * @param symbol   The symbol for the unit.
+   * @param name The name of the unit.
+   * @param symbol The symbol for the unit.
    * @param quantity The base quantity of the unit.
    * @return The base unit corresponding to the arguments.
    */
-  private static BaseUnit bu(final String name, final String symbol,
-                             final BaseQuantity quantity) throws NameException,
-          UnitExistsException {
-    return BaseUnit.getOrCreate(UnitName.newUnitName(name, null, symbol),
-            quantity);
+  private static BaseUnit bu(final String name, final String symbol, final BaseQuantity quantity)
+      throws NameException, UnitExistsException {
+    return BaseUnit.getOrCreate(UnitName.newUnitName(name, null, symbol), quantity);
   }
 
   /**
    * Factory method for constructing a derived unit.
    *
-   * @param name       The name of the unit.
-   * @param symbol     The symbol for the unit.
+   * @param name The name of the unit.
+   * @param symbol The symbol for the unit.
    * @param definition The definition of the unit.
    * @return The derived unit corresponding to the arguments.
    */
-  private static Unit du(final String name, final String symbol,
-                         final Unit definition) throws NameException {
+  private static Unit du(final String name, final String symbol, final Unit definition) throws NameException {
     return definition.clone(UnitName.newUnitName(name, null, symbol));
   }
 
   /**
    * Constructs an SI system of units from nothing.
    */
-  private SI() throws UnitExistsException, NameException, PrefixDBException,
-          NoSuchUnitException {
+  private SI() throws UnitExistsException, NameException, PrefixDBException, NoSuchUnitException {
     super(baseUnitDB(), derivedUnitDB());
   }
 
@@ -635,7 +622,7 @@ public final class SI extends UnitSystemImpl {
    * Returns the base unit database of the SI.
    *
    * @return The base unit database of the SI.
-   * @throws NameException       Bad unit name.
+   * @throws NameException Bad unit name.
    * @throws UnitExistsException Attempt to redefine an existing unit.
    * @throws NoSuchUnitException Necessary unit not found.
    */
@@ -658,7 +645,7 @@ public final class SI extends UnitSystemImpl {
    * Returns the derived unit database of the SI.
    *
    * @return The derived unit database of the SI.
-   * @throws NameException       Bad unit name.
+   * @throws NameException Bad unit name.
    * @throws UnitExistsException Attempt to redefine an existing unit.
    * @throws NoSuchUnitException Necessary unit not found.
    */

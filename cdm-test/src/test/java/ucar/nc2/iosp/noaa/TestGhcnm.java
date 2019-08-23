@@ -5,7 +5,6 @@ import static ucar.nc2.iosp.noaa.Ghcnm.STNID;
 import static ucar.nc2.iosp.noaa.Ghcnm.STNS;
 import static ucar.nc2.iosp.noaa.Ghcnm.YEAR;
 import static ucar.nc2.iosp.noaa.Ghcnm.dataPattern;
-
 import com.google.re2j.Matcher;
 import java.io.IOException;
 import java.util.HashSet;
@@ -46,10 +45,12 @@ public class TestGhcnm {
         int stnid = sdata.getScalarInt(m);
         if (stns.contains(stnid)) {
           countDups++;
-          if (!wantDups) System.out.printf("  dup %d%n", stnid);
+          if (!wantDups)
+            System.out.printf("  dup %d%n", stnid);
         } else {
           stns.add(stnid);
-          if (wantDups) System.out.printf("  dup %d%n", stnid);
+          if (wantDups)
+            System.out.printf("  dup %d%n", stnid);
         }
       }
     }
@@ -70,7 +71,8 @@ public class TestGhcnm {
     if (matcher.matches()) {
       for (int i = 1; i <= matcher.groupCount(); i++) {
         String r = matcher.group(i);
-        if (r == null) continue;
+        if (r == null)
+          continue;
         int value = (int) Long.parseLong(r.trim());
         balony += value;
       }
@@ -89,9 +91,12 @@ public class TestGhcnm {
       String line;
       while (true) {
         line = raf.readLine();
-        if (line == null) break;
-        if (line.startsWith("#")) continue;
-        if (line.trim().length() == 0) continue;
+        if (line == null)
+          break;
+        if (line.startsWith("#"))
+          continue;
+        if (line.trim().length() == 0)
+          continue;
         balony += parseLine(line);
       }
     }
@@ -112,11 +117,13 @@ public class TestGhcnm {
           StructureMembers.Member m = sdata.findMember(YEAR);
           balony += sdata.getScalarInt(m);
 
-        /* StructureMembers sm = sdata.getStructureMembers();
-       for (StructureMembers.Member m : sm.getMembers()) {
-         Array data = sdata.getArray(m);
-         balony += data.getSize();
-       } */
+          /*
+           * StructureMembers sm = sdata.getStructureMembers();
+           * for (StructureMembers.Member m : sm.getMembers()) {
+           * Array data = sdata.getArray(m);
+           * balony += data.getSize();
+           * }
+           */
         }
       }
     }
@@ -134,17 +141,18 @@ public class TestGhcnm {
 
 
 /*
-
-  static public void main(String args[]) throws IOException {
-    //InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexrad.tbl");
-    InputStream is = new FileInputStream("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv");
-
-    List<TableParser.Record> recs = TableParser.readTable(is, "11,20d,30d,37d,68,73i,74,79i,81,83,85,87i,88,90i,106,107", 10);
-    Formatter f = new Formatter(System.out);
-    //f.format("CNTRY WMO ID      YEAR  ELEM  VAL DM QC DS%n");
-    for (TableParser.Record record : recs) {
-      record.toString(f);
-    }
-  }
+ * 
+ * static public void main(String args[]) throws IOException {
+ * //InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexrad.tbl");
+ * InputStream is = new FileInputStream("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv");
+ * 
+ * List<TableParser.Record> recs = TableParser.readTable(is, "11,20d,30d,37d,68,73i,74,79i,81,83,85,87i,88,90i,106,107",
+ * 10);
+ * Formatter f = new Formatter(System.out);
+ * //f.format("CNTRY WMO ID      YEAR  ELEM  VAL DM QC DS%n");
+ * for (TableParser.Record record : recs) {
+ * record.toString(f);
+ * }
+ * }
  */
 

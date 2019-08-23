@@ -9,43 +9,42 @@ import ucar.nc2.ogc.gml.NcFeaturePropertyType;
 import ucar.nc2.ogc.gml.NcReferenceType;
 import ucar.nc2.ogc.gml.NcTimeInstantPropertyType;
 import ucar.nc2.ogc.waterml.NcMeasurementTimeseriesType;
-
 import java.io.IOException;
 
 /**
  * Created by cwardgar on 2014/02/26.
  */
 public abstract class NcOMObservationType {
-    // wml2:Collection/wml2:observationMember/om:OM_Observation
-    public static OMObservationType initOmObservation(OMObservationType omObservation,
-            StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar) throws IOException {
-        // @gml:id
-        String id = MarshallingUtil.createIdForType(OMObservationType.class);
-        omObservation.setId(id);
+  // wml2:Collection/wml2:observationMember/om:OM_Observation
+  public static OMObservationType initOmObservation(OMObservationType omObservation,
+      StationTimeSeriesFeature stationFeat, VariableSimpleIF dataVar) throws IOException {
+    // @gml:id
+    String id = MarshallingUtil.createIdForType(OMObservationType.class);
+    omObservation.setId(id);
 
-        // om:phenomenonTime
-        NcTimeObjectPropertyType.initPhenomenonTime(omObservation.addNewPhenomenonTime(), stationFeat);
+    // om:phenomenonTime
+    NcTimeObjectPropertyType.initPhenomenonTime(omObservation.addNewPhenomenonTime(), stationFeat);
 
-        // om:resultTime
-        NcTimeInstantPropertyType.initResultTime(omObservation.addNewResultTime());
+    // om:resultTime
+    NcTimeInstantPropertyType.initResultTime(omObservation.addNewResultTime());
 
-        // om:observedProperty
-        NcReferenceType.initObservedProperty(omObservation.addNewObservedProperty(), dataVar);
+    // om:observedProperty
+    NcReferenceType.initObservedProperty(omObservation.addNewObservedProperty(), dataVar);
 
-        // om:procedure
-        NcOMProcessPropertyType.initProcedure(omObservation.addNewProcedure());
+    // om:procedure
+    NcOMProcessPropertyType.initProcedure(omObservation.addNewProcedure());
 
-        // om:featureOfInterest
-        NcFeaturePropertyType.initFeatureOfInterest(omObservation.addNewFeatureOfInterest(), stationFeat);
+    // om:featureOfInterest
+    NcFeaturePropertyType.initFeatureOfInterest(omObservation.addNewFeatureOfInterest(), stationFeat);
 
-        // om:result
-        MeasurementTimeseriesDocument measurementTimeseriesDoc = MeasurementTimeseriesDocument.Factory.newInstance();
-        NcMeasurementTimeseriesType.initMeasurementTimeseries(
-                measurementTimeseriesDoc.addNewMeasurementTimeseries(), stationFeat, dataVar);
-        omObservation.setResult(measurementTimeseriesDoc);
+    // om:result
+    MeasurementTimeseriesDocument measurementTimeseriesDoc = MeasurementTimeseriesDocument.Factory.newInstance();
+    NcMeasurementTimeseriesType.initMeasurementTimeseries(measurementTimeseriesDoc.addNewMeasurementTimeseries(),
+        stationFeat, dataVar);
+    omObservation.setResult(measurementTimeseriesDoc);
 
-        return omObservation;
-    }
+    return omObservation;
+  }
 
-    private NcOMObservationType() { }
+  private NcOMObservationType() {}
 }

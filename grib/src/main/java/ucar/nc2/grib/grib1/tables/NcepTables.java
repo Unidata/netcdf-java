@@ -14,7 +14,6 @@ import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -32,8 +31,8 @@ import java.util.Map;
 public class NcepTables extends Grib1Customizer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
-  private static Map<Integer, String> genProcessMap;  // shared by all instances
-  private static Map<Integer, VertCoordType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, String> genProcessMap; // shared by all instances
+  private static Map<Integer, VertCoordType> levelTypesMap; // shared by all instances
 
   NcepTables(Grib1ParamTables tables) {
     super(7, tables);
@@ -70,11 +69,11 @@ public class NcepTables extends Grib1Customizer {
     }
   }
 
-    /////////////////// local time types
+  /////////////////// local time types
   @Override
   public Grib1ParamTime getParamTime(Grib1SectionProductDefinition pds) {
-    int p1 = pds.getTimeValue1();  // octet 19
-    int p2 = pds.getTimeValue2();  // octet 20
+    int p1 = pds.getTimeValue1(); // octet 19
+    int p2 = pds.getTimeValue2(); // octet 20
     int timeRangeIndicator = pds.getTimeRangeIndicator(); // octet 21
     int n = pds.getNincluded();
 
@@ -105,7 +104,7 @@ public class NcepTables extends Grib1Customizer {
       case 136:
         forecastTime = p1;
         start = p1;
-        end = (n > 0) ? p1 + (n-1) * p2 : p1;  // LOOK ??
+        end = (n > 0) ? p1 + (n - 1) * p2 : p1; // LOOK ??
         isInterval = (n > 0);
         break;
 
@@ -121,27 +120,35 @@ public class NcepTables extends Grib1Customizer {
 
     switch (timeRangeIndicator) {
       case 128:
-        /* Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
-          Reference time is the start time of the first forecast, other forecasts at 24-hour intervals.
-          Number in Ave = number of forecasts used. */
+        /*
+         * Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
+         * Reference time is the start time of the first forecast, other forecasts at 24-hour intervals.
+         * Number in Ave = number of forecasts used.
+         */
         return "Average of forecast accumulations at 24 hour intervals, period = (RT + P1) to (RT + P2)";
 
       case 129:
-        /* Average of successive forecast accumulations. P1 = start of accumulation period.
-        P2 = end of accumulation period. Reference time is the start time of the first forecast,
-        other forecasts at (P2 - P1) intervals. Number in Ave = number of forecasts used */
+        /*
+         * Average of successive forecast accumulations. P1 = start of accumulation period.
+         * P2 = end of accumulation period. Reference time is the start time of the first forecast,
+         * other forecasts at (P2 - P1) intervals. Number in Ave = number of forecasts used
+         */
         return "Average of successive forecast accumulations, period = (RT + P1) to (RT + P2)";
 
       case 130:
-        /* Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
-        Reference time is the start time of the first forecast, other forecasts at 24-hour intervals.
-        Number in Ave = number of forecast used*/
+        /*
+         * Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
+         * Reference time is the start time of the first forecast, other forecasts at 24-hour intervals.
+         * Number in Ave = number of forecast used
+         */
         return "Average of forecast averages at 24 hour intervals, period = (RT + P1) to (RT + P2)";
 
       case 131:
-        /* Average of successive forecast averages. P1 = start of averaging period. P2 = end of averaging period.
-        Reference time is the start time of the first forecast, other forecasts at (P2 - P1) intervals.
-        Number in Ave = number of forecasts used*/
+        /*
+         * Average of successive forecast averages. P1 = start of averaging period. P2 = end of averaging period.
+         * Reference time is the start time of the first forecast, other forecasts at (P2 - P1) intervals.
+         * Number in Ave = number of forecasts used
+         */
         return "Average of successive forecast averages, period = (RT + P1) to (RT + P2)";
 
       case 132:
@@ -160,27 +167,35 @@ public class NcepTables extends Grib1Customizer {
         return "Climatological Standard Deviation of N analyses from the mean of the same N analyses, for analyses one year apart.";
 
       case 137:
-        /* Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
-        Reference time is the start time of the first forecast, other forecasts at 6-hour intervals.
-        Number in Ave = number of forecast used */
+        /*
+         * Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
+         * Reference time is the start time of the first forecast, other forecasts at 6-hour intervals.
+         * Number in Ave = number of forecast used
+         */
         return "Average of forecast accumulations at 6 hour intervals, period = (RT + P1) to (RT + P2)";
 
       case 138:
-        /* Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
-        Reference time is the start time of the first forecast, other forecasts at 6-hour intervals.
-        Number in Ave = number of forecast used */
+        /*
+         * Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
+         * Reference time is the start time of the first forecast, other forecasts at 6-hour intervals.
+         * Number in Ave = number of forecast used
+         */
         return "Average of forecast averages at 6 hour intervals, period = (RT + P1) to (RT + P2)";
 
       case 139:
-        /* Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
-        Reference time is the start time of the first forecast, other forecasts at 12-hour intervals.
-        Number in Ave = number of forecast used */
+        /*
+         * Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
+         * Reference time is the start time of the first forecast, other forecasts at 12-hour intervals.
+         * Number in Ave = number of forecast used
+         */
         return "Average of forecast accumulations at 12 hour intervals, period = (RT + P1) to (RT + P2)";
 
       case 140:
-        /* Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
-        Reference time is the start time of the first forecast, other forecasts at 12-hour intervals.
-        Number in Ave = number of forecast used */
+        /*
+         * Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
+         * Reference time is the start time of the first forecast, other forecasts at 12-hour intervals.
+         * Number in Ave = number of forecast used
+         */
         return "Average of forecast averages at 12 hour intervals, period = (RT + P1) to (RT + P2)";
 
       default:
@@ -194,8 +209,9 @@ public class NcepTables extends Grib1Customizer {
   @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null)
-        genProcessMap = getNcepGenProcess();
-    if (genProcessMap == null) return null;
+      genProcessMap = getNcepGenProcess();
+    if (genProcessMap == null)
+      return null;
 
     return genProcessMap.get(genProcess);
   }
@@ -203,7 +219,8 @@ public class NcepTables extends Grib1Customizer {
   // public so can be called from Grib2
   @Nullable
   public static Map<Integer, String> getNcepGenProcess() {
-    if (genProcessMap != null) return genProcessMap;
+    if (genProcessMap != null)
+      return genProcessMap;
     String path = "resources/grib1/ncep/ncepTableA.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
@@ -217,7 +234,7 @@ public class NcepTables extends Grib1Customizer {
         String desc = elem1.getChildText("description");
         result.put(code, desc);
       }
-      return Collections.unmodifiableMap(result);  // all at once - thread safe
+      return Collections.unmodifiableMap(result); // all at once - thread safe
 
     } catch (IOException | JDOMException ioe) {
       logger.error("Cant read NCEP Table 1 = " + path, ioe);
@@ -228,7 +245,8 @@ public class NcepTables extends Grib1Customizer {
   ///////////////////////////////////////// levels
   protected VertCoordType getLevelType(int code) {
     if (code < 129)
-      return super.getLevelType(code); // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
+      return super.getLevelType(code); // LOOK dont let NCEP override standard tables (??) looks like a conflict with
+                                       // level code 210 (!)
 
     if (levelTypesMap == null)
       levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");
@@ -236,7 +254,8 @@ public class NcepTables extends Grib1Customizer {
       return super.getLevelType(code);
 
     VertCoordType levelType = levelTypesMap.get(code);
-    if (levelType != null) return levelType;
+    if (levelType != null)
+      return levelType;
 
     return super.getLevelType(code);
   }

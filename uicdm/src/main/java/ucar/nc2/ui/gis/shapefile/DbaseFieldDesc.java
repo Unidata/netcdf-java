@@ -5,11 +5,10 @@
 package ucar.nc2.ui.gis.shapefile;
 
 import java.nio.charset.StandardCharsets;
-
 import java.io.DataInputStream;
 
 /**
- * A dBase field descriptor object.  Nothing public here, this is all just for
+ * A dBase field descriptor object. Nothing public here, this is all just for
  * use by DbaseFile and DbaseData.
  *
  * @author Kirk Water
@@ -29,8 +28,8 @@ class DbaseFieldDesc {
     }
   }
 
-  DbaseFieldDesc(String Name, byte Type, int FieldLength, int DecimalCount,
-                 int SetFlags, int WorkAreaID, byte MDXflag) {
+  DbaseFieldDesc(String Name, byte Type, int FieldLength, int DecimalCount, int SetFlags, int WorkAreaID,
+      byte MDXflag) {
     this.Name = Name;
     this.Type = Type;
     this.FieldLength = FieldLength;
@@ -66,16 +65,19 @@ class DbaseFieldDesc {
     Name = Name.trim();
     Type = Header[11];
     FieldLength = (int) Header[16];
-    if (FieldLength < 0) FieldLength += 256;
+    if (FieldLength < 0)
+      FieldLength += 256;
     DecimalCount = (int) Header[17];
-    if (DecimalCount < 0) DecimalCount += 256;
+    if (DecimalCount < 0)
+      DecimalCount += 256;
     return 0;
   }
 
   /* works for dbase 5.0 DOS and Windows too */
 
   private int read_dbase4(DataInputStream in) {
-    if (read_dbase3(in) != 0) return -1;
+    if (read_dbase3(in) != 0)
+      return -1;
     return 0;
   }
 

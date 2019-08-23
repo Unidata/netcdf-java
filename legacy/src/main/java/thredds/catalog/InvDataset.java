@@ -9,7 +9,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public abstract class InvDataset {
   // not inherited
 
   protected InvCatalog catalog; // null unless top level dataset.
-  protected InvDataset parent;  // null if top level dataset.
+  protected InvDataset parent; // null if top level dataset.
   protected String name;
   protected String id;
   protected List<InvDataset> datasets = new ArrayList<InvDataset>(); // local
@@ -78,11 +77,9 @@ public abstract class InvDataset {
    * @return full, heirarchical name of the dataset, which has all parent collection names.
    */
   public String getFullName() {
-    return (parent == null)
-        ? name
-        : (parent.getFullName() == null || parent.getFullName().length() == 0)
-        ? name
-        : parent.getFullName() + "/" + name;
+    return (parent == null) ? name
+        : (parent.getFullName() == null || parent.getFullName().length() == 0) ? name
+            : parent.getFullName() + "/" + name;
   }
 
   /**
@@ -209,7 +206,8 @@ public abstract class InvDataset {
    * @return the query fragment for this dataset
    */
   public String getSubsetUrl() {
-    if (getID() == null) return null;
+    if (getID() == null)
+      return null;
     return "catalog=" + getParentCatalog().baseURI.toString() + "&amp;dataset=" + getID();
   }
 
@@ -260,7 +258,8 @@ public abstract class InvDataset {
    * @return containing catalog.
    */
   public InvCatalog getParentCatalog() {
-    if (catalog != null) return catalog;
+    if (catalog != null)
+      return catalog;
     return (parent != null) ? parent.getParentCatalog() : null;
   }
 
@@ -299,9 +298,9 @@ public abstract class InvDataset {
    * <p>
    * The property may have been specified in the dataset or in an enclosing parent element.
    *
-   * @param name  the name of the property.
-   * @return  the string value of the <b>first</b> property with the given name or
-   *          {@code null} if no such property exists.
+   * @param name the name of the property.
+   * @return the string value of the <b>first</b> property with the given name or
+   *         {@code null} if no such property exists.
    */
   // TODO: Change the name of this method to something like "findFirstProperty".
   // This is an API change, so will have to be done in a major release.
@@ -346,7 +345,8 @@ public abstract class InvDataset {
    * @return first service that matches the given name, or null if none found.
    */
   public InvService findService(String name) {
-    if (name == null) return null;
+    if (name == null)
+      return null;
 
     // search local (but expanded) services
     for (InvService p : services) {
@@ -380,7 +380,8 @@ public abstract class InvDataset {
    * @return the resource control value for this dataset (inherited from ancestor datasets).
    */
   public String getRestrictAccess() {
-    if (restrictAccess != null) return restrictAccess;
+    if (restrictAccess != null)
+      return restrictAccess;
     // not found, look in parent
     if (parent != null)
       return parent.getRestrictAccess();
@@ -500,7 +501,8 @@ public abstract class InvDataset {
    */
   public ThreddsMetadata.Variables getVariables(String vocab) {
     ThreddsMetadata.Variables result = new ThreddsMetadata.Variables(vocab, null, null, null, null);
-    if (variables == null) return result;
+    if (variables == null)
+      return result;
 
     for (ThreddsMetadata.Variables vs : variables) {
       if (vs.getVocabulary().equals(vocab))
@@ -547,7 +549,8 @@ public abstract class InvDataset {
       return null;
     for (InvDocumentation doc : getDocumentation()) {
       String dtype = doc.getType();
-      if ((dtype != null) && dtype.equalsIgnoreCase(type)) return doc.getInlineContent();
+      if ((dtype != null) && dtype.equalsIgnoreCase(type))
+        return doc.getInlineContent();
     }
     return null;
   }

@@ -10,7 +10,6 @@ import ucar.ui.widget.PopupMenu;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -37,9 +36,9 @@ public class WmoCommonCodesPanel extends JPanel {
 
     codeTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(e -> {
-        TableBean csb = (TableBean) codeTable.getSelectedBean();
-        CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());
-        setEntries(cct);
+      TableBean csb = (TableBean) codeTable.getSelectedBean();
+      CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());
+      setEntries(cct);
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
@@ -49,11 +48,12 @@ public class WmoCommonCodesPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
         TableBean csb = (TableBean) codeTable.getSelectedBean();
-        if (csb == null) return;
+        if (csb == null)
+          return;
         CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());
         out.format("%s ==== %s%n", csb.getName(), csb.getResource());
         List<EntryBean> beans = setEntries(cct);
-        for (EntryBean bean: beans) {
+        for (EntryBean bean : beans) {
           bean.show(out);
         }
         compareTA.setText(out.toString());
@@ -106,8 +106,7 @@ public class WmoCommonCodesPanel extends JPanel {
     CommonCodeTable.Table t;
 
     // no-arg constructor
-    public TableBean() {
-    }
+    public TableBean() {}
 
     // create from a dataset
     public TableBean(CommonCodeTable.Table t) {
@@ -136,8 +135,7 @@ public class WmoCommonCodesPanel extends JPanel {
     CommonCodeTable.TableEntry te;
 
     // no-arg constructor
-    public EntryBean() {
-    }
+    public EntryBean() {}
 
     // create from a dataset
     public EntryBean(CommonCodeTable.TableEntry te) {
@@ -170,7 +168,7 @@ public class WmoCommonCodesPanel extends JPanel {
 
     private void show(Formatter f) {
       if (getCode() > 0)
-      f.format("%4d; %4d; %s%n", getCode(), getCode2(), getValue());
+        f.format("%4d; %4d; %s%n", getCode(), getCode2(), getValue());
     }
   }
 }

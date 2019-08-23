@@ -15,7 +15,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
@@ -30,17 +29,15 @@ public class TestAggExistingPromote extends TestCase {
   public void testWithDateFormatMark() throws Exception {
     String filename = "file:" + TestNcML.topDir + "aggExistingPromote.ncml";
 
-    String aggExistingPromote =
-          "<?xml version='1.0' encoding='UTF-8'?>\n"+
-          "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"+
-          "  <aggregation dimName='time' type='joinExisting' recheckEvery='4 sec'>\n"+
-          "    <promoteGlobalAttribute name='times' orgName='time_coverage_end' />\n"+
-          "    <scan dateFormatMark='CG#yyyyDDD_HHmmss' location='nc/cg/' suffix='.nc' subdirs='false' />\n"+
-          "  </aggregation>\n"+
-          "</netcdf>";
+    String aggExistingPromote = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "  <aggregation dimName='time' type='joinExisting' recheckEvery='4 sec'>\n"
+        + "    <promoteGlobalAttribute name='times' orgName='time_coverage_end' />\n"
+        + "    <scan dateFormatMark='CG#yyyyDDD_HHmmss' location='nc/cg/' suffix='.nc' subdirs='false' />\n"
+        + "  </aggregation>\n" + "</netcdf>";
 
-    NetcdfFile ncfile = NcMLReader.readNcML( new StringReader(aggExistingPromote), filename, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename+"\n"+ncfile);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingPromote), filename, null);
+    System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     // the promoted var
     Variable pv = ncfile.findVariable("times");
@@ -62,7 +59,7 @@ public class TestAggExistingPromote extends TestCase {
 
     logger.debug(NCdumpW.toString(datap, "time_coverage_end", null));
 
-    String[] resultp = new String[]{"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
+    String[] resultp = new String[] {"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
     int count = 0;
     IndexIterator dataI = datap.getIndexIterator();
     while (dataI.hasNext()) {
@@ -83,11 +80,11 @@ public class TestAggExistingPromote extends TestCase {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    //String units = time.getUnitsString();
-    //DateUnit du = new DateUnit(units);
-    //DateFormatter df = new DateFormatter();
+    // String units = time.getUnitsString();
+    // DateUnit du = new DateUnit(units);
+    // DateFormatter df = new DateFormatter();
 
-    String[] result = new String[] {"2006-06-07T12:00:00Z",   "2006-06-07T13:00:00Z",   "2006-06-07T14:00:00Z"};
+    String[] result = new String[] {"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
     try {
       Array data = time.read();
       assert data.getRank() == 1;
@@ -101,9 +98,9 @@ public class TestAggExistingPromote extends TestCase {
       dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
         String val = (String) dataI.getObjectNext();
-        //Date dateVal = du.makeDate(val);
-        //String dateS = df.toDateTimeStringISO(dateVal);
-        assert val.equals( result[count]) : val+" != "+ result[count];
+        // Date dateVal = du.makeDate(val);
+        // String dateS = df.toDateTimeStringISO(dateVal);
+        assert val.equals(result[count]) : val + " != " + result[count];
         count++;
       }
 
@@ -112,60 +109,56 @@ public class TestAggExistingPromote extends TestCase {
       assert false;
     }
 
-    /* String[] result = new String[]{"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
-    Array data = time.read();
-    assert data.getRank() == 1;
-    assert data.getSize() == 3;
-    assert data.getShape()[0] == 3;
-    assert data.getElementType() == String.class;
-
-    NCdumpW.printArray(data, "time coord", System.out, null);
-
-    count = 0;
-    dataI = data.getIndexIterator();
-    while (dataI.hasNext()) {
-      String s = (String) dataI.getObjectNext();
-      assert s.equals(result[count]) : s;
-      count++;
-    } */
+    /*
+     * String[] result = new String[]{"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
+     * Array data = time.read();
+     * assert data.getRank() == 1;
+     * assert data.getSize() == 3;
+     * assert data.getShape()[0] == 3;
+     * assert data.getElementType() == String.class;
+     * 
+     * NCdumpW.printArray(data, "time coord", System.out, null);
+     * 
+     * count = 0;
+     * dataI = data.getIndexIterator();
+     * while (dataI.hasNext()) {
+     * String s = (String) dataI.getObjectNext();
+     * assert s.equals(result[count]) : s;
+     * count++;
+     * }
+     */
 
     ncfile.close();
   }
 
   /*
-  <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-
-  <aggregation dimName="time" type="joinExisting">
-    <promoteGlobalAttribute name="title" />
-    <netcdf location="file:src/test/data/ncml/nc/jan.nc"/>
-    <netcdf location="file:src/test/data/ncml/nc/feb.nc"/>
-  </aggregation>
-
-</netcdf>
+   * <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+   * 
+   * <aggregation dimName="time" type="joinExisting">
+   * <promoteGlobalAttribute name="title" />
+   * <netcdf location="file:src/test/data/ncml/nc/jan.nc"/>
+   * <netcdf location="file:src/test/data/ncml/nc/feb.nc"/>
+   * </aggregation>
+   * 
+   * </netcdf>
    */
   public void testNotOne() throws IOException, InvalidRangeException {
     String filename = "file:" + TestNcML.topDir + "aggExistingPromote2.ncml";
 
-    String aggExistingPromote2 =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-        "  <aggregation dimName='time' type='joinExisting'>\n" +
-        "    <promoteGlobalAttribute name='title' />\n" +
-        "    <promoteGlobalAttribute name='month' />\n" +
-        "    <promoteGlobalAttribute name='vector' />\n" +
-        "    <netcdf location='file:src/test/data/ncml/nc/jan.nc'>\n" +
-        "      <attribute name='month' value='jan'/>\n" +
-        "      <attribute name='vector' value='1 2 3' type='int'/>\n" +
-        "    </netcdf>\n" +
-        "    <netcdf location='file:src/test/data/ncml/nc/feb.nc'>\n" +
-        "      <attribute name='month' value='feb'/>\n" +
-        "      <attribute name='vector' value='4 5 6' type='int'/>\n" +
-        "    </netcdf>\n" +
-        "  </aggregation>\n" +
-        "</netcdf>";
+    String aggExistingPromote2 = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "  <aggregation dimName='time' type='joinExisting'>\n" + "    <promoteGlobalAttribute name='title' />\n"
+        + "    <promoteGlobalAttribute name='month' />\n" + "    <promoteGlobalAttribute name='vector' />\n"
+        + "    <netcdf location='file:src/test/data/ncml/nc/jan.nc'>\n"
+        + "      <attribute name='month' value='jan'/>\n"
+        + "      <attribute name='vector' value='1 2 3' type='int'/>\n" + "    </netcdf>\n"
+        + "    <netcdf location='file:src/test/data/ncml/nc/feb.nc'>\n"
+        + "      <attribute name='month' value='feb'/>\n"
+        + "      <attribute name='vector' value='4 5 6' type='int'/>\n" + "    </netcdf>\n" + "  </aggregation>\n"
+        + "</netcdf>";
 
 
-    NetcdfFile ncfile = NcMLReader.readNcML( new StringReader(aggExistingPromote2), filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingPromote2), filename, null);
     Dimension dim = ncfile.findDimension("time");
 
     // the promoted var

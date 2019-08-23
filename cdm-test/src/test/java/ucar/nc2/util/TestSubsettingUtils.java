@@ -8,7 +8,6 @@ import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Random;
@@ -20,11 +19,12 @@ import java.util.Random;
  * @since 3/25/12
  */
 public class TestSubsettingUtils {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public static void subsetVariables(String filename, String varName, int ntrials) throws InvalidRangeException, IOException {
-    //varName = NetcdfFile.makeValidCdmObjectName(varName);
-    System.out.println("testVariableSubset="+filename+","+varName);
+  public static void subsetVariables(String filename, String varName, int ntrials)
+      throws InvalidRangeException, IOException {
+    // varName = NetcdfFile.makeValidCdmObjectName(varName);
+    System.out.println("testVariableSubset=" + filename + "," + varName);
 
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
 
@@ -64,8 +64,9 @@ public class TestSubsettingUtils {
     }
   }
 
-   public static void subsetVariables(String filename, String varName, Section s) throws InvalidRangeException, IOException {
-    System.out.println("testVariableSubset="+filename+","+varName);
+  public static void subsetVariables(String filename, String varName, Section s)
+      throws InvalidRangeException, IOException {
+    System.out.println("testVariableSubset=" + filename + "," + varName);
 
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       Variable v = ncfile.findVariable(varName);
@@ -75,23 +76,23 @@ public class TestSubsettingUtils {
   }
 
   public static void subsetVariable(Variable v, Section s, Array fullData) throws IOException, InvalidRangeException {
-      System.out.println("   section="+s);
+    System.out.println("   section=" + s);
 
-      // read just that
-      Array sdata = v.read(s);
-      assert sdata.getRank() == s.getRank();
-      int[] sshape = sdata.getShape();
-      for (int i = 0; i < sshape.length; i++)
-        assert sshape[i] == s.getShape(i);
+    // read just that
+    Array sdata = v.read(s);
+    assert sdata.getRank() == s.getRank();
+    int[] sshape = sdata.getShape();
+    for (int i = 0; i < sshape.length; i++)
+      assert sshape[i] == s.getShape(i);
 
-      // compare with logical section
-      Array Asection = fullData.sectionNoReduce(s.getRanges());
-      int[] ashape = Asection.getShape();
-      assert (ashape.length == sdata.getRank());
-      for (int i = 0; i < ashape.length; i++)
-        assert sshape[i] == ashape[i];
+    // compare with logical section
+    Array Asection = fullData.sectionNoReduce(s.getRanges());
+    int[] ashape = Asection.getShape();
+    assert (ashape.length == sdata.getRank());
+    for (int i = 0; i < ashape.length; i++)
+      assert sshape[i] == ashape[i];
 
-      ucar.unidata.util.test.CompareNetcdf.compareData(sdata, Asection);
+    ucar.unidata.util.test.CompareNetcdf.compareData(sdata, Asection);
   }
 
   private static Section randomSubset(Section all, int stride) throws InvalidRangeException {
@@ -105,6 +106,7 @@ public class TestSubsettingUtils {
   }
 
   private static Random r = new Random(System.currentTimeMillis());
+
   private static int random(int first, int last) {
     return first + r.nextInt(last - first + 1);
   }

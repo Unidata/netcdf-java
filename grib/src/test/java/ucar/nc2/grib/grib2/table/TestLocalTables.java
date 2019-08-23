@@ -2,7 +2,6 @@ package ucar.nc2.grib.grib2.table;
 
 import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.grib.grib2.table.EccodesCodeTable.LATEST_VERSION;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -29,7 +28,7 @@ public class TestLocalTables {
 
   @Test
   public void testKmaTable() {
-    Grib2Tables kma = Grib2Tables.factory(40,-1,-1,-1,-1);
+    Grib2Tables kma = Grib2Tables.factory(40, -1, -1, -1, -1);
     assertThat(kma).isNotNull();
     assertThat(kma.getType()).isEqualTo(Grib2TablesId.Type.kma);
     assertThat(kma.getParameters()).isNotEmpty();
@@ -46,11 +45,7 @@ public class TestLocalTables {
     assertThat(ecmwfTable.getType()).isEqualTo(Grib2TablesId.Type.eccodes);
 
     for (String tableName : tableOverrides) {
-      Iterator<String> tokens = Splitter.on('.')
-          .trimResults()
-          .omitEmptyStrings()
-          .split(tableName)
-          .iterator();
+      Iterator<String> tokens = Splitter.on('.').trimResults().omitEmptyStrings().split(tableName).iterator();
 
       int discipline = Integer.parseInt(tokens.next());
       int category = Integer.parseInt(tokens.next());

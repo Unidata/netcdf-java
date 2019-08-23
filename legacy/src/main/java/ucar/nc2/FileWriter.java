@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import ucar.ma2.*;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 
@@ -24,8 +23,10 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
  * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
  * then the new file is filled with fill values, like ncgen.
  * <p/>
- * <p> Use the static methods writeToFile() to copy an entire file. Create a FileWriter object to control exactly
- * what gets written to the file. </p>
+ * <p>
+ * Use the static methods writeToFile() to copy an entire file. Create a FileWriter object to control exactly
+ * what gets written to the file.
+ * </p>
  *
  * @deprecated use FileWriter2
  * @author caron
@@ -52,7 +53,7 @@ public class FileWriter {
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
    * Cannot do groups, etc, until we get a Netcdf-4 file format.
    *
-   * @param fileIn      write from this NetcdfFile
+   * @param fileIn write from this NetcdfFile
    * @param fileOutName write to this local file
    * @return NetcdfFile that was written to. It remains open for reading or writing.
    * @throws IOException on read or write error
@@ -62,47 +63,48 @@ public class FileWriter {
   }
 
   /**
-    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
-    * Cannot do groups, etc, until we get a Netcdf-4 file format.
-    *
-    * @param fileIn      write from this NetcdfFile
-    * @param fileOutName write to this local file
-    * @param fill        use fill mode
-    * @return NetcdfFile that was written to. It remains open for reading or writing.
-    * @throws IOException on read or write error
-    */
-   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill) throws IOException {
-     return writeToFile(fileIn, fileOutName, fill, false, null);
-   }
+   * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
+   * Cannot do groups, etc, until we get a Netcdf-4 file format.
+   *
+   * @param fileIn write from this NetcdfFile
+   * @param fileOutName write to this local file
+   * @param fill use fill mode
+   * @return NetcdfFile that was written to. It remains open for reading or writing.
+   * @throws IOException on read or write error
+   */
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill) throws IOException {
+    return writeToFile(fileIn, fileOutName, fill, false, null);
+  }
 
   /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
    * Cannot do groups, etc, until we get a Netcdf-4 file format.
    *
-   * @param fileIn            write from this NetcdfFile
-   * @param fileOutName       write to this local file
-   * @param fill              use fill mode
-   * @param isLargeFile       if true, make large file format (> 2Gb offsets)
+   * @param fileIn write from this NetcdfFile
+   * @param fileOutName write to this local file
+   * @param fill use fill mode
+   * @param isLargeFile if true, make large file format (> 2Gb offsets)
    * @return NetcdfFile that was written to. It remains open for reading or writing.
    * @throws IOException on read or write error
    */
-  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, boolean isLargeFile) throws IOException {
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, boolean isLargeFile)
+      throws IOException {
     return writeToFile(fileIn, fileOutName, fill, isLargeFile, null);
   }
 
   /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
    *
-   * @param fileIn            write from this NetcdfFile
-   * @param fileOutName       write to this local file
-   * @param fill              use fill mode
-   * @param isLargeFile       if true, make large file format (> 2Gb offsets)
+   * @param fileIn write from this NetcdfFile
+   * @param fileOutName write to this local file
+   * @param fill use fill mode
+   * @param isLargeFile if true, make large file format (> 2Gb offsets)
    * @param progressListeners List of progress listeners, use null or empty list if there are none.
    * @return NetcdfFile that was written. It remains open for reading or writing.
    * @throws IOException on read or write error
    */
   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, boolean isLargeFile,
-                                       List<FileWriterProgressListener> progressListeners) throws IOException {
+      List<FileWriterProgressListener> progressListeners) throws IOException {
 
     NetcdfFileWriteable ncfile = null;
     try {
@@ -124,16 +126,18 @@ public class FileWriter {
           useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
         else
           useAtt = ncfile.addGlobalAttribute(useName, att.getNumericValue());
-        if (debug) System.out.println("add gatt= " + useAtt);
+        if (debug)
+          System.out.println("add gatt= " + useAtt);
       }
 
       Map<String, Dimension> dimHash = new HashMap<>();
       for (Dimension oldD : fileIn.getDimensions()) {
         String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
-        Dimension newD = ncfile.addDimension(useName, oldD.isUnlimited() ? 0 : oldD.getLength(),
-                oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+        Dimension newD = ncfile.addDimension(useName, oldD.isUnlimited() ? 0 : oldD.getLength(), oldD.isShared(),
+            oldD.isUnlimited(), oldD.isVariableLength());
         dimHash.put(newD.getShortName(), newD);
-        if (debug) System.out.println("add dim= " + newD);
+        if (debug)
+          System.out.println("add dim= " + newD);
       }
 
       // Variables
@@ -181,7 +185,8 @@ public class FileWriter {
 
         String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
         Variable v = ncfile.addVariable(varName, newType, dims);
-        if (debug) System.out.println("add var= " + v);
+        if (debug)
+          System.out.println("add var= " + v);
 
         // attributes
         List<Attribute> attList = oldVar.getAttributes();
@@ -214,13 +219,15 @@ public class FileWriter {
 
       double total = copyVarData(ncfile, varlist, recordVar, progressListeners);
       ncfile.flush();
-      if (debug) System.out.println("FileWriter done total bytes = " + total);
+      if (debug)
+        System.out.println("FileWriter done total bytes = " + total);
 
       fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
       return ncfile;
 
     } catch (Throwable t) {
-      if (ncfile != null) ncfile.close();
+      if (ncfile != null)
+        ncfile.close();
       throw t;
     }
   }
@@ -231,18 +238,18 @@ public class FileWriter {
   }
 
   /**
-   * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
+   * Write data from varList into new file. Read/Write a maximum of maxSize bytes at a time.
    * When theres a record variable, its much more efficient to use it.
    *
-   * @param ncfile            write tot this file
-   * @param varlist           list of varibles from the original file, with data in them
-   * @param recordVar         the record variable from the original file, or null means dont use record variables
+   * @param ncfile write tot this file
+   * @param varlist list of varibles from the original file, with data in them
+   * @param recordVar the record variable from the original file, or null means dont use record variables
    * @param progressListeners List of progress event listeners, may be null
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
   public static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar,
-                                   List<FileWriterProgressListener> progressListeners) throws IOException {
+      List<FileWriterProgressListener> progressListeners) throws IOException {
 
     boolean useRecordDimension = (recordVar != null);
 
@@ -255,7 +262,8 @@ public class FileWriter {
         continue;
 
       if (debug)
-        System.out.println("write var= " + oldVar.getShortName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
+        System.out.println(
+            "write var= " + oldVar.getShortName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
 
       long size = oldVar.getSize() * oldVar.getElementSize();
       total += size;
@@ -270,8 +278,8 @@ public class FileWriter {
 
     // write record data
     if (useRecordDimension) {
-      int[] origin = new int[]{0};
-      int[] size = new int[]{1};
+      int[] origin = new int[] {0};
+      int[] size = new int[] {1};
 
       int nrecs = (int) recordVar.getSize();
       int sdataSize = recordVar.getElementSize();
@@ -281,8 +289,9 @@ public class FileWriter {
         origin[0] = count;
         try {
           Array recordData = recordVar.read(origin, size);
-          ncfile.write("record", origin, recordData);  // rather magic here - only writes the ones in ncfile !!
-          if (debug && (count == 0)) System.out.println("write record size = " + sdataSize);
+          ncfile.write("record", origin, recordData); // rather magic here - only writes the ones in ncfile !!
+          if (debug && (count == 0))
+            System.out.println("write record size = " + sdataSize);
         } catch (InvalidRangeException e) {
           e.printStackTrace();
           break;
@@ -292,7 +301,8 @@ public class FileWriter {
       }
       total += totalRecordBytes;
       totalRecordBytes /= 1000 * 1000;
-      if (debug) System.out.println("write record var; total = " + totalRecordBytes + " Mbytes # recs=" + nrecs);
+      if (debug)
+        System.out.println("write record var; total = " + totalRecordBytes + " Mbytes # recs=" + nrecs);
     }
     return total;
   }
@@ -306,7 +316,7 @@ public class FileWriter {
       if (oldVar.getDataType() == DataType.STRING) {
         data = convertToChar(ncfile.findVariable(newName), data);
       }
-      if (data.getSize() > 0)  // zero when record dimension = 0
+      if (data.getSize() > 0) // zero when record dimension = 0
         ncfile.write(newName, data);
 
     } catch (InvalidRangeException e) {
@@ -316,7 +326,7 @@ public class FileWriter {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // contributed by  cwardgar@usgs.gov 4/12/2010
+  // contributed by cwardgar@usgs.gov 4/12/2010
 
   /**
    * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
@@ -336,7 +346,7 @@ public class FileWriter {
      * and with {@code numElems <= maxChunkElems}.
      *
      * @param maxChunkElems the maximum number of elements in the chunk shape. The actual element count of the shape
-     *                      returned is likely to be different, and can be found with {@link Index#computeSize}.
+     *        returned is likely to be different, and can be found with {@link Index#computeSize}.
      * @return the shape of the largest possible contiguous chunk.
      */
     public int[] computeChunkShape(long maxChunkElems) {
@@ -357,13 +367,14 @@ public class FileWriter {
    * Copies data from {@code oldVar} to {@code ncfile}. The writes are done in a series of chunks no larger than
    * {@code maxChunkSize} bytes.
    *
-   * @param ncfile       the NetCDF file to write to.
-   * @param oldVar       a variable from the original file to copy data from.
+   * @param ncfile the NetCDF file to write to.
+   * @param oldVar a variable from the original file to copy data from.
    * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
    * @param progressListeners list of listeners
    * @throws IOException if an I/O error occurs.
    */
-  private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, long maxChunkSize, List<FileWriterProgressListener> progressListeners) throws IOException {
+  private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, long maxChunkSize,
+      List<FileWriterProgressListener> progressListeners) throws IOException {
     String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     long byteWriteTotal = 0;
@@ -405,7 +416,7 @@ public class FileWriter {
 
           ncfile.write(newName, chunkOrigin, data);
           if (debugWrite) {
-            System.out.println(" write " + data.getSize() + " bytes at "+ new Section(chunkOrigin, chunkShape));
+            System.out.println(" write " + data.getSize() + " bytes at " + new Section(chunkOrigin, chunkShape));
           }
           byteWriteTotal += data.getSize();
 
@@ -452,7 +463,7 @@ public class FileWriter {
    * These are mostly convenience methods on top of NetcdfFileWriteable.
    *
    * @param fileOutName file name to write to.
-   * @param fill        use fill mode or not
+   * @param fill use fill mode or not
    * @throws java.io.IOException on bad
    */
   public FileWriter(String fileOutName, boolean fill) throws IOException {
@@ -465,7 +476,7 @@ public class FileWriter {
    * These are mostly convenience methods on top of NetcdfFileWriteable.
    *
    * @param fileOutName file name to write to.
-   * @param fill        use fill mode or not
+   * @param fill use fill mode or not
    * @param isLargeFile true if large file format
    * @param extraHeaderBytes add extra bytes in the header, or -1
    * @throws java.io.IOException on bad
@@ -506,7 +517,7 @@ public class FileWriter {
    * Write a Variable attribute to the file.
    *
    * @param varName name of variable to attach attribute to
-   * @param att     take attribute name, value, from here
+   * @param att take attribute name, value, from here
    */
   public void writeAttribute(String varName, Attribute att) {
     String attName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
@@ -527,10 +538,11 @@ public class FileWriter {
    */
   public Dimension writeDimension(Dimension dim) {
     String useName = N3iosp.makeValidNetcdfObjectName(dim.getShortName());
-    Dimension newDim = ncfile.addDimension(useName, dim.isUnlimited() ? 0 : dim.getLength(),
-            dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
+    Dimension newDim = ncfile.addDimension(useName, dim.isUnlimited() ? 0 : dim.getLength(), dim.isShared(),
+        dim.isUnlimited(), dim.isVariableLength());
     dimHash.put(useName, newDim);
-    if (debug) System.out.println("write dim= " + newDim);
+    if (debug)
+      System.out.println("write dim= " + newDim);
     return newDim;
   }
 
@@ -577,7 +589,8 @@ public class FileWriter {
 
 
     varList.add(oldVar);
-    if (debug) System.out.println("write var= " + oldVar);
+    if (debug)
+      System.out.println("write var= " + oldVar);
 
     List<Attribute> attList = oldVar.getAttributes();
     for (Attribute att : attList)
@@ -604,10 +617,10 @@ public class FileWriter {
    *
    * @param recordVar the record Variable.
    *
-  public void setRecordVariable(Structure recordVar) {
-    this.recordVar = recordVar;
-  }
-  */
+   * public void setRecordVariable(Structure recordVar) {
+   * this.recordVar = recordVar;
+   * }
+   */
 
   /**
    * Call this when all attributes, dimensions, and variables have been added. The data from all
@@ -621,7 +634,8 @@ public class FileWriter {
 
     double total = copyVarData(ncfile, varList, recordVar, null);
     ncfile.close();
-    if (debug) System.out.println("FileWriter finish total bytes = " + total);
+    if (debug)
+      System.out.println("FileWriter finish total bytes = " + total);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -689,39 +703,45 @@ public class FileWriter {
   }
 
   ////////////////////
-  // deprecated - dont support  delay anymore
+  // deprecated - dont support delay anymore
 
   /**
    * @deprecated
    */
-  public static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay) throws IOException {
-    return copyVarData( ncfile, varlist, recordVar, null);
+  public static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay)
+      throws IOException {
+    return copyVarData(ncfile, varlist, recordVar, null);
   }
 
 
   /**
    * @deprecated
    */
-  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay) throws IOException {
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay)
+      throws IOException {
     return writeToFile(fileIn, fileOutName, fill, false, null);
   }
 
   /**
    * @deprecated
    */
-  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay, boolean isLargeFile) throws IOException {
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay,
+      boolean isLargeFile) throws IOException {
     return writeToFile(fileIn, fileOutName, fill, isLargeFile, null);
   }
 
-    //////////////////////////////////////
+  //////////////////////////////////////
 
   /**
    * Main program.
-   * <p><strong>ucar.nc2.FileWriter -in fileIn -out fileOut</strong>.
-   * <p>where: <ul>
-   * <li> fileIn : path of any CDM readable file
-   * <li> fileOut: local pathname where netdf-3 file will be written
-   * <li> delay: if set and file has record dimension, delay between writing each record, for testing files that
+   * <p>
+   * <strong>ucar.nc2.FileWriter -in fileIn -out fileOut</strong>.
+   * <p>
+   * where:
+   * <ul>
+   * <li>fileIn : path of any CDM readable file
+   * <li>fileOut: local pathname where netdf-3 file will be written
+   * <li>delay: if set and file has record dimension, delay between writing each record, for testing files that
    * are growing
    * </ol>
    *
@@ -738,8 +758,10 @@ public class FileWriter {
     int delay = 0;
     for (int i = 0; i < arg.length; i++) {
       String s = arg[i];
-      if (s.equalsIgnoreCase("-in")) datasetIn = arg[i + 1];
-      if (s.equalsIgnoreCase("-out")) datasetOut = arg[i + 1];
+      if (s.equalsIgnoreCase("-in"))
+        datasetIn = arg[i + 1];
+      if (s.equalsIgnoreCase("-out"))
+        datasetOut = arg[i + 1];
     }
     if ((datasetIn == null) || (datasetOut == null)) {
       usage();

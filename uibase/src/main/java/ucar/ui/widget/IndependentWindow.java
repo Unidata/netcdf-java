@@ -18,18 +18,20 @@ import javax.swing.UIManager;
 import ucar.ui.util.ScreenUtils;
 
 /**
- *  Provides common L&F for managing independent windows
- *  Will reset L&F
+ * Provides common L&F for managing independent windows
+ * Will reset L&F
  *
- *  example: <pre>
-     infoWindow = new IndependentWindow("Dataset Information");
-     datasetInfoTA = new TextHistoryPane(500, 100, true);
-     Container cp = infoWindow.getContentPane();
-     cp.add(datasetInfoTA, BorderLayout.CENTER);
-     infoWindow.pack();
-     infoWindow.setSize(700,700);
-     infoWindow.setLocation(100,100);
- *   </pre>
+ * example:
+ * 
+ * <pre>
+ * infoWindow = new IndependentWindow("Dataset Information");
+ * datasetInfoTA = new TextHistoryPane(500, 100, true);
+ * Container cp = infoWindow.getContentPane();
+ * cp.add(datasetInfoTA, BorderLayout.CENTER);
+ * infoWindow.pack();
+ * infoWindow.setSize(700, 700);
+ * infoWindow.setLocation(100, 100);
+ * </pre>
  *
  * @author John Caron
  */
@@ -37,9 +39,11 @@ public class IndependentWindow extends JFrame {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IndependentWindow.class);
 
 
-  /** constructor
-     @param title       Window title
-     @param iconImage   image to show when iconified
+  /**
+   * constructor
+   * 
+   * @param title Window title
+   * @param iconImage image to show when iconified
    */
   public IndependentWindow(String title, Image iconImage) {
     super(title);
@@ -53,19 +57,21 @@ public class IndependentWindow extends JFrame {
     });
 
     if (null != iconImage)
-      setIconImage( iconImage);
+      setIconImage(iconImage);
   }
 
-  /** constructor
-     @param title       Window title.
-     @param comp the COmponent to put in the window.
+  /**
+   * constructor
+   * 
+   * @param title Window title.
+   * @param comp the COmponent to put in the window.
    */
   public IndependentWindow(String title, Image iconImage, Component comp) {
     this(title, iconImage);
     setComponent(comp);
   }
 
-  public void setComponent(Component comp ) {
+  public void setComponent(Component comp) {
     Container cp = getContentPane();
     cp.removeAll();
     cp.add(comp, BorderLayout.CENTER);
@@ -73,7 +79,8 @@ public class IndependentWindow extends JFrame {
       pack();
     } catch (IllegalArgumentException e) {
       // Ticket ID: HEM-237554
-      // I'm using IceWM window manager under Linux, and it does not support changing the icon on the top left side of the window.
+      // I'm using IceWM window manager under Linux, and it does not support changing the icon on the top left side of
+      // the window.
       // This crashes the whole thing. I dont think this should be a fatal exception.
       // It would be helpful for future releases to catch this exception and let the program go ahead without the icon.
       log.error("Possible problem setting icon (?)", e);
@@ -82,7 +89,7 @@ public class IndependentWindow extends JFrame {
 
   /** show the window. */
   public void show() {
-    setState( Frame.NORMAL );   // deiconify if needed
+    setState(Frame.NORMAL); // deiconify if needed
     super.toFront();
     // need to put on event thread
     SwingUtilities.invokeLater(new Runnable() {
@@ -94,7 +101,8 @@ public class IndependentWindow extends JFrame {
 
   /** show if not iconified */
   public void showIfNotIconified() {
-    if (getState() == Frame.ICONIFIED) return;
+    if (getState() == Frame.ICONIFIED)
+      return;
     // need to put on event thread
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {

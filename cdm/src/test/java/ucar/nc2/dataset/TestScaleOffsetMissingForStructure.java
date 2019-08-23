@@ -5,13 +5,11 @@
 package ucar.nc2.dataset;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -95,24 +93,26 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
     StructureMembers.Member m = sdata.findMember("testScale");
     assert null != m;
 
-    /* LOOK heres the problem where StructureData.getScalarXXX doesnt use enhanced values
-    float dval = sdata.getScalarFloat( m.getName());
-    assert Float.isNaN(dval) : dval;
-
-    int count = 0;
-    StructureDataIterator siter = s.getStructureIterator();
-    while (siter.hasNext()) {
-      sdata = siter.next();
-      m = sdata.findMember("testScale");
-      assert null != m;
-
-      dval = sdata.getScalarFloat( m);
-      if (count == 0)
-        assert Float.isNaN(dval) : dval;
-      else
-        assert TestAll.nearlyEquals(dval, 1040.8407) : dval;
-      count++;
-    } */
+    /*
+     * LOOK heres the problem where StructureData.getScalarXXX doesnt use enhanced values
+     * float dval = sdata.getScalarFloat( m.getName());
+     * assert Float.isNaN(dval) : dval;
+     * 
+     * int count = 0;
+     * StructureDataIterator siter = s.getStructureIterator();
+     * while (siter.hasNext()) {
+     * sdata = siter.next();
+     * m = sdata.findMember("testScale");
+     * assert null != m;
+     * 
+     * dval = sdata.getScalarFloat( m);
+     * if (count == 0)
+     * assert Float.isNaN(dval) : dval;
+     * else
+     * assert TestAll.nearlyEquals(dval, 1040.8407) : dval;
+     * count++;
+     * }
+     */
 
     ncfile.close();
   }

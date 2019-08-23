@@ -5,7 +5,6 @@
 package ucar.nc2.iosp.uf;
 
 import ucar.unidata.io.RandomAccessFile;
-
 import java.nio.ByteBuffer;
 import java.io.IOException;
 import java.util.*;
@@ -19,11 +18,11 @@ import java.util.*;
  */
 public class UFheader {
   static final boolean littleEndianData = true;
-  String dataFormat = "UNIVERSALFORMAT";  // temp setting
+  String dataFormat = "UNIVERSALFORMAT"; // temp setting
   Ray firstRay = null;
   Date endDate = null;
 
-  Map<String, List<List<Ray>>> variableGroup;  // key = data type, value = List by sweep number
+  Map<String, List<List<Ray>>> variableGroup; // key = data type, value = List by sweep number
   private int max_radials = 0;
   private int min_radials = Integer.MAX_VALUE;
 
@@ -35,7 +34,7 @@ public class UFheader {
       String ufStr = raf.readString(2);
       if (!ufStr.equals("UF"))
         return false;
-      //if ufStr is UF, then a further checking apply
+      // if ufStr is UF, then a further checking apply
       raf.seek(0);
       int rsize = raf.readInt();
 
@@ -43,7 +42,7 @@ public class UFheader {
       long offset = raf.getFilePointer();
       int readBytes = raf.read(buffer, 0, rsize);
       if (readBytes != rsize) {
-          return false;
+        return false;
       }
       int endPoint = raf.readInt();
       if (endPoint != rsize) {
@@ -60,14 +59,15 @@ public class UFheader {
   }
 
   void read(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    Map<String, List<Ray>> rayListMap = new HashMap<>(600);  // all the rays for a variable
+    Map<String, List<Ray>> rayListMap = new HashMap<>(600); // all the rays for a variable
 
     raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
     while (!raf.isAtEndOfFile()) {
       byte[] b4 = new byte[4];
       int bytesRead = raf.read(b4);
-      if (bytesRead != 4) break; // done
+      if (bytesRead != 4)
+        break; // done
 
       int rsize = bytesToInt(b4, false);
       byte[] buffer = new byte[rsize];
@@ -78,47 +78,45 @@ public class UFheader {
 
       int endPoint = bytesToInt(b4, false);
       if (endPoint != rsize || rsize == 0) {
-        //     System.out.println("Herr " +velocityList.size());
+        // System.out.println("Herr " +velocityList.size());
         continue;
       }
 
       ByteBuffer bos = ByteBuffer.wrap(buffer);
       Ray r = new Ray(bos, rsize, offset);
-      if (firstRay == null)
-      {
-          firstRay = r;
-          endDate = r.getDate();
+      if (firstRay == null) {
+        firstRay = r;
+        endDate = r.getDate();
       } else if (r.getTitleMsecs() > firstRay.getTitleMsecs())
         endDate = r.getDate();
 
-      Map<String, Ray.UF_field_header2> rayMap = r.field_header_map;      // each ray has a list of variables
+      Map<String, Ray.UF_field_header2> rayMap = r.field_header_map; // each ray has a list of variables
       for (Map.Entry<String, Ray.UF_field_header2> entry : rayMap.entrySet()) {
-        String ab = entry.getKey();                                      // variable name
-        List<Ray> group = rayListMap.computeIfAbsent(ab,
-            k -> new ArrayList<>());                            // all the rays for this variable
+        String ab = entry.getKey(); // variable name
+        List<Ray> group = rayListMap.computeIfAbsent(ab, k -> new ArrayList<>()); // all the rays for this variable
         group.add(r);
       }
     }
 
     // now sort the rays by sweep number
     variableGroup = new HashMap<>();
-    for (Map.Entry<String,List<Ray>> entry : rayListMap.entrySet()) {
+    for (Map.Entry<String, List<Ray>> entry : rayListMap.entrySet()) {
       String key = entry.getKey();
       List<Ray> group = entry.getValue();
       List<List<Ray>> sortedGroup = sortScans(key, group);
       variableGroup.put(key, sortedGroup);
     }
 
-    //System.out.println("Herr " +velocityList.size());
-    //return;
+    // System.out.println("Herr " +velocityList.size());
+    // return;
   }
 
   private List<List<Ray>> sortScans(String name, List<Ray> rays) {
 
     // now group by sweepNumber
-    Map<Integer, List<Ray>> sweepMap = new HashMap<>(2*rays.size());
-    for ( Ray r : rays) {
-      Integer groupNo = (int) r.uf_header2.sweepNumber; //.elevation);
+    Map<Integer, List<Ray>> sweepMap = new HashMap<>(2 * rays.size());
+    for (Ray r : rays) {
+      Integer groupNo = (int) r.uf_header2.sweepNumber; // .elevation);
 
       List<Ray> group = sweepMap.computeIfAbsent(groupNo, k -> new ArrayList<>());
 
@@ -138,26 +136,28 @@ public class UFheader {
     return groups;
   }
 
-  /* public float getMeanElevation(String key, int eNum) {
-    List<Ray> gp = getGroup(key);
-    return getMeanElevation(gp);
-  }
-
-  public float getMeanElevation(List<Ray> gList) {
-    float sum = 0;
-    int size = 0;
-
-    for (Ray r : gList) {
-      sum += r.getElevation();
-      size++;
-    }
-
-    return sum / size;
-  }
-
-  public List<Ray> getGroup(String key) {
-    return variableGroup.get(key);
-  } */
+  /*
+   * public float getMeanElevation(String key, int eNum) {
+   * List<Ray> gp = getGroup(key);
+   * return getMeanElevation(gp);
+   * }
+   * 
+   * public float getMeanElevation(List<Ray> gList) {
+   * float sum = 0;
+   * int size = 0;
+   * 
+   * for (Ray r : gList) {
+   * sum += r.getElevation();
+   * size++;
+   * }
+   * 
+   * return sum / size;
+   * }
+   * 
+   * public List<Ray> getGroup(String key) {
+   * return variableGroup.get(key);
+   * }
+   */
 
   public int getMaxRadials() {
     return max_radials;
@@ -180,7 +180,7 @@ public class UFheader {
   }
 
   public String getStationId() {
-      return getSiteName();
+    return getSiteName();
   }
 
   public String getSiteName() {
@@ -188,7 +188,7 @@ public class UFheader {
   }
 
   String getRadarName() {
-      return firstRay.uf_header2.radarName;
+    return firstRay.uf_header2.radarName;
   }
 
   public Short getSweepMode() {
@@ -218,9 +218,9 @@ public class UFheader {
       Ray ray1 = group1.get(0);
       Ray ray2 = group2.get(0);
 
-      //if (record1.elevation_num != record2.elevation_num)
+      // if (record1.elevation_num != record2.elevation_num)
       return (ray1.uf_header2.elevation - ray2.uf_header2.elevation < 13 ? 0 : 1);
-      //return record1.cut - record2.cut;
+      // return record1.cut - record2.cut;
     }
   }
 
@@ -248,15 +248,9 @@ public class UFheader {
     byte c = bytes[2];
     byte d = bytes[3];
     if (swapBytes) {
-      return ((a & 0xff)) +
-              ((b & 0xff) << 8) +
-              ((c & 0xff) << 16) +
-              ((d & 0xff) << 24);
+      return ((a & 0xff)) + ((b & 0xff) << 8) + ((c & 0xff) << 16) + ((d & 0xff) << 24);
     } else {
-      return ((a & 0xff) << 24) +
-              ((b & 0xff) << 16) +
-              ((c & 0xff) << 8) +
-              ((d & 0xff));
+      return ((a & 0xff) << 24) + ((b & 0xff) << 16) + ((c & 0xff) << 8) + ((d & 0xff));
     }
   }
 

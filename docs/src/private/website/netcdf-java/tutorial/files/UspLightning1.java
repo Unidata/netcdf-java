@@ -12,7 +12,6 @@ import ucar.nc2.dataset.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -27,67 +26,68 @@ import java.text.ParseException;
  */
 public class UspLightning1 implements IOServiceProvider {
 
-/*  USPLN data format:
-
-Each 1 minute packet sent has an ASCII header, followed by a record for
-each lightning detection during the past 1 minute.
-
-Header
-The ASCII header provides information on the creation time of the one
-minute packet and ending date and time of the file.
-
-Sample Header:
-USPLN-LIGHTNING,2004-10-11T20:45:02,2004-10-11T20:45:02
-Description:
-Name of Product: USPLN-LIGHTNING
-Creation of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
-Ending of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
-
-NOTE: All times in UTC
-
-Strike Record Following the header, an individual record is provided for
-each lightning strike in a comma delimited format.
-
-Sample Strike Records:
-2004-10-11T20:44:02,32.6785331,-105.4344587,-96.1,1
-2004-10-11T20:44:05,21.2628231,-86.9596634,53.1,1
-2004-10-11T20:44:05,21.2967119,-86.9702106,50.3,1
-2004-10-11T20:44:06,19.9044769,-100.7082608,43.1,1
-2004-10-11T20:44:11,21.4523434,-82.5202274,-62.8,1
-2004-10-11T20:44:11,21.8155306,-82.6708778,80.9,1
-
-Description:
-
-Strike Date/Time (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:44:02
-
-Strike Latitude (deg): 32.6785331
-Strike Longitude (deg): -105.4344587
-Strike Amplitude (kAmps, see note below): -96.1
-Stroke Count (number of strokes per flash): 1
-
-Note: At the present time USPLN data are only provided in stroke format,
-so the stroke count will always be 1.
-
-Notes about Decoding Strike Amplitude
-The amplitude field is utilized to indicate the amplitude of strokes and
-polarity of strokes for all Cloud-to- Ground Strokes.
-
-For other types of detections this field is utilized to provide
-information on the type of stroke detected.
-
-The amplitude number for Cloud-to-Ground strokes provides the amplitude
-of the stroke and the sign (+/-) provides the polarity of the stroke.
-
-An amplitude of 0 indicates USPLN Cloud Flash Detections rather than
-Cloud-to-Ground detections.
-
-Cloud flash detections include cloud-to-cloud, cloud-to-air, and
-intra-cloud flashes.
-
-An amplitude of -999 or 999 indicates a valid cloud-to-ground stroke
-detection in which an amplitude was not able to be determined. Typically
-these are long-range detections.
-*/
+  /*
+   * USPLN data format:
+   * 
+   * Each 1 minute packet sent has an ASCII header, followed by a record for
+   * each lightning detection during the past 1 minute.
+   * 
+   * Header
+   * The ASCII header provides information on the creation time of the one
+   * minute packet and ending date and time of the file.
+   * 
+   * Sample Header:
+   * USPLN-LIGHTNING,2004-10-11T20:45:02,2004-10-11T20:45:02
+   * Description:
+   * Name of Product: USPLN-LIGHTNING
+   * Creation of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
+   * Ending of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
+   * 
+   * NOTE: All times in UTC
+   * 
+   * Strike Record Following the header, an individual record is provided for
+   * each lightning strike in a comma delimited format.
+   * 
+   * Sample Strike Records:
+   * 2004-10-11T20:44:02,32.6785331,-105.4344587,-96.1,1
+   * 2004-10-11T20:44:05,21.2628231,-86.9596634,53.1,1
+   * 2004-10-11T20:44:05,21.2967119,-86.9702106,50.3,1
+   * 2004-10-11T20:44:06,19.9044769,-100.7082608,43.1,1
+   * 2004-10-11T20:44:11,21.4523434,-82.5202274,-62.8,1
+   * 2004-10-11T20:44:11,21.8155306,-82.6708778,80.9,1
+   * 
+   * Description:
+   * 
+   * Strike Date/Time (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:44:02
+   * 
+   * Strike Latitude (deg): 32.6785331
+   * Strike Longitude (deg): -105.4344587
+   * Strike Amplitude (kAmps, see note below): -96.1
+   * Stroke Count (number of strokes per flash): 1
+   * 
+   * Note: At the present time USPLN data are only provided in stroke format,
+   * so the stroke count will always be 1.
+   * 
+   * Notes about Decoding Strike Amplitude
+   * The amplitude field is utilized to indicate the amplitude of strokes and
+   * polarity of strokes for all Cloud-to- Ground Strokes.
+   * 
+   * For other types of detections this field is utilized to provide
+   * information on the type of stroke detected.
+   * 
+   * The amplitude number for Cloud-to-Ground strokes provides the amplitude
+   * of the stroke and the sign (+/-) provides the polarity of the stroke.
+   * 
+   * An amplitude of 0 indicates USPLN Cloud Flash Detections rather than
+   * Cloud-to-Ground detections.
+   * 
+   * Cloud flash detections include cloud-to-cloud, cloud-to-air, and
+   * intra-cloud flashes.
+   * 
+   * An amplitude of -999 or 999 indicates a valid cloud-to-ground stroke
+   * detection in which an amplitude was not able to be determined. Typically
+   * these are long-range detections.
+   */
 
   private static final String MAGIC = "USPLN-LIGHTNING";
 
@@ -194,14 +194,16 @@ these are long-range detections.
     java.text.SimpleDateFormat isoDateTimeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
 
-    //java.io.RandomAccessFile jraf = raf.getRandomAccessFile();
+    // java.io.RandomAccessFile jraf = raf.getRandomAccessFile();
 
     raf.seek(0);
     int count = 0;
     while (true) {
       String line = raf.readLine();
-      if (line == null) break;
-      if (line.startsWith(MAGIC)) continue;
+      if (line == null)
+        break;
+      if (line.startsWith(MAGIC))
+        continue;
 
       StringTokenizer stoker = new StringTokenizer(line, ",\r\n");
       while (stoker.hasMoreTokens()) {
@@ -224,7 +226,7 @@ these are long-range detections.
     System.out.println("processed " + count + " records");
 
     int n = records.size();
-    int[] shape = new int[]{n};
+    int[] shape = new int[] {n};
     dateArray = (ArrayInt.D1) Array.factory(DataType.INT, shape);
     latArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
     lonArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
@@ -265,7 +267,7 @@ these are long-range detections.
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public Array readData(Variable v2, List section) throws IOException, InvalidRangeException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public Array readNestedData(Variable v2, List section) throws IOException, InvalidRangeException {
@@ -273,27 +275,27 @@ these are long-range detections.
   }
 
   public void close() throws IOException {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public boolean syncExtend() throws IOException {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public boolean sync() throws IOException {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public void setSpecial(Object special) {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public String toStringDebug(Object o) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public String getDetailInfo() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException {

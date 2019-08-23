@@ -12,7 +12,6 @@ import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,32 +23,33 @@ import java.util.*;
  * Hides GribIndexProto
  *
  * sample use:
+ * 
  * <pre>
-    GribIndex index = new GribIndex();
-    if (!index.readIndex(path))
-      index.makeIndex(path);
-
-    for (Grib2SectionGridDefinition gds : index.getGds()) {
-      if (gdsSet.get(gds.calcCRC()) == null)
-        gdsSet.put(gds.calcCRC(), gds);
-    }
-
-    for (Grib2Record gr : index.getRecords()) {
-      gr.setFile(fileno);
-
-      Grib2Pds pds = gr.getPDSsection().getPDS();
-      int discipline = gr.getDiscipline();
-
-      int id = gr.cdmVariableHash();
-      Grib2ParameterBean bean = pdsSet.get(id);
-      if (bean == null) {
-        bean = new Grib2ParameterBean(gr);
-        pdsSet.put(id, bean);
-        params.add(bean);
-      }
-      bean.addRecord(gr);
-    }
-    </pre>
+ * GribIndex index = new GribIndex();
+ * if (!index.readIndex(path))
+ *   index.makeIndex(path);
+ * 
+ * for (Grib2SectionGridDefinition gds : index.getGds()) {
+ *   if (gdsSet.get(gds.calcCRC()) == null)
+ *     gdsSet.put(gds.calcCRC(), gds);
+ * }
+ * 
+ * for (Grib2Record gr : index.getRecords()) {
+ *   gr.setFile(fileno);
+ * 
+ *   Grib2Pds pds = gr.getPDSsection().getPDS();
+ *   int discipline = gr.getDiscipline();
+ * 
+ *   int id = gr.cdmVariableHash();
+ *   Grib2ParameterBean bean = pdsSet.get(id);
+ *   if (bean == null) {
+ *     bean = new Grib2ParameterBean(gr);
+ *     pdsSet.put(id, bean);
+ *     params.add(bean);
+ *   }
+ *   bean.addRecord(gr);
+ * }
+ * </pre>
  *
  * @author caron
  * @since 4/1/11
@@ -64,7 +64,7 @@ public class Grib2Index extends GribIndex {
   private static final int version = 6; // index must be this version, or else rewrite.
 
   /*
-    9/12/2012 version 6: replace bms indicator = 254 with previously defined.
+   * 9/12/2012 version 6: replace bms indicator = 254 with previously defined.
    */
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -89,25 +89,30 @@ public class Grib2Index extends GribIndex {
 
   public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) {
     String idxPath = filename;
-    if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+    if (!idxPath.endsWith(GBX9_IDX))
+      idxPath += GBX9_IDX;
     File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
-    if (idxFile == null) return false;
+    if (idxFile == null)
+      return false;
 
     long idxModified = idxFile.lastModified();
-    if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
+    if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified))
+      return false; // force new index if file was updated
 
     try (FileInputStream fin = new FileInputStream(idxFile)) {
-        //// check header is ok
-        if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(CDM.utf8Charset))) {
-          logger.info("Bad magic number of grib index on file= {}", idxFile);
-          return false;
-        }
+      //// check header is ok
+      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(CDM.utf8Charset))) {
+        logger.info("Bad magic number of grib index on file= {}", idxFile);
+        return false;
+      }
 
       int v = NcStream.readVInt(fin);
-      if (v != version) { // here we insist that the version match. so cant use it to detect proto3 without forcing a rewrite.
+      if (v != version) { // here we insist that the version match. so cant use it to detect proto3 without forcing a
+                          // rewrite.
         if ((v == 0) || (v > version))
-          throw new IOException("GribIndex found version "+v+", want version " + version+ " on " +filename);
-        if (logger.isDebugEnabled()) logger.debug("Grib2Index found version "+v+", want version " + version+ " on " +filename);
+          throw new IOException("GribIndex found version " + v + ", want version " + version + " on " + filename);
+        if (logger.isDebugEnabled())
+          logger.debug("Grib2Index found version " + v + ", want version " + version + " on " + filename);
         return false;
       }
 
@@ -145,7 +150,8 @@ public class Grib2Index extends GribIndex {
   }
 
   private Grib2Record readRecord(Grib2IndexProto.Grib2Record p) {
-    Grib2SectionIndicator is = new Grib2SectionIndicator(p.getGribMessageStart(), p.getGribMessageLength(), p.getDiscipline());
+    Grib2SectionIndicator is =
+        new Grib2SectionIndicator(p.getGribMessageStart(), p.getGribMessageLength(), p.getDiscipline());
 
     Grib2SectionIdentification ids = readIdMessage(p.getIds());
 
@@ -157,27 +163,31 @@ public class Grib2Index extends GribIndex {
     int gdsIndex = p.getGdsIdx();
     Grib2SectionGridDefinition gds = gdsList.get(gdsIndex);
     Grib2SectionProductDefinition pds = new Grib2SectionProductDefinition(p.getPds().toByteArray());
-    Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(p.getDrsPos(), p.getDrsNpoints(), p.getDrsTemplate());
+    Grib2SectionDataRepresentation drs =
+        new Grib2SectionDataRepresentation(p.getDrsPos(), p.getDrsNpoints(), p.getDrsTemplate());
     Grib2SectionBitMap bms = new Grib2SectionBitMap(p.getBmsPos(), p.getBmsIndicator());
     Grib2SectionData data = new Grib2SectionData(p.getDataPos(), p.getDataLen());
     boolean bmsReplaced = p.getBmsReplaced();
 
     int scanMode = p.getScanMode();
-    /* boolean isMissing = p.getScanModePresentCase() == Grib2IndexProto.Grib2Record.ScanModePresentCase.SCANMODEPRESENT_NOT_SET;
-    if (isMissing) {
-      scanMode = (isProto3) ? 0 : 9999;
-    } */
+    /*
+     * boolean isMissing = p.getScanModePresentCase() ==
+     * Grib2IndexProto.Grib2Record.ScanModePresentCase.SCANMODEPRESENT_NOT_SET;
+     * if (isMissing) {
+     * scanMode = (isProto3) ? 0 : 9999;
+     * }
+     */
 
     return new Grib2Record(p.getHeader().toByteArray(), is, ids, lus, gds, pds, drs, bms, data, bmsReplaced, scanMode);
   }
 
   private Grib2SectionIdentification readIdMessage(Grib2IndexProto.GribIdSection p) {
     // Grib2SectionIdentification(int center_id, int subcenter_id, int master_table_version,
-    // int local_table_version, int significanceOfRT, int year, int month, int day, int hour, int minute, int second, int productionStatus, int processedDataType) {
-    return new Grib2SectionIdentification(p.getCenterId(), p.getSubcenterId(),
-            p.getMasterTableVersion(), p.getLocalTableVersion(), p.getSignificanceOfRT(),
-            p.getRefDate(0), p.getRefDate(1), p.getRefDate(2), p.getRefDate(3), p.getRefDate(4), p.getRefDate(5),
-            p.getProductionStatus(), p.getProcessedDataType());
+    // int local_table_version, int significanceOfRT, int year, int month, int day, int hour, int minute, int second,
+    // int productionStatus, int processedDataType) {
+    return new Grib2SectionIdentification(p.getCenterId(), p.getSubcenterId(), p.getMasterTableVersion(),
+        p.getLocalTableVersion(), p.getSignificanceOfRT(), p.getRefDate(0), p.getRefDate(1), p.getRefDate(2),
+        p.getRefDate(3), p.getRefDate(4), p.getRefDate(5), p.getProductionStatus(), p.getProcessedDataType());
   }
 
   private Grib2SectionGridDefinition readGds(Grib2IndexProto.GribGdsSection proto) {
@@ -190,7 +200,8 @@ public class Grib2Index extends GribIndex {
   // LOOK what about extending an index ??
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     String idxPath = filename;
-    if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+    if (!idxPath.endsWith(GBX9_IDX))
+      idxPath += GBX9_IDX;
     File idxFile = GribIndexCache.getFileOrCache(idxPath);
     File idxFileTmp = GribIndexCache.getFileOrCache(idxPath + ".tmp");
 
@@ -209,7 +220,7 @@ public class Grib2Index extends GribIndex {
       Grib2IndexProto.Grib2Index.Builder rootBuilder = Grib2IndexProto.Grib2Index.newBuilder();
       rootBuilder.setFilename(filename);
 
-      if (dataRaf == null)  {
+      if (dataRaf == null) {
         raf = RandomAccessFile.acquire(filename);
         dataRaf = raf;
       }
@@ -217,14 +228,15 @@ public class Grib2Index extends GribIndex {
       Grib2RecordScanner scan = new Grib2RecordScanner(dataRaf);
       while (scan.hasNext()) {
         Grib2Record r = scan.next();
-        if (r == null) break; // done
+        if (r == null)
+          break; // done
         records.add(r);
 
         Grib2SectionGridDefinition gdss = r.getGDSsection();
         Integer index = gdsMap.get(gdss.calcCRC());
         if (index == null) {
           gdsList.add(gdss);
-          index = gdsList.size()-1;
+          index = gdsList.size() - 1;
           gdsMap.put(gdss.calcCRC(), index);
           rootBuilder.addGdsList(makeGdsProto(gdss));
         }
@@ -232,19 +244,20 @@ public class Grib2Index extends GribIndex {
       }
 
       if (records.isEmpty())
-        throw new RuntimeException("No GRIB2 records found in "+dataRaf.getLocation());
+        throw new RuntimeException("No GRIB2 records found in " + dataRaf.getLocation());
 
       Grib2IndexProto.Grib2Index index = rootBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(fout, b.length); // message size
-      fout.write(b);  // message  - all in one gulp
+      fout.write(b); // message - all in one gulp
       logger.debug("  made gbx9 index for {} size={}", filename, b.length);
 
       ok = true;
       return true;
 
     } finally {
-      if (raf != null) raf.close(); // only close if we opened it
+      if (raf != null)
+        raf.close(); // only close if we opened it
 
       // now switch; fout has been closed
       if (ok) {
@@ -306,16 +319,16 @@ public class Grib2Index extends GribIndex {
   }
 
   /*
-  message GribIdSection {
-  required uint32 center_id = 1;
-  required uint32 subcenter_id = 2;
-  required uint32 master_table_version = 3;
-  required uint32 local_table_version = 4;
-  required uint32 significanceOfRT = 5;
-  repeated uint32 refDate = 6 [packed=true]; // year, month, day, hour, minute, second;
-  required uint32 productionStatus = 7;
-  required uint32 processedDataType = 8;
-}
+   * message GribIdSection {
+   * required uint32 center_id = 1;
+   * required uint32 subcenter_id = 2;
+   * required uint32 master_table_version = 3;
+   * required uint32 local_table_version = 4;
+   * required uint32 significanceOfRT = 5;
+   * repeated uint32 refDate = 6 [packed=true]; // year, month, day, hour, minute, second;
+   * required uint32 productionStatus = 7;
+   * required uint32 processedDataType = 8;
+   * }
    */
   private Grib2IndexProto.GribIdSection makeIdProto(Grib2SectionIdentification id) {
     Grib2IndexProto.GribIdSection.Builder b = Grib2IndexProto.GribIdSection.newBuilder();

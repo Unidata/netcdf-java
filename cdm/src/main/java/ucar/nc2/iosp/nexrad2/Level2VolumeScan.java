@@ -10,7 +10,6 @@ import ucar.nc2.util.DiskCache;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.bzip2.BZip2ReadException;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -24,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import static ucar.nc2.iosp.nexrad2.Level2Record.REFLECTIVITY_HIGH;
 import static ucar.nc2.iosp.nexrad2.Level2Record.VELOCITY_HIGH;
 
@@ -32,7 +30,8 @@ import static ucar.nc2.iosp.nexrad2.Level2Record.VELOCITY_HIGH;
  * This class reads a NEXRAD level II data file. It can handle NCDC archives (ARCHIVE2), as well as
  * CRAFT/IDD compressed files (AR2V0001).
  * <p/>
- * Adapted with permission from the Java Iras software developed by David Priegnitz at NSSL.<p>
+ * Adapted with permission from the Java Iras software developed by David Priegnitz at NSSL.
+ * <p>
  * <p/>
  * Documentation on Archive Level II data format can be found at:
  * <a href="http://www.ncdc.noaa.gov/oa/radar/leveliidoc.html">
@@ -90,7 +89,8 @@ public class Level2VolumeScan {
   private List<List<Level2Record>> diffPhaseHighResGroups;
   private List<List<Level2Record>> coefficientHighResGroups;
 
-  private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false, debugRadials = false;
+  private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false,
+      debugRadials = false;
   private boolean runCheck = false;
 
   Level2VolumeScan(RandomAccessFile orgRaf, CancelTask cancelTask) throws IOException {
@@ -127,10 +127,9 @@ public class Level2VolumeScan {
       }
     }
 
-    //see if we have to uncompress
-    if (dataFormat.equals(AR2V0001) || dataFormat.equals(AR2V0003)
-        || dataFormat.equals(AR2V0004) || dataFormat.equals(AR2V0006) || dataFormat
-        .equals(AR2V0007)) {
+    // see if we have to uncompress
+    if (dataFormat.equals(AR2V0001) || dataFormat.equals(AR2V0003) || dataFormat.equals(AR2V0004)
+        || dataFormat.equals(AR2V0006) || dataFormat.equals(AR2V0007)) {
       raf.skipBytes(4);
       String BZ = raf.readString(2);
       if (BZ.equals("BZ")) {
@@ -140,7 +139,7 @@ public class Level2VolumeScan {
         if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
           // see if its locked - another thread is writing it
           try (FileInputStream fstream = new FileInputStream(uncompressedFile)) {
-            //lock = fstream.getChannel().lock(0, 1, true); // wait till its unlocked
+            // lock = fstream.getChannel().lock(0, 1, true); // wait till its unlocked
 
             while (true) { // loop waiting for the lock
               try {
@@ -295,8 +294,7 @@ public class Level2VolumeScan {
     // now group by elevation_num
     Map<Short, List<Level2Record>> groupHash = new HashMap<>(siz);
     for (Level2Record record : scans) {
-      List<Level2Record> group = groupHash
-          .computeIfAbsent(record.elevation_num, k -> new ArrayList<>());
+      List<Level2Record> group = groupHash.computeIfAbsent(record.elevation_num, k -> new ArrayList<>());
       group.add(record);
     }
 
@@ -406,8 +404,7 @@ public class Level2VolumeScan {
     if (debugScans) {
       boolean hasBoth = first.hasDopplerData && first.hasReflectData;
       System.out.println(
-          name + " " + first + " has " + n + " radials resolution= " + first.resolution
-              + " has both = " + hasBoth);
+          name + " " + first + " has " + n + " radials resolution= " + first.resolution + " has both = " + hasBoth);
     }
 
     boolean ok = true;
@@ -417,41 +414,36 @@ public class Level2VolumeScan {
     }
 
     for (Level2Record r : group) {
-      /* this appears to be common - seems to be ok, we put missing values in
-      if (r.getGateCount(datatype) != first.getGateCount(datatype)) {
-        log.error(raf.getLocation()+" different number of gates ("+r.getGateCount(datatype)+
-                "!="+first.getGateCount(datatype)+") in record "+name+ " "+r);
-        ok = false;
-      } */
+      /*
+       * this appears to be common - seems to be ok, we put missing values in
+       * if (r.getGateCount(datatype) != first.getGateCount(datatype)) {
+       * log.error(raf.getLocation()+" different number of gates ("+r.getGateCount(datatype)+
+       * "!="+first.getGateCount(datatype)+") in record "+name+ " "+r);
+       * ok = false;
+       * }
+       */
 
       if (r.getGateSize(datatype) != first.getGateSize(datatype)) {
         log.warn(
-            raf.getLocation() + " different gate size (" + r.getGateSize(datatype) + ") in record "
-                + name + " " + r);
+            raf.getLocation() + " different gate size (" + r.getGateSize(datatype) + ") in record " + name + " " + r);
         ok = false;
       }
       if (r.getGateStart(datatype) != first.getGateStart(datatype)) {
-        log.warn(raf.getLocation() + " different gate start (" + r.getGateStart(datatype)
-            + ") in record " + name + " " + r);
+        log.warn(
+            raf.getLocation() + " different gate start (" + r.getGateStart(datatype) + ") in record " + name + " " + r);
         ok = false;
       }
       if (r.resolution != first.resolution) {
-        log.warn(
-            raf.getLocation() + " different resolution (" + r.resolution + ") in record " + name
-                + " " + r);
+        log.warn(raf.getLocation() + " different resolution (" + r.resolution + ") in record " + name + " " + r);
         ok = false;
       }
 
       if ((r.radial_num < 0) || (r.radial_num >= MAX_RADIAL)) {
-        log.info(
-            raf.getLocation() + " radial out of range= " + r.radial_num + " in record " + name + " "
-                + r);
+        log.info(raf.getLocation() + " radial out of range= " + r.radial_num + " in record " + name + " " + r);
         continue;
       }
       if (radial[r.radial_num] > 0) {
-        log.warn(
-            raf.getLocation() + " duplicate radial = " + r.radial_num + " in record " + name + " "
-                + r);
+        log.warn(raf.getLocation() + " duplicate radial = " + r.radial_num + " in record " + name + " " + r);
         ok = false;
       }
       radial[r.radial_num] = r.recno + 1;
@@ -484,51 +476,45 @@ public class Level2VolumeScan {
     dopplarResolution = firstRecord.resolution;
 
     if (debugGroups2) {
-      System.out.println(
-          "Group " + Level2Record.getDatatypeName(datatype) + " ngates = " + firstRecord
-              .getGateCount(datatype) +
-              " start = " + firstRecord.getGateStart(datatype) + " size = " + firstRecord
-              .getGateSize(datatype));
+      System.out
+          .println("Group " + Level2Record.getDatatypeName(datatype) + " ngates = " + firstRecord.getGateCount(datatype)
+              + " start = " + firstRecord.getGateStart(datatype) + " size = " + firstRecord.getGateSize(datatype));
     }
 
     for (int i = 1; i < scans.size(); i++) {
       List scan = (List) scans.get(i);
       Level2Record record = (Level2Record) scan.get(0);
 
-      if ((datatype == Level2Record.VELOCITY_HI) && (record.resolution
-          != firstRecord.resolution)) { // do all velocity resolutions match ??
-        log.warn(name + " scan " + i + " diff resolutions = " + record.resolution + ", "
-            + firstRecord.resolution +
-            " elev= " + record.elevation_num + " " + record.getElevation());
+      if ((datatype == Level2Record.VELOCITY_HI) && (record.resolution != firstRecord.resolution)) { // do all velocity
+                                                                                                     // resolutions
+                                                                                                     // match ??
+        log.warn(name + " scan " + i + " diff resolutions = " + record.resolution + ", " + firstRecord.resolution
+            + " elev= " + record.elevation_num + " " + record.getElevation());
         ok = false;
         hasDifferentDopplarResolutions = true;
       }
 
       if (record.getGateSize(datatype) != firstRecord.getGateSize(datatype)) {
         log.warn(name + " scan " + i + " diff gates size = " + record.getGateSize(datatype) + " "
-            + firstRecord.getGateSize(datatype) +
-            " elev= " + record.elevation_num + " " + record.getElevation());
+            + firstRecord.getGateSize(datatype) + " elev= " + record.elevation_num + " " + record.getElevation());
         ok = false;
 
       } else if (debugGroups2) {
-        System.out
-            .println(" ok gates size elev= " + record.elevation_num + " " + record.getElevation());
+        System.out.println(" ok gates size elev= " + record.elevation_num + " " + record.getElevation());
       }
 
       if (record.getGateStart(datatype) != firstRecord.getGateStart(datatype)) {
         log.warn(name + " scan " + i + " diff gates start = " + record.getGateStart(datatype) + " "
-            + firstRecord.getGateStart(datatype) +
-            " elev= " + record.elevation_num + " " + record.getElevation());
+            + firstRecord.getGateStart(datatype) + " elev= " + record.elevation_num + " " + record.getElevation());
         ok = false;
 
       } else if (debugGroups2) {
-        System.out
-            .println(" ok gates start elev= " + record.elevation_num + " " + record.getElevation());
+        System.out.println(" ok gates start elev= " + record.elevation_num + " " + record.getElevation());
       }
 
       if (record.message_type == 31) {
         hasHighResolutionData = true;
-        //each data type
+        // each data type
         if (record.hasHighResREFData) {
           hasHighResolutionREF = true;
         }
@@ -596,8 +582,7 @@ public class Level2VolumeScan {
     return coefficientHighResGroups;
   }
 
-  private static class GroupComparator implements
-      Comparator<List<Level2Record>> {
+  private static class GroupComparator implements Comparator<List<Level2Record>> {
 
     public int compare(List<Level2Record> group1, List<Level2Record> group2) {
       Level2Record record1 = group1.get(0);
@@ -627,7 +612,7 @@ public class Level2VolumeScan {
   /**
    * Get the starting time in seconds since midnight.
    *
-   * @return Generation time of data in milliseconds of day past  midnight (UTC).
+   * @return Generation time of data in milliseconds of day past midnight (UTC).
    */
   public int getTitleMsecs() {
     return title_msecs;
@@ -684,8 +669,7 @@ public class Level2VolumeScan {
    * @param ufilename write to this file
    * @throws IOException on read error
    */
-  private void uncompress(RandomAccessFile inputRaf, String ufilename)
-      throws IOException {
+  private void uncompress(RandomAccessFile inputRaf, String ufilename) throws IOException {
 
     FileLock lock = null;
     boolean needsDelete = false;
@@ -705,15 +689,14 @@ public class Level2VolumeScan {
         }
       }
 
-      //otherwise an error means we should delete the uncompressed file.
+      // otherwise an error means we should delete the uncompressed file.
       needsDelete = true;
 
       inputRaf.seek(0);
       byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
       int bytesRead = inputRaf.read(header);
       if (bytesRead != header.length) {
-        throw new IOException("Error reading NEXRAD2 header -- got " +
-            bytesRead + " rather than" + header.length);
+        throw new IOException("Error reading NEXRAD2 header -- got " + bytesRead + " rather than" + header.length);
       }
       outputRaf.write(header);
 
@@ -738,13 +721,13 @@ public class Level2VolumeScan {
         }
 
         if (log.isDebugEnabled()) {
-          log.debug("reading compressed bytes " + numCompBytes + " input starts at " + inputRaf
-              .getFilePointer() + "; output starts at " + outputRaf.getFilePointer());
+          log.debug("reading compressed bytes " + numCompBytes + " input starts at " + inputRaf.getFilePointer()
+              + "; output starts at " + outputRaf.getFilePointer());
 
         }
         /*
          * For some stupid reason, the last block seems to
-         * have the number of bytes negated.  So, we just
+         * have the number of bytes negated. So, we just
          * assume that any negative number (other than -1)
          * is the last block and go on our merry little way.
          */
@@ -757,8 +740,7 @@ public class Level2VolumeScan {
         }
         byte[] buf = new byte[numCompBytes];
         inputRaf.readFully(buf);
-        ByteArrayInputStream bis = new ByteArrayInputStream(buf, 2,
-            numCompBytes - 2);
+        ByteArrayInputStream bis = new ByteArrayInputStream(buf, 2, numCompBytes - 2);
 
         cbzip2.setStream(bis);
         int total = 0;
@@ -795,7 +777,7 @@ public class Level2VolumeScan {
         }
       }
       throw t;
-    }  // try-with-resource
+    } // try-with-resource
   }
 
   // check if compressed file seems ok
@@ -807,8 +789,7 @@ public class Level2VolumeScan {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
       String test = raf.readString(8);
-      if (test.equals(Level2VolumeScan.ARCHIVE2) ||
-          test.startsWith("AR2V000")) {
+      if (test.equals(Level2VolumeScan.ARCHIVE2) || test.startsWith("AR2V000")) {
         System.out.println("--Good header= " + test);
         raf.seek(24);
       } else {
@@ -824,8 +805,7 @@ public class Level2VolumeScan {
 
         if (lookForHeader) {
           test = raf.readString(8);
-          if (test.equals(Level2VolumeScan.ARCHIVE2) ||
-              test.startsWith("AR2V000")) {
+          if (test.equals(Level2VolumeScan.ARCHIVE2) || test.startsWith("AR2V000")) {
             System.out.println("  found header= " + test);
             raf.skipBytes(16);
             lookForHeader = false;

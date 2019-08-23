@@ -7,7 +7,6 @@ package ucar.nc2.ui.dialog;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.util.ListenerManager;
 import ucar.nc2.write.Nc4Chunking;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -20,7 +19,8 @@ import java.awt.event.ItemListener;
  * @author John Caron
  */
 public class NetcdfOutputChooser extends JDialog {
-  private ListenerManager lm = new ListenerManager("java.awt.event.ItemListener", "java.awt.event.ItemEvent", "itemStateChanged");
+  private ListenerManager lm =
+      new ListenerManager("java.awt.event.ItemListener", "java.awt.event.ItemEvent", "itemStateChanged");
 
   public NetcdfOutputChooser(Frame owner) {
     super(owner);
@@ -33,9 +33,11 @@ public class NetcdfOutputChooser extends JDialog {
   }
 
   public void setOutputFilename(String filename) {
-    if (filename == null) filename = "test";
+    if (filename == null)
+      filename = "test";
     String location = filename;
-    if (location.startsWith("file:")) location = location.substring(5);
+    if (location.startsWith("file:"))
+      location = location.substring(5);
     int pos = location.lastIndexOf(".");
     if (pos > 0)
       location = location.substring(0, pos);
@@ -58,7 +60,7 @@ public class NetcdfOutputChooser extends JDialog {
     public boolean shuffle;
 
     private Data(String outputFilename, NetcdfFileWriter.Version version, Nc4Chunking.Strategy chunkerType,
-                 boolean deflate, boolean shuffle) {
+        boolean deflate, boolean shuffle) {
       this.outputFilename = outputFilename;
       this.version = version;
       this.chunkerType = chunkerType;
@@ -68,10 +70,8 @@ public class NetcdfOutputChooser extends JDialog {
   }
 
   private void okButtonActionPerformed(ActionEvent e) {
-    Data data = new Data(outputFilename.getText(),
-            (NetcdfFileWriter.Version) netcdfVersion.getSelectedItem(),
-            (Nc4Chunking.Strategy) chunking.getSelectedItem(),
-            deflate.isSelected(), shuffle.isSelected());
+    Data data = new Data(outputFilename.getText(), (NetcdfFileWriter.Version) netcdfVersion.getSelectedItem(),
+        (Nc4Chunking.Strategy) chunking.getSelectedItem(), deflate.isSelected(), shuffle.isSelected());
     firePropertyChange("OK", null, data);
     setVisible(false);
   }
@@ -97,7 +97,7 @@ public class NetcdfOutputChooser extends JDialog {
   }
 
   private void initComponents() {
-    // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+    // JFormDesigner - Component initialization - DO NOT MODIFY //GEN-BEGIN:initComponents
     // Generated using JFormDesigner non-commercial license
     dialogPane = new JPanel();
     contentPanel = new JPanel();
@@ -114,110 +114,97 @@ public class NetcdfOutputChooser extends JDialog {
     okButton = new JButton();
     cancelButton = new JButton();
 
-    //======== this ========
+    // ======== this ========
     Container contentPane = getContentPane();
     contentPane.setLayout(new BorderLayout());
 
-    //======== dialogPane ========
+    // ======== dialogPane ========
     {
       dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
       dialogPane.setLayout(new BorderLayout());
 
-      //======== contentPanel ========
+      // ======== contentPanel ========
       {
 
-        //---- label1 ----
+        // ---- label1 ----
         label1.setText("Output Filename:");
 
-        //---- label2 ----
+        // ---- label2 ----
         label2.setText("NetCDF Format:");
 
-        //======== panel1 ========
+        // ======== panel1 ========
         {
-          panel1.setBorder(new TitledBorder(null, "netCDF4 options", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION));
+          panel1
+              .setBorder(new TitledBorder(null, "netCDF4 options", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION));
           panel1.setLayout(new GridBagLayout());
-          ((GridBagLayout)panel1.getLayout()).columnWidths = new int[] {0, 0, 0};
-          ((GridBagLayout)panel1.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
-          ((GridBagLayout)panel1.getLayout()).columnWeights = new double[] {0.0, 1.0, 1.0E-4};
-          ((GridBagLayout)panel1.getLayout()).rowWeights = new double[] {0.0, 0.0, 1.0, 1.0E-4};
+          ((GridBagLayout) panel1.getLayout()).columnWidths = new int[] {0, 0, 0};
+          ((GridBagLayout) panel1.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
+          ((GridBagLayout) panel1.getLayout()).columnWeights = new double[] {0.0, 1.0, 1.0E-4};
+          ((GridBagLayout) panel1.getLayout()).rowWeights = new double[] {0.0, 0.0, 1.0, 1.0E-4};
 
-          //---- label3 ----
+          // ---- label3 ----
           label3.setText("Chunking:");
-          panel1.add(label3, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0), 0, 0));
+          panel1.add(label3, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+              GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-          //---- chunking ----
+          // ---- chunking ----
           chunking.addItemListener(this::chunkingItemStateChanged);
-          panel1.add(chunking, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0), 0, 0));
+          panel1.add(chunking, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+              GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-          //---- deflate ----
+          // ---- deflate ----
           deflate.setText("deflate");
-          panel1.add(deflate, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0), 0, 0));
+          panel1.add(deflate, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+              GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-          //---- shuffle ----
+          // ---- shuffle ----
           shuffle.setText("shuffle");
-          panel1.add(shuffle, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0), 0, 0));
+          panel1.add(shuffle, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+              GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         }
 
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
-        contentPanelLayout.setHorizontalGroup(
-          contentPanelLayout.createParallelGroup()
-            .addGroup(contentPanelLayout.createSequentialGroup()
-              .addGroup(contentPanelLayout.createParallelGroup()
-                .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addComponent(label1)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(outputFilename, GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
-                .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addGroup(contentPanelLayout.createParallelGroup()
+        contentPanelLayout
+            .setHorizontalGroup(contentPanelLayout.createParallelGroup()
+                .addGroup(contentPanelLayout.createSequentialGroup().addGroup(contentPanelLayout.createParallelGroup()
+                    .addGroup(contentPanelLayout.createSequentialGroup().addComponent(label1)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(outputFilename, GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
                     .addGroup(contentPanelLayout.createSequentialGroup()
-                      .addGap(18, 18, 18)
-                      .addComponent(label2)
-                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                      .addComponent(netcdfVersion, GroupLayout.PREFERRED_SIZE, 243, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(contentPanelLayout.createSequentialGroup()
-                      .addGap(33, 33, 33)
-                      .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 383, GroupLayout.PREFERRED_SIZE)))
-                  .addGap(0, 143, Short.MAX_VALUE)))
-              .addContainerGap())
-        );
-        contentPanelLayout.setVerticalGroup(
-          contentPanelLayout.createParallelGroup()
-            .addGroup(contentPanelLayout.createSequentialGroup()
-              .addContainerGap()
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label1)
-                .addComponent(outputFilename, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-              .addGap(18, 18, 18)
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label2)
-                .addComponent(netcdfVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-              .addGap(18, 18, 18)
-              .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
-              .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                        .addGroup(contentPanelLayout.createParallelGroup()
+                            .addGroup(contentPanelLayout.createSequentialGroup().addGap(18, 18, 18).addComponent(label2)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addComponent(netcdfVersion,
+                                    GroupLayout.PREFERRED_SIZE, 243, GroupLayout.PREFERRED_SIZE))
+                            .addGroup(contentPanelLayout.createSequentialGroup().addGap(33, 33, 33).addComponent(panel1,
+                                GroupLayout.PREFERRED_SIZE, 383, GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 143, Short.MAX_VALUE)))
+                    .addContainerGap()));
+        contentPanelLayout.setVerticalGroup(contentPanelLayout.createParallelGroup().addGroup(contentPanelLayout
+            .createSequentialGroup().addContainerGap()
+            .addGroup(contentPanelLayout
+                .createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(label1).addComponent(outputFilename,
+                    GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+            .addGap(18, 18, 18)
+            .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(label2)
+                .addComponent(netcdfVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                    GroupLayout.PREFERRED_SIZE))
+            .addGap(18, 18, 18).addComponent(panel1, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
+            .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
       }
       dialogPane.add(contentPanel, BorderLayout.CENTER);
 
-      //======== buttonBar ========
+      // ======== buttonBar ========
       {
         buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
         buttonBar.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        //---- okButton ----
+        // ---- okButton ----
         okButton.setText("Write File");
         okButton.addActionListener(this::okButtonActionPerformed);
         buttonBar.add(okButton);
 
-        //---- cancelButton ----
+        // ---- cancelButton ----
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(this::cancelButtonActionPerformed);
         buttonBar.add(cancelButton);
@@ -227,10 +214,10 @@ public class NetcdfOutputChooser extends JDialog {
     contentPane.add(dialogPane, BorderLayout.CENTER);
     pack();
     setLocationRelativeTo(getOwner());
-    // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    // JFormDesigner - End of component initialization //GEN-END:initComponents
   }
 
-  // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+  // JFormDesigner - Variables declaration - DO NOT MODIFY //GEN-BEGIN:variables
   // Generated using JFormDesigner non-commercial license
   private JPanel dialogPane;
   private JPanel contentPanel;
@@ -246,5 +233,5 @@ public class NetcdfOutputChooser extends JDialog {
   private JPanel buttonBar;
   private JButton okButton;
   private JButton cancelButton;
-  // JFormDesigner - End of variables declaration  //GEN-END:variables
+  // JFormDesigner - End of variables declaration //GEN-END:variables
 }

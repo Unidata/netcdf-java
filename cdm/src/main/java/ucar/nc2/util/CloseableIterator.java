@@ -12,7 +12,7 @@ import java.util.Iterator;
  * An iterator that must be closed.
  *
  * try (CloseableIterator iter = getIterator()) {
- *   // do stuff
+ * // do stuff
  * }
  *
  * @author caron

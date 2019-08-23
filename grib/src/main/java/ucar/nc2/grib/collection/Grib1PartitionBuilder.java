@@ -7,7 +7,6 @@ package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.partition.PartitionManager;
-
 import java.io.File;
 
 /**
@@ -17,7 +16,7 @@ import java.io.File;
  * @since 2/21/14
  */
 class Grib1PartitionBuilder extends GribPartitionBuilder {
-  public static final String MAGIC_START = "Grib1Partition2Index";  // was Grib1Partition0Index
+  public static final String MAGIC_START = "Grib1Partition2Index"; // was Grib1Partition0Index
 
   Grib1PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(name, tpc, logger);

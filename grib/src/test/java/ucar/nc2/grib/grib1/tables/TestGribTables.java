@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -33,7 +33,6 @@
 package ucar.nc2.grib.grib1.tables;
 
 import org.junit.*;
-
 import java.io.File;
 import java.io.IOException;
 import org.junit.runner.RunWith;
@@ -48,10 +47,12 @@ public class TestGribTables {
     File dir = new File(dirS);
     assert (dir.listFiles() != null);
     for (File f : dir.listFiles()) {
-      if (!f.getName().endsWith(".h")) continue;
+      if (!f.getName().endsWith(".h"))
+        continue;
       Grib1ParamTableReader table = new Grib1ParamTableReader(f.getPath());
-      //  60:	 1:		180:	WMO_GRIB1.60-1.180.xml
-      System.out.printf("%5d: %5d: %5d: %s%n", table.getCenter_id(), table.getSubcenter_id(), table.getVersion(), table.getName());
+      // 60: 1: 180: WMO_GRIB1.60-1.180.xml
+      System.out.printf("%5d: %5d: %5d: %s%n", table.getCenter_id(), table.getSubcenter_id(), table.getVersion(),
+          table.getName());
     }
   }
 

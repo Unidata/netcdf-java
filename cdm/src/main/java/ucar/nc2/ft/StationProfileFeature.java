@@ -7,7 +7,6 @@ package ucar.nc2.ft;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nonnull;
-
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDate;
@@ -15,6 +14,7 @@ import ucar.nc2.time.CalendarDateRange;
 
 /**
  * Time series of ProfileFeature at named locations.
+ * 
  * @author caron
  * @since Feb 29, 2008
  */
@@ -22,12 +22,14 @@ public interface StationProfileFeature extends StationFeature, PointFeatureCC, I
 
   /**
    * The number of profiles in the time series. May not be known until after iterating through the collection.
+   * 
    * @return number of profiles in the time series, or -1 if not known.
    */
   int size();
 
   /**
    * Subset this collection by dateRange
+   * 
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
    */
@@ -35,13 +37,16 @@ public interface StationProfileFeature extends StationFeature, PointFeatureCC, I
 
 
   /**
-   * Get the list of times in the time series of profiles. Note that this may be as costly as iterating over the collection.
+   * Get the list of times in the time series of profiles. Note that this may be as costly as iterating over the
+   * collection.
+   * 
    * @return list of times in the time series of profiles.
    */
   List<CalendarDate> getTimes();
 
   /**
    * Get a particular profile by date. Note that this may be as costly as iterating over the collection.
+   * 
    * @param date get profile matching this date.
    * @return profile whose date matches the given date
    * @throws java.io.IOException on read error
@@ -50,6 +55,7 @@ public interface StationProfileFeature extends StationFeature, PointFeatureCC, I
 
   /**
    * The data associated with the StationProfile feature.
+   * 
    * @return the actual data of this section. may be empty, not null.
    * @throws java.io.IOException on i/o error
    */
@@ -60,6 +66,7 @@ public interface StationProfileFeature extends StationFeature, PointFeatureCC, I
 
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.
+   * 
    * @return true is there is another ProfileFeature in the iteration.
    * @throws java.io.IOException on read error
    * @deprecated use foreach
@@ -69,6 +76,7 @@ public interface StationProfileFeature extends StationFeature, PointFeatureCC, I
   /**
    * Use the internal iterator to get the next ProfileFeature in the iteration.
    * You must call hasNext() before you call this.
+   * 
    * @return the next ProfileFeature in the iteration
    * @throws java.io.IOException on read error
    * @deprecated use foreach
@@ -77,6 +85,7 @@ public interface StationProfileFeature extends StationFeature, PointFeatureCC, I
 
   /**
    * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
+   * 
    * @throws java.io.IOException on read error
    * @deprecated use foreach
    */

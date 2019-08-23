@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Diff;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.PrintStream;
@@ -24,7 +23,7 @@ public class TestDConnect2 extends TestSources {
 
   final String TITLE = "DAP DConnect2 Tests";
 
-// Define the test sets
+  // Define the test sets
 
   int passcount = 0;
   int xfailcount = 0;
@@ -39,20 +38,19 @@ public class TestDConnect2 extends TestSources {
   boolean pass = false;
   TestSet currentTestSet = null;
 
-  TestSetEnum[] whichtests = {
-          TestSetEnum.Standard1, TestSetEnum.Constrained1, TestSetEnum.Remote2
-          //TestSetEnum.Experimental
+  TestSetEnum[] whichtests = {TestSetEnum.Standard1, TestSetEnum.Constrained1, TestSetEnum.Remote2
+      // TestSetEnum.Experimental
   };
 
-  final String[] XFAIL = {
-          "test.01.das", "test.07.das"
-  };
+  final String[] XFAIL = {"test.01.das", "test.07.das"};
 
   boolean isxfail(String testname, String extension) {
     // See if this is an xfail test
     for (String s : XFAIL) {
-      if (!s.endsWith(extension)) continue;
-      if (s.startsWith(testname)) return true;
+      if (!s.endsWith(extension))
+        continue;
+      if (s.startsWith(testname))
+        return true;
     }
     return false;
   }
@@ -96,13 +94,17 @@ public class TestDConnect2 extends TestSources {
       url = currentTestSet.url + "/" + testname;
 
     }
-    if (verbose) System.out.println("*** Testing: " + testdataname);
-    if (verbose) System.out.println("*** URL: " + url);
+    if (verbose)
+      System.out.println("*** Testing: " + testdataname);
+    if (verbose)
+      System.out.println("*** URL: " + url);
 
 
-    if (!constrained) testpart(TestPart.DAS, ce);
+    if (!constrained)
+      testpart(TestPart.DAS, ce);
     testpart(TestPart.DDS, ce);
-    if (constrained) testpart(TestPart.DATADDS, ce);
+    if (constrained)
+      testpart(TestPart.DATADDS, ce);
     if (!pass)
       Assert.assertTrue(testname, pass);
   }
@@ -191,7 +193,8 @@ public class TestDConnect2 extends TestSources {
 
     for (TestSetEnum e : whichtests) {
       currentTestSet = TestSets.get(e);
-      if (currentTestSet == null) continue;
+      if (currentTestSet == null)
+        continue;
       System.out.printf("Base URL: %s\n", currentTestSet.url);
 
       for (String test : currentTestSet.tests) {
@@ -202,7 +205,8 @@ public class TestDConnect2 extends TestSources {
     int totalcount = passcount + failcount;
     int okcount = passcount;
 
-    System.out.printf("*** PASSED: %d/%d; %d expected failures; %d unexpected failures\n", okcount, totalcount, xfailcount, failcount);
+    System.out.printf("*** PASSED: %d/%d; %d expected failures; %d unexpected failures\n", okcount, totalcount,
+        xfailcount, failcount);
   }
 
 }

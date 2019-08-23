@@ -10,14 +10,12 @@ package thredds.cataloggen.config;
  *
  * @author Ethan Davis
  */
-enum DatasetNamerType
-{
-  REGULAR_EXPRESSION( "RegExp" ),
-  DODS_ATTRIBUTE( "DodsAttrib" );
+enum DatasetNamerType {
+  REGULAR_EXPRESSION("RegExp"), DODS_ATTRIBUTE("DodsAttrib");
 
   private String altId;
 
-  private DatasetNamerType( String altId ) {
+  private DatasetNamerType(String altId) {
     this.altId = altId;
   }
 
@@ -25,14 +23,12 @@ enum DatasetNamerType
     return this.altId;
   }
 
-  public static DatasetNamerType getType( String altId )
-  {
-    if ( altId == null )
+  public static DatasetNamerType getType(String altId) {
+    if (altId == null)
       return null;
 
-    for ( DatasetNamerType curType : DatasetNamerType.values() )
-    {
-      if ( curType.altId.equals( altId ) )
+    for (DatasetNamerType curType : DatasetNamerType.values()) {
+      if (curType.altId.equals(altId))
         return curType;
     }
     return null;

@@ -8,10 +8,8 @@ package ucar.nc2.iosp.gempak;
 
 
 import java.io.*;
-
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -88,11 +86,10 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
   /**
    * Default ctor
    */
-  AbstractGempakStationFileReader() {
-  }
+  AbstractGempakStationFileReader() {}
 
   /**
-   * Initialize this reader.  Read all the metadata
+   * Initialize this reader. Read all the metadata
    *
    * @return true if successful
    * @throws IOException problem reading the data
@@ -102,14 +99,14 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
   }
 
   /**
-   * Initialize this reader.  Get the Grid specific info
+   * Initialize this reader. Get the Grid specific info
    *
    * @param fullCheck check to make sure there are grids we can handle
    * @return true if successful
    * @throws IOException problem reading the data
    */
   protected boolean init(boolean fullCheck) throws IOException {
-    //Trace.startTrace();
+    // Trace.startTrace();
 
     if (!super.init(fullCheck)) {
       return false;
@@ -124,7 +121,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
   }
 
   /**
-   * Read in the stations and times.  Subclasses should
+   * Read in the stations and times. Subclasses should
    * call this during init()
    *
    * @param uniqueTimes make a set of unique times
@@ -167,8 +164,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
   private List<Key> getDateTimeKeys() {
     Key date = findKey(DATE);
     Key time = findKey(TIME);
-    if ((date == null) || (time == null)
-            || !date.type.equals(time.type)) {
+    if ((date == null) || (time == null) || !date.type.equals(time.type)) {
       return null;
     }
     List<Key> dt = new ArrayList<>(2);
@@ -204,8 +200,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
       }
     }
     if (unique && !fileDates.isEmpty()) {
-      SortedSet<String> uniqueTimes =
-              Collections.synchronizedSortedSet(new TreeSet<>());
+      SortedSet<String> uniqueTimes = Collections.synchronizedSortedSet(new TreeSet<>());
       uniqueTimes.addAll(fileDates);
       fileDates.clear();
       fileDates.addAll(uniqueTimes);
@@ -226,8 +221,8 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
       String name = param.kprmnm;
       GempakParameter parm = GempakParameters.getParameter(name);
       if (parm == null) {
-        //System.out.println("couldn't find " + name
-        //                   + " in params table");
+        // System.out.println("couldn't find " + name
+        // + " in params table");
         parm = new GempakParameter(1, name, name, "", 0);
       }
       gemparms.add(parm);
@@ -360,8 +355,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
     Key spri = findKey(GempakStation.SPRI);
     Key swfo = findKey(GempakStation.SWFO);
     Key wfo2 = findKey(GempakStation.WFO2);
-    if ((slat == null) || (slon == null)
-            || !slat.type.equals(slon.type)) {
+    if ((slat == null) || (slon == null) || !slat.type.equals(slon.type)) {
       return null;
     }
     String tslat = slat.type;
@@ -438,8 +432,8 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
       dateFmt.setTimeZone(TimeZone.getTimeZone("GMT"));
       for (String dateString : dateList) {
         Date d = dateFmt.parse(dateString, new ParsePosition(0));
-        //DateFromString.getDateUsingSimpleDateFormat(dateString,
-        //    DATE_FORMAT);
+        // DateFromString.getDateUsingSimpleDateFormat(dateString,
+        // DATE_FORMAT);
         dates.add(d);
       }
     }

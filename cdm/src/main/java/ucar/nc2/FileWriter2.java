@@ -8,7 +8,6 @@ import ucar.ma2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.write.Nc4Chunking;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +23,8 @@ import java.util.Map;
  * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
  * then the new file is filled with fill values, like ncgen.
  * <p/>
- * <p> Use a NetcdfFileWriter object for a lower level API.
+ * <p>
+ * Use a NetcdfFileWriter object for a lower level API.
  *
  * @see ucar.nc2.dt.grid.CFGridWriter2
  * @see ucar.nc2.ft.point.writer.CFPointWriter
@@ -53,28 +53,32 @@ public class FileWriter2 {
   private final NetcdfFileWriter writer;
   private final NetcdfFileWriter.Version version;
 
-  private final Map<Variable, Variable> varMap = new HashMap<>(100);  // oldVar, newVar
-  private final List<Variable> varList = new ArrayList<>(100);        // old Vars
+  private final Map<Variable, Variable> varMap = new HashMap<>(100); // oldVar, newVar
+  private final List<Variable> varList = new ArrayList<>(100); // old Vars
   private final Map<String, Dimension> gdimHash = new HashMap<>(33); // name, newDim : global dimensions (classic mode)
 
   /**
    * Use this constructor to copy entire file. Use this.write() to do actual copy.
    *
-   * @param fileIn      copy this file
+   * @param fileIn copy this file
    * @param fileOutName to this output file
-   * @param version     output file version
-   * @param chunker     chunking strategy (netcdf4 only)
+   * @param version output file version
+   * @param chunker chunking strategy (netcdf4 only)
    * @throws IOException on read/write error
    */
-  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker) throws IOException {
+  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker)
+      throws IOException {
     this.fileIn = fileIn;
     this.writer = NetcdfFileWriter.createNew(version, fileOutName, chunker);
     this.version = version;
   }
 
-  public enum N3StructureStrategy {flatten, exclude}
+  public enum N3StructureStrategy {
+    flatten, exclude
+  }
 
   private N3StructureStrategy n3StructureStrategy;
+
   public void setN3StructureStrategy(N3StructureStrategy n3StructureStrategy) {
     this.n3StructureStrategy = n3StructureStrategy;
   }
@@ -132,9 +136,10 @@ public class FileWriter2 {
       Dimension newD = gdimHash.get(oldD.getShortName());
       if (newD == null) {
         newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-                oldD.isUnlimited(), oldD.isVariableLength());
+            oldD.isUnlimited(), oldD.isVariableLength());
         gdimHash.put(oldD.getShortName(), newD);
-        if (debug) System.out.println("add dim= " + newD);
+        if (debug)
+          System.out.println("add dim= " + newD);
       }
       result.add(newD);
     }
@@ -149,7 +154,8 @@ public class FileWriter2 {
 
   /**
    * Write the input file to the output file.
-   * @param cancel  allow user to cancel; may be null.
+   * 
+   * @param cancel allow user to cancel; may be null.
    * @return the open output file.
    */
   public NetcdfFile write(CancelTask cancel) throws IOException {
@@ -160,21 +166,25 @@ public class FileWriter2 {
       else
         addGroupClassic();
 
-      if (cancel != null && cancel.isCancel()) return null;
+      if (cancel != null && cancel.isCancel())
+        return null;
 
       // create the file
       writer.create();
 
-      if (cancel != null && cancel.isCancel()) return null;
+      if (cancel != null && cancel.isCancel())
+        return null;
       double total = copyVarData(varList, null, cancel);
-      if (cancel != null && cancel.isCancel()) return null;
+      if (cancel != null && cancel.isCancel())
+        return null;
 
       writer.flush();
-      if (debug) System.out.println("FileWriter done total bytes = " + total);
+      if (debug)
+        System.out.println("FileWriter done total bytes = " + total);
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
-      writer.abort();  // clean up
+      writer.abort(); // clean up
       throw ioe;
     }
 
@@ -196,15 +206,17 @@ public class FileWriter2 {
     Map<String, Dimension> dimHash = new HashMap<>();
     for (Dimension oldD : fileIn.getDimensions()) {
       Dimension newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-              oldD.isUnlimited(), oldD.isVariableLength());
+          oldD.isUnlimited(), oldD.isVariableLength());
       dimHash.put(oldD.getShortName(), newD);
-      if (debug) System.out.println("add dim= " + newD);
+      if (debug)
+        System.out.println("add dim= " + newD);
     }
 
     // Variables
     int anonCount = 0;
     for (Variable oldVar : fileIn.getVariables()) {
-      if (oldVar instanceof Structure) continue; // ignore for the moment
+      if (oldVar instanceof Structure)
+        continue; // ignore for the moment
 
       List<Dimension> dims = new ArrayList<>();
       for (Dimension oldD : oldVar.getDimensions()) {
@@ -244,7 +256,8 @@ public class FileWriter2 {
       }
 
       Variable v = writer.addVariable(null, oldVar.getShortName(), newType, dims);
-      if (debug) System.out.println("add var= " + v.getNameAndDimensions());
+      if (debug)
+        System.out.println("add var= " + v.getNameAndDimensions());
       varMap.put(oldVar, v);
       varList.add(oldVar);
 
@@ -261,22 +274,25 @@ public class FileWriter2 {
     // attributes
     for (Attribute att : oldGroup.getAttributes()) {
       writer.addGroupAttribute(newGroup, att); // atts are immutable
-      if (debug) System.out.println("add gatt= " + att);
+      if (debug)
+        System.out.println("add gatt= " + att);
     }
 
     // typedefs
     for (EnumTypedef td : oldGroup.getEnumTypedefs()) {
       writer.addTypedef(newGroup, td); // td are immutable
-      if (debug) System.out.println("add td= " + td);
+      if (debug)
+        System.out.println("add td= " + td);
     }
 
     // dimensions
     Map<String, Dimension> dimHash = new HashMap<>();
     for (Dimension oldD : oldGroup.getDimensions()) {
       Dimension newD = writer.addDimension(newGroup, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-              oldD.isUnlimited(), oldD.isVariableLength());
+          oldD.isUnlimited(), oldD.isVariableLength());
       dimHash.put(oldD.getShortName(), newD);
-      if (debug) System.out.println("add dim= " + newD);
+      if (debug)
+        System.out.println("add dim= " + newD);
     }
 
     // Variables
@@ -296,7 +312,7 @@ public class FileWriter2 {
       Variable v;
       if (newType == DataType.STRUCTURE) {
         v = writer.addCopyOfStructure(newGroup, (Structure) oldVar, oldVar.getShortName(), dims);
-      } else if(newType.isEnum()) {
+      } else if (newType.isEnum()) {
         EnumTypedef en = oldVar.getEnumTypedef();
         v = writer.addVariable(newGroup, oldVar.getShortName(), newType, dims);
         v.setEnumTypedef(en);
@@ -305,7 +321,8 @@ public class FileWriter2 {
       }
       varMap.put(oldVar, v);
       varList.add(oldVar);
-      if (debug) System.out.println("add var= " + v);
+      if (debug)
+        System.out.println("add var= " + v);
 
       // attributes
       for (Attribute att : oldVar.getAttributes())
@@ -320,20 +337,22 @@ public class FileWriter2 {
 
   // munge attribute if needed
   private Attribute convertAttribute(Attribute org) {
-    if (version.isExtendedModel()) return org;
-    if (!org.getDataType().isUnsigned()) return org;
+    if (version.isExtendedModel())
+      return org;
+    if (!org.getDataType().isUnsigned())
+      return org;
     Array orgValues = org.getValues();
     Array nc3Values = Array.makeFromJavaArray(orgValues.getStorage(), false);
     return new Attribute(org.getShortName(), nc3Values);
   }
 
   /**
-   * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
+   * Write data from varList into new file. Read/Write a maximum of maxSize bytes at a time.
    * When theres a record variable, its much more efficient to use it.
    *
-   * @param oldVars   list of variables from the original file, with data in them
+   * @param oldVars list of variables from the original file, with data in them
    * @param recordVar the record variable from the original file, or null means dont use record variables
-   * @param cancel  allow user to cancel, may be null.
+   * @param cancel allow user to cancel, may be null.
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
@@ -351,7 +370,8 @@ public class FileWriter2 {
         continue;
 
       if (debug)
-        System.out.println("write var= " + oldVar.getShortName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
+        System.out.println(
+            "write var= " + oldVar.getShortName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
       if (cancel != null)
         cancel.setProgress("writing " + oldVar.getShortName(), countVars++);
 
@@ -364,13 +384,14 @@ public class FileWriter2 {
         copySome(oldVar, varMap.get(oldVar), maxSize, cancel);
       }
 
-      if (cancel != null && cancel.isCancel()) return total;
+      if (cancel != null && cancel.isCancel())
+        return total;
     }
 
     // write record data
     if (useRecordDimension) {
-      int[] origin = new int[]{0};
-      int[] size = new int[]{1};
+      int[] origin = new int[] {0};
+      int[] size = new int[] {1};
 
       int nrecs = (int) recordVar.getSize();
       int sdataSize = recordVar.getElementSize();
@@ -381,18 +402,21 @@ public class FileWriter2 {
         origin[0] = count;
         try {
           Array recordData = recordVar.read(origin, size);
-          writer.write(recordVarNew, origin, recordData);  // rather magic here - only writes the ones in ncfile !!
-          if (debug && (count == 0)) System.out.println("write record size = " + sdataSize);
+          writer.write(recordVarNew, origin, recordData); // rather magic here - only writes the ones in ncfile !!
+          if (debug && (count == 0))
+            System.out.println("write record size = " + sdataSize);
         } catch (InvalidRangeException e) {
           e.printStackTrace();
           break;
         }
         totalRecordBytes += sdataSize;
-        if (cancel != null && cancel.isCancel()) return total;
+        if (cancel != null && cancel.isCancel())
+          return total;
       }
       total += totalRecordBytes;
       totalRecordBytes /= 1000 * 1000;
-      if (debug) System.out.println("write record var; total = " + totalRecordBytes + " Mbytes # recs=" + nrecs);
+      if (debug)
+        System.out.println("write record var; total = " + totalRecordBytes + " Mbytes # recs=" + nrecs);
     }
     return total;
   }
@@ -405,7 +429,7 @@ public class FileWriter2 {
       if (!version.isNetdf4format() && oldVar.getDataType() == DataType.STRING) {
         data = convertToChar(newVar, data);
       }
-      if (data.getSize() > 0)  // zero when record dimension = 0
+      if (data.getSize() > 0) // zero when record dimension = 0
         writer.write(newVar, data);
 
     } catch (InvalidRangeException e) {
@@ -418,10 +442,10 @@ public class FileWriter2 {
    * Copies data from {@code oldVar} to {@code newVar}. The writes are done in a series of chunks no larger than
    * {@code maxChunkSize} bytes.
    *
-   * @param oldVar       a variable from the original file to copy data from.
-   * @param newVar       a variable from the original file to copy data from.
+   * @param oldVar a variable from the original file to copy data from.
+   * @param newVar a variable from the original file to copy data from.
    * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
-   * @param cancel      allow user to cancel, may be null.
+   * @param cancel allow user to cancel, may be null.
    * @throws IOException if an I/O error occurs.
    */
   private void copySome(Variable oldVar, Variable newVar, long maxChunkSize, CancelTask cancel) throws IOException {
@@ -434,13 +458,17 @@ public class FileWriter2 {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
 
-        if (cancel != null) cancel.setProgress("Reading chunk "+new Section(chunkOrigin, chunkShape)+" from variable: " + oldVar.getShortName(), -1);
-        /* writeProgressEvent.setWriteStatus("Reading chunk from variable: " + oldVar.getShortName());
-        if (progressListeners != null) {
-          for (FileWriterProgressListener listener : progressListeners) {
-            listener.writeProgress(writeProgressEvent);
-          }
-        } */
+        if (cancel != null)
+          cancel.setProgress(
+              "Reading chunk " + new Section(chunkOrigin, chunkShape) + " from variable: " + oldVar.getShortName(), -1);
+        /*
+         * writeProgressEvent.setWriteStatus("Reading chunk from variable: " + oldVar.getShortName());
+         * if (progressListeners != null) {
+         * for (FileWriterProgressListener listener : progressListeners) {
+         * listener.writeProgress(writeProgressEvent);
+         * }
+         * }
+         */
 
         Array data = oldVar.read(chunkOrigin, chunkShape);
         if (!version.isNetdf4format() && oldVar.getDataType() == DataType.STRING) {
@@ -448,7 +476,10 @@ public class FileWriter2 {
         }
 
         if (data.getSize() > 0) {// zero when record dimension = 0
-          if (cancel != null) cancel.setProgress("Writing chunk "+new Section(chunkOrigin, chunkShape)+" from variable: " + oldVar.getShortName(), -1);
+          if (cancel != null)
+            cancel.setProgress(
+                "Writing chunk " + new Section(chunkOrigin, chunkShape) + " from variable: " + oldVar.getShortName(),
+                -1);
 
           writer.write(newVar, chunkOrigin, data);
           if (debugWrite)
@@ -458,7 +489,8 @@ public class FileWriter2 {
         }
 
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
-        if (cancel != null && cancel.isCancel()) return;
+        if (cancel != null && cancel.isCancel())
+          return;
 
       } catch (InvalidRangeException e) {
         e.printStackTrace();
@@ -481,13 +513,15 @@ public class FileWriter2 {
     return newData;
   }
 
-  /* private boolean hasRecordStructure(NetcdfFile file) {
-    Variable v = file.findVariable("record");
-    return (v != null) && (v.getDataType() == DataType.STRUCTURE);
-  } */
+  /*
+   * private boolean hasRecordStructure(NetcdfFile file) {
+   * Variable v = file.findVariable("record");
+   * return (v != null) && (v.getDataType() == DataType.STRUCTURE);
+   * }
+   */
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // contributed by  cwardgar@usgs.gov 4/12/2010
+  // contributed by cwardgar@usgs.gov 4/12/2010
 
   /**
    * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
@@ -504,7 +538,7 @@ public class FileWriter2 {
      * and with {@code numElems <= maxChunkElems}.
      *
      * @param maxChunkElems the maximum number of elements in the chunk shape. The actual element count of the shape
-     *                      returned is likely to be different, and can be found with {@link Index#computeSize}.
+     *        returned is likely to be different, and can be found with {@link Index#computeSize}.
      * @return the shape of the largest possible contiguous chunk.
      */
     public int[] computeChunkShape(long maxChunkElems) {
@@ -529,10 +563,13 @@ public class FileWriter2 {
 
   /**
    * Better to use ucar.nc.dataset.NetcdfDataset main program instead.
-   * <p><strong>ucar.nc2.FileWriter -in fileIn -out fileOut</strong>.
-   * <p>where: <ul>
-   * <li> fileIn : path of any CDM readable file
-   * <li> fileOut: local pathname where netdf-3 file will be written
+   * <p>
+   * <strong>ucar.nc2.FileWriter -in fileIn -out fileOut</strong>.
+   * <p>
+   * where:
+   * <ul>
+   * <li>fileIn : path of any CDM readable file
+   * <li>fileOut: local pathname where netdf-3 file will be written
    * </ol>
    *
    * @param arg -in fileIn -out fileOut [-netcdf4]
@@ -548,9 +585,12 @@ public class FileWriter2 {
     NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
     for (int i = 0; i < arg.length; i++) {
       String s = arg[i];
-      if (s.equalsIgnoreCase("-in")) datasetIn = arg[i + 1];
-      if (s.equalsIgnoreCase("-out")) datasetOut = arg[i + 1];
-      if (s.equalsIgnoreCase("-netcdf4")) version = NetcdfFileWriter.Version.netcdf4;
+      if (s.equalsIgnoreCase("-in"))
+        datasetIn = arg[i + 1];
+      if (s.equalsIgnoreCase("-out"))
+        datasetOut = arg[i + 1];
+      if (s.equalsIgnoreCase("-netcdf4"))
+        version = NetcdfFileWriter.Version.netcdf4;
     }
     if ((datasetIn == null) || (datasetOut == null)) {
       usage();
@@ -560,11 +600,13 @@ public class FileWriter2 {
     System.out.printf("FileWriter2 copy %s to %s ", datasetIn, datasetOut);
     CancelTaskImpl cancel = new CancelTaskImpl();
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, cancel);
-    if (cancel.isCancel()) return;
+    if (cancel.isCancel())
+      return;
 
     FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null); // currently only the default chunker
     NetcdfFile ncfileOut = writer2.write(cancel);
-    if (ncfileOut != null) ncfileOut.close();
+    if (ncfileOut != null)
+      ncfileOut.close();
     ncfileIn.close();
     System.out.printf("%s%n", cancel);
   }

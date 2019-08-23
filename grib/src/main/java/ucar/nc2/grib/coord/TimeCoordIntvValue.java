@@ -9,7 +9,7 @@ import ucar.nc2.time.CalendarPeriod;
 // use for time intervals
 @Immutable
 public class TimeCoordIntvValue implements Comparable<TimeCoordIntvValue> {
-  private final int b1, b2;  // bounds
+  private final int b1, b2; // bounds
 
   public TimeCoordIntvValue(int b1, int b2) {
     this.b1 = b1;
@@ -46,8 +46,7 @@ public class TimeCoordIntvValue implements Comparable<TimeCoordIntvValue> {
       return false;
     }
     TimeCoordIntvValue that = (TimeCoordIntvValue) o;
-    return b1 == that.b1 &&
-        b2 == that.b2;
+    return b1 == that.b1 && b2 == that.b2;
   }
 
   @Override

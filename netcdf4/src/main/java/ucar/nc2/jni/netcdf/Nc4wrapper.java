@@ -40,8 +40,7 @@ public class Nc4wrapper implements Nc4prototypes {
       sargs.append(o == null ? "null" : o.toString());
     }
     sargs.append(")");
-    log.info(String.format("trace: %s ret=%s args=%s",
-        fcn, ret.toString(), sargs.toString()));
+    log.info(String.format("trace: %s ret=%s args=%s", fcn, ret.toString(), sargs.toString()));
   }
 
   static protected void err(String cc, int c) {
@@ -146,8 +145,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_format_extended(int ncid, IntByReference formatp,
-      IntByReference modep) {
+  public synchronized int nc_inq_format_extended(int ncid, IntByReference formatp, IntByReference modep) {
     int ret;
     try {
       ce();
@@ -237,8 +235,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_unlimdims(int ncid, IntByReference nunlimdimsp,
-      int[] unlimdimidsp) {
+  public synchronized int nc_inq_unlimdims(int ncid, IntByReference nunlimdimsp, int[] unlimdimidsp) {
     int ret;
     try {
       ce();
@@ -253,8 +250,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_dimids(int ncid, IntByReference ndims, int[] dimids,
-      int include_parents) {
+  public synchronized int nc_inq_dimids(int ncid, IntByReference ndims, int[] dimids, int include_parents) {
     int ret;
     try {
       ce();
@@ -599,8 +595,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep,
-      IntByReference ndimsp, int[] dimidsp, IntByReference nattsp) {
+  public synchronized int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep, IntByReference ndimsp,
+      int[] dimidsp, IntByReference nattsp) {
     int ret;
     try {
       ce();
@@ -722,8 +718,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_enum_member(int ncid, int xtype, int idx, byte[] name,
-      IntByReference value) {
+  public synchronized int nc_inq_enum_member(int ncid, int xtype, int idx, byte[] name, IntByReference value) {
     int ret;
     try {
       ce();
@@ -1143,8 +1138,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      byte[] buf) {
+  public synchronized int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] buf) {
     int ret;
     try {
       ce();
@@ -1159,8 +1153,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      byte[] ip) {
+  public synchronized int nc_get_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip) {
     int ret;
     try {
       ce();
@@ -1175,8 +1168,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      byte[] ip) {
+  public synchronized int nc_get_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip) {
     int ret;
     try {
       ce();
@@ -1191,8 +1183,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_text(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      byte[] ip) {
+  public synchronized int nc_get_vara_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip) {
     int ret;
     try {
       ce();
@@ -1207,8 +1198,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_short(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      short[] ip) {
+  public synchronized int nc_get_vara_short(int ncid, int varid, SizeT[] startp, SizeT[] countp, short[] ip) {
     int ret;
     try {
       ce();
@@ -1223,8 +1213,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      short[] ip) {
+  public synchronized int nc_get_vara_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp, short[] ip) {
     int ret;
     try {
       ce();
@@ -1239,8 +1228,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_int(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      int[] ip) {
+  public synchronized int nc_get_vara_int(int ncid, int varid, SizeT[] startp, SizeT[] countp, int[] ip) {
     int ret;
     try {
       ce();
@@ -1255,8 +1243,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      int[] ip) {
+  public synchronized int nc_get_vara_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp, int[] ip) {
     int ret;
     try {
       ce();
@@ -1271,8 +1258,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      long[] ip) {
+  public synchronized int nc_get_vara_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, long[] ip) {
     int ret;
     try {
       ce();
@@ -1287,8 +1273,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      long[] ip) {
+  public synchronized int nc_get_vara_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, long[] ip) {
     int ret;
     try {
       ce();
@@ -1303,8 +1288,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_float(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      float[] ip) {
+  public synchronized int nc_get_vara_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, float[] ip) {
     int ret;
     try {
       ce();
@@ -1319,8 +1303,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_double(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      double[] ip) {
+  public synchronized int nc_get_vara_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, double[] ip) {
     int ret;
     try {
       ce();
@@ -1335,8 +1318,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara_string(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      String[] ip) {
+  public synchronized int nc_get_vara_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, String[] ip) {
     int ret;
     try {
       ce();
@@ -1351,8 +1333,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, byte[] buf) {
+  public synchronized int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      byte[] buf) {
     int ret;
     try {
       ce();
@@ -1367,8 +1349,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, byte[] ip) {
+  public synchronized int nc_get_vars_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      byte[] ip) {
     int ret;
     try {
       ce();
@@ -1383,8 +1365,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, byte[] ip) {
+  public synchronized int nc_get_vars_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      byte[] ip) {
     int ret;
     try {
       ce();
@@ -1399,8 +1381,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_text(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, byte[] ip) {
+  public synchronized int nc_get_vars_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      byte[] ip) {
     int ret;
     try {
       ce();
@@ -1415,8 +1397,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_short(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, short[] ip) {
+  public synchronized int nc_get_vars_short(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      short[] ip) {
     int ret;
     try {
       ce();
@@ -1431,8 +1413,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, short[] ip) {
+  public synchronized int nc_get_vars_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      short[] ip) {
     int ret;
     try {
       ce();
@@ -1447,8 +1429,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_int(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, int[] ip) {
+  public synchronized int nc_get_vars_int(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      int[] ip) {
     int ret;
     try {
       ce();
@@ -1463,8 +1445,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, int[] ip) {
+  public synchronized int nc_get_vars_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      int[] ip) {
     int ret;
     try {
       ce();
@@ -1479,8 +1461,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, long[] ip) {
+  public synchronized int nc_get_vars_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      long[] ip) {
     int ret;
     try {
       ce();
@@ -1495,8 +1477,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, long[] ip) {
+  public synchronized int nc_get_vars_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      long[] ip) {
     int ret;
     try {
       ce();
@@ -1511,8 +1493,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_float(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, float[] ip) {
+  public synchronized int nc_get_vars_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      float[] ip) {
     int ret;
     try {
       ce();
@@ -1527,8 +1509,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_double(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, double[] ip) {
+  public synchronized int nc_get_vars_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      double[] ip) {
     int ret;
     try {
       ce();
@@ -1543,8 +1525,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars_string(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, String[] ip) {
+  public synchronized int nc_get_vars_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      String[] ip) {
     int ret;
     try {
       ce();
@@ -1680,8 +1662,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_def_compound(int ncid, SizeT size, String name,
-      IntByReference typeidp) {
+  public synchronized int nc_def_compound(int ncid, SizeT size, String name, IntByReference typeidp) {
     int ret;
     try {
       ce();
@@ -1696,8 +1677,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_insert_compound(int ncid, int typeid, String name, SizeT offset,
-      int field_typeid) {
+  public synchronized int nc_insert_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid) {
     int ret;
     try {
       ce();
@@ -1712,16 +1692,14 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_insert_array_compound(int ncid, int typeid, String name, SizeT offset,
-      int field_typeid, int ndims, int[] dim_sizes) {
+  public synchronized int nc_insert_array_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid,
+      int ndims, int[] dim_sizes) {
     int ret;
     try {
       ce();
-      ret = nc4
-          .nc_insert_array_compound(ncid, typeid, name, offset, field_typeid, ndims, dim_sizes);
+      ret = nc4.nc_insert_array_compound(ncid, typeid, name, offset, field_typeid, ndims, dim_sizes);
       if (TRACE) {
-        trace(ret, "nc_insert_array_compound", ncid, typeid, name, offset, field_typeid, ndims,
-            dim_sizes);
+        trace(ret, "nc_insert_array_compound", ncid, typeid, name, offset, field_typeid, ndims, dim_sizes);
       }
     } finally {
       cx();
@@ -1730,8 +1708,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_def_enum(int ncid, int base_typeid, String name,
-      IntByReference typeidp) {
+  public synchronized int nc_def_enum(int ncid, int base_typeid, String name, IntByReference typeidp) {
     int ret;
     try {
       ce();
@@ -1791,8 +1768,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      byte[] bbuff) {
+  public synchronized int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] bbuff) {
     int ret;
     try {
       ce();
@@ -1807,8 +1783,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      byte[] ip) {
+  public synchronized int nc_put_vara_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip) {
     int ret;
     try {
       ce();
@@ -1823,8 +1798,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      byte[] ip) {
+  public synchronized int nc_put_vara_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip) {
     int ret;
     try {
       ce();
@@ -1839,8 +1813,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_text(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      byte[] ip) {
+  public synchronized int nc_put_vara_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, byte[] ip) {
     int ret;
     try {
       ce();
@@ -1855,8 +1828,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_short(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      short[] ip) {
+  public synchronized int nc_put_vara_short(int ncid, int varid, SizeT[] startp, SizeT[] countp, short[] ip) {
     int ret;
     try {
       ce();
@@ -1871,8 +1843,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      short[] ip) {
+  public synchronized int nc_put_vara_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp, short[] ip) {
     int ret;
     try {
       ce();
@@ -1887,8 +1858,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_int(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      int[] ip) {
+  public synchronized int nc_put_vara_int(int ncid, int varid, SizeT[] startp, SizeT[] countp, int[] ip) {
     int ret;
     try {
       ce();
@@ -1903,8 +1873,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      int[] ip) {
+  public synchronized int nc_put_vara_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp, int[] ip) {
     int ret;
     try {
       ce();
@@ -1919,8 +1888,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      long[] ip) {
+  public synchronized int nc_put_vara_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, long[] ip) {
     int ret;
     try {
       ce();
@@ -1935,8 +1903,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      long[] ip) {
+  public synchronized int nc_put_vara_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, long[] ip) {
     int ret;
     try {
       ce();
@@ -1951,8 +1918,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_float(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      float[] ip) {
+  public synchronized int nc_put_vara_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, float[] ip) {
     int ret;
     try {
       ce();
@@ -1967,8 +1933,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_double(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      double[] ip) {
+  public synchronized int nc_put_vara_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, double[] ip) {
     int ret;
     try {
       ce();
@@ -1983,8 +1948,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara_string(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, String[] ip) {
+  public synchronized int nc_put_vara_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      String[] ip) {
     int ret;
     try {
       ce();
@@ -1999,8 +1964,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, byte[] bbuff) {
+  public synchronized int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      byte[] bbuff) {
     int ret;
     try {
       ce();
@@ -2015,8 +1980,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, byte[] ip) {
+  public synchronized int nc_put_vars_uchar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      byte[] ip) {
     int ret;
     try {
       ce();
@@ -2031,8 +1996,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, byte[] ip) {
+  public synchronized int nc_put_vars_schar(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      byte[] ip) {
     int ret;
     try {
       ce();
@@ -2047,8 +2012,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_text(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, byte[] ip) {
+  public synchronized int nc_put_vars_text(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      byte[] ip) {
     int ret;
     try {
       ce();
@@ -2063,8 +2028,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_short(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, short[] ip) {
+  public synchronized int nc_put_vars_short(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      short[] ip) {
     int ret;
     try {
       ce();
@@ -2079,8 +2044,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, short[] ip) {
+  public synchronized int nc_put_vars_ushort(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      short[] ip) {
     int ret;
     try {
       ce();
@@ -2095,8 +2060,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_int(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, int[] ip) {
+  public synchronized int nc_put_vars_int(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      int[] ip) {
     int ret;
     try {
       ce();
@@ -2111,8 +2076,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, int[] ip) {
+  public synchronized int nc_put_vars_uint(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      int[] ip) {
     int ret;
     try {
       ce();
@@ -2127,8 +2092,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, long[] ip) {
+  public synchronized int nc_put_vars_longlong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      long[] ip) {
     int ret;
     try {
       ce();
@@ -2143,8 +2108,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, long[] ip) {
+  public synchronized int nc_put_vars_ulonglong(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      long[] ip) {
     int ret;
     try {
       ce();
@@ -2159,8 +2124,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_float(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, float[] ip) {
+  public synchronized int nc_put_vars_float(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      float[] ip) {
     int ret;
     try {
       ce();
@@ -2175,8 +2140,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_double(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, double[] ip) {
+  public synchronized int nc_put_vars_double(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      double[] ip) {
     int ret;
     try {
       ce();
@@ -2191,8 +2156,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars_string(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, String[] ip) {
+  public synchronized int nc_put_vars_string(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      String[] ip) {
     int ret;
     try {
       ce();
@@ -2387,8 +2352,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att(int ncid, int varid, String name, int xtype, SizeT len,
-      byte[] value) {
+  public synchronized int nc_put_att(int ncid, int varid, String name, int xtype, SizeT len, byte[] value) {
     int ret;
     try {
       ce();
@@ -2403,8 +2367,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_string(int ncid, int varid, String attName, SizeT len,
-      String[] value) {
+  public synchronized int nc_put_att_string(int ncid, int varid, String attName, SizeT len, String[] value) {
     int ret;
     try {
       ce();
@@ -2419,8 +2382,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_text(int ncid, int varid, String attName, SizeT len,
-      byte[] value) {
+  public synchronized int nc_put_att_text(int ncid, int varid, String attName, SizeT len, byte[] value) {
     int ret;
     try {
       ce();
@@ -2435,8 +2397,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_uchar(int ncid, int varid, String attName, int xtype,
-      SizeT len, byte[] value) {
+  public synchronized int nc_put_att_uchar(int ncid, int varid, String attName, int xtype, SizeT len, byte[] value) {
     int ret;
     try {
       ce();
@@ -2451,8 +2412,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_schar(int ncid, int varid, String attName, int xtype,
-      SizeT len, byte[] value) {
+  public synchronized int nc_put_att_schar(int ncid, int varid, String attName, int xtype, SizeT len, byte[] value) {
     int ret;
     try {
       ce();
@@ -2467,8 +2427,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_short(int ncid, int varid, String attName, int xtype,
-      SizeT len, short[] value) {
+  public synchronized int nc_put_att_short(int ncid, int varid, String attName, int xtype, SizeT len, short[] value) {
     int ret;
     try {
       ce();
@@ -2483,8 +2442,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_ushort(int ncid, int varid, String attName, int xtype,
-      SizeT len, short[] value) {
+  public synchronized int nc_put_att_ushort(int ncid, int varid, String attName, int xtype, SizeT len, short[] value) {
     int ret;
     try {
       ce();
@@ -2499,8 +2457,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_int(int ncid, int varid, String attName, int xtype, SizeT len,
-      int[] value) {
+  public synchronized int nc_put_att_int(int ncid, int varid, String attName, int xtype, SizeT len, int[] value) {
     int ret;
     try {
       ce();
@@ -2515,8 +2472,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_uint(int ncid, int varid, String attName, int xtype, SizeT len,
-      int[] value) {
+  public synchronized int nc_put_att_uint(int ncid, int varid, String attName, int xtype, SizeT len, int[] value) {
     int ret;
     try {
       ce();
@@ -2531,8 +2487,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_longlong(int ncid, int varid, String attName, int xtype,
-      SizeT len, long[] value) {
+  public synchronized int nc_put_att_longlong(int ncid, int varid, String attName, int xtype, SizeT len, long[] value) {
     int ret;
     try {
       ce();
@@ -2547,8 +2502,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_ulonglong(int ncid, int varid, String attName, int xtype,
-      SizeT len, long[] value) {
+  public synchronized int nc_put_att_ulonglong(int ncid, int varid, String attName, int xtype, SizeT len,
+      long[] value) {
     int ret;
     try {
       ce();
@@ -2563,8 +2518,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_float(int ncid, int varid, String attName, int xtype,
-      SizeT len, float[] value) {
+  public synchronized int nc_put_att_float(int ncid, int varid, String attName, int xtype, SizeT len, float[] value) {
     int ret;
     try {
       ce();
@@ -2579,8 +2533,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att_double(int ncid, int varid, String attName, int xtype,
-      SizeT len, double[] value) {
+  public synchronized int nc_put_att_double(int ncid, int varid, String attName, int xtype, SizeT len, double[] value) {
     int ret;
     try {
       ce();
@@ -2595,8 +2548,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
-      int deflate_level) {
+  public synchronized int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level) {
     int ret;
     try {
       ce();
@@ -2611,8 +2563,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_var_deflate(int ncid, int varid, IntByReference shufflep,
-      IntByReference deflatep, IntByReference deflate_levelp) {
+  public synchronized int nc_inq_var_deflate(int ncid, int varid, IntByReference shufflep, IntByReference deflatep,
+      IntByReference deflate_levelp) {
     int ret;
     try {
       ce();
@@ -2673,8 +2625,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_def_var_chunking(int ncid, int varid, int storage,
-      SizeT[] chunksizesp) {
+  public synchronized int nc_def_var_chunking(int ncid, int varid, int storage, SizeT[] chunksizesp) {
     int ret;
     try {
       ce();
@@ -2689,8 +2640,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_var_chunking(int ncid, int varid, IntByReference storagep,
-      SizeT[] chunksizesp) {
+  public synchronized int nc_inq_var_chunking(int ncid, int varid, IntByReference storagep, SizeT[] chunksizesp) {
     int ret;
     try {
       ce();
@@ -2720,8 +2670,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_var_fill(int ncid, int varid, IntByReference no_fill,
-      byte[] fill_valuep) {
+  public synchronized int nc_inq_var_fill(int ncid, int varid, IntByReference no_fill, byte[] fill_valuep) {
     int ret;
     try {
       ce();
@@ -2812,8 +2761,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_set_var_chunk_cache(int ncid, int varid, SizeT size, SizeT nelems,
-      float preemption) {
+  public synchronized int nc_set_var_chunk_cache(int ncid, int varid, SizeT size, SizeT nelems, float preemption) {
     int ret;
     try {
       ce();
@@ -2828,8 +2776,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_var_chunk_cache(int ncid, int varid, SizeTByReference sizep,
-      SizeTByReference nelemsp, FloatByReference preemptionp) {
+  public synchronized int nc_get_var_chunk_cache(int ncid, int varid, SizeTByReference sizep, SizeTByReference nelemsp,
+      FloatByReference preemptionp) {
     int ret;
     try {
       ce();
@@ -2875,16 +2823,14 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name,
-      SizeTByReference offsetp, IntByReference field_typeidp, IntByReference ndimsp, int[] dims) {
+  public synchronized int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name, SizeTByReference offsetp,
+      IntByReference field_typeidp, IntByReference ndimsp, int[] dims) {
     int ret;
     try {
       ce();
-      ret = nc4
-          .nc_inq_compound_field(ncid, xtype, fieldid, name, offsetp, field_typeidp, ndimsp, dims);
+      ret = nc4.nc_inq_compound_field(ncid, xtype, fieldid, name, offsetp, field_typeidp, ndimsp, dims);
       if (TRACE) {
-        trace(ret, "nc_inq_compound_field", ncid, xtype, fieldid, name, offsetp, field_typeidp,
-            ndimsp, dims);
+        trace(ret, "nc_inq_compound_field", ncid, xtype, fieldid, name, offsetp, field_typeidp, ndimsp, dims);
       }
     } finally {
       cx();
@@ -2893,8 +2839,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_inq_vlen(int ncid, int xtype, byte[] name,
-      SizeTByReference datum_sizep, IntByReference base_nc_typep) {
+  public synchronized int nc_inq_vlen(int ncid, int xtype, byte[] name, SizeTByReference datum_sizep,
+      IntByReference base_nc_typep) {
     int ret;
     try {
       ce();
@@ -2954,8 +2900,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      Vlen_t[] v) {
+  public synchronized int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, Vlen_t[] v) {
     int ret;
     try {
       ce();
@@ -2970,8 +2915,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, Vlen_t[] v) {
+  public synchronized int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      Vlen_t[] v) {
     int ret;
     try {
       ce();
@@ -2986,8 +2931,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att(int ncid, int varid, String attName, int xtype, SizeT len,
-      Vlen_t[] value) {
+  public synchronized int nc_put_att(int ncid, int varid, String attName, int xtype, SizeT len, Vlen_t[] value) {
     int ret;
     try {
       ce();
@@ -3032,8 +2976,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      Vlen_t[] v) {
+  public synchronized int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, Vlen_t[] v) {
     int ret;
     try {
       ce();
@@ -3048,8 +2991,8 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, Vlen_t[] v) {
+  public synchronized int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep,
+      Vlen_t[] v) {
     int ret;
     try {
       ce();
@@ -3109,8 +3052,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      Pointer p) {
+  public synchronized int nc_get_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, Pointer p) {
     int ret;
     try {
       ce();
@@ -3125,8 +3067,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, Pointer p) {
+  public synchronized int nc_get_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, Pointer p) {
     int ret;
     try {
       ce();
@@ -3141,8 +3082,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_att(int ncid, int varid, String attName, int xtype, SizeT len,
-      Pointer p) {
+  public synchronized int nc_put_att(int ncid, int varid, String attName, int xtype, SizeT len, Pointer p) {
     int ret;
     try {
       ce();
@@ -3187,8 +3127,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      Pointer p) {
+  public synchronized int nc_put_vara(int ncid, int varid, SizeT[] startp, SizeT[] countp, Pointer p) {
     int ret;
     try {
       ce();
@@ -3203,8 +3142,7 @@ public class Nc4wrapper implements Nc4prototypes {
   }
 
   @Override
-  public synchronized int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp,
-      SizeT[] stridep, Pointer p) {
+  public synchronized int nc_put_vars(int ncid, int varid, SizeT[] startp, SizeT[] countp, SizeT[] stridep, Pointer p) {
     int ret;
     try {
       ce();

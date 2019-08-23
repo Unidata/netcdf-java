@@ -6,7 +6,6 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 import ucar.nc2.util.CancelTask;
-
 import java.io.IOException;
 
 /**
@@ -17,7 +16,7 @@ import java.io.IOException;
  */
 
 class SectionReader implements ProxyReader {
-  private Section orgSection;   // section of the original
+  private Section orgSection; // section of the original
   private Variable orgClient;
 
   // section must be filled
@@ -29,10 +28,10 @@ class SectionReader implements ProxyReader {
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     try {
-      return orgClient._read( orgSection);
+      return orgClient._read(orgSection);
     } catch (InvalidRangeException e) {
       try {
-        orgClient._read( orgSection); // debug
+        orgClient._read(orgSection); // debug
       } catch (InvalidRangeException e1) {
         e1.printStackTrace();
       }
@@ -41,9 +40,10 @@ class SectionReader implements ProxyReader {
   }
 
   @Override
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-    Section want = orgSection.compose( section);
-    return orgClient._read( want);
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
+    Section want = orgSection.compose(section);
+    return orgClient._read(want);
   }
 
 }

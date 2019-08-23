@@ -16,7 +16,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -46,7 +45,7 @@ public class TestH4misc {
       double sum3 = 0;
       int[] varShape = v.getShape();
       int[] origin = new int[3];
-      int[] size = new int[]{1, varShape[1], varShape[2]};
+      int[] size = new int[] {1, varShape[1], varShape[2]};
       for (int i = 0; i < varShape[0]; i++) {
         origin[0] = i;
         Array data2D = v.read(origin, size);
@@ -55,7 +54,7 @@ public class TestH4misc {
         System.out.printf("  %d sum3D =        %f%n", i, sum);
         sum2 += sum;
 
-//      assert data2D.getRank() == 2;
+        // assert data2D.getRank() == 2;
         sum = MAMath.sumDouble(data2D.reduce(0));
         System.out.printf("  %d sum2D =        %f%n", i, sum);
         sum3 += sum;

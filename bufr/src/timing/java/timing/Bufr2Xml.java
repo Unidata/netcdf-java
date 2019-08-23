@@ -1,7 +1,7 @@
 /*
-* Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
-* See LICENSE for license information.
-*/
+ * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package timing;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -12,7 +12,6 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.*;
-
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -43,7 +42,8 @@ public class Bufr2Xml {
       System.out.println(filename + " does not exist");
       return;
     }
-    if (f.isDirectory()) testAllInDir(f, closure);
+    if (f.isDirectory())
+      testAllInDir(f, closure);
     else {
       try {
         closure.run(f.getPath());
@@ -60,11 +60,16 @@ public class Bufr2Xml {
     Collections.sort(list);
 
     for (File f : list) {
-      if (f.getName().endsWith("bfx")) continue;
-      if (f.getName().endsWith("txt")) continue;
-      if (f.getName().endsWith("zip")) continue;
-      if (f.getName().endsWith("csh")) continue;
-      if (f.getName().endsWith("rtf")) continue;
+      if (f.getName().endsWith("bfx"))
+        continue;
+      if (f.getName().endsWith("txt"))
+        continue;
+      if (f.getName().endsWith("zip"))
+        continue;
+      if (f.getName().endsWith("csh"))
+        continue;
+      if (f.getName().endsWith("rtf"))
+        continue;
 
       if (f.isDirectory())
         testAllInDir(f, closure);
@@ -89,8 +94,9 @@ public class Bufr2Xml {
       int bad = 0;
       while (scan.hasNext()) {
         Message m = scan.next();
-        if (m == null) continue;
-        //if (count == 0) new BufrDump2().dump(out, m);
+        if (m == null)
+          continue;
+        // if (count == 0) new BufrDump2().dump(out, m);
 
         if (!m.isTablesComplete()) {
           out.format("**INCOMPLETE%n");
@@ -100,7 +106,8 @@ public class Bufr2Xml {
 
         int nbitsCounted = m.getTotalBits();
         if (!(Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1)) {
-          out.format("**BitCount Fails expect=%d != dataLength=%d%n", m.getCountedDataBytes(), m.dataSection.getDataLength());
+          out.format("**BitCount Fails expect=%d != dataLength=%d%n", m.getCountedDataBytes(),
+              m.dataSection.getDataLength());
           bad++;
           continue;
         }
@@ -117,7 +124,8 @@ public class Bufr2Xml {
 
     long took = (System.nanoTime() - start);
     double rate = (took > 0) ? ((double) (1000 * 1000) * count / took) : 0.0;
-    out.format("----nmsgs= %d bad=%d nobs = %d took %d msecs rate = %f msgs/msec%n", count, bad, scan.getTotalObs(), took / (1000 * 1000), rate);
+    out.format("----nmsgs= %d bad=%d nobs = %d took %d msecs rate = %f msgs/msec%n", count, bad, scan.getTotalObs(),
+        took / (1000 * 1000), rate);
     return scan.getTotalObs();
   }
 
@@ -246,10 +254,12 @@ public class Bufr2Xml {
     staxWriter.writeCharacters("\n");
     staxWriter.writeCharacters(indent.toString());
 
-    /* small option
- staxWriter.writeStartElement("var");
- String name = v.findAttribute("BUFR:TableB_descriptor").getStringValue();
- staxWriter.writeAttribute("name", name); // */
+    /*
+     * small option
+     * staxWriter.writeStartElement("var");
+     * String name = v.findAttribute("BUFR:TableB_descriptor").getStringValue();
+     * staxWriter.writeAttribute("name", name); //
+     */
 
     // complete option
     staxWriter.writeStartElement("data");
@@ -282,11 +292,11 @@ public class Bufr2Xml {
         stringFormatter.format(format, val);
         staxWriter.writeCharacters(stringFormatter.toString());
 
-      } else {  // numeric, not float
+      } else { // numeric, not float
         staxWriter.writeCharacters(mdata.toString());
       }
 
-    } else {  // not numeric
+    } else { // not numeric
       staxWriter.writeCharacters(mdata.toString());
     }
 
@@ -342,8 +352,8 @@ public class Bufr2Xml {
     FileOutputStream fos = new FileOutputStream(fileout);
     GZIPOutputStream zos = new GZIPOutputStream(fos);
 
-    //staxWriter = fac.createXMLStreamWriter(System.out, "UTF-8");
-    //staxWriter = fac.createXMLStreamWriter(fos, "UTF-8");
+    // staxWriter = fac.createXMLStreamWriter(System.out, "UTF-8");
+    // staxWriter = fac.createXMLStreamWriter(fos, "UTF-8");
     staxWriter = fac.createXMLStreamWriter(zos, "UTF-8");
 
     staxWriter.writeStartDocument("UTF-8", "1.0");
@@ -351,8 +361,8 @@ public class Bufr2Xml {
     staxWriter.writeStartElement("bufrMessages");
 
     String filename = "D:/bufr/mlodeSorted/IUSUV1KWBC.bufr";
-    //String filename = "D:/bufr/out/IUACRJTD-1.bufr";
-    //String filename = "D:/bufr/mlodeSorted/ISXAB40KWNO.bufr";
+    // String filename = "D:/bufr/out/IUACRJTD-1.bufr";
+    // String filename = "D:/bufr/mlodeSorted/ISXAB40KWNO.bufr";
     test(filename, new MClosure() {
       public void run(String filename) throws IOException {
         scan(filename);

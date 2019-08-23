@@ -13,7 +13,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.ProjectionRect;
-
 import java.util.*;
 
 /**
@@ -22,18 +21,21 @@ import java.util.*;
  * The Models-3/EDSS Input/Output Applications Programming Interface (I/O API)
  * is the standard data access library for both NCSC's EDSS project and EPA's Models-3.
  * <p/>
- * 6/24/09: Modified to support multiple projection types of data by Qun He <qunhe@unc.edu> and Alexis Zubrow <azubrow@unc.edu>
+ * 6/24/09: Modified to support multiple projection types of data by Qun He <qunhe@unc.edu> and Alexis Zubrow
+ * <azubrow@unc.edu>
  * added makePolarStereographicProjection, UTM, and modified latlon
  * <p/>
  * 09/2010 plessel.todd@epa.gov add projections 7,8,9,10
  *
  * @author plessel.todd@epa.gov
  * @author caron
- * @see <a href="http://www.baronams.com/products/ioapi/index.html">http://www.baronams.com/products/ioapi/index.html</a>
+ * @see <a href=
+ *      "http://www.baronams.com/products/ioapi/index.html">http://www.baronams.com/products/ioapi/index.html</a>
  */
 
 public class M3IOConvention extends CoordSysBuilder {
-   private static final double earthRadius = 6370.000; // km
+  private static final double earthRadius = 6370.000; // km
+
   /**
    * Do we think this is a M3IO file.
    *
@@ -41,12 +43,9 @@ public class M3IOConvention extends CoordSysBuilder {
    * @return true if we think this is a M3IO file.
    */
   public static boolean isMine(NetcdfFile ncfile) {
-    return (null != ncfile.findGlobalAttribute("XORIG"))
-            && (null != ncfile.findGlobalAttribute("YORIG"))
-            && (null != ncfile.findGlobalAttribute("XCELL"))
-            && (null != ncfile.findGlobalAttribute("YCELL"))
-            && (null != ncfile.findGlobalAttribute("NCOLS"))
-            && (null != ncfile.findGlobalAttribute("NROWS"));
+    return (null != ncfile.findGlobalAttribute("XORIG")) && (null != ncfile.findGlobalAttribute("YORIG"))
+        && (null != ncfile.findGlobalAttribute("XCELL")) && (null != ncfile.findGlobalAttribute("YCELL"))
+        && (null != ncfile.findGlobalAttribute("NCOLS")) && (null != ncfile.findGlobalAttribute("NROWS"));
 
     // M3IOVGGridConvention - is this true for this class ??
     // return ncFile.findGlobalAttribute( "VGLVLS" ) != null && isValidM3IOFile_( ncFile );
@@ -58,8 +57,10 @@ public class M3IOConvention extends CoordSysBuilder {
   }
 
   public void augmentDataset(NetcdfDataset ncd, CancelTask cancelTask) {
-    if (null != ncd.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
-    if (null != ncd.findVariable("lon")) return; // check if its already been done - aggregating enhanced datasets.
+    if (null != ncd.findVariable("x"))
+      return; // check if its already been done - aggregating enhanced datasets.
+    if (null != ncd.findVariable("lon"))
+      return; // check if its already been done - aggregating enhanced datasets.
 
     constructCoordAxes(ncd);
     ncd.finish();
@@ -78,8 +79,8 @@ public class M3IOConvention extends CoordSysBuilder {
     int projType = findAttributeInt(ds, "GDTYP");
     boolean isLatLon = (projType == 1);
     if (isLatLon) {
-      //ds.addCoordinateAxis(  makeCoordAxis( ds, "lon", "COL", nx, "XORIG", "XCELL", "degrees east"));
-      //ds.addCoordinateAxis(  makeCoordAxis( ds, "lat", "ROW", ny, "YORIG", "YCELL", "degrees north"));
+      // ds.addCoordinateAxis( makeCoordAxis( ds, "lon", "COL", nx, "XORIG", "XCELL", "degrees east"));
+      // ds.addCoordinateAxis( makeCoordAxis( ds, "lat", "ROW", ny, "YORIG", "YCELL", "degrees north"));
 
       ds.addCoordinateAxis(makeCoordLLAxis(ds, "lon", "COL", nx, "XORIG", "XCELL", "degrees east"));
       ds.addCoordinateAxis(makeCoordLLAxis(ds, "lat", "ROW", ny, "YORIG", "YCELL", "degrees north"));
@@ -123,20 +124,20 @@ public class M3IOConvention extends CoordSysBuilder {
     makeTimeCoordAxis(ds, "TSTEP");
   }
 
-  private CoordinateAxis makeCoordAxis(NetcdfDataset ds, String name, String dimName, int n,
-                                       String startName, String incrName, String unitName) {
+  private CoordinateAxis makeCoordAxis(NetcdfDataset ds, String name, String dimName, int n, String startName,
+      String incrName, String unitName) {
 
     double start = .001 * findAttributeDouble(ds, startName); // km
     double incr = .001 * findAttributeDouble(ds, incrName); // km
     start = start + incr / 2.; // shifting x and y to central
     CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, dimName, unitName,
-            "synthesized coordinate from " + startName + " " + incrName + " global attributes");
+        "synthesized coordinate from " + startName + " " + incrName + " global attributes");
     v.setValues(n, start, incr);
     return v;
   }
 
-  private CoordinateAxis makeCoordLLAxis(NetcdfDataset ds, String name, String dimName, int n,
-                                         String startName, String incrName, String unitName) {
+  private CoordinateAxis makeCoordLLAxis(NetcdfDataset ds, String name, String dimName, int n, String startName,
+      String incrName, String unitName) {
     // Makes coordinate axes for Lat/Lon
     double start = findAttributeDouble(ds, startName); // degrees
     double incr = findAttributeDouble(ds, incrName); // degrees
@@ -144,7 +145,7 @@ public class M3IOConvention extends CoordSysBuilder {
     // I recommend also adding a bounds coordinate variable for clarity in the future.
     start = start + incr / 2.; // shiftin lon and lat to central
     CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, dimName, unitName,
-            "synthesized coordinate from " + startName + " " + incrName + " global attributes");
+        "synthesized coordinate from " + startName + " " + incrName + " global attributes");
     v.setValues(n, start, incr);
     return v;
   }
@@ -166,7 +167,7 @@ public class M3IOConvention extends CoordSysBuilder {
     }
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, "level", DataType.DOUBLE, dimName, unitName,
-            "synthesized coordinate from " + levelsName + " global attributes");
+        "synthesized coordinate from " + levelsName + " global attributes");
     v.setCachedData(dataLev, true);
     v.addAttribute(new Attribute("positive", "down"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
@@ -177,7 +178,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
     ds.addDimension(null, lay_edge);
     CoordinateAxis vedge = new CoordinateAxis1D(ds, null, edge_name, DataType.DOUBLE, edge_name, unitName,
-            "synthesized coordinate from " + levelsName + " global attributes");
+        "synthesized coordinate from " + levelsName + " global attributes");
     vedge.setCachedData(dataLayers, true);
     v.setBoundaryRef(edge_name);
 
@@ -204,7 +205,7 @@ public class M3IOConvention extends CoordSysBuilder {
     cal.set(Calendar.HOUR_OF_DAY, hour);
     cal.set(Calendar.MINUTE, min);
     cal.set(Calendar.SECOND, sec);
-    //cal.setTimeZone( new SimpleTimeZone(0, "GMT"));
+    // cal.setTimeZone( new SimpleTimeZone(0, "GMT"));
 
     java.text.SimpleDateFormat dateFormatOut = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     dateFormatOut.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
@@ -227,7 +228,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
     // create the coord axis
     CoordinateAxis1D timeCoord = new CoordinateAxis1D(ds, null, "time", DataType.INT, timeName, units,
-            "synthesized time coordinate from SDATE, STIME, STEP global attributes");
+        "synthesized time coordinate from SDATE, STIME, STEP global attributes");
     timeCoord.setCachedData(data, true);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
@@ -235,7 +236,7 @@ public class M3IOConvention extends CoordSysBuilder {
   }
 
   private CoordinateTransform makeLatLongProjection(NetcdfDataset ds) {
-    //double lat0 = findAttributeDouble(ds,  "YCENT");
+    // double lat0 = findAttributeDouble(ds, "YCENT");
 
     // Get lower left and upper right corners of domain in lat/lon
     double x1 = findAttributeDouble(ds, "XORIG");
@@ -259,21 +260,21 @@ public class M3IOConvention extends CoordSysBuilder {
   }
 
   private CoordinateTransform makePolarStereographicProjection(NetcdfDataset ds) {
-    //boolean n_polar = (findAttributeDouble(ds, "P_ALP") == 1.0);
-    //double central_meridian = findAttributeDouble(ds, "P_GAM");
+    // boolean n_polar = (findAttributeDouble(ds, "P_ALP") == 1.0);
+    // double central_meridian = findAttributeDouble(ds, "P_GAM");
     double lon0 = findAttributeDouble(ds, "XCENT");
     double lat0 = findAttributeDouble(ds, "YCENT");
     double latts = findAttributeDouble(ds, "P_BET");
 
     Stereographic sg = new Stereographic(latts, lat0, lon0, 0.0, 0.0, earthRadius);
-    //sg.setCentralMeridian(centeral_meridian);
+    // sg.setCentralMeridian(centeral_meridian);
 
     return new ProjectionCT("PolarStereographic", "FGDC", sg);
   }
 
   private CoordinateTransform makeEquitorialMercatorProjection(NetcdfDataset ds) {
     double lon0 = findAttributeDouble(ds, "XCENT");
-    double par  = findAttributeDouble(ds, "P_ALP");
+    double par = findAttributeDouble(ds, "P_ALP");
 
     Mercator p = new Mercator(lon0, par, 0.0, 0.0, earthRadius);
 
@@ -304,8 +305,7 @@ public class M3IOConvention extends CoordSysBuilder {
     double lat0 = findAttributeDouble(ds, "YCENT");
     double lon0 = findAttributeDouble(ds, "XCENT");
 
-    LambertAzimuthalEqualArea p =
-      new LambertAzimuthalEqualArea(lat0, lon0, 0.0, 0.0, earthRadius);
+    LambertAzimuthalEqualArea p = new LambertAzimuthalEqualArea(lat0, lon0, 0.0, 0.0, earthRadius);
 
     return new ProjectionCT("LambertAzimuthal", "FGDC", p);
   }
@@ -321,8 +321,11 @@ public class M3IOConvention extends CoordSysBuilder {
 
     /*
      * Construct a Stereographic Projection.
+     * 
      * @param latt tangent point of projection, also origin of projecion coord system
+     * 
      * @param lont tangent point of projection, also origin of projecion coord system
+     * 
      * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
      */
     Stereographic st = new Stereographic(latt, lont, 1.0, 0.0, 0.0, earthRadius);
@@ -341,8 +344,11 @@ public class M3IOConvention extends CoordSysBuilder {
 
     /*
      * Construct a TransverseMercator Projection.
+     * 
      * @param lat0 origin of projection coord system is at (lat0, tangentLon)
+     * 
      * @param tangentLon longitude that the cylinder is tangent at ("central meridian")
+     * 
      * @param scale scale factor along the central meridian
      */
     TransverseMercator tm = new TransverseMercator(lat0, tangentLon, 1.0, 0.0, 0.0, earthRadius);
@@ -359,12 +365,14 @@ public class M3IOConvention extends CoordSysBuilder {
   private CoordinateTransform makeUTMProjection(NetcdfDataset ds) {
     int zone = (int) findAttributeDouble(ds, "P_ALP");
     double ycent = findAttributeDouble(ds, "YCENT");
-    //double lon0 = findAttributeDouble( "X_CENT");
-    //double lat0 = findAttributeDouble( "Y_CENT");
+    // double lon0 = findAttributeDouble( "X_CENT");
+    // double lat0 = findAttributeDouble( "Y_CENT");
 
     /*
      * Construct a UTM Projection.
+     * 
      * @param zone - UTM zone
+     * 
      * @param if ycent < 0, then isNorth = False
      */
     boolean isNorth = true;
@@ -413,7 +421,8 @@ public class M3IOConvention extends CoordSysBuilder {
 
   private double findAttributeDouble(NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
-    if ((att == null) || (att.isString())) return Double.NaN;
+    if ((att == null) || (att.isString()))
+      return Double.NaN;
     return att.getNumericValue().doubleValue();
   }
 

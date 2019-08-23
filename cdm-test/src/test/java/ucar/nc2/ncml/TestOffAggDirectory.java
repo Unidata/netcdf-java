@@ -21,7 +21,6 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
@@ -29,7 +28,7 @@ import java.util.List;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggDirectory extends TestCase {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testNcmlDirect() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
@@ -48,7 +47,7 @@ public class TestOffAggDirectory extends TestCase {
   public void testNcmlDataset() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
+    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.openDataset {}", filename);
 
     testDimensions(ncfile);
@@ -62,7 +61,7 @@ public class TestOffAggDirectory extends TestCase {
   public void testNcmlGrid() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
-    GridDataset gds = GridDataset.open( filename);
+    GridDataset gds = GridDataset.open(filename);
     logger.debug(" TestNcmlAggExisting.openGrid {}", filename);
 
     List grids = gds.getGrids();
@@ -90,7 +89,7 @@ public class TestOffAggDirectory extends TestCase {
     assert timeDim.getLength() == 6;
   }
 
- public void testCoordVar(NetcdfFile ncfile) throws IOException {
+  public void testCoordVar(NetcdfFile ncfile) throws IOException {
 
     Variable lat = ncfile.findVariable("latitude");
     assert lat.getDataType() == DataType.FLOAT;
@@ -163,12 +162,12 @@ public class TestOffAggDirectory extends TestCase {
     assert data.getElementType() == short.class;
 
     short[] vals = {32767, 32767, 20, 32767, 20, 20};
-    int [] shape = data.getShape();
+    int[] shape = data.getShape();
     Index tIndex = data.getIndex();
-    for (int i=0; i<shape[0]; i++) {
-        double val = data.getDouble( tIndex.set(i, 133, 133));
-        Assert2.assertNearlyEquals(vals[i], val);
-      }
+    for (int i = 0; i < shape[0]; i++) {
+      double val = data.getDouble(tIndex.set(i, 133, 133));
+      Assert2.assertNearlyEquals(vals[i], val);
+    }
   }
 
   public void testReadData2(NetcdfFile ncfile) throws IOException {
@@ -195,27 +194,24 @@ public class TestOffAggDirectory extends TestCase {
     assert data.getElementType() == double.class;
 
     double[] vals = {Double.NaN, Double.NaN, .20, Double.NaN, .20, .20};
-    int [] shape = data.getShape();
+    int[] shape = data.getShape();
     Index tIndex = data.getIndex();
-    for (int i=0; i<shape[0]; i++) {
-        double val = data.getDouble( tIndex.set(i, 133, 133));
-        if (Double.isNaN(val))
-          assert Double.isNaN(vals[i]);
-        else
-          Assert2.assertNearlyEquals(vals[i], val);
-      }
+    for (int i = 0; i < shape[0]; i++) {
+      double val = data.getDouble(tIndex.set(i, 133, 133));
+      if (Double.isNaN(val))
+        assert Double.isNaN(vals[i]);
+      else
+        Assert2.assertNearlyEquals(vals[i], val);
+    }
   }
 
   public void testBlanksInDirectory() throws IOException {
-    String dir = TestDir.cdmUnitTestDir +"encoding/";
-    String ncml =
-      "<?xml version='1.0' encoding='UTF-8'?>\n" +
-      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-      " <aggregation type='joinNew' dimName='fake'>\n" +
-      "  <netcdf location='"+dir+"dir mit blank/20070101.nc' coord='1'/>\n" +
-      "  <netcdf location='"+dir+"dir mit blank/20070301.nc' coord='2'/>\n" +
-      " </aggregation>\n" +
-      "</netcdf> ";
+    String dir = TestDir.cdmUnitTestDir + "encoding/";
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + " <aggregation type='joinNew' dimName='fake'>\n" + "  <netcdf location='" + dir
+        + "dir mit blank/20070101.nc' coord='1'/>\n" + "  <netcdf location='" + dir
+        + "dir mit blank/20070301.nc' coord='2'/>\n" + " </aggregation>\n" + "</netcdf> ";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
     logger.debug("result={}", ncfile);
     ncfile.close();

@@ -43,7 +43,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import ucar.ui.prefs.Debug;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -81,7 +80,7 @@ public class ToolsUI extends JPanel {
 
   private static String wantDataset;
 
-  private final JFrame parentFrame;   // redundant? will equal static "frame" defined just above
+  private final JFrame parentFrame; // redundant? will equal static "frame" defined just above
 
   private final FileManager fileChooser;
   private FileManager bufrFileChooser;
@@ -169,10 +168,8 @@ public class ToolsUI extends JPanel {
     this.parentFrame = parentFrame;
 
     // FileChooser is shared
-    FileFilter[] filters = new FileFilter[]{new FileManager.HDF5ExtFilter(),
-        new FileManager.NetcdfExtFilter()};
-    fileChooser = new FileManager(parentFrame, null, filters,
-        (PreferencesExt) prefs.node("FileManager"));
+    FileFilter[] filters = new FileFilter[] {new FileManager.HDF5ExtFilter(), new FileManager.NetcdfExtFilter()};
+    fileChooser = new FileManager(parentFrame, null, filters, (PreferencesExt) prefs.node("FileManager"));
 
     OpPanel.setFileChooser(fileChooser);
 
@@ -239,7 +236,7 @@ public class ToolsUI extends JPanel {
     addListeners(bufrTabPane);
 
     // nested-2 tab - grib
-    //gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
+    // gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     gribTabPane.addTab("CdmIndex4", new JLabel("CdmIndex4"));
     gribTabPane.addTab("CdmIndexReport", new JLabel("CdmIndexReport"));
     gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
@@ -299,8 +296,8 @@ public class ToolsUI extends JPanel {
     addListeners(ncmlTabPane);
 
     // dynamic proxy for DebugFlags
-    debugFlags = (DebugFlags) Proxy.newProxyInstance(
-        DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
+    debugFlags = (DebugFlags) Proxy.newProxyInstance(DebugFlags.class.getClassLoader(), new Class[] {DebugFlags.class},
+        new DebugProxyHandler());
 
     final JMenuBar mb = makeMenuBar();
     parentFrame.setJMenuBar(mb);
@@ -409,8 +406,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "GRIB1collection":
-        grib1CollectionPanel = new Grib1CollectionOpPanel(
-            (PreferencesExt) mainPrefs.node("grib1raw"));
+        grib1CollectionPanel = new Grib1CollectionOpPanel((PreferencesExt) mainPrefs.node("grib1raw"));
         c = grib1CollectionPanel;
         break;
 
@@ -425,8 +421,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "GRIB2collection":
-        grib2CollectionPanel = new Grib2CollectionOpPanel(
-            (PreferencesExt) mainPrefs.node("gribNew"));
+        grib2CollectionPanel = new Grib2CollectionOpPanel((PreferencesExt) mainPrefs.node("gribNew"));
         c = grib2CollectionPanel;
         break;
 
@@ -438,9 +433,11 @@ public class ToolsUI extends JPanel {
       case "BufrCdmIndex":
         bufrCdmIndexPanel = new BufrCdmIndexOpPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
         c = bufrCdmIndexPanel;
-        /* } else if (title.equals("CdmIndex")) {
-          gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
-          c = gribCdmIndexPanel; */
+        /*
+         * } else if (title.equals("CdmIndex")) {
+         * gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
+         * c = gribCdmIndexPanel;
+         */
         break;
 
       case "CdmIndex4":
@@ -588,8 +585,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "StationRadial":
-        stationRadialPanel = new StationRadialPanel(
-            (PreferencesExt) mainPrefs.node("stationRadar"));
+        stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
         c = stationRadialPanel;
         break;
 
@@ -598,12 +594,11 @@ public class ToolsUI extends JPanel {
         threddsUI.addPropertyChangeListener(new PropertyChangeListener() {
           public void propertyChange(PropertyChangeEvent e) {
             if (e.getPropertyName().equals("InvAccess")) {
-              thredds.client.catalog.Access access = (thredds.client.catalog.Access) e
-                  .getNewValue();
+              thredds.client.catalog.Access access = (thredds.client.catalog.Access) e.getNewValue();
               jumptoThreddsDatatype(access);
             }
-            if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e
-                .getPropertyName().equals("File")) {
+            if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys")
+                || e.getPropertyName().equals("File")) {
               thredds.client.catalog.Dataset ds = (thredds.client.catalog.Dataset) e.getNewValue();
               setThreddsDatatype(ds, e.getPropertyName());
             }
@@ -842,7 +837,7 @@ public class ToolsUI extends JPanel {
     if (pointFeaturePanel != null) {
       pointFeaturePanel.save();
     }
-    //if (pointObsPanel    != null) pointObsPanel.save();
+    // if (pointObsPanel != null) pointObsPanel.save();
     if (radialPanel != null) {
       radialPanel.save();
     }
@@ -874,9 +869,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-///
-/// The following are hooks and shortcuts allowing OpPanel classes to interact with the UI.
-///
+  ///
+  /// The following are hooks and shortcuts allowing OpPanel classes to interact with the UI.
+  ///
 
   /**
    *
@@ -916,8 +911,7 @@ public class ToolsUI extends JPanel {
 
   private FileManager getBufrFileChooserPriv() {
     if (bufrFileChooser == null) {
-      bufrFileChooser = new FileManager(
-          parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
+      bufrFileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
     }
 
     return bufrFileChooser;
@@ -963,9 +957,9 @@ public class ToolsUI extends JPanel {
     mainPrefs.putBean(key, newVal);
   }
 
-///
-///
-///
+  ///
+  ///
+  ///
 
   /**
    *
@@ -1027,7 +1021,7 @@ public class ToolsUI extends JPanel {
    *
    */
   public void openGrib1Collection(String collection) {
-    makeComponent(grib1TabPane, "GRIB1collection");  // LOOK - does this aleays make component ?
+    makeComponent(grib1TabPane, "GRIB1collection"); // LOOK - does this aleays make component ?
     grib1CollectionPanel.setCollection(collection);
     tabbedPane.setSelectedComponent(iospTabPane);
     iospTabPane.setSelectedComponent(grib1TabPane);
@@ -1289,15 +1283,13 @@ public class ToolsUI extends JPanel {
       if ((null == message) && (ioe instanceof EOFException)) {
         message = "Premature End of File";
       }
-      JOptionPane
-          .showMessageDialog(null, "NetcdfDataset.open cannot open " + location + "%n" + message);
+      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location + "%n" + message);
       if (!(ioe instanceof FileNotFoundException)) {
         ioe.printStackTrace();
       }
       ncfile = null;
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(null,
-          "NetcdfDataset.open cannot open " + location + "%n" + e.getMessage());
+      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location + "%n" + e.getMessage());
       log.error("NetcdfDataset.open cannot open " + location, e);
       e.printStackTrace();
 
@@ -1339,8 +1331,7 @@ public class ToolsUI extends JPanel {
           downloadStatus = values[1] + " written to " + values[0];
 
         } catch (IOException ioe) {
-          downloadStatus =
-              "Error opening " + values[0] + " and reading " + values[1] + "%n" + ioe.getMessage();
+          downloadStatus = "Error opening " + values[0] + " and reading " + values[1] + "%n" + ioe.getMessage();
         }
       }
     };
@@ -1354,9 +1345,9 @@ public class ToolsUI extends JPanel {
     pm.start(this, "Download", 30);
   }
 
-///
-///////////////////////////////////////////////////////////////////////////////////////
-///
+  ///
+  ///////////////////////////////////////////////////////////////////////////////////////
+  ///
 
   /**
    *
@@ -1384,8 +1375,8 @@ public class ToolsUI extends JPanel {
     if (cache != null) {
       cache.clearCache(true);
     }
-    FileCache.shutdown();           // shutdown threads
-    DiskCache2.exit();              // shutdown threads
+    FileCache.shutdown(); // shutdown threads
+    DiskCache2.exit(); // shutdown threads
   }
 
   /**
@@ -1448,7 +1439,8 @@ public class ToolsUI extends JPanel {
       final Toolkit tk = Toolkit.getDefaultToolkit();
       final Font f = new Font("SansSerif", Font.PLAIN, 12);
 
-      @SuppressWarnings("deprecation") final FontMetrics fm = tk.getFontMetrics(f);
+      @SuppressWarnings("deprecation")
+      final FontMetrics fm = tk.getFontMetrics(f);
     });
   }
 

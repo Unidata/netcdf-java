@@ -6,6 +6,7 @@ package ucar.ma2;
 
 /**
  * DO NOT USE
+ * 
  * @author caron
  * @since Nov 15, 2008
  */
@@ -17,27 +18,28 @@ public class ArrayRagged extends Array {
 
 
   public Class getElementType() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   /**
    * DO NOT USE, throws UnsupportedOperationException
    */
   protected Array createView(Index index) {
-    if (index.getSize() == getSize()) return this;
+    if (index.getSize() == getSize())
+      return this;
     throw new UnsupportedOperationException();
   }
 
   public Object getStorage() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }// used to create Array from java array
 
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
   protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,11 +150,11 @@ public class ArrayRagged extends Array {
   }
 
   public Object getObject(Index ima) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public void setObject(Index ima, Object value) {
-//To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
   /**
@@ -236,11 +238,11 @@ public class ArrayRagged extends Array {
   }
 
   public Object getObject(int elem) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public void setObject(int elem, Object value) {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
 }

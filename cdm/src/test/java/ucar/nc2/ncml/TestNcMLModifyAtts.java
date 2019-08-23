@@ -5,14 +5,12 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.Assert2;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -21,14 +19,14 @@ import java.lang.invoke.MethodHandles;
 public class TestNcMLModifyAtts extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestNcMLModifyAtts( String name) {
+  public TestNcMLModifyAtts(String name) {
     super(name);
   }
 
   NetcdfFile ncfile = null;
 
   public void setUp() throws IOException {
-    String filename = "file:"+TestNcML.topDir + "modifyAtts.xml";
+    String filename = "file:" + TestNcML.topDir + "modifyAtts.xml";
     ncfile = NcMLReader.readNcML(filename, null);
   }
 
@@ -108,13 +106,13 @@ public class TestNcMLModifyAtts extends TestCase {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = lat.read();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
     assert data.getElementType() == float.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
@@ -138,7 +136,7 @@ public class TestNcMLModifyAtts extends TestCase {
     assert v.getDimension(0) == ncfile.findDimension("time");
     assert v.getDimension(1) == ncfile.findDimension("lat");
     assert v.getDimension(2) == ncfile.findDimension("lon");
-  
+
     Array data = v.read();
     assert data.getRank() == 3;
     assert data.getSize() == 24;
@@ -146,7 +144,7 @@ public class TestNcMLModifyAtts extends TestCase {
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 4;
     assert data.getElementType() == int.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     assert dataI.getIntNext() == 1;
     assert dataI.getIntNext() == 2;
@@ -159,7 +157,7 @@ public class TestNcMLModifyAtts extends TestCase {
     Variable v = ncfile.findVariable("rh");
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
-  
+
     Array data = v.read(origin, shape);
     assert data.getRank() == 3;
     assert data.getSize() == 6;
@@ -167,7 +165,7 @@ public class TestNcMLModifyAtts extends TestCase {
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 1;
     assert data.getElementType() == int.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     assert dataI.getIntNext() == 1;
     assert dataI.getIntNext() == 5;
@@ -181,14 +179,14 @@ public class TestNcMLModifyAtts extends TestCase {
     Variable v = ncfile.findVariable("rh");
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
-  
+
     Array data = v.read(origin, shape).reduce();
     assert data.getRank() == 2;
     assert data.getSize() == 6;
     assert data.getShape()[0] == 2;
     assert data.getShape()[1] == 3;
     assert data.getElementType() == int.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     assert dataI.getIntNext() == 1;
     assert dataI.getIntNext() == 2;
@@ -227,7 +225,7 @@ public class TestNcMLModifyAtts extends TestCase {
     assert att.getStringValue().equals("degC");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = v.read();
     assert data.getRank() == 3;
     assert data.getSize() == 24;
@@ -235,12 +233,12 @@ public class TestNcMLModifyAtts extends TestCase {
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 4;
     assert data.getElementType() == double.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
-    Assert2.assertNearlyEquals( dataI.getDoubleNext(),1.0);
-    Assert2.assertNearlyEquals( dataI.getDoubleNext(),2.0);
-    Assert2.assertNearlyEquals( dataI.getDoubleNext(),3.0);
-    Assert2.assertNearlyEquals( dataI.getDoubleNext(),4.0);
-    Assert2.assertNearlyEquals( dataI.getDoubleNext(),2.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 1.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 3.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 4.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);
   }
 }

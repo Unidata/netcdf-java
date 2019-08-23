@@ -8,7 +8,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -53,7 +52,9 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   }
 
   @Nonnull
-  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
+  public List<Variable> getExtraVariables() {
+    return (extras == null) ? new ArrayList<>() : extras;
+  }
 
   @Override
   public int size() {

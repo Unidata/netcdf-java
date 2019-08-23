@@ -20,7 +20,6 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -50,24 +49,26 @@ public class GribIndexPanel extends JPanel {
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(e -> {
-        Formatter f = new Formatter();
-        showIndex(f);
-        detailTA.setText(f.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
+      Formatter f = new Formatter();
+      showIndex(f);
+      detailTA.setText(f.toString());
+      detailTA.gotoTop();
+      detailWindow.show();
     });
     buttPanel.add(infoButton);
 
 
-    /* AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
-    filesButton.addActionListener(e -> {
-        Formatter f = new Formatter();
-        showFiles(f);
-        detailTA.setText(f.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
-    });
-    buttPanel.add(filesButton);    */
+    /*
+     * AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
+     * filesButton.addActionListener(e -> {
+     * Formatter f = new Formatter();
+     * showFiles(f);
+     * detailTA.setText(f.toString());
+     * detailTA.gotoTop();
+     * detailWindow.show();
+     * });
+     * buttPanel.add(filesButton);
+     */
 
     ////////////////////////////
 
@@ -219,7 +220,8 @@ public class GribIndexPanel extends JPanel {
   }
 
   private void showIndex(Formatter f) {
-    if (gc == null) return;
+    if (gc == null)
+      return;
     if (gc instanceof Grib1Index) {
       Grib1Index index1 = (Grib1Index) gc;
       f.format("GRIB1 = %s%n", index1);
@@ -231,20 +233,20 @@ public class GribIndexPanel extends JPanel {
   }
 
   private void compareData(RecordBean bean1, RecordBean bean2, Formatter f) {
-    byte[]  data1 = bean1.gdsBytes();
-    byte[]  data2 = bean2.gdsBytes();
+    byte[] data1 = bean1.gdsBytes();
+    byte[] data2 = bean2.gdsBytes();
     Misc.compare(data1, data2, f);
   }
 
   private void compareData(Gds1Bean bean1, Gds1Bean bean2, Formatter f) {
-    byte[]  data1 = bean1.gdss.getRawBytes();
-    byte[]  data2 = bean2.gdss.getRawBytes();
+    byte[] data1 = bean1.gdss.getRawBytes();
+    byte[] data2 = bean2.gdss.getRawBytes();
     Misc.compare(data1, data2, f);
   }
 
   private void compareData(Gds2Bean bean1, Gds2Bean bean2, Formatter f) {
-    byte[]  data1 = bean1.gdss.getRawBytes();
-    byte[]  data2 = bean2.gdss.getRawBytes();
+    byte[] data1 = bean1.gdss.getRawBytes();
+    byte[] data2 = bean2.gdss.getRawBytes();
     Misc.compare(data1, data2, f);
   }
 
@@ -256,17 +258,18 @@ public class GribIndexPanel extends JPanel {
     Grib1Record gr1;
     Grib2Record gr2;
 
-    public RecordBean() {
-    }
+    public RecordBean() {}
 
     public RecordBean(Grib2Record gr) throws IOException {
       this.gr2 = gr;
-      if (cust2 == null) cust2 = Grib2Tables.factory(gr2);
+      if (cust2 == null)
+        cust2 = Grib2Tables.factory(gr2);
     }
 
     public RecordBean(Grib1Record gr) {
       this.gr1 = gr;
-      if (cust1 == null) cust1 = Grib1Customizer.factory(gr1, null);
+      if (cust1 == null)
+        cust1 = Grib1Customizer.factory(gr1, null);
     }
 
     public byte[] gdsBytes() {
@@ -290,7 +293,8 @@ public class GribIndexPanel extends JPanel {
     }
 
     public String getVariable() {
-      return (gr2 == null) ? Integer.toString(gr1.getPDSsection().getParameterNumber()) : Grib2Utils.getVariableName(gr2);
+      return (gr2 == null) ? Integer.toString(gr1.getPDSsection().getParameterNumber())
+          : Grib2Utils.getVariableName(gr2);
     }
 
     public long getStart() {
@@ -302,8 +306,10 @@ public class GribIndexPanel extends JPanel {
     }
 
     private void show(Formatter f) {
-      if (gr2 == null) show(gr1, f);
-      else show(gr2, f);
+      if (gr2 == null)
+        show(gr1, f);
+      else
+        show(gr2, f);
     }
 
     private void show(Grib1Record gr1, Formatter f) {
@@ -321,8 +327,7 @@ public class GribIndexPanel extends JPanel {
     Grib1Gds gds;
 
     // no-arg constructor
-    public Gds1Bean() {
-    }
+    public Gds1Bean() {}
 
     public Gds1Bean(Grib1SectionGridDefinition m) {
       this.gdss = m;
@@ -403,8 +408,7 @@ public class GribIndexPanel extends JPanel {
 
     // no-arg constructor
 
-    public Gds2Bean() {
-    }
+    public Gds2Bean() {}
 
     public Gds2Bean(Grib2SectionGridDefinition m) {
       this.gdss = m;
@@ -447,10 +451,14 @@ public class GribIndexPanel extends JPanel {
       int scanMode = gds.getScanMode();
       Formatter f = new Formatter();
       f.format("0x%s=", Long.toHexString(scanMode));
-      if (!GribUtils.scanModeXisPositive(scanMode)) f.format(" Xneg");
-      if (GribUtils.scanModeYisPositive(scanMode)) f.format(" Ypos");
-      if (!GribUtils.scanModeXisConsecutive(scanMode)) f.format(" !XisConsecutive");
-      if (!GribUtils.scanModeSameDirection(scanMode)) f.format(" !SameDirection");
+      if (!GribUtils.scanModeXisPositive(scanMode))
+        f.format(" Xneg");
+      if (GribUtils.scanModeYisPositive(scanMode))
+        f.format(" Ypos");
+      if (!GribUtils.scanModeXisConsecutive(scanMode))
+        f.format(" !XisConsecutive");
+      if (!GribUtils.scanModeSameDirection(scanMode))
+        f.format(" !SameDirection");
       return f.toString();
     }
 

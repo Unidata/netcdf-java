@@ -12,7 +12,6 @@ import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -32,21 +31,28 @@ public abstract class GribIndex {
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
       String idxPath = file.getPath();
-      if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+      if (!idxPath.endsWith(GBX9_IDX))
+        idxPath += GBX9_IDX;
       File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
-      if (idxFile == null) return true;
+      if (idxFile == null)
+        return true;
 
-      long idxLastModified =  idxFile.lastModified();
-      if (idxLastModified < file.getLastModified()) return true;
+      long idxLastModified = idxFile.lastModified();
+      if (idxLastModified < file.getLastModified())
+        return true;
       return 0 < when && when < idxLastModified;
     }
+
     public boolean hasntChangedSince(MFile file, long when) {
       String idxPath = file.getPath();
-      if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+      if (!idxPath.endsWith(GBX9_IDX))
+        idxPath += GBX9_IDX;
       File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
-      if (idxFile == null) return true;
+      if (idxFile == null)
+        return true;
 
-      if (idxFile.lastModified() < file.getLastModified()) return true;
+      if (idxFile.lastModified() < file.getLastModified())
+        return true;
       return 0 < when && idxFile.lastModified() < when;
     }
   };
@@ -74,15 +80,17 @@ public abstract class GribIndex {
    *
    * @param isGrib1 true if grib1
    * @param mfile the grib file
-   * @param force  force writing index
+   * @param force force writing index
    * @return the resulting GribIndex
    * @throws IOException on io error
    */
-  public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, MFile mfile, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
+  public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, MFile mfile, CollectionUpdateType force,
+      org.slf4j.Logger logger) throws IOException {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
 
-    if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked against the data file
+    if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked
+                                                                             // against the data file
       index.makeIndex(mfile.getPath(), null);
       logger.debug("  Index written: {} == {} records", mfile.getName() + GBX9_IDX, index.getNRecords());
     } else if (debug) {
@@ -116,6 +124,7 @@ public abstract class GribIndex {
 
   /**
    * The number of records in the index.
+   * 
    * @return The number of records in the index.
    */
   public abstract int getNRecords();

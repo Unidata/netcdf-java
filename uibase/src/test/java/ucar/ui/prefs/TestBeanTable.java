@@ -30,8 +30,7 @@ public class TestBeanTable {
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   static {
-    System
-        .setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
 
   private static XMLStore xstore;
@@ -81,8 +80,7 @@ public class TestBeanTable {
   @Test
   public void testBuildAndShow() throws IOException {
     try {
-      BeanTable<TestBean> bt = new BeanTable<>(TestBean.class, store, true, "header",
-          "header\ntooltip", null);
+      BeanTable<TestBean> bt = new BeanTable<>(TestBean.class, store, true, "header", "header\ntooltip", null);
 
       JFrame frame = new JFrame("Test BeanTable");
       frame.addWindowListener(new WindowAdapter() {
@@ -103,8 +101,7 @@ public class TestBeanTable {
       frame.pack();
       frame.setLocation(300, 300);
       frame.setVisible(true);
-    } catch (
-        HeadlessException e) {
+    } catch (HeadlessException e) {
       // ok to fail if there is no display
     }
   }

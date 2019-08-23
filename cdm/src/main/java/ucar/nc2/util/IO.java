@@ -6,7 +6,6 @@
 package ucar.nc2.util;
 
 import ucar.nc2.constants.CDM;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -34,28 +33,35 @@ public class IO {
 
   static private Class cl;
 
-  /** Open a resource as a Stream. First try ClassLoader.getResourceAsStream().
-   *  If that fails, try a plain old FileInputStream().
+  /**
+   * Open a resource as a Stream. First try ClassLoader.getResourceAsStream().
+   * If that fails, try a plain old FileInputStream().
+   * 
    * @param resourcePath name of file path (use forward slashes!)
    * @return InputStream or null on failure
-  */
-  public static InputStream getFileResource( String resourcePath) {
-    if (cl == null) cl = IO.class; // (new IO()).getClass();
+   */
+  public static InputStream getFileResource(String resourcePath) {
+    if (cl == null)
+      cl = IO.class; // (new IO()).getClass();
 
     InputStream is = cl.getResourceAsStream(resourcePath);
     if (is != null) {
-      if (debug) System.out.println("Resource.getResourceAsStream ok on "+resourcePath);
+      if (debug)
+        System.out.println("Resource.getResourceAsStream ok on " + resourcePath);
       return is;
     } else if (debug)
-      System.out.println("Resource.getResourceAsStream failed on ("+resourcePath+")");
+      System.out.println("Resource.getResourceAsStream failed on (" + resourcePath + ")");
 
     try {
-      is =  new FileInputStream(resourcePath);
-      if (debug) System.out.println("Resource.FileInputStream ok on "+resourcePath);
+      is = new FileInputStream(resourcePath);
+      if (debug)
+        System.out.println("Resource.FileInputStream ok on " + resourcePath);
     } catch (FileNotFoundException e) {
-      if (debug)  System.out.println("  FileNotFoundException: Resource.getFile failed on "+resourcePath);
+      if (debug)
+        System.out.println("  FileNotFoundException: Resource.getFile failed on " + resourcePath);
     } catch (java.security.AccessControlException e) {
-      if (debug)  System.out.println("  AccessControlException: Resource.getFile failed on "+resourcePath);
+      if (debug)
+        System.out.println("  AccessControlException: Resource.getFile failed on " + resourcePath);
     }
 
     return is;
@@ -64,7 +70,7 @@ public class IO {
   /**
    * copy all bytes from in to out.
    *
-   * @param in  InputStream
+   * @param in InputStream
    * @param out OutputStream
    * @return number of bytes copied
    * @throws java.io.IOException on io error
@@ -74,7 +80,8 @@ public class IO {
     byte[] buffer = new byte[default_file_buffersize];
     while (true) {
       int bytesRead = in.read(buffer);
-      if (bytesRead == -1) break;
+      if (bytesRead == -1)
+        break;
       out.write(buffer, 0, bytesRead);
       totalBytesRead += bytesRead;
     }
@@ -85,18 +92,20 @@ public class IO {
   /**
    * copy all bytes from in and throw them away.
    *
-   * @param in  InputStream
+   * @param in InputStream
    * @param buffersize size of buffer to use, if -1 uses default value (9200)
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
   static public long copy2null(InputStream in, int buffersize) throws IOException {
     long totalBytesRead = 0;
-    if (buffersize <= 0) buffersize = default_file_buffersize;
+    if (buffersize <= 0)
+      buffersize = default_file_buffersize;
     byte[] buffer = new byte[buffersize];
     while (true) {
       int n = in.read(buffer);
-      if (n == -1) break;
+      if (n == -1)
+        break;
       totalBytesRead += n;
     }
     // if (fout != null) fout.format("done=%d %n",totalBytesRead);
@@ -105,12 +114,14 @@ public class IO {
 
   static public long touch(InputStream in, int buffersize) throws IOException {
     long touch = 0;
-    if (buffersize <= 0) buffersize = default_file_buffersize;
+    if (buffersize <= 0)
+      buffersize = default_file_buffersize;
     byte[] buffer = new byte[buffersize];
     while (true) {
       int n = in.read(buffer);
-      if (n == -1) break;
-      for (int i=0; i<buffersize; i++)
+      if (n == -1)
+        break;
+      for (int i = 0; i < buffersize; i++)
         touch += buffer[i];
     }
     // if (fout != null) fout.format("done=%d %n",totalBytesRead);
@@ -120,18 +131,20 @@ public class IO {
   /**
    * copy all bytes from in and throw them away.
    *
-   * @param in  FileChannel
+   * @param in FileChannel
    * @param buffersize size of buffer to use, if -1 uses default value (9200)
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
   static public long copy2null(FileChannel in, int buffersize) throws IOException {
     long totalBytesRead = 0;
-    if (buffersize <= 0) buffersize = default_file_buffersize;
-    ByteBuffer buffer = ByteBuffer.allocate( buffersize);
+    if (buffersize <= 0)
+      buffersize = default_file_buffersize;
+    ByteBuffer buffer = ByteBuffer.allocate(buffersize);
     while (true) {
       int n = in.read(buffer);
-      if (n == -1) break;
+      if (n == -1)
+        break;
       totalBytesRead += n;
       buffer.flip();
     }
@@ -140,19 +153,21 @@ public class IO {
 
   static public long touch(FileChannel in, int buffersize) throws IOException {
     long touch = 0;
-    if (buffersize <= 0) buffersize = default_file_buffersize;
-    ByteBuffer buffer = ByteBuffer.allocate( buffersize);
+    if (buffersize <= 0)
+      buffersize = default_file_buffersize;
+    ByteBuffer buffer = ByteBuffer.allocate(buffersize);
     while (true) {
       int n = in.read(buffer);
-      if (n == -1) break;
+      if (n == -1)
+        break;
 
       // touch all the bytes
-      //buffer.rewind();
-      //for (int i=0; i<buffersize; i++)
-      //  touch += buffer.get();
+      // buffer.rewind();
+      // for (int i=0; i<buffersize; i++)
+      // touch += buffer.get();
 
       byte[] result = buffer.array();
-      for (int i=0; i<buffersize; i++)
+      for (int i = 0; i < buffersize; i++)
         touch += result[i];
 
       buffer.flip();
@@ -163,8 +178,8 @@ public class IO {
   /**
    * copy all bytes from in to out, specify buffer size
    *
-   * @param in         InputStream
-   * @param out        OutputStream
+   * @param in InputStream
+   * @param out OutputStream
    * @param bufferSize : internal buffer size.
    * @return number of bytes copied
    * @throws java.io.IOException on io error
@@ -176,7 +191,8 @@ public class IO {
     byte[] buffer = new byte[bufferSize];
     while (true) {
       int n = in.read(buffer);
-      if (n == -1) break;
+      if (n == -1)
+        break;
       out.write(buffer, 0, n);
       totalBytesRead += n;
 
@@ -195,9 +211,9 @@ public class IO {
   /**
    * copy n bytes from in to out.
    *
-   * @param in  InputStream
+   * @param in InputStream
    * @param out OutputStream
-   * @param n   number of bytes to copy
+   * @param n number of bytes to copy
    * @throws java.io.IOException on io error
    */
   static public void copy(InputStream in, OutputStream out, int n) throws IOException {
@@ -205,10 +221,12 @@ public class IO {
     int count = 0;
     while (true) {
       int bytesRead = in.read(buffer);
-      if (bytesRead == -1) break;
+      if (bytesRead == -1)
+        break;
       out.write(buffer, 0, bytesRead);
       count += bytesRead;
-      if (count > n) return;
+      if (count > n)
+        return;
     }
     out.flush();
   }
@@ -226,9 +244,9 @@ public class IO {
     return readContents(is, "UTF-8");
   }
 
-   /**
+  /**
    * Read the contents from the inputStream and place into a String,
-   * with any error messages  put in the return String.
+   * with any error messages put in the return String.
    *
    * @param is the inputStream to read from.
    * @return String holding the contents, or an error message.
@@ -242,7 +260,7 @@ public class IO {
 
   /**
    * Read the contents from the inputStream and place into a byte array,
-   * with any error messages  put in the return String.
+   * with any error messages put in the return String.
    *
    * @param is the inputStream to read from.
    * @return byte[] holding the contents, or an error message.
@@ -258,7 +276,7 @@ public class IO {
    * Wite the contents from the String to a Stream,
    *
    * @param contents String holding the contents.
-   * @param os       write to this OutputStream
+   * @param os write to this OutputStream
    * @throws java.io.IOException on io error
    */
   static public void writeContents(String contents, OutputStream os) throws IOException {
@@ -272,13 +290,13 @@ public class IO {
   /**
    * copy one file to another.
    *
-   * @param fileInName  copy from this file, which must exist.
+   * @param fileInName copy from this file, which must exist.
    * @param fileOutName copy to this file, which is overrwritten if already exists.
    * @throws java.io.IOException on io error
    */
   static public void copyFile(String fileInName, String fileOutName) throws IOException {
     try (FileInputStream fin = new FileInputStream(fileInName);
-         FileOutputStream fout = new FileOutputStream(fileOutName)) {
+        FileOutputStream fout = new FileOutputStream(fileOutName)) {
 
       InputStream in = new BufferedInputStream(fin);
       OutputStream out = new BufferedOutputStream(fout);
@@ -289,13 +307,12 @@ public class IO {
   /**
    * copy one file to another.
    *
-   * @param fileIn  copy from this file, which must exist.
+   * @param fileIn copy from this file, which must exist.
    * @param fileOut copy to this file, which is overrwritten if already exists.
    * @throws java.io.IOException on io error
    */
   static public void copyFile(File fileIn, File fileOut) throws IOException {
-    try (FileInputStream fin = new FileInputStream(fileIn);
-         FileOutputStream fout = new FileOutputStream(fileOut)) {
+    try (FileInputStream fin = new FileInputStream(fileIn); FileOutputStream fout = new FileOutputStream(fileOut)) {
       InputStream in = new BufferedInputStream(fin);
       OutputStream out = new BufferedOutputStream(fout);
       IO.copy(in, out);
@@ -305,13 +322,13 @@ public class IO {
   /**
    * copy file to output stream
    *
-   * @param src  source
-   * @param fileOut        copy to this file
+   * @param src source
+   * @param fileOut copy to this file
    * @throws java.io.IOException on io error
    */
   static public void copy2File(byte[] src, String fileOut) throws IOException {
     try (FileOutputStream fout = new FileOutputStream(fileOut)) {
-      InputStream in = new BufferedInputStream( new ByteArrayInputStream(src));
+      InputStream in = new BufferedInputStream(new ByteArrayInputStream(src));
       OutputStream out = new BufferedOutputStream(fout);
       IO.copy(in, out);
     }
@@ -321,7 +338,7 @@ public class IO {
    * copy file to output stream
    *
    * @param fileInName open this file
-   * @param out        copy here
+   * @param out copy here
    * @throws java.io.IOException on io error
    */
   static public void copyFile(String fileInName, OutputStream out) throws IOException {
@@ -331,8 +348,8 @@ public class IO {
   /**
    * copy file to output stream, specify internal buffer size
    *
-   * @param fileIn     copy this file
-   * @param out        copy to this stream
+   * @param fileIn copy this file
+   * @param out copy to this stream
    * @param bufferSize internal buffer size.
    * @throws java.io.IOException on io error
    */
@@ -345,64 +362,69 @@ public class IO {
 
   static public void copyFileWithChannels(File fileIn, WritableByteChannel out) throws IOException {
     try (FileChannel in = new FileInputStream(fileIn).getChannel()) {
-      long want =  fileIn.length();
+      long want = fileIn.length();
       long pos = 0;
       while (true) {
         long did = in.transferTo(pos, want, out);
-        if (did == want) break;
+        if (did == want)
+          break;
         pos += did;
         want -= did;
       }
     }
   }
 
- /*  static public void copyFileWithChannels2(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
-    ReadableByteChannel in = new FileInputStream(fileIn).getChannel();
-    copy(in, out, 32 * 1024);
-  }
-
-    // Read all available bytes from one channel and copy them to the other.
-  static public void copy(ReadableByteChannel in, WritableByteChannel out, int bufferSize) throws IOException {
-    // First, we need a buffer to hold blocks of copied bytes.
-    ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
-
-    // Now loop until no more bytes to read and the buffer is empty
-    while (in.read(buffer) != -1 || buffer.position() > 0) {
-      // The read() call leaves the buffer in "fill mode". To prepare
-      // to write bytes from the bufferwe have to put it in "drain mode"
-      // by flipping it: setting limit to position and position to zero
-      buffer.flip();
-
-      // Now write some or all of the bytes out to the output channel
-      out.write(buffer);
-
-      // Compact the buffer by discarding bytes that were written,
-      // and shifting any remaining bytes. This method also
-      // prepares the buffer for the next call to read() by setting the
-      // position to the limit and the limit to the buffer capacity.
-      buffer.compact();
-    }
-  }  */
+  /*
+   * static public void copyFileWithChannels2(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
+   * ReadableByteChannel in = new FileInputStream(fileIn).getChannel();
+   * copy(in, out, 32 * 1024);
+   * }
+   * 
+   * // Read all available bytes from one channel and copy them to the other.
+   * static public void copy(ReadableByteChannel in, WritableByteChannel out, int bufferSize) throws IOException {
+   * // First, we need a buffer to hold blocks of copied bytes.
+   * ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
+   * 
+   * // Now loop until no more bytes to read and the buffer is empty
+   * while (in.read(buffer) != -1 || buffer.position() > 0) {
+   * // The read() call leaves the buffer in "fill mode". To prepare
+   * // to write bytes from the bufferwe have to put it in "drain mode"
+   * // by flipping it: setting limit to position and position to zero
+   * buffer.flip();
+   * 
+   * // Now write some or all of the bytes out to the output channel
+   * out.write(buffer);
+   * 
+   * // Compact the buffer by discarding bytes that were written,
+   * // and shifting any remaining bytes. This method also
+   * // prepares the buffer for the next call to read() by setting the
+   * // position to the limit and the limit to the buffer capacity.
+   * buffer.compact();
+   * }
+   * }
+   */
 
   /**
    * Copy part of a RandomAccessFile to output stream, specify internal buffer size
    *
-   * @param raf    copy this file
+   * @param raf copy this file
    * @param offset start here (byte offset)
    * @param length number of bytes to copy
-   * @param out    copy to this stream
+   * @param out copy to this stream
    * @param buffer use this buffer.
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public long copyRafB(ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out, byte[] buffer) throws IOException {
+  static public long copyRafB(ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out,
+      byte[] buffer) throws IOException {
     int bufferSize = buffer.length;
     long want = length;
     raf.seek(offset);
     while (want > 0) {
       int len = (int) Math.min(want, bufferSize);
       int bytesRead = raf.read(buffer, 0, len);
-      if (bytesRead <= 0) break;
+      if (bytesRead <= 0)
+        break;
       out.write(buffer, 0, bytesRead);
       want -= bytesRead;
     }
@@ -414,7 +436,7 @@ public class IO {
    * Copy an entire directory tree.
    *
    * @param fromDirName from this directory (do nothing if not exist)
-   * @param toDirName   to this directory (will create if not exist)
+   * @param toDirName to this directory (will create if not exist)
    * @throws java.io.IOException on io error
    */
   static public void copyDirTree(String fromDirName, String toDirName) throws IOException {
@@ -442,7 +464,7 @@ public class IO {
 
   /**
    * Read the file and place contents into a byte array,
-   * with any error messages  put in the return String.
+   * with any error messages put in the return String.
    *
    * @param filename the file to read from.
    * @return byte[] holding the contents, or an error message.
@@ -476,7 +498,7 @@ public class IO {
    * Write String contents to a file, using UTF-8 encoding.
    *
    * @param contents String holding the contents
-   * @param file     write to this file (overwrite if exists)
+   * @param file write to this file (overwrite if exists)
    * @throws java.io.IOException on io error
    */
   static public void writeToFile(String contents, File file) throws IOException {
@@ -492,11 +514,11 @@ public class IO {
    * Write byte[] contents to a file.
    *
    * @param contents String holding the contents
-   * @param file     write to this file (overwrite if exists)
+   * @param file write to this file (overwrite if exists)
    * @throws java.io.IOException on io error
    */
   static public void writeToFile(byte[] contents, File file) throws IOException {
-    try (FileOutputStream fw = new FileOutputStream( file)) {
+    try (FileOutputStream fw = new FileOutputStream(file)) {
       fw.write(contents);
       fw.flush();
     }
@@ -505,7 +527,7 @@ public class IO {
   /**
    * Write contents to a file, using UTF-8 encoding.
    *
-   * @param contents    String holding the contents
+   * @param contents String holding the contents
    * @param fileOutName write to this file (overwrite if exists)
    * @throws java.io.IOException on io error
    */
@@ -516,22 +538,23 @@ public class IO {
   /**
    * copy input stream to file. close input stream when done.
    *
-   * @param in          copy from here
+   * @param in copy from here
    * @param fileOutName open this file (overwrite) and copy to it.
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
   static public long writeToFile(InputStream in, String fileOutName) throws IOException {
-    try (FileOutputStream fout = new FileOutputStream( fileOutName)) {
+    try (FileOutputStream fout = new FileOutputStream(fileOutName)) {
       OutputStream out = new BufferedOutputStream(fout);
       return IO.copy(in, out);
     } finally {
-      if (null != in) in.close();
+      if (null != in)
+        in.close();
     }
   }
 
   static public long appendToFile(InputStream in, String fileOutName) throws IOException {
-    try (FileOutputStream fout = new FileOutputStream( fileOutName)) {
+    try (FileOutputStream fout = new FileOutputStream(fileOutName)) {
       OutputStream out = new BufferedOutputStream(fout);
       return IO.copy(in, out);
     }
@@ -543,8 +566,8 @@ public class IO {
   /**
    * copy contents of URL to output stream, specify internal buffer size. request gzip encoding
    *
-   * @param urlString  copy the contents of this URL
-   * @param out        copy to this stream. If null, throw bytes away
+   * @param urlString copy the contents of this URL
+   * @param out copy to this stream. If null, throw bytes away
    * @param bufferSize internal buffer size.
    * @return number of bytes copied
    * @throws java.io.IOException on io error
@@ -575,8 +598,8 @@ public class IO {
       if (httpConnection != null) {
         int responseCode = httpConnection.getResponseCode();
         if (responseCode / 100 != 2)
-          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode
-              + "\n" + httpConnection.getResponseMessage() + "\n");
+          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode + "\n"
+              + httpConnection.getResponseMessage() + "\n");
       }
 
       if (showHeaders && (httpConnection != null)) {
@@ -588,10 +611,11 @@ public class IO {
         System.out.println(" HTTP/1.x " + code + " " + response);
         System.out.println("Headers: ");
 
-        for (int j = 1; ; j++) {
+        for (int j = 1;; j++) {
           String header = connection.getHeaderField(j);
           String key = connection.getHeaderFieldKey(j);
-          if (header == null || key == null) break;
+          if (header == null || key == null)
+            break;
           System.out.println(" " + key + ": " + header);
         }
       }
@@ -613,31 +637,35 @@ public class IO {
           count = IO.copyB(bis, out, bufferSize);
       }
 
-     } catch (java.net.ConnectException e) {
-       if (showStackTrace) e.printStackTrace();
-       throw new IOException("** ConnectException on URL: <" + urlString + ">\n" +
-          e.getMessage() + "\nServer probably not running");
+    } catch (java.net.ConnectException e) {
+      if (showStackTrace)
+        e.printStackTrace();
+      throw new IOException(
+          "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
 
-     } catch (java.net.UnknownHostException e) {
-       if (showStackTrace) e.printStackTrace();
-       throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
+    } catch (java.net.UnknownHostException e) {
+      if (showStackTrace)
+        e.printStackTrace();
+      throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
 
-     } catch (Exception e) {
-       if (showStackTrace) e.printStackTrace();
-       throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
-     }
+    } catch (Exception e) {
+      if (showStackTrace)
+        e.printStackTrace();
+      throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
+    }
 
     return count;
   }
 
   static private void showRequestHeaders(String urlString, java.net.URLConnection connection) {
     System.out.println("\nREQUEST Properties for " + urlString + ": ");
-     Map<String,List<String>> reqs = connection.getRequestProperties();
-     for (Map.Entry<String,List<String>> entry : reqs.entrySet()) {
-       System.out.printf(" %s:", entry.getKey());
-       for (String v : entry.getValue()) System.out.printf("%s,", v);
-       System.out.printf("%n");
-     }
+    Map<String, List<String>> reqs = connection.getRequestProperties();
+    for (Map.Entry<String, List<String>> entry : reqs.entrySet()) {
+      System.out.printf(" %s:", entry.getKey());
+      for (String v : entry.getValue())
+        System.out.printf("%s,", v);
+      System.out.printf("%n");
+    }
   }
 
   /**
@@ -672,8 +700,8 @@ public class IO {
       if (httpConnection != null) {
         int responseCode = httpConnection.getResponseCode();
         if (responseCode / 100 != 2)
-          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode
-              + "\n" + httpConnection.getResponseMessage() + "\n");
+          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode + "\n"
+              + httpConnection.getResponseMessage() + "\n");
       }
 
       if (showHeaders && (httpConnection != null)) {
@@ -685,10 +713,11 @@ public class IO {
         System.out.println(" HTTP/1.x " + code + " " + response);
         System.out.println("Headers: ");
 
-        for (int j = 1; ; j++) {
+        for (int j = 1;; j++) {
           String header = connection.getHeaderField(j);
           String key = connection.getHeaderFieldKey(j);
-          if (header == null || key == null) break;
+          if (header == null || key == null)
+            break;
           System.out.println(" " + key + ": " + header);
         }
       }
@@ -703,21 +732,25 @@ public class IO {
           is = new BufferedInputStream(new GZIPInputStream(is), 1000);
         }
       } catch (Throwable t) {
-        if (is != null) is.close();
+        if (is != null)
+          is.close();
       }
       return is;
 
     } catch (java.net.ConnectException e) {
-      if (showStackTrace) e.printStackTrace();
-      throw new IOException("** ConnectException on URL: <" + urlString + ">\n" +
-          e.getMessage() + "\nServer probably not running");
+      if (showStackTrace)
+        e.printStackTrace();
+      throw new IOException(
+          "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
 
     } catch (java.net.UnknownHostException e) {
-      if (showStackTrace) e.printStackTrace();
+      if (showStackTrace)
+        e.printStackTrace();
       throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
 
     } catch (Exception e) {
-      if (showStackTrace) e.printStackTrace();
+      if (showStackTrace)
+        e.printStackTrace();
       throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
 
     }
@@ -729,21 +762,23 @@ public class IO {
    * read the contents from the named URL, write to a file.
    *
    * @param urlString the URL to read from.
-   * @param file      write to this file
+   * @param file write to this file
    * @return status or error message.
    */
   static public String readURLtoFile(String urlString, File file) {
-    try (FileOutputStream fout = new FileOutputStream( file)) {
+    try (FileOutputStream fout = new FileOutputStream(file)) {
       OutputStream out = new BufferedOutputStream(fout);
       copyUrlB(urlString, out, 20000);
       return "ok";
 
     } catch (FileNotFoundException e) {
-      if (showStackTrace) e.printStackTrace();
+      if (showStackTrace)
+        e.printStackTrace();
       return "** IOException opening file: <" + file.getPath() + ">\n" + e.getMessage() + "\n";
 
     } catch (IOException e) {
-      if (showStackTrace) e.printStackTrace();
+      if (showStackTrace)
+        e.printStackTrace();
       return "** IOException reading URL: <" + urlString + ">\n" + e.getMessage() + "\n";
 
     }
@@ -752,7 +787,7 @@ public class IO {
 
   /**
    * Read the contents from the given URL and place into a byte array,
-   * with any error messages  put in the return String.
+   * with any error messages put in the return String.
    *
    * @param urlString read from this URL.
    * @return byte[] holding the contents, or an error message.
@@ -769,7 +804,7 @@ public class IO {
    * read the contents from the named URL, write to a file.
    *
    * @param urlString the URL to read from.
-   * @param file      write to this file
+   * @param file write to this file
    * @return status or error message.
    * @throws IOException if failure
    */
@@ -781,14 +816,14 @@ public class IO {
   /**
    * read the contents from the named URL, write to a file.
    *
-   * @param urlString   the URL to read from.
-   * @param file        write to this file
+   * @param urlString the URL to read from.
+   * @param file write to this file
    * @param buffer_size read/write in this size chunks
    * @return status or error message.
    * @throws IOException if failure
    */
   static public String readURLtoFileWithExceptions(String urlString, File file, int buffer_size) throws IOException {
-    try (FileOutputStream fout = new FileOutputStream( file)) {
+    try (FileOutputStream fout = new FileOutputStream(file)) {
       OutputStream out = new BufferedOutputStream(fout);
       copyUrlB(urlString, out, buffer_size);
       return "ok";
@@ -812,7 +847,7 @@ public class IO {
 
   /**
    * Read the contents from the named URL and place into a String,
-   * with any error messages  put in the return String.
+   * with any error messages put in the return String.
    *
    * @param urlString the URL to read from.
    * @return String holding the contents, or an error message.
@@ -829,7 +864,7 @@ public class IO {
    * use HTTP PUT to send the contents to the named URL.
    *
    * @param urlString the URL to read from. must be http:
-   * @param contents  String holding the contents
+   * @param contents String holding the contents
    * @return a Result object; generally 0 <= code <=400 is ok
    */
   static public HttpResult putToURL(String urlString, String contents) {
@@ -856,11 +891,14 @@ public class IO {
       return new HttpResult(code, mess);
 
     } catch (java.net.ConnectException e) {
-      if (showStackTrace) e.printStackTrace();
-      return new HttpResult(-2, "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
+      if (showStackTrace)
+        e.printStackTrace();
+      return new HttpResult(-2,
+          "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
 
     } catch (IOException e) {
-      if (showStackTrace) e.printStackTrace();
+      if (showStackTrace)
+        e.printStackTrace();
       return new HttpResult(-3, "** IOException on URL: (" + urlString + ")\n" + e.getMessage());
     }
 

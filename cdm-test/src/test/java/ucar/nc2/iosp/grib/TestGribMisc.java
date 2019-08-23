@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -47,7 +47,6 @@ import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -144,48 +143,53 @@ public class TestGribMisc {
 
   @Ignore("NCEP may be miscoding. Withdraw unit test until we have more info")
   @Test
-   public void testScanMode() throws IOException, InvalidRangeException {
-     // Robert.C.Lipschutz@noaa.gov
-     // we are setting the value of scanMode to 64, which per GRIB2 Table 3.4 indicates "points scan in the +j direction", and so filling
-     // the data arrays from south to north.
+  public void testScanMode() throws IOException, InvalidRangeException {
+    // Robert.C.Lipschutz@noaa.gov
+    // we are setting the value of scanMode to 64, which per GRIB2 Table 3.4 indicates "points scan in the +j
+    // direction", and so filling
+    // the data arrays from south to north.
     /*
-    Hi Bob:
-
-    You might think that if scanmode = 64, one should just invert the grids. As it turns out, on all projections except for latlon (that i have sample of),
-    the right thing to do is to ignore the flipping, because the coordinate system (the assignment of lat,lon values to each grid point) correctly adjusts
-    for it. So its just on latlon grids that this issue arises.
-
-    So on your file:
-
-     C:/Users/caron/Downloads/grid174_scanmode_64_example.grb2
-
-      latlon scan mode=64 dLat=0.125000 lat=(89.938004,-89.938004)
-
-    Now, the only other example of a latlon Grid that I seem to have with scan mode 64 is
-
-     Q:/cdmUnitTest/tds/ncep/SREF_PacificNE_0p4_ensprod_20120213_2100.grib2
-
-        latlon scan 64 lat=(10.000000 , 50.000000)
-
-    its over the pacific and much harder to tell if its flipped, but im guessing not. Note that its lat range is consistent with scan mode 64.
-
-    Im loath to generalize from a sample size of 2. Do you have a sample of GRIB2 files with various encodings? Perhaps I could test them to see if we
-    can guess when to flip or not.
-
-    thanks,
-    John
+     * Hi Bob:
+     * 
+     * You might think that if scanmode = 64, one should just invert the grids. As it turns out, on all projections
+     * except for latlon (that i have sample of),
+     * the right thing to do is to ignore the flipping, because the coordinate system (the assignment of lat,lon values
+     * to each grid point) correctly adjusts
+     * for it. So its just on latlon grids that this issue arises.
+     * 
+     * So on your file:
+     * 
+     * C:/Users/caron/Downloads/grid174_scanmode_64_example.grb2
+     * 
+     * latlon scan mode=64 dLat=0.125000 lat=(89.938004,-89.938004)
+     * 
+     * Now, the only other example of a latlon Grid that I seem to have with scan mode 64 is
+     * 
+     * Q:/cdmUnitTest/tds/ncep/SREF_PacificNE_0p4_ensprod_20120213_2100.grib2
+     * 
+     * latlon scan 64 lat=(10.000000 , 50.000000)
+     * 
+     * its over the pacific and much harder to tell if its flipped, but im guessing not. Note that its lat range is
+     * consistent with scan mode 64.
+     * 
+     * Im loath to generalize from a sample size of 2. Do you have a sample of GRIB2 files with various encodings?
+     * Perhaps I could test them to see if we
+     * can guess when to flip or not.
+     * 
+     * thanks,
+     * John
      */
-     String filename = TestDir.cdmUnitTestDir + "formats/grib2/grid174_scanmode_64_example.grb2";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib2/grid174_scanmode_64_example.grb2";
 
-     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
-       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
-       assert v != null : ncfile.getLocation();
-       ArrayFloat vals = (ArrayFloat) (v.read("0,:,0").reduce());   // read first column - its flipped
-       logger.debug("{}: first={} last={}", v.getFullName(), vals.getFloat(0), vals.getFloat((int)vals.getSize()-1));
-       Assert2.assertNearlyEquals(vals.getFloat(0), 243.289993);
-       Assert2.assertNearlyEquals(vals.getFloat((int)vals.getSize()-1), 242.080002);
-     }
-   }
+    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+      Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
+      assert v != null : ncfile.getLocation();
+      ArrayFloat vals = (ArrayFloat) (v.read("0,:,0").reduce()); // read first column - its flipped
+      logger.debug("{}: first={} last={}", v.getFullName(), vals.getFloat(0), vals.getFloat((int) vals.getSize() - 1));
+      Assert2.assertNearlyEquals(vals.getFloat(0), 243.289993);
+      Assert2.assertNearlyEquals(vals.getFloat((int) vals.getSize() - 1), 242.080002);
+    }
+  }
 
   // Tests reading a bad ecmwf encoded grib 1 file.
   // gaussian thin grid to boot.
@@ -203,7 +207,7 @@ public class TestGribMisc {
       Assert.assertEquals(npts, data.getSize());
 
       float first = data.getFloat(0);
-      float last = data.getFloat(npts-1);
+      float last = data.getFloat(npts - 1);
 
       Assert.assertEquals(273.260162, first, 1e-6);
       Assert.assertEquals(224.599670, last, 1e-6);
@@ -214,27 +218,28 @@ public class TestGribMisc {
   }
 
   /*
-  @Test
-  public void testReadBadEcmwf2() throws IOException {
-    //Grib1RecordScanner.setAllowBadDsLength(true);
-    //Grib1RecordScanner.setAllowBadIsLength(true);
-
-    String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/badEcmwf.grib1";
-    try (NetcdfFile nc = NetcdfFile.open(filename)) {
-
-      Variable var = nc.findVariable("2_metre_temperature_surface");
-      Array data = var.read();
-      int npts = 2560 * 5136;
-      Assert.assertEquals(npts, data.getSize());
-
-      float first = data.getFloat(0);
-      float last = data.getFloat(npts-1);
-
-      Assert.assertEquals(273.260162, first, 1e-6);
-      Assert.assertEquals(224.599670, last, 1e-6);
-    }
-
-    //Grib1RecordScanner.setAllowBadDsLength(false);
-    //Grib1RecordScanner.setAllowBadIsLength(false);
-  } */
+   * @Test
+   * public void testReadBadEcmwf2() throws IOException {
+   * //Grib1RecordScanner.setAllowBadDsLength(true);
+   * //Grib1RecordScanner.setAllowBadIsLength(true);
+   * 
+   * String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/badEcmwf.grib1";
+   * try (NetcdfFile nc = NetcdfFile.open(filename)) {
+   * 
+   * Variable var = nc.findVariable("2_metre_temperature_surface");
+   * Array data = var.read();
+   * int npts = 2560 * 5136;
+   * Assert.assertEquals(npts, data.getSize());
+   * 
+   * float first = data.getFloat(0);
+   * float last = data.getFloat(npts-1);
+   * 
+   * Assert.assertEquals(273.260162, first, 1e-6);
+   * Assert.assertEquals(224.599670, last, 1e-6);
+   * }
+   * 
+   * //Grib1RecordScanner.setAllowBadDsLength(false);
+   * //Grib1RecordScanner.setAllowBadIsLength(false);
+   * }
+   */
 }

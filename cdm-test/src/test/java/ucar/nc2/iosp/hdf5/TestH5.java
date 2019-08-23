@@ -15,7 +15,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -32,47 +31,50 @@ public class TestH5 {
   public static boolean dumpFile = false;
   public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
 
- public static NetcdfFile open( String filename) {
+  public static NetcdfFile open(String filename) {
     try {
-      System.out.println("**** Open "+filename);
+      System.out.println("**** Open " + filename);
       NetcdfFile ncfile = NetcdfFile.open(filename);
-      if (TestH5.dumpFile) System.out.println("open "+ncfile);
+      if (TestH5.dumpFile)
+        System.out.println("open " + ncfile);
       return ncfile;
 
     } catch (java.io.IOException e) {
-      System.out.println(" fail = "+e);
+      System.out.println(" fail = " + e);
       e.printStackTrace();
-      assert(false);
+      assert (false);
       return null;
     }
   }
 
-  public static NetcdfFile openH5( String filename) {
+  public static NetcdfFile openH5(String filename) {
     try {
-      System.out.println("**** Open "+ testDir+filename);
-      NetcdfFile ncfile = NetcdfFile.open( testDir+filename);
-      if (TestH5.dumpFile) System.out.println("open H5 "+ncfile);
+      System.out.println("**** Open " + testDir + filename);
+      NetcdfFile ncfile = NetcdfFile.open(testDir + filename);
+      if (TestH5.dumpFile)
+        System.out.println("open H5 " + ncfile);
       return ncfile;
 
     } catch (java.io.IOException e) {
-      System.out.println(" fail = "+e);
+      System.out.println(" fail = " + e);
       e.printStackTrace();
-      assert(false);
+      assert (false);
       return null;
     }
   }
 
-  public static NetcdfDataset openH5dataset( String filename) {
+  public static NetcdfDataset openH5dataset(String filename) {
     try {
-      System.out.println("**** Open "+ testDir+filename);
-      NetcdfDataset ncfile = NetcdfDataset.openDataset( testDir+filename);
-      if (TestH5.dumpFile) System.out.println("open H5 "+ncfile);
+      System.out.println("**** Open " + testDir + filename);
+      NetcdfDataset ncfile = NetcdfDataset.openDataset(testDir + filename);
+      if (TestH5.dumpFile)
+        System.out.println("open H5 " + ncfile);
       return ncfile;
 
     } catch (java.io.IOException e) {
-      System.out.println(" fail = "+e);
+      System.out.println(" fail = " + e);
       e.printStackTrace();
-      assert(false);
+      assert (false);
       return null;
     }
   }
@@ -120,36 +122,36 @@ public class TestH5 {
 
   // groups have a cycle using hard link
   /*
-  $ h5dump h5ex_g_traverse.h5
-  HDF5 "h5ex_g_traverse.h5" {
-  GROUP "/" {
-     GROUP "group1" {
-        DATASET "dset1" {
-           DATATYPE  H5T_STD_I32LE
-           DATASPACE  SIMPLE { ( 1, 1 ) / ( 1, 1 ) }
-           DATA {
-           (0,0): 0
-           }
-        }
-        GROUP "group3" {
-           DATASET "dset2" {
-              HARDLINK "/group1/dset1"
-           }
-           GROUP "group4" {
-              GROUP "group1" {
-                 GROUP "group5" {
-                    HARDLINK "/group1"
-                 }
-              }
-              GROUP "group2" {
-              }
-           }
-        }
-     }
-     GROUP "group2" {
-        HARDLINK "/group1/group3"
-     }
-  }
+   * $ h5dump h5ex_g_traverse.h5
+   * HDF5 "h5ex_g_traverse.h5" {
+   * GROUP "/" {
+   * GROUP "group1" {
+   * DATASET "dset1" {
+   * DATATYPE H5T_STD_I32LE
+   * DATASPACE SIMPLE { ( 1, 1 ) / ( 1, 1 ) }
+   * DATA {
+   * (0,0): 0
+   * }
+   * }
+   * GROUP "group3" {
+   * DATASET "dset2" {
+   * HARDLINK "/group1/dset1"
+   * }
+   * GROUP "group4" {
+   * GROUP "group1" {
+   * GROUP "group5" {
+   * HARDLINK "/group1"
+   * }
+   * }
+   * GROUP "group2" {
+   * }
+   * }
+   * }
+   * }
+   * GROUP "group2" {
+   * HARDLINK "/group1/group3"
+   * }
+   * }
    */
   @org.junit.Test
   public void testGroupHardLinks() throws IOException {

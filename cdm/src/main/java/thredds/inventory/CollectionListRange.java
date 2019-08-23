@@ -8,7 +8,6 @@ import com.google.common.base.MoreObjects;
 import org.slf4j.Logger;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,8 @@ public class CollectionListRange extends CollectionAbstract {
   private final List<MFile> mfiles = new ArrayList<>();
   private final CalendarDate startDate, endDate;
 
-  public CollectionListRange(String collectionName, String root, CalendarDate startDate, CalendarDate endDate, Logger logger) {
+  public CollectionListRange(String collectionName, String root, CalendarDate startDate, CalendarDate endDate,
+      Logger logger) {
     super(collectionName, logger);
     setRoot(root);
     this.startDate = startDate;
@@ -52,14 +52,11 @@ public class CollectionListRange extends CollectionAbstract {
   }
 
   @Override
-  public void close() {  }
+  public void close() {}
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-            .add("collectionName", collectionName)
-            .add("startDate", startDate)
-            .add("endDate", endDate)
-            .toString();
+    return MoreObjects.toStringHelper(this).add("collectionName", collectionName).add("startDate", startDate)
+        .add("endDate", endDate).toString();
   }
 }

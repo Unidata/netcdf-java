@@ -13,7 +13,6 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.ma2.*;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -27,7 +26,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
   private NetcdfDataset ds;
 
   /////////////////////////////////////////////////
-  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
+  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ncd.findAttValueIgnoreCase(null, "Format", null);
@@ -37,7 +36,8 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
     return null;
   }
 
-  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) {
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task,
+      Formatter errlog) {
     return new NidsRadialAdapter(ncd);
   }
 
@@ -46,8 +46,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
   }
 
   // needed for FeatureDatasetFactory
-  public NidsRadialAdapter() {
-  }
+  public NidsRadialAdapter() {}
 
   /**
    * Constructor.
@@ -211,10 +210,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
   }
 
   public String getInfo() {
-    String sbuff = "Nids2Dataset\n"
-        + super.getDetailInfo()
-        + "\n\n"
-        + parseInfo.toString();
+    String sbuff = "Nids2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo.toString();
     return sbuff;
   }
 
@@ -260,7 +256,8 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
     }
 
     public Sweep getSweep(int sn) {
-      if (sn != 0) return null;
+      if (sn != 0)
+        return null;
       return sweeps.get(sn);
     }
 
@@ -282,8 +279,8 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
         this.nrays = rays;
         this.ngates = gates;
         this.ds = nds;
-        //setMeanElevation(nds);
-        //setMeanAzimuth(nds);
+        // setMeanElevation(nds);
+        // setMeanAzimuth(nds);
       }
 
       public Variable getsweepVar() {
@@ -324,7 +321,8 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
           }
           meanAzimuth = MAMath.sumDouble(spData) / spData.getSize();
 
-        } else meanAzimuth = 0.0;
+        } else
+          meanAzimuth = 0.0;
 
       }
 
@@ -342,7 +340,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
         return ngates;
       }
 
-      /* a 2D array nradials * ngates   */
+      /* a 2D array nradials * ngates */
       public float[] readData() throws IOException {
         Array allData;
         int[] shape = sweepVar.getShape();
@@ -444,9 +442,9 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
       public float getGateSize() {
         try {
-            if (Double.isNaN(gateSize))
-               gateSize = getRadialDistance(1) - getRadialDistance(0);
-            return (float) gateSize;
+          if (Double.isNaN(gateSize))
+            gateSize = getRadialDistance(1) - getRadialDistance(0);
+          return (float) gateSize;
 
         } catch (IOException e) {
           e.printStackTrace();

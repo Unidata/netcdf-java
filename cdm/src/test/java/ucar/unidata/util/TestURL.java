@@ -7,7 +7,6 @@ package ucar.unidata.util;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 import java.net.*;
 
@@ -16,8 +15,9 @@ import java.net.*;
 public class TestURL {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  //static String u = "http://adde.ucar.edu/pointdata?select='id TXKF'&param=day time t td psl";
-  static String u = "http://adde.ucar.edu/pointdata?group=rtptsrc&descr=01hr&param=LAT&select=\"ida AZCN;day 07-june-2004;time 00:00 22:00\"&num=all&compress=true";
+  // static String u = "http://adde.ucar.edu/pointdata?select='id TXKF'&param=day time t td psl";
+  static String u =
+      "http://adde.ucar.edu/pointdata?group=rtptsrc&descr=01hr&param=LAT&select=\"ida AZCN;day 07-june-2004;time 00:00 22:00\"&num=all&compress=true";
 
 
   @Test
@@ -26,7 +26,7 @@ public class TestURL {
     doAll("http://adde.ucar.edu/test%20test2");
   }
 
-  public void doAll( String s) {
+  public void doAll(String s) {
     doURIencoded(s);
     doURI(s);
     doURL(s);
@@ -39,8 +39,8 @@ public class TestURL {
       System.out.println("TestURL file = " + url.getFile());
       assert true;
     } catch (Exception e) {
-      System.out.println("URL exception = "+e.getMessage());
-      //assert false;
+      System.out.println("URL exception = " + e.getMessage());
+      // assert false;
     }
   }
 
@@ -50,8 +50,8 @@ public class TestURL {
       System.out.println("TestURI url = " + uri.toString());
       assert true;
     } catch (Exception e) {
-      System.out.println("URI exception = "+e.getMessage());
-      //assert false;
+      System.out.println("URI exception = " + e.getMessage());
+      // assert false;
     }
   }
 
@@ -62,8 +62,8 @@ public class TestURL {
       System.out.println("TestURI url encoded = " + uri.toString());
       assert true;
     } catch (Exception e) {
-      System.out.println("URI exception = "+e.getMessage());
-      //assert false;
+      System.out.println("URI exception = " + e.getMessage());
+      // assert false;
     }
   }
 

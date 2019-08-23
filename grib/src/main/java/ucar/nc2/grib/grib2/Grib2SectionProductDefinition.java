@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.zip.CRC32;
@@ -30,36 +29,36 @@ public class Grib2SectionProductDefinition {
    * @throws java.io.IOException on I/O error
    * @throws IllegalArgumentException if not a GRIB-2 record
    */
-   public Grib2SectionProductDefinition( RandomAccessFile raf) throws IOException {
+  public Grib2SectionProductDefinition(RandomAccessFile raf) throws IOException {
 
-     long startingPosition = raf.getFilePointer();
+    long startingPosition = raf.getFilePointer();
 
-     // octets 1-4 (Length of GDS)
-     int length = GribNumbers.int4(raf);
+    // octets 1-4 (Length of GDS)
+    int length = GribNumbers.int4(raf);
 
     // octet 5
-     int section = raf.read();
-     if (section != 4)
-       throw new IllegalArgumentException("Not a GRIB-2 PDS section");
+    int section = raf.read();
+    if (section != 4)
+      throw new IllegalArgumentException("Not a GRIB-2 PDS section");
 
-     // octets 8-9
-     raf.skipBytes(2);
-     templateNumber = GribNumbers.int2(raf);
+    // octets 8-9
+    raf.skipBytes(2);
+    templateNumber = GribNumbers.int2(raf);
 
-     // read in whole GDS as byte[]
-     rawData = new byte[length];
-     raf.seek(startingPosition);
-     raf.readFully(rawData);
-   }
+    // read in whole GDS as byte[]
+    rawData = new byte[length];
+    raf.seek(startingPosition);
+    raf.readFully(rawData);
+  }
 
   /**
    * Set PDS section from byte array.
    *
    * @param rawData the byte array
    */
-  public Grib2SectionProductDefinition( byte[] rawData) {
+  public Grib2SectionProductDefinition(byte[] rawData) {
     this.rawData = rawData;
-    this.templateNumber = GribNumbers.int2( getInt(8), getInt(9) );
+    this.templateNumber = GribNumbers.int2(getInt(8), getInt(9));
   }
 
   /**
@@ -73,6 +72,7 @@ public class Grib2SectionProductDefinition {
 
   /**
    * Calculate the CRC of the entire byte array
+   * 
    * @return CRC
    */
   public long calcCRC() {
@@ -95,11 +95,12 @@ public class Grib2SectionProductDefinition {
   }
 
   private int getInt(int index) {
-    return rawData[index-1] & 0xff;
+    return rawData[index - 1] & 0xff;
   }
 
   /**
    * Parse the raw bytes into a Grib2Pds
+   * 
    * @return Grib2Pds
    */
   public Grib2Pds getPDS() {

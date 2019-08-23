@@ -23,7 +23,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -41,13 +40,14 @@ abstract class GribCollectionBuilder {
   protected final boolean isGrib1;
   protected GribCollectionImmutable.Type type;
 
-  protected final String name;            // collection name
-  protected final File directory;         // top directory
+  protected final String name; // collection name
+  protected final File directory; // top directory
 
-  protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException;
+  protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog)
+      throws IOException;
 
   protected abstract boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
-                                        List<? extends Group> groups, List<MFile> files, CalendarDateRange dateRange) throws IOException;
+      List<? extends Group> groups, List<MFile> files, CalendarDateRange dateRange) throws IOException;
 
   GribCollectionBuilder(boolean isGrib1, String name, MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
@@ -59,13 +59,17 @@ abstract class GribCollectionBuilder {
   }
 
   boolean updateNeeded(CollectionUpdateType ff) throws IOException {
-    if (ff == CollectionUpdateType.never) return false;
-    if (ff == CollectionUpdateType.always) return true;
+    if (ff == CollectionUpdateType.never)
+      return false;
+    if (ff == CollectionUpdateType.always)
+      return true;
 
     File collectionIndexFile = GribIndexCache.getExistingFileOrCache(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
-    if (collectionIndexFile == null) return true;
+    if (collectionIndexFile == null)
+      return true;
 
-    if (ff == CollectionUpdateType.nocheck) return false;
+    if (ff == CollectionUpdateType.nocheck)
+      return false;
 
     return needsUpdate(ff, collectionIndexFile);
   }
@@ -78,11 +82,13 @@ abstract class GribCollectionBuilder {
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
       while (iter != null && iter.hasNext()) {
         MFile memberOfCollection = iter.next();
-        if (cc.hasChangedSince(memberOfCollection, collectionLastModified)) return true;   // checks both data and gbx9 file
+        if (cc.hasChangedSince(memberOfCollection, collectionLastModified))
+          return true; // checks both data and gbx9 file
         newFileSet.add(memberOfCollection.getPath());
       }
     }
-    if (ff == CollectionUpdateType.testIndexOnly) return false;
+    if (ff == CollectionUpdateType.testIndexOnly)
+      return false;
 
     // now see if any files were deleted, by reading the index and comparing to the files there
     GribCdmIndex reader = new GribCdmIndex(logger);
@@ -91,14 +97,14 @@ abstract class GribCollectionBuilder {
     Set<String> oldFileSet = new HashSet<>();
     for (MFile oldFile : oldFiles) {
       if (!newFileSet.contains(oldFile.getPath()))
-        return true;              // got deleted - must recreate the index
+        return true; // got deleted - must recreate the index
       oldFileSet.add(oldFile.getPath());
     }
 
     // now see if any files were added
     for (String newFilename : newFileSet) {
       if (!oldFileSet.contains(newFilename))
-        return true;              // got added - must recreate the index
+        return true; // got added - must recreate the index
     }
 
     return false;
@@ -106,15 +112,15 @@ abstract class GribCollectionBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   // Throw exception if failure
-   boolean createIndex(FeatureCollectionConfig.PartitionType ptype, Formatter errlog) throws IOException {
+  // Throw exception if failure
+  boolean createIndex(FeatureCollectionConfig.PartitionType ptype, Formatter errlog) throws IOException {
     if (ptype == FeatureCollectionConfig.PartitionType.all)
       return createAllRuntimeCollections(errlog);
     else
       return createMultipleRuntimeCollections(errlog);
   }
 
-   // Throw exception if failure
+  // Throw exception if failure
   private boolean createMultipleRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
 
@@ -130,7 +136,7 @@ abstract class GribCollectionBuilder {
 
     // Create the master runtimes, classify the result
     CalendarDateRange calendarDateRangeAll = null;
-    //boolean allTimesAreOne = true;
+    // boolean allTimesAreOne = true;
     boolean allTimesAreUnique = true;
     Set<Long> allRuntimes = new HashSet<>();
     for (Group g : groups) {
@@ -144,30 +150,35 @@ abstract class GribCollectionBuilder {
         }
         if (coord instanceof CoordinateTimeAbstract) {
           CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
-          if (calendarDateRangeAll == null) calendarDateRangeAll = calendarDateRange;
-          else calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
+          if (calendarDateRangeAll == null)
+            calendarDateRangeAll = calendarDateRange;
+          else
+            calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
         }
       }
     }
     List<Long> sortedList = new ArrayList<>(allRuntimes);
     Collections.sort(sortedList);
     if (sortedList.size() == 0)
-      throw new IllegalArgumentException("No runtimes in this collection ="+name);
+      throw new IllegalArgumentException("No runtimes in this collection =" + name);
 
     else if (sortedList.size() == 1)
       this.type = GribCollectionImmutable.Type.SRC;
     else if (allTimesAreUnique)
-      this.type =  GribCollectionImmutable.Type.MRUTC;
+      this.type = GribCollectionImmutable.Type.MRUTC;
     else
-      this.type =  GribCollectionImmutable.Type.MRC;
+      this.type = GribCollectionImmutable.Type.MRC;
 
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);
-    boolean ok = writeIndex(this.name, indexFileForRuntime.getPath(), masterRuntimes, groups, allFiles, calendarDateRangeAll);
+    boolean ok =
+        writeIndex(this.name, indexFileForRuntime.getPath(), masterRuntimes, groups, allFiles, calendarDateRangeAll);
 
-    /* if (this.type ==  GribCollectionImmutable.Type.MRC) {
-      GribBestDatasetBuilder.makeDatasetBest();
-    } */
+    /*
+     * if (this.type == GribCollectionImmutable.Type.MRC) {
+     * GribBestDatasetBuilder.makeDatasetBest();
+     * }
+     */
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);
@@ -178,7 +189,7 @@ abstract class GribCollectionBuilder {
   // creates seperate collection and index for each runtime.
   private boolean createAllRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
-    this.type =  GribCollectionImmutable.Type.SRC;
+    this.type = GribCollectionImmutable.Type.SRC;
     boolean ok = true;
 
     List<MFile> files = new ArrayList<>();
@@ -188,8 +199,7 @@ abstract class GribCollectionBuilder {
     // gather into collections with a single runtime
     Map<Long, List<Group>> runGroups = new HashMap<>();
     for (Group g : groups) {
-      List<Group> runGroup = runGroups
-          .computeIfAbsent(g.getRuntime().getMillis(), k -> new ArrayList<>());
+      List<Group> runGroup = runGroups.computeIfAbsent(g.getRuntime().getMillis(), k -> new ArrayList<>());
       runGroup.add(g);
     }
 
@@ -198,12 +208,14 @@ abstract class GribCollectionBuilder {
     List<MFile> partitions = new ArrayList<>();
     for (List<Group> runGroupList : runGroups.values()) {
       Group g = runGroupList.get(0);
-      // if multiple Runtimes, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
+      // if multiple Runtimes, we will write a partition. otherwise, we need to use the standard name (without runtime)
+      // so we know the filename from the collection
       String gcname = multipleRuntimes ? GribCollectionMutable.makeName(this.name, g.getRuntime()) : this.name;
-      MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(gcname, directory); // not using disk cache LOOK why ?
+      MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(gcname, directory); // not using disk cache LOOK
+                                                                                           // why ?
       partitions.add(indexFileForRuntime);
 
-     // create the master runtimes, consisting of the single runtime
+      // create the master runtimes, consisting of the single runtime
       List<Long> runtimes = new ArrayList<>(1);
       runtimes.add(g.getRuntime().getMillis());
       CoordinateRuntime masterRuntimes = new CoordinateRuntime(runtimes, null);
@@ -212,14 +224,17 @@ abstract class GribCollectionBuilder {
       for (Coordinate coord : g.getCoordinates()) {
         if (coord instanceof CoordinateTimeAbstract) {
           CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
-          if (calendarDateRangeAll == null) calendarDateRangeAll = calendarDateRange;
-          else calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
+          if (calendarDateRangeAll == null)
+            calendarDateRangeAll = calendarDateRange;
+          else
+            calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
         }
       }
       assert calendarDateRangeAll != null;
 
       // for each Group write an index file
-      ok &= writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles, calendarDateRangeAll);
+      ok &= writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles,
+          calendarDateRangeAll);
       logger.info("GribCollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
     }
 
@@ -228,7 +243,8 @@ abstract class GribCollectionBuilder {
       Collections.sort(partitions); // ??
       PartitionManager part = new PartitionManagerFromIndexList(dcm, partitions, logger);
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
-      ok &= GribCdmIndex.updateGribCollectionFromPCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);
+      ok &=
+          GribCdmIndex.updateGribCollectionFromPCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);
     }
 
     long took = System.currentTimeMillis() - start;
@@ -238,7 +254,9 @@ abstract class GribCollectionBuilder {
 
   public interface Group {
     CalendarDate getRuntime();
+
     List<Coordinate> getCoordinates();
+
     Set<Long> getCoordinateRuntimes();
   }
 
@@ -254,11 +272,14 @@ abstract class GribCollectionBuilder {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       GroupAndRuntime that = (GroupAndRuntime) o;
-      if (hashCode != that.hashCode) return false;
+      if (hashCode != that.hashCode)
+        return false;
       return runtime == that.runtime;
     }
 

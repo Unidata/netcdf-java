@@ -11,20 +11,18 @@ import java.io.Serializable;
  * 
  * @author Steven R. Emmerson
  */
-public abstract class BaseQuantityException extends UnitException implements
-		Serializable {
-	private static final long	serialVersionUID	= 1L;
+public abstract class BaseQuantityException extends UnitException implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs from nothing.
-	 */
-	public BaseQuantityException() {
-	}
+  /**
+   * Constructs from nothing.
+   */
+  public BaseQuantityException() {}
 
-	/**
-	 * Constructs from a message.
-	 */
-	public BaseQuantityException(final String message) {
-		super(message);
-	}
+  /**
+   * Constructs from a message.
+   */
+  public BaseQuantityException(final String message) {
+    super(message);
+  }
 }

@@ -20,7 +20,6 @@ import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -36,14 +35,15 @@ import java.util.List;
 public class TestStreamWriter {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc"});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/grid/RUC2_CONUS_40km_20070709_1800.nc"});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc"});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/grid/RUC2_CONUS_40km_20070709_1800.nc"});
 
     return result;
   }
@@ -99,7 +99,8 @@ public class TestStreamWriter {
 
     long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();
-    //   public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker) throws IOException {
+    // public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker)
+    // throws IOException {
     FileWriter2 writer = new FileWriter2(fileIn, fileOut, NetcdfFileWriter.Version.netcdf3, null);
     NetcdfFile ncout2 = writer.write();
     ncout2.close();

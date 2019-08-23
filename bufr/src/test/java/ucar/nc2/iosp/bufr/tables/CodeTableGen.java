@@ -10,7 +10,6 @@ import org.jdom2.output.Format;
 import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -61,26 +60,30 @@ public class CodeTableGen {
     int countCodes = 0;
     boolean first = true;
     while (readOneCode(first)) {
-      if (!getNextLine()) return false;
+      if (!getNextLine())
+        return false;
       first = false;
       countCodes++;
     }
 
-    if (countCodes != ncodes) out.format("*** Really %d codes %n", countCodes);
+    if (countCodes != ncodes)
+      out.format("*** Really %d codes %n", countCodes);
 
     return true;
   }
 
   private boolean readOneCode(boolean first) throws IOException {
-    if (!first && line.substring(0, 3).trim().length() != 0) return false; //
+    if (!first && line.substring(0, 3).trim().length() != 0)
+      return false; //
 
     int code = Integer.parseInt(line.substring(12, 16));
     int nlines = Integer.parseInt(line.substring(17, 19));
     String value = line.substring(20);
     if (nlines > 1) {
       for (int j = 1; j < nlines; j++) {
-        if (!getNextLine()) return false;
-        //value += " ";
+        if (!getNextLine())
+          return false;
+        // value += " ";
         value += line.substring(20);
       }
     }
@@ -152,7 +155,8 @@ public class CodeTableGen {
 
   static boolean hasAncestor(Element e, String name) {
     while (e != null) {
-      if (e.getName().equals(name)) return true;
+      if (e.getName().equals(name))
+        return true;
       e = e.getParentElement();
     }
     return false;
@@ -172,11 +176,13 @@ public class CodeTableGen {
       tdoc.setRootElement(root);
       transform(orgDoc.getRootElement(), root);
 
-      /* XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-  Writer pw = new FileWriter("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans.xml");
-  fmt.output(tdoc, pw);
-  pw = new PrintWriter(System.out);
-  fmt.output(tdoc, pw);  // */
+      /*
+       * XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+       * Writer pw = new FileWriter("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans.xml");
+       * fmt.output(tdoc, pw);
+       * pw = new PrintWriter(System.out);
+       * fmt.output(tdoc, pw); //
+       */
 
 
     } catch (JDOMException e) {
@@ -211,12 +217,15 @@ public class CodeTableGen {
       tableElem.setAttribute("desc", desc);
       f.format("------%n%s == %s%n", lastRtext, desc);
 
-      if (tcElems.size()>0) {
+      if (tcElems.size() > 0) {
         String kind;
         String kinds = tcElems.get(0).getText().toLowerCase();
-        if (kinds.startsWith("code")) kind = "code";
-        else if (kinds.startsWith("bit")) kind = "bit";
-        else kind="unknown";
+        if (kinds.startsWith("code"))
+          kind = "code";
+        else if (kinds.startsWith("bit"))
+          kind = "bit";
+        else
+          kind = "unknown";
         tableElem.setAttribute("kind", kind);
       }
 
@@ -271,7 +280,7 @@ public class CodeTableGen {
 
       List<Element> cElems = (List<Element>) elem.getChildren("code");
       if (cElems.size() == 0) {
-        //f.format("skip %s %n", name);
+        // f.format("skip %s %n", name);
         continue;
       }
 
@@ -280,7 +289,7 @@ public class CodeTableGen {
         f.format("%nTable %s %s kind=%s %n", name, desc, kind);
         tableShown = true;
       }
-      
+
       for (Element cElem : cElems) {
         String value = cElem.getAttributeValue("value").trim();
         String text = cElem.getText();
@@ -288,14 +297,14 @@ public class CodeTableGen {
           ; // f.format(" skip code %s == %s %n", value, text);
         else if (text.toLowerCase().startsWith("not used"))
           ; // f.format(" skip code %s == %s %n", value, text);
-         else {
+        else {
           try {
             Integer.parseInt(value);
           } catch (NumberFormatException e) {
             if (!tableShown)
               f.format("%nTable %s %s kind=%s %n", name, desc, kind);
             tableShown = true;
-            
+
             if (0 == parseAll(value)) {
               f.format(" problem parsing code %s == %s %n", value, text);
             }
@@ -307,11 +316,13 @@ public class CodeTableGen {
 
   static int parseAll(String text) {
     String[] tok = text.split(" ");
-    if (tok.length != 2) return 0;
-    if (!tok[0].equalsIgnoreCase("all")) return 0;
+    if (tok.length != 2)
+      return 0;
+    if (!tok[0].equalsIgnoreCase("all"))
+      return 0;
     try {
       int n = Integer.parseInt(tok[1]);
-      int n2 = (int) Math.pow(2,n)-1;
+      int n2 = (int) Math.pow(2, n) - 1;
       f.format(" parse %s == %d %n", text, n2);
       return n2;
     } catch (NumberFormatException e) {
@@ -326,17 +337,21 @@ public class CodeTableGen {
       SAXBuilder builder = new SAXBuilder();
       tdoc = builder.build(trans2);
 
-      /* org.jdom2.Document ndoc = new org.jdom2.Document();
-      Element nroot = new Element("ndoc");
-      ndoc.setRootElement(nroot);  */
+      /*
+       * org.jdom2.Document ndoc = new org.jdom2.Document();
+       * Element nroot = new Element("ndoc");
+       * ndoc.setRootElement(nroot);
+       */
 
       transform3(tdoc.getRootElement());
 
-      /*  XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-   Writer pw = new FileWriter("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans2.xml");
-   fmt.output(ndoc, pw);
-   pw = new PrintWriter(System.out);
-   fmt.output(ndoc, pw);  */
+      /*
+       * XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+       * Writer pw = new FileWriter("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans2.xml");
+       * fmt.output(ndoc, pw);
+       * pw = new PrintWriter(System.out);
+       * fmt.output(ndoc, pw);
+       */
 
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
@@ -349,7 +364,7 @@ public class CodeTableGen {
 
 
   static public void main(String args[]) throws IOException {
-    //passTwo();
+    // passTwo();
     passThree();
   }
 

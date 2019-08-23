@@ -9,15 +9,15 @@ import java.io.*;
  * @since 2014/10/02
  */
 public class PointCollectionStreamLocal extends PointCollectionStreamAbstract {
-    private final File file;
+  private final File file;
 
-    public PointCollectionStreamLocal(File file) {
-        super(file.getAbsolutePath());
-        this.file = file;
-    }
+  public PointCollectionStreamLocal(File file) {
+    super(file.getAbsolutePath());
+    this.file = file;
+  }
 
-    @Override
-    public InputStream getInputStream() throws IOException {
-        return new BufferedInputStream(new FileInputStream(file));
-    }
+  @Override
+  public InputStream getInputStream() throws IOException {
+    return new BufferedInputStream(new FileInputStream(file));
+  }
 }

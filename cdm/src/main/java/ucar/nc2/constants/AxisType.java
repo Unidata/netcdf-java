@@ -13,29 +13,22 @@ package ucar.nc2.constants;
  */
 
 public enum AxisType {
-  RunTime(0, "R"),   // runtime / reference time
-  Ensemble(2, "E"),
-  Time(1, "T"),
-  GeoX(5, "X"),
-  GeoY(4, "Y"),
-  GeoZ(3, "Z"),     // typically "dimensionless" vertical coordinate
-  Lat(4, "Y"),
-  Lon(5, "X"),
-  Height(3, "Z"),   // vertical height coordinate
+  RunTime(0, "R"), // runtime / reference time
+  Ensemble(2, "E"), Time(1, "T"), GeoX(5, "X"), GeoY(4, "Y"), GeoZ(3, "Z"), // typically "dimensionless" vertical
+                                                                            // coordinate
+  Lat(4, "Y"), Lon(5, "X"), Height(3, "Z"), // vertical height coordinate
   Pressure(3, "Z"), // vertical pressure coordinate
-  RadialAzimuth(7),
-  RadialDistance(8),
-  RadialElevation(6),
-  Spectral(1),
-  TimeOffset(1,"TO"),  // time offset from runtime / reference time
-  Dimension(99,"Dim"),      // used for dimension axis (experimental);
-  SimpleGeometryX(100, "SgX"),	// Simple Geometry X
-  SimpleGeometryY(101, "SgY"),	// Simple Geometry Y
-  SimpleGeometryZ(102, "SgZ"),	// Simple Geometry Z
+  RadialAzimuth(7), RadialDistance(8), RadialElevation(6), Spectral(1), TimeOffset(1, "TO"), // time offset from runtime
+                                                                                             // / reference time
+  Dimension(99, "Dim"), // used for dimension axis (experimental);
+  SimpleGeometryX(100, "SgX"), // Simple Geometry X
+  SimpleGeometryY(101, "SgY"), // Simple Geometry Y
+  SimpleGeometryZ(102, "SgZ"), // Simple Geometry Z
   SimpleGeometryID(103, "SgID"); // Simple Geometry ID Axis, used for indexing simple geometry variables
-  
-  private final int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
-  private final String cfAxisName; // X, Y, Z, T from http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-types
+
+  private final int order; // canonical ordering runTime - ensemble - time - z - y - x or elev - azimuth - distance
+  private final String cfAxisName; // X, Y, Z, T from
+                                   // http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-types
 
   AxisType(int order) {
     this.order = order;
@@ -54,7 +47,8 @@ public enum AxisType {
    * @return AxisType or null if no match.
    */
   public static AxisType getType(String name) {
-    if (name == null) return null;
+    if (name == null)
+      return null;
     try {
       return valueOf(name);
     } catch (IllegalArgumentException e) { // lame!
@@ -63,7 +57,7 @@ public enum AxisType {
   }
 
   /**
-   * axis ordering: runTime - ensemble - time - z - y - x  or elev - azimuth - distance
+   * axis ordering: runTime - ensemble - time - z - y - x or elev - azimuth - distance
    *
    * @return order
    */

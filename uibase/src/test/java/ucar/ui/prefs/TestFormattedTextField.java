@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.invoke.MethodHandles;
@@ -21,8 +20,7 @@ import javax.swing.text.*;
 @RunWith(JUnit4.class)
 public class TestFormattedTextField {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static String pattern = "none";
   static JFormattedTextField d1;
@@ -39,8 +37,8 @@ public class TestFormattedTextField {
     NumberFormat realFormatter = NumberFormat.getNumberInstance();
     realFormatter.setMinimumFractionDigits(2);
     realFormatter.setMaximumFractionDigits(4);
-    JFormattedTextField.AbstractFormatterFactory formatterFactory = new DefaultFormatterFactory(
-        new NumberFormatter(realFormatter));
+    JFormattedTextField.AbstractFormatterFactory formatterFactory =
+        new DefaultFormatterFactory(new NumberFormatter(realFormatter));
 
     JPanel p1 = new JPanel();
     p1.add(new JLabel("JFormattedTextField:"));

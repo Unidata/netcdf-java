@@ -7,7 +7,7 @@ package ucar.nc2.iosp.bufr.tables;
 import java.util.*;
 
 /**
- *  BUFR Table D - Data sequences
+ * BUFR Table D - Data sequences
  *
  * @author caron
  * @since Sep 25, 2008
@@ -34,7 +34,7 @@ public class TableD {
   public Descriptor addDescriptor(short x, short y, String name, List<Short> seq) {
     short id = (short) ((3 << 14) + (x << 8) + y);
     Descriptor d = new Descriptor(x, y, name, seq);
-    map.put( id, d);
+    map.put(id, d);
     return d;
   }
 
@@ -46,12 +46,12 @@ public class TableD {
     return map.values();
   }
 
-  public void show( Formatter out) {
+  public void show(Formatter out) {
     Collection<Short> keys = map.keySet();
     List<Short> sortKeys = new ArrayList<>(keys);
-    Collections.sort( sortKeys);
+    Collections.sort(sortKeys);
 
-    out.format("Table D %s %n",name);
+    out.format("Table D %s %n", name);
     for (Short key : sortKeys) {
       Descriptor dd = map.get(key);
       dd.show(out, true);
@@ -72,12 +72,12 @@ public class TableD {
     }
 
     public List<Short> getSequence() {
-     return seq;
-   }
+      return seq;
+    }
 
     public void addFeature(short f) {
-     seq.add(f);
-   }
+      seq.add(f);
+    }
 
     public String getName() {
       return name;
@@ -98,11 +98,13 @@ public class TableD {
      * @return fxy encoded as a String
      */
     public String getFxy() {
-      return "3-"+x+"-"+y;
+      return "3-" + x + "-" + y;
     }
 
-    public String toString() { return getFxy()+" "+getName(); }
-    
+    public String toString() {
+      return getFxy() + " " + getName();
+    }
+
     public void show(Formatter out, boolean oneline) {
       out.format(" %8s: name=(%s) seq=", getFxy(), name);
       if (oneline) {
@@ -115,7 +117,7 @@ public class TableD {
       }
     }
 
-        @Override
+    @Override
     public int compareTo(Descriptor o) {
       return getId() - o.getId();
     }
@@ -125,7 +127,7 @@ public class TableD {
       return ((x >= 48) || (y >= 192));
     }
 
-    public void setLocalOverride( boolean isOverride) {
+    public void setLocalOverride(boolean isOverride) {
       this.localOverride = isOverride;
     }
 

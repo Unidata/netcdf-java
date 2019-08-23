@@ -8,8 +8,7 @@ public class TestBean {
   private int i;
   private Date now = new Date();
 
-  public TestBean() {
-  }
+  public TestBean() {}
 
   public String getName() {
     return name;

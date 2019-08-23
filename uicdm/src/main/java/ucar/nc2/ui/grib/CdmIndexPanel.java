@@ -29,7 +29,6 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.util.Indent;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -66,39 +65,39 @@ public class CdmIndexPanel extends JPanel {
     if (buttPanel != null) {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
       infoButton.addActionListener(e -> {
-          Formatter f = new Formatter();
-          showInfo(f);
-          infoTA.setText(f.toString());
-          infoTA.gotoTop();
-          infoWindow.show();
+        Formatter f = new Formatter();
+        showInfo(f);
+        infoTA.setText(f.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
       });
       buttPanel.add(infoButton);
 
       AbstractButton filesButton = BAMutil.makeButtcon("nj22/Catalog", "Show Files", false);
       filesButton.addActionListener(e -> {
-          if (gc != null)
-            showFileTable(gc, null);
+        if (gc != null)
+          showFileTable(gc, null);
       });
       buttPanel.add(filesButton);
 
       AbstractButton rawButton = BAMutil.makeButtcon("TableAppearence", "Estimate memory use", false);
       rawButton.addActionListener(e -> {
-          Formatter f = new Formatter();
-          showMemoryEst(f);
-          infoTA.setText(f.toString());
-          infoTA.gotoTop();
-          infoWindow.show();
+        Formatter f = new Formatter();
+        showMemoryEst(f);
+        infoTA.setText(f.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
       });
       buttPanel.add(rawButton);
 
 
       AbstractButton checkAllButton = BAMutil.makeButtcon("Select", "Check entire file", false);
       rawButton.addActionListener(e -> {
-          Formatter f = new Formatter();
-          checkAll(f);
-          infoTA.setText(f.toString());
-          infoTA.gotoTop();
-          infoWindow.show();
+        Formatter f = new Formatter();
+        checkAll(f);
+        infoTA.setText(f.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
       });
       buttPanel.add(checkAllButton);
 
@@ -109,7 +108,8 @@ public class CdmIndexPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group", "GribCollectionImmutable.GroupHcs", null);
+    groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group",
+        "GribCollectionImmutable.GroupHcs", null);
     groupTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
@@ -140,7 +140,8 @@ public class CdmIndexPanel extends JPanel {
       }
     });
 
-    varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollectionImmutable.VariableIndex", null);
+    varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group",
+        "GribCollectionImmutable.VariableIndex", null);
 
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Variable(s)", new AbstractAction() {
@@ -179,7 +180,8 @@ public class CdmIndexPanel extends JPanel {
     });
 
 
-    coordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group", "Coordinates", null);
+    coordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group",
+        "Coordinates", null);
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {
@@ -311,8 +313,8 @@ public class CdmIndexPanel extends JPanel {
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split3, coordTable);
     split2.setDividerLocation(prefs.getInt("splitPos2", 800));
 
-    //split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, vertCoordTable);
-    //split.setDividerLocation(prefs.getInt("splitPos", 500));
+    // split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, vertCoordTable);
+    // split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     add(split2, BorderLayout.CENTER);
   }
@@ -324,9 +326,12 @@ public class CdmIndexPanel extends JPanel {
     fileTable.save();
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("ExtraWindowBounds", extraWindow.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
+    if (split != null)
+      prefs.putInt("splitPos", split.getDividerLocation());
+    if (split2 != null)
+      prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split3 != null)
+      prefs.putInt("splitPos3", split3.getDividerLocation());
   }
 
   public void clear() {
@@ -344,7 +349,8 @@ public class CdmIndexPanel extends JPanel {
   }
 
   public void showInfo(Formatter f) {
-    if (gc == null) return;
+    if (gc == null)
+      return;
     gc.showIndex(f);
     f.format("%n");
 
@@ -381,7 +387,8 @@ public class CdmIndexPanel extends JPanel {
 
 
   private void checkAll(Formatter f) {
-    if (gc == null) return;
+    if (gc == null)
+      return;
     for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
       f.format("Dataset %s%n", ds.getType());
       int bytesTotal = 0;
@@ -396,16 +403,19 @@ public class CdmIndexPanel extends JPanel {
           VarBean bean = new VarBean(v, g);
 
           if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
-            if (count == 0) f.format(" total   VariablePartitioned%n");
+            if (count == 0)
+              f.format(" total   VariablePartitioned%n");
 
-            PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;
+            PartitionCollectionImmutable.VariableIndexPartitioned vip =
+                (PartitionCollectionImmutable.VariableIndexPartitioned) v;
             int nparts = vip.getNparts();
-            int memEstBytes = 368 + nparts * 4;  // very rough
+            int memEstBytes = 368 + nparts * 4; // very rough
             bytesTotal += memEstBytes;
             f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
 
           } else {
-            if (count == 0) f.format(" total   SA  Variable%n");
+            if (count == 0)
+              f.format(" total   SA  Variable%n");
             try {
               v.readRecords();
               SparseArray<Record> sa = v.getSparseArray();
@@ -425,13 +435,15 @@ public class CdmIndexPanel extends JPanel {
         }
       }
       int noSA = bytesTotal - bytesSATotal;
-      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal / 1000, bytesSATotal / 1000, noSA / 1000, coordsAllTotal / 1000);
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal / 1000, bytesSATotal / 1000,
+          noSA / 1000, coordsAllTotal / 1000);
       f.format("%n");
     }
   }
 
   private void showMemoryEst(Formatter f) {
-    if (gc == null) return;
+    if (gc == null)
+      return;
 
     for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
       f.format("Dataset %s%n", ds.getType());
@@ -464,16 +476,19 @@ public class CdmIndexPanel extends JPanel {
           VarBean bean = new VarBean(v, g);
 
           if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
-            if (count == 0) f.format(" total   VariablePartitioned%n");
+            if (count == 0)
+              f.format(" total   VariablePartitioned%n");
 
-            PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;
+            PartitionCollectionImmutable.VariableIndexPartitioned vip =
+                (PartitionCollectionImmutable.VariableIndexPartitioned) v;
             int nparts = vip.getNparts();
-            int memEstBytes = 368 + nparts * 4;  // very rough
+            int memEstBytes = 368 + nparts * 4; // very rough
             bytesTotal += memEstBytes;
             f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
 
           } else {
-            if (count == 0) f.format(" total   SA  Variable%n");
+            if (count == 0)
+              f.format(" total   SA  Variable%n");
             try {
               v.readRecords();
               SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
@@ -493,7 +508,8 @@ public class CdmIndexPanel extends JPanel {
         }
       }
       int noSA = bytesTotal - bytesSATotal;
-      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal / 1000, bytesSATotal / 1000, noSA / 1000, coordsAllTotal / 1000);
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal / 1000, bytesSATotal / 1000,
+          noSA / 1000, coordsAllTotal / 1000);
       f.format("%n");
     }
   }
@@ -505,7 +521,8 @@ public class CdmIndexPanel extends JPanel {
     for (Object val1 : vals1) {
       if (!vals2.contains(val1)) {
         f.format(" %s ", val1);
-        if (val1 instanceof Long) f.format("(%s) ", CalendarDate.of((Long) val1));
+        if (val1 instanceof Long)
+          f.format("(%s) ", CalendarDate.of((Long) val1));
         f.format("MISSING IN 2%n");
       }
     }
@@ -513,7 +530,8 @@ public class CdmIndexPanel extends JPanel {
     for (Object val2 : vals2) {
       if (!vals1.contains(val2)) {
         f.format(" %s ", val2);
-        if (val2 instanceof Long) f.format("(%s) ", CalendarDate.of((Long) val2));
+        if (val2 instanceof Long)
+          f.format("(%s) ", CalendarDate.of((Long) val2));
         f.format("MISSING IN 1%n");
       }
     }
@@ -541,7 +559,8 @@ public class CdmIndexPanel extends JPanel {
 
   private void mergeCoords2D(Formatter f, CoordinateTime2D coord1, CoordinateTime2D coord2) {
     if (coord1.isTimeInterval() != coord2.isTimeInterval()) {
-      f.format("Coordinate 1 isTimeInterval %s != Coordinate 2 isTimeInterval %s %n", coord1.isTimeInterval(), coord2.isTimeInterval());
+      f.format("Coordinate 1 isTimeInterval %s != Coordinate 2 isTimeInterval %s %n", coord1.isTimeInterval(),
+          coord2.isTimeInterval());
       return;
     }
 
@@ -565,12 +584,14 @@ public class CdmIndexPanel extends JPanel {
     List<?> list2 = coord2.getOffsetsSorted();
 
     f.format("%nCoordinate %s%n", coord1.getName());
-    for (Object val : list1) f.format(" %s,", val);
+    for (Object val : list1)
+      f.format(" %s,", val);
     f.format(" n=(%d)%n", list1.size());
     testMissing(f, list1, set2);
 
     f.format("%nCoordinate %s%n", coord2.getName());
-    for (Object val : list2) f.format(" %s,", val);
+    for (Object val : list2)
+      f.format(" %s,", val);
     f.format(" (n=%d)%n", list2.size());
     testMissing(f, list2, set1);
   }
@@ -661,8 +682,9 @@ public class CdmIndexPanel extends JPanel {
       ok &= isOrthogonal;
     }
     f.format("%nAll are orthogonal: %s%n", ok);
-    if (ok) return true;
-    
+    if (ok)
+      return true;
+
     for (int hour : hourMap.keySet()) {
       List<CoordinateTimeAbstract> hg = hourMap.get(hour);
       f.format("Hour %d: %n", hour);
@@ -690,38 +712,41 @@ public class CdmIndexPanel extends JPanel {
     return isOrthogonal;
   }
 
-  /* private void compareFiles(Formatter f) throws IOException {
-    if (gc == null) return;
-    List<String> canon = new ArrayList<>(gc.getFilenames());
-    Collections.sort(canon);
-
-    File idxFile = new File(gc.getIndexFilepathInCache());
-    File dir = idxFile.getParentFile();
-    File[] files = dir.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return name.endsWith(".ncx");
-      }
-    });
-
-    if (files == null) {
-      // File.listFiles() returns null instead of throwing an exception. Dumb.
-      throw new RuntimeException(String.format("Either an I/O error occurred, or \"%s\" is not a directory.", dir));
-    }
-
-    int total = 0;
-    for (File file : files) {
-      RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollectionImmutable cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, false, logger);
-      List<String> cfiles = new ArrayList<>(cgc.getFilenames());
-      Collections.sort(cfiles);
-      f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
-      compareSortedList(f, canon.iterator(), cfiles.iterator());
-      f.format("  Compared %d files to %d files%n%n", cfiles.size(), canon.size());
-      raf.close();
-      total += cfiles.size();
-    }
-    f.format("Total files = %d%n%n", total);
-  } */
+  /*
+   * private void compareFiles(Formatter f) throws IOException {
+   * if (gc == null) return;
+   * List<String> canon = new ArrayList<>(gc.getFilenames());
+   * Collections.sort(canon);
+   * 
+   * File idxFile = new File(gc.getIndexFilepathInCache());
+   * File dir = idxFile.getParentFile();
+   * File[] files = dir.listFiles(new FilenameFilter() {
+   * public boolean accept(File dir, String name) {
+   * return name.endsWith(".ncx");
+   * }
+   * });
+   * 
+   * if (files == null) {
+   * // File.listFiles() returns null instead of throwing an exception. Dumb.
+   * throw new RuntimeException(String.format("Either an I/O error occurred, or \"%s\" is not a directory.", dir));
+   * }
+   * 
+   * int total = 0;
+   * for (File file : files) {
+   * RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
+   * GribCollectionImmutable cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, false,
+   * logger);
+   * List<String> cfiles = new ArrayList<>(cgc.getFilenames());
+   * Collections.sort(cfiles);
+   * f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
+   * compareSortedList(f, canon.iterator(), cfiles.iterator());
+   * f.format("  Compared %d files to %d files%n%n", cfiles.size(), canon.size());
+   * raf.close();
+   * total += cfiles.size();
+   * }
+   * f.format("Total files = %d%n%n", total);
+   * }
+   */
 
   private void compareSortedList(Formatter f, Iterator<String> i1, Iterator<String> i2) {
     String s1 = null, s2 = null;
@@ -735,9 +760,12 @@ public class CdmIndexPanel extends JPanel {
       need1 = true;
       need2 = true;
 
-      if (s1 == null && s2 == null) break;
-      if (s1 == null) f.format(" extra file = %s%n", s2);
-      else if (s2 == null) f.format(" missing file = %s%n", s1);
+      if (s1 == null && s2 == null)
+        break;
+      if (s1 == null)
+        f.format(" extra file = %s%n", s2);
+      else if (s2 == null)
+        f.format(" missing file = %s%n", s1);
       else {
         int pos = s1.lastIndexOf("/");
         String name1 = s1.substring(pos);
@@ -764,7 +792,8 @@ public class CdmIndexPanel extends JPanel {
   FeatureCollectionConfig config = new FeatureCollectionConfig();
 
   public void setIndexFile(Path indexFile, FeatureCollectionConfig config) throws IOException {
-    if (gc != null) gc.close();
+    if (gc != null)
+      gc.close();
 
     this.indexFile = indexFile;
     this.config = config;
@@ -809,37 +838,40 @@ public class CdmIndexPanel extends JPanel {
     coordTable.setBeans(coords);
   }
 
-  /* private void showFiles(Formatter f) {
-    if (gc == null) return;
-    if (gc.getFiles() != null) {
-      List<MFile> fs = new ArrayList<>(gc.getFiles());
-      Map<MFile, Integer> map = new HashMap<>(fs.size() * 2);
-
-      int count = 0;
-      f.format("In order:%n");
-      for (MFile file : fs) {
-        f.format("%5d %60s lastModified=%s%n", count, file.getName(), CalendarDateFormatter.toDateTimeString(new Date(file.getLastModified())));
-        map.put(file, count);
-        count++;
-      }
-
-      f.format("%nsorted:%n");
-      Collections.sort(fs);
-      int last = -1;
-      for (MFile file : fs) {
-        int num = map.get(file);
-        f.format("%s%5d %s%n", (num < last) ? "***" : "", num, file.getPath());
-      }
-    }
-
-    if (gc instanceof PartitionCollection) {
-      PartitionCollection pc = (PartitionCollection) gc;
-      for (PartitionCollection.Partition part : pc.getPartitions())
-        f.format("%s%n", part);
-    }
-
-    f.format("============%n%s%n", gc);
-  }  */
+  /*
+   * private void showFiles(Formatter f) {
+   * if (gc == null) return;
+   * if (gc.getFiles() != null) {
+   * List<MFile> fs = new ArrayList<>(gc.getFiles());
+   * Map<MFile, Integer> map = new HashMap<>(fs.size() * 2);
+   * 
+   * int count = 0;
+   * f.format("In order:%n");
+   * for (MFile file : fs) {
+   * f.format("%5d %60s lastModified=%s%n", count, file.getName(), CalendarDateFormatter.toDateTimeString(new
+   * Date(file.getLastModified())));
+   * map.put(file, count);
+   * count++;
+   * }
+   * 
+   * f.format("%nsorted:%n");
+   * Collections.sort(fs);
+   * int last = -1;
+   * for (MFile file : fs) {
+   * int num = map.get(file);
+   * f.format("%s%5d %s%n", (num < last) ? "***" : "", num, file.getPath());
+   * }
+   * }
+   * 
+   * if (gc instanceof PartitionCollection) {
+   * PartitionCollection pc = (PartitionCollection) gc;
+   * for (PartitionCollection.Partition part : pc.getPartitions())
+   * f.format("%s%n", part);
+   * }
+   * 
+   * f.format("============%n%s%n", gc);
+   * }
+   */
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -848,8 +880,7 @@ public class CdmIndexPanel extends JPanel {
     String type;
     int nrecords, nmissing, ndups;
 
-    public GroupBean() {
-    }
+    public GroupBean() {}
 
     public GroupBean(GribCollectionImmutable.GroupGC g, String type) {
       this.group = g;
@@ -928,8 +959,7 @@ public class CdmIndexPanel extends JPanel {
 
     // no-arg constructor
 
-    public CoordBean() {
-    }
+    public CoordBean() {}
 
     public CoordBean(Coordinate coord, int idx) {
       this.coord = coord;
@@ -951,7 +981,7 @@ public class CdmIndexPanel extends JPanel {
         CoordinateTime2D time = (CoordinateTime2D) coord;
         List<?> offsets = time.getOffsetsSorted();
         int n = offsets.size();
-        //double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
+        // double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
 
         if (time.isTimeInterval()) {
           start = ((TimeCoordIntvValue) offsets.get(0)).getBounds1(); // + offsetFromMaster;
@@ -1030,8 +1060,10 @@ public class CdmIndexPanel extends JPanel {
         f.format("%s %s", dr.getStart(), dr.getEnd());
 
       } else {
-        if (coord.getValues() == null) return "";
-        for (Object val : coord.getValues()) f.format("%s,", val);
+        if (coord.getValues() == null)
+          return "";
+        for (Object val : coord.getValues())
+          f.format("%s,", val);
       }
       return f.toString();
     }
@@ -1041,8 +1073,10 @@ public class CdmIndexPanel extends JPanel {
         CoordinateTime2D c2d = (CoordinateTime2D) coord;
         Formatter f = new Formatter();
         f.format("%s %s", coord.getType(), (c2d.isTimeInterval() ? "intv" : "offs"));
-        if (c2d.isOrthogonal()) f.format(" ort");
-        if (c2d.isRegular()) f.format(" reg");
+        if (c2d.isOrthogonal())
+          f.format(" ort");
+        if (c2d.isRegular())
+          f.format(" reg");
         return f.toString();
       } else {
         return coord.getType().toString();
@@ -1074,9 +1108,9 @@ public class CdmIndexPanel extends JPanel {
 
     public String getRefDate() {
       if (coord instanceof CoordinateTimeAbstract)
-        return ((CoordinateTimeAbstract)coord).getRefDate().toString();
+        return ((CoordinateTimeAbstract) coord).getRefDate().toString();
       else if (coord instanceof CoordinateRuntime)
-        return ((CoordinateRuntime)coord).getFirstDate().toString();
+        return ((CoordinateRuntime) coord).getFirstDate().toString();
       else
         return "";
     }
@@ -1112,8 +1146,7 @@ public class CdmIndexPanel extends JPanel {
     GribCollectionImmutable.GroupGC group;
     String name;
 
-    public VarBean() {
-    }
+    public VarBean() {}
 
     public VarBean(GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable.GroupGC group) {
       this.v = vindex;
@@ -1121,25 +1154,28 @@ public class CdmIndexPanel extends JPanel {
       this.name = vindex.makeVariableName();
     }
 
-    /* public int getNRecords() {
-      return v.nrecords;
-    }
-
-    public int getNMissing() {
-      return v.missing;
-    }
-
-    public int getNDups() {
-      return v.ndups;
-    }
-
-    public float getDensity() {
-      return v.density;
-    }  */
+    /*
+     * public int getNRecords() {
+     * return v.nrecords;
+     * }
+     * 
+     * public int getNMissing() {
+     * return v.missing;
+     * }
+     * 
+     * public int getNDups() {
+     * return v.ndups;
+     * }
+     * 
+     * public float getDensity() {
+     * return v.density;
+     * }
+     */
 
     public String getIndexes() {
       Formatter f = new Formatter();
-      for (int idx : v.getCoordinateIndex()) f.format("%d,", idx);
+      for (int idx : v.getCoordinateIndex())
+        f.format("%d,", idx);
       return f.toString();
     }
 
@@ -1186,16 +1222,19 @@ public class CdmIndexPanel extends JPanel {
 
     private void showSparseArray(Formatter f) {
 
-      /* int count = 0;
-      Indent indent = new Indent(2);
-      for (Coordinate coord : v.getCoordinates()) {
-        f.format("%d: ", count++);
-        coord.showInfo(f, indent);
-      }
-      f.format("%n");  */
+      /*
+       * int count = 0;
+       * Indent indent = new Indent(2);
+       * for (Coordinate coord : v.getCoordinates()) {
+       * f.format("%d: ", count++);
+       * coord.showInfo(f, indent);
+       * }
+       * f.format("%n");
+       */
 
       if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
-        PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;
+        PartitionCollectionImmutable.VariableIndexPartitioned vip =
+            (PartitionCollectionImmutable.VariableIndexPartitioned) v;
         vip.show(f);
 
       } else {
@@ -1216,219 +1255,231 @@ public class CdmIndexPanel extends JPanel {
       }
     }
 
-    /* private void showRecords(Formatter f) {
-
-       try {
-         GribCollectionImmutable.Record[] records = v.getRecords();
-         if (records.length == 0) {
-           f.format("this index has no records%n");
-           return;
-         }
-
-         f.format("%s%n%n", v.toStringComplete());
-         f.format(" isTimeInterval=%s hasVert=%s%n", tcoord.isInterval(), (vcoord != null));
-         f.format(" Show records (file,pos)%n");
-
-         if (tcoord.isInterval()) {
-           if (vcoord == null)
-             showRecords2Dintv(f, tcoord.getIntervals(), records);
-           else
-             showRecords2Dintv(f, vcoord, tcoord.getIntervals(), records);
-         } else {
-           if (vcoord == null)
-             showRecords(f, tcoord.getCoords(), records);
-           else
-             showRecords(f, vcoord, tcoord.getCoords(), records);
-         }
-       } catch (IOException ioe) {
-         ioe.printStackTrace();
-       }
-     }
-
-     private void showRecords(Formatter f, List<Integer> values, GribCollectionImmutable.Record[] records) throws IOException {
-       f.format(" time (down)%n");
-
-       for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
-         f.format("%10s = ", values.get(timeIdx));
-         int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
-         GribCollectionImmutable.Record r = records[idx];
-         if (r == null) f.format("null");
-         else f.format("(%d,%8d) ", r.fileno, r.pos);
-         f.format("%n");
-       }
-
-       f.format("%n Show records in order%n");
-       int count = 0;
-       for (GribCollectionImmutable.Record r : records) {
-         if (r == null) f.format("null%n");
-         else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
-         count++;
-       }
-       f.format("%n");
-
-     }
-
-     private void showRecords(Formatter f, VertCoord vcoord, List<Integer> values, GribCollectionImmutable.Record[] records) throws IOException {
-       f.format(" time (down) vertLevel (across) %n");
-
-       f.format("%12s ", " ");
-       List<VertCoord.Level> levels = vcoord.getCoords();
-       boolean isLayer = vcoord.isLayer();
-       for (int j = 0; j < levels.size(); j++)
-         f.format("%6s ", levels.get(j).toString(isLayer));
-       f.format("%n");
-
-       for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
-         f.format("%10s = ", values.get(timeIdx));
-         for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
-           int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
-           GribCollectionImmutable.Record r = records[idx];
-           if (r == null) f.format("null");
-           else f.format("(%d,%8d) ", r.fileno, r.pos);
-         }
-         f.format("%n");
-       }
-
-       f.format("%n Show records in order%n");
-       int count = 0;
-       for (GribCollectionImmutable.Record r : records) {
-         if (r == null) f.format("null%n");
-         else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
-         count++;
-       }
-       f.format("%n");
-
-     }
-
-     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoordIntvValue> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
-       f.format(" timeIntv (down) vertLevel (across) %n");
-
-       f.format("%12s ", " ");
-       List<VertCoord.Level> levels = vcoord.getCoords();
-       boolean isLayer = vcoord.isLayer();
-       for (VertCoord.Level level : levels)
-         f.format("%13s ", level.toString(isLayer));
-       f.format("%n");
-
-       for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
-         f.format("%10s = ", tinvs.get(timeIdx));
-         Formatter filenames = new Formatter();
-         for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
-           int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
-           GribCollectionImmutable.Record r = records[idx];
-           //f.format("%3d %10d ", r.fileno, r.drsPos);
-           if (r == null || r.pos == 0)
-             f.format("(%4d,%6d) ", -1, -1);
-           else {
-             f.format("(%4d,%6d) ", r.fileno, r.pos);
-             filenames.format(" %s,", getFilename(r.fileno));
-           }
-         }
-         f.format(" == %s%n", filenames);
-       }
-     }
-
-    private String getFilename(int fileno) {
-      MFile want = gcFiles.get(fileno);
-      File wantFile = new File(gc.getDirectory(), want.getPath());
-      return wantFile.getPath();
-    }
-
-     void showRecords2Dintv(Formatter f, List<TimeCoordIntvValue> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
-       f.format(" timeIntv (down) %n");
-
-       for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
-         f.format("%10s = ", tinvs.get(timeIdx));
-         int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
-         GribCollectionImmutable.Record r = records[idx];
-         //f.format("%3d %10d ", r.fileno, r.drsPos);
-         f.format("%6d ", (r == null ? -1 : r.fileno));
-         f.format("%n");
-       }
-     }
-
-    void sendFilesToGrib2Collection() {
-      try {
-        Set<Integer> filenos = new HashSet<>();
-        for (GribCollectionImmutable.Record r : v.getRecords()) {
-          if (r != null && r.pos > 0)
-            filenos.add(r.fileno);
-        }
-        Formatter f = new Formatter();
-
-        f.format("list:");
-        Iterator<Integer> iter = filenos.iterator();
-        while (iter.hasNext()) {
-          f.format("%s;", getFilename(iter.next()));
-        }
-        firePropertyChange("openGrib2Collection", null, f.toString());
-
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
-      }
-
-    }  */
+    /*
+     * private void showRecords(Formatter f) {
+     * 
+     * try {
+     * GribCollectionImmutable.Record[] records = v.getRecords();
+     * if (records.length == 0) {
+     * f.format("this index has no records%n");
+     * return;
+     * }
+     * 
+     * f.format("%s%n%n", v.toStringComplete());
+     * f.format(" isTimeInterval=%s hasVert=%s%n", tcoord.isInterval(), (vcoord != null));
+     * f.format(" Show records (file,pos)%n");
+     * 
+     * if (tcoord.isInterval()) {
+     * if (vcoord == null)
+     * showRecords2Dintv(f, tcoord.getIntervals(), records);
+     * else
+     * showRecords2Dintv(f, vcoord, tcoord.getIntervals(), records);
+     * } else {
+     * if (vcoord == null)
+     * showRecords(f, tcoord.getCoords(), records);
+     * else
+     * showRecords(f, vcoord, tcoord.getCoords(), records);
+     * }
+     * } catch (IOException ioe) {
+     * ioe.printStackTrace();
+     * }
+     * }
+     * 
+     * private void showRecords(Formatter f, List<Integer> values, GribCollectionImmutable.Record[] records) throws
+     * IOException {
+     * f.format(" time (down)%n");
+     * 
+     * for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+     * f.format("%10s = ", values.get(timeIdx));
+     * int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
+     * GribCollectionImmutable.Record r = records[idx];
+     * if (r == null) f.format("null");
+     * else f.format("(%d,%8d) ", r.fileno, r.pos);
+     * f.format("%n");
+     * }
+     * 
+     * f.format("%n Show records in order%n");
+     * int count = 0;
+     * for (GribCollectionImmutable.Record r : records) {
+     * if (r == null) f.format("null%n");
+     * else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
+     * count++;
+     * }
+     * f.format("%n");
+     * 
+     * }
+     * 
+     * private void showRecords(Formatter f, VertCoord vcoord, List<Integer> values, GribCollectionImmutable.Record[]
+     * records) throws IOException {
+     * f.format(" time (down) vertLevel (across) %n");
+     * 
+     * f.format("%12s ", " ");
+     * List<VertCoord.Level> levels = vcoord.getCoords();
+     * boolean isLayer = vcoord.isLayer();
+     * for (int j = 0; j < levels.size(); j++)
+     * f.format("%6s ", levels.get(j).toString(isLayer));
+     * f.format("%n");
+     * 
+     * for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+     * f.format("%10s = ", values.get(timeIdx));
+     * for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
+     * int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
+     * GribCollectionImmutable.Record r = records[idx];
+     * if (r == null) f.format("null");
+     * else f.format("(%d,%8d) ", r.fileno, r.pos);
+     * }
+     * f.format("%n");
+     * }
+     * 
+     * f.format("%n Show records in order%n");
+     * int count = 0;
+     * for (GribCollectionImmutable.Record r : records) {
+     * if (r == null) f.format("null%n");
+     * else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
+     * count++;
+     * }
+     * f.format("%n");
+     * 
+     * }
+     * 
+     * void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoordIntvValue> tinvs,
+     * GribCollectionImmutable.Record[] records) throws IOException {
+     * f.format(" timeIntv (down) vertLevel (across) %n");
+     * 
+     * f.format("%12s ", " ");
+     * List<VertCoord.Level> levels = vcoord.getCoords();
+     * boolean isLayer = vcoord.isLayer();
+     * for (VertCoord.Level level : levels)
+     * f.format("%13s ", level.toString(isLayer));
+     * f.format("%n");
+     * 
+     * for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+     * f.format("%10s = ", tinvs.get(timeIdx));
+     * Formatter filenames = new Formatter();
+     * for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
+     * int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
+     * GribCollectionImmutable.Record r = records[idx];
+     * //f.format("%3d %10d ", r.fileno, r.drsPos);
+     * if (r == null || r.pos == 0)
+     * f.format("(%4d,%6d) ", -1, -1);
+     * else {
+     * f.format("(%4d,%6d) ", r.fileno, r.pos);
+     * filenames.format(" %s,", getFilename(r.fileno));
+     * }
+     * }
+     * f.format(" == %s%n", filenames);
+     * }
+     * }
+     * 
+     * private String getFilename(int fileno) {
+     * MFile want = gcFiles.get(fileno);
+     * File wantFile = new File(gc.getDirectory(), want.getPath());
+     * return wantFile.getPath();
+     * }
+     * 
+     * void showRecords2Dintv(Formatter f, List<TimeCoordIntvValue> tinvs, GribCollectionImmutable.Record[] records)
+     * throws IOException {
+     * f.format(" timeIntv (down) %n");
+     * 
+     * for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+     * f.format("%10s = ", tinvs.get(timeIdx));
+     * int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
+     * GribCollectionImmutable.Record r = records[idx];
+     * //f.format("%3d %10d ", r.fileno, r.drsPos);
+     * f.format("%6d ", (r == null ? -1 : r.fileno));
+     * f.format("%n");
+     * }
+     * }
+     * 
+     * void sendFilesToGrib2Collection() {
+     * try {
+     * Set<Integer> filenos = new HashSet<>();
+     * for (GribCollectionImmutable.Record r : v.getRecords()) {
+     * if (r != null && r.pos > 0)
+     * filenos.add(r.fileno);
+     * }
+     * Formatter f = new Formatter();
+     * 
+     * f.format("list:");
+     * Iterator<Integer> iter = filenos.iterator();
+     * while (iter.hasNext()) {
+     * f.format("%s;", getFilename(iter.next()));
+     * }
+     * firePropertyChange("openGrib2Collection", null, f.toString());
+     * 
+     * } catch (IOException ioe) {
+     * ioe.printStackTrace();
+     * }
+     * 
+     * }
+     */
 
   }
 
 
- /*  private void showRecordsInPartition(Formatter f) {
-    try {
-      PartitionCollection.VariableIndexPartitioned vp = (PartitionCollection.VariableIndexPartitioned) v;
-      showPartitionInfo(vp, f);
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-  }
-
-   private void showPartitionInfo(PartitionCollection.VariableIndexPartitioned vP, Formatter f) throws IOException {
-
-     PartitionCollection tp = (PartitionCollection) gc;
-     tp.setPartitionIndexReletive();
-
-     TimeCoordUnion timeCoordP = (TimeCoordUnion) vP.getTimeCoord();
-     VertCoord vcoord = vP.getVertCoord();
-     EnsCoord ecoord = vP.getEnsCoord();
-     int ntimes = (timeCoordP == null) ? 0 : timeCoordP.getSize();
-     int nverts = (vcoord == null) ? 1 : vcoord.getSize();
-     int nens = (ecoord == null) ? 1 : ecoord.getSize();
-
-     for (int timeIdx = 0; timeIdx < ntimes; timeIdx++) {
-
-       TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
-       int partno = val.getPartition();
-       GribCollectionImmutable.VariableIndex vindex = vP.getVindex(partno); // the variable in this partition
-       f.format("time = %d val = %s partition = %d%n", timeIdx, val, partno);
-
-       for (int ensIdx = 0; ensIdx < nens; ensIdx++) {
-         if (nens > 1) f.format(" ens = %d%n", ensIdx);
-
-         for (int levelIdx = 0; levelIdx <= nverts; levelIdx++) {
-           if (nverts > 1) f.format("  vert = %d%n", levelIdx);
-
-           // where does this record go in the result ??
-           int resultIndex = GribCollectionImmutable.calcIndex(timeIdx, ensIdx, levelIdx, nens, nverts);
-
-           // where does this record come from ??
-           int recordIndex = -1;
-
-           int flag = vP.flag[partno]; // see if theres a mismatch with vert or ens coordinates
-           if (flag == 0) { // no problem
-             recordIndex = GribCollectionImmutable.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
-
-           } else {  // problem - must match coordinates
-             recordIndex = GribCollectionImmutable.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(), vindex.getVertCoord(),
-                     vP.getEnsCoord(), vP.getVertCoord());
-           }
-
-           f.format("   recordIndex=%d / %d, resultIndex=%d,  flag=%d%n", recordIndex,  vindex.records.length, resultIndex, flag);
-           if (flag == 0) f.format("   time=%d, ens=%d, level=%d, nens=%d, nverts=%d", val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
-           else  f.format("   time=%d, ens=%d, level=%d, flag=%d, nens=%s, vert=%s ensp=%s, vertp=%s", val.getIndex(), ensIdx, levelIdx, flag,
-                   vindex.getEnsCoord(), vindex.getVertCoord(), vP.getEnsCoord(), vP.getVertCoord());
-
-         }
-       }
-     }
-   }   */
+  /*
+   * private void showRecordsInPartition(Formatter f) {
+   * try {
+   * PartitionCollection.VariableIndexPartitioned vp = (PartitionCollection.VariableIndexPartitioned) v;
+   * showPartitionInfo(vp, f);
+   * 
+   * } catch (IOException ioe) {
+   * ioe.printStackTrace();
+   * }
+   * }
+   * 
+   * private void showPartitionInfo(PartitionCollection.VariableIndexPartitioned vP, Formatter f) throws IOException {
+   * 
+   * PartitionCollection tp = (PartitionCollection) gc;
+   * tp.setPartitionIndexReletive();
+   * 
+   * TimeCoordUnion timeCoordP = (TimeCoordUnion) vP.getTimeCoord();
+   * VertCoord vcoord = vP.getVertCoord();
+   * EnsCoord ecoord = vP.getEnsCoord();
+   * int ntimes = (timeCoordP == null) ? 0 : timeCoordP.getSize();
+   * int nverts = (vcoord == null) ? 1 : vcoord.getSize();
+   * int nens = (ecoord == null) ? 1 : ecoord.getSize();
+   * 
+   * for (int timeIdx = 0; timeIdx < ntimes; timeIdx++) {
+   * 
+   * TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
+   * int partno = val.getPartition();
+   * GribCollectionImmutable.VariableIndex vindex = vP.getVindex(partno); // the variable in this partition
+   * f.format("time = %d val = %s partition = %d%n", timeIdx, val, partno);
+   * 
+   * for (int ensIdx = 0; ensIdx < nens; ensIdx++) {
+   * if (nens > 1) f.format(" ens = %d%n", ensIdx);
+   * 
+   * for (int levelIdx = 0; levelIdx <= nverts; levelIdx++) {
+   * if (nverts > 1) f.format("  vert = %d%n", levelIdx);
+   * 
+   * // where does this record go in the result ??
+   * int resultIndex = GribCollectionImmutable.calcIndex(timeIdx, ensIdx, levelIdx, nens, nverts);
+   * 
+   * // where does this record come from ??
+   * int recordIndex = -1;
+   * 
+   * int flag = vP.flag[partno]; // see if theres a mismatch with vert or ens coordinates
+   * if (flag == 0) { // no problem
+   * recordIndex = GribCollectionImmutable.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
+   * 
+   * } else { // problem - must match coordinates
+   * recordIndex = GribCollectionImmutable.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(),
+   * vindex.getVertCoord(),
+   * vP.getEnsCoord(), vP.getVertCoord());
+   * }
+   * 
+   * f.format("   recordIndex=%d / %d, resultIndex=%d,  flag=%d%n", recordIndex, vindex.records.length, resultIndex,
+   * flag);
+   * if (flag == 0) f.format("   time=%d, ens=%d, level=%d, nens=%d, nverts=%d", val.getIndex(), ensIdx, levelIdx,
+   * vindex.nens, vindex.nverts);
+   * else f.format("   time=%d, ens=%d, level=%d, flag=%d, nens=%s, vert=%s ensp=%s, vertp=%s", val.getIndex(), ensIdx,
+   * levelIdx, flag,
+   * vindex.getEnsCoord(), vindex.getVertCoord(), vP.getEnsCoord(), vP.getVertCoord());
+   * 
+   * }
+   * }
+   * }
+   * }
+   */
 }

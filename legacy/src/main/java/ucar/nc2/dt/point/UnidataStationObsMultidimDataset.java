@@ -15,7 +15,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.ma2.*;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -31,12 +30,13 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationObsMultidimDataset.class);
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString()) &&
-        !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
+    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString())
+        && !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
-    if (conv == null) return false;
+    if (conv == null)
+      return false;
 
     boolean convOk = false;
     StringTokenizer stoke = new StringTokenizer(conv, ",");
@@ -45,13 +45,16 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
       if (toke.equalsIgnoreCase("Unidata Observation Dataset v1.0"))
         convOk = true;
     }
-    if (!convOk) return false;
+    if (!convOk)
+      return false;
 
-    if (null == UnidataObsDatasetHelper.findDimension(ds, "station")) return false;
+    if (null == UnidataObsDatasetHelper.findDimension(ds, "station"))
+      return false;
 
     // this field indicates a linked list
     Variable stationIndexVar = UnidataObsDatasetHelper.findVariable(ds, "parent_index");
-    if (stationIndexVar != null) return false;
+    if (stationIndexVar != null)
+      return false;
 
     return true;
   }
@@ -65,8 +68,7 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
     return new UnidataStationObsMultidimDataset(ncd);
   }
 
-  public UnidataStationObsMultidimDataset() {
-  }
+  public UnidataStationObsMultidimDataset() {}
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -127,7 +129,8 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
     // create member variables
     structureMembers = new StructureMembers("UnidataStationObsMultidimDataset_obsStructure");
     for (Variable v : netcdfDataset.getVariables()) {
-      if (v.getRank() < 2) continue;
+      if (v.getRank() < 2)
+        continue;
       if (v.getDimension(0).equals(this.stationDim) && v.getDimension(1).equals(this.obsDim)) {
         dataVariables.add(v);
         int[] shape = v.getShape();
@@ -181,25 +184,23 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
       if (stationIdArray instanceof ArrayChar) {
         stationName = ((ArrayChar) stationIdArray).getString(i).trim();
         stationDesc = (stationDescVar != null) ? stationDescArray.getString(i) : null;
-        if (stationDesc != null) stationDesc = stationDesc.trim();
+        if (stationDesc != null)
+          stationDesc = stationDesc.trim();
       } else {
         stationName = stationIdArray.getObject(ima).toString();
         stationDesc = (stationDescVar != null) ? (String) stationDescArray.getObject(ima) : null;
       }
 
-      MStationImpl bean = new MStationImpl(stationName, stationDesc,
-          latArray.getFloat(ima),
-          lonArray.getFloat(ima),
-          (altVar != null) ? elevArray.getFloat(ima) : Double.NaN,
-          i,
-          (int) obsDim.getLength());
+      MStationImpl bean = new MStationImpl(stationName, stationDesc, latArray.getFloat(ima), lonArray.getFloat(ima),
+          (altVar != null) ? elevArray.getFloat(ima) : Double.NaN, i, (int) obsDim.getLength());
 
       stations.add(bean);
     }
   }
 
   private Array readStationVariable(Variable svar) throws IOException {
-    if (svar.getRank() == 1) return svar.read();
+    if (svar.getRank() == 1)
+      return svar.read();
     if (svar.getRank() == 2) {
       int[] shape = svar.getShape();
       shape[1] = 1;
@@ -227,11 +228,9 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
     }
   }
 
-  protected void setStartDate() {
-  }
+  protected void setStartDate() {}
 
-  protected void setEndDate() {
-  }
+  protected void setEndDate() {}
 
   protected void setBoundingBox() {
     boundingBox = stationHelper.getBoundingBox();
@@ -291,8 +290,7 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
       double startTime, endTime;
       boolean hasDateRange;
 
-      StationIterator() {
-      }
+      StationIterator() {}
 
       StationIterator(Date start, Date end) {
         startTime = timeUnit.makeValue(start);
@@ -305,9 +303,11 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
       }
 
       public Object nextData() throws IOException {
-        if (!hasNext()) return null;
+        if (!hasNext())
+          return null;
 
-        MStationObsImpl sobs = new MStationObsImpl(MStationImpl.this, station_index, obsIndex, dataVariables, structureMembers);
+        MStationObsImpl sobs =
+            new MStationObsImpl(MStationImpl.this, station_index, obsIndex, dataVariables, structureMembers);
         obsIndex++;
 
         if (hasDateRange) {
@@ -337,7 +337,8 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
     List<VariableSimpleIF> dataVariables;
     StructureMembers sm;
 
-    MStationObsImpl(ucar.unidata.geoloc.Station s, int stationIndex, int obsIndex, List<VariableSimpleIF> dataVariables, StructureMembers sm) throws IOException {
+    MStationObsImpl(ucar.unidata.geoloc.Station s, int stationIndex, int obsIndex, List<VariableSimpleIF> dataVariables,
+        StructureMembers sm) throws IOException {
       super(s, 0, 0);
       this.stationIndex = stationIndex;
       this.obsIndex = obsIndex;
@@ -346,7 +347,7 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
 
       // must read the time
       Array timeData = readData(timeVar, stationIndex, obsIndex);
-      obsTime = timeData.getDouble( timeData.getIndex());
+      obsTime = timeData.getDouble(timeData.getIndex());
     }
 
     public Date getNominalTimeAsDate() {

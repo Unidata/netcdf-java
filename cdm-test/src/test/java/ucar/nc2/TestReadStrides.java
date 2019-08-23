@@ -12,7 +12,6 @@ import ucar.ma2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.UtilsMa2Test;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.ArrayList;
 public class TestReadStrides extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestReadStrides( String name) {
+  public TestReadStrides(String name) {
     super(name);
   }
 
@@ -31,7 +30,7 @@ public class TestReadStrides extends TestCase {
     NetcdfFile ncfile = TestDir.openFileLocal("ncml/nc/time0.nc");
 
     Variable temp = null;
-    assert(null != (temp = ncfile.findVariable("T")));
+    assert (null != (temp = ncfile.findVariable("T")));
 
     // read entire array
     Array A = temp.read("0:2,0:3");
@@ -42,10 +41,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 3;
     assert shape[1] == 4;
 
-    for (int i=0; i<shape[0]; i++) {
-      for (int j=0; j<shape[1]; j++) {
-        double dval = A.getDouble(ima.set(i,j));
-        assert(  dval == (double) (i*10+j)) : dval;
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        double dval = A.getDouble(ima.set(i, j));
+        assert (dval == (double) (i * 10 + j)) : dval;
       }
     }
 
@@ -57,10 +56,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 3;
     assert shape[1] == 4;
 
-    for (int i=0; i<shape[0]; i++) {
+    for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         double dval = A.getDouble(ima.set(i, j));
-        assert(dval == (double) (i * 10 + j)):dval;
+        assert (dval == (double) (i * 10 + j)) : dval;
       }
     }
 
@@ -72,10 +71,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 2;
     assert shape[1] == 2;
 
-    for (int i=0; i<shape[0]; i++) {
+    for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         double dval = A.getDouble(ima.set(i, j));
-        assert(dval == (double) (i * 20 + j*2)):dval;
+        assert (dval == (double) (i * 20 + j * 2)) : dval;
       }
     }
 
@@ -87,10 +86,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 3;
     assert shape[1] == 2;
 
-    for (int i=0; i<shape[0]; i++) {
+    for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         double dval = A.getDouble(ima.set(i, j));
-        assert(dval == (double) (i * 10 + j*2)):dval;
+        assert (dval == (double) (i * 10 + j * 2)) : dval;
       }
     }
 
@@ -102,10 +101,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 2;
     assert shape[1] == 4;
 
-    for (int i=0; i<shape[0]; i++) {
+    for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         double dval = A.getDouble(ima.set(i, j));
-        assert(dval == (double) (i * 20 + j)):dval;
+        assert (dval == (double) (i * 20 + j)) : dval;
       }
     }
 
@@ -116,7 +115,7 @@ public class TestReadStrides extends TestCase {
     NetcdfFile ncfile = TestDir.openFileLocal("ncml/nc/time0.nc");
 
     Variable temp = null;
-    assert(null != (temp = ncfile.findVariable("T")));
+    assert (null != (temp = ncfile.findVariable("T")));
     temp.setCaching(false);
 
     Array A;
@@ -131,10 +130,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 3;
     assert shape[1] == 4;
 
-    for (int i=0; i<shape[0]; i++) {
+    for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         double dval = A.getDouble(ima.set(i, j));
-        assert(dval == (double) (i * 10 + j)):dval;
+        assert (dval == (double) (i * 10 + j)) : dval;
       }
     }
 
@@ -146,10 +145,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 2;
     assert shape[1] == 2;
 
-    for (int i=0; i<shape[0]; i++) {
+    for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         double dval = A.getDouble(ima.set(i, j));
-        assert(dval == (double) (i * 20 + j*2)):dval;
+        assert (dval == (double) (i * 20 + j * 2)) : dval;
       }
     }
 
@@ -161,10 +160,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 3;
     assert shape[1] == 2;
 
-    for (int i=0; i<shape[0]; i++) {
+    for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         double dval = A.getDouble(ima.set(i, j));
-        assert(dval == (double) (i * 10 + j*2)):dval;
+        assert (dval == (double) (i * 10 + j * 2)) : dval;
       }
     }
 
@@ -176,10 +175,10 @@ public class TestReadStrides extends TestCase {
     assert shape[0] == 2;
     assert shape[1] == 4;
 
-    for (int i=0; i<shape[0]; i++) {
+    for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         double dval = A.getDouble(ima.set(i, j));
-        assert(dval == (double) (i * 20 + j)):dval;
+        assert (dval == (double) (i * 20 + j)) : dval;
       }
     }
 
@@ -188,8 +187,8 @@ public class TestReadStrides extends TestCase {
 
   @Category(NeedsCdmUnitTest.class)
   public void testReadStridesAll() throws IOException, InvalidRangeException {
-    testReadStrides(TestDir.cdmLocalTestDataDir+"ncml/nc/time0.nc");
-    testReadStrides(TestDir.cdmUnitTestDir+"formats/gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
+    testReadStrides(TestDir.cdmLocalTestDataDir + "ncml/nc/time0.nc");
+    testReadStrides(TestDir.cdmUnitTestDir + "formats/gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
   }
 
   private void testReadStrides(String filename) throws IOException, InvalidRangeException {
@@ -198,43 +197,44 @@ public class TestReadStrides extends TestCase {
     List vars = ncfile.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      if (v.getRank() == 0 ) continue;
+      if (v.getRank() == 0)
+        continue;
       if (!v.hasCachedData())
         v.setCaching(false);
 
-      //if (v.getRank() == 1 )
-        testVariableReadStrides(v);
+      // if (v.getRank() == 1 )
+      testVariableReadStrides(v);
     }
-     ncfile.close();
+    ncfile.close();
   }
 
-   private void testVariableReadStrides(Variable v) throws IOException, InvalidRangeException {
-     Array allData = v.read();
+  private void testVariableReadStrides(Variable v) throws IOException, InvalidRangeException {
+    Array allData = v.read();
 
-     int[] shape = v.getShape();
-     if(shape.length < 5)
-         return;
-     for (int first=0;first<3;first++) {
-       for (int stride=2;stride<5;stride++) {
+    int[] shape = v.getShape();
+    if (shape.length < 5)
+      return;
+    for (int first = 0; first < 3; first++) {
+      for (int stride = 2; stride < 5; stride++) {
 
-         ArrayList ranges = new ArrayList();
-         for (int i = 0; i < shape.length; i++) {
-           int last = shape[i] - 1;
-           Range r = new Range(first, last, stride);
-           ranges.add(r);
-         }
+        ArrayList ranges = new ArrayList();
+        for (int i = 0; i < shape.length; i++) {
+          int last = shape[i] - 1;
+          Range r = new Range(first, last, stride);
+          ranges.add(r);
+        }
 
-         System.out.println( v.getFullName()+" test range= "+ new Section(ranges));
+        System.out.println(v.getFullName() + " test range= " + new Section(ranges));
 
-         Array sectionRead = v.read(ranges);
-         Array sectionMake = allData.sectionNoReduce( ranges);
+        Array sectionRead = v.read(ranges);
+        Array sectionMake = allData.sectionNoReduce(ranges);
 
-         UtilsMa2Test.testEquals(sectionRead, sectionMake);
-       }
-     }
+        UtilsMa2Test.testEquals(sectionRead, sectionMake);
+      }
+    }
 
 
 
-   }
+  }
 
 }

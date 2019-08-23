@@ -10,15 +10,15 @@ package ucar.units;
  * @author Steven R. Emmerson
  */
 public class UnitDBAccessException extends UnitDBException {
-	private static final long	serialVersionUID	= 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs from a string.
-	 * 
-	 * @param reason
-	 *            The reason for the failure.
-	 */
-	public UnitDBAccessException(final String reason) {
-		super("Couldn't access unit database: " + reason);
-	}
+  /**
+   * Constructs from a string.
+   * 
+   * @param reason
+   *        The reason for the failure.
+   */
+  public UnitDBAccessException(final String reason) {
+    super("Couldn't access unit database: " + reason);
+  }
 }

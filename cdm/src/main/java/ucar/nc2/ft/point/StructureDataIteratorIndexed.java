@@ -7,7 +7,6 @@ package ucar.nc2.ft.point;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
 import ucar.nc2.Structure;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Iterator;

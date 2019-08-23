@@ -28,7 +28,6 @@ import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.prefs.ComboBox;
-
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -58,212 +57,207 @@ import javax.swing.tree.TreePath;
  */
 public class DirectoryPartitionViewer extends JPanel {
 
-    private static final org.slf4j.Logger logger
-                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private PreferencesExt prefs;
+  private PreferencesExt prefs;
 
-    private FeatureCollectionConfig config;
-    private String collectionName;
-    private CdmIndexPanel cdmIndexTables;
-    private PartitionsTable partitionsTable;
+  private FeatureCollectionConfig config;
+  private String collectionName;
+  private CdmIndexPanel cdmIndexTables;
+  private PartitionsTable partitionsTable;
 
-    private JPanel tablePanel;
-    private JSplitPane mainSplit;
+  private JPanel tablePanel;
+  private JSplitPane mainSplit;
 
-    private PartitionTreeBrowser partitionTreeBrowser;
-    private MFileTable fileTable;
+  private PartitionTreeBrowser partitionTreeBrowser;
+  private MFileTable fileTable;
 
-    private TextHistoryPane infoTA;
-    private IndependentWindow infoWindow;
-    private ComboBox<String> cb;
-    private FileManager dirFileChooser;
-    private boolean isFromIndex;
+  private TextHistoryPane infoTA;
+  private IndependentWindow infoWindow;
+  private ComboBox<String> cb;
+  private FileManager dirFileChooser;
+  private boolean isFromIndex;
 
-/**
- *
- */
-    public DirectoryPartitionViewer(PreferencesExt prefs, JPanel topPanel, JPanel buttPanel) {
-        this.prefs = prefs;
-        partitionTreeBrowser = new PartitionTreeBrowser();
-        partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
+  /**
+   *
+   */
+  public DirectoryPartitionViewer(PreferencesExt prefs, JPanel topPanel, JPanel buttPanel) {
+    this.prefs = prefs;
+    partitionTreeBrowser = new PartitionTreeBrowser();
+    partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
 
-        cdmIndexTables = new CdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
-        cdmIndexTables.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-            }
-        });
+    cdmIndexTables = new CdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
+    cdmIndexTables.addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+      }
+    });
 
-        if (topPanel != null && buttPanel != null) {
+    if (topPanel != null && buttPanel != null) {
 
-            cb = new ComboBox<>(prefs);
-            cb.addActionListener(e -> {
-                String filename = (String) cb.getSelectedItem();
-                if (filename == null) {
-                    return;
-                }
-                File d = new File( filename);
-                if (d.isDirectory()) {
-                    setDirectory(d);
-                }
-                else if (d.getName().endsWith(".xml")) {
-                    setCollectionFromConfig(d.getPath());
-                }
-                else if (d.getName().endsWith(GribCdmIndex.NCX_SUFFIX))
-                {
-                    setCollectionFromIndex(d.getPath());
-                }
-                cb.addItem(filename);
-            });
-            topPanel.add(new JLabel("dir,ncx3,or config:"), BorderLayout.WEST);
-            topPanel.add(cb, BorderLayout.CENTER);
-
-            // a file chooser that can choose a directory
-            dirFileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("fileChooser"));
-            dirFileChooser.getFileChooser().setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
-            AbstractAction dirFileAction = new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String filename = dirFileChooser.chooseFilename();
-                    if (filename == null) {
-                        return;
-                    }
-                    cb.setSelectedItem(filename);
-                }
-            };
-            BAMutil.setActionProperties(dirFileAction, "FileChooser", "choose file or directory...", false, 'L', -1);
-            BAMutil.addActionToContainer(buttPanel, dirFileAction);
-
-            /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-            infoButton.addActionListener(new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                showInfo();
-              }
-            });
-            buttPanel.add(infoButton);
-
-            AbstractButton info2Button = BAMutil.makeButtcon("Information", "Show Detail Info", false);
-            info2Button.addActionListener(new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                showDetailInfo();
-              }
-            });
-            buttPanel.add(info2Button); */
+      cb = new ComboBox<>(prefs);
+      cb.addActionListener(e -> {
+        String filename = (String) cb.getSelectedItem();
+        if (filename == null) {
+          return;
         }
+        File d = new File(filename);
+        if (d.isDirectory()) {
+          setDirectory(d);
+        } else if (d.getName().endsWith(".xml")) {
+          setCollectionFromConfig(d.getPath());
+        } else if (d.getName().endsWith(GribCdmIndex.NCX_SUFFIX)) {
+          setCollectionFromIndex(d.getPath());
+        }
+        cb.addItem(filename);
+      });
+      topPanel.add(new JLabel("dir,ncx3,or config:"), BorderLayout.WEST);
+      topPanel.add(cb, BorderLayout.CENTER);
 
-        setLayout(new BorderLayout());
+      // a file chooser that can choose a directory
+      dirFileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("fileChooser"));
+      dirFileChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+      AbstractAction dirFileAction = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          String filename = dirFileChooser.chooseFilename();
+          if (filename == null) {
+            return;
+          }
+          cb.setSelectedItem(filename);
+        }
+      };
+      BAMutil.setActionProperties(dirFileAction, "FileChooser", "choose file or directory...", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, dirFileAction);
 
-        JScrollPane treeScroll = new JScrollPane(partitionTreeBrowser.tree);
-        JPanel treePanel = new JPanel(new BorderLayout());
-        treePanel.add(treeScroll, BorderLayout.CENTER);
-        treePanel.add(partitionTreeBrowser.view, BorderLayout.SOUTH);
-
-        tablePanel = new JPanel(new BorderLayout());
-        tablePanel.add(cdmIndexTables, BorderLayout.CENTER);
-        current = cdmIndexTables;
-
-        mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, treePanel, tablePanel);
-        mainSplit.setDividerLocation(prefs.getInt("mainSplit", 100));
-        add(mainSplit, BorderLayout.CENTER);
-
-        // the info window
-        infoTA = new TextHistoryPane();
-        infoWindow = new IndependentWindow("Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
-        infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
-
-        // file popup window
-        fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
-        fileTable.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-            }
-        });
+      /*
+       * AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+       * infoButton.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent e) {
+       * showInfo();
+       * }
+       * });
+       * buttPanel.add(infoButton);
+       * 
+       * AbstractButton info2Button = BAMutil.makeButtcon("Information", "Show Detail Info", false);
+       * info2Button.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent e) {
+       * showDetailInfo();
+       * }
+       * });
+       * buttPanel.add(info2Button);
+       */
     }
 
-/**
- *
- */
-    public void save() {
-        if (mainSplit != null) {
-            prefs.putInt("mainSplit", mainSplit.getDividerLocation());
-        }
-        if (cb != null) {
-            cb.save();
-        }
-        if (dirFileChooser != null) {
-            dirFileChooser.save();
-        }
+    setLayout(new BorderLayout());
 
-        cdmIndexTables.save();
-        partitionsTable.save();
-        prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-        fileTable.save();
+    JScrollPane treeScroll = new JScrollPane(partitionTreeBrowser.tree);
+    JPanel treePanel = new JPanel(new BorderLayout());
+    treePanel.add(treeScroll, BorderLayout.CENTER);
+    treePanel.add(partitionTreeBrowser.view, BorderLayout.SOUTH);
+
+    tablePanel = new JPanel(new BorderLayout());
+    tablePanel.add(cdmIndexTables, BorderLayout.CENTER);
+    current = cdmIndexTables;
+
+    mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, treePanel, tablePanel);
+    mainSplit.setDividerLocation(prefs.getInt("mainSplit", 100));
+    add(mainSplit, BorderLayout.CENTER);
+
+    // the info window
+    infoTA = new TextHistoryPane();
+    infoWindow = new IndependentWindow("Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+
+    // file popup window
+    fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
+    fileTable.addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+      }
+    });
+  }
+
+  /**
+   *
+   */
+  public void save() {
+    if (mainSplit != null) {
+      prefs.putInt("mainSplit", mainSplit.getDividerLocation());
+    }
+    if (cb != null) {
+      cb.save();
+    }
+    if (dirFileChooser != null) {
+      dirFileChooser.save();
     }
 
-/**
- *
- */
-    public void clear() {
-        cdmIndexTables.clear();
-        partitionsTable.clear();
-    }
+    cdmIndexTables.save();
+    partitionsTable.save();
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    fileTable.save();
+  }
+
+  /**
+   *
+   */
+  public void clear() {
+    cdmIndexTables.clear();
+    partitionsTable.clear();
+  }
 
   private Component current;
 
-/**
- *
- */
-    private void swap(Component want) {
-        if (current == want) {
-            return;
-        }
-        tablePanel.remove(current);
-        tablePanel.add(want, BorderLayout.CENTER);
-        tablePanel.revalidate();
-        current = want;
-        repaint();
+  /**
+   *
+   */
+  private void swap(Component want) {
+    if (current == want) {
+      return;
+    }
+    tablePanel.remove(current);
+    tablePanel.add(want, BorderLayout.CENTER);
+    tablePanel.revalidate();
+    current = want;
+    repaint();
+  }
+
+  /**
+   *
+   */
+  public void showInfo() {
+    Formatter f = new Formatter();
+    if (current == partitionsTable) {
+      partitionsTable.showGroupDiffs(f);
+    } else if (current == cdmIndexTables) {
+      cdmIndexTables.showInfo(f);
+    } else {
+      return;
     }
 
-/**
- *
- */
-    public void showInfo() {
-        Formatter f = new Formatter();
-        if (current == partitionsTable) {
-            partitionsTable.showGroupDiffs(f);
-        }
-        else if (current == cdmIndexTables) {
-            cdmIndexTables.showInfo(f);
-        }
-        else {
-            return;
-        }
+    infoTA.setText(f.toString());
+    infoTA.gotoTop();
+    infoWindow.show();
+  }
 
-        infoTA.setText(f.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
+  /**
+   *
+   */
+  public void showDetailInfo() {
+    Formatter f = new Formatter();
+    if (current == partitionsTable) {
+      partitionsTable.showGroupDiffs(f);
+    } else if (current == cdmIndexTables) {
+      cdmIndexTables.showInfo(f);
+    } else {
+      return;
     }
 
-/**
- *
- */
-    public void showDetailInfo() {
-        Formatter f = new Formatter();
-        if (current == partitionsTable) {
-            partitionsTable.showGroupDiffs(f);
-        }
-        else if (current == cdmIndexTables) {
-            cdmIndexTables.showInfo(f);
-        }
-        else {
-        return;
-        }
-
-        infoTA.setText(f.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
-    }
+    infoTA.setText(f.toString());
+    infoTA.gotoTop();
+    infoWindow.show();
+  }
 
 
   ////////////////////////////////////////////////
@@ -279,7 +273,8 @@ public class DirectoryPartitionViewer extends JPanel {
   // feature collection config
   private void setCollectionFromConfig(String name) {
     Path f = Paths.get(name);
-    if (!Files.exists(f)) return;
+    if (!Files.exists(f))
+      return;
 
     org.jdom2.Document doc;
     try {
@@ -321,46 +316,50 @@ public class DirectoryPartitionViewer extends JPanel {
     setDirectory(parentFile);
   }
 
-  /* private void moveCdmIndexAll(NodeInfo indexFile) {
-    Formatter out = new Formatter();
-    infoWindow.show();
+  /*
+   * private void moveCdmIndexAll(NodeInfo indexFile) {
+   * Formatter out = new Formatter();
+   * infoWindow.show();
+   * 
+   * for (File f : indexFile.getParentFile().listFiles()) {
+   * if (!f.getName().endsWith(".ncx")) continue;
+   * GribCollection gc = null;
+   * try {
+   * boolean ok = GribCdmIndex.moveCdmIndex(f, logger);
+   * out.format("%s moved success=%s%n", f.getPath(), ok);
+   * infoTA.appendLine(f.getPath() + " moved success=" + ok);
+   * 
+   * } catch (Throwable t) {
+   * out.format("%s moved failed=%s%n", f.getPath(), t.getMessage());
+   * }
+   * }
+   * 
+   * infoTA.setText(out.toString());
+   * infoTA.gotoTop();
+   * infoWindow.show();
+   * }
+   */
 
-    for (File f : indexFile.getParentFile().listFiles()) {
-      if (!f.getName().endsWith(".ncx")) continue;
-      GribCollection gc = null;
-      try {
-        boolean ok = GribCdmIndex.moveCdmIndex(f, logger);
-        out.format("%s moved success=%s%n", f.getPath(), ok);
-        infoTA.appendLine(f.getPath() + " moved success=" + ok);
-
-      } catch (Throwable t) {
-        out.format("%s moved failed=%s%n", f.getPath(), t.getMessage());
-      }
-    }
-
-    infoTA.setText(out.toString());
-    infoTA.gotoTop();
-    infoWindow.show();
-  } */
-
- /*  private void showChildrenIndex(NodeInfo topDir) {
-    if (!topDir.isDirectory()) {
-      JOptionPane.showMessageDialog(this, topDir.getPath() + " not a directory: ");
-      return;
-    }
-
-    Formatter out = new Formatter();
-    try {
-      boolean ok = GribCdmIndex.showDirectoryPartitionIndex(collectionName, topDir, out);
-      out.format("%s showChildrenIndex success=%s%n", topDir.getPath(), ok);
-      infoTA.appendLine(out.toString());
-      infoTA.gotoTop();
-      infoWindow.show();
-
-    } catch (Throwable t) {
-      JOptionPane.showMessageDialog(this, topDir.getPath() + " showChildrenIndex failed: " + t.getMessage());
-    }
-  } */
+  /*
+   * private void showChildrenIndex(NodeInfo topDir) {
+   * if (!topDir.isDirectory()) {
+   * JOptionPane.showMessageDialog(this, topDir.getPath() + " not a directory: ");
+   * return;
+   * }
+   * 
+   * Formatter out = new Formatter();
+   * try {
+   * boolean ok = GribCdmIndex.showDirectoryPartitionIndex(collectionName, topDir, out);
+   * out.format("%s showChildrenIndex success=%s%n", topDir.getPath(), ok);
+   * infoTA.appendLine(out.toString());
+   * infoTA.gotoTop();
+   * infoWindow.show();
+   * 
+   * } catch (Throwable t) {
+   * JOptionPane.showMessageDialog(this, topDir.getPath() + " showChildrenIndex failed: " + t.getMessage());
+   * }
+   * }
+   */
 
 
   private void cmdSummarizePartitions(final NodeInfo node) {
@@ -369,7 +368,8 @@ public class DirectoryPartitionViewer extends JPanel {
       public void run() {
         Formatter out = new Formatter();
         GribCdmIndex indexReader = new GribCdmIndex(logger);
-        try (DirectoryPartition dpart = new DirectoryPartition(config, node.dir, true, indexReader, GribCdmIndex.NCX_SUFFIX, logger)) {
+        try (DirectoryPartition dpart =
+            new DirectoryPartition(config, node.dir, true, indexReader, GribCdmIndex.NCX_SUFFIX, logger)) {
           dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
           try (PartitionCollectionMutable tp = (PartitionCollectionMutable) GribCdmIndex
@@ -384,8 +384,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
             final List<GribCollectionMutable> gclist = new ArrayList<>();
             for (PartitionCollectionMutable.Partition tpp : tp.getPartitions()) {
-              try (GribCollectionMutable gc = tpp
-                  .makeGribCollection()) {    // use index if it exists
+              try (GribCollectionMutable gc = tpp.makeGribCollection()) { // use index if it exists
                 if (gc != null)
                   gclist.add(gc);
 
@@ -523,18 +522,19 @@ public class DirectoryPartitionViewer extends JPanel {
     public String toString() {
       Formatter f = new Formatter();
       f.format("NodeInfo{ dir= %s", dir);
-      if (hasIndex) f.format(" index= %s", part.getIndex());
+      if (hasIndex)
+        f.format(" index= %s", part.getIndex());
       f.format("}");
       return f.toString();
     }
   }
 
   private class PartitionTreeBrowser {
-    //private FileSystemView fileSystemView;
+    // private FileSystemView fileSystemView;
     private Icon dirIcon, fileIcon;
 
     private NodeInfo currentNode;
-    JTree tree;  // File-system tree. Built Lazily
+    JTree tree; // File-system tree. Built Lazily
     private DefaultTreeModel treeModel;
     private JProgressBar progressBar;
 
@@ -550,7 +550,8 @@ public class DirectoryPartitionViewer extends JPanel {
     private JRadioButton isFile;
 
     public void setRoot(Path rootDir) {
-      if (!Files.isDirectory(rootDir)) return;
+      if (!Files.isDirectory(rootDir))
+        return;
 
       DefaultMutableTreeNode root = new DefaultMutableTreeNode();
       root.setUserObject(new NodeInfo(rootDir));
@@ -628,7 +629,7 @@ public class DirectoryPartitionViewer extends JPanel {
       flags.add(isFile);
       fileDetailsValues.add(flags);
 
-      //JToolBar toolBar = makeButtonBar();
+      // JToolBar toolBar = makeButtonBar();
 
       flags.add(new JLabel("::  Flags"));
       readable = new JCheckBox("Read  ");
@@ -658,7 +659,7 @@ public class DirectoryPartitionViewer extends JPanel {
       // put together the fileView
 
       view = new JPanel(new BorderLayout(3, 3));
-      //view.add(toolBar, BorderLayout.NORTH);
+      // view.add(toolBar, BorderLayout.NORTH);
       view.add(progressBar, BorderLayout.NORTH);
       view.add(filePanel, BorderLayout.CENTER);
     }
@@ -677,7 +678,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
           for (TreePath path : selectionPaths) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-            cmdMakeIndex( (NodeInfo) node.getUserObject());
+            cmdMakeIndex((NodeInfo) node.getUserObject());
           }
         }
       });
@@ -699,89 +700,91 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       });
 
-       //////////////
+      //////////////
       // toolbar
 
-      //JToolBar toolBar = new JToolBar();
-      //toolBar.setFloatable(false);  // mnemonics stop working in a floated toolbar
+      // JToolBar toolBar = new JToolBar();
+      // toolBar.setFloatable(false); // mnemonics stop working in a floated toolbar
 
-      /* JButton moveIndexButt = new JButton("Move");
-      moveIndexButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
-          try {
-            moveCdmIndexFile(currentNode);
-          } catch (Throwable t) {
-            showThrowable(t);
-          }
-          repaint();
-        }
-      });
-      toolBar.add(moveIndexButt);
-
-      JButton moveAllButt = new JButton("MoveAll");
-      moveAllButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
-          try {
-            moveCdmIndexAll(currentNode);
-          } catch (Throwable t) {
-            showThrowable(t);
-          }
-          repaint();
-        }
-      });
-      toolBar.add(moveAllButt);
-
-      JButton showFileButt = new JButton("Show");
-      showFileButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
-          try {
-            showCdmIndexFile(currentNode);
-          } catch (Throwable t) {
-            showThrowable(t);
-          }
-          repaint();
-        }
-      });
-      toolBar.add(showFileButt);
-
-      JButton showIndexButt = new JButton("Show Children");
-      showIndexButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
-          try {
-            showChildrenIndex(currentNode);
-          } catch (Throwable t) {
-            showThrowable(t);
-          }
-          repaint();
-        }
-      });
-      toolBar.add(showIndexButt);
-
-      JButton showPartButt = new JButton("Show Partitions");
-      showPartButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
-          try {
-            showPartitions(currentNode);
-          } catch (Throwable t) {
-            showThrowable(t);
-          }
-          repaint();
-        }
-      });
-      toolBar.add(showPartButt);
-
-      JButton makeIndexButt = new JButton("Make Partition");
-      makeIndexButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
-          try {
-            makeIndex(currentNode);
-          } catch (Throwable t) {
-            showThrowable(t);
-          }
-          repaint();
-        }
-      });
-      toolBar.add(makeIndexButt); */
+      /*
+       * JButton moveIndexButt = new JButton("Move");
+       * moveIndexButt.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent ae) {
+       * try {
+       * moveCdmIndexFile(currentNode);
+       * } catch (Throwable t) {
+       * showThrowable(t);
+       * }
+       * repaint();
+       * }
+       * });
+       * toolBar.add(moveIndexButt);
+       * 
+       * JButton moveAllButt = new JButton("MoveAll");
+       * moveAllButt.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent ae) {
+       * try {
+       * moveCdmIndexAll(currentNode);
+       * } catch (Throwable t) {
+       * showThrowable(t);
+       * }
+       * repaint();
+       * }
+       * });
+       * toolBar.add(moveAllButt);
+       * 
+       * JButton showFileButt = new JButton("Show");
+       * showFileButt.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent ae) {
+       * try {
+       * showCdmIndexFile(currentNode);
+       * } catch (Throwable t) {
+       * showThrowable(t);
+       * }
+       * repaint();
+       * }
+       * });
+       * toolBar.add(showFileButt);
+       * 
+       * JButton showIndexButt = new JButton("Show Children");
+       * showIndexButt.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent ae) {
+       * try {
+       * showChildrenIndex(currentNode);
+       * } catch (Throwable t) {
+       * showThrowable(t);
+       * }
+       * repaint();
+       * }
+       * });
+       * toolBar.add(showIndexButt);
+       * 
+       * JButton showPartButt = new JButton("Show Partitions");
+       * showPartButt.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent ae) {
+       * try {
+       * showPartitions(currentNode);
+       * } catch (Throwable t) {
+       * showThrowable(t);
+       * }
+       * repaint();
+       * }
+       * });
+       * toolBar.add(showPartButt);
+       * 
+       * JButton makeIndexButt = new JButton("Make Partition");
+       * makeIndexButt.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent ae) {
+       * try {
+       * makeIndex(currentNode);
+       * } catch (Throwable t) {
+       * showThrowable(t);
+       * }
+       * repaint();
+       * }
+       * });
+       * toolBar.add(makeIndexButt);
+       */
 
     }
 
@@ -834,7 +837,7 @@ public class DirectoryPartitionViewer extends JPanel {
         @Override
         protected void done() {
           progressBar.setIndeterminate(false);
-          //progressBar.setVisible(false);
+          // progressBar.setVisible(false);
           tree.setEnabled(true);
         }
       };
@@ -879,14 +882,8 @@ public class DirectoryPartitionViewer extends JPanel {
       }
 
       @Override
-      public Component getTreeCellRendererComponent(
-              JTree tree,
-              Object value,
-              boolean selected,
-              boolean expanded,
-              boolean leaf,
-              int row,
-              boolean hasFocus) {
+      public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
+          boolean leaf, int row, boolean hasFocus) {
 
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
         NodeInfo uobj = (NodeInfo) node.getUserObject();
@@ -909,7 +906,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
   }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private class PartitionsTable extends JPanel {
     private PreferencesExt prefs;
@@ -923,18 +920,20 @@ public class DirectoryPartitionViewer extends JPanel {
       PopupMenu varPopup;
 
       ////////////////
-      groupsTable = new BeanTable(GroupsBean.class, (PreferencesExt) prefs.node("GroupsBean"), false, "Groups", "GribCollection.GroupHcs", null);
+      groupsTable = new BeanTable(GroupsBean.class, (PreferencesExt) prefs.node("GroupsBean"), false, "Groups",
+          "GribCollection.GroupHcs", null);
       groupsTable.addListSelectionListener(e -> {
-          GroupsBean bean = (GroupsBean) groupsTable.getSelectedBean();
-          if (bean != null)
-            setGroups(bean);
+        GroupsBean bean = (GroupsBean) groupsTable.getSelectedBean();
+        if (bean != null)
+          setGroups(bean);
       });
 
-      groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "Partitions for this Group", "GribCollection.GroupGC", null);
+      groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false,
+          "Partitions for this Group", "GribCollection.GroupGC", null);
       groupTable.addListSelectionListener(e -> {
-          GroupBean bean = (GroupBean) groupTable.getSelectedBean();
-          if (bean != null)
-            setGroup(bean.group);
+        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+        if (bean != null)
+          setGroup(bean.group);
       });
 
       varPopup = new PopupMenu(groupTable.getJTable(), "Options");
@@ -960,7 +959,8 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       });
 
-      varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
+      varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group",
+          "GribCollection.VariableIndex", null);
 
       varPopup = new PopupMenu(varTable.getJTable(), "Options");
       varPopup.addAction("Show Variable", new AbstractAction() {
@@ -989,7 +989,8 @@ public class DirectoryPartitionViewer extends JPanel {
       groupsTable.saveState(false);
       groupTable.saveState(false);
       varTable.saveState(false);
-      if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
+      if (split != null)
+        prefs.putInt("splitPos", split.getDividerLocation());
     }
 
     private void setHeader(String header) {
@@ -1007,9 +1008,9 @@ public class DirectoryPartitionViewer extends JPanel {
       varTable.setBeans(vars);
     }
 
-   // private void showFiles(File dir, List<MFile> files) {
-   //   fileTable.setFiles(dir, files);
-   // }
+    // private void showFiles(File dir, List<MFile> files) {
+    // fileTable.setFiles(dir, files);
+    // }
 
     private void showFiles(GribCollectionMutable gc, GribCollectionMutable.GroupGC group) {
       Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
@@ -1063,15 +1064,16 @@ public class DirectoryPartitionViewer extends JPanel {
       for (String p : partitionsAll) {
         out.format("%s Missing groups:%n", p);
         for (Groups gs : groups) {
-            if (!gs.parts.contains(p))
-              out.format("   %s%n", gs.groupId);
-          }
+          if (!gs.parts.contains(p))
+            out.format("   %s%n", gs.groupId);
         }
+      }
 
     }
 
     Map<String, GroupsBean> groupsBeans = new HashMap<>(50);
     SortedSet<String> partitionsAll = new TreeSet<>();
+
     void clear() {
       groupsBeans = new HashMap<>(50);
       partitionsAll = new TreeSet<>();
@@ -1080,8 +1082,10 @@ public class DirectoryPartitionViewer extends JPanel {
     void addGribCollection(GribCollectionMutable gc) {
       String partitionName = gc.getLocation();
       int pos = partitionName.lastIndexOf("/");
-      if (pos < 0) pos = partitionName.lastIndexOf("\\");
-      if (pos > 0) partitionName = partitionName.substring(0, pos);
+      if (pos < 0)
+        pos = partitionName.lastIndexOf("\\");
+      if (pos > 0)
+        partitionName = partitionName.substring(0, pos);
       partitionsAll.add(partitionName);
 
       for (GribCollectionMutable.Dataset ds : gc.getDatasets()) {
@@ -1125,8 +1129,10 @@ public class DirectoryPartitionViewer extends JPanel {
 
     public String toString() {
       Formatter f = new Formatter();
-      if (min == max) f.format("%3d", min);
-      else f.format("%3d - %3d", min, max);
+      if (min == max)
+        f.format("%3d", min);
+      else
+        f.format("%3d - %3d", min, max);
       return f.toString();
     }
   }
@@ -1144,8 +1150,7 @@ public class DirectoryPartitionViewer extends JPanel {
       ntimes = new RangeTracker(countTimes(g.getCoordinates().iterator()));
     }
 
-    public GroupsBean() {
-    }
+    public GroupsBean() {}
 
     private int count(Iterator iter) {
       int count = 0;
@@ -1160,7 +1165,8 @@ public class DirectoryPartitionViewer extends JPanel {
       int count = 0;
       while (iter.hasNext()) {
         Coordinate c = iter.next();
-        if (c.getType() == Coordinate.Type.time || c.getType() == Coordinate.Type.timeIntv || c.getType() == Coordinate.Type.time2D)
+        if (c.getType() == Coordinate.Type.time || c.getType() == Coordinate.Type.timeIntv
+            || c.getType() == Coordinate.Type.time2D)
           count++;
       }
       return count;
@@ -1216,8 +1222,7 @@ public class DirectoryPartitionViewer extends JPanel {
       this.datasetName = datasetName;
     }
 
-    public GroupBean() {
-    }
+    public GroupBean() {}
 
     public String getGroupId() {
       return group.getId();
@@ -1231,17 +1236,19 @@ public class DirectoryPartitionViewer extends JPanel {
       return group.getNFiles();
     }
 
-    /* public int getNTimes() {
-      return group.timeCoords.size();
-    }
-
-    public int getNVerts() {
-      return group.vertCoords.size();
-    }
-
-    public int getNVars() {
-      return group.varIndex.size();
-    } */
+    /*
+     * public int getNTimes() {
+     * return group.timeCoords.size();
+     * }
+     * 
+     * public int getNVerts() {
+     * return group.vertCoords.size();
+     * }
+     * 
+     * public int getNVars() {
+     * return group.varIndex.size();
+     * }
+     */
 
 
     public String getPartition() {
@@ -1261,14 +1268,13 @@ public class DirectoryPartitionViewer extends JPanel {
 
   }
 
-////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
 
   public class VarBean {
     GribCollectionMutable.VariableIndex v;
     GribCollectionMutable.GroupGC group;
 
-    public VarBean() {
-    }
+    public VarBean() {}
 
     public VarBean(GribCollectionMutable.VariableIndex v, GribCollectionMutable.GroupGC group) {
       this.v = v;
@@ -1276,9 +1282,12 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     public String getTimeCoord() {
-      if (0 <= v.getCoordinateIdx(Coordinate.Type.time)) return Coordinate.Type.time.toString();
-      if (0 <= v.getCoordinateIdx(Coordinate.Type.timeIntv)) return Coordinate.Type.timeIntv.toString();
-      if (0 <= v.getCoordinateIdx(Coordinate.Type.time2D)) return Coordinate.Type.time2D.toString();
+      if (0 <= v.getCoordinateIdx(Coordinate.Type.time))
+        return Coordinate.Type.time.toString();
+      if (0 <= v.getCoordinateIdx(Coordinate.Type.timeIntv))
+        return Coordinate.Type.timeIntv.toString();
+      if (0 <= v.getCoordinateIdx(Coordinate.Type.time2D))
+        return Coordinate.Type.time2D.toString();
       return "ERR";
     }
 

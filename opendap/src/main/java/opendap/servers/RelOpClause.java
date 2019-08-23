@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -40,7 +40,6 @@
 package opendap.servers;
 
 import opendap.servers.parsers.ExprParserConstants;
-
 import java.util.*;
 import java.io.*;
 
@@ -53,128 +52,123 @@ import java.io.*;
  * @see Operator
  * @see ClauseFactory
  */
-public class RelOpClause
-        extends AbstractClause
-        implements TopLevelClause {
-    /**
-     * Creates a new RelOpClause. If the lhs and all the elements of the rhs
-     * are constant, the RelOpClause will be flagged as constant, and
-     * evaluated immediately.
-     *
-     * @param operator The operator invoked by the clause
-     * @param lhs      The left-hand side of the comparison.
-     * @param rhs      A list of SubClauses representing the right-hand side of the
-     *                 comparison.
-     * @throws DAP2ServerSideException Thrown if the clause is constant, but
-     *                        the attempt to evaluate it fails.
-     */
-    protected RelOpClause(int operator, SubClause lhs, List rhs) throws DAP2ServerSideException {
+public class RelOpClause extends AbstractClause implements TopLevelClause {
+  /**
+   * Creates a new RelOpClause. If the lhs and all the elements of the rhs
+   * are constant, the RelOpClause will be flagged as constant, and
+   * evaluated immediately.
+   *
+   * @param operator The operator invoked by the clause
+   * @param lhs The left-hand side of the comparison.
+   * @param rhs A list of SubClauses representing the right-hand side of the
+   *        comparison.
+   * @throws DAP2ServerSideException Thrown if the clause is constant, but
+   *         the attempt to evaluate it fails.
+   */
+  protected RelOpClause(int operator, SubClause lhs, List rhs) throws DAP2ServerSideException {
 
-        this.operator = operator;
-        this.lhs = lhs;
-        this.rhs = rhs;
-        this.children = new ArrayList();
-        children.add(lhs);
-        children.addAll(rhs);
-        this.constant = true;
-        Iterator it = children.iterator();
-        while (it.hasNext()) {
-            SubClause current = (SubClause) it.next();
-            current.setParent(this);
-            if (!current.isConstant()) {
-                constant = false;
-            }
+    this.operator = operator;
+    this.lhs = lhs;
+    this.rhs = rhs;
+    this.children = new ArrayList();
+    children.add(lhs);
+    children.addAll(rhs);
+    this.constant = true;
+    Iterator it = children.iterator();
+    while (it.hasNext()) {
+      SubClause current = (SubClause) it.next();
+      current.setParent(this);
+      if (!current.isConstant()) {
+        constant = false;
+      }
+    }
+    if (constant) {
+      evaluate();
+    }
+  }
+
+
+  public boolean getValue() {
+    return value;
+  }
+
+  public boolean evaluate() throws DAP2ServerSideException {
+
+    if (constant && defined) {
+      return value;
+    }
+
+    if (rhs.size() == 1) {
+      value = Operator.op(operator, lhs.evaluate(), ((SubClause) rhs.get(0)).evaluate());
+    } else {
+      value = false;
+      Iterator it = rhs.iterator();
+      while (it.hasNext() && !value) {
+        if (Operator.op(operator, lhs.evaluate(), ((SubClause) it.next()).evaluate())) {
+          value = true;
         }
-        if (constant) {
-            evaluate();
-        }
+      }
     }
+    defined = true;
+    return value;
+  }
 
+  /**
+   * Returns a SubClause representing the right-hand side of the
+   * comparison.
+   */
+  public SubClause getLHS() {
+    return lhs;
+  }
 
-    public boolean getValue() {
-        return value;
+  /**
+   * Returns a list of SubClauses representing the right-hand side of the
+   * comparison.
+   */
+  public List getRHS() {
+    return rhs;
+  }
+
+  /**
+   * Returns the type of comparison
+   *
+   * @see opendap.servers.parsers.ExprParserConstants
+   */
+  public int getOperator() {
+    return operator;
+  }
+
+  /**
+   * Prints the original string representation of this clause.
+   * For use in debugging.
+   */
+  public void printConstraint(PrintWriter os) {
+    lhs.printConstraint(os);
+    String op = ExprParserConstants.tokenImage[operator];
+    op = op.substring(1, op.length() - 1);
+    os.print(op);
+    // os.print(ExprParserConstants.tokenImage[operator].substring(2, 3));
+    if (rhs.size() == 1) {
+      ((ValueClause) rhs.get(0)).printConstraint(os);
+    } else {
+      os.print("{");
+      Iterator it = rhs.iterator();
+      boolean first = true;
+      while (it.hasNext()) {
+        if (!first)
+          os.print(",");
+        ((ValueClause) it.next()).printConstraint(os);
+        first = false;
+      }
+      os.print("}");
     }
+  }
 
-    public boolean evaluate()
-            throws DAP2ServerSideException {
+  protected boolean value;
 
-        if (constant && defined) {
-            return value;
-        }
+  protected int operator;
 
-        if (rhs.size() == 1) {
-            value = Operator.op(operator,
-                    lhs.evaluate(),
-                    ((SubClause) rhs.get(0)).evaluate());
-        } else {
-            value = false;
-            Iterator it = rhs.iterator();
-            while (it.hasNext() && !value) {
-                if (Operator.op(operator, lhs.evaluate(), ((SubClause) it.next()).evaluate())) {
-                    value = true;
-                }
-            }
-        }
-        defined = true;
-        return value;
-    }
+  protected SubClause lhs;
 
-    /**
-     * Returns a SubClause representing the right-hand side of the
-     * comparison.
-     */
-    public SubClause getLHS() {
-        return lhs;
-    }
-
-    /**
-     * Returns a list of SubClauses representing the right-hand side of the
-     * comparison.
-     */
-    public List getRHS() {
-        return rhs;
-    }
-
-    /**
-     * Returns the type of comparison
-     *
-     * @see opendap.servers.parsers.ExprParserConstants
-     */
-    public int getOperator() {
-        return operator;
-    }
-
-    /**
-     * Prints the original string representation of this clause.
-     * For use in debugging.
-     */
-    public void printConstraint(PrintWriter os)
-    {
-        lhs.printConstraint(os);
-        String op = ExprParserConstants.tokenImage[operator];
-        op = op.substring(1, op.length() - 1);
-        os.print(op);
-        //os.print(ExprParserConstants.tokenImage[operator].substring(2, 3));
-        if (rhs.size() == 1) {
-            ((ValueClause)rhs.get(0)).printConstraint(os);
-        } else {
-            os.print("{");
-            Iterator it = rhs.iterator();
-	    boolean first = true;
-            while (it.hasNext()) {
-                if(!first) os.print(",");
-	        ((ValueClause)it.next()).printConstraint(os);
-		first = false;
-            }
-            os.print("}");
-        }
-    }
-
-    protected boolean value;
-
-    protected int operator;
-
-    protected SubClause lhs;
-
-    protected List rhs;
+  protected List rhs;
 }

@@ -13,6 +13,7 @@ public interface CatalogSetCallback {
 
   /**
    * Called when the catalog is done being read.
+   * 
    * @param catalog the catalog that was just read in.
    */
   public void setCatalog(InvCatalogImpl catalog);

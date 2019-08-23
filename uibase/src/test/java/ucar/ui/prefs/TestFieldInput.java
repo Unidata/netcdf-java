@@ -13,22 +13,19 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import javax.swing.*;
-
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
 @RunWith(JUnit4.class)
 public class TestFieldInput {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
@@ -60,8 +57,7 @@ public class TestFieldInput {
 
         public void propertyChange(PropertyChangeEvent evt) {
           System.out.println(
-              "Text TestFieldInput: old val= <" + evt.getOldValue() + "> new val= <" + evt
-                  .getNewValue() + ">");
+              "Text TestFieldInput: old val= <" + evt.getOldValue() + "> new val= <" + evt.getNewValue() + ">");
           if (count == 0) {
             assert (evt.getOldValue()).equals("defValue") : "<" + evt.getOldValue() + ">";
             assert (evt.getNewValue()).equals("better value") : "<" + evt.getNewValue() + ">";
@@ -80,8 +76,7 @@ public class TestFieldInput {
 
         public void propertyChange(PropertyChangeEvent evt) {
           System.out.println(
-              "Int TestFieldInput:  old val= <" + evt.getOldValue() + "> new val= <" + evt
-                  .getNewValue() + ">");
+              "Int TestFieldInput:  old val= <" + evt.getOldValue() + "> new val= <" + evt.getNewValue() + ">");
           if (count == 0) {
             assert evt.getOldValue() instanceof Integer;
             assert ((Integer) evt.getOldValue()).intValue() == 66 : "<" + evt.getOldValue() + ">";
@@ -94,7 +89,7 @@ public class TestFieldInput {
             assert ((Number) evt.getNewValue()).intValue() == 6666 : "<" + evt.getNewValue() + ">";
           }
           count++;
-          //System.out.println("   getInt = "+ ((Field.Int)intf).getInt());
+          // System.out.println(" getInt = "+ ((Field.Int)intf).getInt());
         }
       });
       ((Field.Int) intf).setInt(666);
@@ -103,8 +98,7 @@ public class TestFieldInput {
       d1.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
           System.out.println(
-              "Double 1 TestFieldInput: old val= <" + evt.getOldValue() + "> new val= <" + evt
-                  .getNewValue() + ">");
+              "Double 1 TestFieldInput: old val= <" + evt.getOldValue() + "> new val= <" + evt.getNewValue() + ">");
         }
       });
 
@@ -112,8 +106,7 @@ public class TestFieldInput {
       d2.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
           System.out.println(
-              "Double 2: TestFieldInput: old val= <" + evt.getOldValue() + "> new val= <" + evt
-                  .getNewValue() + ">");
+              "Double 2: TestFieldInput: old val= <" + evt.getOldValue() + "> new val= <" + evt.getNewValue() + ">");
         }
       });
       d.finish();
@@ -122,8 +115,7 @@ public class TestFieldInput {
       node.put("text", "best value");
       node.putInt("int", 6666);
       node.putDouble("min", 0.0);
-    } catch (
-        HeadlessException e) {
+    } catch (HeadlessException e) {
       // ok to fail if there is no display
     }
   }
@@ -159,8 +151,7 @@ public class TestFieldInput {
       frame.pack();
       frame.setLocation(400, 300);
       frame.setVisible(true);
-    } catch (
-        HeadlessException e) {
+    } catch (HeadlessException e) {
       // ok to fail if there is no display
     }
   }

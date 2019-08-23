@@ -10,7 +10,6 @@ package ucar.nc2.iosp.netcdf3;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.IospHelper;
-
 import java.util.List;
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -19,6 +18,7 @@ import java.io.BufferedOutputStream;
 
 /**
  * Experimental.
+ * 
  * @author john
  */
 public class N3outputStreamWriter extends N3streamWriter {
@@ -34,7 +34,8 @@ public class N3outputStreamWriter extends N3streamWriter {
       if (!vinfo.isRecord) {
         Variable v = vinfo.v;
         assert filePos == vinfo.offset;
-        if (debugPos) System.out.println(" writing at "+filePos+" should be "+vinfo.offset+" "+v.getFullName());
+        if (debugPos)
+          System.out.println(" writing at " + filePos + " should be " + vinfo.offset + " " + v.getFullName());
         int nbytes = writeDataFast(v, stream, v.read());
         filePos += nbytes;
         filePos += pad(stream, nbytes, (byte) 0);
@@ -65,7 +66,8 @@ public class N3outputStreamWriter extends N3streamWriter {
               int nbytes = writeDataFast(v, stream, sdata.getArray(v.getShortName()));
               count += nbytes;
               count += pad(stream, nbytes, (byte) 0);
-              if (first && debugWriteData) System.out.println(v.getShortName() + " wrote " + count + " bytes");
+              if (first && debugWriteData)
+                System.out.println(v.getShortName() + " wrote " + count + " bytes");
             }
           }
           if (first && debugWriteData) {
@@ -75,7 +77,8 @@ public class N3outputStreamWriter extends N3streamWriter {
           nrec++;
         }
       }
-      if (debugWriteData) System.out.println("wrote " + nrec + " records");
+      if (debugWriteData)
+        System.out.println("wrote " + nrec + " records");
       stream.flush();
 
       // remove the record structure this is rather fishy, perhaps better to leave it
@@ -88,7 +91,8 @@ public class N3outputStreamWriter extends N3streamWriter {
     Vinfo vinfo = vinfoMap.get(v);
     if (debugWriteData)
       System.out.println("Write " + v.getFullName() + " at filePos= " + filePos + " vinfo.offset= " + vinfo.offset);
-    if (filePos != vinfo.offset) throw new IllegalStateException();
+    if (filePos != vinfo.offset)
+      throw new IllegalStateException();
 
     filePos += writeData(v, stream, data);
     if (vinfo.pad > 0) {
@@ -103,8 +107,10 @@ public class N3outputStreamWriter extends N3streamWriter {
 
   public void writeRecordData(DataOutputStream stream, List<Variable> varList) throws IOException {
     long want = recStart + ((long) recno) * recSize;
-    if (debugWriteData) System.out.println("Write record at filePos= " + filePos + " should be= " + want);
-    if (filePos != want) throw new IllegalStateException();
+    if (debugWriteData)
+      System.out.println("Write record at filePos= " + filePos + " should be= " + want);
+    if (filePos != want)
+      throw new IllegalStateException();
 
     for (Variable v : varList) {
       if (first && debugWriteData)
@@ -214,7 +220,8 @@ public class N3outputStreamWriter extends N3streamWriter {
   }
 
   public static void writeFromFile(NetcdfFile fileIn, String fileOutName) throws IOException {
-    try (DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 10 * 1000))) {
+    try (DataOutputStream stream =
+        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 10 * 1000))) {
       N3outputStreamWriter writer = new N3outputStreamWriter(fileIn);
       int numrec = fileIn.getUnlimitedDimension() == null ? 0 : fileIn.getUnlimitedDimension().getLength();
       writer.writeHeader(stream, numrec);

@@ -15,7 +15,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.StringUtil2;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,12 +30,12 @@ public class CoverageCoordAxisBuilder {
   public String name;
   public String description;
   public DataType dataType;
-  public AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
+  public AxisType axisType; // ucar.nc2.constants.AxisType ordinal
   public AttributeContainer attributes;
   public CoverageCoordAxis.DependenceType dependenceType;
   public List<String> dependsOn;
 
-  public int ncoords;            // number of coordinates (not values)
+  public int ncoords; // number of coordinates (not values)
   public CoverageCoordAxis.Spacing spacing;
   public double startValue;
   public double endValue;
@@ -53,20 +52,21 @@ public class CoverageCoordAxisBuilder {
   public Range range; // set when its a subset
   public RangeComposite crange;
 
-  //int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
-  //public int stride = 1;
+  // int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues =
+  // max-min+1.
+  // public int stride = 1;
   // public boolean isTime2D;
 
   // 2d only
   public int[] shape;
   public Object userObject;
 
-  public CoverageCoordAxisBuilder() {
-  }
+  public CoverageCoordAxisBuilder() {}
 
-  public CoverageCoordAxisBuilder(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                                  CoverageCoordAxis.DependenceType dependenceType, String dependsOnS, CoverageCoordAxis.Spacing spacing,
-                                  int ncoords, double startValue, double endValue, double resolution, double[] values, CoordAxisReader reader) {
+  public CoverageCoordAxisBuilder(String name, String units, String description, DataType dataType, AxisType axisType,
+      AttributeContainer atts, CoverageCoordAxis.DependenceType dependenceType, String dependsOnS,
+      CoverageCoordAxis.Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
+      double[] values, CoordAxisReader reader) {
     this.name = name;
     this.units = units;
     this.description = description;
@@ -165,7 +165,8 @@ public class CoverageCoordAxisBuilder {
 
     boolean isRegular = isRegular(resol);
     this.spacing = isRegular ? CoverageCoordAxis.Spacing.regularPoint : CoverageCoordAxis.Spacing.irregularPoint;
-    if (isRegular) values = null;
+    if (isRegular)
+      values = null;
   }
 
   private void setSpacingFromIntervalValues() {
@@ -178,9 +179,10 @@ public class CoverageCoordAxisBuilder {
     Counters.Counter resol = new Counters.Counter("resol");
     boolean isContiguous = true;
     for (int i = 0; i < values.length - 2; i += 2) {
-      double diff = values[i + 2] - values[i];  // difference of consecutive starting interval values // LOOK roundoff
+      double diff = values[i + 2] - values[i]; // difference of consecutive starting interval values // LOOK roundoff
       resol.count(diff);
-      if (isContiguous && !Misc.nearlyEquals(values[i+1], values[i+2])) // difference of this ending interval values with next starting value
+      if (isContiguous && !Misc.nearlyEquals(values[i + 1], values[i + 2])) // difference of this ending interval values
+                                                                            // with next starting value
         isContiguous = false;
     }
 
@@ -206,7 +208,7 @@ public class CoverageCoordAxisBuilder {
 
     } else if (isContiguous) {
       this.spacing = CoverageCoordAxis.Spacing.contiguousInterval;
-      double[] contValues = new double[ncoords+ 1];
+      double[] contValues = new double[ncoords + 1];
       int count = 0;
       for (int i = 0; i < values.length; i += 2)
         contValues[count++] = values[i]; // starting interval
@@ -221,7 +223,8 @@ public class CoverageCoordAxisBuilder {
   private static final double missingTolerence = .05;
 
   private boolean isRegular(Counters.Counter resol) {
-    if (resol.getUnique() == 1) return true; // all same resolution, or n == 1
+    if (resol.getUnique() == 1)
+      return true; // all same resolution, or n == 1
 
     Comparable mode = resol.getMode();
     Number modeNumber = (Number) mode;
@@ -243,7 +246,8 @@ public class CoverageCoordAxisBuilder {
         nonModeCount += (multiple - 1) * resol.getCount(value);
       }
     }
-    if (modeCount == 0) return true; // cant happen i think
+    if (modeCount == 0)
+      return true; // cant happen i think
 
     // only tolerate these many missing values
     double ratio = (nonModeCount / (double) modeCount);
@@ -278,13 +282,15 @@ public class CoverageCoordAxisBuilder {
     return this;
   }
 
-  /* CoverageCoordAxisBuilder setIndexRange(int minIndex, int maxIndex, int stride) {
-    this.minIndex = minIndex;
-    this.maxIndex = maxIndex;
-    this.stride = stride;
-    this.isSubset = true;
-    return this;
-  } */
+  /*
+   * CoverageCoordAxisBuilder setIndexRange(int minIndex, int maxIndex, int stride) {
+   * this.minIndex = minIndex;
+   * this.maxIndex = maxIndex;
+   * this.stride = stride;
+   * this.isSubset = true;
+   * return this;
+   * }
+   */
 
   CoverageCoordAxisBuilder setRange(Range r) {
     this.range = r;

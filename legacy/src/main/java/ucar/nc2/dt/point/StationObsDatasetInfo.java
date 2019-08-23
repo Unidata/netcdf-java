@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -80,20 +79,20 @@ public class StationObsDatasetInfo {
     Document doc = new Document(rootElem);
 
     List stns = sobs.getStations();
-    System.out.println("nstns = "+stns.size());
+    System.out.println("nstns = " + stns.size());
     for (int i = 0; i < stns.size(); i++) {
       ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stns.get(i);
       Element sElem = new Element("station");
-      sElem.setAttribute("name",s.getName());
+      sElem.setAttribute("name", s.getName());
       if (s.getWmoId() != null)
-        sElem.setAttribute("wmo_id",s.getWmoId());
+        sElem.setAttribute("wmo_id", s.getWmoId());
       if (s.getDescription() != null)
         sElem.addContent(new Element("description").addContent(s.getDescription()));
 
-      sElem.addContent(new Element("longitude").addContent( ucar.unidata.util.Format.d(s.getLongitude(), 6)));
-      sElem.addContent(new Element("latitide").addContent( ucar.unidata.util.Format.d(s.getLatitude(), 6)));
+      sElem.addContent(new Element("longitude").addContent(ucar.unidata.util.Format.d(s.getLongitude(), 6)));
+      sElem.addContent(new Element("latitide").addContent(ucar.unidata.util.Format.d(s.getLatitude(), 6)));
       if (!Double.isNaN(s.getAltitude()))
-        sElem.addContent(new Element("altitude").addContent( ucar.unidata.util.Format.d(s.getAltitude(), 6)));
+        sElem.addContent(new Element("altitude").addContent(ucar.unidata.util.Format.d(s.getAltitude(), 6)));
       rootElem.addContent(sElem);
     }
 
@@ -110,19 +109,23 @@ public class StationObsDatasetInfo {
     if (null != path)
       rootElem.setAttribute("path", path);
 
-    /* dimensions
-    List dims = getDimensions(sobs);
-    for (int j = 0; j < dims.size(); j++) {
-      Dimension dim = (Dimension) dims.get(j);
-      rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeDimension(dim, null));
-    } */
+    /*
+     * dimensions
+     * List dims = getDimensions(sobs);
+     * for (int j = 0; j < dims.size(); j++) {
+     * Dimension dim = (Dimension) dims.get(j);
+     * rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeDimension(dim, null));
+     * }
+     */
 
-    /* coordinate axes
-    List coordAxes = getCoordAxes(sobs);
-    for (int i = 0; i < coordAxes.size(); i++) {
-      CoordinateAxis axis = (CoordinateAxis) coordAxes.get(i);
-      rootElem.addContent(writeAxis(axis));
-    } */
+    /*
+     * coordinate axes
+     * List coordAxes = getCoordAxes(sobs);
+     * for (int i = 0; i < coordAxes.size(); i++) {
+     * CoordinateAxis axis = (CoordinateAxis) coordAxes.get(i);
+     * rootElem.addContent(writeAxis(axis));
+     * }
+     */
 
     // grids
     List vars = sobs.getDataVariables();
@@ -132,27 +135,29 @@ public class StationObsDatasetInfo {
       rootElem.addContent(writeVariable(v));
     }
 
-    /* global attributes
-    Iterator atts = sobs.getGlobalAttributes().iterator();
-    while (atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
-    } */
+    /*
+     * global attributes
+     * Iterator atts = sobs.getGlobalAttributes().iterator();
+     * while (atts.hasNext()) {
+     * ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+     * rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+     * }
+     */
 
     // add lat/lon bounding box
     LatLonRect bb = sobs.getBoundingBox();
     if (bb != null)
-      rootElem.addContent( writeBoundingBox( bb));
+      rootElem.addContent(writeBoundingBox(bb));
 
     // add date range
-    Date start  = sobs.getStartDate();
-    Date end  = sobs.getEndDate();
+    Date start = sobs.getStartDate();
+    Date end = sobs.getEndDate();
     if ((start != null) && (end != null)) {
       DateFormatter format = new DateFormatter();
       Element dateRange = new Element("TimeSpan");
       dateRange.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
       dateRange.addContent(new Element("end").addContent(format.toDateTimeStringISO(end)));
-      rootElem.addContent( dateRange);
+      rootElem.addContent(dateRange);
     }
 
     // add accept list
@@ -167,63 +172,67 @@ public class StationObsDatasetInfo {
     return doc;
   }
 
-  /* private List getCoordAxes(StationObsDataset gds) {
-    HashSet axesHash = new HashSet();
-    List gridSets = gds.getGridsets();
-    for (int i = 0; i < gridSets.size(); i++) {
-      GridDataset.Gridset gridset = (GridDataset.Gridset) gridSets.get(i);
-      GridCoordSystem gcs = gridset.getGeoCoordSystem();
-      List axes = gcs.getCoordinateAxes();
-      for (int j = 0; j < axes.size(); j++)
-        axesHash.add(axes.get(j));
-    }
+  /*
+   * private List getCoordAxes(StationObsDataset gds) {
+   * HashSet axesHash = new HashSet();
+   * List gridSets = gds.getGridsets();
+   * for (int i = 0; i < gridSets.size(); i++) {
+   * GridDataset.Gridset gridset = (GridDataset.Gridset) gridSets.get(i);
+   * GridCoordSystem gcs = gridset.getGeoCoordSystem();
+   * List axes = gcs.getCoordinateAxes();
+   * for (int j = 0; j < axes.size(); j++)
+   * axesHash.add(axes.get(j));
+   * }
+   * 
+   * List list = Arrays.asList(axesHash.toArray());
+   * Collections.sort(list);
+   * return list;
+   * }
+   */
 
-    List list = Arrays.asList(axesHash.toArray());
-    Collections.sort(list);
-    return list;
-  } */
-
-  /* private List getDimensions(StationObsDataset gds) {
-    HashSet dimHash = new HashSet();
-    List vars = gds.getDataVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      VariableSimpleIF v = (VariableSimpleIF) vars.get(i);
-      List dims = v.getDimensions();
-      for (int j = 0; j < dims.size(); j++) {
-        Dimension dim = (Dimension) dims.get(j);
-        dimHash.add(dim);
-      }
-    }
-    List list = Arrays.asList(dimHash.toArray());
-    Collections.sort(list);
-    return list;
-  }
-
-  private Element writeAxis(CoordinateAxis axis) {
-
-    Element varElem = new Element("axis");
-    varElem.setAttribute("name", axis.getName());
-    varElem.setAttribute("shape", axis.getDimensionsString());
-
-    ucar.ma2.DataType dt = axis.getDataType();
-    varElem.setAttribute("type", dt.toString());
-
-    AxisType axisType = axis.getAxisType();
-    if (null != axisType)
-      varElem.setAttribute("axisType", axisType.toString());
-
-    // attributes
-    Iterator atts = axis.getAttributes().iterator();
-    while (atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
-    }
-
-    if (axis.getRank() < 2)
-      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true));
-
-    return varElem;
-  } */
+  /*
+   * private List getDimensions(StationObsDataset gds) {
+   * HashSet dimHash = new HashSet();
+   * List vars = gds.getDataVariables();
+   * for (int i = 0; i < vars.size(); i++) {
+   * VariableSimpleIF v = (VariableSimpleIF) vars.get(i);
+   * List dims = v.getDimensions();
+   * for (int j = 0; j < dims.size(); j++) {
+   * Dimension dim = (Dimension) dims.get(j);
+   * dimHash.add(dim);
+   * }
+   * }
+   * List list = Arrays.asList(dimHash.toArray());
+   * Collections.sort(list);
+   * return list;
+   * }
+   * 
+   * private Element writeAxis(CoordinateAxis axis) {
+   * 
+   * Element varElem = new Element("axis");
+   * varElem.setAttribute("name", axis.getName());
+   * varElem.setAttribute("shape", axis.getDimensionsString());
+   * 
+   * ucar.ma2.DataType dt = axis.getDataType();
+   * varElem.setAttribute("type", dt.toString());
+   * 
+   * AxisType axisType = axis.getAxisType();
+   * if (null != axisType)
+   * varElem.setAttribute("axisType", axisType.toString());
+   * 
+   * // attributes
+   * Iterator atts = axis.getAttributes().iterator();
+   * while (atts.hasNext()) {
+   * ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+   * varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+   * }
+   * 
+   * if (axis.getRank() < 2)
+   * varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true));
+   * 
+   * return varElem;
+   * }
+   */
 
   private Element writeBoundingBox(LatLonRect bb) {
     Element bbElem = new Element("LatLonBox");
@@ -296,17 +305,18 @@ public class StationObsDatasetInfo {
   public static void main(String args[]) throws IOException {
     String url = "C:/data/metars/Surface_METAR_20060326_0000.nc";
 
-    StationObsDataset ncd = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuilder());
+    StationObsDataset ncd =
+        (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuilder());
     StationObsDatasetInfo info = new StationObsDatasetInfo(ncd, null);
     FileOutputStream fos2 = new FileOutputStream("C:/TEMP/stationCollection.xml");
-    GZIPOutputStream zout =  new GZIPOutputStream( fos2);
+    GZIPOutputStream zout = new GZIPOutputStream(fos2);
 
     info.writeStationObsDatasetXML(System.out);
     info.writeStationCollectionXML(zout);
 
     zout.close();
     File f = new File("C:/TEMP/stationCollection.xml");
-    System.out.println(" size="+f.length());
+    System.out.println(" size=" + f.length());
   }
 
 }

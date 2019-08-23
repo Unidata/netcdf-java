@@ -88,14 +88,18 @@ public class CancelTaskImpl implements CancelTask {
   @Override
   public void setProgress(String msg, int progress) {
     this.note = msg;
-    if (progress > 0) this.progress = progress;
+    if (progress > 0)
+      this.progress = progress;
   }
 
   @Override
   public String toString() {
-    if (cancel) return "was canceled";
-    if (isError()) return "error= "+error;
-    if (success) return "success";
-    return "finished="+done;
+    if (cancel)
+      return "was canceled";
+    if (isError())
+      return "error= " + error;
+    if (success)
+      return "success";
+    return "finished=" + done;
   }
 }

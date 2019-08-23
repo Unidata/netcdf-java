@@ -14,8 +14,7 @@ public class TestTimeDuration {
       System.out.println("start = (" + s + ")");
       TimeDuration d = new TimeDuration(s);
       System.out.println("duration = (" + d.toString() + ")");
-    }
-    catch (java.text.ParseException e) {
+    } catch (java.text.ParseException e) {
       e.printStackTrace();
     }
   }

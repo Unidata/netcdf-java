@@ -12,7 +12,6 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.GaussianLatitudes;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -30,8 +29,8 @@ public class GdsHorizCoordSys {
   public final ucar.unidata.geoloc.ProjectionImpl proj;
   public final double startx, dx; // km
   public final double starty, dy; // km
-  public final int nx, ny;        // regridded
-  public final int nxRaw, nyRaw;  // raw
+  public final int nx, ny; // regridded
+  public final int nxRaw, nyRaw; // raw
   public final int[] nptsInLine; // non-null id thin grid
 
   // hmmmm
@@ -39,7 +38,7 @@ public class GdsHorizCoordSys {
   private Array gaussw;
 
   public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, ProjectionImpl proj,
-                          double startx, double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
+      double startx, double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
 
     this.name = name;
     this.template = template;
@@ -63,7 +62,7 @@ public class GdsHorizCoordSys {
         ny = nyRaw;
         nx = QuasiRegular.getMax(nptsInLine);
       } else {
-        throw new IllegalArgumentException("Quasi Grids nx,ny="+nxRaw+","+nyRaw);
+        throw new IllegalArgumentException("Quasi Grids nx,ny=" + nxRaw + "," + nyRaw);
       }
     } else {
       nx = nxRaw;
@@ -80,17 +79,19 @@ public class GdsHorizCoordSys {
   }
 
   public double getStartY() {
-    if (gaussLats != null) return gaussLats.getDouble(0);
+    if (gaussLats != null)
+      return gaussLats.getDouble(0);
     return starty;
   }
 
   public double getEndX() {
-    return startx + dx * (nx-1);
+    return startx + dx * (nx - 1);
   }
 
   public double getEndY() {
-    if (gaussLats != null) return gaussLats.getDouble((int) gaussLats.getSize() - 1);
-    return starty + dy * (ny-1);
+    if (gaussLats != null)
+      return gaussLats.getDouble((int) gaussLats.getSize() - 1);
+    return starty + dy * (ny - 1);
   }
 
   public int getScanMode() {
@@ -106,23 +107,24 @@ public class GdsHorizCoordSys {
   }
 
   public String makeDescription() {
-    return name + "_" + ny + "X" + nx+" (Center "+getCenterLatLon()+")";
+    return name + "_" + ny + "X" + nx + " (Center " + getCenterLatLon() + ")";
   }
 
   public String makeId() {
     LatLonPointImpl center = (LatLonPointImpl) getCenterLatLon();
-    StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx+"-"+center.toString(2));
-    StringUtil2.replace(result, ". ","p-");
+    StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx + "-" + center.toString(2));
+    StringUtil2.replace(result, ". ", "p-");
     return result.toString();
   }
 
   public ProjectionRect getProjectionBB() {
-    return new ProjectionRect(new ProjectionPointImpl(getStartX(), getStartY()), getEndX() - getStartX(), getEndY() - getStartY());
+    return new ProjectionRect(new ProjectionPointImpl(getStartX(), getStartY()), getEndX() - getStartX(),
+        getEndY() - getStartY());
   }
 
   public LatLonRect getLatLonBB() {
     if (isLatLon()) {
-      return new LatLonRect(new LatLonPointImpl(getStartY(), getStartX()), dy * (ny-1), dx * (nx-1));
+      return new LatLonRect(new LatLonPointImpl(getStartY(), getStartX()), dy * (ny - 1), dx * (nx - 1));
     } else {
       return proj.projToLatLonBB(getProjectionBB());
     }
@@ -133,15 +135,16 @@ public class GdsHorizCoordSys {
   // set gaussian weights based on nparallels
   // some weird adjustment for la1 and la2.
   public void setGaussianLats(int nparallels, float la1, float la2) {
-    log.debug ("la1 {}, la2 {}", la1, la2);
-    if (this.gaussLats != null) throw new RuntimeException("Cant modify GdsHorizCoordSys");
+    log.debug("la1 {}, la2 {}", la1, la2);
+    if (this.gaussLats != null)
+      throw new RuntimeException("Cant modify GdsHorizCoordSys");
 
     int nlats = (2 * nparallels);
     GaussianLatitudes gaussLats = GaussianLatitudes.factory(nlats);
 
     int bestStartIndex = 0, bestEndIndex = 0;
     double bestStartDiff = Double.MAX_VALUE;
-    double bestEndDiff   = Double.MAX_VALUE;
+    double bestEndDiff = Double.MAX_VALUE;
     for (int i = 0; i < nlats; i++) {
       double diff = Math.abs(gaussLats.latd[i] - la1);
       if (diff < bestStartDiff) {
@@ -155,10 +158,10 @@ public class GdsHorizCoordSys {
       }
     }
 
-    log.debug ("first pass: bestStartIndex {}, bestEndIndex {}", bestStartIndex, bestEndIndex);
+    log.debug("first pass: bestStartIndex {}, bestEndIndex {}", bestStartIndex, bestEndIndex);
 
     if (Math.abs(bestEndIndex - bestStartIndex) + 1 != nyRaw) {
-      log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
+      log.warn("GRIB gaussian lats: NP != NY, use NY"); // see email from Toussaint@dkrz.de datafil:
       nlats = nyRaw;
       gaussLats = GaussianLatitudes.factory(nlats);
       bestStartIndex = 0;
@@ -166,7 +169,7 @@ public class GdsHorizCoordSys {
     }
     boolean goesUp = bestEndIndex > bestStartIndex;
 
-    log.debug ("bestStartIndex {}, bestEndIndex {}, goesUp {}", bestStartIndex, bestEndIndex, goesUp);
+    log.debug("bestStartIndex {}, bestEndIndex {}, goesUp {}", bestStartIndex, bestEndIndex, goesUp);
 
     // create the data
     int useIndex = bestStartIndex;
@@ -176,7 +179,7 @@ public class GdsHorizCoordSys {
       data[i] = (float) gaussLats.latd[useIndex];
       gaussw[i] = (float) gaussLats.gaussw[useIndex];
 
-        log.trace ("i {}, useIndex {}, data {}, gaussw {}", i, useIndex, data[i], gaussw[i]);
+      log.trace("i {}, useIndex {}, data {}, gaussw {}", i, useIndex, data[i], gaussw[i]);
       if (goesUp) {
         useIndex++;
       } else {
@@ -184,8 +187,8 @@ public class GdsHorizCoordSys {
       }
     }
 
-    this.gaussLats = Array.factory(DataType.FLOAT, new int[]{nyRaw}, data);
-    this.gaussw    = Array.factory(DataType.FLOAT, new int[]{nyRaw}, gaussw);
+    this.gaussLats = Array.factory(DataType.FLOAT, new int[] {nyRaw}, data);
+    this.gaussw = Array.factory(DataType.FLOAT, new int[] {nyRaw}, gaussw);
   }
 
   public Array getGaussianLats() {
@@ -198,23 +201,9 @@ public class GdsHorizCoordSys {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("name", name)
-        .add("template", template)
-        .add("gdsNumberPoints", gdsNumberPoints)
-        .add("scanMode", scanMode)
-        .add("proj", proj)
-        .add("startx", startx)
-        .add("dx", dx)
-        .add("starty", starty)
-        .add("dy", dy)
-        .add("nx", nx)
-        .add("ny", ny)
-        .add("nxRaw", nxRaw)
-        .add("nyRaw", nyRaw)
-        .add("nptsInLine", nptsInLine)
-        .add("gaussLats", gaussLats)
-        .add("gaussw", gaussw)
-        .toString();
+    return MoreObjects.toStringHelper(this).add("name", name).add("template", template)
+        .add("gdsNumberPoints", gdsNumberPoints).add("scanMode", scanMode).add("proj", proj).add("startx", startx)
+        .add("dx", dx).add("starty", starty).add("dy", dy).add("nx", nx).add("ny", ny).add("nxRaw", nxRaw)
+        .add("nyRaw", nyRaw).add("nptsInLine", nptsInLine).add("gaussLats", gaussLats).add("gaussw", gaussw).toString();
   }
 }

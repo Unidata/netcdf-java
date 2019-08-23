@@ -12,11 +12,9 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
-
 import javax.annotation.Nonnull;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
-
 import static ucar.ma2.DataType.*;
 
 /**
@@ -46,7 +44,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   private double fillValue; // LOOK: making it double not really correct. What about CHAR?
 
   private boolean hasMissingValue = false;
-  private double[] missingValue;  // LOOK: also wrong to make double, for the same reason.
+  private double[] missingValue; // LOOK: also wrong to make double, for the same reason.
 
   private DataType.Signedness signedness;
 
@@ -54,8 +52,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   /**
    * Constructor, when you dont want anything done.
    */
-  EnhanceScaleMissingUnsignedImpl() {
-  }
+  EnhanceScaleMissingUnsignedImpl() {}
 
   /**
    * Constructor, default values.
@@ -71,33 +68,33 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
    * Constructor.
    * If scale/offset attributes are found, remove them from the decorated variable.
    *
-   * @param forVar               the Variable to decorate.
-   * @param fillValueIsMissing   use _FillValue for isMissing()
+   * @param forVar the Variable to decorate.
+   * @param fillValueIsMissing use _FillValue for isMissing()
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
   private EnhanceScaleMissingUnsignedImpl(VariableDS forVar, boolean fillValueIsMissing, boolean invalidDataIsMissing,
-          boolean missingDataIsMissing) {
+      boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
     this.missingDataIsMissing = missingDataIsMissing;
 
     this.origDataType = forVar.getDataType();
     this.unsignedConversionType = origDataType;
-    
+
     // unsignedConversionType is initialized to origDataType, and origDataType may be a non-integral type that doesn't
     // have an "unsigned flavor" (such as FLOAT and DOUBLE). Furthermore, unsignedConversionType may start out as
     // integral, but then be widened to non-integral (i.e. LONG -> DOUBLE). For these reasons, we cannot rely upon
     // unsignedConversionType to store the signedness of the variable. We need a separate field.
     this.signedness = origDataType.getSignedness();
-  
+
     // In the event of conflict, "unsigned" wins. Potential conflicts include:
     // 1. origDataType is unsigned, but variable has "_Unsigned == false" attribute.
-    // 2. origDataType is signed,   but variable has "_Unsigned == true"  attribute.
+    // 2. origDataType is signed, but variable has "_Unsigned == true" attribute.
     if (signedness == Signedness.SIGNED) {
       Attribute unsignedAtt = forVar.findAttributeIgnoreCase(CDM.UNSIGNED);
       if (unsignedAtt != null && unsignedAtt.getStringValue().equalsIgnoreCase("true")) {
-          this.signedness = Signedness.UNSIGNED;
+        this.signedness = Signedness.UNSIGNED;
       }
     }
 
@@ -106,7 +103,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       this.unsignedConversionType = nextLarger(origDataType).withSignedness(Signedness.UNSIGNED);
       logger.debug("assign unsignedConversionType = {}", unsignedConversionType);
     }
-    
+
     DataType scaleType = null, offsetType = null, validType = null;
     logger.debug("{} for Variable = {}", getClass().getSimpleName(), forVar.getFullName());
 
@@ -165,15 +162,15 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     if (fillValueAtt != null && !fillValueAtt.isString()) {
       DataType fillType = getAttributeDataType(fillValueAtt);
       fillValue = convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
-      fillValue = applyScaleOffset(fillValue);  // This will fail when _FillValue is CHAR.
+      fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
       hasFillValue = true;
     } else {
       // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
       String fileTypeId = forVar.getNetcdfFile() == null ? null : forVar.getNetcdfFile().getFileTypeId();
-      
-      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId) ||
-              DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
-      
+
+      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
+          || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
+
       if (isNetcdfIosp && unsignedConversionType.isNumeric()) {
         fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
         hasFillValue = true;
@@ -194,7 +191,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
           }
 
           hasMissingValue = true;
-        } else {  // not a CHAR - try to fix problem where they use a numeric value as a String attribute
+        } else { // not a CHAR - try to fix problem where they use a numeric value as a String attribute
           try {
             missingValue = new double[1];
             missingValue[0] = Double.parseDouble(svalue);
@@ -205,17 +202,17 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
         }
       } else { // not a string
         DataType missType = getAttributeDataType(missingValueAtt);
-        
+
         missingValue = new double[missingValueAtt.getLength()];
         for (int i = 0; i < missingValue.length; i++) {
           missingValue[i] = convertUnsigned(missingValueAtt.getNumericValue(i), missType).doubleValue();
           missingValue[i] = applyScaleOffset(missingValue[i]);
         }
         logger.debug("missing_data: {}", Arrays.toString(missingValue));
-        
+
         for (double mv : missingValue) {
           if (!Double.isNaN(mv)) {
-            hasMissingValue = true;   // dont need to do anything if its already a NaN
+            hasMissingValue = true; // dont need to do anything if its already a NaN
             break;
           }
         }
@@ -229,8 +226,8 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
 
       // validData may be packed or unpacked
       if (hasValidData()) {
-        if (rank(validType) == rank(largestOf(scaleType, offsetType)) &&
-                rank(validType) > rank(unsignedConversionType)) {
+        if (rank(validType) == rank(largestOf(scaleType, offsetType))
+            && rank(validType) > rank(unsignedConversionType)) {
           // If valid_range is the same type as the wider of scale_factor and add_offset, PLUS
           // it is wider than the (packed) data, we know that the valid_range values were stored as unpacked.
           // We already assumed that this was the case when we first read the attribute values, so there's
@@ -247,7 +244,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       }
     }
   }
-  
+
   // Get the data type of an attribute. Make it unsigned if the variable is unsigned.
   private DataType getAttributeDataType(Attribute attribute) {
     DataType dataType = attribute.getDataType();
@@ -257,14 +254,14 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     }
     return dataType;
   }
-  
+
   /**
    * Returns a distinct integer for each of the {@link DataType#isNumeric() numeric} data types that can be used to
    * (roughly) order them by the range of the DataType. {@code BYTE < UBYTE < SHORT < USHORT < INT < UINT <
    * LONG < ULONG < FLOAT < DOUBLE}. {@code -1} will be returned for all non-numeric data types.
    *
-   * @param dataType  a numeric data type.
-   * @return  a distinct integer for each of the numeric data types that can be used to (roughly) order them by size.
+   * @param dataType a numeric data type.
+   * @return a distinct integer for each of the numeric data types that can be used to (roughly) order them by size.
    */
   public static int rank(DataType dataType) {
     if (dataType == null) {
@@ -272,26 +269,37 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     }
 
     switch (dataType) {
-      case BYTE:   return 0;
-      case UBYTE:  return 1;
-      case SHORT:  return 2;
-      case USHORT: return 3;
-      case INT:    return 4;
-      case UINT:   return 5;
-      case LONG:   return 6;
-      case ULONG:  return 7;
-      case FLOAT:  return 8;
-      case DOUBLE: return 9;
-      default:     return -1;
+      case BYTE:
+        return 0;
+      case UBYTE:
+        return 1;
+      case SHORT:
+        return 2;
+      case USHORT:
+        return 3;
+      case INT:
+        return 4;
+      case UINT:
+        return 5;
+      case LONG:
+        return 6;
+      case ULONG:
+        return 7;
+      case FLOAT:
+        return 8;
+      case DOUBLE:
+        return 9;
+      default:
+        return -1;
     }
   }
-  
+
   /**
    * Returns the data type that is the largest among the arguments. Relative sizes of data types are determined via
    * {@link #rank(DataType)}.
    *
-   * @param dataTypes  an array of numeric data types.
-   * @return  the data type that is the largest among the arguments.
+   * @param dataTypes an array of numeric data types.
+   * @return the data type that is the largest among the arguments.
    */
   public static DataType largestOf(DataType... dataTypes) {
     DataType widest = null;
@@ -304,70 +312,110 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     }
     return widest;
   }
-  
+
   /**
    * Returns the smallest numeric data type that:
    * <ol>
-   *     <li>can hold a larger integer than {@code dataType} can</li>
-   *     <li>if integral, has the same signedness as {@code dataType}</li>
+   * <li>can hold a larger integer than {@code dataType} can</li>
+   * <li>if integral, has the same signedness as {@code dataType}</li>
    * </ol>
    * The relative sizes of data types are determined in a manner consistent with {@link #rank(DataType)}.
    * <p/>
    * <table border="1">
-   *     <tr>  <th>Argument</th>  <th>Result</th>  </tr>
-   *     <tr>  <td>BYTE</td>      <td>SHORT</td>   </tr>
-   *     <tr>  <td>UBYTE</td>     <td>USHORT</td>  </tr>
-   *     <tr>  <td>SHORT</td>     <td>INT</td>     </tr>
-   *     <tr>  <td>USHORT</td>    <td>UINT</td>    </tr>
-   *     <tr>  <td>INT</td>       <td>LONG</td>    </tr>
-   *     <tr>  <td>UINT</td>      <td>ULONG</td>   </tr>
-   *     <tr>  <td>LONG</td>      <td>DOUBLE</td>  </tr>
-   *     <tr>  <td>ULONG</td>     <td>DOUBLE</td>  </tr>
-   *     <tr>
-   *         <td>Any other data type</td>
-   *         <td>Just return argument</td>
-   *     </tr>
+   * <tr>
+   * <th>Argument</th>
+   * <th>Result</th>
+   * </tr>
+   * <tr>
+   * <td>BYTE</td>
+   * <td>SHORT</td>
+   * </tr>
+   * <tr>
+   * <td>UBYTE</td>
+   * <td>USHORT</td>
+   * </tr>
+   * <tr>
+   * <td>SHORT</td>
+   * <td>INT</td>
+   * </tr>
+   * <tr>
+   * <td>USHORT</td>
+   * <td>UINT</td>
+   * </tr>
+   * <tr>
+   * <td>INT</td>
+   * <td>LONG</td>
+   * </tr>
+   * <tr>
+   * <td>UINT</td>
+   * <td>ULONG</td>
+   * </tr>
+   * <tr>
+   * <td>LONG</td>
+   * <td>DOUBLE</td>
+   * </tr>
+   * <tr>
+   * <td>ULONG</td>
+   * <td>DOUBLE</td>
+   * </tr>
+   * <tr>
+   * <td>Any other data type</td>
+   * <td>Just return argument</td>
+   * </tr>
    * </table>
    * <p/>
    * The returned type is intended to be just big enough to hold the result of performing an unsigned conversion of a
    * value of the smaller type. For example, the {@code byte} value {@code -106} equals {@code 150} when interpreted
    * as unsigned. That won't fit in a (signed) {@code byte}, but it will fit in a {@code short}.
    *
-   * @param dataType  an integral data type.
-   * @return  the next larger type.
+   * @param dataType an integral data type.
+   * @return the next larger type.
    */
   public static DataType nextLarger(DataType dataType) {
     switch (dataType) {
-      case BYTE:   return SHORT;
-      case UBYTE:  return USHORT;
-      case SHORT:  return INT;
-      case USHORT: return UINT;
-      case INT:    return LONG;
-      case UINT:   return ULONG;
+      case BYTE:
+        return SHORT;
+      case UBYTE:
+        return USHORT;
+      case SHORT:
+        return INT;
+      case USHORT:
+        return UINT;
+      case INT:
+        return LONG;
+      case UINT:
+        return ULONG;
       case LONG:
       case ULONG:
         return DOUBLE;
-      default:     return dataType;
+      default:
+        return dataType;
     }
   }
 
-  @Override public double getScaleFactor() {
+  @Override
+  public double getScaleFactor() {
     return scale;
   }
 
-  @Override public double getOffset() {
+  @Override
+  public double getOffset() {
     return offset;
   }
-  
-  @Override public Signedness getSignedness() {
+
+  @Override
+  public Signedness getSignedness() {
     return signedness;
   }
-  
-  @Override public DataType getScaledOffsetType() {
+
+  @Override
+  public DataType getScaledOffsetType() {
     return scaledOffsetType;
   }
-  
-  @Nonnull @Override public DataType getUnsignedConversionType() {
+
+  @Nonnull
+  @Override
+  public DataType getUnsignedConversionType() {
     return unsignedConversionType;
   }
 
@@ -375,17 +423,17 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   public boolean hasValidData() {
     return hasValidRange || hasValidMin || hasValidMax;
   }
-  
+
   @Override
   public double getValidMin() {
     return validMin;
   }
-  
+
   @Override
   public double getValidMax() {
     return validMax;
   }
-  
+
   @Override
   public boolean isInvalidData(double val) {
     // valid_min and valid_max may have been multiplied by scale_factor, which could be a float, not a double.
@@ -396,36 +444,35 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     boolean lessThanOrEqualToValidMax =
         Misc.nearlyEquals(val, validMax, Misc.defaultMaxRelativeDiffFloat) || val < validMax;
 
-    return (hasValidRange && !(greaterThanOrEqualToValidMin && lessThanOrEqualToValidMax)) ||
-           (hasValidMin   && !greaterThanOrEqualToValidMin) ||
-           (hasValidMax   && !lessThanOrEqualToValidMax);
+    return (hasValidRange && !(greaterThanOrEqualToValidMin && lessThanOrEqualToValidMax))
+        || (hasValidMin && !greaterThanOrEqualToValidMin) || (hasValidMax && !lessThanOrEqualToValidMax);
   }
-  
+
   @Override
   public boolean hasFillValue() {
     return hasFillValue;
   }
-  
+
   @Override
   public boolean isFillValue(double val) {
     return hasFillValue && Misc.nearlyEquals(val, fillValue, Misc.defaultMaxRelativeDiffFloat);
   }
-  
+
   @Override
   public double getFillValue() {
     return fillValue;
   }
-  
+
   @Override
   public boolean hasScaleOffset() {
     return hasScaleOffset;
   }
-  
+
   @Override
   public boolean hasMissingValue() {
     return hasMissingValue;
   }
-  
+
   @Override
   public boolean isMissingValue(double val) {
     if (!hasMissingValue) {
@@ -438,53 +485,53 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     }
     return false;
   }
-  
+
   @Override
   public double[] getMissingValues() {
     return missingValue;
   }
-  
+
   @Override
   public void setFillValueIsMissing(boolean b) {
     this.fillValueIsMissing = b;
   }
-  
+
   @Override
   public void setInvalidDataIsMissing(boolean b) {
     this.invalidDataIsMissing = b;
   }
-  
+
   @Override
   public void setMissingDataIsMissing(boolean b) {
     this.missingDataIsMissing = b;
   }
-  
+
   @Override
   public boolean hasMissing() {
-    return (invalidDataIsMissing && hasValidData()) || (fillValueIsMissing && hasFillValue()) ||
-        (missingDataIsMissing && hasMissingValue());
+    return (invalidDataIsMissing && hasValidData()) || (fillValueIsMissing && hasFillValue())
+        || (missingDataIsMissing && hasMissingValue());
   }
-  
+
   @Override
   public boolean isMissing(double val) {
     if (Double.isNaN(val)) {
       return true;
     } else {
-      return (missingDataIsMissing && isMissingValue(val)) || (fillValueIsMissing && isFillValue(val)) ||
-             (invalidDataIsMissing && isInvalidData(val));
+      return (missingDataIsMissing && isMissingValue(val)) || (fillValueIsMissing && isFillValue(val))
+          || (invalidDataIsMissing && isInvalidData(val));
     }
   }
-  
-  
+
+
   @Override
   public Number convertUnsigned(Number value) {
     return convertUnsigned(value, signedness);
   }
-  
+
   private static Number convertUnsigned(Number value, DataType dataType) {
     return convertUnsigned(value, dataType.getSignedness());
   }
-  
+
   private static Number convertUnsigned(Number value, Signedness signedness) {
     if (signedness == Signedness.UNSIGNED) {
       // Handle integral types that should be treated as unsigned by widening them if necessary.
@@ -493,7 +540,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       return value;
     }
   }
-  
+
   @Override
   public Array convertUnsigned(Array in) {
     return convert(in, true, false, false);
@@ -504,35 +551,35 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     double convertedValue = value.doubleValue();
     return hasScaleOffset ? scale * convertedValue + offset : convertedValue;
   }
-  
+
   @Override
   public Array applyScaleOffset(Array in) {
     return convert(in, false, true, false);
   }
-  
+
   @Override
   public Number convertMissing(Number value) {
     return isMissing(value.doubleValue()) ? Double.NaN : value;
   }
-  
+
   @Override
   public Array convertMissing(Array in) {
     return convert(in, false, false, true);
   }
-  
+
   @Override
   public Array convert(Array in, boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
     if (!in.getDataType().isNumeric() || (!convertUnsigned && !applyScaleOffset && !convertMissing)) {
-      return in;  // Nothing to do!
+      return in; // Nothing to do!
     }
-    
+
     if (getSignedness() == Signedness.SIGNED) {
       convertUnsigned = false;
     }
     if (!hasScaleOffset()) {
       applyScaleOffset = false;
     }
-    
+
     DataType outType = origDataType;
     if (convertUnsigned) {
       outType = getUnsignedConversionType();
@@ -540,18 +587,18 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     if (applyScaleOffset) {
       outType = getScaledOffsetType();
     }
-  
+
     if (outType != DataType.FLOAT && outType != DataType.DOUBLE) {
       convertMissing = false;
     }
-    
+
     Array out = Array.factory(outType, in.getShape());
     IndexIterator iterIn = in.getIndexIterator();
     IndexIterator iterOut = out.getIndexIterator();
-  
+
     while (iterIn.hasNext()) {
       Number value = (Number) iterIn.getObjectNext();
-      
+
       if (convertUnsigned) {
         value = convertUnsigned(value);
       }
@@ -561,10 +608,10 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       if (convertMissing) {
         value = convertMissing(value);
       }
-      
+
       iterOut.setObjectNext(value);
     }
-  
+
     return out;
   }
 }

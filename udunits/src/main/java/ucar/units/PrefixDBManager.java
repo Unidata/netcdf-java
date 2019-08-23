@@ -12,33 +12,33 @@ import java.io.Serializable;
  * @author Steven R. Emmerson
  */
 public final class PrefixDBManager implements Serializable {
-	private static final long	serialVersionUID	= 1L;
-	/**
-	 * @serial
-	 */
-	private static PrefixDB		instance;
+  private static final long serialVersionUID = 1L;
+  /**
+   * @serial
+   */
+  private static PrefixDB instance;
 
-	/**
-	 * Gets the current prefix database.
-	 * 
-	 * @return The current prefix database.
-	 * @throws PrefixDBException
-	 *             The current prefix database couldn't be created.
-	 */
-	public static synchronized PrefixDB instance() throws PrefixDBException {
-		if (instance == null) {
-					instance = StandardPrefixDB.instance();
-		}
-		return instance;
-	}
+  /**
+   * Gets the current prefix database.
+   * 
+   * @return The current prefix database.
+   * @throws PrefixDBException
+   *         The current prefix database couldn't be created.
+   */
+  public static synchronized PrefixDB instance() throws PrefixDBException {
+    if (instance == null) {
+      instance = StandardPrefixDB.instance();
+    }
+    return instance;
+  }
 
-	/**
-	 * Sets the current prefix database.
-	 * 
-	 * @param instance
-	 *            The prefix database to be made the current one.
-	 */
-	public static synchronized void setInstance(final PrefixDB instance) {
-		PrefixDBManager.instance = instance;
-	}
+  /**
+   * Sets the current prefix database.
+   * 
+   * @param instance
+   *        The prefix database to be made the current one.
+   */
+  public static synchronized void setInstance(final PrefixDB instance) {
+    PrefixDBManager.instance = instance;
+  }
 }

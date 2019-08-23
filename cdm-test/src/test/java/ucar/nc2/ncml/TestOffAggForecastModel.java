@@ -16,7 +16,6 @@ import ucar.nc2.*;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -30,17 +29,16 @@ public class TestOffAggForecastModel {
   private int nfore = 11;
 
   static String dataDir = TestDir.cdmUnitTestDir + "ncml/nc/ncmodels/";
-  static String ncml =
-    "<?xml version='1.0' encoding='UTF-8'?>\n" +
-    "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-    "  <aggregation dimName='runtime' type='forecastModelRunCollection' recheckEvery='0 sec'>\n" +
-    "    <scan location='"+dataDir+"' suffix='.nc' dateFormatMark='NAM_CONUS_80km_#yyyyMMdd_HHmm' enhance='true'/>\n" +
-    "  </aggregation>\n" +
-    "</netcdf>";
+  static String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+      + "  <aggregation dimName='runtime' type='forecastModelRunCollection' recheckEvery='0 sec'>\n"
+      + "    <scan location='" + dataDir
+      + "' suffix='.nc' dateFormatMark='NAM_CONUS_80km_#yyyyMMdd_HHmm' enhance='true'/>\n" + "  </aggregation>\n"
+      + "</netcdf>";
 
   @Test
   public void testForecastModel() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestDir.cdmUnitTestDir + "ncml/offsite/aggForecastModel.xml";
+    String filename = "file:./" + TestDir.cdmUnitTestDir + "ncml/offsite/aggForecastModel.xml";
     logger.debug(" TestOffAggForecastModel.testForecastModel=\n{}", ncml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
 
@@ -55,7 +53,7 @@ public class TestOffAggForecastModel {
 
   @Test
   public void testForecastModelExtend() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestDir.cdmUnitTestDir + "ncml/offsite/aggForecastModel.xml";
+    String filename = "file:./" + TestDir.cdmUnitTestDir + "ncml/offsite/aggForecastModel.xml";
     String newModel = dataDir + "NAM_CONUS_80km_20051212_1200.nc";
     String newModelsave = dataDir + "NAM_CONUS_80km_20051212_1200.nc.save";
     File newModelFile = new File(newModel);
@@ -64,14 +62,16 @@ public class TestOffAggForecastModel {
     // remove one of the files from the scan
     if (newModelFile.exists() && !newModelFileSave.exists()) {
       boolean ok = newModelFile.renameTo(newModelFileSave);
-      if (!ok) throw new IOException("cant rename file "+newModelFile);
+      if (!ok)
+        throw new IOException("cant rename file " + newModelFile);
     } else if (!newModelFile.exists() && newModelFileSave.exists()) {
       logger.debug("already renamed");
     } else if (!newModelFile.exists() && !newModelFileSave.exists()) {
-      throw new IOException("missing "+newModelFile.getPath());
+      throw new IOException("missing " + newModelFile.getPath());
     } else if (newModelFile.exists() && newModelFileSave.exists()) {
       boolean ok = newModelFile.delete();
-      if (!ok) throw new IOException("cant delete file "+newModelFile.getPath());
+      if (!ok)
+        throw new IOException("cant delete file " + newModelFile.getPath());
     }
 
     logger.debug(" TestOffAggForecastModel.testForecastModel=\n{}", ncml);
@@ -118,10 +118,10 @@ public class TestOffAggForecastModel {
     Dimension timeDim = ncfile.findDimension("run");
     assert null != timeDim;
     assert timeDim.getShortName().equals("run");
-    assert timeDim.getLength() == nagg : nagg +" != "+ timeDim.getLength();
+    assert timeDim.getLength() == nagg : nagg + " != " + timeDim.getLength();
   }
 
- public void testCoordVar(NetcdfFile ncfile) throws IOException {
+  public void testCoordVar(NetcdfFile ncfile) throws IOException {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
@@ -208,13 +208,13 @@ public class TestOffAggForecastModel {
     assert v.getDimension(2) == ncfile.findDimension("y");
     assert v.getDimension(3) == ncfile.findDimension("x");
 
-      Array data = v.read();
-      assert data.getRank() == 4;
-      assert data.getShape()[0] == nagg;
-      assert data.getShape()[1] == nfore;
-      assert data.getShape()[2] == 65;
-      assert data.getShape()[3] == 93;
-      assert data.getElementType() == float.class;
+    Array data = v.read();
+    assert data.getRank() == 4;
+    assert data.getShape()[0] == nagg;
+    assert data.getShape()[1] == nfore;
+    assert data.getShape()[2] == 65;
+    assert data.getShape()[3] == 93;
+    assert data.getElementType() == float.class;
 
   }
 
@@ -222,30 +222,32 @@ public class TestOffAggForecastModel {
 
     Variable v = ncfile.findVariable("P_sfc");
 
-      Array data = v.read(origin, shape);
-      assert data.getRank() == 4;
-      assert data.getSize() == shape[0] * shape[1] * shape[2] * shape[3];
-      assert data.getShape()[0] == shape[0];
-      assert data.getShape()[1] == shape[1];
-      assert data.getShape()[2] == shape[2];
-      assert data.getShape()[3] == shape[3];
-      assert data.getElementType() == float.class;
+    Array data = v.read(origin, shape);
+    assert data.getRank() == 4;
+    assert data.getSize() == shape[0] * shape[1] * shape[2] * shape[3];
+    assert data.getShape()[0] == shape[0];
+    assert data.getShape()[1] == shape[1];
+    assert data.getShape()[2] == shape[2];
+    assert data.getShape()[3] == shape[3];
+    assert data.getElementType() == float.class;
 
-      /* Index tIndex = data.getIndex();
-      for (int i=0; i<shape[0]; i++)
-       for (int j=0; j<shape[1]; j++)
-        for (int k=0; k<shape[2]; k++) {
-          double val = data.getDouble( tIndex.set(i, j, k));
-          //logger.debug(" {}", val);
-          assert Misc.nearlyEquals(val, 100*(i+origin[0]) + 10*j + k) : val;
-        } */
+    /*
+     * Index tIndex = data.getIndex();
+     * for (int i=0; i<shape[0]; i++)
+     * for (int j=0; j<shape[1]; j++)
+     * for (int k=0; k<shape[2]; k++) {
+     * double val = data.getDouble( tIndex.set(i, j, k));
+     * //logger.debug(" {}", val);
+     * assert Misc.nearlyEquals(val, 100*(i+origin[0]) + 10*j + k) : val;
+     * }
+     */
 
   }
 
   public void testReadSlice(NetcdfFile ncfile) throws IOException, InvalidRangeException {
-    testReadSlice( ncfile, new int[] {0, 0, 0, 0}, new int[] {14, 11, 3, 4} );
-    testReadSlice( ncfile, new int[] {0, 0, 0, 0}, new int[] {4, 2, 3, 2} );
-    testReadSlice( ncfile, new int[] {5, 0, 0, 0}, new int[] {3, 10, 3, 4} );
-    testReadSlice( ncfile, new int[] {10, 0, 0, 0}, new int[] {4, 10, 2, 3} );
-   }
+    testReadSlice(ncfile, new int[] {0, 0, 0, 0}, new int[] {14, 11, 3, 4});
+    testReadSlice(ncfile, new int[] {0, 0, 0, 0}, new int[] {4, 2, 3, 2});
+    testReadSlice(ncfile, new int[] {5, 0, 0, 0}, new int[] {3, 10, 3, 4});
+    testReadSlice(ncfile, new int[] {10, 0, 0, 0}, new int[] {4, 10, 2, 3});
+  }
 }

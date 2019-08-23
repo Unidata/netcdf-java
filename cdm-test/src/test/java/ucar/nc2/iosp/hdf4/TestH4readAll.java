@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -35,15 +34,15 @@ public class TestH4readAll {
 
   @AfterClass
   static public void after() {
-    H4header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
+    H4header.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 
-  @Parameterized.Parameters(name="{0}")
- 	public static Collection<Object[]> getTestParameters() throws IOException {
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> getTestParameters() throws IOException {
     Collection<Object[]> filenames = new ArrayList<>();
 
     try {
-      TestDir.actOnAllParameterized(testDir , new H4FileFilter(), filenames);
+      TestDir.actOnAllParameterized(testDir, new H4FileFilter(), filenames);
       // TestDir.actOnAllParameterized("D:/hdf4/" , new H4FileFilter(), filenames);
     } catch (IOException e) {
       // JUnit *always* executes a test class's @Parameters method, even if it won't subsequently run the class's tests
@@ -53,13 +52,14 @@ public class TestH4readAll {
       // Naturally, if we execute a test using that nonsense value, it'll fail. That's fine; we need to deal with the
       // root cause. However, it is more likely that the exception occurred because "!isCdmUnitTestDirAvailable", and
       // as a result, all NeedsCdmUnitTest tests will be excluded.
-      filenames.add(new Object[]{e.getMessage()});
+      filenames.add(new Object[] {e.getMessage()});
     }
 
     return filenames;
- 	}
+  }
 
   String filename;
+
   public TestH4readAll(String filename) {
     this.filename = filename;
   }
@@ -71,7 +71,8 @@ public class TestH4readAll {
 
   static class H4FileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
-      return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos") || pathname.getName().endsWith(".h4");
+      return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos")
+          || pathname.getName().endsWith(".h4");
     }
   }
 }

@@ -10,7 +10,6 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.Urlencoded;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,8 +26,8 @@ import java.nio.channels.WritableByteChannel;
  */
 
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
-  static public final int defaultHTTPBufferSize = 20 * 1000;       // 20K
-  static public final int maxHTTPBufferSize = 10 * 1000 * 1000;     // 10 M
+  static public final int defaultHTTPBufferSize = 20 * 1000; // 20K
+  static public final int maxHTTPBufferSize = 10 * 1000 * 1000; // 10 M
   static private final boolean debug = false, debugDetails = false;
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -55,8 +54,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     boolean needtest = true;
 
-    try (
-      HTTPMethod method = HTTPFactory.Head(session,url)) {
+    try (HTTPMethod method = HTTPFactory.Head(session, url)) {
 
       doConnect(method);
 
@@ -78,9 +76,12 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
       try {
         total_length = Long.parseLong(head.getValue());
-        /* Some HTTP server report 0 bytes length. 
-         * Do the Range bytes test if the server is reporting 0 bytes length*/
-        if (total_length==0) needtest = true;
+        /*
+         * Some HTTP server report 0 bytes length.
+         * Do the Range bytes test if the server is reporting 0 bytes length
+         */
+        if (total_length == 0)
+          needtest = true;
       } catch (NumberFormatException e) {
         throw new IOException("Server has malformed Content-Length header");
       }
@@ -97,7 +98,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       setBufferSize(useBuffer);
     }
 
-    if (debugLeaks) openFiles.add(location);
+    if (debugLeaks)
+      openFiles.add(location);
   }
 
   public void close() {
@@ -110,15 +112,14 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     }
   }
 
-  private boolean rangeOk(String url)
-  {
+  private boolean rangeOk(String url) {
     try {
       try (HTTPMethod method = HTTPFactory.Get(session, url)) {
-        method.setRange(0,0);
+        method.setRange(0, 0);
         doConnect(method);
 
         int code = method.getStatusCode();
-        if(code != 206)
+        if (code != 206)
           throw new IOException("Server does not support Range requests, code= " + code);
         Header head = method.getResponseHeader("Content-Range");
         total_length = Long.parseLong(head.getValue().substring(head.getValue().lastIndexOf("/") + 1));
@@ -161,10 +162,10 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    * Read directly from file, without going through the buffer.
    * All reading goes through here or readToByteChannel;
    *
-   * @param pos    start here in the file
-   * @param buff   put data into this buffer
+   * @param pos start here in the file
+   * @param buff put data into this buffer
    * @param offset buffer offset
-   * @param len    this number of bytes
+   * @param len this number of bytes
    * @return actual number of bytes read
    * @throws IOException on io error
    */
@@ -174,11 +175,12 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (end >= total_length)
       end = total_length - 1;
 
-    if (debug) System.out.println(" HTTPRandomAccessFile bytes=" + pos + "-" + end + ": ");
+    if (debug)
+      System.out.println(" HTTPRandomAccessFile bytes=" + pos + "-" + end + ": ");
 
-    try (HTTPMethod method = HTTPFactory.Get(session,url)) {
+    try (HTTPMethod method = HTTPFactory.Get(session, url)) {
       method.setFollowRedirects(true);
-      method.setRange(pos,end);
+      method.setRange(pos, end);
       doConnect(method);
 
       int code = method.getStatusCode();
@@ -203,7 +205,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     int done = 0;
     while (want > 0) {
       int bytesRead = in.read(buff, offset + done, want);
-      if (bytesRead == -1) break;
+      if (bytesRead == -1)
+        break;
       done += bytesRead;
       want -= bytesRead;
     }
@@ -233,7 +236,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   /**
    * Always returns {@code 0L}, as we cannot easily determine the last time that a remote file was modified.
    *
-   * @return  {@code 0L}, always.
+   * @return {@code 0L}, always.
    */
   // LOOK: An idea of how we might implement this: https://github.com/Unidata/thredds/pull/479#issuecomment-194562614
   @Override

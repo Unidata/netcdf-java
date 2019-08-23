@@ -10,7 +10,6 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.time.*;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +29,13 @@ public class TimeHelper {
     if (units == null)
       units = atts.findAttValueIgnoreCase(CDM.UNITS, null);
     if (units == null)
-        throw new IllegalStateException("No units");
+      throw new IllegalStateException("No units");
 
     Calendar cal = getCalendarFromAttribute(atts);
     CalendarDateUnit dateUnit;
     try {
       dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
-      return new TimeHelper( dateUnit);
+      return new TimeHelper(dateUnit);
     } catch (IllegalArgumentException e) {
       return null;
     }
@@ -52,8 +51,8 @@ public class TimeHelper {
   private TimeHelper(CalendarDateUnit dateUnit) {
     // this.cal = cal;
     this.dateUnit = dateUnit;
-    //this.refDate = dateUnit.getBaseCalendarDate();
-    //this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
+    // this.refDate = dateUnit.getBaseCalendarDate();
+    // this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }
 
   // copy on modify
@@ -104,8 +103,8 @@ public class TimeHelper {
   }
 
   public CalendarDateRange getDateRange(double startValue, double endValue) {
-    CalendarDate start = makeDate( startValue);
-    CalendarDate end = makeDate( endValue);
+    CalendarDate start = makeDate(startValue);
+    CalendarDate end = makeDate(endValue);
     return CalendarDateRange.of(start, end);
   }
 
@@ -119,7 +118,8 @@ public class TimeHelper {
 
   public static ucar.nc2.time.Calendar getCalendarFromAttribute(AttributeContainer atts) {
     String cal = atts.findAttValueIgnoreCase(CF.CALENDAR, null);
-    if (cal == null) return null;
+    if (cal == null)
+      return null;
     return ucar.nc2.time.Calendar.get(cal);
   }
 

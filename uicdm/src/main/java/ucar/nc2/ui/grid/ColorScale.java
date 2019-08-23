@@ -6,10 +6,8 @@ package ucar.nc2.ui.grid;
 
 import ucar.ma2.IsMissingEvaluator;
 import ucar.ui.widget.FontUtil;
-
 import ucar.nc2.util.ListenerManager;
 import ucar.unidata.util.Format;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;
@@ -30,13 +28,15 @@ import javax.swing.*;
  */
 
 public class ColorScale implements Cloneable, java.io.Serializable {
-  public enum MinMaxType {horiz, log, hold}
+  public enum MinMaxType {
+    horiz, log, hold
+  }
 
   public static final int VERTICAL = 0;
   public static final int HORIZONTAL = 1;
 
-  private static final long serialVersionUID = -1L;       // disconnect java version checking
-  private static final int objectVersion = 1;             // our version control
+  private static final long serialVersionUID = -1L; // disconnect java version checking
+  private static final int objectVersion = 1; // our version control
   private static final boolean debugColors = false;
   private static int sigfig = 4;
 
@@ -58,152 +58,89 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   private Color missingDataColor = Color.white;
 
   // kludge to make life easier
-  public static final Color[] redHot = {
-          new java.awt.Color(0x5cacee),    //cyan
-          new java.awt.Color(0xfff5eb),
-          new java.awt.Color(0xffe6cc),
-          new java.awt.Color(0xffd9b0),
-          new java.awt.Color(0xffc485),
-          new java.awt.Color(0xffb86b),
-          new java.awt.Color(0xffad56),
-          new java.awt.Color(0xff992b),
-          new java.awt.Color(0xff7e00),
-          new java.awt.Color(0xff6a00),
-          new java.awt.Color(0xf15800),
-          new java.awt.Color(0xe24400),
-          new java.awt.Color(0xd22f00),
-          new java.awt.Color(0xc11900),
-          new java.awt.Color(0xa00300),
-          new java.awt.Color(0xff00ff)      // magenta
+  public static final Color[] redHot = {new java.awt.Color(0x5cacee), // cyan
+      new java.awt.Color(0xfff5eb), new java.awt.Color(0xffe6cc), new java.awt.Color(0xffd9b0),
+      new java.awt.Color(0xffc485), new java.awt.Color(0xffb86b), new java.awt.Color(0xffad56),
+      new java.awt.Color(0xff992b), new java.awt.Color(0xff7e00), new java.awt.Color(0xff6a00),
+      new java.awt.Color(0xf15800), new java.awt.Color(0xe24400), new java.awt.Color(0xd22f00),
+      new java.awt.Color(0xc11900), new java.awt.Color(0xa00300), new java.awt.Color(0xff00ff) // magenta
   };
 
-  public static final Color[] redBlue = {
-          new java.awt.Color(1, 57, 255),
-          new java.awt.Color(0, 140, 255),
-          new java.awt.Color(1, 209, 255),
-          new java.awt.Color(1, 255, 232),
-          new java.awt.Color(1, 255, 171),
-          new java.awt.Color(1, 255, 79),
-          new java.awt.Color(43, 255, 0),
-          new java.awt.Color(166, 255, 2),
-          new java.awt.Color(227, 255, 1),
-          new java.awt.Color(255, 198, 0),
-          new java.awt.Color(255, 168, 1),
-          new java.awt.Color(255, 145, 1),
-          new java.awt.Color(255, 130, 1),
-          new java.awt.Color(255, 107, 0),
-          new java.awt.Color(255, 84, 0),
-          new java.awt.Color(255, 7, 0)
-  };
-  public static final Color[] hueBands = {
-          new java.awt.Color(204, 0, 0),
-          new java.awt.Color(255, 0, 0),
-          new java.awt.Color(255, 51, 51),
-          new java.awt.Color(255, 102, 102),
-          new java.awt.Color(255, 153, 153),
-          new java.awt.Color(255, 102, 0),
-          new java.awt.Color(255, 153, 0),
-          new java.awt.Color(255, 204, 102),
-          new java.awt.Color(255, 255, 0),
-          new java.awt.Color(255, 255, 51),
-          new java.awt.Color(255, 255, 102),
-          new java.awt.Color(255, 255, 153),
-          new java.awt.Color(0, 255, 0),
-          new java.awt.Color(51, 255, 51),
-          new java.awt.Color(102, 255, 102),
-          new java.awt.Color(153, 255, 153),
-          new java.awt.Color(204, 255, 204),
-          new java.awt.Color(0, 255, 255),
-          new java.awt.Color(51, 255, 255),
-          new java.awt.Color(102, 255, 255),
-          new java.awt.Color(153, 255, 255),
-          new java.awt.Color(204, 255, 255),
-          new java.awt.Color(0, 0, 255),
-          new java.awt.Color(51, 51, 255),
-          new java.awt.Color(102, 102, 255),
-          new java.awt.Color(153, 153, 255),
-          new java.awt.Color(255, 0, 255),
-          new java.awt.Color(255, 51, 255),
-          new java.awt.Color(255, 102, 255),
-          new java.awt.Color(255, 153, 255),
-          new java.awt.Color(255, 204, 255)
-  };
+  public static final Color[] redBlue = {new java.awt.Color(1, 57, 255), new java.awt.Color(0, 140, 255),
+      new java.awt.Color(1, 209, 255), new java.awt.Color(1, 255, 232), new java.awt.Color(1, 255, 171),
+      new java.awt.Color(1, 255, 79), new java.awt.Color(43, 255, 0), new java.awt.Color(166, 255, 2),
+      new java.awt.Color(227, 255, 1), new java.awt.Color(255, 198, 0), new java.awt.Color(255, 168, 1),
+      new java.awt.Color(255, 145, 1), new java.awt.Color(255, 130, 1), new java.awt.Color(255, 107, 0),
+      new java.awt.Color(255, 84, 0), new java.awt.Color(255, 7, 0)};
+  public static final Color[] hueBands = {new java.awt.Color(204, 0, 0), new java.awt.Color(255, 0, 0),
+      new java.awt.Color(255, 51, 51), new java.awt.Color(255, 102, 102), new java.awt.Color(255, 153, 153),
+      new java.awt.Color(255, 102, 0), new java.awt.Color(255, 153, 0), new java.awt.Color(255, 204, 102),
+      new java.awt.Color(255, 255, 0), new java.awt.Color(255, 255, 51), new java.awt.Color(255, 255, 102),
+      new java.awt.Color(255, 255, 153), new java.awt.Color(0, 255, 0), new java.awt.Color(51, 255, 51),
+      new java.awt.Color(102, 255, 102), new java.awt.Color(153, 255, 153), new java.awt.Color(204, 255, 204),
+      new java.awt.Color(0, 255, 255), new java.awt.Color(51, 255, 255), new java.awt.Color(102, 255, 255),
+      new java.awt.Color(153, 255, 255), new java.awt.Color(204, 255, 255), new java.awt.Color(0, 0, 255),
+      new java.awt.Color(51, 51, 255), new java.awt.Color(102, 102, 255), new java.awt.Color(153, 153, 255),
+      new java.awt.Color(255, 0, 255), new java.awt.Color(255, 51, 255), new java.awt.Color(255, 102, 255),
+      new java.awt.Color(255, 153, 255), new java.awt.Color(255, 204, 255)};
 
 
-  public static final Color[] spectrum2 = {
-          new java.awt.Color(204, 0, 0),
-          new java.awt.Color(255, 31, 0),
-          new java.awt.Color(255, 69, 0),
-          new java.awt.Color(255, 107, 0),
-          new java.awt.Color(255, 138, 0),
-          new java.awt.Color(255, 168, 0),
-          new java.awt.Color(255, 199, 0),
-          new java.awt.Color(255, 244, 0),
-          new java.awt.Color(227, 255, 0),
-          new java.awt.Color(196, 255, 0),
-          new java.awt.Color(165, 255, 0),
-          new java.awt.Color(127, 255, 0),
-          new java.awt.Color(89, 255, 0),
-          new java.awt.Color(43, 255, 0),
-          new java.awt.Color(0, 255, 40),
-          new java.awt.Color(0, 255, 80),
-          new java.awt.Color(0, 255, 110),
-          new java.awt.Color(0, 255, 140),
-          new java.awt.Color(0, 255, 170),
-          new java.awt.Color(0, 255, 201),
-          new java.awt.Color(0, 255, 232),
-          new java.awt.Color(0, 232, 255),
-          new java.awt.Color(0, 209, 255),
-          new java.awt.Color(0, 170, 255),
-          new java.awt.Color(0, 140, 255),
-          new java.awt.Color(0, 79, 255),
-          new java.awt.Color(0, 57, 255),
-          new java.awt.Color(0, 34, 255),
-          new java.awt.Color(0, 3, 255),
-          new java.awt.Color(29, 1, 255),
-          new java.awt.Color(59, 1, 255),
-          new java.awt.Color(82, 1, 255),
-          new java.awt.Color(112, 1, 255),
-          new java.awt.Color(125, 1, 255),
-          new java.awt.Color(166, 1, 255),
-          new java.awt.Color(189, 1, 255),
-          new java.awt.Color(219, 1, 255)
-  };
+  public static final Color[] spectrum2 = {new java.awt.Color(204, 0, 0), new java.awt.Color(255, 31, 0),
+      new java.awt.Color(255, 69, 0), new java.awt.Color(255, 107, 0), new java.awt.Color(255, 138, 0),
+      new java.awt.Color(255, 168, 0), new java.awt.Color(255, 199, 0), new java.awt.Color(255, 244, 0),
+      new java.awt.Color(227, 255, 0), new java.awt.Color(196, 255, 0), new java.awt.Color(165, 255, 0),
+      new java.awt.Color(127, 255, 0), new java.awt.Color(89, 255, 0), new java.awt.Color(43, 255, 0),
+      new java.awt.Color(0, 255, 40), new java.awt.Color(0, 255, 80), new java.awt.Color(0, 255, 110),
+      new java.awt.Color(0, 255, 140), new java.awt.Color(0, 255, 170), new java.awt.Color(0, 255, 201),
+      new java.awt.Color(0, 255, 232), new java.awt.Color(0, 232, 255), new java.awt.Color(0, 209, 255),
+      new java.awt.Color(0, 170, 255), new java.awt.Color(0, 140, 255), new java.awt.Color(0, 79, 255),
+      new java.awt.Color(0, 57, 255), new java.awt.Color(0, 34, 255), new java.awt.Color(0, 3, 255),
+      new java.awt.Color(29, 1, 255), new java.awt.Color(59, 1, 255), new java.awt.Color(82, 1, 255),
+      new java.awt.Color(112, 1, 255), new java.awt.Color(125, 1, 255), new java.awt.Color(166, 1, 255),
+      new java.awt.Color(189, 1, 255), new java.awt.Color(219, 1, 255)};
   private static final Color[] defaultColors = redBlue;
 
-  /* Constructor.
+  /*
+   * Constructor.
+   * 
    * @param name of this colorscale.
+   * 
    * @param c array of colors.
    */
-  public ColorScale(String name, Color [] c) {
+  public ColorScale(String name, Color[] c) {
     this.name = name;
     this.ncolors = c.length;
-    colors = new Color[ ncolors];
+    colors = new Color[ncolors];
     System.arraycopy(c, 0, colors, 0, ncolors);
 
     constructTransient();
   }
 
-  /* Constructor. Use default colors.
+  /*
+   * Constructor. Use default colors.
+   * 
    * @param name of this colorscale.
    */
   public ColorScale(String name) {
     this(name, defaultColors);
-/*    this.name = new String(name);
-    this.ncolors = ncolors;
-    colors = new Color[ ncolors];
-
-      // set default colors
-    int n = Math.min(ncolors, defaultColors.length);
-    for (int i=0; i<n; i++)
-      colors[i] = defaultColors[i];
-    for (int i=n; i<ncolors; i++)
-      colors[i] = defaultColors[n-1];
-
-    constructTransient(); */
+    /*
+     * this.name = new String(name);
+     * this.ncolors = ncolors;
+     * colors = new Color[ ncolors];
+     * 
+     * // set default colors
+     * int n = Math.min(ncolors, defaultColors.length);
+     * for (int i=0; i<n; i++)
+     * colors[i] = defaultColors[i];
+     * for (int i=n; i<ncolors; i++)
+     * colors[i] = defaultColors[n-1];
+     * 
+     * constructTransient();
+     */
   }
 
-  /* Constructor. Use default colors, no name.
+  /*
+   * Constructor. Use default colors, no name.
    */
   public ColorScale() {
     this("", defaultColors);
@@ -213,12 +150,9 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   private void constructTransient() {
     useColors = colors;
 
-    edge = new double[ ncolors];
-    hist = new int[ ncolors + 1];
-    lm = new ListenerManager(
-            "java.beans.PropertyChangeListener",
-            "java.beans.PropertyChangeEvent",
-            "propertyChange");
+    edge = new double[ncolors];
+    hist = new int[ncolors + 1];
+    lm = new ListenerManager("java.beans.PropertyChangeListener", "java.beans.PropertyChangeEvent", "propertyChange");
     missingDataColor = Color.white;
   }
 
@@ -270,13 +204,16 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
       useColors = colors;
       ncolors = n;
-      edge = new double[ ncolors];
-      hist = new int[ ncolors + 1];
+      edge = new double[ncolors];
+      hist = new int[ncolors + 1];
     }
   }
 
-  /* Get the color at the given index, or the missing data color.
+  /*
+   * Get the color at the given index, or the missing data color.
+   * 
    * @param i index into color array, or ncolors to get missingDataColor.
+   * 
    * @exception IllegalArgumentException if (i<0) || (i>ncolors)
    */
   public Color getColor(int i) {
@@ -295,13 +232,17 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     return edge[index];
   }
 
-  /* Set whether there is missing data, what it is, and what color to use.
+  /*
+   * Set whether there is missing data, what it is, and what color to use.
+   * 
    * @param i: index into color array, or ncolors for missingDataColor.
+   * 
    * @exception IllegalArgumentException if (i<0) || (i>ncolors)
    *
-  public void setMissingDataColor( Color missingDataColor) {
-    this.missingDataColor = missingDataColor;
-  } */
+   * public void setMissingDataColor( Color missingDataColor) {
+   * this.missingDataColor = missingDataColor;
+   * }
+   */
 
   public void setGeoGrid(IsMissingEvaluator gg) {
     this.gg = gg;
@@ -312,12 +253,14 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     return missingDataColor;
   }
 
-  /*public String getLabel(int i) {
-    if (i >=0 && i < ncolors)
-      return label[i];
-    else
-      throw new IllegalArgumentException("Color Scale getLabel "+i);
-  } */
+  /*
+   * public String getLabel(int i) {
+   * if (i >=0 && i < ncolors)
+   * return label[i];
+   * else
+   * throw new IllegalArgumentException("Color Scale getLabel "+i);
+   * }
+   */
 
   /**
    * Get which color interval this value lies in.
@@ -328,7 +271,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   public int getIndexFromValue(double value) {
     int index;
     if (hasMissingData && gg.isMissing(value))
-      index = ncolors;  // missing data
+      index = ncolors; // missing data
     else if (value <= min)
       index = 0;
     else if (value >= max)
@@ -343,7 +286,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   public int getIndexFromValueLog(double value) {
     int index;
     if (hasMissingData && gg.isMissing(value))
-      index = ncolors;  // missing data
+      index = ncolors; // missing data
     else if (value <= min)
       index = 0;
     else if (value >= max)
@@ -359,6 +302,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
    * Set the data min/max interval. The color intervals are set based on this.
    * A PropertyChangeEvent is sent when this is called. Currently the intervals are
    * calculated in the following way (where incr = (max-min)/(n-2)) :
+   * 
    * <pre>
    * <p/>
    *      edge           data interval
@@ -417,16 +361,18 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
   public Object clone() {
     ColorScale cl = new ColorScale(name, colors);
-    /*try {
-      cl = (ColorScale) super.clone();
-    } catch(CloneNotSupportedException e) {
-      return null;
-    } // ignore
-
-    // non primitive fields must be cloned separately
-    cl.name = new String(name);
-    cl.set(this);
-    cl.construct();  */
+    /*
+     * try {
+     * cl = (ColorScale) super.clone();
+     * } catch(CloneNotSupportedException e) {
+     * return null;
+     * } // ignore
+     * 
+     * // non primitive fields must be cloned separately
+     * cl.name = new String(name);
+     * cl.set(this);
+     * cl.construct();
+     */
     return cl;
   }
 
@@ -434,7 +380,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
   // this is for editing a colorscale
   private void editModeBegin() {
-    Color [] editColors = new Color[ ncolors];
+    Color[] editColors = new Color[ncolors];
     System.arraycopy(colors, 0, editColors, 0, ncolors);
     useColors = editColors;
   }
@@ -451,16 +397,18 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       useColors[i] = c;
   }
 
-  /* private void set( ColorScale cs) {
-   set(cs.getColors());
- } */
+  /*
+   * private void set( ColorScale cs) {
+   * set(cs.getColors());
+   * }
+   */
   private void setColors(Color[] c) {
     ncolors = c.length;
-    colors = new Color[ ncolors];
+    colors = new Color[ncolors];
     System.arraycopy(c, 0, colors, 0, ncolors);
-    edge = new double[ ncolors];
-    hist = new int[ ncolors + 1];
-    useColors = colors;        // ??
+    edge = new double[ncolors];
+    hist = new int[ncolors + 1];
+    useColors = colors; // ??
   }
 
   // serialization
@@ -526,24 +474,26 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       }
       lpanel = new JPanel();
       lpanel.add(unitLabel);
-      //unitLabel.setBorder( new javax.swing.border.EtchedBorder());
+      // unitLabel.setBorder( new javax.swing.border.EtchedBorder());
       if (type == ColorScale.VERTICAL)
         lpanel.setPreferredSize(new Dimension(size, 0));
       else
         lpanel.setPreferredSize(new Dimension(0, size));
       add(lpanel);
 
-      label = new String[ nColorInterval];
+      label = new String[nColorInterval];
       calcLabels();
 
-      /* creates a popup men, attaches it to this Panel
-     PopupMenu popupMenu = new PopupMenu(this, "options");
-     popupMenu.add("Edit", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         System.out.println("popup edit action");
-         dialog.show();
-       }
-     }); */
+      /*
+       * creates a popup men, attaches it to this Panel
+       * PopupMenu popupMenu = new PopupMenu(this, "options");
+       * popupMenu.add("Edit", new AbstractAction() {
+       * public void actionPerformed(ActionEvent e) {
+       * System.out.println("popup edit action");
+       * dialog.show();
+       * }
+       * });
+       */
 
     }
 
@@ -575,7 +525,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       if (nColorInterval != cscale.getNumColors()) {
         removeAll();
         nColorInterval = cscale.getNumColors();
-        label = new String[ nColorInterval];
+        label = new String[nColorInterval];
         for (int i = 0; i < nColorInterval; i++) {
           ColorInterval intv = new ColorInterval(nColorInterval - i - 1);
           add(intv);
@@ -596,7 +546,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       if (nColorInterval != c.length) {
         removeAll();
         nColorInterval = c.length;
-        label = new String[ nColorInterval];
+        label = new String[nColorInterval];
         for (int i = 0; i < nColorInterval; i++) {
           ColorInterval intv = new ColorInterval(nColorInterval - i - 1);
           add(intv);
@@ -622,7 +572,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       cs.setColor(selected, c);
     }
 
-    //public void setEditable( boolean b) { editable = b; }
+    // public void setEditable( boolean b) { editable = b; }
     public void setEditMode(boolean on, boolean accept) {
       if (on) {
         editable = true;
@@ -645,18 +595,20 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       useLabel = b;
     }
 
-    /*private void edit(int which) {
-      if (!editable)
-        return;
-      selected = which;
-      repaint();
-      cs.setEditMode(true);
-      //dialog.show();
-    }*/
+    /*
+     * private void edit(int which) {
+     * if (!editable)
+     * return;
+     * selected = which;
+     * repaint();
+     * cs.setEditMode(true);
+     * //dialog.show();
+     * }
+     */
     public void setUnitString(String s) {
       unitLabel.setText(s);
-      //System.out.println("new text = "+s);
-      //unitLabel.repaint(s);
+      // System.out.println("new text = "+s);
+      // unitLabel.repaint(s);
     }
 
     public void print(Graphics2D g, double x, double y, double width, double height) {
@@ -678,28 +630,30 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       }
     }
 
-    /* private class OkListener implements ActionListener {
-      public void actionPerformed(ActionEvent e) {
-        selected = -1;
-        cs.accept();
-        repaint();
-      }
-    }  // end inner class OkListener
-
-    private class CancelListener implements ActionListener {
-      public void actionPerformed(ActionEvent e) {
-        selected = -1;
-        cs.cancel();
-        repaint();
-      }
-    } // end inner class CancelListener  */
+    /*
+     * private class OkListener implements ActionListener {
+     * public void actionPerformed(ActionEvent e) {
+     * selected = -1;
+     * cs.accept();
+     * repaint();
+     * }
+     * } // end inner class OkListener
+     * 
+     * private class CancelListener implements ActionListener {
+     * public void actionPerformed(ActionEvent e) {
+     * selected = -1;
+     * cs.cancel();
+     * repaint();
+     * }
+     * } // end inner class CancelListener
+     */
 
     private class ColorInterval extends JComponent {
       private int rank;
 
       ColorInterval(int r) {
         this.rank = r;
-        //setPreferredSize( new Dimension(40,40));
+        // setPreferredSize( new Dimension(40,40));
         addMouseListener(new MouseAdapter() {
           public void mousePressed(MouseEvent e) {
             if (editable) {
@@ -716,8 +670,8 @@ public class ColorScale implements Cloneable, java.io.Serializable {
         g.setColor(cs.getColor(rank));
         g.fillRect(x, y + textSize, width, height - textSize);
 
-        //g.setColor( Color.black);
-        //g.drawRect( x, y+textSize, width, height-textSize);
+        // g.setColor( Color.black);
+        // g.drawRect( x, y+textSize, width, height-textSize);
 
         if (useLabel) {
           g.setColor(Color.black);

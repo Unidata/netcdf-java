@@ -6,9 +6,7 @@ package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
-
 import ucar.nc2.dataset.*;
-
 import ucar.unidata.geoloc.vertical.HybridHeight;
 import ucar.unidata.util.Parameter;
 
@@ -56,7 +54,7 @@ public class CFHybridHeight extends AbstractTransformBuilder implements VertTran
   /**
    * Make the <code>CoordinateTransform</code> from the dataset
    *
-   * @param ds  the dataset
+   * @param ds the dataset
    * @param ctv the variable with the formula
    * @return the <code>CoordinateTransform</code>
    */
@@ -67,13 +65,15 @@ public class CFHybridHeight extends AbstractTransformBuilder implements VertTran
 
     // parse the formula string
     String[] values = parseFormula(formula_terms, "a b orog");
-    if (values == null) return null;
+    if (values == null)
+      return null;
 
     a = values[0];
     b = values[1];
     orog = values[2];
 
-    VerticalCT rs = new VerticalCT("AtmHybridHeight_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.HybridHeight, this);
+    VerticalCT rs = new VerticalCT("AtmHybridHeight_Transform_" + ctv.getName(), getTransformName(),
+        VerticalCT.Type.HybridHeight, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
 
@@ -102,12 +102,13 @@ public class CFHybridHeight extends AbstractTransformBuilder implements VertTran
   /**
    * Make the vertical transform transform
    *
-   * @param ds      the dataset
+   * @param ds the dataset
    * @param timeDim the time dimention
-   * @param vCT     the vertical coordinate transform
+   * @param vCT the vertical coordinate transform
    * @return the VerticalTransform
    */
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+      VerticalCT vCT) {
     return new HybridHeight(ds, timeDim, vCT.getParameters());
   }
 }

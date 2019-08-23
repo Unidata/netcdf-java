@@ -15,6 +15,7 @@ import ucar.nc2.constants.CF;
 
 /**
  * Abstract superclass for TableConfigurer implementations
+ * 
  * @author caron
  * @since Jan 21, 2009
  */
@@ -42,63 +43,74 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
 
   private String convName, convUsed;
 
-  /* protected Variable findVariableWithStandardNameAndNotDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
-    for (Variable v : ds.getVariables()) {
-      String stdName = ds.findAttValueIgnoreCase(v, CF.STANDARD_NAME, null);
-      if ((stdName != null) && stdName.equals(standard_name) && v.getRank() > 0 && !v.getDimension(0).equals(outer))
-        return v;
-    }
-    return null;
-  }
+  /*
+   * protected Variable findVariableWithStandardNameAndNotDimension(NetcdfDataset ds, String standard_name, Dimension
+   * outer, Formatter errlog) {
+   * for (Variable v : ds.getVariables()) {
+   * String stdName = ds.findAttValueIgnoreCase(v, CF.STANDARD_NAME, null);
+   * if ((stdName != null) && stdName.equals(standard_name) && v.getRank() > 0 && !v.getDimension(0).equals(outer))
+   * return v;
+   * }
+   * return null;
+   * }
+   * 
+   * protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer) {
+   * Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
+   * public boolean match(CoordinateAxis axis) {
+   * if ((outer == null) && (axis.getRank() == 0))
+   * return true;
+   * if ((outer != null) && (axis.getRank() == 1) && (outer.equals(axis.getDimension(0))))
+   * return true;
+   * return false;
+   * }
+   * });
+   * if (var == null) return null;
+   * return var.getShortName();
+   * }
+   */
 
-  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer) {
-    Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
-      public boolean match(CoordinateAxis axis) {
-        if ((outer == null) && (axis.getRank() == 0))
-          return true;
-        if ((outer != null) && (axis.getRank() == 1) && (outer.equals(axis.getDimension(0))))
-          return true;
-        return false;
-      }
-    });
-    if (var == null) return null;
-    return var.getShortName();
-  } */
-
-  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer, final Dimension inner) {
+  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer,
+      final Dimension inner) {
     Variable var = CoordSysEvaluator.findCoordByType(ds, type,
         axis -> ((axis.getRank() == 2) && outer.equals(axis.getDimension(0)) && inner.equals(axis.getDimension(1))));
-    if (var == null) return null;
+    if (var == null)
+      return null;
     return var.getShortName();
   }
 
-  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer, final Dimension middle, final Dimension inner) {
-    Variable var = CoordSysEvaluator.findCoordByType(ds, type,
-        axis -> ((axis.getRank() == 3) && outer.equals(axis.getDimension(0)) && middle.equals(axis.getDimension(1)) && inner.equals(axis.getDimension(2))));
-    if (var == null) return null;
+  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer,
+      final Dimension middle, final Dimension inner) {
+    Variable var =
+        CoordSysEvaluator.findCoordByType(ds, type, axis -> ((axis.getRank() == 3) && outer.equals(axis.getDimension(0))
+            && middle.equals(axis.getDimension(1)) && inner.equals(axis.getDimension(2))));
+    if (var == null)
+      return null;
     return var.getShortName();
   }
 
   protected CoordinateAxis findZAxisNotStationAlt(NetcdfDataset ds) {
     CoordinateAxis z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height, new NotStationAlt());
-    if (z != null) return z;
+    if (z != null)
+      return z;
 
     z = CoordSysEvaluator.findCoordByType(ds, AxisType.Pressure, new NotStationAlt());
-    if (z != null) return z;
+    if (z != null)
+      return z;
 
     z = CoordSysEvaluator.findCoordByType(ds, AxisType.GeoZ, new NotStationAlt());
     return z;
   }
 
-  // search for an axis which is  not the station altitude
+  // search for an axis which is not the station altitude
   private static class NotStationAlt implements CoordSysEvaluator.Predicate {
 
     @Override
     public boolean match(CoordinateAxis axis) {
       Attribute stdName = axis.findAttribute(CF.STANDARD_NAME);
-       if (stdName == null) return true;
-       String val = stdName.getStringValue();
-       return !CF.SURFACE_ALTITUDE.equals(val) && !CF.STATION_ALTITUDE.equals(val);
+      if (stdName == null)
+        return true;
+      String val = stdName.getStringValue();
+      return !CF.SURFACE_ALTITUDE.equals(val) && !CF.STATION_ALTITUDE.equals(val);
     }
   }
 

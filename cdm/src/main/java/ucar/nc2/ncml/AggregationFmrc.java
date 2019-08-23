@@ -13,7 +13,6 @@ import thredds.inventory.MFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.util.CancelTask;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -37,19 +36,19 @@ public class AggregationFmrc extends AggregationOuterDimension {
     super(ncd, dimName, Type.forecastModelRunCollection, recheckS);
   }
 
-  public void addDirectoryScanFmrc(String dirName, String suffix, String regexpPatternString, String subdirs, String olderThan,
-                                   String runMatcher, String forecastMatcher, String offsetMatcher) {
+  public void addDirectoryScanFmrc(String dirName, String suffix, String regexpPatternString, String subdirs,
+      String olderThan, String runMatcher, String forecastMatcher, String offsetMatcher) {
 
     // only one
     this.runMatcher = runMatcher;
-    //this.forecastMatcher = forecastMatcher;
-    //this.offsetMatcher = offsetMatcher;
+    // this.forecastMatcher = forecastMatcher;
+    // this.offsetMatcher = offsetMatcher;
 
     // this.enhance = NetcdfDataset.getDefaultEnhanceMode();
     isDate = true;
 
-    //DatasetScanner d = new DatasetScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
-    //datasetManager.addDirectoryScan(d);
+    // DatasetScanner d = new DatasetScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
+    // datasetManager.addDirectoryScan(d);
     datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, null);
     if (runMatcher != null) {
       DateExtractor dateExtractor = new DateExtractorFromName(runMatcher, false);
@@ -85,10 +84,12 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     if (runMatcher != null)
       f.format("  runMatcher=%s%n", runMatcher);
-   /*  if (forecastMatcher != null)
-      f.format("  forecastMatcher=%s%n", forecastMatcher);
-    if (offsetMatcher != null)
-      f.format("  offsetMatcher=%s%n", offsetMatcher); */
+    /*
+     * if (forecastMatcher != null)
+     * f.format("  forecastMatcher=%s%n", forecastMatcher);
+     * if (offsetMatcher != null)
+     * f.format("  offsetMatcher=%s%n", offsetMatcher);
+     */
   }
 
   @Override
@@ -96,7 +97,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     fmrc = new Fmrc(datasetManager, new FeatureCollectionConfig());
 
     // fill in the ncDataset
-    fmrc.getDataset2D( ncDataset);
+    fmrc.getDataset2D(ncDataset);
 
     ncDataset.finish();
   }

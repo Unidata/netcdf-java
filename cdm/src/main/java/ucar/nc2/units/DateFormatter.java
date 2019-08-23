@@ -16,34 +16,40 @@ import java.util.Date;
  */
 public class DateFormatter {
 
-  private java.text.SimpleDateFormat isoDateTimeFormat, isoDateNoSecsFormat, stdDateTimeFormat, stdDateNoSecsFormat, dateOnlyFormat;
+  private java.text.SimpleDateFormat isoDateTimeFormat, isoDateNoSecsFormat, stdDateTimeFormat, stdDateNoSecsFormat,
+      dateOnlyFormat;
 
   private void isoDateTimeFormat() {
-    if (isoDateTimeFormat != null) return;
+    if (isoDateTimeFormat != null)
+      return;
     isoDateTimeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
   private void isoDateNoSecsFormat() {
-    if (isoDateNoSecsFormat != null) return;
+    if (isoDateNoSecsFormat != null)
+      return;
     isoDateNoSecsFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     isoDateNoSecsFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
   private void stdDateTimeFormat() {
-    if (stdDateTimeFormat != null) return;
+    if (stdDateTimeFormat != null)
+      return;
     stdDateTimeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     stdDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
   private void stdDateNoSecsFormat() {
-    if (stdDateNoSecsFormat != null) return;
+    if (stdDateNoSecsFormat != null)
+      return;
     stdDateNoSecsFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm");
     stdDateNoSecsFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT")); // same as UTC
   }
 
   private void dateOnlyFormat() {
-    if (dateOnlyFormat != null) return;
+    if (dateOnlyFormat != null)
+      return;
     dateOnlyFormat = new java.text.SimpleDateFormat("yyyy-MM-dd");
     dateOnlyFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
@@ -53,11 +59,13 @@ public class DateFormatter {
 
   /**
    * Parse the text in W3C profile of ISO 8601 format.
+   * 
    * @param text parse this text
    * @return equivalent Date or null if failure
    * @see <a href="http://www.w3.org/TR/NOTE-datetime">W3C profile of ISO 8601</a>
    * 
-   * @deprecated As of netCDF-JAVA 4.3.10. Use {@link ucar.nc2.time.CalendarDateFormatter#isoStringToDate(String)  } instead
+   * @deprecated As of netCDF-JAVA 4.3.10. Use {@link ucar.nc2.time.CalendarDateFormatter#isoStringToDate(String) }
+   *             instead
    * 
    */
   @Deprecated
@@ -71,7 +79,7 @@ public class DateFormatter {
     } catch (java.text.ParseException e) {
     }
 
-    // now try  "yyyy-MM-dd'T'HH:mm:ss"
+    // now try "yyyy-MM-dd'T'HH:mm:ss"
     try {
       result = isoDateTimeFormat(text);
       return result;
@@ -104,6 +112,7 @@ public class DateFormatter {
 
   /**
    * Parse text in the format "yyyy-MM-dd HH:mm:ss"
+   * 
    * @param text parse this text
    * @return equivalent Date
    * @throws java.text.ParseException if not formatted correctly
@@ -116,6 +125,7 @@ public class DateFormatter {
 
   /**
    * Parse text in the format "yyyy-MM-dd HH:mm"
+   * 
    * @param text parse this text
    * @return equivalent Date
    * @throws java.text.ParseException if not formatted correctly
@@ -128,6 +138,7 @@ public class DateFormatter {
 
   /**
    * Parse text in the format "yyyy-MM-dd'T'HH:mm:ss"
+   * 
    * @param text parse this text
    * @return equivalent Date
    * @throws java.text.ParseException if not formatted correctly
@@ -140,6 +151,7 @@ public class DateFormatter {
 
   /**
    * Parse text in the format "yyyy-MM-dd'T'HH:mm"
+   * 
    * @param text parse this text
    * @return equivalent Date
    * @throws java.text.ParseException if not formatted correctly
@@ -152,6 +164,7 @@ public class DateFormatter {
 
   /**
    * Parse text in the format "yyyy-MM-dd"
+   * 
    * @param text parse this text
    * @return equivalent Date
    * @throws java.text.ParseException if not formatted correctly
@@ -165,57 +178,74 @@ public class DateFormatter {
   ////////////
 
 
-  /** Return standard GMT date format; show date only, not time. Format = "yyyy-MM-dd"
-   * @deprecated use toDateOnlyString */
+  /**
+   * Return standard GMT date format; show date only, not time. Format = "yyyy-MM-dd"
+   * 
+   * @deprecated use toDateOnlyString
+   */
   public String getStandardDateOnlyString(Date date) {
-     return toDateOnlyString(date);
-   }
-
-  /** date only format= yyyy-MM-dd
-   * @deprecated use toDateOnlyString */
-  public String toDateString( Date date) {
-    return toDateOnlyString( date);
+    return toDateOnlyString(date);
   }
 
-  /** date only format= yyyy-MM-dd
+  /**
+   * date only format= yyyy-MM-dd
+   * 
+   * @deprecated use toDateOnlyString
+   */
+  public String toDateString(Date date) {
+    return toDateOnlyString(date);
+  }
+
+  /**
+   * date only format= yyyy-MM-dd
+   * 
    * @param date format this date
    * @return date formatted as date only
    */
-  public String toDateOnlyString( Date date) {
+  public String toDateOnlyString(Date date) {
     dateOnlyFormat();
-    return dateOnlyFormat.format( date);
+    return dateOnlyFormat.format(date);
   }
 
-  /** Return standard formatted GMT date and time String. Format = "yyyy-MM-dd HH:mm:ss'Z'"
-   *  @deprecated use toDateTimeString
+  /**
+   * Return standard formatted GMT date and time String. Format = "yyyy-MM-dd HH:mm:ss'Z'"
+   * 
+   * @deprecated use toDateTimeString
    */
-   public String getStandardDateString2(Date date) {
-     return toDateTimeString(date);
-   }
+  public String getStandardDateString2(Date date) {
+    return toDateTimeString(date);
+  }
 
-  /** "standard date format" = yyyy-MM-dd HH:mm:ssZ
+  /**
+   * "standard date format" = yyyy-MM-dd HH:mm:ssZ
+   * 
    * @param date format this date
    * @return date formatted as date/time
    */
-  public String toDateTimeString( Date date) {
-    if (date == null) return "Unknown";
+  public String toDateTimeString(Date date) {
+    if (date == null)
+      return "Unknown";
     stdDateTimeFormat();
-    return stdDateTimeFormat.format( date) +"Z";
+    return stdDateTimeFormat.format(date) + "Z";
   }
 
-  /** Return standard formatted GMT date and time String. Format = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-   *  @deprecated use toDateTimeStringISO
+  /**
+   * Return standard formatted GMT date and time String. Format = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+   * 
+   * @deprecated use toDateTimeStringISO
    */
-   public String getStandardDateString(Date date) {
-     return toDateTimeStringISO(date);
-   }
+  public String getStandardDateString(Date date) {
+    return toDateTimeStringISO(date);
+  }
 
-  /** "ISO date format" = yyyy-MM-dd'T'HH:mm:ssZ
-   *  @param date format this date
+  /**
+   * "ISO date format" = yyyy-MM-dd'T'HH:mm:ssZ
+   * 
+   * @param date format this date
    * @return date formatted as ISO date string
    */
-  public String toDateTimeStringISO( Date date) {
+  public String toDateTimeStringISO(Date date) {
     isoDateTimeFormat();
-    return isoDateTimeFormat.format( date) +"Z";
+    return isoDateTimeFormat.format(date) + "Z";
   }
 }

@@ -6,7 +6,6 @@
 package ucar.unidata.util;
 
 import ucar.nc2.constants.CDM;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +22,8 @@ public class StringUtil2 {
   /**
    * Replace any char not alphanumeric or in allowChars by replaceChar.
    *
-   * @param x           operate on this string
-   * @param allowChars  these are ok.
+   * @param x operate on this string
+   * @param allowChars these are ok.
    * @param replaceChar thar char to replace
    * @return resulting string.
    */
@@ -57,8 +56,8 @@ public class StringUtil2 {
   /**
    * Break the given text into lines, respecting word boundaries (blank space).
    *
-   * @param text     The text to convert
-   * @param insert   break to insert
+   * @param text The text to convert
+   * @param insert break to insert
    * @param lineSize line size to insert at
    * @return The text with added br tags.
    */
@@ -97,7 +96,8 @@ public class StringUtil2 {
   }
 
   public static String cleanup(String s) {
-    if (s == null) return null;
+    if (s == null)
+      return null;
     return cleanup(s.getBytes(CDM.utf8Charset));
   }
 
@@ -105,7 +105,7 @@ public class StringUtil2 {
   /**
    * Remove any char not alphanumeric or in okChars.
    *
-   * @param x       filter this string
+   * @param x filter this string
    * @param okChars these are ok.
    * @return filtered string.
    */
@@ -141,7 +141,8 @@ public class StringUtil2 {
    * @return filtered string.
    */
   public static String filter7bits(String s) {
-    if (s == null) return null;
+    if (s == null)
+      return null;
     char[] bo = new char[s.length()];
     int count = 0;
     for (int i = 0; i < s.length(); i++) {
@@ -164,12 +165,17 @@ public class StringUtil2 {
     boolean ok = true;
     for (int i = 0; i < name.length(); i++) {
       int c = name.charAt(i);
-      if (c < 0x20) ok = false;
-      if (c == '/') ok = false;
-      if (c == ' ') ok = false;
-      if (!ok) break;
+      if (c < 0x20)
+        ok = false;
+      if (c == '/')
+        ok = false;
+      if (c == ' ')
+        ok = false;
+      if (!ok)
+        break;
     }
-    if (ok) return name;
+    if (ok)
+      return name;
 
     StringBuilder sbuff = new StringBuilder(name.length());
     for (int i = 0, len = name.length(); i < len; i++) {
@@ -203,10 +209,10 @@ public class StringUtil2 {
   /**
    * Left pad the given value with zeros up to the number of digits
    *
-   * @param value     The value.
+   * @param value The value.
    * @param numDigits number of digits
-   * @return The String  represenation of the value, padded with
-   * leading "0"-s if value &lt; 10E(numDigits-1)
+   * @return The String represenation of the value, padded with
+   *         leading "0"-s if value &lt; 10E(numDigits-1)
    */
   public static String padZero(int value, int numDigits) {
     return padLeft(String.valueOf(value), numDigits, "0");
@@ -216,7 +222,7 @@ public class StringUtil2 {
   /**
    * Pad the given string with spaces on the left up to the given length.
    *
-   * @param s             String to pad
+   * @param s String to pad
    * @param desiredLength ending length
    * @return padded String
    */
@@ -228,13 +234,12 @@ public class StringUtil2 {
   /**
    * Pad the given string with padString on the left up to the given length.
    *
-   * @param s             String to pad
+   * @param s String to pad
    * @param desiredLength ending length
-   * @param padString     String to pad with (e.g, " ")
+   * @param padString String to pad with (e.g, " ")
    * @return padded String
    */
-  public static String padLeft(String s, int desiredLength,
-                               String padString) {
+  public static String padLeft(String s, int desiredLength, String padString) {
     while (s.length() < desiredLength) {
       s = padString + s;
     }
@@ -245,7 +250,7 @@ public class StringUtil2 {
   /**
    * Pad the given string with spaces on the right up to the given length.
    *
-   * @param s             String to pad
+   * @param s String to pad
    * @param desiredLength ending length
    * @return padded String
    */
@@ -257,13 +262,12 @@ public class StringUtil2 {
   /**
    * Pad the given string with padString on the right up to the given length.
    *
-   * @param s             String to pad
+   * @param s String to pad
    * @param desiredLength ending length
-   * @param padString     String to pad with (e.g, " ")
+   * @param padString String to pad with (e.g, " ")
    * @return padded String
    */
-  public static String padRight(String s, int desiredLength,
-                                String padString) {
+  public static String padRight(String s, int desiredLength, String padString) {
     StringBuilder ret = new StringBuilder(s);
     while (ret.length() < desiredLength) {
       ret.append(padString);
@@ -274,7 +278,7 @@ public class StringUtil2 {
   /**
    * Remove all occurrences of the substring sub in the string s.
    *
-   * @param s   operate on this string
+   * @param s operate on this string
    * @param sub remove all occurrences of this substring.
    * @return result with substrings removed
    */
@@ -295,7 +299,7 @@ public class StringUtil2 {
    * @return result with any character c removed
    */
   public static String remove(String s, int c) {
-    if (0 > s.indexOf(c)) {  // none
+    if (0 > s.indexOf(c)) { // none
       return s;
     }
 
@@ -319,7 +323,7 @@ public class StringUtil2 {
    * @return result with any character c removed
    */
   public static String removeFromEnd(String s, int c) {
-    if (0 > s.indexOf(c))   // none
+    if (0 > s.indexOf(c)) // none
       return s;
 
     int len = s.length();
@@ -373,7 +377,7 @@ public class StringUtil2 {
       } else {
         b.append(' ');
         while ((i + 1 < len) && Character.isWhitespace(s.charAt(i + 1))) {
-          i++;  /// skip further whitespace
+          i++; /// skip further whitespace
         }
       }
     }
@@ -383,9 +387,9 @@ public class StringUtil2 {
   /**
    * Replace any char "out" in s with "in".
    *
-   * @param s   string to replace
+   * @param s string to replace
    * @param out replace this character
-   * @param in  with this string
+   * @param in with this string
    * @return modified string if needed
    */
   public static String replace(String s, char out, String in) {
@@ -403,7 +407,7 @@ public class StringUtil2 {
   /**
    * Replace all occurrences of any char in replaceChar with corresponding String in replaceWith
    *
-   * @param x           operate on this string
+   * @param x operate on this string
    * @param replaceChar get rid of these
    * @param replaceWith replace with these
    * @return resulting string
@@ -435,16 +439,17 @@ public class StringUtil2 {
   /**
    * Replaces all occurrences of "pattern" in "string" with "value"
    *
-   * @param string  string to munge
+   * @param string string to munge
    * @param pattern pattern to replace
-   * @param value   replacement value
+   * @param value replacement value
    * @return munged string
    */
   public static String replace(String string, String pattern, String value) {
     if (pattern.length() == 0)
       return string;
 
-    if (!string.contains(pattern)) return string;
+    if (!string.contains(pattern))
+      return string;
 
     // ok gotta do it
     StringBuilder returnValue = new StringBuilder();
@@ -468,9 +473,9 @@ public class StringUtil2 {
   /**
    * Replace all occurrences of orgReplace with orgChar; inverse of replace().
    *
-   * @param x          operate on this string
+   * @param x operate on this string
    * @param orgReplace get rid of these
-   * @param orgChar    replace with these
+   * @param orgChar replace with these
    * @return resulting string
    */
   public static String unreplace(String x, String[] orgReplace, char[] orgChar) {
@@ -479,7 +484,8 @@ public class StringUtil2 {
     for (String anOrgReplace : orgReplace) {
       int pos = x.indexOf(anOrgReplace);
       ok = (pos < 0);
-      if (!ok) break;
+      if (!ok)
+        break;
     }
     if (ok)
       return x;
@@ -500,8 +506,8 @@ public class StringUtil2 {
    * Find all occurrences of the "match" in original, and substitute the "subst" string.
    *
    * @param original starting string
-   * @param match    string to match
-   * @param subst    string to substitute
+   * @param match string to match
+   * @param subst string to substitute
    * @return a new string with substitutions
    */
   public static String substitute(String original, String match, String subst) {
@@ -518,7 +524,7 @@ public class StringUtil2 {
    * Escape any char not alphanumeric or in okChars.
    * Escape by replacing char with %xx (hex).
    *
-   * @param x       escape this string
+   * @param x escape this string
    * @param okChars these are ok.
    * @return equivilent escaped string.
    */
@@ -565,7 +571,7 @@ public class StringUtil2 {
       try {
         value = Integer.parseInt(new String(b), 16);
       } catch (NumberFormatException e) {
-        continue;   // not a hex number
+        continue; // not a hex number
       }
       c = (char) value;
       sb.setCharAt(pos, c);
@@ -591,8 +597,8 @@ public class StringUtil2 {
    * subst string.
    *
    * @param original starting string
-   * @param match    array of strings to match
-   * @param subst    array of strings to substitute
+   * @param match array of strings to match
+   * @param subst array of strings to substitute
    * @return a new string with substitutions
    */
   public static String substitute(String original, String[] match, String[] subst) {
@@ -623,37 +629,40 @@ public class StringUtil2 {
       int sepLength = sep.length();
       switch (sepLength) {
         case 0:
-          String[] tokens = splitString(fullString);   // default to use white space if separator is ""
+          String[] tokens = splitString(fullString); // default to use white space if separator is ""
           strs = Arrays.asList(tokens);
           break;
 
         case 1:
-          StringTokenizer tokenizer = new StringTokenizer(fullString, sep);       // maybe use StreamTokenizer?
+          StringTokenizer tokenizer = new StringTokenizer(fullString, sep); // maybe use StreamTokenizer?
           while (tokenizer.hasMoreTokens())
             strs.add(tokenizer.nextToken());
           break;
 
         default:
-          String remainderString = fullString;    // multicharacter separator
+          String remainderString = fullString; // multicharacter separator
           int location = remainderString.indexOf(sep);
-          while (location != -1) {    // watch out for off-by-one errors on the string splitting indices!!!
-            if (location == 0) {    // remainderString starts with the separator, cut it off
+          while (location != -1) { // watch out for off-by-one errors on the string splitting indices!!!
+            if (location == 0) { // remainderString starts with the separator, cut it off
               remainderString = remainderString.substring(location + sepLength);
               location = remainderString.indexOf(sep);
             } else {
               String token = remainderString.substring(0, location); // pull the token off the front of the string
-              strs.add(token);    // add the token to our list
-              remainderString = remainderString.substring(location + sepLength); // cut out both the token and the separator
+              strs.add(token); // add the token to our list
+              remainderString = remainderString.substring(location + sepLength); // cut out both the token and the
+                                                                                 // separator
               location = remainderString.indexOf(sep);
             }
-          }  //close while loop
-          if (remainderString.length() > 0) strs.add(remainderString);    // add the last token, post last separator
-      }  //close switch (sepLength)
-    } else {  // default to white space separator if sep is null
+          } // close while loop
+          if (remainderString.length() > 0)
+            strs.add(remainderString); // add the last token, post last separator
+      } // close switch (sepLength)
+    } else { // default to white space separator if sep is null
       String[] tokens = splitString(fullString);
       strs = Arrays.asList(tokens);
     }
-    if (strs.size() == 0) strs.add(""); // maybe thrown an exception instead?  return null?
+    if (strs.size() == 0)
+      strs.add(""); // maybe thrown an exception instead? return null?
     return strs;
   }
 
@@ -663,7 +672,7 @@ public class StringUtil2 {
   /**
    * Remove any of the characters in out from sb
    *
-   * @param sb  the StringBuilder
+   * @param sb the StringBuilder
    * @param out get rid of any of these characters
    */
   public static void removeAll(StringBuilder sb, String out) {
@@ -678,16 +687,17 @@ public class StringUtil2 {
           break;
         }
       }
-      if (ok) i++;
+      if (ok)
+        i++;
     }
   }
 
   /**
    * Replace any char "out" in sb with String "in".
    *
-   * @param sb  StringBuilder to replace
+   * @param sb StringBuilder to replace
    * @param out repalce this character
-   * @param in  with this string
+   * @param in with this string
    */
   public static void replace(StringBuilder sb, char out, String in) {
     for (int i = 0; i < sb.length(); i++) {
@@ -701,9 +711,9 @@ public class StringUtil2 {
   /**
    * Replace any String "out" in sb with char "in".
    *
-   * @param sb  StringBuilder to replace
+   * @param sb StringBuilder to replace
    * @param out repalce this String
-   * @param in  with this char
+   * @param in with this char
    */
   public static void unreplace(StringBuilder sb, String out, char in) {
     int pos;
@@ -716,9 +726,9 @@ public class StringUtil2 {
   /**
    * Replace any of the characters from out with corresponding character from in
    *
-   * @param sb  the StringBuilder
+   * @param sb the StringBuilder
    * @param out get rid of any of these characters
-   * @param in  replacing with the character at same index
+   * @param in replacing with the character at same index
    */
   public static void replace(StringBuilder sb, String out, String in) {
     for (int i = 0; i < sb.length(); i++) {
@@ -745,7 +755,7 @@ public class StringUtil2 {
     int matchLen = match.length();
     while (0 <= (pos = sbuff.indexOf(match, fromIndex))) {
       sbuff.replace(pos, pos + matchLen, subst);
-      fromIndex = pos + substLen;  // make sure dont get into an infinite loop
+      fromIndex = pos + substLen; // make sure dont get into an infinite loop
     }
   }
 
@@ -778,7 +788,8 @@ public class StringUtil2 {
    * @deprecated legacy only, use HtmlEscapers.htmlEscaper()
    */
   public static String quoteHtmlContent(String x) {
-    if (x == null) return null;
+    if (x == null)
+      return null;
     return replace(x, htmlIn, htmlOut);
   }
 }

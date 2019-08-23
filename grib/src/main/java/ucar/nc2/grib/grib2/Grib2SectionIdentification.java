@@ -8,7 +8,6 @@ package ucar.nc2.grib.grib2;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -47,16 +46,16 @@ public class Grib2SectionIdentification {
     if (section != 1)
       throw new IllegalArgumentException("Not a GRIB-2 Identification section");
 
-    // Center  octet 6-7
+    // Center octet 6-7
     center_id = GribNumbers.int2(raf);
 
-    // subCenter  octet 8-9
+    // subCenter octet 8-9
     subcenter_id = GribNumbers.int2(raf);
 
     // master table octet 10 (code table 1.0)
     master_table_version = raf.read();
 
-    // local table octet 11  (code table 1.1)
+    // local table octet 11 (code table 1.1)
     local_table_version = raf.read();
 
     // significanceOfRT octet 12 (code table 1.1)
@@ -69,7 +68,7 @@ public class Grib2SectionIdentification {
     hour = raf.read();
     minute = raf.read();
     second = raf.read();
-    //refTime = CalendarDate.of(null, year, month, day, hour, minute, second);
+    // refTime = CalendarDate.of(null, year, month, day, hour, minute, second);
 
     productionStatus = raf.read();
     processedDataType = raf.read();
@@ -78,8 +77,8 @@ public class Grib2SectionIdentification {
   }
 
   public Grib2SectionIdentification(int center_id, int subcenter_id, int master_table_version, int local_table_version,
-                                    int significanceOfRT, int year, int month, int day, int hour, int minute, int second,
-                                    int productionStatus, int processedDataType) {
+      int significanceOfRT, int year, int month, int day, int hour, int minute, int second, int productionStatus,
+      int processedDataType) {
     this.center_id = center_id;
     this.subcenter_id = subcenter_id;
     this.master_table_version = master_table_version;
@@ -133,6 +132,7 @@ public class Grib2SectionIdentification {
 
   /**
    * Note 2 : if true, all entries come from the local table (!)
+   * 
    * @return useLocalTablesOnly
    */
   public boolean useLocalTablesOnly() {
@@ -201,11 +201,7 @@ public class Grib2SectionIdentification {
 
   @Override
   public String toString() {
-    return "id {" +
-            "center_id=" + center_id +
-            ", subcenter_id=" + subcenter_id +
-            ", master_table_version=" + master_table_version +
-            ", local_table_version=" + local_table_version +
-            '}';
+    return "id {" + "center_id=" + center_id + ", subcenter_id=" + subcenter_id + ", master_table_version="
+        + master_table_version + ", local_table_version=" + local_table_version + '}';
   }
 }

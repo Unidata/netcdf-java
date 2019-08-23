@@ -1,17 +1,18 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
+/*
+ * This is part of the netCDF package.
+ * Copyright 2006 University Corporation for Atmospheric Research/Unidata.
  *
-    See COPYRIGHT file for conditions of use.
-
-   This is an example which reads some surface pressure and
-   temperatures. The data file read by this program is produced
-   companion program sfc_pres_temp_wr.java. It is intended to
-   illustrate the use of the netCDF Java API.
-
-   This example demonstrates the netCDF Java API.
-
-   Full documentation of the netCDF Java API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf-java/
+ * See COPYRIGHT file for conditions of use.
+ * 
+ * This is an example which reads some surface pressure and
+ * temperatures. The data file read by this program is produced
+ * companion program sfc_pres_temp_wr.java. It is intended to
+ * illustrate the use of the netCDF Java API.
+ * 
+ * This example demonstrates the netCDF Java API.
+ * 
+ * Full documentation of the netCDF Java API can be found at:
+ * http://www.unidata.ucar.edu/software/netcdf-java/
  */
 package examples;
 
@@ -20,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayFloat;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -148,7 +148,7 @@ public class Sfc_pres_temp_rd {
       for (int lat = 0; lat < NLAT; lat++)
         for (int lon = 0; lon < NLON; lon++)
           if (presIn[lat][lon] != SAMPLE_PRESSURE + (lon * NLAT + lat)
-                  || tempIn[lat][lon] != SAMPLE_TEMP + .25 * (lon * NLAT + lat))
+              || tempIn[lat][lon] != SAMPLE_TEMP + .25 * (lon * NLAT + lat))
             System.err.println("ERROR reading variable pressure or temperature");
 
       // Each of the netCDF variables has a "units" attribute. Let's read

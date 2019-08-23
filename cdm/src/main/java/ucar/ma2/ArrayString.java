@@ -23,10 +23,14 @@ public class ArrayString extends Array {
     return ArrayString.factory(index, null);
   }
 
-  /* create new ArrayString with given indexImpl and backing store.
+  /*
+   * create new ArrayString with given indexImpl and backing store.
    * Should be private.
+   * 
    * @param index use this Index
+   * 
    * @param stor. use this storage. if null, allocate.
+   * 
    * @return. new ArrayString.D<rank> or ArrayString object.
    */
   static ArrayString factory(Index index, String[] storage) {
@@ -69,14 +73,16 @@ public class ArrayString extends Array {
    * Create a new Array using the given IndexArray and backing store.
    * used for sections. Trusted package private.
    *
-   * @param ima  use this IndexArray as the index
+   * @param ima use this IndexArray as the index
    * @param data use this as the backing store
    */
   ArrayString(Index ima, String[] data) {
     super(DataType.STRING, ima);
-    /* replace by something better
-    if (ima.getSize() != data.length)
-      throw new IllegalArgumentException("bad data length"); */
+    /*
+     * replace by something better
+     * if (ima.getSize() != data.length)
+     * throw new IllegalArgumentException("bad data length");
+     */
     if (data != null)
       storage = data;
     else
@@ -98,7 +104,8 @@ public class ArrayString extends Array {
   // copy from javaArray to storage using the iterator: used by factory( Object);
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     String[] ja = (String[]) javaArray;
-    for (String aJa : ja) iter.setObjectNext(aJa);
+    for (String aJa : ja)
+      iter.setObjectNext(aJa);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
@@ -115,7 +122,7 @@ public class ArrayString extends Array {
       totalsize += (aStorage.length() + 1); // 1 for null terminator
     ByteBuffer bb = ByteBuffer.allocate(2 * totalsize);
     CharBuffer cb = bb.asCharBuffer();
-    // Concatenate 
+    // Concatenate
     for (String s : storage) {
       cb.append(s);
       cb.append('\0');
@@ -347,7 +354,7 @@ public class ArrayString extends Array {
      * Constructor.
      */
     public D0() {
-      super(new int[]{});
+      super(new int[] {});
       ix = (Index0D) indexCalc;
     }
 
@@ -381,7 +388,7 @@ public class ArrayString extends Array {
      * Constructor for array of shape {len0}.
      */
     public D1(int len0) {
-      super(new int[]{len0});
+      super(new int[] {len0});
       ix = (Index1D) indexCalc;
     }
 
@@ -415,7 +422,7 @@ public class ArrayString extends Array {
      * Constructor for array of shape {len0,len1}.
      */
     public D2(int len0, int len1) {
-      super(new int[]{len0, len1});
+      super(new int[] {len0, len1});
       ix = (Index2D) indexCalc;
     }
 
@@ -449,7 +456,7 @@ public class ArrayString extends Array {
      * Constructor for array of shape {len0,len1,len2}.
      */
     public D3(int len0, int len1, int len2) {
-      super(new int[]{len0, len1, len2});
+      super(new int[] {len0, len1, len2});
       ix = (Index3D) indexCalc;
     }
 
@@ -483,7 +490,7 @@ public class ArrayString extends Array {
      * Constructor for array of shape {len0,len1,len2,len3}.
      */
     public D4(int len0, int len1, int len2, int len3) {
-      super(new int[]{len0, len1, len2, len3});
+      super(new int[] {len0, len1, len2, len3});
       ix = (Index4D) indexCalc;
     }
 
@@ -517,7 +524,7 @@ public class ArrayString extends Array {
      * Constructor for array of shape {len0,len1,len2,len3,len4}.
      */
     public D5(int len0, int len1, int len2, int len3, int len4) {
-      super(new int[]{len0, len1, len2, len3, len4});
+      super(new int[] {len0, len1, len2, len3, len4});
       ix = (Index5D) indexCalc;
     }
 
@@ -551,7 +558,7 @@ public class ArrayString extends Array {
      * Constructor for array of shape {len0,len1,len2,len3,len4,len5,}.
      */
     public D6(int len0, int len1, int len2, int len3, int len4, int len5) {
-      super(new int[]{len0, len1, len2, len3, len4, len5});
+      super(new int[] {len0, len1, len2, len3, len4, len5});
       ix = (Index6D) indexCalc;
     }
 
@@ -585,7 +592,7 @@ public class ArrayString extends Array {
      * Constructor for array of shape {len0,len1,len2,len3,len4,len5,len6}.
      */
     public D7(int len0, int len1, int len2, int len3, int len4, int len5, int len6) {
-      super(new int[]{len0, len1, len2, len3, len4, len5, len6});
+      super(new int[] {len0, len1, len2, len3, len4, len5, len6});
       ix = (Index7D) indexCalc;
     }
 

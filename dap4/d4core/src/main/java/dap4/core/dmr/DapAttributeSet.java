@@ -1,43 +1,41 @@
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information.
-*/
+/*
+ * Copyright 2012, UCAR/Unidata.
+ * See the LICENSE file for more information.
+ */
 
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information.
-*/
+/*
+ * Copyright 2012, UCAR/Unidata.
+ * See the LICENSE file for more information.
+ */
 
 package dap4.core.dmr;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DapAttributeSet extends DapAttribute
-{
+public class DapAttributeSet extends DapAttribute {
 
-    //////////////////////////////////////////////////
-    // Instance Variables
+  //////////////////////////////////////////////////
+  // Instance Variables
 
-    //////////////////////////////////////////////////
-    // Constructors
+  //////////////////////////////////////////////////
+  // Constructors
 
-    public DapAttributeSet()
-    {
-	super();
-    }
+  public DapAttributeSet() {
+    super();
+  }
 
-    public DapAttributeSet(String name)
-    {
-        super(name,null);
-    }
+  public DapAttributeSet(String name) {
+    super(name, null);
+  }
 
-    //////////////////////////////////////////////////
-    // Get/Set
+  //////////////////////////////////////////////////
+  // Get/Set
 
-    // The set of contained attributes are stored in DapNode.attributes
-    public DapAttribute getAttribute(String name)
-    {
-	return attributes.get(name);
-    }
+  // The set of contained attributes are stored in DapNode.attributes
+  public DapAttribute getAttribute(String name) {
+    return attributes.get(name);
+  }
 
 } // class DapAttribute
 

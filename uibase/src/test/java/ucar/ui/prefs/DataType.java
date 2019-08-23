@@ -27,20 +27,21 @@ public class DataType {
   public static final DataType DOUBLE = new DataType("double");
   public static final DataType STRING = new DataType("string");
 
-  public DataType() { }
+  public DataType() {}
 
   private String _DataType;
+
   public DataType(String s) {
-      this._DataType = s;
-      hash.put( s, this);
-      names.add( s);
+    this._DataType = s;
+    hash.put(s, this);
+    names.add(s);
   }
 
   /**
    * The string name.
    */
-   public String toString() {
-      return _DataType;
+  public String toString() {
+    return _DataType;
   }
 
   public static java.util.Collection getTypes() {

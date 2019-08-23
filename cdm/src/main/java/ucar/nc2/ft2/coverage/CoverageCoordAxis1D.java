@@ -13,7 +13,6 @@ import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.util.Optional;
 import ucar.unidata.util.Format;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -30,7 +29,7 @@ import java.util.List;
 public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Iterable<Object> {
 
   // does this really describe all subset possibilities? what about RangeScatter, composite ??
-  protected final Range range;            // for subset, tracks the indexes in the original
+  protected final Range range; // for subset, tracks the indexes in the original
   protected final RangeComposite crange;
 
   public CoverageCoordAxis1D(CoverageCoordAxisBuilder builder) {
@@ -75,7 +74,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
       Formatter f = new Formatter();
       for (int i = 0; i < ncoords; i++) {
         CalendarDate cd = makeDate(getCoordMidpoint(i));
-        if (i > 0) f.format(", ");
+        if (i > 0)
+          f.format(", ");
         f.format("%s", cd);
       }
       return f.toString();
@@ -170,11 +170,12 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
 
     switch (spacing) {
       case regularPoint:
-        if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
+        if (index < 0 || index >= ncoords)
+          throw new IllegalArgumentException("Index out of range " + index);
         return startValue + (index + .5) * getResolution();
 
       case regularInterval:
-        return startValue + (index+1) * getResolution();
+        return startValue + (index + 1) * getResolution();
 
       case irregularPoint:
         if (index < ncoords - 1)
@@ -205,7 +206,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     if (dependenceType == DependenceType.scalar) {
       result = Array.factory(getDataType(), new int[0]);
     } else {
-      result = Array.factory(getDataType(), new int[]{ncoords});
+      result = Array.factory(getDataType(), new int[] {ncoords});
     }
 
     for (int i = 0; i < ncoords; i++)
@@ -215,7 +216,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
 
   @Override
   public Array getCoordBoundsAsArray() {
-    Array result = Array.factory(getDataType(), new int[]{ncoords, 2});
+    Array result = Array.factory(getDataType(), new int[] {ncoords, 2});
 
     int count = 0;
     for (int i = 0; i < ncoords; i++) {
@@ -229,7 +230,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
     Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue, stride);
-    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new CoverageCoordAxis1D(buildero.get()));
+    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage())
+        : Optional.of(new CoverageCoordAxis1D(buildero.get()));
   }
 
   // CalendarDate, double[2], or Double
@@ -237,7 +239,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     if (axisType == AxisType.RunTime)
       return makeDate(getCoordMidpoint(index));
     if (isInterval())
-      return new double[]{getCoordEdge1(index), getCoordEdge2(index)};
+      return new double[] {getCoordEdge1(index), getCoordEdge2(index)};
     return getCoordMidpoint(index);
   }
 
@@ -275,7 +277,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   @Override
   public Optional<CoverageCoordAxis> subset(SubsetParams params) {
     Optional<CoverageCoordAxisBuilder> buildero = subsetBuilder(params);
-    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new CoverageCoordAxis1D(buildero.get()));
+    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage())
+        : Optional.of(new CoverageCoordAxis1D(buildero.get()));
   }
 
   // only for longitude, only for regular (do we need a subclass for longitude 1D coords ??
@@ -291,7 +294,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     boolean first = true;
     List<RangeIterator> ranges = new ArrayList<>();
     for (MAMath.MinMax lonIntv : lonIntvs) {
-      if (first) start = lonIntv.min;
+      if (first)
+        start = lonIntv.min;
       first = false;
 
       Optional<RangeIterator> opt = helper.makeRange(lonIntv.min, lonIntv.max, stride);
@@ -322,7 +326,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     }
   }
 
-  // LOOK  incomplete handling of subsetting params
+  // LOOK incomplete handling of subsetting params
   protected Optional<CoverageCoordAxisBuilder> subsetBuilder(SubsetParams params) {
     if (params == null)
       return Optional.of(new CoverageCoordAxisBuilder(this));
@@ -339,7 +343,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         // use midpoint of interval LOOK may not always be unique
         double[] intv = params.getVertCoordIntv();
         if (intv != null)
-          return Optional.of(helper.subsetClosest((intv[0]+intv[1])/2));
+          return Optional.of(helper.subsetClosest((intv[0] + intv[1]) / 2));
 
         double[] vertRange = params.getVertRange(); // used by WCS
         if (vertRange != null)
@@ -373,17 +377,20 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
           return Optional.of(helper.subsetClosest(date));
 
         Integer stride = (Integer) params.get(SubsetParams.timeStride);
-        if (stride == null || stride < 0) stride = 1;
+        if (stride == null || stride < 0)
+          stride = 1;
 
         CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
           return helper.subset(dateRange, stride);
 
         // If no time range or time point, a timeOffset can be used to specify the time point.
-        /* CalendarDate timeOffsetDate = params.getTimeOffsetDate();
-        if (timeOffsetDate != null) {
-          return Optional.of(helper.subsetClosest(timeOffsetDate));
-        } */
+        /*
+         * CalendarDate timeOffsetDate = params.getTimeOffsetDate();
+         * if (timeOffsetDate != null) {
+         * return Optional.of(helper.subsetClosest(timeOffsetDate));
+         * }
+         */
 
         // A time offset or time offset interval starts from the rundate of the offset
         Double timeOffset = params.getTimeOffset();
@@ -422,9 +429,11 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         if (rundate != null)
           return Optional.of(helper.subsetClosest(rundate));
 
-/*        CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
-        if (rundateRange != null)
-          return helper.subset(rundateRange, 1); */
+        /*
+         * CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
+         * if (rundateRange != null)
+         * return helper.subset(rundateRange, 1);
+         */
 
         if (params.isTrue(SubsetParams.runtimeAll))
           break;
@@ -441,7 +450,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         // If a time interval is sent, search for match.
         timeOffsetIntv = params.getTimeOffsetIntv();
         if (timeOffsetIntv != null) {
-          return Optional.of(helper.subsetClosest((timeOffsetIntv[0]+timeOffsetIntv[1])/2));
+          return Optional.of(helper.subsetClosest((timeOffsetIntv[0] + timeOffsetIntv[1]) / 2));
         }
 
 
@@ -471,7 +480,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     return Optional.of(new CoverageCoordAxis1D(builder));
   }
 
- // @Override
+  // @Override
   public Iterator<Object> iterator() {
     return new MyIterator();
   }

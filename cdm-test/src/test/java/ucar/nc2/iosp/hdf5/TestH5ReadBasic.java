@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
@@ -121,7 +120,7 @@ public class TestH5ReadBasic {
   }
 
   @org.junit.Test
-   public void testReadH5StringFixed() throws IOException {
+  public void testReadH5StringFixed() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/dstr.h5")) {
 
       Variable v = null;

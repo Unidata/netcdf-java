@@ -6,7 +6,6 @@ package ucar.nc2.ft;
 
 import java.io.IOException;
 import javax.annotation.Nullable;
-
 import ucar.nc2.time.CalendarDateRange;
 
 /**
@@ -19,6 +18,7 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
 
   /**
    * Subset this collection by boundingBox and/or dateRange
+   * 
    * @param boundingBox only points in this lat/lon bounding box. may be null.
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
@@ -32,6 +32,7 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
   /**
    * Use the internal iterator to check if there is another PointFeature in the iteration.
    * Note that this is not thread-safe; use getPointFeatureIterator() for a threadsafe iterator.
+   * 
    * @return true is there is another PointFeature in the iteration.
    * @throws java.io.IOException on read error
    * @see PointFeatureIterator#hasNext
@@ -42,6 +43,7 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
   /**
    * Use the internal iterator to get the next PointFeature in the iteration.
    * You must call hasNext() before you call this.
+   * 
    * @return the next PointFeature in the iteration
    * @see PointFeatureIterator#next
    * @deprecated use foreach
@@ -50,6 +52,7 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
 
   /**
    * Reset the internal iterator for another iteration over the PointFeatures in this Collection.
+   * 
    * @throws java.io.IOException on read error
    * @deprecated use foreach
    */
@@ -58,16 +61,18 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
   /**
    * Make sure that the internal iterator is complete, and recover resources.
    * You must complete the iteration (until hasNext() returns false) or call finish().
+   * 
    * @deprecated use foreach
    */
   void finish();
 
   /**
-    * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
-    * @return iterator over the PointFeatures of this collection
-    * @throws IOException on read error
-    * @deprecated use foreach
-    */
-   PointFeatureIterator getPointFeatureIterator() throws java.io.IOException;
+   * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
+   * 
+   * @return iterator over the PointFeatures of this collection
+   * @throws IOException on read error
+   * @deprecated use foreach
+   */
+  PointFeatureIterator getPointFeatureIterator() throws java.io.IOException;
 
 }

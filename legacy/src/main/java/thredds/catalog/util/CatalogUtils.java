@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -33,7 +33,6 @@
 package thredds.catalog.util;
 
 import thredds.catalog.*;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.net.URI;
@@ -45,65 +44,59 @@ import java.net.URISyntaxException;
  * @author edavis
  * @since 4.0
  */
-public class CatalogUtils
-{
-    private CatalogUtils() {}
+public class CatalogUtils {
+  private CatalogUtils() {}
 
-    /**
-     * Find all catalogRef elements in the dataset tree formed by the given dataset list.
-     *
-     * @param datasets         the list of datasets from which to find all the catalogRefs
-     * @param log              StringBuilder into which any messages will be written
-     * @param onlyRelativeUrls only include catalogRefs with relative HREF URLs if true, otherwise include all catalogRef datasets
-     * @return the list of catalogRef datasets
-     */
-    public static List<InvCatalogRef> findAllCatRefsInDatasetTree( List<InvDataset> datasets, StringBuilder log, boolean onlyRelativeUrls )
-    {
-        List<InvCatalogRef> catRefList = new ArrayList<InvCatalogRef>();
-        for ( InvDataset invds : datasets )
-        {
-            InvDatasetImpl curDs = (InvDatasetImpl) invds;
+  /**
+   * Find all catalogRef elements in the dataset tree formed by the given dataset list.
+   *
+   * @param datasets the list of datasets from which to find all the catalogRefs
+   * @param log StringBuilder into which any messages will be written
+   * @param onlyRelativeUrls only include catalogRefs with relative HREF URLs if true, otherwise include all catalogRef
+   *        datasets
+   * @return the list of catalogRef datasets
+   */
+  public static List<InvCatalogRef> findAllCatRefsInDatasetTree(List<InvDataset> datasets, StringBuilder log,
+      boolean onlyRelativeUrls) {
+    List<InvCatalogRef> catRefList = new ArrayList<InvCatalogRef>();
+    for (InvDataset invds : datasets) {
+      InvDatasetImpl curDs = (InvDatasetImpl) invds;
 
-            if ( curDs instanceof InvDatasetScan)
-                continue;
+      if (curDs instanceof InvDatasetScan)
+        continue;
 
-            if ( curDs instanceof InvCatalogRef )
-            {
-                InvCatalogRef catRef = (InvCatalogRef) curDs;
-                String name = catRef.getName();
-                String href = catRef.getXlinkHref();
-                URI uri;
-                try
-                {
-                    uri = new URI( href );
-                }
-                catch ( URISyntaxException e )
-                {
-                    log.append( log.length() > 0 ? "\n" : "" )
-                            .append( "***WARN - CatalogRef [").append(name)
-                            .append("] with bad HREF [" ).append( href ).append( "] " );
-                    continue;
-                }
-                if ( onlyRelativeUrls && uri.isAbsolute() )
-                    continue;
-
-                catRefList.add( catRef );
-                continue;
-            }
-
-            if ( curDs.hasNestedDatasets() )
-                catRefList.addAll( findAllCatRefsInDatasetTree( curDs.getDatasets(), log, onlyRelativeUrls ) );
-        }
-        return catRefList;
-    }
-
-    // Escape the characters necessary for a path to be valid for a URL
-    static public String escapePathForURL(String path) {
+      if (curDs instanceof InvCatalogRef) {
+        InvCatalogRef catRef = (InvCatalogRef) curDs;
+        String name = catRef.getName();
+        String href = catRef.getXlinkHref();
+        URI uri;
         try {
-            return new URI(null, null, path, null).toString();
+          uri = new URI(href);
         } catch (URISyntaxException e) {
-            return path;
+          log.append(log.length() > 0 ? "\n" : "").append("***WARN - CatalogRef [").append(name)
+              .append("] with bad HREF [").append(href).append("] ");
+          continue;
         }
+        if (onlyRelativeUrls && uri.isAbsolute())
+          continue;
+
+        catRefList.add(catRef);
+        continue;
+      }
+
+      if (curDs.hasNestedDatasets())
+        catRefList.addAll(findAllCatRefsInDatasetTree(curDs.getDatasets(), log, onlyRelativeUrls));
     }
+    return catRefList;
+  }
+
+  // Escape the characters necessary for a path to be valid for a URL
+  static public String escapePathForURL(String path) {
+    try {
+      return new URI(null, null, path, null).toString();
+    } catch (URISyntaxException e) {
+      return path;
+    }
+  }
 
 }

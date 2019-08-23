@@ -26,10 +26,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants._Coordinate;
-
 import java.util.*;
 import java.io.*;
-
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
 import org.jdom2.Document;
@@ -40,7 +38,8 @@ import thredds.inventory.MFile;
 
 /**
  * The data inventory of one GridDataset. Track grids, time, vert, ens coordinates. Grids are
- * grouped by the time coordinated that they use. Uses dense time, vert coordinates - just the ones that are in the file.
+ * grouped by the time coordinated that they use. Uses dense time, vert coordinates - just the ones that are in the
+ * file.
  *
  * Note: Not sure if the vert coords will ever be different across the time coords.
  *
@@ -52,12 +51,11 @@ import thredds.inventory.MFile;
 public class GridDatasetInv {
   static private final Logger logger = LoggerFactory.getLogger(GridDatasetInv.class);
   static private final int REQ_VERSION = 2; // minimum required version, else regenerate XML
-  static private final int CURR_VERSION = 2;  // current version
+  static private final int CURR_VERSION = 2; // current version
 
   // Cache the GridDatasetInv directly, not persisted to disk.
   // TODO: Add persistence if thats shown to be needed.
-  static private Cache<String, GridDatasetInv> cache = CacheBuilder.newBuilder().maximumSize(100)
-      .build();
+  static private Cache<String, GridDatasetInv> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
   public static GridDatasetInv open(MCollection cm, MFile mfile, Element ncml) throws IOException {
     try {
@@ -112,8 +110,7 @@ public class GridDatasetInv {
   private String runTimeString; // string representation of the date of the run
   private Date lastModified;
 
-  private GridDatasetInv() {
-  }
+  private GridDatasetInv() {}
 
   public GridDatasetInv(ucar.nc2.dt.grid.GridDataset gds, CalendarDate runDate) {
     this.location = gds.getLocation();
@@ -132,8 +129,7 @@ public class GridDatasetInv {
 
       if (this.runDate == null) {
         this.runDate = gds.getCalendarDateStart(); // LOOK not really right
-        logger.warn("GridDatasetInv using gds.getStartDate() for run date = {} in {}", runTimeString,
-            location);
+        logger.warn("GridDatasetInv using gds.getStartDate() for run date = {} in {}", runTimeString, location);
       }
     }
 
@@ -560,7 +556,7 @@ public class GridDatasetInv {
         tc.setOffsetTimes(offsets);
       }
 
-      //get the variable names
+      // get the variable names
       List<Element> varList = timeElem.getChildren("grid");
       for (Element vElem : varList) {
         Grid grid = fmr.makeGrid(vElem.getAttributeValue("name"));

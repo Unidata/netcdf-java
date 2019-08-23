@@ -8,7 +8,6 @@ package thredds.catalog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.stream.CdmRemote;
-
 import java.net.URI;
 
 /**
@@ -77,13 +76,15 @@ abstract public class InvAccess {
    */
   public String getStandardUrlName() {
     URI uri = getStandardUri();
-    if (uri == null) return null;
+    if (uri == null)
+      return null;
     return uri.toString();
   }
 
   public String getWrappedUrlName() {
     URI uri = getStandardUri();
-    if (uri == null) return null;
+    if (uri == null)
+      return null;
     return wrap(uri.toString());
   }
 
@@ -110,6 +111,7 @@ abstract public class InvAccess {
   /**
    * Construct "unresolved" URL: service.getBase() + getUrlPath() + service.getSuffix().
    * It is not resolved, so it may be a reletive URL.
+   * 
    * @return Unresolved Url as a String
    */
   public String getUnresolvedUrlName() {

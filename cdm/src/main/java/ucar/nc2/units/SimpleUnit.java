@@ -9,10 +9,11 @@ import ucar.units.*;
 /**
  * Convenience routines on top of ucar.units package.
  * <p/>
- * The ucar.units package handles <ol>
- * <li> scientific units, which are factors of the fundamental
+ * The ucar.units package handles
+ * <ol>
+ * <li>scientific units, which are factors of the fundamental
  * dimensions such as length, time, mass, etc
- * <li> dates, represented as "n units of time since reference date" eg
+ * <li>dates, represented as "n units of time since reference date" eg
  * "1203 days since 1970-01-01 00:00:00"
  * </ol>
  *
@@ -24,7 +25,7 @@ public class SimpleUnit {
   public static final SimpleUnit meterUnit;
   public static final SimpleUnit pressureUnit;
 
-  //static protected UnitFormat format;
+  // static protected UnitFormat format;
   static protected Unit secsUnit, dateReferenceUnit;
   static protected boolean debugParse = false;
 
@@ -61,7 +62,8 @@ public class SimpleUnit {
     try {
       return factoryWithExceptions(name);
     } catch (Exception e) {
-      if (debugParse) System.out.println("Parse " + name + " got Exception " + e);
+      if (debugParse)
+        System.out.println("Parse " + name + " got Exception " + e);
       return null;
     }
   }
@@ -77,8 +79,9 @@ public class SimpleUnit {
   static public SimpleUnit factoryWithExceptions(String name) throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit uu = format.parse(name);
-    //if (isDateUnit(uu)) return new DateUnit(name);
-    if (isTimeUnit(uu)) return new TimeUnit(name);
+    // if (isDateUnit(uu)) return new DateUnit(name);
+    if (isTimeUnit(uu))
+      return new TimeUnit(name);
     return new SimpleUnit(uu);
   }
 
@@ -102,7 +105,8 @@ public class SimpleUnit {
       UnitFormat format = UnitFormatManager.instance();
       uu1 = format.parse(unitString1);
     } catch (Exception e) {
-      if (debugParse) System.out.println("Parse " + unitString1 + " got Exception1 " + e);
+      if (debugParse)
+        System.out.println("Parse " + unitString1 + " got Exception1 " + e);
       return false;
     }
 
@@ -110,16 +114,17 @@ public class SimpleUnit {
       UnitFormat format = UnitFormatManager.instance();
       uu2 = format.parse(unitString2);
     } catch (Exception e) {
-      if (debugParse) System.out.println("Parse " + unitString2 + " got Exception2 " + e);
+      if (debugParse)
+        System.out.println("Parse " + unitString2 + " got Exception2 " + e);
       return false;
     }
 
-    //System.out.println("udunits isCompatible "+ uu1+ " "+ uu2);
+    // System.out.println("udunits isCompatible "+ uu1+ " "+ uu2);
     return uu1.isCompatible(uu2);
   }
 
   /**
-   * Return true if  unitString1 is convertible to unitString2
+   * Return true if unitString1 is convertible to unitString2
    *
    * @param unitString1 compare this unit
    * @param unitString2 compare this unit
@@ -141,7 +146,8 @@ public class SimpleUnit {
    */
   static public boolean isDateUnit(ucar.units.Unit uu) {
     boolean ok = uu.isCompatible(dateReferenceUnit);
-    if (!ok) return false;
+    if (!ok)
+      return false;
     try {
       uu.getConverterTo(dateReferenceUnit);
       return true;
@@ -163,7 +169,10 @@ public class SimpleUnit {
   /**
    * Return true if the given unit is convertible to a date Unit.
    * allowed format is something like:
-   * <pre>[-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]</pre>
+   * 
+   * <pre>
+   * [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
+   * </pre>
    *
    * @param unitString check this unit string
    * @return true if its a Date
@@ -187,12 +196,13 @@ public class SimpleUnit {
   /**
    * Get the conversion factor to convert inputUnit to outputUnit.
    *
-   * @param inputUnitString  inputUnit in string form
+   * @param inputUnitString inputUnit in string form
    * @param outputUnitString outputUnit in string form
    * @return conversion factor
    * @throws IllegalArgumentException if not convertible
    */
-  static public double getConversionFactor(String inputUnitString, String outputUnitString) throws IllegalArgumentException {
+  static public double getConversionFactor(String inputUnitString, String outputUnitString)
+      throws IllegalArgumentException {
     SimpleUnit inputUnit = SimpleUnit.factory(inputUnitString);
     SimpleUnit outputUnit = SimpleUnit.factory(outputUnitString);
     return inputUnit.convertTo(1.0, outputUnit);
@@ -204,8 +214,7 @@ public class SimpleUnit {
   /**
    * for subclasses.
    */
-  protected SimpleUnit() {
-  }
+  protected SimpleUnit() {}
 
   /**
    * Wrap a ucar.units.Unit in a SimpleUnit. Use factory().
@@ -235,9 +244,9 @@ public class SimpleUnit {
   /**
    * Convert given value of this unit to the new unit.
    *
-   * @param value  value in this unit
+   * @param value value in this unit
    * @param outputUnit convert to this unit
-   * @return  value in outputUnit
+   * @return value in outputUnit
    * @throws IllegalArgumentException if outputUnit not convertible from this unit
    */
   public double convertTo(double value, SimpleUnit outputUnit) throws IllegalArgumentException {
@@ -252,6 +261,7 @@ public class SimpleUnit {
    * Return true if unitString1 is compatible to unitString2,
    * meaning one can be converted to the other.
    * If either unit string is illegal, return false.
+   * 
    * @param unitString check if this is compatible with unitString
    * @return true if compatible
    */
@@ -261,7 +271,8 @@ public class SimpleUnit {
       UnitFormat format = UnitFormatManager.instance();
       uuWant = format.parse(unitString);
     } catch (Exception e) {
-      if (debugParse) System.out.println("Parse " + unitString + " got Exception1 " + e);
+      if (debugParse)
+        System.out.println("Parse " + unitString + " got Exception1 " + e);
       return false;
     }
 
@@ -303,16 +314,19 @@ public class SimpleUnit {
 
   /**
    * Extract the value, can only be called for ScaledUnit.
+   * 
    * @return value of this unit if ScaledUnit, else NaN
    */
   public double getValue() {
-    if (!(uu instanceof ScaledUnit)) return Double.NaN;
+    if (!(uu instanceof ScaledUnit))
+      return Double.NaN;
     ScaledUnit offset = (ScaledUnit) uu;
     return offset.getScale();
   }
 
   /**
    * Extract the simple unit string (no number), eg "s" or "m".
+   * 
    * @return unit string with no value
    */
   public String getUnitString() {

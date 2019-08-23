@@ -21,7 +21,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
@@ -52,7 +51,7 @@ public class TestFmrcMisc {
 
   @Test
   public void testFloatingPointCompare() throws Exception {
-    String spec = TestDir.cdmUnitTestDir+"ft/fmrc/fp_precision/sediment_thickness_#yyMMddHHmm#.*\\.nc$";
+    String spec = TestDir.cdmUnitTestDir + "ft/fmrc/fp_precision/sediment_thickness_#yyMMddHHmm#.*\\.nc$";
     System.out.printf("%n====================FMRC dataset %s%n", spec);
     Formatter errlog = new Formatter();
     Fmrc fmrc = Fmrc.open(spec, errlog);

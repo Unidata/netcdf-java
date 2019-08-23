@@ -6,7 +6,6 @@
 package thredds.catalog;
 
 import ucar.nc2.constants.CDM;
-
 import java.io.*;
 import java.net.URL;
 import java.net.URI;
@@ -28,10 +27,10 @@ public class InvDocumentation {
   /**
    * Constructor.
    *
-   * @param href          : href of documentation, may be null.
-   * @param uri           : resolved URL, or null
-   * @param title         : Xlink title, may be null.
-   * @param type          : user-defined InvDocumentation type
+   * @param href : href of documentation, may be null.
+   * @param uri : resolved URL, or null
+   * @param title : Xlink title, may be null.
+   * @param type : user-defined InvDocumentation type
    * @param inlineContent : optional inline contents.
    */
   public InvDocumentation(String href, URI uri, String title, String type, String inlineContent) {
@@ -66,6 +65,7 @@ public class InvDocumentation {
 
   /**
    * if its a XLink, get the absolute URI
+   * 
    * @return the XLink URI, else null
    */
   public URI getURI() {
@@ -74,6 +74,7 @@ public class InvDocumentation {
 
   /**
    * if its a XLink, get the title, to display the link to the user.
+   * 
    * @return the XLink title, else null
    */
   public String getXlinkTitle() {
@@ -86,6 +87,7 @@ public class InvDocumentation {
 
   /**
    * if its a XLink, get the href, to display the link to the user.
+   * 
    * @return the XLink href, or null
    */
   public String getXlinkHref() {
@@ -99,12 +101,15 @@ public class InvDocumentation {
 
   /**
    * if its a XLink, get its content. This triggers a URL read the first time.
+   * 
    * @return the XLink content
    * @throws java.io.IOException on read error
    */
   public String getXlinkContent() throws java.io.IOException {
-    if (content != null) return content;
-    if (uri == null) return "";
+    if (content != null)
+      return content;
+    if (uri == null)
+      return "";
 
     URL url = uri.toURL();
     InputStream is = url.openStream();
@@ -114,7 +119,8 @@ public class InvDocumentation {
     byte[] buffer = new byte[1024];
     while (true) {
       int bytesRead = is.read(buffer);
-      if (bytesRead == -1) break;
+      if (bytesRead == -1)
+        break;
       os.write(buffer, 0, bytesRead);
     }
     is.close();
@@ -127,7 +133,8 @@ public class InvDocumentation {
 
   /**
    * Get inline content as a string, else null if there is none
-   * @return  inline content as a string, else null
+   * 
+   * @return inline content as a string, else null
    */
   public String getInlineContent() {
     return inlineContent;
@@ -152,8 +159,10 @@ public class InvDocumentation {
    * InvDocumentation elements with same values are equal.
    */
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof InvDocumentation)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof InvDocumentation))
+      return false;
     return o.hashCode() == this.hashCode();
   }
 
@@ -179,8 +188,7 @@ public class InvDocumentation {
   private volatile int hashCode = 0; // Bloch, item 8
 
   // for bean editing
-  public InvDocumentation() {
-  }
+  public InvDocumentation() {}
 
   static public String hiddenProperties() {
     return "inlineContent type URI xlinkContent";

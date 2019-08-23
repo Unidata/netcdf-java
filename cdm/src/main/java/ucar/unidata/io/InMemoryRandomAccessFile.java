@@ -10,6 +10,7 @@ import java.io.IOException;
 
 /**
  * A RandomAccessFile stored entirely in memory as a byte array.
+ * 
  * @author john
  */
 public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
@@ -43,7 +44,7 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return dataEnd;
   }
 
-  // @Override  LOOK weird error
+  // @Override LOOK weird error
   public void setBufferSize(int bufferSize) {
     // do nothing
   }

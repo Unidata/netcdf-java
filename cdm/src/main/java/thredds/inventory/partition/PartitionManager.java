@@ -6,7 +6,6 @@ package thredds.inventory.partition;
 
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
-
 import java.io.IOException;
 
 /**

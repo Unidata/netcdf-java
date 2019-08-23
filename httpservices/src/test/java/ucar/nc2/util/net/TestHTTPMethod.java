@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -41,92 +41,87 @@ import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
-
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 
-public class TestHTTPMethod extends UnitTestCommon
-{
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    
-    //////////////////////////////////////////////////
-    // Constants
+public class TestHTTPMethod extends UnitTestCommon {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    protected final String baseurl = "http://"+ TestDir.dap2TestServer+"/dts";
-    static String relativebaseline = "/cdm/src/test/data/ucar/nc2/util/net";
+  //////////////////////////////////////////////////
+  // Constants
 
-    static final String testcase = "test.01.dds";
+  protected final String baseurl = "http://" + TestDir.dap2TestServer + "/dts";
+  static String relativebaseline = "/cdm/src/test/data/ucar/nc2/util/net";
 
-    static final int EXPECTED = 20000;
+  static final String testcase = "test.01.dds";
 
-    static {HTTPSession.TESTING = true;}
+  static final int EXPECTED = 20000;
 
-    //////////////////////////////////////////////////
+  static {
+    HTTPSession.TESTING = true;
+  }
 
-    // Define the test sets
+  //////////////////////////////////////////////////
 
-    int passcount = 0;
-    int xfailcount = 0;
-    int failcount = 0;
-    boolean verbose = true;
-    boolean pass = false;
+  // Define the test sets
 
-    String datadir = null;
-    String threddsroot = null;
+  int passcount = 0;
+  int xfailcount = 0;
+  int failcount = 0;
+  boolean verbose = true;
+  boolean pass = false;
 
-    public TestHTTPMethod()
-    {
-        super();
-        setTitle("HTTP Method tests");
-        HTTPSession.TESTING = true;
+  String datadir = null;
+  String threddsroot = null;
+
+  public TestHTTPMethod() {
+    super();
+    setTitle("HTTP Method tests");
+    HTTPSession.TESTING = true;
+  }
+
+  @Test
+  public void testGetStream() throws Exception {
+    String url = baseurl + "/" + testcase;
+    String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
+
+    System.out.println("*** Testing: HTTPMethod");
+    System.out.println("*** URL: " + url);
+
+    System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream");
+    try (HTTPMethod method = HTTPFactory.Get(url)) {
+      method.execute();
+      InputStream stream = method.getResponseBodyAsStream();
+      // Read the whole thing
+      byte[] buffer = new byte[EXPECTED];
+      int count = stream.read(buffer);
+      stream.close(); /* should close the method also */
+      Assert.assertTrue("TestHTTPMethod: stream close did not close method", method.isClosed());
     }
+  }
 
-    @Test
-    public void
-    testGetStream() throws Exception
-    {
-        String url = baseurl + "/" + testcase;
-        String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
+  @Test
+  public void testGetStreamPartial() throws Exception {
+    String url = baseurl + "/" + testcase;
+    String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
-        System.out.println("*** Testing: HTTPMethod");
-        System.out.println("*** URL: " + url);
+    System.out.println("*** Testing: HTTPMethod");
+    System.out.println("*** URL: " + url);
 
-        System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream");
-        try (HTTPMethod method = HTTPFactory.Get(url)) {
-            method.execute();
-            InputStream stream = method.getResponseBodyAsStream();
-            // Read the whole thing
-            byte[] buffer = new byte[EXPECTED];
-            int count = stream.read(buffer);
-            stream.close(); /* should close the method also */
-            Assert.assertTrue("TestHTTPMethod: stream close did not close method",method.isClosed());
-        }
+    System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream partial read");
+    try (HTTPMethod method = HTTPFactory.Get(url)) {
+      method.execute();
+      InputStream stream = method.getResponseBodyAsStream();
+      byte[] buffer = new byte[EXPECTED];
+      int count = stream.read(buffer, 0, 10); // partial read
+      Assert.assertTrue("TestHTTPMethod: partial stream read closed ,ethod", !method.isClosed());
+      method.close();
+      Assert.assertTrue("TestHTTPMetthod: method.close() did not close", method.isClosed());
+      try {
+        count = stream.read(buffer);
+      } catch (Throwable t) {
+        Assert.assertTrue("TestHTTPMethod: stream read after method.close()", method.isClosed());
+      }
     }
-
-    @Test
-    public void
-    testGetStreamPartial() throws Exception
-    {
-        String url = baseurl + "/" + testcase;
-        String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
-
-        System.out.println("*** Testing: HTTPMethod");
-        System.out.println("*** URL: " + url);
-
-        System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream partial read");
-        try (HTTPMethod method = HTTPFactory.Get(url)) {
-            method.execute();
-            InputStream stream = method.getResponseBodyAsStream();
-            byte[] buffer = new byte[EXPECTED];
-            int count = stream.read(buffer, 0, 10); // partial read
-            Assert.assertTrue("TestHTTPMethod: partial stream read closed ,ethod",!method.isClosed());
-            method.close();
-            Assert.assertTrue("TestHTTPMetthod: method.close() did not close",method.isClosed());
-            try {
-                count = stream.read(buffer);
-            } catch (Throwable t) {
-                Assert.assertTrue("TestHTTPMethod: stream read after method.close()",method.isClosed());
-            }
-        }
-    }
+  }
 }

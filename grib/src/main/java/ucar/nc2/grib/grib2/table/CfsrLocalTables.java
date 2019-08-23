@@ -15,7 +15,6 @@ import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +55,8 @@ class CfsrLocalTables extends NcepLocalTables {
   }
 
   // 193
-  // Average of N forecasts (or initialized analyses); each product has forecast period of P1 (P1=0 for initialized analyses);
+  // Average of N forecasts (or initialized analyses); each product has forecast period of P1 (P1=0 for initialized
+  // analyses);
   // products have reference times at intervals of P2, beginning at the given reference time.
   // 194
   // Average of N uninitialized analyses, starting at reference time, at intervals of P2.
@@ -69,7 +69,8 @@ class CfsrLocalTables extends NcepLocalTables {
   // Number in Ave = number of forecast used
   // 205
   // Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
-  // Reference time is the start time of the first forecast, other forecasts at 6-hour intervals. Number in Ave = number of forecast used
+  // Reference time is the start time of the first forecast, other forecasts at 6-hour intervals. Number in Ave = number
+  // of forecast used
 
   @Override
   public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
@@ -108,7 +109,7 @@ class CfsrLocalTables extends NcepLocalTables {
         throw new IllegalArgumentException("unknown statType " + statType);
     }
 
-    return new int[]{start, end};
+    return new int[] {start, end};
   }
 
   @Override
@@ -126,8 +127,7 @@ class CfsrLocalTables extends NcepLocalTables {
     int timeUnitConvert = convertTimeUnit(timeUnitOrg);
     CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(timeUnitConvert);
     if (unitPeriod == null) {
-      throw new IllegalArgumentException(
-          "unknown CalendarPeriod " + timeUnitConvert + " org=" + timeUnitOrg);
+      throw new IllegalArgumentException("unknown CalendarPeriod " + timeUnitConvert + " org=" + timeUnitOrg);
     }
 
     CalendarPeriod.Field fld = unitPeriod.getField();
@@ -170,19 +170,21 @@ class CfsrLocalTables extends NcepLocalTables {
       return;
     }
 
-    /*     Octet(s)	Description
-        47	From NCEP Code Table 4.10
-        48	Should be ignored
-        49	Should be ignored
-        50-53	Number of grids used in the average
-        54	Should be ignored
-        55-58	This is "P2" from the GRIB1 format
-        59	From NCEP Code Table 4.10
-        60	Should be ignored
-        61	Should be ignored
-        62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
-        66	Should be ignored
-        67-70	Should be ignored */
+    /*
+     * Octet(s) Description
+     * 47 From NCEP Code Table 4.10
+     * 48 Should be ignored
+     * 49 Should be ignored
+     * 50-53 Number of grids used in the average
+     * 54 Should be ignored
+     * 55-58 This is "P2" from the GRIB1 format
+     * 59 From NCEP Code Table 4.10
+     * 60 Should be ignored
+     * 61 Should be ignored
+     * 62-65 This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+     * 66 Should be ignored
+     * 67-70 Should be ignored
+     */
 
     int statType = pds.getOctet(47);
     int statType2 = pds.getOctet(59);
@@ -205,14 +207,17 @@ class CfsrLocalTables extends NcepLocalTables {
     f.format("ForecastTimeIntervalOffset  = (%d,%d)%n", intv[0], intv[1]);
     f.format("      ForecastTimeInterval  = %s%n", getForecastTimeInterval(gr));
 
-    /* Section 4 Octet 58 (possibly 32 bits: 55-58) is the length of the averaging period per unit.
-       For cycle fractions, this is 24, for complete monthly averages, it is 6.
-       The product of this and the num_in_avg {above} should always equal the total number of hours in a respective month.
-     - Section 4 Octet 65 is the hours skipped between each calculation component.
-    f.format("%nCFSR MM special encoding (Swank)%n");
-    f.format("  (55-58) length of avg period per unit                     = %d%n", p2);
-    f.format("  (62-65) hours skipped between each calculation component  = %d%n", p2mp1);
-    f.format("  nhours in month %d should be  = %d%n", ngrids * p2, 24 * 31); */
+    /*
+     * Section 4 Octet 58 (possibly 32 bits: 55-58) is the length of the averaging period per unit.
+     * For cycle fractions, this is 24, for complete monthly averages, it is 6.
+     * The product of this and the num_in_avg {above} should always equal the total number of hours in a respective
+     * month.
+     * - Section 4 Octet 65 is the hours skipped between each calculation component.
+     * f.format("%nCFSR MM special encoding (Swank)%n");
+     * f.format("  (55-58) length of avg period per unit                     = %d%n", p2);
+     * f.format("  (62-65) hours skipped between each calculation component  = %d%n", p2mp1);
+     * f.format("  nhours in month %d should be  = %d%n", ngrids * p2, 24 * 31);
+     */
   }
 
   //////////////////////////////////////////////////////////////////////

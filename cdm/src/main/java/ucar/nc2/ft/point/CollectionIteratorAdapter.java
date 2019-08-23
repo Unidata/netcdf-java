@@ -5,7 +5,6 @@
 package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.PointFeatureCollectionIterator;
-
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -16,27 +15,27 @@ import java.util.Iterator;
  * @since 9/24/2015.
  */
 public class CollectionIteratorAdapter<T> implements Iterator<T> {
-    PointFeatureCollectionIterator pfIterator;
+  PointFeatureCollectionIterator pfIterator;
 
-    public CollectionIteratorAdapter(PointFeatureCollectionIterator pfIterator) {
-      this.pfIterator = pfIterator;
-    }
+  public CollectionIteratorAdapter(PointFeatureCollectionIterator pfIterator) {
+    this.pfIterator = pfIterator;
+  }
 
-    @Override
-    public boolean hasNext() {
-      try {
-        return pfIterator.hasNext();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+  @Override
+  public boolean hasNext() {
+    try {
+      return pfIterator.hasNext();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    @Override
-    public T next() {
-      try {
-        return (T) pfIterator.next();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+  @Override
+  public T next() {
+    try {
+      return (T) pfIterator.next();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 }

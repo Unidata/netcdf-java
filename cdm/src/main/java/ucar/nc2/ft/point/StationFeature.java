@@ -7,7 +7,6 @@ package ucar.nc2.ft.point;
 
 import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.Station;
-
 import java.io.IOException;
 
 /**

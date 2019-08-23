@@ -10,11 +10,10 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
-/** Test compressed data from H5  read JUnit framework. */
+/** Test compressed data from H5 read JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5compressed {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -66,20 +65,15 @@ public class TestH5compressed {
       assert (A.getShape()[0] == 64);
       assert (A.getShape()[1] == 96);
 
-      byte[] firstRow = new byte[]{
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
-              31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
-              31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 32, 33, 34, 35, 36, 37, 39, 39,
-              40, 42, 42, 44, 44, 57, 59, 52, 52, 53, 55, 59, 62, 63, 66, 71, 79, 81,
-              83, 85, 87, 89, 90, 87, 84, 84, 87, 94, 82, 80, 76, 77, 68, 59, 57, 61,
-              68, 81, 42};
+      byte[] firstRow = new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+          31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 32,
+          33, 34, 35, 36, 37, 39, 39, 40, 42, 42, 44, 44, 57, 59, 52, 52, 53, 55, 59, 62, 63, 66, 71, 79, 81, 83, 85,
+          87, 89, 90, 87, 84, 84, 87, 94, 82, 80, 76, 77, 68, 59, 57, 61, 68, 81, 42};
 
-      byte[] lastRow = new byte[]{
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 31, 31,
-              31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
-              31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
-              31, 31, 30, 31, 28, 20, 11, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      byte[] lastRow = new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 31, 31, 31, 31,
+          31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+          31, 31, 31, 31, 31, 31, 31, 31, 31, 30, 31, 28, 20, 11, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
       int[] shape = A.getShape();
       Index ima = A.getIndex();
@@ -101,7 +95,7 @@ public class TestH5compressed {
       Array data = v.read();
       assert data.getElementType() == float.class;
 
-      //large values indicate incorrect inflate or byte swapping
+      // large values indicate incorrect inflate or byte swapping
       while (data.hasNext()) {
         float val = data.nextFloat();
         assert Math.abs(val) < 100.0 : val;

@@ -10,12 +10,13 @@ import java.util.Iterator;
 /**
  * An iterator over PointFeatures.
  * Use try-with-resource to make sure resources are released:
+ * 
  * <pre>
-  try (PointFeatureIterator iter = getIter()) {
-    while (iter.hasNext())
-      process(iter.next());
-  }
-  </pre>
+ * try (PointFeatureIterator iter = getIter()) {
+ *   while (iter.hasNext())
+ *     process(iter.next());
+ * }
+ * </pre>
  *
  * @author caron
  * @since Feb 18, 2008
@@ -36,6 +37,7 @@ public interface PointFeatureIterator extends Closeable, Iterator<PointFeature> 
   /**
    * Returns the next PointFeature.
    * You must call hasNext() before calling next(), even if you know it will return true.
+   * 
    * @return the next PointFeature
    * @throws RuntimeException on i/o error
    */
@@ -54,6 +56,7 @@ public interface PointFeatureIterator extends Closeable, Iterator<PointFeature> 
   interface Filter {
     /**
      * True if the PointFeature passes this filter
+     * 
      * @param pointFeature the PointFeature to test
      * @return true if given pointFeature passes the filter
      */

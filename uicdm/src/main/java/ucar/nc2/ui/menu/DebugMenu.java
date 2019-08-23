@@ -8,7 +8,6 @@ package ucar.nc2.ui.menu;
 import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.prefs.Debug;
-
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -20,46 +19,46 @@ import javax.swing.event.MenuListener;
  */
 public class DebugMenu extends JMenu {
 
-    private ToolsUI toolsui;
+  private ToolsUI toolsui;
 
-/**
- *
- */
-    public DebugMenu(final ToolsUI tui) {
-        super("Debug");
-        setMnemonic('D');
+  /**
+   *
+   */
+  public DebugMenu(final ToolsUI tui) {
+    super("Debug");
+    setMnemonic('D');
 
-        this.toolsui = tui;
+    this.toolsui = tui;
 
-        // the list of debug flags are in a submenu
-        // they are dynamically discovered, and persisted
-        final JMenu flagsMenu = new JMenu("Debug Flags");
+    // the list of debug flags are in a submenu
+    // they are dynamically discovered, and persisted
+    final JMenu flagsMenu = new JMenu("Debug Flags");
 
-        flagsMenu.addMenuListener(new MenuListener() {
-            @Override
-            public void menuSelected(MenuEvent e) {
-                toolsui.setDebugFlags(); // let Debug know about the flag names
-                Debug.constructMenu(flagsMenu); // now construct the menu
-            }
+    flagsMenu.addMenuListener(new MenuListener() {
+      @Override
+      public void menuSelected(MenuEvent e) {
+        toolsui.setDebugFlags(); // let Debug know about the flag names
+        Debug.constructMenu(flagsMenu); // now construct the menu
+      }
 
-            @Override
-            public void menuDeselected(MenuEvent e) {
-                toolsui.setDebugFlags(); // transfer menu values
-            }
+      @Override
+      public void menuDeselected(MenuEvent e) {
+        toolsui.setDebugFlags(); // transfer menu values
+      }
 
-            @Override
-            public void menuCanceled(MenuEvent e) { }
-        });
+      @Override
+      public void menuCanceled(MenuEvent e) {}
+    });
 
-        add(flagsMenu);
+    add(flagsMenu);
 
-        // this deletes all the flags, then they start accumulating again
-        final AbstractAction clearDebugFlagsAction = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                Debug.removeAll();
-            }
-        };
-        BAMutil.setActionProperties(clearDebugFlagsAction, null, "Delete All Debug Flags", false, 'C', -1);
-        BAMutil.addActionToMenu(this, clearDebugFlagsAction);
-    }
+    // this deletes all the flags, then they start accumulating again
+    final AbstractAction clearDebugFlagsAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Debug.removeAll();
+      }
+    };
+    BAMutil.setActionProperties(clearDebugFlagsAction, null, "Delete All Debug Flags", false, 'C', -1);
+    BAMutil.addActionToMenu(this, clearDebugFlagsAction);
+  }
 }

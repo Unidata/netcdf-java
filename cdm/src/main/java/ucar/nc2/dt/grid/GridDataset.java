@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -42,10 +41,11 @@ import ucar.unidata.geoloc.ProjectionRect;
  * <p/>
  * Example:
  * <p/>
+ * 
  * <pre>
- * GridDataset gridDs = GridDataset.open (uriString);
+ * GridDataset gridDs = GridDataset.open(uriString);
  * List grids = gridDs.getGrids();
- * for (int i=0; i&lt;grids.size(); i++) {
+ * for (int i = 0; i &lt; grids.size(); i++) {
  *   GeoGrid grid = (Geogrid) grids.get(i);
  * }
  * </pre>
@@ -82,7 +82,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
   static public GridDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, DatasetUrl.findDatasetUrl(location), enhanceMode, -1, null, null);
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, DatasetUrl.findDatasetUrl(location),
+        enhanceMode, -1, null, null);
     return new GridDataset(ds, null);
   }
 
@@ -107,11 +108,13 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     this.ncd = ncd;
     // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
     Set<Enhance> enhance = ncd.getEnhanceMode();
-    if(enhance == null || enhance.isEmpty()) enhance = NetcdfDataset.getDefaultEnhanceMode(); 
+    if (enhance == null || enhance.isEmpty())
+      enhance = NetcdfDataset.getDefaultEnhanceMode();
     ncd.enhance(enhance);
 
     // look for geoGrids
-    if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids%n");
+    if (parseInfo != null)
+      parseInfo.format("GridDataset look for GeoGrids%n");
     List<Variable> vars = ncd.getVariables();
     for (Variable var : vars) {
       VariableEnhanced varDS = (VariableEnhanced) var;
@@ -138,7 +141,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
         GridCoordSys gcsTry = GridCoordSys.makeGridCoordSys(parseInfo, cs, v);
         if (gcsTry != null) {
           gcs = gcsTry;
-          if (gcsTry.isProductSet()) break;
+          if (gcsTry.isProductSet())
+            break;
         }
       }
 
@@ -197,7 +201,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   }
 
   public String getLocation() {
-    return (ncd != null) ?  ncd.getLocation() : "";
+    return (ncd != null) ? ncd.getLocation() : "";
   }
 
   /**
@@ -225,27 +229,32 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   }
 
   public CalendarDateRange getCalendarDateRange() {
-    if (dateRangeMax == null) makeRanges();
+    if (dateRangeMax == null)
+      makeRanges();
     return dateRangeMax;
   }
 
   public CalendarDate getCalendarDateStart() {
-    if (dateRangeMax == null) makeRanges();
+    if (dateRangeMax == null)
+      makeRanges();
     return (dateRangeMax == null) ? null : dateRangeMax.getStart();
   }
 
   public CalendarDate getCalendarDateEnd() {
-    if (dateRangeMax == null) makeRanges();
+    if (dateRangeMax == null)
+      makeRanges();
     return (dateRangeMax == null) ? null : dateRangeMax.getEnd();
   }
 
   public LatLonRect getBoundingBox() {
-    if (llbbMax == null) makeRanges();
+    if (llbbMax == null)
+      makeRanges();
     return llbbMax;
   }
 
   public ProjectionRect getProjBoundingBox() {
-    if (llbbMax == null) makeRanges();
+    if (llbbMax == null)
+      makeRanges();
     return projBB;
   }
 
@@ -262,10 +271,10 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   }
 
   public List<VariableSimpleIF> getDataVariables() {
-    List<VariableSimpleIF> result = new ArrayList<>( grids.size());
+    List<VariableSimpleIF> result = new ArrayList<>(grids.size());
     for (GridDatatype grid : getGrids()) {
       if (grid.getVariable() != null) // LOOK could make Adaptor if no variable
-        result.add( grid.getVariable());
+        result.add(grid.getVariable());
     }
     return result;
   }
@@ -283,7 +292,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     if (null == (gridset = gridsetHash.get(gcs.getName()))) {
       gridset = new Gridset(gcs);
       gridsetHash.put(gcs.getName(), gridset);
-      if (parseInfo != null) parseInfo.format(" -make new GridCoordSys= %s%n",gcs.getName());
+      if (parseInfo != null)
+        parseInfo.format(" -make new GridCoordSys= %s%n", gcs.getName());
       gcs.makeVerticalTransform(this, parseInfo); // delayed until now LOOK why for each grid ??
     }
 
@@ -294,6 +304,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   /**
    * the name of the dataset is the last part of the location
+   * 
    * @return the name of the dataset
    */
   public String getName() {
@@ -301,7 +312,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     int pos = loc.lastIndexOf('/');
     if (pos < 0)
       pos = loc.lastIndexOf('\\');
-    return (pos < 0) ? loc : loc.substring(pos+1);
+    return (pos < 0) ? loc : loc.substring(pos + 1);
   }
 
   /**
@@ -345,7 +356,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     }
     return null;
   }
-  
+
   /**
    * find the named GeoGrid.
    *
@@ -368,7 +379,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     }
     return null;
   }
-  
+
   /**
    * Get Details about the dataset.
    */
@@ -395,6 +406,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   /**
    * Show Grids and coordinate systems.
+   * 
    * @param buf put info here
    */
   private void getInfo(Formatter buf) {
@@ -402,9 +414,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
     for (Gridset gs : gridsetHash.values()) {
       GridCoordSystem gcs = gs.getGeoCoordSystem();
-      buf.format("%nGridset %d  coordSys=%s", countGridset,  gcs);
+      buf.format("%nGridset %d  coordSys=%s", countGridset, gcs);
       buf.format(" LLbb=%s ", gcs.getLatLonBoundingBox());
-      if ((gcs.getProjection() != null)  && !gcs.getProjection().isLatLon())
+      if ((gcs.getProjection() != null) && !gcs.getProjection().isLatLon())
         buf.format(" bb= %s", gcs.getBoundingBox());
       buf.format("%n");
       buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
@@ -418,7 +430,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     buf.format("%nGeoReferencing Coordinate Axes%n");
     buf.format("Name__________________________Units_______________Type______Description%n");
     for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
-      if (axis.getAxisType() == null) continue;
+      if (axis.getAxisType() == null)
+        continue;
       axis.getInfo(buf);
       buf.format("%n");
     }
@@ -477,29 +490,33 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   }
 
   //////////////////////////////////////////////////
-  //  FileCacheable
+  // FileCacheable
 
   @Override
   public synchronized void close() throws java.io.IOException {
     if (fileCache != null) {
-      if (fileCache.release(this)) return;
+      if (fileCache.release(this))
+        return;
     }
 
     try {
-      if (ncd != null) ncd.close();
+      if (ncd != null)
+        ncd.close();
     } finally {
       ncd = null;
-      }
+    }
   }
 
-        // release any resources like file handles
+  // release any resources like file handles
   public void release() throws IOException {
-    if (ncd != null) ncd.release();
+    if (ncd != null)
+      ncd.release();
   }
 
   // reacquire any resources like file handles
   public void reacquire() throws IOException {
-    if (ncd != null) ncd.reacquire();
+    if (ncd != null)
+      ncd.reacquire();
   }
 
   @Override

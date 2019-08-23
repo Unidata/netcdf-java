@@ -8,12 +8,10 @@ import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import ucar.httpservices.*;
 import org.apache.http.Header;
-
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
-
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,7 +27,7 @@ import java.util.Formatter;
  */
 public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String PROTOCOL = "cdmremote";
-  static public final String SCHEME = PROTOCOL+":";
+  static public final String SCHEME = PROTOCOL + ":";
 
   // static private org.slf4SCHEMEj.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private boolean showRequest = false;
@@ -60,7 +58,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////////////////////
 
-  private HTTPSession httpClient = null;  // stays open until close is called
+  private HTTPSession httpClient = null; // stays open until close is called
 
   private final String remoteURI;
 
@@ -81,7 +79,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     httpClient = HTTPFactory.newSession(remoteURI);
     // get the header
     String url = remoteURI + "?req=header";
-    if (showRequest) System.out.printf(" CdmRemote request %s%n", url);
+    if (showRequest)
+      System.out.printf(" CdmRemote request %s%n", url);
     try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
       method.setFollowRedirects(true);
       int statusCode = method.execute();
@@ -89,7 +88,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       if (statusCode == 404)
         throw new FileNotFoundException(getErrorMessage(method));
 
-       if (statusCode >= 300)
+      if (statusCode >= 300)
         throw new IOException(getErrorMessage(method));
 
       InputStream is = method.getResponseAsStream();
@@ -99,11 +98,12 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
 
     long took = System.currentTimeMillis() - start;
-    if (showRequest) System.out.printf(" CdmRemote request %s took %d msecs %n", url, took);
+    if (showRequest)
+      System.out.printf(" CdmRemote request %s took %d msecs %n", url, took);
   }
 
   // Closes the input stream.
-  public CdmRemote(InputStream is, String location ) throws IOException {
+  public CdmRemote(InputStream is, String location) throws IOException {
     remoteURI = location;
 
     try {
@@ -118,8 +118,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   @Override
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException {
-    //if (unlocked)
-    //  throw new IllegalStateException("File is unlocked - cannot use");
+    // if (unlocked)
+    // throw new IllegalStateException("File is unlocked - cannot use");
 
     if (v.getDataType() == DataType.SEQUENCE) {
       Structure s = (Structure) v;
@@ -131,7 +131,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     f.format("%s?req=data", remoteURI);
     if (compress)
       f.format("&deflate=5");
-    //f.format("&var=%s", v.getShortName());
+    // f.format("&var=%s", v.getShortName());
     f.format("&var=%s", v.getFullNameEscaped());
     if ((section != null) && (section.computeSize() != v.getSize()) && (v.getDataType() != DataType.SEQUENCE)) {
       f.format("(%s)", section.toString());
@@ -147,7 +147,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     if (showRequest)
       System.out.printf("CdmRemote data request for variable: '%s' section=(%s)%n url='%s'%n esc='%s'%n",
-              v.getFullName(), section, url, escapedURI);
+          v.getFullName(), section, url, escapedURI);
 
     try (HTTPMethod method = HTTPFactory.Get(httpClient, escapedURI.toString())) {
       int statusCode = method.execute();
@@ -170,7 +170,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         }
       }
 
-      InputStream is = method.getResponseAsStream();  // Closed by HTTPMethod.close().
+      InputStream is = method.getResponseAsStream(); // Closed by HTTPMethod.close().
       NcStreamReader reader = new NcStreamReader();
       NcStreamReader.DataResult result = reader.readData(is, this, remoteURI);
 
@@ -183,7 +183,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     String path = method.getURI().toString();
     String status = method.getStatusLine();
     String content = method.getResponseAsString();
-    return (content == null) ? status + " " + path : status + " " + path +"\n "+content;
+    return (content == null) ? status + " " + path : status + " " + path + "\n " + content;
   }
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
@@ -205,7 +205,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
     sbuff.append(query);
-    if (showRequest) System.out.printf(" CdmRemote sendQuery= %s", sbuff);
+    if (showRequest)
+      System.out.printf(" CdmRemote sendQuery= %s", sbuff);
 
     HTTPMethod method = HTTPFactory.Get(session, sbuff.toString());
     try {
@@ -217,7 +218,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       }
 
       InputStream stream = method.getResponseBodyAsStream();
-      if (showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
+      if (showRequest)
+        System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
 
       // Leave the stream open. We must also leave the HTTPMethod open because the two are linked:
       // calling close() on one object causes the other object to be closed as well.
@@ -251,7 +253,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       // header
       try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
-        if (showRequest) System.out.printf("CdmRemote request %s %n", url);
+        if (showRequest)
+          System.out.printf("CdmRemote request %s %n", url);
         int statusCode = method.execute();
 
         if (statusCode == 404)
@@ -301,7 +304,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   @Override
   public synchronized void close() {
-    if (httpClient != null) httpClient.close();
+    if (httpClient != null)
+      httpClient.close();
   }
 
 }

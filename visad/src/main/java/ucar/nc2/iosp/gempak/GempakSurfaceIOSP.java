@@ -8,19 +8,13 @@ package ucar.nc2.iosp.gempak;
 
 
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
-
 import java.nio.ByteBuffer;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,10 +48,9 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     if (!super.isValidFile(raf)) {
       return false;
     }
-    // TODO:  handle other types of surface files
-    return gemreader.getFileSubType()
-            .equals(GempakSurfaceFileReader.STANDARD) || gemreader
-            .getFileSubType().equals(GempakSurfaceFileReader.SHIP);
+    // TODO: handle other types of surface files
+    return gemreader.getFileSubType().equals(GempakSurfaceFileReader.STANDARD)
+        || gemreader.getFileSubType().equals(GempakSurfaceFileReader.SHIP);
   }
 
   /**
@@ -93,55 +86,50 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
   /**
    * Read the data for the variable
    *
-   * @param v2      Variable to read
+   * @param v2 Variable to read
    * @param section section infomation
    * @return Array of data
-   * @throws IOException           problem reading from file
+   * @throws IOException problem reading from file
    * @throws InvalidRangeException invalid Range
    */
-  public Array readData(Variable v2, Section section)
-          throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     if (gemreader == null) {
       return null;
     }
-    //System.out.println("looking for " + v2);
-    //System.out.println("Section = " + section);
-    //Trace.call1("GEMPAKSIOSP: readData");
+    // System.out.println("looking for " + v2);
+    // System.out.println("Section = " + section);
+    // Trace.call1("GEMPAKSIOSP: readData");
     Array array = null;
     if (gemreader.getFileSubType().equals(GempakSurfaceFileReader.SHIP)) {
       array = readShipData(v2, section);
-    } else if (gemreader.getFileSubType().equals(
-            GempakSurfaceFileReader.STANDARD)) {
+    } else if (gemreader.getFileSubType().equals(GempakSurfaceFileReader.STANDARD)) {
       array = readStandardData(v2, section);
-    } else {  // climate data
-      //array = readClimateData(v2, section);
+    } else { // climate data
+      // array = readClimateData(v2, section);
     }
-    //  long took = System.currentTimeMillis() - start;
-    //  System.out.println("  read data took=" + took + " msec ");
-    //Trace.call2("GEMPAKSIOSP: readData");
+    // long took = System.currentTimeMillis() - start;
+    // System.out.println(" read data took=" + took + " msec ");
+    // Trace.call2("GEMPAKSIOSP: readData");
     return array;
   }
 
   /**
-   * Read in the data for the variable.  In this case, it should be
-   * a Structure.  The section should be rank 2 (station, time).
+   * Read in the data for the variable. In this case, it should be
+   * a Structure. The section should be rank 2 (station, time).
    *
-   * @param v2      variable to read
+   * @param v2 variable to read
    * @param section section of the variable
    * @return the array of data
    * @throws IOException problem reading the file
    */
-  private Array readStandardData(Variable v2, Section section)
-          throws IOException {
+  private Array readStandardData(Variable v2, Section section) throws IOException {
 
     Array array = null;
     if (v2 instanceof Structure) {
-      List<GempakParameter> params =
-              gemreader.getParameters(GempakSurfaceFileReader.SFDT);
+      List<GempakParameter> params = gemreader.getParameters(GempakSurfaceFileReader.SFDT);
       Structure pdata = (Structure) v2;
       StructureMembers members = pdata.makeStructureMembers();
-      List<StructureMembers.Member> mbers =
-              members.getMembers();
+      List<StructureMembers.Member> mbers = members.getMembers();
       int i = 0;
       int numBytes;
       int totalNumBytes = 0;
@@ -156,20 +144,18 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       int missnum = 0;
       for (Variable v : pdata.getVariables()) {
         Attribute att = v.findAttribute("missing_value");
-        missing[missnum++] = (att == null)
-                ? GempakConstants.RMISSD
-                : att.getNumericValue().floatValue();
+        missing[missnum++] = (att == null) ? GempakConstants.RMISSD : att.getNumericValue().floatValue();
       }
 
 
-      //int num = 0;
+      // int num = 0;
       Range stationRange = section.getRange(0);
       Range timeRange = section.getRange(1);
       int size = stationRange.length() * timeRange.length();
       // Create a ByteBuffer using a byte array
       byte[] bytes = new byte[totalNumBytes * size];
       ByteBuffer buf = ByteBuffer.wrap(bytes);
-      array = new ArrayStructureBB(members, new int[]{size}, buf, 0);
+      array = new ArrayStructureBB(members, new int[] {size}, buf, 0);
 
       for (int stnIdx : stationRange) {
         for (int timeIdx : timeRange) {
@@ -198,33 +184,31 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
           }
         }
       }
-      //Trace.call2("GEMPAKSIOSP: readStandardData");
+      // Trace.call2("GEMPAKSIOSP: readStandardData");
     }
     return array;
   }
 
   /**
-   * Read in the data for the record variable.  In this case, it should be
-   * a Structure of record dimension.  We can handle a subset of the
+   * Read in the data for the record variable. In this case, it should be
+   * a Structure of record dimension. We can handle a subset of the
    * variables in a structure.
    *
-   * @param v2      variable to read
+   * @param v2 variable to read
    * @param section section of the variable
    * @return the array of data
    * @throws IOException problem reading the file
    */
-  private Array readShipData(Variable v2, Section section)
-          throws IOException {
+  private Array readShipData(Variable v2, Section section) throws IOException {
 
     Array array = null;
     if (v2 instanceof Structure) {
-      List<GempakParameter> params =
-              gemreader.getParameters(GempakSurfaceFileReader.SFDT);
+      List<GempakParameter> params = gemreader.getParameters(GempakSurfaceFileReader.SFDT);
       Structure pdata = (Structure) v2;
       StructureMembers members = pdata.makeStructureMembers();
       List<StructureMembers.Member> mbers = members.getMembers();
       int ssize = 0;
-      //int stnVarNum = 0;
+      // int stnVarNum = 0;
       List<String> stnKeyNames = gemreader.getStationKeyNames();
       for (StructureMembers.Member member : mbers) {
         if (stnKeyNames.contains(member.getName())) {
@@ -244,15 +228,15 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       }
       members.setStructureSize(ssize);
 
-      // TODO:  figure out how to get the missing value for data
-      //float[] missing = new float[mbers.size()];
-      //int     missnum = 0;
-      //for (Variable v : pdata.getVariables()) {
-      //    Attribute att = v.findAttribute("missing_value");
-      //    missing[missnum++] = (att == null)
-      //                         ? GempakConstants.RMISSD
-      //                         : att.getNumericValue().floatValue();
-      //}
+      // TODO: figure out how to get the missing value for data
+      // float[] missing = new float[mbers.size()];
+      // int missnum = 0;
+      // for (Variable v : pdata.getVariables()) {
+      // Attribute att = v.findAttribute("missing_value");
+      // missing[missnum++] = (att == null)
+      // ? GempakConstants.RMISSD
+      // : att.getNumericValue().floatValue();
+      // }
 
 
       Range recordRange = section.getRange(0);
@@ -260,11 +244,11 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       // Create a ByteBuffer using a byte array
       byte[] bytes = new byte[ssize * size];
       ByteBuffer buf = ByteBuffer.wrap(bytes);
-      array = new ArrayStructureBB(members, new int[]{size}, buf, 0);
+      array = new ArrayStructureBB(members, new int[] {size}, buf, 0);
       List<GempakStation> stationList = gemreader.getStations();
       List<Date> dateList = gemreader.getDates();
       boolean needToReadData = !pdata.isSubset();
-      if (!needToReadData) {  // subset, see if we need some param data
+      if (!needToReadData) { // subset, see if we need some param data
         for (GempakParameter param : params) {
           if (members.findMember(param.getName()) != null) {
             needToReadData = true;
@@ -272,7 +256,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
           }
         }
       }
-      //boolean hasTime = (members.findMember(TIME_VAR) != null);
+      // boolean hasTime = (members.findMember(TIME_VAR) != null);
 
       // fill out the station information
       for (int recIdx : recordRange) {
@@ -323,15 +307,13 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         }
         if (members.findMember(TIME_VAR) != null) {
           // put in the time
-          Date time = dateList.get( recIdx);
+          Date time = dateList.get(recIdx);
           buf.putDouble(time.getTime() / 1000.d);
         }
 
         if (needToReadData) {
           int column = stn.getIndex();
-          GempakFileReader.RData vals =
-                  gemreader.DM_RDTR(1, column,
-                          GempakSurfaceFileReader.SFDT);
+          GempakFileReader.RData vals = gemreader.DM_RDTR(1, column, GempakSurfaceFileReader.SFDT);
           if (vals == null) {
             for (GempakParameter param : params) {
               if (members.findMember(param.getName()) != null) {
@@ -352,7 +334,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
           }
         }
       }
-      //Trace.call2("GEMPAKSIOSP: readShipData");
+      // Trace.call2("GEMPAKSIOSP: readShipData");
     }
     return array;
   }
@@ -383,7 +365,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
   private void buildStandardFile() {
     // Build station list
     List<GempakStation> stations = gemreader.getStations();
-    //Trace.msg("GEMPAKSIOSP: now have " + stations.size() + " stations");
+    // Trace.msg("GEMPAKSIOSP: now have " + stations.size() + " stations");
     Dimension station = new Dimension("station", stations.size(), true);
     ncfile.addDimension(null, station);
     ncfile.addDimension(null, DIM_LEN8);
@@ -420,41 +402,33 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     stationTime.add(station);
     stationTime.add(times);
     // TODO: handle other parts
-    Structure sfData = makeStructure(GempakSurfaceFileReader.SFDT,
-            stationTime, true);
+    Structure sfData = makeStructure(GempakSurfaceFileReader.SFDT, stationTime, true);
     if (sfData == null) {
       return;
     }
     sfData.addAttribute(new Attribute(CF.COORDINATES, "time SLAT SLON SELV"));
     ncfile.addVariable(null, sfData);
-    ncfile.addAttribute(
-            null,
-            new Attribute(
-                    "CF:featureType",
-                    CF.FeatureType.timeSeries.toString()));
+    ncfile.addAttribute(null, new Attribute("CF:featureType", CF.FeatureType.timeSeries.toString()));
   }
 
 
   /**
-   * Build a ship station structure.  Here the columns are the
+   * Build a ship station structure. Here the columns are the
    * stations/reports and the rows (1) are the reports.
    */
   private void buildShipFile() {
     // Build variable list (var(station,time))
     List<GempakStation> stations = gemreader.getStations();
     int numObs = stations.size();
-    //Trace.msg("GEMPAKSIOSP: now have " + numObs + " stations");
-    Dimension record = new Dimension("record", numObs, true,
-            (numObs == 0), false);
+    // Trace.msg("GEMPAKSIOSP: now have " + numObs + " stations");
+    Dimension record = new Dimension("record", numObs, true, (numObs == 0), false);
     ncfile.addDimension(null, record);
     List<Dimension> records = new ArrayList<>(1);
     records.add(record);
 
     // time
-    Variable timeVar = new Variable(ncfile, null, null, TIME_VAR,
-            DataType.DOUBLE, (String)null);
-    timeVar.addAttribute(
-            new Attribute(CDM.UNITS, "seconds since 1970-01-01 00:00:00"));
+    Variable timeVar = new Variable(ncfile, null, null, TIME_VAR, DataType.DOUBLE, (String) null);
+    timeVar.addAttribute(new Attribute(CDM.UNITS, "seconds since 1970-01-01 00:00:00"));
     timeVar.addAttribute(new Attribute("long_name", TIME_VAR));
 
     ncfile.addDimension(null, DIM_LEN8);
@@ -462,8 +436,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     ncfile.addDimension(null, DIM_LEN2);
     List<Variable> stationVars = makeStationVars(stations, null);
 
-    List<GempakParameter> params =
-            gemreader.getParameters(GempakSurfaceFileReader.SFDT);
+    List<GempakParameter> params = gemreader.getParameters(GempakSurfaceFileReader.SFDT);
     if (params == null) {
       return;
     }
@@ -490,17 +463,14 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     }
     sVar.addAttribute(new Attribute(CF.COORDINATES, coords));
     ncfile.addVariable(null, sVar);
-    ncfile.addAttribute(null,
-            new Attribute("CF:featureType",
-                    CF.FeatureType.point.toString()));
+    ncfile.addAttribute(null, new Attribute("CF:featureType", CF.FeatureType.point.toString()));
   }
 
   /**
-   * Build a ship station structure.  Here the columns are the
+   * Build a ship station structure. Here the columns are the
    * times and the rows are the stations.
    */
-  private void buildClimateFile() {
-  }
+  private void buildClimateFile() {}
 
 }
 

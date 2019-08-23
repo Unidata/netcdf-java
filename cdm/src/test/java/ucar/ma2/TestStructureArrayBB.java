@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.UtilsTestStructureArray;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
@@ -18,76 +17,76 @@ import java.nio.IntBuffer;
 public class TestStructureArrayBB {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  /* <pre>
-   Structure {
-     int  f1;
-     int f2(9);
-
-     Structure {
-       int g1;
-       int(2) g2;
-       int(3,4) g3;
-
-       Structure {
-         int(3) h1;
-         int(2) h2;
-       } nested2(17);
-
-     } nested1(10);
-   } s(4);
-   </pre>
-   so
-   <pre>
-   each s record  1010 * 4 = 4040
-     10 ints
-     10 nested1  10 * 100 = 1000
-        15 ints
-        17 nested2 17 * 5 = 85
-           5 ints
-  */
+  /*
+   * <pre>
+   * Structure {
+   * int f1;
+   * int f2(9);
+   * 
+   * Structure {
+   * int g1;
+   * int(2) g2;
+   * int(3,4) g3;
+   * 
+   * Structure {
+   * int(3) h1;
+   * int(2) h2;
+   * } nested2(17);
+   * 
+   * } nested1(10);
+   * } s(4);
+   * </pre>
+   * so
+   * <pre>
+   * each s record 1010 * 4 = 4040
+   * 10 ints
+   * 10 nested1 10 * 100 = 1000
+   * 15 ints
+   * 17 nested2 17 * 5 = 85
+   * 5 ints
+   */
   @Test
   public void testBB() throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers("s");
-    members.addMember("f1", "desc", "units", DataType.INT, new int[]{1});
-    members.addMember("f2", "desc", "units", DataType.INT, new int[]{9});  // 10
+    members.addMember("f1", "desc", "units", DataType.INT, new int[] {1});
+    members.addMember("f2", "desc", "units", DataType.INT, new int[] {9}); // 10
 
-    StructureMembers.Member nested1 = members.addMember("nested1", "desc", "units", DataType.STRUCTURE, new int[]{10});
+    StructureMembers.Member nested1 = members.addMember("nested1", "desc", "units", DataType.STRUCTURE, new int[] {10});
     StructureMembers nested1_members = new StructureMembers("nested1");
-    nested1_members.addMember("g1", "desc", "units", DataType.INT, new int[]{1});
-    nested1_members.addMember("g2", "desc", "units", DataType.INT, new int[]{2});
-    nested1_members.addMember("g3", "desc", "units", DataType.INT, new int[]{3,4});  // (15 + 85) * 10 = 1000
+    nested1_members.addMember("g1", "desc", "units", DataType.INT, new int[] {1});
+    nested1_members.addMember("g2", "desc", "units", DataType.INT, new int[] {2});
+    nested1_members.addMember("g3", "desc", "units", DataType.INT, new int[] {3, 4}); // (15 + 85) * 10 = 1000
 
-    StructureMembers.Member nested2 = nested1_members.addMember("nested2", "desc", "units", DataType.STRUCTURE, new int[]{17}); // 5 * 17 = 85
+    StructureMembers.Member nested2 =
+        nested1_members.addMember("nested2", "desc", "units", DataType.STRUCTURE, new int[] {17}); // 5 * 17 = 85
     nested1.setStructureMembers(nested1_members);
 
     StructureMembers nested2_members = new StructureMembers("nested2");
-    nested2_members.addMember("h1", "desc", "units", DataType.INT, new int[]{3});
-    nested2_members.addMember("h2", "desc", "units", DataType.INT, new int[]{2});  // 5
+    nested2_members.addMember("h1", "desc", "units", DataType.INT, new int[] {3});
+    nested2_members.addMember("h2", "desc", "units", DataType.INT, new int[] {2}); // 5
     nested2.setStructureMembers(nested2_members);
 
     ArrayStructureBB.setOffsets(members);
     int[] offs = {0, 4, 40};
     for (int i = 0; i < offs.length; ++i) {
       StructureMembers.Member m = members.getMember(i);
-      Assert.assertEquals("Bad offset for " + m.getName(), offs[i],
-              m.getDataParam());
+      Assert.assertEquals("Bad offset for " + m.getName(), offs[i], m.getDataParam());
     }
 
     int[] offs2 = {0, 4, 12, 60};
     for (int i = 0; i < offs2.length; ++i) {
-        StructureMembers.Member m = nested1_members.getMember(i);
-        Assert.assertEquals("Bad offset for " + m.getName(), offs2[i],
-                m.getDataParam());
+      StructureMembers.Member m = nested1_members.getMember(i);
+      Assert.assertEquals("Bad offset for " + m.getName(), offs2[i], m.getDataParam());
     }
 
-//    Formatter f = new Formatter(System.out);
-//    Indent indent = new Indent(2);
-//    ArrayStructureBB.showOffsets(members, indent, f);
+    // Formatter f = new Formatter(System.out);
+    // Indent indent = new Indent(2);
+    // ArrayStructureBB.showOffsets(members, indent, f);
 
-    ArrayStructureBB bb = new ArrayStructureBB(members, new int[]{4});
+    ArrayStructureBB bb = new ArrayStructureBB(members, new int[] {4});
     fillStructureArray(bb);
 
-//    System.out.println( NCdumpW.toString(bb, "test arrayBB", null));
+    // System.out.println( NCdumpW.toString(bb, "test arrayBB", null));
 
     new UtilsTestStructureArray().testArrayStructure(bb);
 
@@ -124,7 +123,7 @@ public class TestStructureArrayBB {
     ByteBuffer bb = sa.getByteBuffer();
     IntBuffer ibb = bb.asIntBuffer();
     int count = 0;
-    for (int i=0; i<ibb.capacity(); i++)
+    for (int i = 0; i < ibb.capacity(); i++)
       ibb.put(i, count++);
   }
 
@@ -146,193 +145,195 @@ public class TestStructureArrayBB {
     StructureMembers members = new StructureMembers(parent.getName());
     parent.setStructureMembers(members);
 
-    StructureMembers.Member m = members.addMember("g1", "desc", "units", DataType.INT, new int[]{1});
-    Array data = Array.factory(DataType.INT, new int[]{4, 9});
+    StructureMembers.Member m = members.addMember("g1", "desc", "units", DataType.INT, new int[] {1});
+    Array data = Array.factory(DataType.INT, new int[] {4, 9});
     m.setDataArray(data);
     fill(data);
 
-    m = members.addMember("g2", "desc", "units", DataType.DOUBLE, new int[]{2});
-    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 2});
+    m = members.addMember("g2", "desc", "units", DataType.DOUBLE, new int[] {2});
+    data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 2});
     m.setDataArray(data);
     fill(data);
 
-    m = members.addMember("g3", "desc", "units", DataType.DOUBLE, new int[]{3, 4});
-    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 3, 4});
+    m = members.addMember("g3", "desc", "units", DataType.DOUBLE, new int[] {3, 4});
+    data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 3, 4});
     m.setDataArray(data);
     fill(data);
 
-    m = members.addMember("nested2", "desc", "units", DataType.STRUCTURE, new int[]{7});
+    m = members.addMember("nested2", "desc", "units", DataType.STRUCTURE, new int[] {7});
     data = makeNested2(m);
     m.setDataArray(data);
 
-    return new ArrayStructureBB(members, new int[]{4, 9});
+    return new ArrayStructureBB(members, new int[] {4, 9});
   }
 
   public ArrayStructure makeNested2(StructureMembers.Member parent) throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers(parent.getName());
     parent.setStructureMembers(members);
 
-    StructureMembers.Member m = members.addMember("h1", "desc", "units", DataType.INT, new int[]{1});
-    Array data = Array.factory(DataType.INT, new int[]{4, 9, 7});
+    StructureMembers.Member m = members.addMember("h1", "desc", "units", DataType.INT, new int[] {1});
+    Array data = Array.factory(DataType.INT, new int[] {4, 9, 7});
     m.setDataArray(data);
     fill(data);
 
-    m = members.addMember("h2", "desc", "units", DataType.DOUBLE, new int[]{2});
-    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 7, 2});
+    m = members.addMember("h2", "desc", "units", DataType.DOUBLE, new int[] {2});
+    data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 7, 2});
     m.setDataArray(data);
     fill(data);
 
-    return new ArrayStructureBB(members, new int[]{4, 9, 7});
+    return new ArrayStructureBB(members, new int[] {4, 9, 7});
   }
 
-  /* static public void testArrayStructure(ArrayStructure as) {
-
-    StructureMembers sms = as.getStructureMembers();
-    List members = sms.getMembers();
-    String name = sms.getName();
-
-    int n = (int) as.getSize();
-    for (int recno = 0; recno < n; recno++) {
-      Object o = as.getObject(recno);
-      assert (o instanceof StructureData);
-      StructureData sdata = as.getStructureData(recno);
-      assert (o == sdata);
-
-      for (int i = 0; i < members.size(); i++) {
-        StructureMembers.Member m = (StructureMembers.Member) members.get(i);
-
-        Array sdataArray = sdata.getArray(m);
-        assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
-
-        Array sdataArray2 = sdata.getArray(m.getName());
-        ucar.ma2.TestMA2.testEquals(sdataArray, sdataArray2);
-
-        Array a = as.getArray(recno, m);
-        assert (a.getElementType() == m.getDataType().getPrimitiveClassType());
-        ucar.ma2.TestMA2.testEquals(sdataArray, a);
-
-        testGetArrayByType(as, recno, m, a);
-      }
-      testStructureData(sdata);
-    }
-  }
-
-  static public void printArrayStructure(ArrayStructure as) throws IOException {
-
-    StructureMembers sms = as.getStructureMembers();
-    List members = sms.getMembers();
-    String name = sms.getName();
-
-    int n = (int) as.getSize();
-    for (int recno = 0; recno < n; recno++) {
-      System.out.println("\n***Dump " + name + " record=" + recno);
-      for (int i = 0; i < members.size(); i++) {
-        StructureMembers.Member m = (StructureMembers.Member) members.get(i);
-
-        Array a = as.getArray(recno, m);
-        if (a instanceof ArrayStructure)
-          printArrayStructure((ArrayStructure) a);
-        else
-          NCdump.printArray(a, m.getName(), System.out, null);
-      }
-    }
-
-    System.out.println(NCdumpW.printArray(as, "", null));
-  }
-
-  static private void testGetArrayByType(ArrayStructure as, int recno, StructureMembers.Member m, Array a) {
-    DataType dtype = m.getDataType();
-    Object data = null;
-    if (dtype == DataType.DOUBLE) {
-      assert a.getElementType() == double.class;
-      data = as.getJavaArrayDouble(recno, m);
-    } else if (dtype == DataType.FLOAT) {
-      assert a.getElementType() == float.class;
-      data = as.getJavaArrayFloat(recno, m);
-    } else if (dtype == DataType.LONG) {
-      assert a.getElementType() == long.class;
-      data = as.getJavaArrayLong(recno, m);
-    } else if (dtype == DataType.INT) {
-      assert a.getElementType() == int.class;
-      data = as.getJavaArrayInt(recno, m);
-    } else if (dtype == DataType.SHORT) {
-      assert a.getElementType() == short.class;
-      data = as.getJavaArrayShort(recno, m);
-    } else if (dtype == DataType.BYTE) {
-      assert a.getElementType() == byte.class;
-      data = as.getJavaArrayByte(recno, m);
-    } else if (dtype == DataType.CHAR) {
-      assert a.getElementType() == char.class;
-      data = as.getJavaArrayChar(recno, m);
-    } else if (dtype == DataType.STRING) {
-      assert a.getElementType() == String.class;
-      data = as.getJavaArrayString(recno, m);
-    } else if (dtype == DataType.STRUCTURE) {
-      assert a.getElementType() == StructureData.class;
-      ArrayStructure nested = as.getArrayStructure(recno, m);
-      testArrayStructure(nested);
-    }
-
-    if (data != null)
-      ucar.ma2.TestMA2.testJarrayEquals(data, a.getStorage(), m.getSize());
-  }
-
-  static private void testStructureData(StructureData sdata) {
-
-    StructureMembers sms = sdata.getStructureMembers();
-    List members = sms.getMembers();
-
-    for (int i = 0; i < members.size(); i++) {
-      StructureMembers.Member m = (StructureMembers.Member) members.get(i);
-
-      Array sdataArray = sdata.getArray(m);
-      assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
-
-      Array sdataArray2 = sdata.getArray(m.getName());
-      ucar.ma2.TestMA2.testEquals(sdataArray, sdataArray2);
-
-      //NCdump.printArray(sdataArray, m.getName(), System.out, null);
-
-      testGetArrayByType(sdata, m, sdataArray);
-    }
-  }
-
-  static private void testGetArrayByType(StructureData sdata, StructureMembers.Member m, Array a) {
-    DataType dtype = m.getDataType();
-    Object data = null;
-    if (dtype == DataType.DOUBLE) {
-      assert a.getElementType() == double.class;
-      data = sdata.getJavaArrayDouble(m);
-    } else if (dtype == DataType.FLOAT) {
-      assert a.getElementType() == float.class;
-      data = sdata.getJavaArrayFloat(m);
-    } else if (dtype == DataType.LONG) {
-      assert a.getElementType() == long.class;
-      data = sdata.getJavaArrayLong(m);
-    } else if (dtype == DataType.INT) {
-      assert a.getElementType() == int.class;
-      data = sdata.getJavaArrayInt(m);
-    } else if (dtype == DataType.SHORT) {
-      assert a.getElementType() == short.class;
-      data = sdata.getJavaArrayShort(m);
-    } else if (dtype == DataType.BYTE) {
-      assert a.getElementType() == byte.class;
-      data = sdata.getJavaArrayByte(m);
-    } else if (dtype == DataType.CHAR) {
-      assert a.getElementType() == char.class;
-      data = sdata.getJavaArrayChar(m);
-    } else if (dtype == DataType.STRING) {
-      assert a.getElementType() == String.class;
-      data = sdata.getJavaArrayString(m);
-    } else if (dtype == DataType.STRUCTURE) {
-      assert a.getElementType() == StructureData.class;
-      ArrayStructure nested = sdata.getArrayStructure(m);
-      testArrayStructure(nested);
-    }
-
-    if (data != null)
-      ucar.ma2.TestMA2.testJarrayEquals(data, a.getStorage(), m.getSize());
-  }  */
+  /*
+   * static public void testArrayStructure(ArrayStructure as) {
+   * 
+   * StructureMembers sms = as.getStructureMembers();
+   * List members = sms.getMembers();
+   * String name = sms.getName();
+   * 
+   * int n = (int) as.getSize();
+   * for (int recno = 0; recno < n; recno++) {
+   * Object o = as.getObject(recno);
+   * assert (o instanceof StructureData);
+   * StructureData sdata = as.getStructureData(recno);
+   * assert (o == sdata);
+   * 
+   * for (int i = 0; i < members.size(); i++) {
+   * StructureMembers.Member m = (StructureMembers.Member) members.get(i);
+   * 
+   * Array sdataArray = sdata.getArray(m);
+   * assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
+   * 
+   * Array sdataArray2 = sdata.getArray(m.getName());
+   * ucar.ma2.TestMA2.testEquals(sdataArray, sdataArray2);
+   * 
+   * Array a = as.getArray(recno, m);
+   * assert (a.getElementType() == m.getDataType().getPrimitiveClassType());
+   * ucar.ma2.TestMA2.testEquals(sdataArray, a);
+   * 
+   * testGetArrayByType(as, recno, m, a);
+   * }
+   * testStructureData(sdata);
+   * }
+   * }
+   * 
+   * static public void printArrayStructure(ArrayStructure as) throws IOException {
+   * 
+   * StructureMembers sms = as.getStructureMembers();
+   * List members = sms.getMembers();
+   * String name = sms.getName();
+   * 
+   * int n = (int) as.getSize();
+   * for (int recno = 0; recno < n; recno++) {
+   * System.out.println("\n***Dump " + name + " record=" + recno);
+   * for (int i = 0; i < members.size(); i++) {
+   * StructureMembers.Member m = (StructureMembers.Member) members.get(i);
+   * 
+   * Array a = as.getArray(recno, m);
+   * if (a instanceof ArrayStructure)
+   * printArrayStructure((ArrayStructure) a);
+   * else
+   * NCdump.printArray(a, m.getName(), System.out, null);
+   * }
+   * }
+   * 
+   * System.out.println(NCdumpW.printArray(as, "", null));
+   * }
+   * 
+   * static private void testGetArrayByType(ArrayStructure as, int recno, StructureMembers.Member m, Array a) {
+   * DataType dtype = m.getDataType();
+   * Object data = null;
+   * if (dtype == DataType.DOUBLE) {
+   * assert a.getElementType() == double.class;
+   * data = as.getJavaArrayDouble(recno, m);
+   * } else if (dtype == DataType.FLOAT) {
+   * assert a.getElementType() == float.class;
+   * data = as.getJavaArrayFloat(recno, m);
+   * } else if (dtype == DataType.LONG) {
+   * assert a.getElementType() == long.class;
+   * data = as.getJavaArrayLong(recno, m);
+   * } else if (dtype == DataType.INT) {
+   * assert a.getElementType() == int.class;
+   * data = as.getJavaArrayInt(recno, m);
+   * } else if (dtype == DataType.SHORT) {
+   * assert a.getElementType() == short.class;
+   * data = as.getJavaArrayShort(recno, m);
+   * } else if (dtype == DataType.BYTE) {
+   * assert a.getElementType() == byte.class;
+   * data = as.getJavaArrayByte(recno, m);
+   * } else if (dtype == DataType.CHAR) {
+   * assert a.getElementType() == char.class;
+   * data = as.getJavaArrayChar(recno, m);
+   * } else if (dtype == DataType.STRING) {
+   * assert a.getElementType() == String.class;
+   * data = as.getJavaArrayString(recno, m);
+   * } else if (dtype == DataType.STRUCTURE) {
+   * assert a.getElementType() == StructureData.class;
+   * ArrayStructure nested = as.getArrayStructure(recno, m);
+   * testArrayStructure(nested);
+   * }
+   * 
+   * if (data != null)
+   * ucar.ma2.TestMA2.testJarrayEquals(data, a.getStorage(), m.getSize());
+   * }
+   * 
+   * static private void testStructureData(StructureData sdata) {
+   * 
+   * StructureMembers sms = sdata.getStructureMembers();
+   * List members = sms.getMembers();
+   * 
+   * for (int i = 0; i < members.size(); i++) {
+   * StructureMembers.Member m = (StructureMembers.Member) members.get(i);
+   * 
+   * Array sdataArray = sdata.getArray(m);
+   * assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
+   * 
+   * Array sdataArray2 = sdata.getArray(m.getName());
+   * ucar.ma2.TestMA2.testEquals(sdataArray, sdataArray2);
+   * 
+   * //NCdump.printArray(sdataArray, m.getName(), System.out, null);
+   * 
+   * testGetArrayByType(sdata, m, sdataArray);
+   * }
+   * }
+   * 
+   * static private void testGetArrayByType(StructureData sdata, StructureMembers.Member m, Array a) {
+   * DataType dtype = m.getDataType();
+   * Object data = null;
+   * if (dtype == DataType.DOUBLE) {
+   * assert a.getElementType() == double.class;
+   * data = sdata.getJavaArrayDouble(m);
+   * } else if (dtype == DataType.FLOAT) {
+   * assert a.getElementType() == float.class;
+   * data = sdata.getJavaArrayFloat(m);
+   * } else if (dtype == DataType.LONG) {
+   * assert a.getElementType() == long.class;
+   * data = sdata.getJavaArrayLong(m);
+   * } else if (dtype == DataType.INT) {
+   * assert a.getElementType() == int.class;
+   * data = sdata.getJavaArrayInt(m);
+   * } else if (dtype == DataType.SHORT) {
+   * assert a.getElementType() == short.class;
+   * data = sdata.getJavaArrayShort(m);
+   * } else if (dtype == DataType.BYTE) {
+   * assert a.getElementType() == byte.class;
+   * data = sdata.getJavaArrayByte(m);
+   * } else if (dtype == DataType.CHAR) {
+   * assert a.getElementType() == char.class;
+   * data = sdata.getJavaArrayChar(m);
+   * } else if (dtype == DataType.STRING) {
+   * assert a.getElementType() == String.class;
+   * data = sdata.getJavaArrayString(m);
+   * } else if (dtype == DataType.STRUCTURE) {
+   * assert a.getElementType() == StructureData.class;
+   * ArrayStructure nested = sdata.getArrayStructure(m);
+   * testArrayStructure(nested);
+   * }
+   * 
+   * if (data != null)
+   * ucar.ma2.TestMA2.testJarrayEquals(data, a.getStorage(), m.getSize());
+   * }
+   */
 
 }
 

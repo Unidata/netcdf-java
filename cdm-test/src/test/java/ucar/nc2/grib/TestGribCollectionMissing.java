@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -49,7 +49,6 @@ import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -101,7 +100,8 @@ public class TestGribCollectionMissing {
     System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
     System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
     System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
-    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
+    System.out.printf(" total files needed=%7d%n",
+        GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
     FileCache.shutdown();
     RandomAccessFile.setGlobalFileCache(null);
@@ -111,7 +111,8 @@ public class TestGribCollectionMissing {
 
   @Test
   public void testGC_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_1200.grib2.ncx4");
+    Count count =
+        read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_1200.grib2.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 29567 : count.nread;
@@ -132,7 +133,8 @@ public class TestGribCollectionMissing {
   //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx4 has lots of missing records
   @Test
   public void testGC_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_0000.grib1.ncx4");
+    Count count =
+        read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_0000.grib1.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 7122 : count.nread;
@@ -145,7 +147,7 @@ public class TestGribCollectionMissing {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_dir-20141024.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 28488 : count.nread;  // 0/612/28488
+    assert count.nread == 28488 : count.nread; // 0/612/28488
     assert count.nmiss == 612;
     assert count.nerrs == 0;
   }
@@ -173,7 +175,7 @@ public class TestGribCollectionMissing {
       int n = 22;
       int first = 23;
       double sum = 0;
-      for (int time=first; time < first+n; time++) {
+      for (int time = first; time < first + n; time++) {
         Array data = gdt.readDataSlice(0, -0, time, 0, -1, -1);
         sum += MAMath.sumDouble(data);
       }
@@ -253,7 +255,8 @@ public class TestGribCollectionMissing {
     return count;
   }
 
-  private static void read(GridDatatype gdt, Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
+  private static void read(GridDatatype gdt, Count count, int rtIndex, Dimension timeDim, Dimension zDim)
+      throws IOException {
     if (timeDim != null) {
       for (int t = 0; t < timeDim.getLength(); t++)
         read(gdt, count, rtIndex, t, zDim);
@@ -275,10 +278,12 @@ public class TestGribCollectionMissing {
   private static void read(GridDatatype gdt, Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
     // int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index
     Array data = gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);
-    /* if (data.getSize() != 1 || data.getRank() != 0) {
-      System.out.printf("%s size=%d rank=%d%n", gdt.getFullName(), data.getSize(), data.getRank());
-      gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, 10, 10); // debug
-    }  */
+    /*
+     * if (data.getSize() != 1 || data.getRank() != 0) {
+     * System.out.printf("%s size=%d rank=%d%n", gdt.getFullName(), data.getSize(), data.getRank());
+     * gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, 10, 10); // debug
+     * }
+     */
 
     // subset the array by striding x,y by 100
     Array dataSubset;

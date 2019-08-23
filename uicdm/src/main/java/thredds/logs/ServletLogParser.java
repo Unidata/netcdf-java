@@ -8,7 +8,6 @@ package thredds.logs;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.nc2.util.EscapeStrings;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
@@ -79,7 +78,8 @@ public class ServletLogParser implements LogReader.LogParser {
     }
 
     void addExtra(String s) {
-      if (extra == null) extra = new StringBuilder(300);
+      if (extra == null)
+        extra = new StringBuilder(300);
       extra.append(s);
       extra.append("\n");
     }
@@ -90,28 +90,36 @@ public class ServletLogParser implements LogReader.LogParser {
   // log reading
 
   // sample
-  // 128.117.140.75 - - [02/May/2008:00:46:26 -0600] "HEAD /thredds/dodsC/model/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20080501_1800.grib2.dds HTTP/1.1" 200 - "null" "Java/1.6.0_05" 21
-  //           Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
+  // 128.117.140.75 - - [02/May/2008:00:46:26 -0600] "HEAD
+  // /thredds/dodsC/model/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20080501_1800.grib2.dds HTTP/1.1" 200 - "null"
+  // "Java/1.6.0_05" 21
+  // Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\"
+  // (\\d+)");
 
-  // 2009-03-10T16:08:55.184 -0600 [  16621850][  162233] INFO  - thredds.server.opendap.NcDODSServlet - Remote host: 128.117.140.71 - Request: "GET /thredds/dodsC/model/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20090309_0000.grib1.dods?Geopotential_height%5B7:1:7%5D%5B0:10:10%5D%5B0:1:64%5D%5B0:1:92%5D HTTP/1.1"
-  // 2009-03-10T16:08:55.218 -0600 [  16621884][  162233] INFO  - thredds.server.opendap.NcDODSServlet - Request Completed - 200 - -1 - 34
+  // 2009-03-10T16:08:55.184 -0600 [ 16621850][ 162233] INFO - thredds.server.opendap.NcDODSServlet - Remote host:
+  // 128.117.140.71 - Request: "GET
+  // /thredds/dodsC/model/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20090309_0000.grib1.dods?Geopotential_height%5B7:1:7%5D%5B0:10:10%5D%5B0:1:64%5D%5B0:1:92%5D
+  // HTTP/1.1"
+  // 2009-03-10T16:08:55.218 -0600 [ 16621884][ 162233] INFO - thredds.server.opendap.NcDODSServlet - Request Completed
+  // - 200 - -1 - 34
   //
   /*
-   1 2009-03-10T16:08:54.617 -0600
-   2   16621283
-   3   162230
-   4 INFO
-   5 thredds.server.opendap.NcDODSServlet
-   6 Request Completed - 200 - -1 - 47
+   * 1 2009-03-10T16:08:54.617 -0600
+   * 2 16621283
+   * 3 162230
+   * 4 INFO
+   * 5 thredds.server.opendap.NcDODSServlet
+   * 6 Request Completed - 200 - -1 - 47
    */
 
   private static final Pattern donePattern = Pattern.compile("^Request Completed - (.*) - (.*) - (.*)");
   static final Pattern startPattern = Pattern.compile("^Remote host: ([^-]+) - Request: \"(\\w+) (.*) (.*)");
-  static final Pattern commonPattern = Pattern.compile("^(\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\\.\\d+ [+-]\\d+) \\[(.*)]\\[(.*)] (\\w+)[\\s]+- ([^-]+) - (.*)");
+  static final Pattern commonPattern =
+      Pattern.compile("^(\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\\.\\d+ [+-]\\d+) \\[(.*)]\\[(.*)] (\\w+)[\\s]+- ([^-]+) - (.*)");
 
   /*
-  Difficult thing is to return the extra line assocated with the previous good log
-  We do this by not returning until we get a match on the next log. We have to rewind.
+   * Difficult thing is to return the extra line assocated with the previous good log
+   * We do this by not returning until we get a match on the next log. We have to rewind.
    */
   public LogReader.Log nextLog(BufferedReader dataIS) throws IOException {
 
@@ -124,7 +132,7 @@ public class ServletLogParser implements LogReader.LogParser {
       if (line == null) {
         return haveLog ? log : null;
       }
-      // if (count++ < limit) System.out.println("\n" + line);                      nTest reqe
+      // if (count++ < limit) System.out.println("\n" + line); nTest reqe
 
       try {
         Matcher m = commonPattern.matcher(line);
@@ -135,12 +143,12 @@ public class ServletLogParser implements LogReader.LogParser {
               return log;
 
             } catch (Throwable t) {
-              System.out.println("Cant reset " + line);              
+              System.out.println("Cant reset " + line);
             }
           }
           haveLog = true; // next match will return the current log
 
-          log.date = convertDate( m.group(1));
+          log.date = convertDate(m.group(1));
           log.reqTime = parseLong(m.group(2));
           log.reqSeq = parseLong(m.group(3));
           log.level = m.group(4).intern();
@@ -168,7 +176,7 @@ public class ServletLogParser implements LogReader.LogParser {
             if (m2.matches()) {
               log.ip = m2.group(1);
               log.verb = m2.group(2).intern();
-              log.path = EscapeStrings.urlDecode(m2.group(3)); //old  URLDecoder.decode(m2.group(3));
+              log.path = EscapeStrings.urlDecode(m2.group(3)); // old URLDecoder.decode(m2.group(3));
               if (m2.groupCount() > 4)
                 log.http = m2.group(4).intern();
               log.isStart = true;
@@ -184,7 +192,7 @@ public class ServletLogParser implements LogReader.LogParser {
           }
 
         } else { // the true extra line
-          //System.out.println("No match on " + line);
+          // System.out.println("No match on " + line);
           log.addExtra(line);
         }
 
@@ -199,6 +207,7 @@ public class ServletLogParser implements LogReader.LogParser {
 
   // 2010-04-21T13:05:22.006 -0600
   private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
   private long convertDate(String accessDateFormat) {
     // 30/Sep/2009:23:50:47 -0600
     try {
@@ -213,15 +222,19 @@ public class ServletLogParser implements LogReader.LogParser {
 
   private int parse(String s) {
     s = s.trim();
-    if (s.isEmpty()) return 0;
-    if (s.equals("-")) return 0;
+    if (s.isEmpty())
+      return 0;
+    if (s.equals("-"))
+      return 0;
     return Integer.parseInt(s);
   }
 
   private long parseLong(String s) {
     s = s.trim();
-    if (s.isEmpty()) return 0;
-    if (s.equals("-")) return 0;
+    if (s.isEmpty())
+      return 0;
+    if (s.equals("-"))
+      return 0;
     return Long.parseLong(s);
   }
 

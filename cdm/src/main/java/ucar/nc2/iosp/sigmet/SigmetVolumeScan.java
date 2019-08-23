@@ -6,11 +6,10 @@
 
 package ucar.nc2.iosp.sigmet;
 
-//~--- non-JDK imports --------------------------------------------------------
+// ~--- non-JDK imports --------------------------------------------------------
 
 import ucar.nc2.Variable;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.util.*;
 
 /**
@@ -18,9 +17,7 @@ import java.util.*;
  * @since Apr 7, 2010
  */
 public class SigmetVolumeScan {
-  String[] data_name = {
-          " ", "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity"
-  };
+  String[] data_name = {" ", "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity"};
   private List<List<Ray>> differentialReflectivityGroups;
   private List<List<Ray>> reflectivityGroups;
   private List<List<Ray>> totalPowerGroups;
@@ -45,56 +42,23 @@ public class SigmetVolumeScan {
   /**
    * Read all the values from SIGMET-IRIS file which are necessary to fill in the ncfile.
    *
-   * @param raf     ucar.unidata.io.RandomAccessFile corresponds to SIGMET datafile.
-   * @param ncfile  an empty NetcdfFile object which will be filled.
+   * @param raf ucar.unidata.io.RandomAccessFile corresponds to SIGMET datafile.
+   * @param ncfile an empty NetcdfFile object which will be filled.
    * @param varList ArrayList of Variables of ncfile
    */
   SigmetVolumeScan(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ArrayList<Variable> varList)
-          throws java.io.IOException {
+      throws java.io.IOException {
     final int REC_SIZE = 6144;
-    int len = 12288;    // ---- Read from the 3d record----------- 6144*2=12288
-    short nrec = 0,
-            nsweep = 1,
-            nray = 0,
-            byteoff = 0;
-    int nwords,
-            end_words,
-            data_read = 0,
-            num_zero,
-            rays_count = 0,
-            nb = 0,
-            pos = 0,
-            pos_ray_hdr = 0,
-            t = 0;
-    short a0,
-            a00,
-            dty;
-    short beg_az = 0,
-            beg_elev = 0,
-            end_az = 0,
-            end_elev = 0,
-            num_bins = 0,
-            time_start_sw = 0;
-    float az,
-            elev,
-            d = 0.0f,
-            step;
-    //     byte      data          = 0;
-    boolean beg_rec = true,
-            end_rec = true,
-            read_ray_hdr = true,
-            begin = true;
-    int cur_len,
-            beg = 1,
-            kk,
-            col = 0,
-            nu = 0,
-            bt0 = 0,
-            bt1 = 0;
-    int start_sweep = 1,
-            end_sweep = 1,
-            start_ray = 1,
-            end_ray = 1;
+    int len = 12288; // ---- Read from the 3d record----------- 6144*2=12288
+    short nrec = 0, nsweep = 1, nray = 0, byteoff = 0;
+    int nwords, end_words, data_read = 0, num_zero, rays_count = 0, nb = 0, pos = 0, pos_ray_hdr = 0, t = 0;
+    short a0, a00, dty;
+    short beg_az = 0, beg_elev = 0, end_az = 0, end_elev = 0, num_bins = 0, time_start_sw = 0;
+    float az, elev, d = 0.0f, step;
+    // byte data = 0;
+    boolean beg_rec = true, end_rec = true, read_ray_hdr = true, begin = true;
+    int cur_len, beg = 1, kk, col = 0, nu = 0, bt0 = 0, bt1 = 0;
+    int start_sweep = 1, end_sweep = 1, start_ray = 1, end_ray = 1;
 
     // Input
     this.raf = raf;
@@ -102,7 +66,7 @@ public class SigmetVolumeScan {
 
     int fileLength = (int) raf.length();
     java.util.Map<String, Number> recHdr = SigmetIOServiceProvider.readRecordsHdr(raf);
-    int nparams = recHdr.get("nparams").intValue();    // System.out.println("DO: nparams="+nparams);
+    int nparams = recHdr.get("nparams").intValue(); // System.out.println("DO: nparams="+nparams);
     short number_sweeps = recHdr.get("number_sweeps").shortValue();
 
     // System.out.println("DO: number_sweeps="+number_sweeps);
@@ -118,7 +82,7 @@ public class SigmetVolumeScan {
     short bins = recHdr.get("bins").shortValue();
 
     // System.out.println("DO: bins="+bins);
-    // int[]   base_time    = new int[nparams * number_sweeps];
+    // int[] base_time = new int[nparams * number_sweeps];
 
     short[] num_sweep = new short[nparams];
     short[] num_rays_swp = new short[nparams];
@@ -127,7 +91,7 @@ public class SigmetVolumeScan {
     short[] angl_swp = new short[nparams];
     short[] bin_len = new short[nparams];
     short[] data_type = new short[nparams];
-    // float[] dd           = new float[bins];
+    // float[] dd = new float[bins];
     num_gates = new int[number_sweeps];
     base_time = new int[nparams * number_sweeps];
     year = new short[nparams * number_sweeps];
@@ -161,12 +125,12 @@ public class SigmetVolumeScan {
 
       if (beg_rec) {
 
-        // --- <raw_prod_bhdr>  12bytes -----------
+        // --- <raw_prod_bhdr> 12bytes -----------
         raf.seek(cur_len);
-        nrec = raf.readShort();    // cur_len
-        nsweep = raf.readShort();    // cur_len+2
+        nrec = raf.readShort(); // cur_len
+        nsweep = raf.readShort(); // cur_len+2
         byteoff = raf.readShort();
-        len = len + 2;            // cur_len+4
+        len = len + 2; // cur_len+4
         nray = raf.readShort();
 
         // ---- end of <raw_prod_bhdr> -------------
@@ -186,21 +150,21 @@ public class SigmetVolumeScan {
           raf.seek(idh_len);
 
           // Read seconds since midnight
-          base_time[nu] = raf.readInt();         // idh_len
+          base_time[nu] = raf.readInt(); // idh_len
           raf.skipBytes(2);
-          year[nu] = raf.readShort();           // idh_len+6
-          month[nu] = raf.readShort();           // idh_len+8
-          day[nu] = raf.readShort();           // idh_len+10
+          year[nu] = raf.readShort(); // idh_len+6
+          month[nu] = raf.readShort(); // idh_len+8
+          day[nu] = raf.readShort(); // idh_len+10
           nu++;
-          num_sweep[i] = raf.readShort();     // idh_len+12
-          num_rays_swp[i] = raf.readShort();     // idh_len+14
-          indx_1ray[i] = raf.readShort();     // idh_len+16
+          num_sweep[i] = raf.readShort(); // idh_len+12
+          num_rays_swp[i] = raf.readShort(); // idh_len+14
+          indx_1ray[i] = raf.readShort(); // idh_len+16
           raf.skipBytes(2);
           num_rays_act[i] = raf.readShort();
-          beg += num_rays_act[i];    // idh_len+20
-          angl_swp[i] = raf.readShort();     // idh_len+22
-          bin_len[i] = raf.readShort();     // idh_len+24
-          data_type[i] = raf.readShort();     // idh_len+26
+          beg += num_rays_act[i]; // idh_len+20
+          angl_swp[i] = raf.readShort(); // idh_len+22
+          bin_len[i] = raf.readShort(); // idh_len+24
+          data_type[i] = raf.readShort(); // idh_len+26
         }
 
         cur_len = cur_len + nparams * 76;
@@ -361,17 +325,17 @@ public class SigmetVolumeScan {
         data_read = data_read - pos;
         pos = 0;
       }
-      //  if(az > 358.5 && az < 358.8 && var_name.contains("Reflectivity")) {
-      //      System.out.println(" here ");
-      //  }
+      // if(az > 358.5 && az < 358.8 && var_name.contains("Reflectivity")) {
+      // System.out.println(" here ");
+      // }
       if (data_read > 0) {
         raf.seek(cur_len);
         rayoffset = cur_len;
         datalen = data_read;
 
         for (int i = 0; i < data_read; i++) {
-          //  data   = raf.readByte();
-          //  dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
+          // data = raf.readByte();
+          // dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
           cur_len++;
           nb++;
 
@@ -410,10 +374,10 @@ public class SigmetVolumeScan {
         // --- Check if the code=1 ("1" means an end of a ray)
         if (a00 == (short) 1) {
           // for (int uk = 0; uk < (int) num_bins; uk++) {
-          //  dd[uk] = -999.99f;
-          //  }
-          ray = new Ray(-999.99f, -999.99f, -999.99f, -999.99f, num_bins, (short) (-99), -999, 0, -999,
-                  nsweep, var_name, dty);
+          // dd[uk] = -999.99f;
+          // }
+          ray = new Ray(-999.99f, -999.99f, -999.99f, -999.99f, num_bins, (short) (-99), -999, 0, -999, nsweep,
+              var_name, dty);
           rays_count++;
           beg_rec = false;
           end_rec = true;
@@ -421,7 +385,7 @@ public class SigmetVolumeScan {
           break;
         }
 
-        if (a00 < 0) {    // -- This is data
+        if (a00 < 0) { // -- This is data
           nwords = a00 & 0x7fff;
           data_read = nwords * 2;
 
@@ -437,8 +401,8 @@ public class SigmetVolumeScan {
           raf.seek(cur_len);
 
           for (int ii = 0; ii < data_read; ii++) {
-            //   data    = raf.readByte();
-            //    dd[nb]  = SigmetIOServiceProvider.calcData(recHdr, dty, data);
+            // data = raf.readByte();
+            // dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
             cur_len = cur_len + 1;
             nb = nb + 1;
 
@@ -459,7 +423,7 @@ public class SigmetVolumeScan {
           num_zero = a00 * 2;
 
           // for (int k = 0; k < num_zero; k++) {
-          //   dd[nb + k] = SigmetIOServiceProvider.calcData(recHdr, dty, (byte) 0);
+          // dd[nb + k] = SigmetIOServiceProvider.calcData(recHdr, dty, (byte) 0);
           // }
 
           nb = nb + num_zero;
@@ -474,7 +438,7 @@ public class SigmetVolumeScan {
             break;
           }
         }
-      }                     // ------ end of while for num_bins---------------------------------
+      } // ------ end of while for num_bins---------------------------------
 
       if (cur_len % REC_SIZE == 0) {
         len = cur_len;
@@ -488,8 +452,8 @@ public class SigmetVolumeScan {
         a00 = raf.readShort();
         cur_len = cur_len + 2;
         end_rec = true;
-        ray = new Ray(range_first, step, az, elev, num_bins, time_start_sw, rayoffset, datalen, rayoffset1,
-                nsweep, var_name, dty);
+        ray = new Ray(range_first, step, az, elev, num_bins, time_start_sw, rayoffset, datalen, rayoffset1, nsweep,
+            var_name, dty);
         rays_count++;
         two++;
         if ((nsweep == number_sweeps) & (rays_count % beg == 0)) {
@@ -535,7 +499,8 @@ public class SigmetVolumeScan {
       }
 
       // "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity"
-      if (firstRay == null) firstRay = ray;
+      if (firstRay == null)
+        firstRay = ray;
 
       if (var_name.trim().equalsIgnoreCase("TotalPower")) {
         totalPower.add(ray);
@@ -567,7 +532,7 @@ public class SigmetVolumeScan {
       }
 
       len = cur_len;
-    }    // ------------end of outer while  ---------------
+    } // ------------end of outer while ---------------
     lastRay = ray;
 
     if (reflectivity.size() > 0) {
@@ -597,7 +562,7 @@ public class SigmetVolumeScan {
     }
 
     // --------- fill all of values in the ncfile ------
-  }    // ----------- end of doData -----------------------
+  } // ----------- end of doData -----------------------
 
   private int max_radials = 0;
   private int min_radials = Integer.MAX_VALUE;
@@ -703,10 +668,10 @@ public class SigmetVolumeScan {
     short time1, time2;
     int[] k1 = new int[300];
     int[] k2 = new int[300];
-    //      define the groups of rays with the same "time". For ex.:
-    //      group1 - ray[0]={time=1,az=344}, ray[1]={time=1,az=345}, ... ray[11]={time=1,az=359}
-    //      group2 - ray[12]={time=1,az=0}, ray[13]={time=1,az=1}, ... ray[15]={time=1,az=5}
-    //      k1- array of begin indx (0,12), k2- array of end indx (11,15)
+    // define the groups of rays with the same "time". For ex.:
+    // group1 - ray[0]={time=1,az=344}, ray[1]={time=1,az=345}, ... ray[11]={time=1,az=359}
+    // group2 - ray[12]={time=1,az=0}, ray[13]={time=1,az=1}, ... ray[15]={time=1,az=5}
+    // k1- array of begin indx (0,12), k2- array of end indx (11,15)
     for (int i = 0; i < r.length - 1; i++) {
       time1 = r[i].getTime();
       time2 = r[i + 1].getTime();
@@ -721,8 +686,8 @@ public class SigmetVolumeScan {
       k2[j] = r.length - 1;
     }
 
-    //      if different groups have the same value of "time" (may be 2 and more groups) -
-    //      it1= indx of "k1" of 1st group, it2= indx of "k2" of last group
+    // if different groups have the same value of "time" (may be 2 and more groups) -
+    // it1= indx of "k1" of 1st group, it2= indx of "k2" of last group
     int it1 = 0, it2 = 0;
     for (int ii = 0; ii < j + 1; ii++) {
       n1 = k1[ii];
@@ -751,11 +716,13 @@ public class SigmetVolumeScan {
     }
     float mx0 = t0[0];
     for (int i = 0; i < s1; i++) {
-      if (mx0 < t0[i]) mx0 = t0[i];
+      if (mx0 < t0[i])
+        mx0 = t0[i];
     }
     float mx00 = t00[0];
     for (int i = 0; i < s2; i++) {
-      if (mx00 < t00[i]) mx00 = t00[i];
+      if (mx00 < t00[i])
+        mx00 = t00[i];
     }
     if ((mx0 > 330.0f & mx00 < 50.0f)) {
       for (int i = 0; i < s1; i++) {

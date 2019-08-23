@@ -12,7 +12,6 @@ import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -26,33 +25,30 @@ import java.util.Formatter;
 public class Grib2Iosp extends GribIosp {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
-  static String makeVariableNameFromTable(Grib2Tables cust,
-      GribCollectionImmutable gribCollection,
+  static String makeVariableNameFromTable(Grib2Tables cust, GribCollectionImmutable gribCollection,
       GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
 
     try (Formatter f = new Formatter()) {
       GribTables.Parameter param = cust.getParameter(vindex);
 
       if (param == null) {
-        f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(),
-            vindex.getParameter(), gribCollection.getCenter(),
-            gribCollection.getSubcenter(), vindex.getTableVersion());
+        f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter(),
+            gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion());
       } else {
         f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
       }
 
       if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
-        f.format("_error");  // its an "error" type variable - add to name
+        f.format("_error"); // its an "error" type variable - add to name
 
       } else if (useGenType && vindex.getGenProcessType() >= 0) {
-          String genType = cust.getGeneratingProcessTypeName(vindex.getGenProcessType());
-          String s = StringUtil2.substitute(genType, " ", "_");
-          f.format("_%s", s);
+        String genType = cust.getGeneratingProcessTypeName(vindex.getGenProcessType());
+        String s = StringUtil2.substitute(genType, " ", "_");
+        f.format("_%s", s);
       }
 
       if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-        f.format("_%s", cust.getLevelNameShort(
-            vindex.getLevelType())); // vindex.getLevelType()); // code table 4.5
+        f.format("_%s", cust.getLevelNameShort(vindex.getLevelType())); // vindex.getLevelType()); // code table 4.5
         if (vindex.isLayer()) {
           f.format("_layer");
         }
@@ -89,26 +85,23 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  static String makeVariableLongName(Grib2Tables cust,
-      GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
+  static String makeVariableLongName(Grib2Tables cust, GribCollectionImmutable.VariableIndex vindex,
+      boolean useGenType) {
 
     try (Formatter f = new Formatter()) {
-      boolean isProb = (vindex.getProbabilityName() != null
-          && vindex.getProbabilityName().length() > 0);
+      boolean isProb = (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0);
       if (isProb) {
         f.format("Probability ");
       }
 
       GribTables.Parameter gp = cust.getParameter(vindex);
       if (gp == null) {
-        f.format("Unknown Parameter %d-%d-%d", vindex.getDiscipline(), vindex.getCategory(),
-            vindex.getParameter());
+        f.format("Unknown Parameter %d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
       } else {
         f.format("%s", gp.getName());
       }
 
-      if (vindex.getIntvType() >= 0 && vindex.getIntvName() != null && !vindex.getIntvName()
-          .isEmpty()) {
+      if (vindex.getIntvType() >= 0 && vindex.getIntvName() != null && !vindex.getIntvName().isEmpty()) {
         String intvName = cust.getStatisticNameShort(vindex.getIntvType());
         if (intvName == null || intvName.equalsIgnoreCase("Missing")) {
           intvName = cust.getStatisticNameShort(vindex.getIntvType());
@@ -134,12 +127,11 @@ public class Grib2Iosp extends GribIosp {
       if (vindex.getEnsDerivedType() >= 0) {
         f.format(" (%s)", cust.getCodeTableValue("4.10", vindex.getEnsDerivedType()));
       } else if (isProb) {
-        f.format(" %s %s", vindex.getProbabilityName(),
-            getVindexUnits(cust, vindex)); // add data units here
+        f.format(" %s %s", vindex.getProbabilityName(), getVindexUnits(cust, vindex)); // add data units here
       }
 
       if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
-        f.format(" error");  // its an "error" type variable - add to name
+        f.format(" error"); // its an "error" type variable - add to name
 
       } else if (useGenType && vindex.getGenProcessType() >= 0) {
         f.format(" %s", cust.getGeneratingProcessTypeName(vindex.getGenProcessType()));
@@ -170,9 +162,9 @@ public class Grib2Iosp extends GribIosp {
     return makeVariableUnits(cust, vindex);
   }
 
-  static String makeVariableUnits(Grib2Tables tables,
-      GribCollectionImmutable.VariableIndex vindex) {
-    if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) return "%";
+  static String makeVariableUnits(Grib2Tables tables, GribCollectionImmutable.VariableIndex vindex) {
+    if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0)
+      return "%";
     return getVindexUnits(tables, vindex);
   }
 
@@ -193,10 +185,12 @@ public class Grib2Iosp extends GribIosp {
       if (raf.length() > raf.getBufferSize())
         return false;
 
-    } else {                                  // wont accept remote index
+    } else { // wont accept remote index
       GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
-      if (type == GribCdmIndex.GribCollectionType.GRIB2) return true;
-      if (type == GribCdmIndex.GribCollectionType.Partition2) return true;
+      if (type == GribCdmIndex.GribCollectionType.GRIB2)
+        return true;
+      if (type == GribCdmIndex.GribCollectionType.Partition2)
+        return true;
     }
 
     // check for GRIB2 data file
@@ -234,8 +228,8 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected ucar.nc2.grib.GribTables createCustomizer() {
-    cust = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal(),
-            gribCollection.getGenProcessId());
+    cust = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(),
+        gribCollection.getLocal(), gribCollection.getGenProcessId());
     return cust;
   }
 

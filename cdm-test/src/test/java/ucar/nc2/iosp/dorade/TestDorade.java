@@ -9,14 +9,12 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
-
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -24,8 +22,10 @@ import java.lang.invoke.MethodHandles;
 public class TestDorade {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public static String groundDoradeFile = TestDir.cdmUnitTestDir + "formats/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
-  public static String airDoradeFile = TestDir.cdmUnitTestDir + "formats/dorade/swp.1030524195200.TA-ELDR.291.-16.5_AIR_v-999";
+  public static String groundDoradeFile =
+      TestDir.cdmUnitTestDir + "formats/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
+  public static String airDoradeFile =
+      TestDir.cdmUnitTestDir + "formats/dorade/swp.1030524195200.TA-ELDR.291.-16.5_AIR_v-999";
 
   public static boolean show = false;
 
@@ -39,7 +39,7 @@ public class TestDorade {
         System.out.println(v.getFullName());
       }
 
-    /* test both gate and radial dimension */
+      /* test both gate and radial dimension */
       Dimension gateDim = ncfile.getRootGroup().findDimension("gate_1");
 
       assert (gateDim.getLength() == 1008);
@@ -48,7 +48,7 @@ public class TestDorade {
 
       assert (radialDim.getLength() == 439);
 
-    /* test some att  */
+      /* test some att */
       Attribute testAtt = ncfile.getRootGroup().findAttribute("Conventions");
       assert (testAtt.getStringValue().equals(_Coordinate.Convention));
 
@@ -250,7 +250,8 @@ public class TestDorade {
   }
 
   private void testReadData(Variable v) throws IOException {
-    if (show) System.out.printf(" read %s%n", v.getNameAndDimensions());
+    if (show)
+      System.out.printf(" read %s%n", v.getNameAndDimensions());
     assert (null != v);
 
     assert (null != v.getDimension(0));
@@ -260,7 +261,8 @@ public class TestDorade {
   }
 
   private float testReadScalar(Variable v) throws IOException {
-    if (show) System.out.printf(" read %s%n", v.getNameAndDimensions());
+    if (show)
+      System.out.printf(" read %s%n", v.getNameAndDimensions());
     assert (null != v);
     Array a = v.read();
     assert (null != a);

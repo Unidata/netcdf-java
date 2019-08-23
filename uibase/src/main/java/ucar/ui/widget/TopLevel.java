@@ -7,18 +7,18 @@ package ucar.ui.widget;
 /** common toplevel for applets (JApplet) and applications (JFrames) */
 
 public interface TopLevel {
-    /** get the getRootPaneContainer */
-    javax.swing.RootPaneContainer getRootPaneContainer();
+  /** get the getRootPaneContainer */
+  javax.swing.RootPaneContainer getRootPaneContainer();
 
-    /** get the underlying Frame; call only if !isApplet() */
-    javax.swing.JFrame getJFrame();
+  /** get the underlying Frame; call only if !isApplet() */
+  javax.swing.JFrame getJFrame();
 
-    /** close and exit the progem */
-    void close();
+  /** close and exit the progem */
+  void close();
 
-    /** save any persistant data */
-    void save();
+  /** save any persistant data */
+  void save();
 
-    /** return true if this is an Applet */
-    boolean isApplet();
+  /** return true if this is an Applet */
+  boolean isApplet();
 }

@@ -26,7 +26,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -46,13 +45,16 @@ abstract class GribCollectionBuilderFromIndex {
   protected GribTables tables;
 
   protected abstract GribHorizCoordSystem readGds(GribCollectionProto.Gds p);
+
   protected abstract GribTables makeCustomizer() throws IOException;
+
   protected abstract String getLevelNameShort(int levelCode);
+
   protected abstract int getVersion();
+
   protected abstract int getMinVersion();
 
-  GribCollectionBuilderFromIndex(GribCollectionMutable gc, FeatureCollectionConfig config,
-      org.slf4j.Logger logger) {
+  GribCollectionBuilderFromIndex(GribCollectionMutable gc, FeatureCollectionConfig config, org.slf4j.Logger logger) {
     this.logger = logger;
     this.config = config;
     this.gc = gc;
@@ -72,15 +74,17 @@ abstract class GribCollectionBuilderFromIndex {
         raf.seek(0);
         NcStream.readAndTest(raf, getMagicStart().getBytes(CDM.utf8Charset)); // debug
         logger.warn("GribCollectionBuilderFromIndex {}: invalid index raf={}", gc.getName(), raf.getLocation());
-        throw new IllegalStateException();   // temp debug
+        throw new IllegalStateException(); // temp debug
         // return false;
       }
 
       gc.version = raf.readInt();
       if (gc.version < getVersion()) {
-        logger.debug("GribCollectionBuilderFromIndex {}: index found version={}, current version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
-        // throw new IllegalStateException();   // temp debug
-        if (gc.version < getMinVersion()) return false;
+        logger.debug("GribCollectionBuilderFromIndex {}: index found version={}, current version= {} on file {}",
+            gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
+        // throw new IllegalStateException(); // temp debug
+        if (gc.version < getMinVersion())
+          return false;
       }
 
       // these are the variable records
@@ -90,9 +94,10 @@ abstract class GribCollectionBuilderFromIndex {
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 300 * 1000 * 1000)) { // ncx bigger than 300 MB?
-        logger.warn("GribCollectionBuilderFromIndex {}: invalid index size on file {}", gc.getName(), raf.getLocation());
-        throw new IllegalStateException();   // temp debug
-        //return false;
+        logger.warn("GribCollectionBuilderFromIndex {}: invalid index size on file {}", gc.getName(),
+            raf.getLocation());
+        throw new IllegalStateException(); // temp debug
+        // return false;
       }
       logger.debug("GribCollectionBuilderFromIndex proto len = {}", size);
 
@@ -100,30 +105,30 @@ abstract class GribCollectionBuilderFromIndex {
       raf.readFully(m);
 
       /*
-      message GribCollection {
-        required string name = 1;         // must be unique - index filename is name.ncx
-        required string topDir = 2;       // filenames are reletive to this
-        repeated MFile mfiles = 3;        // list of grib MFiles
-        repeated Dataset dataset = 4;
-        repeated Gds gds = 5;             // unique Gds, shared amongst datasets
-        required Coord masterRuntime = 21;  // list of runtimes in this GC
-
-        required int32 center = 6;      // these 4 fields are to get a GribTable object
-        required int32 subcenter = 7;
-        required int32 master = 8;
-        required int32 local = 9;       // grib1 table Version
-
-        optional int32 genProcessType = 10;
-        optional int32 genProcessId = 11;
-        optional int32 backProcessId = 12;
-
-        // repeated Parameter params = 20;      // not used
-        FcConfig config = 21;
-        uint64 startTime = 22; // calendar date, first valid time
-        uint64 endTime = 23;   // calendar date, last valid time
-
-        extensions 100 to 199;
-      }
+       * message GribCollection {
+       * required string name = 1; // must be unique - index filename is name.ncx
+       * required string topDir = 2; // filenames are reletive to this
+       * repeated MFile mfiles = 3; // list of grib MFiles
+       * repeated Dataset dataset = 4;
+       * repeated Gds gds = 5; // unique Gds, shared amongst datasets
+       * required Coord masterRuntime = 21; // list of runtimes in this GC
+       * 
+       * required int32 center = 6; // these 4 fields are to get a GribTable object
+       * required int32 subcenter = 7;
+       * required int32 master = 8;
+       * required int32 local = 9; // grib1 table Version
+       * 
+       * optional int32 genProcessType = 10;
+       * optional int32 genProcessId = 11;
+       * optional int32 backProcessId = 12;
+       * 
+       * // repeated Parameter params = 20; // not used
+       * FcConfig config = 21;
+       * uint64 startTime = 22; // calendar date, first valid time
+       * uint64 endTime = 23; // calendar date, last valid time
+       * 
+       * extensions 100 to 199;
+       * }
        */
 
       GribCollectionProto.GribCollection proto = GribCollectionProto.GribCollection.parseFrom(m);
@@ -140,10 +145,11 @@ abstract class GribCollectionBuilderFromIndex {
       gc.cust = this.tables;
 
       if (!gc.name.equals(proto.getName())) {
-        logger.info("GribCollectionBuilderFromIndex raf {}: has different name= '{}' than stored in ncx= '{}' ", raf.getLocation(), gc.getName(), proto.getName());
+        logger.info("GribCollectionBuilderFromIndex raf {}: has different name= '{}' than stored in ncx= '{}' ",
+            raf.getLocation(), gc.getName(), proto.getName());
       }
 
-      // directory always taken from proto, since ncx2 file may be moved, or in cache, etc  LOOK
+      // directory always taken from proto, since ncx2 file may be moved, or in cache, etc LOOK
       gc.directory = gc.setOrgDirectory(proto.getTopDir());
       gc.indexVersion = proto.getVersion();
 
@@ -154,7 +160,8 @@ abstract class GribCollectionBuilderFromIndex {
       Map<Integer, MFile> fileMap = new HashMap<>(2 * n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-        fileMap.put(mf.getIndex(), new GcMFile(gc.directory, mf.getFilename(), mf.getLastModified(), mf.getLength(), mf.getIndex()));
+        fileMap.put(mf.getIndex(),
+            new GcMFile(gc.directory, mf.getFilename(), mf.getLastModified(), mf.getLength(), mf.getIndex()));
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);
@@ -170,7 +177,8 @@ abstract class GribCollectionBuilderFromIndex {
 
     } catch (Throwable t) {
       logger.warn("Error reading index " + raf.getLocation(), t);
-      if (stackTrace) t.printStackTrace();
+      if (stackTrace)
+        t.printStackTrace();
       return false;
     }
   }
@@ -179,23 +187,24 @@ abstract class GribCollectionBuilderFromIndex {
     return true;
   }
 
-  protected GribCollectionMutable.VariableIndex readVariableExtensions(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable pv, GribCollectionMutable.VariableIndex vi) {
+  protected GribCollectionMutable.VariableIndex readVariableExtensions(GribCollectionMutable.GroupGC group,
+      GribCollectionProto.Variable pv, GribCollectionMutable.VariableIndex vi) {
     group.addVariable(vi);
     return vi;
   }
 
   /*
-message Dataset {
-    enum Type {
-      TwoD = 0;
-      Best = 1;
-      Analysis = 2;
-    }
-
-  required Type type = 1;
-  repeated Group groups = 2;      // separate group for each GDS
-}
- */
+   * message Dataset {
+   * enum Type {
+   * TwoD = 0;
+   * Best = 1;
+   * Analysis = 2;
+   * }
+   * 
+   * required Type type = 1;
+   * repeated Group groups = 2; // separate group for each GDS
+   * }
+   */
   private GribCollectionMutable.Dataset readDataset(GribCollectionProto.Dataset p) {
     GribCollectionImmutable.Type type = GribCollectionImmutable.Type.valueOf(p.getType().toString());
     GribCollectionMutable.Dataset ds = gc.makeDataset(type);
@@ -209,20 +218,20 @@ message Dataset {
   }
 
   /*
-message Group {
-  required uint32 gdsIndex = 1;       // index into GribCollection.gds array
-  repeated Variable variables = 2;    // list of variables
-  repeated Coord coords = 3;          // list of coordinates
-  repeated int32 fileno = 4;          // the component files that are in this group, index into gc.mfiles
-
-  repeated Parameter params = 20;      // not used yet
-  extensions 100 to 199;
-}
- */
+   * message Group {
+   * required uint32 gdsIndex = 1; // index into GribCollection.gds array
+   * repeated Variable variables = 2; // list of variables
+   * repeated Coord coords = 3; // list of coordinates
+   * repeated int32 fileno = 4; // the component files that are in this group, index into gc.mfiles
+   * 
+   * repeated Parameter params = 20; // not used yet
+   * extensions 100 to 199;
+   * }
+   */
   protected GribCollectionMutable.GroupGC readGroup(GribCollectionProto.Group p) {
     GribCollectionMutable.GroupGC group = gc.makeGroup();
 
-    group.horizCoordSys = readGds( p.getGds());
+    group.horizCoordSys = readGds(p.getGds());
 
     // read coords before variables
     group.coords = new ArrayList<>();
@@ -249,26 +258,30 @@ message Group {
       switch (type) {
         case runtime:
           CoordinateRuntime reftime = (CoordinateRuntime) coord;
-          if (reftimeCoord > 0) reftime.setName("reftime" + reftimeCoord);
+          if (reftimeCoord > 0)
+            reftime.setName("reftime" + reftimeCoord);
           reftimeCoord++;
           runtimes.put(reftime, reftime);
           break;
 
         case time:
           CoordinateTime tc = (CoordinateTime) coord;
-          if (timeCoord > 0) tc.setName("time" + timeCoord);
+          if (timeCoord > 0)
+            tc.setName("time" + timeCoord);
           timeCoord++;
           break;
 
         case timeIntv:
           CoordinateTimeIntv tci = (CoordinateTimeIntv) coord;
-          if (timeCoord > 0) tci.setName("time" + timeCoord);
+          if (timeCoord > 0)
+            tci.setName("time" + timeCoord);
           timeCoord++;
           break;
 
         case time2D:
           CoordinateTime2D t2d = (CoordinateTime2D) coord;
-          if (timeCoord > 0) t2d.setName("time" + timeCoord);
+          if (timeCoord > 0)
+            t2d.setName("time" + timeCoord);
           timeCoord++;
           time2DCoords.add(t2d);
           break;
@@ -279,7 +292,8 @@ message Group {
 
         case ens:
           CoordinateEns ce = (CoordinateEns) coord;
-          if (ensCoord > 0) ce.setName("ens" + ensCoord);
+          if (ensCoord > 0)
+            ce.setName("ens" + ensCoord);
           ensCoord++;
           break;
       }
@@ -296,7 +310,8 @@ message Group {
     // assign name
     for (CoordinateVert vc : vertCoords) {
       String shortName = getLevelNameShort(vc.getCode()).toLowerCase();
-      if (vc.isLayer()) shortName = shortName + "_layer";
+      if (vc.isLayer())
+        shortName = shortName + "_layer";
 
       Integer countName = map.get(shortName);
       if (countName == null) {
@@ -311,7 +326,8 @@ message Group {
     }
   }
 
-  public void assignRuntimeNames(Map<CoordinateRuntime, CoordinateRuntime> runtimes, List<CoordinateTime2D> time2DCoords, String groupId) {
+  public void assignRuntimeNames(Map<CoordinateRuntime, CoordinateRuntime> runtimes,
+      List<CoordinateTime2D> time2DCoords, String groupId) {
 
     // assign same name to internal time2D runtime as matched the external runtime
     for (CoordinateTime2D t2d : time2DCoords) {
@@ -326,20 +342,21 @@ message Group {
   }
 
   /*
-message Coord {
-  required int32 type = 1;   // Coordinate.Type.oridinal
-  required int32 code = 2;   // time unit; level type
-  required string unit = 3;
-  repeated float values = 4;
-  repeated float bound = 5; // only used if interval, then = (value, bound)
-  repeated int64 msecs = 6; // calendar date
-}
- */
+   * message Coord {
+   * required int32 type = 1; // Coordinate.Type.oridinal
+   * required int32 code = 2; // time unit; level type
+   * required string unit = 3;
+   * repeated float values = 4;
+   * repeated float bound = 5; // only used if interval, then = (value, bound)
+   * repeated int64 msecs = 6; // calendar date
+   * }
+   */
   private Coordinate readCoord(GribCollectionProto.Coord pc) {
     Coordinate.Type type = convertAxisType(pc.getAxisType());
     int code = pc.getCode();
     String unit = pc.getUnit();
-    if (unit.length() == 0) unit = null; // LOOK may be null
+    if (unit.length() == 0)
+      unit = null; // LOOK may be null
 
     switch (type) {
       case runtime:
@@ -354,7 +371,7 @@ message Coord {
           offs.add((int) val);
         CalendarDate refDate = CalendarDate.of(pc.getMsecs(0));
         if (unit == null)
-           throw new IllegalStateException("Null units");
+          throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit = CalendarPeriod.of(unit);
         return new CoordinateTime(code, timeUnit, refDate, offs, readTime2Runtime(pc));
 
@@ -367,13 +384,13 @@ message Coord {
         }
         refDate = CalendarDate.of(pc.getMsecs(0));
         if (unit == null)
-           throw new IllegalStateException("Null units");
+          throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit2 = CalendarPeriod.of(unit);
         return new CoordinateTimeIntv(code, timeUnit2, refDate, tinvs, readTime2Runtime(pc));
 
       case time2D:
         if (unit == null)
-           throw new IllegalStateException("Null units");
+          throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit3 = CalendarPeriod.of(unit);
         CoordinateRuntime runtime = new CoordinateRuntime(pc.getMsecsList(), timeUnit3);
 
@@ -383,7 +400,8 @@ message Coord {
         boolean isOrthogonal = pc.getIsOrthogonal();
         boolean isRegular = pc.getIsRegular();
         if (isOrthogonal)
-          return new CoordinateTime2D(code, timeUnit3, null, runtime, (CoordinateTimeAbstract) times.get(0), null, readTime2Runtime(pc));
+          return new CoordinateTime2D(code, timeUnit3, null, runtime, (CoordinateTimeAbstract) times.get(0), null,
+              readTime2Runtime(pc));
         else if (isRegular)
           return new CoordinateTime2D(code, timeUnit3, null, runtime, times, null, readTime2Runtime(pc));
         else
@@ -405,7 +423,7 @@ message Coord {
         for (int i = 0; i < pc.getValuesCount(); i++) {
           double val1 = pc.getValues(i);
           double val2 = pc.getBound(i);
-          ecoords.add(new EnsCoordValue((int)val1, (int)val2));
+          ecoords.add(new EnsCoordValue((int) val1, (int) val2));
         }
         return new CoordinateEns(code, ecoords);
     }
@@ -416,7 +434,7 @@ message Coord {
   private int[] readTime2Runtime(GribCollectionProto.Coord pc) {
     if (pc.getTime2RuntimeCount() > 0) {
       int[] time2runtime = new int[pc.getTime2RuntimeCount()];
-      for (int i=0; i<pc.getTime2RuntimeCount(); i++)
+      for (int i = 0; i < pc.getTime2RuntimeCount(); i++)
         time2runtime[i] = pc.getTime2Runtime(i);
       return time2runtime;
     }
@@ -429,7 +447,7 @@ message Coord {
 
     byte[] rawPds = pv.getPds().toByteArray();
 
-        // extra id info
+    // extra id info
     int nids = pv.getIdsCount();
     int center = (nids > 0) ? pv.getIds(0) : 0;
     int subcenter = (nids > 1) ? pv.getIds(1) : 0;
@@ -438,7 +456,8 @@ message Coord {
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();
 
-    GribCollectionMutable.VariableIndex result = gc.makeVariableIndex(group, tables, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
+    GribCollectionMutable.VariableIndex result =
+        gc.makeVariableIndex(group, tables, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
     result.ndups = pv.getNdups();
     result.nrecords = pv.getNrecords();
     result.nmissing = pv.getMissing();

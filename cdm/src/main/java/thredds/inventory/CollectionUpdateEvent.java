@@ -32,6 +32,6 @@ public class CollectionUpdateEvent {
 
   @Override
   public String toString() {
-    return collectionName+": "+ type + "source='" + source;
+    return collectionName + ": " + type + "source='" + source;
   }
 }

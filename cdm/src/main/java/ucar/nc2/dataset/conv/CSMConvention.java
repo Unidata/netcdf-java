@@ -16,7 +16,6 @@ import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.util.Parameter;
-
 import java.io.*;
 import java.util.*;
 
@@ -97,15 +96,20 @@ public class CSMConvention extends COARDSConvention {
       VerticalCT rs = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
       rs.addParameter(new Parameter("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
 
-      if (!addParameter2(rs, HybridSigmaPressure.PS, ds, ctv, "PS_var", false)) return null;
-      if (!addParameter2(rs, HybridSigmaPressure.A, ds, ctv, "A_var", false)) return null;
-      if (!addParameter2(rs, HybridSigmaPressure.B, ds, ctv, "B_var", false)) return null;
-      if (!addParameter2(rs, HybridSigmaPressure.P0, ds, ctv, "P0_var", false)) return null;
-      parseInfo.format("CSMConvention made SigmaPressureCT %s%n",ctv.getName());
+      if (!addParameter2(rs, HybridSigmaPressure.PS, ds, ctv, "PS_var", false))
+        return null;
+      if (!addParameter2(rs, HybridSigmaPressure.A, ds, ctv, "A_var", false))
+        return null;
+      if (!addParameter2(rs, HybridSigmaPressure.B, ds, ctv, "B_var", false))
+        return null;
+      if (!addParameter2(rs, HybridSigmaPressure.P0, ds, ctv, "P0_var", false))
+        return null;
+      parseInfo.format("CSMConvention made SigmaPressureCT %s%n", ctv.getName());
       return rs;
     }
 
-    public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+    public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+        VerticalCT vCT) {
       return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
     }
   }
@@ -119,32 +123,38 @@ public class CSMConvention extends COARDSConvention {
       VerticalCT rs = new VerticalCT("sigma-" + ctv.getName(), conventionName, VerticalCT.Type.Sigma, this);
       rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
 
-      if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false)) return null;
-      if (!addParameter2(rs, AtmosSigma.SIGMA, ds, ctv, "B_var", false)) return null;
-      if (!addParameter2(rs, AtmosSigma.PTOP, ds, ctv, "P0_var", false)) return null;
+      if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false))
+        return null;
+      if (!addParameter2(rs, AtmosSigma.SIGMA, ds, ctv, "B_var", false))
+        return null;
+      if (!addParameter2(rs, AtmosSigma.PTOP, ds, ctv, "P0_var", false))
+        return null;
       parseInfo.format("CSMConvention made SigmaCT %s%n", ctv.getName());
       return rs;
     }
 
-    public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+    public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+        VerticalCT vCT) {
       return new AtmosSigma(ds, timeDim, vCT.getParameters());
     }
   }
 
   /**
-   * Add a Parameter to a CoordinateTransform. The variable attribute points to a another variable that has the data in it.
+   * Add a Parameter to a CoordinateTransform. The variable attribute points to a another variable that has the data in
+   * it.
    * Make sure that atrribute and variable exist. Id readData is true, read the data and use it as the value of the
    * parameter, otherwise use the name as the value of the parameter.
    *
-   * @param rs        the CoordinateTransform
+   * @param rs the CoordinateTransform
    * @param paramName the parameter name
-   * @param ds        dataset
-   * @param v         variable
-   * @param attName   variable attribute name
-   * @param readData  if true, read data and use a  s parameter value
+   * @param ds dataset
+   * @param v variable
+   * @param attName variable attribute name
+   * @param readData if true, read data and use a s parameter value
    * @return true if success, false is failed
    */
-  protected boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, AttributeContainer v, String attName, boolean readData) {
+  protected boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, AttributeContainer v,
+      String attName, boolean readData) {
     String varName;
     if (null == (varName = v.findAttValueIgnoreCase(attName, null))) {
       parseInfo.format("CSMConvention No Attribute named %s%n", attName);
@@ -166,7 +176,7 @@ public class CSMConvention extends COARDSConvention {
         parseInfo.format("CSMConvention failed on read of %s err= %s%n", varName, e.getMessage());
         return false;
       }
-      double[] vals = (double []) data.get1DJavaArray(DataType.DOUBLE);
+      double[] vals = (double[]) data.get1DJavaArray(DataType.DOUBLE);
       rs.addParameter(new Parameter(paramName, vals));
 
     } else

@@ -7,11 +7,11 @@ package ucar.nc2.iosp.bufr;
 import ucar.nc2.iosp.bufr.tables.TableB;
 import ucar.nc2.iosp.bufr.tables.TableC;
 import ucar.nc2.iosp.bufr.tables.TableD;
-
 import java.util.Formatter;
 
 /**
  * Static methods to manipulate the f-x-y descriptors
+ * 
  * @author caron
  * @since Oct 25, 2008
  */
@@ -21,11 +21,11 @@ public class Descriptor {
     int f = (fxy & 0xC000) >> 14;
     int x = (fxy & 0x3F00) >> 8;
     int y = fxy & 0xFF;
-    return makeString(f,x,y);
+    return makeString(f, x, y);
   }
 
   public static String makeString(int f, int x, int y) {
-    return String.format("%d-%d-%d",f,x,y);
+    return String.format("%d-%d-%d", f, x, y);
   }
 
   public static boolean isWmoRange(short fxy) {
@@ -69,9 +69,11 @@ public class Descriptor {
     int f = (fxy & 0xC000) >> 14;
 
     if (f == 0) {
-      TableB.Descriptor b = lookup.getDescriptorTableB( fxy);
-      if (b == null) out.format("%-8s: NOT FOUND!!", makeString(fxy) );
-      else out.format("%-8s: %s", b.getFxy(), b.getName());
+      TableB.Descriptor b = lookup.getDescriptorTableB(fxy);
+      if (b == null)
+        out.format("%-8s: NOT FOUND!!", makeString(fxy));
+      else
+        out.format("%-8s: %s", b.getFxy(), b.getName());
 
     } else if (f == 1) {
       out.format("%-8s: %s", makeString(fxy), descType[1]);
@@ -81,9 +83,11 @@ public class Descriptor {
       out.format("%-8s: Operator= %s", makeString(fxy), TableC.getOperatorName(x));
 
     } else if (f == 3) {
-      TableD.Descriptor d = lookup.getDescriptorTableD( fxy);
-      if (d == null) out.format("%-8s: NOT FOUND!!", makeString(fxy) );
-      else out.format("%-8s: %s", d.getFxy(), d.getName());
+      TableD.Descriptor d = lookup.getDescriptorTableD(fxy);
+      if (d == null)
+        out.format("%-8s: NOT FOUND!!", makeString(fxy));
+      else
+        out.format("%-8s: %s", d.getFxy(), d.getName());
     }
   }
 
@@ -91,9 +95,11 @@ public class Descriptor {
     int f = (fxy & 0xC000) >> 14;
 
     if (f == 0) {
-      TableB.Descriptor b = lookup.getDescriptorTableB( fxy);
-      if (b == null) return("**NOT FOUND!!");
-      else return b.getName();
+      TableB.Descriptor b = lookup.getDescriptorTableB(fxy);
+      if (b == null)
+        return ("**NOT FOUND!!");
+      else
+        return b.getName();
 
     } else if (f == 1) {
       return descType[1];
@@ -103,11 +109,13 @@ public class Descriptor {
       return TableC.getOperatorName(x);
 
     } else if (f == 3) {
-      TableD.Descriptor d = lookup.getDescriptorTableD( fxy);
-      if (d == null) return "**NOT FOUND!!";
-      else return d.getName();
+      TableD.Descriptor d = lookup.getDescriptorTableD(fxy);
+      if (d == null)
+        return "**NOT FOUND!!";
+      else
+        return d.getName();
     }
 
-    return "illegal F="+f;
+    return "illegal F=" + f;
   }
 }

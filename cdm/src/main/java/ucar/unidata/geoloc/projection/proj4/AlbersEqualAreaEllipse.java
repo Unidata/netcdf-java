@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -36,7 +36,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Parameter;
-
 import java.util.Formatter;
 
 
@@ -65,9 +64,9 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
 
   // earth shape
   private Earth earth;
-  private double e;   // earth.getEccentricitySquared
-  private double es;  // earth.getEccentricitySquared
-  private double one_es;  // 1-es
+  private double e; // earth.getEccentricitySquared
+  private double es; // earth.getEccentricitySquared
+  private double one_es; // 1-es
   private double totalScale; // scale to convert cartesian coords in km
 
   private double ec;
@@ -79,8 +78,8 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new AlbersEqualAreaEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
-            getFalseEasting(), getFalseNorthing(), getEarth());
+    ProjectionImpl result = new AlbersEqualAreaEllipse(getOriginLat(), getOriginLon(), getParallelOne(),
+        getParallelTwo(), getFalseEasting(), getFalseNorthing(), getEarth());
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -106,7 +105,8 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
    * @param earth shape of the earth
    * @throws IllegalArgumentException if Math.abs(par1 + par2) < 1.e-10
    */
-  public AlbersEqualAreaEllipse(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing, Earth earth) {
+  public AlbersEqualAreaEllipse(double lat0, double lon0, double par1, double par2, double falseEasting,
+      double falseNorthing, Earth earth) {
     super("AlbersEqualAreaEllipse", false);
 
     this.lat0deg = lat0;
@@ -125,10 +125,10 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     this.falseNorthing = falseNorthing;
 
     this.earth = earth;
-		this.e = earth.getEccentricity();
-		this.es = earth.getEccentricitySquared();
-		this.one_es = 1.0-es;
-		this.totalScale = earth.getMajor() * .001; // scale factor for cartesion coords in km.
+    this.e = earth.getEccentricity();
+    this.es = earth.getEccentricitySquared();
+    this.one_es = 1.0 - es;
+    this.totalScale = earth.getMajor() * .001; // scale factor for cartesion coords in km.
 
     precalculate();
 
@@ -152,65 +152,75 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     }
 
     addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor());
-    addParameter(CF.INVERSE_FLATTENING, 1.0/earth.getFlattening());
+    addParameter(CF.INVERSE_FLATTENING, 1.0 / earth.getFlattening());
   }
 
   private void precalculate() {
 
-		if (Math.abs(phi1 + phi2) < EPS10)
-			throw new IllegalArgumentException("Math.abs(par1 + par2) < 1.e-10");
+    if (Math.abs(phi1 + phi2) < EPS10)
+      throw new IllegalArgumentException("Math.abs(par1 + par2) < 1.e-10");
 
-		double sinphi = Math.sin(phi1);
+    double sinphi = Math.sin(phi1);
     n = sinphi;
-		double cosphi = Math.cos(phi1);
-		boolean secant = Math.abs(phi1 - phi2) >= EPS10;
+    double cosphi = Math.cos(phi1);
+    boolean secant = Math.abs(phi1 - phi2) >= EPS10;
 
-		if (!earth.isSpherical()) { // not spherical  LOOK CHANGE
+    if (!earth.isSpherical()) { // not spherical LOOK CHANGE
 
-      // 		if (!(P->en = pj_enfn(P->es))) E_ERROR_0; ??
+      // if (!(P->en = pj_enfn(P->es))) E_ERROR_0; ??
       if ((MapMath.enfn(es)) == null)
-				throw new IllegalArgumentException("0");
+        throw new IllegalArgumentException("0");
 
-			double m1 = MapMath.msfn(sinphi, cosphi, es);
-			double ml1 = MapMath.qsfn(sinphi, e, one_es);
-			if (secant) { /* secant cone */
-				sinphi = Math.sin(phi2);
-				cosphi = Math.cos(phi2);
-				double m2 = MapMath.msfn(sinphi, cosphi, es);
-				double ml2 = MapMath.qsfn(sinphi, e, one_es);
-				n = (m1 * m1 - m2 * m2) / (ml2 - ml1);
-			}
+      double m1 = MapMath.msfn(sinphi, cosphi, es);
+      double ml1 = MapMath.qsfn(sinphi, e, one_es);
+      if (secant) { /* secant cone */
+        sinphi = Math.sin(phi2);
+        cosphi = Math.cos(phi2);
+        double m2 = MapMath.msfn(sinphi, cosphi, es);
+        double ml2 = MapMath.qsfn(sinphi, e, one_es);
+        n = (m1 * m1 - m2 * m2) / (ml2 - ml1);
+      }
 
-			ec = 1. - .5 * one_es * Math.log((1. - e) / (1. + e)) / e;
-			c = m1 * m1 + n * ml1;
-			dd = 1. / n;
-			rho0 = dd * Math.sqrt(c - n * MapMath.qsfn(Math.sin(lat0rad), e, one_es));
+      ec = 1. - .5 * one_es * Math.log((1. - e) / (1. + e)) / e;
+      c = m1 * m1 + n * ml1;
+      dd = 1. / n;
+      rho0 = dd * Math.sqrt(c - n * MapMath.qsfn(Math.sin(lat0rad), e, one_es));
 
-		} else { // sphere
-			if (secant) n = .5 * (n + Math.sin(phi2));
-			n2 = n + n;
-			c = cosphi * cosphi + n2 * sinphi;
-			dd = 1. / n;
-			rho0 = dd * Math.sqrt(c - n2 * Math.sin(lat0rad));
-		}
-	}
+    } else { // sphere
+      if (secant)
+        n = .5 * (n + Math.sin(phi2));
+      n2 = n + n;
+      c = cosphi * cosphi + n2 * sinphi;
+      dd = 1. / n;
+      rho0 = dd * Math.sqrt(c - n2 * Math.sin(lat0rad));
+    }
+  }
 
-  //   public AlbersEqualAreaEllipse(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing, Earth earth) {
+  // public AlbersEqualAreaEllipse(double lat0, double lon0, double par1, double par2, double falseEasting, double
+  // falseNorthing, Earth earth) {
 
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     AlbersEqualAreaEllipse that = (AlbersEqualAreaEllipse) o;
 
-    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
-    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
-    if (Double.compare(that.lat0deg, lat0deg) != 0) return false;
-    if (Double.compare(that.lon0deg, lon0deg) != 0) return false;
-    if (Double.compare(that.par1deg, par1deg) != 0) return false;
-    if (Double.compare(that.par2deg, par2deg) != 0) return false;
+    if (Double.compare(that.falseEasting, falseEasting) != 0)
+      return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0)
+      return false;
+    if (Double.compare(that.lat0deg, lat0deg) != 0)
+      return false;
+    if (Double.compare(that.lon0deg, lon0deg) != 0)
+      return false;
+    if (Double.compare(that.par1deg, par1deg) != 0)
+      return false;
+    if (Double.compare(that.par2deg, par2deg) != 0)
+      return false;
     return earth.equals(that.earth);
   }
 
@@ -238,27 +248,32 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
    * Check for equality with the Object in question
    *
    * @param proj object to check
+   * 
    * @return true if they are equal
    *
-  public boolean equals2(Object proj) {
-    if (!(proj instanceof AlbersEqualAreaEllipse)) {
-      return false;
-    }
-
-    AlbersEqualAreaEllipse oo = (AlbersEqualAreaEllipse) proj;
-    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
-    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
-
-    return ((this.getParallelOne() == oo.getParallelOne())
-          && (this.getParallelTwo() == oo.getParallelTwo())
-          && (this.getOriginLat() == oo.getOriginLat())
-          && (this.getOriginLon() == oo.getOriginLon())
-          && this.earth.equals(oo.earth));
-  } */
+   * public boolean equals2(Object proj) {
+   * if (!(proj instanceof AlbersEqualAreaEllipse)) {
+   * return false;
+   * }
+   * 
+   * AlbersEqualAreaEllipse oo = (AlbersEqualAreaEllipse) proj;
+   * if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these
+   * are null
+   * if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
+   * 
+   * return ((this.getParallelOne() == oo.getParallelOne())
+   * && (this.getParallelTwo() == oo.getParallelTwo())
+   * && (this.getOriginLat() == oo.getOriginLat())
+   * && (this.getOriginLon() == oo.getOriginLon())
+   * && this.earth.equals(oo.earth));
+   * }
+   */
 
   // bean properties
 
-  public Earth getEarth() { return earth; }
+  public Earth getEarth() {
+    return earth;
+  }
 
   /**
    * Get the second standard parallel
@@ -297,7 +312,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     return lat0deg;
   }
 
-     /**
+  /**
    * Get the false easting, in km.
    *
    * @return the false easting in km
@@ -315,7 +330,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     return falseNorthing;
   }
 
-   /**
+  /**
    * Get the label to be used in the gui for this type of projection
    *
    * @return Type label
@@ -331,7 +346,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
    */
   public String paramsToString() {
     Formatter f = new Formatter();
-    f.format("origin lat,lon=%f,%f parellels=%f,%f earth=%s", lat0deg, lon0deg, par1deg, par2deg, earth );
+    f.format("origin lat,lon=%f,%f parellels=%f,%f earth=%s", lat0deg, lon0deg, par1deg, par2deg, earth);
     return f.toString();
   }
 
@@ -346,45 +361,49 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     return ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2);
 
-    /* opposite signed X values, larger then 5000 km  LOOK ????
-    return (pt1.getX() * pt2.getX() < 0)
-            && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0); */
+    /*
+     * opposite signed X values, larger then 5000 km LOOK ????
+     * return (pt1.getX() * pt2.getX() < 0)
+     * && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
+     */
   }
 
   /*
    * Convert a LatLonPoint to projection coordinates
    *
    * @param latLon convert from these lat, lon coordinates
+   * 
    * @param result the object to write to
+   * 
    * @return the given result
    *
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
-    double toX, toY;
-    double fromLat = latLon.getLatitude();
-    double fromLon = latLon.getLongitude();
-
-    fromLat = Math.toRadians(fromLat);
-    fromLon = Math.toRadians(fromLon);
-    double rho = computeRho(fromLat);
-    double theta = computeTheta(fromLon);
-
-    toX = rho * Math.sin(theta) + falseEasting;
-    toY = rho0 - rho * Math.cos(theta) + falseNorthing;
-
-    result.setLocation(toX, toY);
-    return result;
-  }
-
-  /*
-  	public Point2D.Double project(double lplam, double lpphi, Point2D.Double out) {
-		double rho;
-		if ((rho = c - (!spherical ? n * MapMath.qsfn(Math.sin(lpphi), e, one_es) : n2 * Math.sin(lpphi))) < 0.)
-			throw new ProjectionException("F");
-		rho = dd * Math.sqrt(rho);
-		out.x = rho * Math.sin( lplam *= n );
-		out.y = rho0 - rho * Math.cos(lplam);
-		return out;
-	}
+   * public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+   * double toX, toY;
+   * double fromLat = latLon.getLatitude();
+   * double fromLon = latLon.getLongitude();
+   * 
+   * fromLat = Math.toRadians(fromLat);
+   * fromLon = Math.toRadians(fromLon);
+   * double rho = computeRho(fromLat);
+   * double theta = computeTheta(fromLon);
+   * 
+   * toX = rho * Math.sin(theta) + falseEasting;
+   * toY = rho0 - rho * Math.cos(theta) + falseNorthing;
+   * 
+   * result.setLocation(toX, toY);
+   * return result;
+   * }
+   * 
+   * /*
+   * public Point2D.Double project(double lplam, double lpphi, Point2D.Double out) {
+   * double rho;
+   * if ((rho = c - (!spherical ? n * MapMath.qsfn(Math.sin(lpphi), e, one_es) : n2 * Math.sin(lpphi))) < 0.)
+   * throw new ProjectionException("F");
+   * rho = dd * Math.sqrt(rho);
+   * out.x = rho * Math.sin( lplam *= n );
+   * out.y = rho0 - rho * Math.cos(lplam);
+   * return out;
+   * }
    */
 
   private double computeTheta(double lon) {
@@ -416,72 +435,73 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    *
+   *         public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+   *         double toLat, toLon;
+   *         double fromX = world.getX() - falseEasting;
+   *         double fromY = world.getY() - falseNorthing;
+   *         double rrho0 = rho0;
+   * 
+   *         if (n < 0) {
+   *         rrho0 *= -1.0;
+   *         fromX *= -1.0;
+   *         fromY *= -1.0;
+   *         }
+   * 
+   *         double yd = rrho0 - fromY;
+   *         double rho = Math.sqrt(fromX * fromX + yd * yd);
+   *         double theta = Math.atan2(fromX, yd);
+   *         if (n < 0) {
+   *         rho *= -1.0;
+   *         }
+   *         toLat = Math.toDegrees(Math.asin((C - Math.pow((rho * n / EARTH_RADIUS), 2)) / (2 * n)));
+   * 
+   *         toLon = Math.toDegrees(theta / n + lon0);
+   * 
+   *         result.setLatitude(toLat);
+   *         result.setLongitude(toLon);
+   *         return result;
+   *         }
+   * 
+   * 
+   *         public Point2D.Double projectInverse(double xyx, double xyy, Point2D.Double out) {
+   *         double rho;
+   *         if ((rho = MapMath.distance(xyx, xyy = rho0 - xyy)) != 0) {
+   *         double lpphi, lplam;
+   *         if (n < 0.) {
+   *         rho = -rho;
+   *         xyx = -xyx;
+   *         xyy = -xyy;
+   *         }
+   *         lpphi = rho / dd;
+   *         if (!spherical) {
+   *         lpphi = (c - lpphi * lpphi) / n;
+   *         if (Math.abs(ec - Math.abs(lpphi)) > TOL7) {
+   *         if ((lpphi = phi1_(lpphi, e, one_es)) == Double.MAX_VALUE)
+   *         throw new ProjectionException("I");
+   *         } else
+   *         lpphi = lpphi < 0. ? -MapMath.HALFPI : MapMath.HALFPI;
+   *         } else if (Math.abs(out.y = (c - lpphi * lpphi) / n2) <= 1.)
+   *         lpphi = Math.asin(lpphi);
+   *         else
+   *         lpphi = lpphi < 0. ? -MapMath.HALFPI : MapMath.HALFPI;
+   *         lplam = Math.atan2(xyx, xyy) / n;
+   *         out.x = lplam;
+   *         out.y = lpphi;
+   *         } else {
+   *         out.x = 0.;
+   *         out.y = n > 0. ? MapMath.HALFPI : - MapMath.HALFPI;
+   *         }
+   *         return out;
+   *         }
+   */
+
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
-    double fromX = world.getX() - falseEasting;
-    double fromY = world.getY() - falseNorthing;
-    double rrho0 = rho0;
-
-    if (n < 0) {
-      rrho0 *= -1.0;
-      fromX *= -1.0;
-      fromY *= -1.0;
-    }
-
-    double yd = rrho0 - fromY;
-    double rho = Math.sqrt(fromX * fromX + yd * yd);
-    double theta = Math.atan2(fromX, yd);
-    if (n < 0) {
-      rho *= -1.0;
-    }
-    toLat = Math.toDegrees(Math.asin((C - Math.pow((rho * n / EARTH_RADIUS), 2)) / (2 * n)));
-
-    toLon = Math.toDegrees(theta / n + lon0);
-
-    result.setLatitude(toLat);
-    result.setLongitude(toLon);
-    return result;
-  }
-
-
-  public Point2D.Double projectInverse(double xyx, double xyy, Point2D.Double out) {
-  double rho;
-  if ((rho = MapMath.distance(xyx, xyy = rho0 - xyy)) != 0) {
-    double lpphi, lplam;
-    if (n < 0.) {
-      rho = -rho;
-      xyx = -xyx;
-      xyy = -xyy;
-    }
-    lpphi =  rho / dd;
-    if (!spherical) {
-      lpphi = (c - lpphi * lpphi) / n;
-      if (Math.abs(ec - Math.abs(lpphi)) > TOL7) {
-        if ((lpphi = phi1_(lpphi, e, one_es)) == Double.MAX_VALUE)
-          throw new ProjectionException("I");
-      } else
-        lpphi = lpphi < 0. ? -MapMath.HALFPI : MapMath.HALFPI;
-    } else if (Math.abs(out.y = (c - lpphi * lpphi) / n2) <= 1.)
-      lpphi = Math.asin(lpphi);
-    else
-      lpphi = lpphi < 0. ? -MapMath.HALFPI : MapMath.HALFPI;
-    lplam = Math.atan2(xyx, xyy) / n;
-    out.x = lplam;
-    out.y = lpphi;
-  } else {
-    out.x = 0.;
-    out.y = n > 0. ? MapMath.HALFPI : - MapMath.HALFPI;
-  }
-  return out;
-}  */
-
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
-    double toLat, toLon;
-    double fromX = (world.getX() - falseEasting) / totalScale;  // assumes cartesion coords in km
+    double fromX = (world.getX() - falseEasting) / totalScale; // assumes cartesion coords in km
     double fromY = (world.getY() - falseNorthing) / totalScale;
 
     fromY = rho0 - fromY;
@@ -503,7 +523,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
         lpphi = (c - lpphi * lpphi) / n;
         if (Math.abs(ec - Math.abs(lpphi)) > TOL7) {
           if (Math.abs(lpphi) > 2.0)
-            throw new IllegalArgumentException("AlbersEqualAreaEllipse x,y="+world);
+            throw new IllegalArgumentException("AlbersEqualAreaEllipse x,y=" + world);
 
           lpphi = phi1_(lpphi, e, one_es);
           if (lpphi == Double.MAX_VALUE)
@@ -522,7 +542,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
       }
 
       toLon = Math.atan2(fromX, fromY) / n;
-      //coverity[swapped_arguments]
+      // coverity[swapped_arguments]
       toLat = lpphi;
     }
 
@@ -544,9 +564,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
       cospi = Math.cos(phi);
       con = Te * sinpi;
       com = 1. - con * con;
-      dphi = .5 * com * com / cospi * (qs / Tone_es -
-              sinpi / com + .5 / Te * Math.log((1. - con) /
-              (1. + con)));
+      dphi = .5 * com * com / cospi * (qs / Tone_es - sinpi / com + .5 / Te * Math.log((1. - con) / (1. + con)));
       phi += dphi;
     } while (Math.abs(dphi) > TOL && --countIter != 0);
 

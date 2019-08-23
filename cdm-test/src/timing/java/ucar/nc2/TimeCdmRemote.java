@@ -8,7 +8,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamReader;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,7 +28,8 @@ public class TimeCdmRemote {
 
   static void testAllInDir(File dir, MClosure closure) throws IOException, InvalidRangeException {
     File[] fa = dir.listFiles();
-    if (fa == null || fa.length == 0) return;
+    if (fa == null || fa.length == 0)
+      return;
 
     List<File> list = Arrays.asList(fa);
     Collections.sort(list);
@@ -43,17 +43,20 @@ public class TimeCdmRemote {
     }
   }
 
-  static long readAllData( NetcdfFile ncfile) {
+  static long readAllData(NetcdfFile ncfile) {
     long bytes = 0;
     try {
       for (Variable v : ncfile.getVariables()) {
         if (v.getSize() > max_size) {
           Section s = makeSubset(v);
-          if (verbose) System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+          if (verbose)
+            System.out.println(
+                "  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
           Array data = v.read(s);
           bytes += data.getSizeBytes();
         } else {
-          if (verbose) System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+          if (verbose)
+            System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
           Array data = v.read();
           bytes += data.getSizeBytes();
         }
@@ -67,6 +70,7 @@ public class TimeCdmRemote {
   static boolean show = false;
   static boolean verbose = false;
   static int max_size = 1000 * 1000 * 10;
+
   static Section makeSubset(Variable v) throws InvalidRangeException {
     int[] shape = v.getShape();
     shape[0] = 1;
@@ -80,57 +84,64 @@ public class TimeCdmRemote {
   static void testRead(String filename, Stat stat, boolean readData) throws IOException, InvalidRangeException {
     long bytes = 0;
     long start = System.nanoTime();
-    if (show) System.out.printf("%n------Reading filename %s (%s)%n", filename, stat.getName());
+    if (show)
+      System.out.printf("%n------Reading filename %s (%s)%n", filename, stat.getName());
 
-    try ( NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
-      if (readData) bytes = readAllData(ncfile);
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+      if (readData)
+        bytes = readAllData(ncfile);
       long end = System.nanoTime();
-      double took = ((double)(end - start)) / 1000 / 1000 / 1000; // secs
+      double took = ((double) (end - start)) / 1000 / 1000 / 1000; // secs
       double rate = 0;
       ncfile.close();
       if (stat != null && bytes > 0) {
-        rate = bytes/took/1000/1000;
+        rate = bytes / took / 1000 / 1000;
         stat.sample(rate); // Mb/sec
       }
-      if (show) System.out.printf(" bytes = %d took =%f secs rate=%f MB/sec%n", bytes, took, rate);
+      if (show)
+        System.out.printf(" bytes = %d took =%f secs rate=%f MB/sec%n", bytes, took, rate);
     }
   }
 
   static String server = "//localhost:8081/thredds";
-  static void compare(String url, Stat statCdm, Stat statDods, int n, boolean readData) throws IOException, InvalidRangeException {
-    for (int i=0; i<n; i++) {
-      testRead("cdmremote:"+server+"/cdmremote/"+url, statCdm, readData);
-      testRead("dods:"+server+"/dodsC/"+url, statDods, readData);
+
+  static void compare(String url, Stat statCdm, Stat statDods, int n, boolean readData)
+      throws IOException, InvalidRangeException {
+    for (int i = 0; i < n; i++) {
+      testRead("cdmremote:" + server + "/cdmremote/" + url, statCdm, readData);
+      testRead("dods:" + server + "/dodsC/" + url, statDods, readData);
     }
 
-    for (int i=0; i<n; i++) {
-      testRead("dods:"+server+"/dodsC/"+url, statDods, readData);
-      testRead("cdmremote:"+server+"/cdmremote/"+url, statCdm, readData);
+    for (int i = 0; i < n; i++) {
+      testRead("dods:" + server + "/dodsC/" + url, statDods, readData);
+      testRead("cdmremote:" + server + "/cdmremote/" + url, statCdm, readData);
     }
   }
 
-  static void testDodsCompress(String url, Stat statCompress, Stat statNone, int n, boolean readData) throws IOException, InvalidRangeException {
-    for (int i=0; i<n; i++) {
+  static void testDodsCompress(String url, Stat statCompress, Stat statNone, int n, boolean readData)
+      throws IOException, InvalidRangeException {
+    for (int i = 0; i < n; i++) {
       DODSNetcdfFile.setAllowCompression(false);
       testRead("dods:" + server + "/dodsC/" + url, statNone, readData);
       DODSNetcdfFile.setAllowCompression(true);
-      testRead("dods:"+server+"/dodsC/"+url, statCompress, readData);
+      testRead("dods:" + server + "/dodsC/" + url, statCompress, readData);
     }
   }
 
-  static void testCdmremoteCompress(String url, Stat statCompress, Stat statNone, int n, boolean readData) throws IOException, InvalidRangeException {
-    for (int i=0; i<n; i++) {
+  static void testCdmremoteCompress(String url, Stat statCompress, Stat statNone, int n, boolean readData)
+      throws IOException, InvalidRangeException {
+    for (int i = 0; i < n; i++) {
       CdmRemote.setAllowCompression(false);
       testRead("cdmremote:" + server + "/cdmremote/" + url, statNone, readData);
       CdmRemote.setAllowCompression(true);
-      testRead("cdmremote:"+server+"/cdmremote/"+url, statCompress, readData);
+      testRead("cdmremote:" + server + "/cdmremote/" + url, statCompress, readData);
     }
     System.out.printf(" compression ratio = %f%n", NcStreamReader.getCompression(true));
   }
 
   static void testCdmremote(String url, Stat tstat, int n, boolean readData) throws IOException, InvalidRangeException {
     Stat stat = new Stat(tstat.getName(), false);
-    for (int i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
       testRead("cdmremote:" + server + "/cdmremote/" + url, stat, readData);
     }
     System.out.printf(" %s MB/sec%n", stat);
@@ -171,7 +182,7 @@ public class TimeCdmRemote {
     doOne("scanCdmUnitTests/conventions/cf/bora_feb_001.nc", stat1, stat2);
     doOne("scanCdmUnitTests/conventions/cf/ccsm2.nc", stat1, stat2);
 
-    System.out.printf("%n %s MB/sec%n",stat1);
+    System.out.printf("%n %s MB/sec%n", stat1);
     // System.out.printf(" %s MB/sec%n", stat2);
   }
 }

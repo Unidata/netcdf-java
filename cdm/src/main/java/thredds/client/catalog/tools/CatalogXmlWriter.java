@@ -8,13 +8,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.output.XMLOutputter;
-
 import thredds.client.catalog.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,9 +29,11 @@ import java.util.List;
  */
 public class CatalogXmlWriter {
   static private boolean useBytesForDataSize = false;
+
   static public void useBytesForDataSize(boolean b) {
     useBytesForDataSize = b;
   }
+
   static private final String version = "1.2";
 
   ////////////////////////////////////////////////////////////////////////
@@ -43,8 +43,8 @@ public class CatalogXmlWriter {
    * Write the catalog as an XML document to the specified stream.
    *
    * @param catalog write this catalog
-   * @param os      write to this OutputStream
-   * @param raw     write raw file if true (for server configuration)
+   * @param os write to this OutputStream
+   * @param raw write raw file if true (for server configuration)
    */
   public void writeXML(Catalog catalog, OutputStream os, boolean raw) throws IOException {
     this.raw = raw;
@@ -53,7 +53,7 @@ public class CatalogXmlWriter {
   }
 
   public String writeXML(Catalog catalog) throws IOException {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream(100*1000);
+    ByteArrayOutputStream bos = new ByteArrayOutputStream(100 * 1000);
     writeXML(catalog, bos);
     this.raw = false;
     return new String(bos.toByteArray(), CDM.utf8Charset);
@@ -63,15 +63,15 @@ public class CatalogXmlWriter {
    * Write the catalog as an XML document to the specified stream.
    *
    * @param catalog write this catalog
-   * @param os      write to this OutputStream
+   * @param os write to this OutputStream
    */
   public void writeXML(Catalog catalog, OutputStream os) throws IOException {
     // Output the document, use standard formatter
-    //XMLOutputter fmt = new XMLOutputter();
-    //fmt.setNewlines(true);
-    //fmt.setIndent("  ");
-    //fmt.setTrimAllWhite( true);
-    XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat());  // LOOK maybe compact ??
+    // XMLOutputter fmt = new XMLOutputter();
+    // fmt.setNewlines(true);
+    // fmt.setIndent(" ");
+    // fmt.setTrimAllWhite( true);
+    XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat()); // LOOK maybe compact ??
     fmt.output(writeCatalog(catalog), os);
   }
 
@@ -94,14 +94,16 @@ public class CatalogXmlWriter {
       rootElem.addContent(writeService(service));
     }
 
-    /* dataset roots
-    if (raw) {
-      iter = cat.getDatasetRoots().iterator();
-      while (iter.hasNext()) {
-        Property p = (Property) iter.next();
-        rootElem.addContent(writeDatasetRoot(p));
-      }
-    } */
+    /*
+     * dataset roots
+     * if (raw) {
+     * iter = cat.getDatasetRoots().iterator();
+     * while (iter.hasNext()) {
+     * Property p = (Property) iter.next();
+     * rootElem.addContent(writeDatasetRoot(p));
+     * }
+     * }
+     */
 
     // properties
     iter = cat.getProperties().iterator();
@@ -172,11 +174,13 @@ public class CatalogXmlWriter {
   private Element writeDataset(Dataset ds) {
     Element dsElem = new Element("dataset", Catalog.defNS);
 
-    /* if (ds instanceof DatasetProxy) {
-      dsElem.setAttribute("name", ((DatasetProxy) ds).getAliasName());
-      dsElem.setAttribute("alias", ds.getID());
-      return dsElem;
-    } */
+    /*
+     * if (ds instanceof DatasetProxy) {
+     * dsElem.setAttribute("name", ((DatasetProxy) ds).getAliasName());
+     * dsElem.setAttribute("alias", ds.getID());
+     * return dsElem;
+     * }
+     */
 
     writeDatasetInfo(ds, dsElem, true, raw);
 
@@ -185,7 +189,8 @@ public class CatalogXmlWriter {
 
   private void writeDatasetInfo(Dataset ds, Element dsElem, boolean doNestedDatasets, boolean showNcML) {
     String name = ds.getName();
-    if (name == null) name = ""; // eg catrefs
+    if (name == null)
+      name = ""; // eg catrefs
     dsElem.setAttribute("name", name);
 
     // other attributes, note the others get made into an element
@@ -200,37 +205,42 @@ public class CatalogXmlWriter {
     if (ds.getRestrictAccess() != null)
       dsElem.setAttribute("restrictAccess", ds.getRestrictAccess());
 
-    /* services (local only)
-    for (Service service : ds.getServices()) {
-      dsElem.addContent(writeService(service));
-    } */
+    /*
+     * services (local only)
+     * for (Service service : ds.getServices()) {
+     * dsElem.addContent(writeService(service));
+     * }
+     */
 
     // thredds metadata
     writeThreddsMetadata(dsElem, ds);
     writeInheritedMetadata(dsElem, ds);
 
-    // access  (local only)
+    // access (local only)
     List<Access> access = (List<Access>) ds.getLocalFieldAsList(Dataset.Access);
     for (Access a : access) {
-      dsElem.addContent(writeAccess( a));
+      dsElem.addContent(writeAccess(a));
     }
 
-    /* if (showNcML && ds.getNcmlElement() != null) {
-      org.jdom2.Element ncml = ds.getNcmlElement().clone();
-      ncml.detach();
-      dsElem.addContent(ncml);
-    } */
+    /*
+     * if (showNcML && ds.getNcmlElement() != null) {
+     * org.jdom2.Element ncml = ds.getNcmlElement().clone();
+     * ncml.detach();
+     * dsElem.addContent(ncml);
+     * }
+     */
 
-    if (!doNestedDatasets) return;
+    if (!doNestedDatasets)
+      return;
 
     // nested datasets
     for (Dataset nested : ds.getDatasetsLocal()) {
-     // if (nested instanceof DatasetScan)
-     //   dsElem.addContent(writeDatasetScan((DatasetScan) nested));
+      // if (nested instanceof DatasetScan)
+      // dsElem.addContent(writeDatasetScan((DatasetScan) nested));
       if (nested instanceof CatalogRef)
         dsElem.addContent(writeCatalogRef((CatalogRef) nested));
       else
-        dsElem.addContent(writeDataset( nested));
+        dsElem.addContent(writeDataset(nested));
     }
   }
 
@@ -274,14 +284,16 @@ public class CatalogXmlWriter {
     if (gc.getUpDownRange() != null)
       writeGeospatialRange(elem, new Element("updown", Catalog.defNS), gc.getUpDownRange());
 
-    /* serialize isGlobal
-    java.util.List<ThreddsMetadata.Vocab> names = gc.getNames();
-    ThreddsMetadata.Vocab global = new ThreddsMetadata.Vocab("global", null);
-    if (gc.isGlobal() && !names.contains(global)) {
-      names.add(global);
-    } else if (!gc.isGlobal() && names.contains(global)) {
-      names.remove(global);
-    } */
+    /*
+     * serialize isGlobal
+     * java.util.List<ThreddsMetadata.Vocab> names = gc.getNames();
+     * ThreddsMetadata.Vocab global = new ThreddsMetadata.Vocab("global", null);
+     * if (gc.isGlobal() && !names.contains(global)) {
+     * names.add(global);
+     * } else if (!gc.isGlobal() && names.contains(global)) {
+     * names.remove(global);
+     * }
+     */
 
     for (ThreddsMetadata.Vocab name : gc.getNames()) {
       elem.addContent(writeControlledVocabulary(name, "name"));
@@ -291,7 +303,8 @@ public class CatalogXmlWriter {
   }
 
   private void writeGeospatialRange(Element parent, Element elem, ThreddsMetadata.GeospatialRange r) {
-    if (r == null) return;
+    if (r == null)
+      return;
 
     elem.addContent(new Element("start", Catalog.defNS).setText(Double.toString(r.getStart())));
     elem.addContent(new Element("size", Catalog.defNS).setText(Double.toString(r.getSize())));
@@ -358,7 +371,7 @@ public class CatalogXmlWriter {
     String svctype = service.getServiceTypeName();
     serviceElem.setAttribute("serviceType", svctype);
     String base = service.getBase();
-    if("compound".equalsIgnoreCase(svctype) && base == null)
+    if ("compound".equalsIgnoreCase(svctype) && base == null)
       base = ""; // Add some error tolerance
     serviceElem.setAttribute("base", base);
     if ((service.getSuffix() != null) && (service.getSuffix().length() > 0))
@@ -374,12 +387,14 @@ public class CatalogXmlWriter {
       serviceElem.addContent(writeService(nested));
     }
 
-    /* dataset roots
-    if (raw) {
-      for (Property p : service.getDatasetRoots()) {
-        serviceElem.addContent(writeDatasetRoot(p));
-      }
-    } */
+    /*
+     * dataset roots
+     * if (raw) {
+     * for (Property p : service.getDatasetRoots()) {
+     * serviceElem.addContent(writeDatasetRoot(p));
+     * }
+     * }
+     */
 
     return serviceElem;
   }
@@ -422,22 +437,25 @@ public class CatalogXmlWriter {
     return sizeElem;
   }
 
-  /* protected void writeCat6InheritedMetadata( Element elem, ThreddsMetadata tmi) {
-    if ((tmi.getDataType() == null) && (tmi.getServiceName() == null) &&
-        (tmi.getAuthority() == null) && ( tmi.getProperties().size() == 0))
-      return;
-
-    Element mdataElem = new Element("metadata", Catalog.defNS);
-    mdataElem.setAttribute("inherited", "true");
-    writeThreddsMetadata( mdataElem, tmi);
-    elem.addContent( mdataElem);
-  }  */
+  /*
+   * protected void writeCat6InheritedMetadata( Element elem, ThreddsMetadata tmi) {
+   * if ((tmi.getDataType() == null) && (tmi.getServiceName() == null) &&
+   * (tmi.getAuthority() == null) && ( tmi.getProperties().size() == 0))
+   * return;
+   * 
+   * Element mdataElem = new Element("metadata", Catalog.defNS);
+   * mdataElem.setAttribute("inherited", "true");
+   * writeThreddsMetadata( mdataElem, tmi);
+   * elem.addContent( mdataElem);
+   * }
+   */
 
   protected void writeInheritedMetadata(Element elem, Dataset ds) {
     Element mdataElem = new Element("metadata", Catalog.defNS);
     mdataElem.setAttribute("inherited", "true");
     ThreddsMetadata tmi = (ThreddsMetadata) ds.getLocalField(Dataset.ThreddsMetadataInheritable);
-    if (tmi == null) return;
+    if (tmi == null)
+      return;
     writeThreddsMetadata(mdataElem, tmi);
     if (mdataElem.getChildren().size() > 0)
       elem.addContent(mdataElem);
@@ -477,12 +495,13 @@ public class CatalogXmlWriter {
     if (dataSize != null && dataSize > 0)
       elem.addContent(writeDataSize(dataSize));
 
-    List<Documentation> docList =  (List<Documentation>) ds.getLocalFieldAsList(Dataset.Documentation);
+    List<Documentation> docList = (List<Documentation>) ds.getLocalFieldAsList(Dataset.Documentation);
     for (Documentation doc : docList) {
       elem.addContent(writeDocumentation(doc, "documentation"));
     }
 
-    List<ThreddsMetadata.Contributor> contribList = (List<ThreddsMetadata.Contributor>) ds.getLocalFieldAsList(Dataset.Contributors);
+    List<ThreddsMetadata.Contributor> contribList =
+        (List<ThreddsMetadata.Contributor>) ds.getLocalFieldAsList(Dataset.Contributors);
     for (ThreddsMetadata.Contributor c : contribList) {
       elem.addContent(writeContributor(c));
     }
@@ -497,7 +516,8 @@ public class CatalogXmlWriter {
       elem.addContent(writeControlledVocabulary(v, "keyword"));
     }
 
-    List<ThreddsMetadata.MetadataOther> mdList = (List<ThreddsMetadata.MetadataOther>) ds.getLocalFieldAsList(Dataset.MetadataOther);
+    List<ThreddsMetadata.MetadataOther> mdList =
+        (List<ThreddsMetadata.MetadataOther>) ds.getLocalFieldAsList(Dataset.MetadataOther);
     for (ThreddsMetadata.MetadataOther m : mdList) {
       elem.addContent(writeMetadata(m));
     }
@@ -522,7 +542,8 @@ public class CatalogXmlWriter {
       elem.addContent(writeDate("date", d));
     }
 
-    ThreddsMetadata.GeospatialCoverage gc = (ThreddsMetadata.GeospatialCoverage) ds.getLocalField(Dataset.GeospatialCoverage);
+    ThreddsMetadata.GeospatialCoverage gc =
+        (ThreddsMetadata.GeospatialCoverage) ds.getLocalField(Dataset.GeospatialCoverage);
     if (gc != null)
       elem.addContent(writeGeospatialCoverage(gc));
 
@@ -530,7 +551,8 @@ public class CatalogXmlWriter {
     if (tc != null)
       elem.addContent(writeTimeCoverage(tc));
 
-    List<ThreddsMetadata.VariableGroup> varList = (List<ThreddsMetadata.VariableGroup>) ds.getLocalFieldAsList(Dataset.VariableGroups);
+    List<ThreddsMetadata.VariableGroup> varList =
+        (List<ThreddsMetadata.VariableGroup>) ds.getLocalFieldAsList(Dataset.VariableGroups);
     for (ThreddsMetadata.VariableGroup v : varList) {
       elem.addContent(writeVariables(v));
     }

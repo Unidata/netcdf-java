@@ -22,7 +22,7 @@ public class Section {
    * A section with no nulls is called "filled".
    * If s is already filled, return it, otherwise return a new Section, filled from the shape.
    *
-   * @param s     the original Section, may be null or not filled
+   * @param s the original Section, may be null or not filled
    * @param shape use this as default shape if any of the ranges are null.
    * @return a filled Section
    * @throws InvalidRangeException if shape and s and shape rank dont match, or if s has invalid range compared to shape
@@ -40,7 +40,8 @@ public class Section {
     boolean ok = true;
     for (int i = 0; i < shape.length; i++)
       ok &= (s.getRange(i) != null);
-    if (ok) return s;
+    if (ok)
+      return s;
 
     // fill in any nulls
     return new Section(s.getRanges(), shape);
@@ -83,7 +84,7 @@ public class Section {
    * Create Section from a shape and origin arrays.
    *
    * @param origin array of start for each Range
-   * @param shape  array of lengths for each Range
+   * @param shape array of lengths for each Range
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
@@ -103,7 +104,7 @@ public class Section {
    * Create Section from a shape, origin, and stride arrays.
    *
    * @param origin array of start for each Range
-   * @param size   array of lengths for each Range (last = origin + size -1)
+   * @param size array of lengths for each Range (last = origin + size -1)
    * @param stride stride between consecutive elements, must be > 0
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
@@ -152,7 +153,7 @@ public class Section {
   /**
    * Create Section from a List<Range>.
    *
-   * @param from  the list of Range
+   * @param from the list of Range
    * @param shape use this as default shape if any of the ranges are null.
    * @throws InvalidRangeException if shape and range list dont match
    */
@@ -166,6 +167,7 @@ public class Section {
    * A null Range means "all" (i.e.":") indices in that dimension.
    * <p/>
    * The sectionSpec string uses fortran90 array section syntax, namely:
+   * 
    * <pre>
    *   sectionSpec := dims
    *   dims := dim | dim, dims
@@ -186,7 +188,7 @@ public class Section {
    * </pre>
    *
    * @param sectionSpec the token to parse, eg "(1:20,:,3,10:20:2)", parenthesis optional
-   * @throws InvalidRangeException    when the Range is illegal
+   * @throws InvalidRangeException when the Range is illegal
    * @throws IllegalArgumentException when sectionSpec is misformed
    */
   public Section(String sectionSpec) throws InvalidRangeException {
@@ -194,7 +196,7 @@ public class Section {
     list = new ArrayList<>();
     Range range;
 
-    StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),");  // LOOK deal with scatterRange {1,2,3}
+    StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),"); // LOOK deal with scatterRange {1,2,3}
     while (stoke.hasMoreTokens()) {
       String s = stoke.nextToken().trim();
       if (s.equals(":"))
@@ -208,7 +210,7 @@ public class Section {
           throw new IllegalArgumentException(" illegal selector: " + s + " part of <" + sectionSpec + ">");
         }
 
-      } else {  // gotta be "start : end" or "start : end : stride"
+      } else { // gotta be "start : end" or "start : end : stride"
         StringTokenizer stoke2 = new StringTokenizer(s, ":");
         String s1 = stoke2.nextToken();
         String s2 = stoke2.nextToken();
@@ -248,33 +250,37 @@ public class Section {
    * first = first/stride, last=last/stride, stride=1.
    *
    * @return compacted Section
+   * 
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    *
-  public Section removeVlen() throws InvalidRangeException {
-    boolean need = false;
-    for (Range r : list) {
-      if (r == Range.VLEN) need = true;
-    }
-    if (!need) return this;
-
-    List<Range> results = new ArrayList<>(getRank());
-    for (Range r : list) {
-      if (r != Range.VLEN) results.add(r);
-    }
-    return new Section(results);
-  } */
+   * public Section removeVlen() throws InvalidRangeException {
+   * boolean need = false;
+   * for (Range r : list) {
+   * if (r == Range.VLEN) need = true;
+   * }
+   * if (!need) return this;
+   * 
+   * List<Range> results = new ArrayList<>(getRank());
+   * for (Range r : list) {
+   * if (r != Range.VLEN) results.add(r);
+   * }
+   * return new Section(results);
+   * }
+   */
 
 
   /**
    * Create a new Section by composing with a Section that is reletive to this Section.
    *
-   * @param want Section reletive to this one. If null, return this. If individual ranges are null, use corresponding Range in this.
+   * @param want Section reletive to this one. If null, return this. If individual ranges are null, use corresponding
+   *        Range in this.
    * @return new Section, composed
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank(), or invalid component Range
    */
   public Section compose(Section want) throws InvalidRangeException {
     // all nulls
-    if (want == null) return this; // LOOK maybe a copy ??
+    if (want == null)
+      return this; // LOOK maybe a copy ??
 
     if (want.getRank() != getRank())
       throw new InvalidRangeException("Invalid Section rank");
@@ -318,6 +324,7 @@ public class Section {
 
   /**
    * Compute the element offset of an intersecting subrange of this.
+   * 
    * @param intersect the subrange
    * @return element offset
    */
@@ -454,7 +461,8 @@ public class Section {
     Formatter sbuff = new Formatter();
     for (int i = 0; i < list.size(); i++) {
       Range r = list.get(i);
-      if (i > 0) sbuff.format(",");
+      if (i > 0)
+        sbuff.format(",");
       if (r == null)
         sbuff.format(":");
       else {
@@ -468,7 +476,8 @@ public class Section {
     Formatter sbuff = new Formatter();
     for (int i = 0; i < list.size(); i++) {
       Range r = list.get(i);
-      if (i > 0) sbuff.format("%n");
+      if (i > 0)
+        sbuff.format("%n");
       if (r == null)
         sbuff.format(":");
       else {
@@ -496,7 +505,8 @@ public class Section {
    * @return this
    */
   public Section appendRange() {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     list.add(null);
     return this;
   }
@@ -507,7 +517,8 @@ public class Section {
    * @return this
    */
   public Section appendRange(Range r) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     list.add(r);
     return this;
   }
@@ -519,7 +530,8 @@ public class Section {
    * @return this
    */
   public Section appendRange(int size) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     if (size > 0)
       list.add(new Range(size));
     else if (size == 0)
@@ -533,12 +545,13 @@ public class Section {
    * Append a new Range(first, last) to the Section
    *
    * @param first starting index
-   * @param last  last index, inclusive
+   * @param last last index, inclusive
    * @return this
    * @throws InvalidRangeException if last < first
    */
   public Section appendRange(int first, int last) throws InvalidRangeException {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     if (last < 0)
       list.add(Range.VLEN);
     else
@@ -549,14 +562,15 @@ public class Section {
   /**
    * Append a new Range(first,last,stride) to the Section
    *
-   * @param first  starting index
-   * @param last   last index, inclusive
+   * @param first starting index
+   * @param last last index, inclusive
    * @param stride stride
    * @return this
    * @throws InvalidRangeException if last < first
    */
   public Section appendRange(int first, int last, int stride) throws InvalidRangeException {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     list.add(new Range(first, last, stride));
     return this;
   }
@@ -564,15 +578,16 @@ public class Section {
   /**
    * Append a new Range(name,first,last,stride) to the Section
    *
-   * @param name   name of Range
-   * @param first  starting index
-   * @param last   last index, inclusive
+   * @param name name of Range
+   * @param first starting index
+   * @param last last index, inclusive
    * @param stride stride
    * @return this
    * @throws InvalidRangeException if last < first
    */
   public Section appendRange(String name, int first, int last, int stride) throws InvalidRangeException {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     list.add(new Range(name, first, last, stride));
     return this;
   }
@@ -581,12 +596,13 @@ public class Section {
    * Insert a range at the specified index in the list.
    *
    * @param index insert here in the list, existing ranges at or after this index get shifted by one
-   * @param r     insert this Range
+   * @param r insert this Range
    * @return this
    * @throws IndexOutOfBoundsException if bad index
    */
   public Section insertRange(int index, Range r) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     list.add(index, r);
     return this;
   }
@@ -599,7 +615,8 @@ public class Section {
    * @throws IndexOutOfBoundsException if bad index
    */
   public Section removeRange(int index) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     list.remove(index);
     return this;
   }
@@ -608,12 +625,13 @@ public class Section {
    * Set the range at the specified index in the list, previous Range is discarded
    *
    * @param index list index, must be in interval [0,size).
-   * @param r     insert this Range
+   * @param r insert this Range
    * @return this
    * @throws IndexOutOfBoundsException if bad index
    */
   public Section setRange(int index, Range r) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     list.set(index, r);
     return this;
   }
@@ -622,12 +640,13 @@ public class Section {
    * Replace a range at the specified index in the list.
    *
    * @param index replace here in the list.
-   * @param r     use this Range
+   * @param r use this Range
    * @return this
    * @throws IndexOutOfBoundsException if bad index
    */
   public Section replaceRange(int index, Range r) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     list.set(index, r);
     return this;
   }
@@ -638,12 +657,15 @@ public class Section {
    * @return new Section if any Range had length 1, else this
    */
   public Section reduce() {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     boolean needed = false;
     for (Range r : list) {
-      if (r.length() == 1) needed = true;
+      if (r.length() == 1)
+        needed = true;
     }
-    if (!needed) return this;
+    if (!needed)
+      return this;
 
     List<Range> newList = list.stream().filter(r -> r.length() > 1).collect(Collectors.toList());
     return new Section(newList);
@@ -657,7 +679,8 @@ public class Section {
    * @throws InvalidRangeException if rank is wrong
    */
   public void setDefaults(int[] shape) throws InvalidRangeException {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     if (shape.length != list.size())
       throw new InvalidRangeException(" shape[] must have same rank as Section");
 
@@ -682,7 +705,8 @@ public class Section {
    * @return this Section
    */
   public Section makeImmutable() {
-    if (immutable) return this;
+    if (immutable)
+      return this;
     immutable = true;
     list = Collections.unmodifiableList(list);
     return this;
@@ -693,17 +717,17 @@ public class Section {
 
 
   public Section subSection(int fromIndex, int endExclusive) {
-    return new Section( list.subList(fromIndex, endExclusive));
+    return new Section(list.subList(fromIndex, endExclusive));
   }
 
   public Section removeLast() {
     int size = list.size();
-    return subSection(size-2, size-1);
+    return subSection(size - 2, size - 1);
   }
 
   public Section removeVlen() {
     int size = list.size();
-    if (list.get(size-1) == Range.VLEN)
+    if (list.get(size - 1) == Range.VLEN)
       return removeLast();
     else
       return this;
@@ -712,12 +736,14 @@ public class Section {
   public Section removeFirst(Section parentSection) {
     int parentSize = parentSection.getRank();
     assert parentSize <= list.size();
-    if (parentSize == list.size()) return new Section(); // scalar
+    if (parentSize == list.size())
+      return new Section(); // scalar
     return subSection(parentSize, list.size());
   }
 
   public Section prepend(Section parentSection) {
-    if (parentSection == null) return this;
+    if (parentSection == null)
+      return this;
     List<Range> ranges = new ArrayList<>(parentSection.getRanges());
     ranges.addAll(getRanges());
     return new Section(ranges);
@@ -729,7 +755,8 @@ public class Section {
 
   public boolean isVariableLength() {
     for (Range aFrom : list)
-      if (aFrom == Range.VLEN) return true;
+      if (aFrom == Range.VLEN)
+        return true;
     return false;
   }
 
@@ -738,7 +765,8 @@ public class Section {
    */
   public boolean isStrided() {
     for (Range r : list) {
-      if (r != null && r.stride() != 1) return false;
+      if (r != null && r.stride() != 1)
+        return false;
     }
     return true;
   }
@@ -828,13 +856,15 @@ public class Section {
    */
   public boolean compatibleRank(Section other) {
     return (getRank() == other.getRank());
-      /*if((isVariableLength() && other.isVariableLength())
-          || (!isVariableLength() && !other.isVariableLength()))
-          return getRank() == other.getRank();
-      else if(isVariableLength() && !other.isVariableLength())
-          return getVlenRank() == other.getRank();
-      else // !isVariableLength() && other.isVariableLength()
-        return getRank() == other.getVlenRank(); */
+    /*
+     * if((isVariableLength() && other.isVariableLength())
+     * || (!isVariableLength() && !other.isVariableLength()))
+     * return getRank() == other.getRank();
+     * else if(isVariableLength() && !other.isVariableLength())
+     * return getVlenRank() == other.getRank();
+     * else // !isVariableLength() && other.isVariableLength()
+     * return getRank() == other.getVlenRank();
+     */
   }
 
   /**
@@ -846,7 +876,8 @@ public class Section {
   public long computeSize() {
     long product = 1;
     for (Range r : list) {
-      if (r == Range.VLEN) continue;
+      if (r == Range.VLEN)
+        continue;
       product *= r.length();
     }
     return product;
@@ -887,7 +918,8 @@ public class Section {
    */
   public Range find(String rangeName) {
     for (Range r : list) {
-      if (rangeName.equals(r.getName())) return r;
+      if (rangeName.equals(r.getName()))
+        return r;
     }
     return null;
   }
@@ -919,8 +951,10 @@ public class Section {
 
     for (int i = 0; i < list.size(); i++) {
       Range r = list.get(i);
-      if (r == null) continue;
-      if (r == Range.VLEN) continue;
+      if (r == null)
+        continue;
+      if (r == Range.VLEN)
+        continue;
       if (r == Range.EMPTY) {
         if (shape[i] != 0)
           return "Illegal Range for dimension " + i + ": empty range only for unlimited dimension len = 0";
@@ -948,27 +982,34 @@ public class Section {
 
     for (int i = 0; i < list.size(); i++) {
       Range r = list.get(i);
-      if (r == null) continue;
-      if (r.first() != 0) return false;
-      if (r.length() != shape[i]) return false;
+      if (r == null)
+        continue;
+      if (r.first() != 0)
+        return false;
+      if (r.length() != shape[i])
+        return false;
     }
     return true;
   }
 
   public boolean conformal(Section other) {
-    if (computeSize() != other.computeSize()) return false;
+    if (computeSize() != other.computeSize())
+      return false;
     Section reduceThis = this.reduce();
     Section reduceOther = other.reduce();
     return reduceThis.equalShape(reduceOther);
   }
 
   public boolean equalShape(Section other) {
-    if (computeSize() != other.computeSize()) return false;
-    if (getRank() != other.getRank()) return false;
+    if (computeSize() != other.computeSize())
+      return false;
+    if (getRank() != other.getRank())
+      return false;
     for (int i = 0; i < getRank(); i++) {
       Range r = getRange(i);
       Range or = other.getRange(i);
-      if (r.length() != or.length()) return false;
+      if (r.length() != or.length())
+        return false;
     }
     return true;
   }
@@ -977,18 +1018,25 @@ public class Section {
    * Sections with equals Ranges are equal.
    */
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Section)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof Section))
+      return false;
     Section os = (Section) o;
 
-    if (getRank() != os.getRank()) return false;
+    if (getRank() != os.getRank())
+      return false;
     for (int i = 0; i < getRank(); i++) {
       Range r = getRange(i);
       Range or = os.getRange(i);
-      if ((r == null) && (or != null)) return false;
-      if ((or == null) && (r != null)) return false;
-      if (r == null) continue;  // then or is also null
-      if (!r.equals(or)) return false;
+      if ((r == null) && (or != null))
+        return false;
+      if ((or == null) && (r != null))
+        return false;
+      if (r == null)
+        continue; // then or is also null
+      if (!r.equals(or))
+        return false;
     }
     return true;
   }
@@ -999,13 +1047,15 @@ public class Section {
   public int hashCode() {
     int result = 17;
     for (Range r : list)
-      if (r != null) result += 37 * result + r.hashCode();
+      if (r != null)
+        result += 37 * result + r.hashCode();
     return result;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /**
-   * Iterate over a section, returning the index in an equivalent 1D array of shape[], and optionally the corresponding index[n]
+   * Iterate over a section, returning the index in an equivalent 1D array of shape[], and optionally the corresponding
+   * index[n]
    * So this is a section in a (possibly) larger array described by shape[].
    * The index is in the "source" array.
    *
@@ -1017,14 +1067,15 @@ public class Section {
   }
 
   public class Iterator {
-    private int[] odo = new int[getRank()];  // odometer - the current element LOOK could use Index, but must upgrade to using Range
+    private int[] odo = new int[getRank()]; // odometer - the current element LOOK could use Index, but must upgrade to
+                                            // using Range
     private List<java.util.Iterator<Integer>> rangeIterList = new ArrayList<>();
     private int[] stride = new int[getRank()];
     private long done, total;
 
     Iterator(int[] shape) {
       int ss = 1;
-      for (int i = getRank() - 1; i >= 0; i--) {  // fastest varying last
+      for (int i = getRank() - 1; i >= 0; i--) { // fastest varying last
         stride[i] = ss;
         ss *= shape[i];
       }
@@ -1060,7 +1111,8 @@ public class Section {
         System.arraycopy(odo, 0, index, 0, odo.length);
 
       done++;
-      if (done < total) incr(); // increment for next call
+      if (done < total)
+        incr(); // increment for next call
       return next;
     }
 
@@ -1069,9 +1121,10 @@ public class Section {
      *
      * @return result index
      *
-    public int getResultIndex() {
-      return (int) done - 1;
-    } */
+     * public int getResultIndex() {
+     * return (int) done - 1;
+     * }
+     */
 
     private void incr() {
       int digit = getRank() - 1;

@@ -27,7 +27,7 @@ public interface EarthLocation {
    * Returns the longitude in some unit. The unit is very likely decimal degrees east, but we don't enforce that
    * anywhere.
    *
-   * @return  the longitude in some unit.
+   * @return the longitude in some unit.
    */
   // FIXME: Enforce the "decimal degrees east" unit in EarthLocationImpl and other subclasses.
   // Or, allow a different unit and make it available from EarthLocation.
@@ -38,19 +38,21 @@ public interface EarthLocation {
    * (via {@link PointFeature#getLocation()}), then the unit can be obtained by calling
    * {@code pointFeature.getFeatureCollection().getAltUnits()}.
    *
-   * @return  the altitude in some unit. A value of {@link Double#NaN} indicates "no altitude".
+   * @return the altitude in some unit. A value of {@link Double#NaN} indicates "no altitude".
    */
   // FIXME: Make the unit available from EarthLocation.
   double getAltitude();
 
   /**
    * Get the lat/lon location
+   * 
    * @return lat/lon location
    */
   LatLonPoint getLatLon();
 
   /**
    * Are either lat or lon missing?
+   * 
    * @return true if lat or lon is missing
    */
   boolean isMissing();

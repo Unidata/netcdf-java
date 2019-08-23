@@ -16,7 +16,6 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
 import ucar.ui.prefs.Debug;
-
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
@@ -41,23 +40,23 @@ public class GridRenderer {
 
   private ColorScale cs = null;
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
-  private ProjectionImpl drawProjection = null;    // current drawing Projection
-  private ProjectionImpl dataProjection = null;    // current GridDatatype Projection
+  private ProjectionImpl drawProjection = null; // current drawing Projection
+  private ProjectionImpl dataProjection = null; // current GridDatatype Projection
   private GridDatatype orgGrid = null;
   private GridDatatype stridedGrid = null;
 
   // data stuff
   private Array dataH, dataV;
-  private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
+  private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1; // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
-  private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1;   // last data read
-  private int lastRunTime = -1, lastEnsemble = -1;   // last data read
+  private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1; // last data read
+  private int lastRunTime = -1, lastEnsemble = -1; // last data read
   private GridDatatype lastGrid = null;
 
   // drawing optimization
   private boolean useModeForProjections = false; // use colorMode optimization for different projections
   private boolean sameProjection = false;
-  private LatLonProjection projectll;       // special handling for LatLonProjection
+  private LatLonProjection projectll; // special handling for LatLonProjection
 
   // working objects to minimize excessive gc
   private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
@@ -84,6 +83,7 @@ public class GridRenderer {
 
   /**
    * set the ColorScale data min/max type
+   * 
    * @param type MinMaxType
    */
   public void setDataMinMaxType(ColorScale.MinMaxType type) {
@@ -151,12 +151,12 @@ public class GridRenderer {
     this.drawGridLines = drawGrid;
   }
 
-  /* get whether countours  should be drawn */
+  /* get whether countours should be drawn */
   public boolean getDrawContours() {
     return drawContours;
   }
 
-  /* set whether countours  should be drawn */
+  /* set whether countours should be drawn */
   public void setDrawContours(boolean drawContours) {
     this.drawContours = drawContours;
   }
@@ -236,7 +236,7 @@ public class GridRenderer {
       try {
         stridedGrid = orgGrid.makeSubset(null, null, null, 1, horizStride, horizStride);
       } catch (InvalidRangeException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
       }
     } else {
       stridedGrid = orgGrid;
@@ -333,12 +333,14 @@ public class GridRenderer {
       return "";
 
     GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
-    /* CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
-    double x = (xaxis == null) ? 0.0 : xaxis.getCoordValue(lastSlice);
-    double y = loc.getX();
-    LatLonPointImpl lpt = dataProjection.projToLatLon(x, y);
-    sbuff.setLength(0);
-    sbuff.append(LatLonPointImpl.latToString(lpt.getLatitude(), 3)); */
+    /*
+     * CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
+     * double x = (xaxis == null) ? 0.0 : xaxis.getCoordValue(lastSlice);
+     * double y = loc.getX();
+     * LatLonPointImpl lpt = dataProjection.projToLatLon(x, y);
+     * sbuff.setLength(0);
+     * sbuff.append(LatLonPointImpl.latToString(lpt.getLatitude(), 3));
+     */
 
     StringBuilder sbuff = new StringBuilder();
     sbuff.setLength(0);
@@ -387,7 +389,7 @@ public class GridRenderer {
 
   private String makeXYZvalueStr(double value, int wantx, int wanty, int wantz) {
     if (stridedGrid.isMissingData(value)) {
-      //if (debugMiss) System.out.println("debug miss = "+value+" "+cs.getIndexFromValue(value));
+      // if (debugMiss) System.out.println("debug miss = "+value+" "+cs.getIndexFromValue(value));
       if (Debug.isSet("pick/showGridIndexes"))
         return ("missing data @ (" + wantx + "," + wanty + ")");
       else
@@ -458,20 +460,22 @@ public class GridRenderer {
 
   //////// data routines
 
-  /* get an x,y,z data volume for the given time
- private void makeDataVolume( GridDatatype g, int time) {
-   try {
-     dataVolume = g.readVolumeData( time);
-   } catch (java.io.IOException e) {
-     System.out.println("Error reading netcdf file "+e);
-     dataVolume = null;
-   }
-   lastGrid = g;
-   lastTime = time;
-   lastLevel = -1;  // invalidate
-   lastSlice = -1;  // invalidate
-   dataVolumeChanged = true;
- } */
+  /*
+   * get an x,y,z data volume for the given time
+   * private void makeDataVolume( GridDatatype g, int time) {
+   * try {
+   * dataVolume = g.readVolumeData( time);
+   * } catch (java.io.IOException e) {
+   * System.out.println("Error reading netcdf file "+e);
+   * dataVolume = null;
+   * }
+   * lastGrid = g;
+   * lastTime = time;
+   * lastLevel = -1; // invalidate
+   * lastSlice = -1; // invalidate
+   * dataVolumeChanged = true;
+   * }
+   */
 
   private Array makeHSlice(GridDatatype useG, int level, int time, int ensemble, int runtime) throws IOException {
 
@@ -479,14 +483,14 @@ public class GridRenderer {
     GridCoordSystem gcs = useG.getCoordinateSystem();
     CoordinateAxis xaxis = gcs.getXHorizAxis();
     CoordinateAxis yaxis = gcs.getYHorizAxis();
-    if ((xaxis == null) || (yaxis == null))    // doesnt exist
+    if ((xaxis == null) || (yaxis == null)) // doesnt exist
       return null;
     if ((xaxis.getSize() <= 1) || (yaxis.getSize() <= 1)) // LOOK ??
       return null;
 
     // make sure we need new one
     if (useG.equals(lastGrid) && (time == lastTime) && (level == lastLevel) && (horizStride == lastStride)
-            && (ensemble == lastEnsemble) && (runtime == lastRunTime))
+        && (ensemble == lastEnsemble) && (runtime == lastRunTime))
       return dataH; // nothing changed
 
     // get the data slice
@@ -500,12 +504,13 @@ public class GridRenderer {
     lastStride = horizStride;
 
     /*
-    CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-    if ((zaxis == null) || (zaxis.getSize() < 1)) {
-      dataH = dataVolume;  // volume is xy plane
-    } else {
-      dataH = dataVolume.slice(0, level);  // if z exists, always first (logical) dimension
-    } */
+     * CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+     * if ((zaxis == null) || (zaxis.getSize() < 1)) {
+     * dataH = dataVolume; // volume is xy plane
+     * } else {
+     * dataH = dataVolume.slice(0, level); // if z exists, always first (logical) dimension
+     * }
+     */
 
     if (debugArrayShape) {
       System.out.println("Horiz shape = ");
@@ -521,14 +526,14 @@ public class GridRenderer {
     GridCoordSystem gcs = g.getCoordinateSystem();
     CoordinateAxis xaxis = gcs.getXHorizAxis();
     CoordinateAxis zaxis = gcs.getVerticalAxis();
-    if ((xaxis == null) || (zaxis == null))    // doesnt exist
+    if ((xaxis == null) || (zaxis == null)) // doesnt exist
       return null;
     if ((xaxis.getSize() <= 1) || (zaxis.getSize() <= 1)) // LOOK ??
       return null;
 
     // make sure we need it
-    if (g.equals(lastGrid) && (time == lastTime) && (vSlice == lastSlice)
-            && (ensemble == lastEnsemble) && (runtime == lastRunTime))
+    if (g.equals(lastGrid) && (time == lastTime) && (vSlice == lastSlice) && (ensemble == lastEnsemble)
+        && (runtime == lastRunTime))
       return dataV; // nothing changed
 
     // get the slice
@@ -573,17 +578,18 @@ public class GridRenderer {
 
   // set colorscale limits, missing data
   private void setColorScaleParams() throws IOException {
-       if (dataMinMaxType == ColorScale.MinMaxType.hold && !isNewField)
+    if (dataMinMaxType == ColorScale.MinMaxType.hold && !isNewField)
       return;
     isNewField = false;
 
     Array dataArr = makeHSlice(stridedGrid, wantLevel, wantTime, wantEnsemble, wantRunTime);
 
-    //else
-    //  dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
+    // else
+    // dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
 
     if (dataArr != null) {
-      MAMath.MinMax minmax = stridedGrid.hasMissingData() ? stridedGrid.getMinMaxSkipMissingData(dataArr) : MAMath.getMinMax(dataArr);
+      MAMath.MinMax minmax =
+          stridedGrid.hasMissingData() ? stridedGrid.getMinMaxSkipMissingData(dataArr) : MAMath.getMinMax(dataArr);
       cs.setMinMax(minmax.min, minmax.max);
       cs.setGeoGrid(stridedGrid);
     }
@@ -592,7 +598,7 @@ public class GridRenderer {
   /**
    * Do the rendering to the given Graphics2D object.
    *
-   * @param g      Graphics2D object: has clipRect and AffineTransform set.
+   * @param g Graphics2D object: has clipRect and AffineTransform set.
    * @param dFromN transforms "Normalized Device" to Device coordinates
    */
   public void renderVertView(java.awt.Graphics2D g, AffineTransform dFromN) {
@@ -647,11 +653,10 @@ public class GridRenderer {
       long startTime = System.currentTimeMillis();
       ContourFeatureRenderer contourRendererV;
       try {
-        ContourGrid conGrid = new ContourGrid(dataV.transpose(0, 1), levels, yedges, zedges,
-                stridedGrid);
+        ContourGrid conGrid = new ContourGrid(dataV.transpose(0, 1), levels, yedges, zedges, stridedGrid);
         contourRendererV = new ContourFeatureRenderer(conGrid, null);
 
-        //contourRendererV.setProjection(drawProjection);
+        // contourRendererV.setProjection(drawProjection);
         contourRendererV.setColor(Color.black);
         contourRendererV.setShowLabels(drawContourLabels);
         contourRendererV.draw(g, dFromN);
@@ -666,14 +671,14 @@ public class GridRenderer {
     }
 
     if ((lastLevel >= 0) && (lastLevel < nz))
-      drawXORline(g, yaxis.getCoordEdge(0), zaxis.getCoordValue(lastLevel),
-              yaxis.getCoordEdge(ny), zaxis.getCoordValue(lastLevel));
+      drawXORline(g, yaxis.getCoordEdge(0), zaxis.getCoordValue(lastLevel), yaxis.getCoordEdge(ny),
+          zaxis.getCoordValue(lastLevel));
   }
 
   /**
    * Do the rendering to the given Graphics2D object.
    *
-   * @param g      Graphics2D object: has clipRect and AffineTransform set.
+   * @param g Graphics2D object: has clipRect and AffineTransform set.
    * @param dFromN transforms "Normalized Device" to Device coordinates
    */
   public void renderPlanView(java.awt.Graphics2D g, AffineTransform dFromN) throws IOException {
@@ -749,20 +754,21 @@ public class GridRenderer {
 
         // debug F:\data2\formats\hdf4\AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf
         if (false) {
-          double d1 = Math.abs(edgex.get(y, x) - edgex.get(y, x+1));
-          double d2 = Math.abs(edgex.get(y, x+1) - edgex.get(y+1, x+1));
-          double d3 = Math.abs(edgex.get(y+1, x+1) - edgex.get(y+1, x) );
-          double d4 = Math.abs(edgex.get(y+1, x) - edgex.get(y, x));
+          double d1 = Math.abs(edgex.get(y, x) - edgex.get(y, x + 1));
+          double d2 = Math.abs(edgex.get(y, x + 1) - edgex.get(y + 1, x + 1));
+          double d3 = Math.abs(edgex.get(y + 1, x + 1) - edgex.get(y + 1, x));
+          double d4 = Math.abs(edgex.get(y + 1, x) - edgex.get(y, x));
           if (Math.abs(d1) > 10 || Math.abs(d2) > 10 || Math.abs(d3) > 10 || Math.abs(d4) > 10) {
             System.out.printf("x=%d y=%d %n", x, y);
-            System.out.printf("%f %f %f %f %n", edgex.get(y, x), edgex.get(y, x + 1), edgex.get(y + 1, x), edgex.get(y + 1, x + 1));
+            System.out.printf("%f %f %f %f %n", edgex.get(y, x), edgex.get(y, x + 1), edgex.get(y + 1, x),
+                edgex.get(y + 1, x + 1));
 
-            System.out.printf("%n%s", NCdumpW.toString(edgex.slice(0,y+1), "row "+y, null));
-            System.out.printf("%n%s", NCdumpW.toString(edgex.slice(0,y+1), "row "+(y+1), null));
+            System.out.printf("%n%s", NCdumpW.toString(edgex.slice(0, y + 1), "row " + y, null));
+            System.out.printf("%n%s", NCdumpW.toString(edgex.slice(0, y + 1), "row " + (y + 1), null));
           }
         }
 
-        double val = data.getDouble(ima.set(y, x));   // ordering LOOK
+        double val = data.getDouble(ima.set(y, x)); // ordering LOOK
         int colorIndex = cs.getIndexFromValue(val);
         g.setColor(cs.getColor(colorIndex));
         g.fill(gp);
@@ -795,9 +801,9 @@ public class GridRenderer {
     int ny = shape[0];
     int nx = shape[1];
 
-    for (int y = 0; y < ny+1; y += 10) {
+    for (int y = 0; y < ny + 1; y += 10) {
       gp.reset();
-      for (int x = 0; x < nx+1; x++) {
+      for (int x = 0; x < nx + 1; x++) {
         if (x == 0)
           gp.moveTo((float) edgex.get(y, x), (float) edgey.get(y, x));
         else
@@ -806,9 +812,9 @@ public class GridRenderer {
       g.draw(gp);
     }
 
-    for (int x = 0; x < nx+1; x += 10) {
+    for (int x = 0; x < nx + 1; x += 10) {
       gp.reset();
-      for (int y = 0; y < ny+1; y++) {
+      for (int y = 0; y < ny + 1; y++) {
         if (y == 0)
           gp.moveTo((float) edgex.get(y, x), (float) edgey.get(y, x));
         else
@@ -819,7 +825,8 @@ public class GridRenderer {
 
   }
 
-  private void drawGridHorizRotated(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
+  private void drawGridHorizRotated(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D,
+      CoordinateAxis2D yaxis2D) {
     ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdgesRotated(xaxis2D.getCoordValuesArray());
     ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdgesRotated(yaxis2D.getCoordValuesArray());
 
@@ -839,7 +846,7 @@ public class GridRenderer {
         gp.lineTo((float) edgex.get(y + 2, x), (float) edgey.get(y + 2, x));
         gp.lineTo((float) edgex.get(y + 1, x + 1), (float) edgey.get(y + 1, x + 1));
 
-        double val = data.getDouble(ima.set(y, x));   // ordering LOOK
+        double val = data.getDouble(ima.set(y, x)); // ordering LOOK
         int colorIndex = cs.getIndexFromValue(val);
         g.setColor(cs.getColor(colorIndex));
         g.fill(gp);
@@ -855,7 +862,7 @@ public class GridRenderer {
         gp.lineTo((float) edgex.get(y + 2, x + 1), (float) edgey.get(y + 2, x + 1));
         gp.lineTo((float) edgex.get(y + 1, x + 1), (float) edgey.get(y + 1, x + 1));
 
-        double val = data.getDouble(ima.set(y, x));   // ordering LOOK
+        double val = data.getDouble(ima.set(y, x)); // ordering LOOK
         int colorIndex = cs.getIndexFromValue(val);
         g.setColor(cs.getColor(colorIndex));
         g.fill(gp);
@@ -863,33 +870,35 @@ public class GridRenderer {
     }
   }
 
-  /* draw using GeneralPath shape
- private GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
- private Shape makeShape(double lon1, double lat1, double lon2, double lat2) {
-   gp.reset();
-   ProjectionPoint pt = drawProjection.latLonToProj( lat1, lon1);
-   gp.moveTo( (float) pt.getX(), (float) pt.getY());
-
-   ptP1.setLocation(pt);
-   pt = drawProjection.latLonToProj( lat1, lon2);
-   gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   if (drawProjection.crossSeam(ptP1, pt))
-     return null;
-
-   ptP1.setLocation(pt);
-   pt = drawProjection.latLonToProj( lat2, lon2);
-   gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   if (drawProjection.crossSeam(ptP1, pt))
-     return null;
-
-   ptP1.setLocation(pt);
-   pt = drawProjection.latLonToProj( lat2, lon1);
-   gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   if (drawProjection.crossSeam(ptP1, pt))
-     return null;
-
-   return gp;
- } */
+  /*
+   * draw using GeneralPath shape
+   * private GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
+   * private Shape makeShape(double lon1, double lat1, double lon2, double lat2) {
+   * gp.reset();
+   * ProjectionPoint pt = drawProjection.latLonToProj( lat1, lon1);
+   * gp.moveTo( (float) pt.getX(), (float) pt.getY());
+   * 
+   * ptP1.setLocation(pt);
+   * pt = drawProjection.latLonToProj( lat1, lon2);
+   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
+   * if (drawProjection.crossSeam(ptP1, pt))
+   * return null;
+   * 
+   * ptP1.setLocation(pt);
+   * pt = drawProjection.latLonToProj( lat2, lon2);
+   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
+   * if (drawProjection.crossSeam(ptP1, pt))
+   * return null;
+   * 
+   * ptP1.setLocation(pt);
+   * pt = drawProjection.latLonToProj( lat2, lon1);
+   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
+   * if (drawProjection.crossSeam(ptP1, pt))
+   * return null;
+   * 
+   * return gp;
+   * }
+   */
 
   private void drawGridHoriz1D(java.awt.Graphics2D g, Array data, CoordinateAxis1D xaxis1D, CoordinateAxis1D yaxis1D) {
     int count = 0;
@@ -897,18 +906,21 @@ public class GridRenderer {
     int nx = (int) xaxis1D.getSize();
     int ny = (int) yaxis1D.getSize();
 
-    /* how big is one pixel ?
-if (debug) System.out.println("affine transform = "+g.getTransform());
-if (debug) System.out.println("           scaleY= "+g.getTransform().getScaleY());
-onePixel = Math.abs(1.5/g.getTransform().getScaleY());   // a little nudge more than 1 pixel
-onePixel = 0;  */
+    /*
+     * how big is one pixel ?
+     * if (debug) System.out.println("affine transform = "+g.getTransform());
+     * if (debug) System.out.println("           scaleY= "+g.getTransform().getScaleY());
+     * onePixel = Math.abs(1.5/g.getTransform().getScaleY()); // a little nudge more than 1 pixel
+     * onePixel = 0;
+     */
 
     //// drawing optimizations
     sameProjection = drawProjection.equals(dataProjection);
     if (drawProjection.isLatLon()) {
       projectll = (LatLonProjection) drawProjection;
       double centerLon = projectll.getCenterLon();
-      if (Debug.isSet("projection/LatLonShift")) System.out.println("projection/LatLonShift: gridDraw = " + centerLon);
+      if (Debug.isSet("projection/LatLonShift"))
+        System.out.println("projection/LatLonShift: gridDraw = " + centerLon);
     }
 
     // find the most common color and fill the entire area with it
@@ -917,14 +929,15 @@ onePixel = 0;  */
     IndexIterator iiter = data.getIndexIterator();
     while (iiter.hasNext()) {
       double val = iiter.getDoubleNext();
-      cs.getIndexFromValue(val);                // accum in histogram
+      cs.getIndexFromValue(val); // accum in histogram
     }
     modeColor = cs.getHistMax();
-    if (debugMiss) System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
+    if (debugMiss)
+      System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
 
     if (sameProjection) {
-      count += drawRect(g, modeColor, xaxis1D.getCoordEdge(0), yaxis1D.getCoordEdge(0),
-              xaxis1D.getCoordEdge(nx), yaxis1D.getCoordEdge(ny), drawProjection.isLatLon());
+      count += drawRect(g, modeColor, xaxis1D.getCoordEdge(0), yaxis1D.getCoordEdge(0), xaxis1D.getCoordEdge(nx),
+          yaxis1D.getCoordEdge(ny), drawProjection.isLatLon());
 
     } else if (useModeForProjections)
       drawPathShape(g, modeColor, xaxis1D, yaxis1D);
@@ -951,14 +964,15 @@ onePixel = 0;  */
           throw e;
         }
 
-        if ((run == 0) || (lastColor == thisColor))  // same color - keep running
+        if ((run == 0) || (lastColor == thisColor)) // same color - keep running
           run++;
         else {
           if (sameProjection) {
             if (lastColor != modeColor) // dont have to draw these
-              count += drawRect(g, lastColor, xaxis1D.getCoordEdge(xbeg), ybeg, xaxis1D.getCoordEdge(x), yend, drawProjection.isLatLon());
+              count += drawRect(g, lastColor, xaxis1D.getCoordEdge(xbeg), ybeg, xaxis1D.getCoordEdge(x), yend,
+                  drawProjection.isLatLon());
           } else {
-            //if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
+            // if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
             count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, x);
           }
           xbeg = x;
@@ -969,15 +983,17 @@ onePixel = 0;  */
       // get the ones at the end
       if (sameProjection) {
         if (lastColor != modeColor)
-          count += drawRect(g, lastColor, xaxis1D.getCoordEdge(xbeg), ybeg, xaxis1D.getCoordEdge(nx), yend, drawProjection.isLatLon());
+          count += drawRect(g, lastColor, xaxis1D.getCoordEdge(xbeg), ybeg, xaxis1D.getCoordEdge(nx), yend,
+              drawProjection.isLatLon());
       } else {
-        //if (!useModeForProjections || (lastColor != modeColor))
+        // if (!useModeForProjections || (lastColor != modeColor))
         count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, nx - 1);
       }
 
       // if (debugPts) break;
     }
-    if (debugHorizDraw) System.out.println("debugHorizDraw = " + count);
+    if (debugHorizDraw)
+      System.out.println("debugHorizDraw = " + count);
   }
 
   //// draw using Rectangle when possible
@@ -1021,7 +1037,8 @@ onePixel = 0;  */
     gpRun.reset();
     LatLonPoint llp = dataProjection.projToLatLon(xaxis.getCoordEdge(x1), y1);
     ProjectionPoint pt = drawProjection.latLonToProj(llp);
-    if (debugPts) System.out.println("** moveTo = " + pt.getX() + " " + pt.getY());
+    if (debugPts)
+      System.out.println("** moveTo = " + pt.getX() + " " + pt.getY());
     gpRun.moveTo((float) pt.getX(), (float) pt.getY());
     ptP1.setLocation(pt);
 
@@ -1029,14 +1046,16 @@ onePixel = 0;  */
       llp = dataProjection.projToLatLon(xaxis.getCoordEdge(e), y1);
       pt = drawProjection.latLonToProj(llp);
       if (drawProjection.crossSeam(ptP1, pt)) { // break it in two & recurse
-        int x = e - 1;  // which col has to be dropped ?
-        if (debugPathShape) System.out.println("split1 at x = " + x + " " + x1 + " " + x2);
+        int x = e - 1; // which col has to be dropped ?
+        if (debugPathShape)
+          System.out.println("split1 at x = " + x + " " + x1 + " " + x2);
         int count = 0;
         count += drawPathRun(g, color, y1, y2, xaxis, x1, x - 1);
         count += drawPathRun(g, color, y1, y2, xaxis, x + 1, x2);
         return count;
       }
-      if (debugPts) System.out.println("  lineTo = " + pt.getX() + " " + pt.getY());
+      if (debugPts)
+        System.out.println("  lineTo = " + pt.getX() + " " + pt.getY());
       gpRun.lineTo((float) pt.getX(), (float) pt.getY());
       ptP1.setLocation(pt);
     }
@@ -1045,14 +1064,16 @@ onePixel = 0;  */
       llp = dataProjection.projToLatLon(xaxis.getCoordEdge(e), y2);
       pt = drawProjection.latLonToProj(llp);
       if (drawProjection.crossSeam(ptP1, pt)) { // break it in two & recurse
-        int x = (e == x2 + 1) ? x2 : e;  // which col has to be dropped ?
-        if (debugPathShape) System.out.println("split2 at x = " + x + " " + x1 + " " + x2);
+        int x = (e == x2 + 1) ? x2 : e; // which col has to be dropped ?
+        if (debugPathShape)
+          System.out.println("split2 at x = " + x + " " + x1 + " " + x2);
         int count = 0;
         count += drawPathRun(g, color, y1, y2, xaxis, x1, x - 1);
         count += drawPathRun(g, color, y1, y2, xaxis, x + 1, x2);
         return count;
       }
-      if (debugPts) System.out.println("  lineTo = " + pt.getX() + " " + pt.getY());
+      if (debugPts)
+        System.out.println("  lineTo = " + pt.getX() + " " + pt.getY());
       gpRun.lineTo((float) pt.getX(), (float) pt.getY());
       ptP1.setLocation(pt);
     }
@@ -1083,76 +1104,79 @@ onePixel = 0;  */
     gpRun.moveTo((float) x1, (float) y1);
     gpRun.lineTo((float) x2, (float) y2);
 
-    //g.setXORMode(Color.black);
+    // g.setXORMode(Color.black);
     g.setColor(Color.black);
 
-    if (Double.isInfinite(x1) || Double.isInfinite(x2) || Double.isInfinite(y1) ||
-            Double.isInfinite(y2))
+    if (Double.isInfinite(x1) || Double.isInfinite(x2) || Double.isInfinite(y1) || Double.isInfinite(y2))
       return;
 
     g.draw(gpRun);
-    //g.setPaintMode();
+    // g.setPaintMode();
   }
 
-/*  private int drawPathShape(Graphics2D g, int color, CoordinateAxis xaxis, CoordinateAxis yaxis) {
-    Point2D pt;
-    gpRun.reset();
-    int nx = xaxis.getNumElements();
-    int ny = yaxis.getNumElements();
-    boolean debugPathShape = true;
-    int x, y;
+  /*
+   * private int drawPathShape(Graphics2D g, int color, CoordinateAxis xaxis, CoordinateAxis yaxis) {
+   * Point2D pt;
+   * gpRun.reset();
+   * int nx = xaxis.getNumElements();
+   * int ny = yaxis.getNumElements();
+   * boolean debugPathShape = true;
+   * int x, y;
+   * 
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(0), xaxis.getCoordValue(0));
+   * gpRun.moveTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * 
+   * y = 0;
+   * for (x=1; x<nx; x++) {
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
+   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
+   * }
+   * 
+   * x = nx-1;
+   * for (y=0; y<ny; y++) {
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
+   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
+   * }
+   * 
+   * y = ny-1;
+   * for (x=nx-1; x>=0; x--) {
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
+   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
+   * }
+   * 
+   * x = 0;
+   * for (y=ny-1; y>=0; y--) {
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
+   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
+   * }
+   * 
+   * g.setColor( cs.getColor(color));
+   * //g.fill(gpRun);
+   * return 1;
+   * }
+   */
 
-    pt = drawProjection.latLonToProj( yaxis.getCoordValue(0), xaxis.getCoordValue(0));
-    gpRun.moveTo( (float) pt.getX(), (float) pt.getY());
-    ptP1.set(pt);
-
-    y = 0;
-    for (x=1; x<nx; x++) {
-      pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-      gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      ptP1.set(pt);
-      if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-    }
-
-    x = nx-1;
-    for (y=0; y<ny; y++) {
-      pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-      gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      ptP1.set(pt);
-      if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-    }
-
-    y = ny-1;
-    for (x=nx-1; x>=0; x--) {
-      pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-      gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      ptP1.set(pt);
-      if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-    }
-
-    x = 0;
-    for (y=ny-1; y>=0; y--) {
-      pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-      gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      ptP1.set(pt);
-      if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-    }
-
-    g.setColor( cs.getColor(color));
-    //g.fill(gpRun);
-    return 1;
-  }  */
-
-/*  private void drawLine(Graphics2D g, double lat1, double lon1, double lat2, double lon2) {
-    ptP1.set(drawProjection.latLonToProj( lat1, lon1));
-    Point2D pt2 = drawProjection.latLonToProj( lat2, lon2);
-    if (drawProjection.crossSeam(ptP1, pt2))
-      if (debugSeam) System.out.println( "crossSeam: "+ ptP1+ " to "+ pt2);
-    else {
-      line2D.setLine( ptP1, pt2);
-      g.draw( line2D);
-    }
-  } */
+  /*
+   * private void drawLine(Graphics2D g, double lat1, double lon1, double lat2, double lon2) {
+   * ptP1.set(drawProjection.latLonToProj( lat1, lon1));
+   * Point2D pt2 = drawProjection.latLonToProj( lat2, lon2);
+   * if (drawProjection.crossSeam(ptP1, pt2))
+   * if (debugSeam) System.out.println( "crossSeam: "+ ptP1+ " to "+ pt2);
+   * else {
+   * line2D.setLine( ptP1, pt2);
+   * g.draw( line2D);
+   * }
+   * }
+   */
 
   //////// contouring
 
@@ -1196,7 +1220,7 @@ onePixel = 0;  */
     }
     if (Debug.isSet("timing/contourDraw")) {
       long tookTime = System.currentTimeMillis() - startTime;
-      System.out.println("timing/contourDraw: " + tookTime*.001 + " seconds");
+      System.out.println("timing/contourDraw: " + tookTime * .001 + " seconds");
     }
   }
 

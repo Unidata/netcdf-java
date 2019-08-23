@@ -11,7 +11,6 @@ import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
@@ -59,8 +58,7 @@ public class TestH5ReadArray {
       dset.setCachedData(null, false); // turn off caching to test read subset
       dset.setCaching(false);
       int[] origin2 = new int[3];
-      int[] shape2 = new int[]{
-              10, 1, 1};
+      int[] shape2 = new int[] {10, 1, 1};
       try {
         A = dset.read(origin2, shape2);
       } catch (InvalidRangeException e) {

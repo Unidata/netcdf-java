@@ -8,12 +8,11 @@ package ucar.nc2.write;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
  * Abstract superclass for netcdf-4 chunking strategy.
-
+ * 
  * @author caron
  * @since 11/14/12
  */
@@ -21,16 +20,20 @@ import javax.annotation.concurrent.Immutable;
 public abstract class Nc4ChunkingStrategy implements Nc4Chunking {
 
   /**
-   * @param type         Strategy type
+   * @param type Strategy type
    * @param deflateLevel 0 corresponds to no compression and 9 to maximum compression,
-   * @param shuffle      true to turn shuffling on which may improve compression. This option is ignored unless a non-zero deflation level is specified.
+   * @param shuffle true to turn shuffling on which may improve compression. This option is ignored unless a non-zero
+   *        deflation level is specified.
    * @return Nc4Chunking implementation
    */
   public static Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle) {
     switch (type) {
-      case standard: return new Nc4ChunkingDefault(deflateLevel, shuffle);
-      case grib: return new Nc4ChunkingStrategyGrib(deflateLevel, shuffle);
-      case none: return new Nc4ChunkingStrategyNone();
+      case standard:
+        return new Nc4ChunkingDefault(deflateLevel, shuffle);
+      case grib:
+        return new Nc4ChunkingStrategyGrib(deflateLevel, shuffle);
+      case none:
+        return new Nc4ChunkingStrategyNone();
     }
     throw new IllegalArgumentException("Illegal Nc4Chunking.Standard " + type);
   }

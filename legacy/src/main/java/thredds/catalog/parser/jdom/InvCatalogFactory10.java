@@ -17,18 +17,15 @@ import thredds.cataloggen.CatalogRefExpander;
 import thredds.cataloggen.datasetenhancer.RegExpAndDurationTimeCoverageEnhancer;
 import thredds.cataloggen.inserter.SimpleLatestProxyDsHandler;
 import thredds.cataloggen.inserter.LatestCompleteProxyDsHandler;
-
 import org.jdom2.*;
 import org.jdom2.input.*;
 import org.jdom2.output.*;
-
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.TimeDuration;
@@ -83,10 +80,12 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   private String expandAliasForCollectionSpec(String location) {
-    if (location == null) return null;
+    if (location == null)
+      return null;
     for (PathAliasReplacement par : this.dataRootLocAliasExpanders) {
       String result = par.replaceIfMatch(location);
-      if (result != null) return result;
+      if (result != null)
+        return result;
     }
     return location;
   }
@@ -128,7 +127,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       try {
         baseURI = new URI(catSpecifiedBaseURL);
       } catch (URISyntaxException e) {
-        logger.debug("readCatalog(): bad catalog specified base URI <" + catSpecifiedBaseURL + ">: " + e.getMessage(), e);
+        logger.debug("readCatalog(): bad catalog specified base URI <" + catSpecifiedBaseURL + ">: " + e.getMessage(),
+            e);
         baseURI = docBaseURI;
       }
     }
@@ -175,23 +175,27 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   protected InvCatalogRef readCatalogRef(InvCatalogImpl cat, InvDatasetImpl parent, Element catRefElem, URI baseURI) {
     String title = catRefElem.getAttributeValue("title", xlinkNS);
-    if (title == null) title = catRefElem.getAttributeValue("name");
+    if (title == null)
+      title = catRefElem.getAttributeValue("name");
     String href = catRefElem.getAttributeValue("href", xlinkNS);
     String useRemCatSerStr = catRefElem.getAttributeValue("useRemoteCatalogService");
     Boolean useRemoteCatalogService = null;
-    if (useRemCatSerStr != null) useRemoteCatalogService = Boolean.parseBoolean(useRemCatSerStr);
+    if (useRemCatSerStr != null)
+      useRemoteCatalogService = Boolean.parseBoolean(useRemCatSerStr);
     InvCatalogRef catRef = new InvCatalogRef(parent, title, href, useRemoteCatalogService);
     readDatasetInfo(cat, catRef, catRefElem, baseURI);
     return catRef;
   }
 
   protected ThreddsMetadata.Contributor readContributor(Element elem) {
-    if (elem == null) return null;
+    if (elem == null)
+      return null;
     return new ThreddsMetadata.Contributor(elem.getText(), elem.getAttributeValue("role"));
   }
 
   protected ThreddsMetadata.Vocab readControlledVocabulary(Element elem) {
-    if (elem == null) return null;
+    if (elem == null)
+      return null;
     return new ThreddsMetadata.Vocab(elem.getText(), elem.getAttributeValue("vocabulary"));
   }
 
@@ -213,7 +217,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     InvDatasetImpl dataset = new InvDatasetImpl(parent, name);
     readDatasetInfo(catalog, dataset, dsElem, base);
 
-    if (InvCatalogFactory.debugXML) System.out.println(" Dataset added: " + dataset.dump());
+    if (InvCatalogFactory.debugXML)
+      System.out.println(" Dataset added: " + dataset.dump());
     return dataset;
   }
 
@@ -243,9 +248,12 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (urlPath != null)
       dataset.setUrlPath(urlPath);
 
-    if (authority != null) dataset.setAuthority(authority);
-    if (id != null) dataset.setID(id);
-    if (harvest != null) dataset.setHarvest(harvest.equalsIgnoreCase("true"));
+    if (authority != null)
+      dataset.setAuthority(authority);
+    if (id != null)
+      dataset.setID(id);
+    if (harvest != null)
+      dataset.setHarvest(harvest.equalsIgnoreCase("true"));
     if (restrictAccess != null)
       dataset.setResourceControl(restrictAccess);
 
@@ -306,7 +314,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
   }
 
-  protected InvDatasetImpl readFeatureCollection(InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
+  protected InvDatasetImpl readFeatureCollection(InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem,
+      URI base) {
 
     FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(dsElem);
     config.spec = expandAliasForCollectionSpec(config.spec);
@@ -333,27 +342,30 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   }
 
-  /* protected InvDatasetImpl readFeatureCollection(InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
-
-    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(dsElem);
-    config.spec = expandAliasForCollectionSpec(config.spec);
-
-    try {
-      InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory(parent, config);
-      if (ds == null) {
-        logger.error("featureCollection " + config.collectionName + " has fatal error ");
-        return null;
-      }
-      // regular dataset elements
-      readDatasetInfo(catalog, ds, dsElem, base);
-      return ds;
-
-    } catch (Exception e) {
-      logger.error("featureCollection " + config.collectionName + " has fatal error, skipping ", e);
-      return null;
-    }
-
-  } */
+  /*
+   * protected InvDatasetImpl readFeatureCollection(InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI
+   * base) {
+   * 
+   * FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(dsElem);
+   * config.spec = expandAliasForCollectionSpec(config.spec);
+   * 
+   * try {
+   * InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory(parent, config);
+   * if (ds == null) {
+   * logger.error("featureCollection " + config.collectionName + " has fatal error ");
+   * return null;
+   * }
+   * // regular dataset elements
+   * readDatasetInfo(catalog, ds, dsElem, base);
+   * return ds;
+   * 
+   * } catch (Exception e) {
+   * logger.error("featureCollection " + config.collectionName + " has fatal error, skipping ", e);
+   * return null;
+   * }
+   * 
+   * }
+   */
 
   // read a dataset scan element
   protected InvDatasetScan readDatasetScan(InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
@@ -368,7 +380,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       }
     } else {
       String name = dsElem.getAttributeValue("name");
-      factory.appendWarning("**Warning: Dataset " + name + " using old form of DatasetScan (dirLocation instead of location)\n");
+      factory.appendWarning(
+          "**Warning: Dataset " + name + " using old form of DatasetScan (dirLocation instead of location)\n");
 
       String path = dsElem.getAttributeValue("path");
 
@@ -387,14 +400,17 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           addDatasetSize = false;
 
       if (path != null) {
-        if (path.charAt(0) == '/') path = path.substring(1);
+        if (path.charAt(0) == '/')
+          path = path.substring(1);
         int last = path.length() - 1;
-        if (path.charAt(last) == '/') path = path.substring(0, last);
+        if (path.charAt(last) == '/')
+          path = path.substring(0, last);
       }
 
       if (scanDir != null) {
         int last = scanDir.length() - 1;
-        if (scanDir.charAt(last) != '/') scanDir = scanDir + '/';
+        if (scanDir.charAt(last) != '/')
+          scanDir = scanDir + '/';
       }
 
       Element atcElem = dsElem.getChild("addTimeCoverage", defNS);
@@ -408,10 +424,11 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       }
 
       try {
-        datasetScan = new InvDatasetScan(catalog, parent, name, path, scanDir, filter, addDatasetSize, addLatest, sortOrderIncreasing,
-                dsNameMatchPattern, startTimeSubstitutionPattern, duration);
+        datasetScan = new InvDatasetScan(catalog, parent, name, path, scanDir, filter, addDatasetSize, addLatest,
+            sortOrderIncreasing, dsNameMatchPattern, startTimeSubstitutionPattern, duration);
         readDatasetInfo(catalog, datasetScan, dsElem, base);
-        if (InvCatalogFactory.debugXML) System.out.println(" Dataset added: " + datasetScan.dump());
+        if (InvCatalogFactory.debugXML)
+          System.out.println(" Dataset added: " + datasetScan.dump());
 
       } catch (Exception e) {
         logger.error("Reading DatasetScan", e);
@@ -429,7 +446,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String locationOrg = dsElem.getAttributeValue("location");
     String scanDir = expandAliasForPath(locationOrg);
     if (scanDir.startsWith("${")) {
-      scanDir = expandAliasForPath(locationOrg);  // debugging
+      scanDir = expandAliasForPath(locationOrg); // debugging
     }
 
     // Read datasetConfig element
@@ -442,7 +459,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       if (children.size() == 1) {
         configObj = children.get(0);
       } else if (children.size() != 0) {
-        logger.warn("readDatasetScanNew(): content of datasetConfig element not a single element, using first element.");
+        logger
+            .warn("readDatasetScanNew(): content of datasetConfig element not a single element, using first element.");
         configObj = children.get(0);
       } else {
         logger.debug("readDatasetScanNew(): datasetConfig element has no children.");
@@ -489,9 +507,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     // Read addDatasetSize element.
     Element addDsSizeElem = dsElem.getChild("addDatasetSize", defNS);
-    //boolean addDatasetSize = false; old way
-    //if ( addDsSizeElem != null )
-    //  addDatasetSize = true;
+    // boolean addDatasetSize = false; old way
+    // if ( addDsSizeElem != null )
+    // addDatasetSize = true;
     boolean addDatasetSize = true;
     if (addDsSizeElem != null) {
       if (addDsSizeElem.getTextNormalize().equalsIgnoreCase("false"))
@@ -516,24 +534,21 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
 
     // Read catalogRefExpander element
-//    Element catRefExpanderElem = dsElem.getChild( "catalogRefExpander", defNS );
+    // Element catRefExpanderElem = dsElem.getChild( "catalogRefExpander", defNS );
     CatalogRefExpander catalogRefExpander = null;
-//    if ( catRefExpanderElem != null )
-//    {
-//      catalogRefExpander = readDatasetScanCatRefExpander( catRefExpanderElem );
-//    }
+    // if ( catRefExpanderElem != null )
+    // {
+    // catalogRefExpander = readDatasetScanCatRefExpander( catRefExpanderElem );
+    // }
 
 
     InvDatasetScan datasetScan;
     try {
-      datasetScan = new InvDatasetScan(parent, name, path, scanDir,
-              configClassName, configObj,
-              filter, identifier, namer,
-              addDatasetSize, sorter, allProxyDsHandlers,
-              childEnhancerList,
-              catalogRefExpander);
+      datasetScan = new InvDatasetScan(parent, name, path, scanDir, configClassName, configObj, filter, identifier,
+          namer, addDatasetSize, sorter, allProxyDsHandlers, childEnhancerList, catalogRefExpander);
       readDatasetInfo(catalog, datasetScan, dsElem, base);
-      if (InvCatalogFactory.debugXML) System.out.println(" Dataset added: " + datasetScan.dump());
+      if (InvCatalogFactory.debugXML)
+        System.out.println(" Dataset added: " + datasetScan.dump());
 
     } catch (Exception e) {
       logger.error("readDatasetScanNew(): failed to create DatasetScan", e);
@@ -544,7 +559,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   CrawlableDatasetFilter readDatasetScanFilter(Element filterElem) {
-    CrawlableDatasetFilter filter = null;  //lastModifiedLimit
+    CrawlableDatasetFilter filter = null; // lastModifiedLimit
 
     // Handle LastModifiedLimitFilter CrDsFilters.
     Attribute lastModLimitAtt = filterElem.getAttribute("lastModifiedLimit");
@@ -553,7 +568,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       try {
         lastModLimit = lastModLimitAtt.getLongValue();
       } catch (DataConversionException e) {
-        String tmpMsg = "readDatasetScanFilter(): bad lastModifedLimit value <" + lastModLimitAtt.getValue() + ">, couldn't parse into long: " + e.getMessage();
+        String tmpMsg = "readDatasetScanFilter(): bad lastModifedLimit value <" + lastModLimitAtt.getValue()
+            + ">, couldn't parse into long: " + e.getMessage();
         factory.appendErr(tmpMsg);
         logger.warn(tmpMsg);
         return null;
@@ -567,33 +583,33 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       List filters = filterElem.getChildren("filter", defNS);
       if (compType.equalsIgnoreCase("AND")) {
         if (filters.size() != 2) {
-          String tmpMsg = "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for AND (2 expected).";
+          String tmpMsg =
+              "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for AND (2 expected).";
           factory.appendErr(tmpMsg);
           logger.warn(tmpMsg);
           return null;
         }
-        filter = LogicalFilterComposer.getAndFilter(
-                readDatasetScanFilter((Element) filters.get(0)),
-                readDatasetScanFilter((Element) filters.get(1)));
+        filter = LogicalFilterComposer.getAndFilter(readDatasetScanFilter((Element) filters.get(0)),
+            readDatasetScanFilter((Element) filters.get(1)));
       } else if (compType.equalsIgnoreCase("OR")) {
         if (filters.size() != 2) {
-          String tmpMsg = "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for OR (2 expected).";
+          String tmpMsg =
+              "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for OR (2 expected).";
           factory.appendErr(tmpMsg);
           logger.warn(tmpMsg);
           return null;
         }
-        filter = LogicalFilterComposer.getOrFilter(
-                readDatasetScanFilter((Element) filters.get(0)),
-                readDatasetScanFilter((Element) filters.get(1)));
+        filter = LogicalFilterComposer.getOrFilter(readDatasetScanFilter((Element) filters.get(0)),
+            readDatasetScanFilter((Element) filters.get(1)));
       } else if (compType.equalsIgnoreCase("NOT")) {
         if (filters.size() != 1) {
-          String tmpMsg = "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for NOT (1 expected).";
+          String tmpMsg =
+              "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for NOT (1 expected).";
           factory.appendErr(tmpMsg);
           logger.warn(tmpMsg);
           return null;
         }
-        filter = LogicalFilterComposer.getNotFilter(
-                readDatasetScanFilter((Element) filters.get(0)));
+        filter = LogicalFilterComposer.getNotFilter(readDatasetScanFilter((Element) filters.get(0)));
       }
 
       return filter;
@@ -614,7 +630,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         String lastModLimitAttVal = curElem.getAttributeValue("lastModLimitInMillis");
         if (regExpAttVal == null && wildcardAttVal == null && lastModLimitAttVal == null) {
           // If no regExp or wildcard attributes, skip this selector.
-          logger.warn("readDatasetScanFilter(): no regExp, wildcard, or lastModLimitInMillis attribute in filter child <" + curElem.getName() + ">.");
+          logger
+              .warn("readDatasetScanFilter(): no regExp, wildcard, or lastModLimitInMillis attribute in filter child <"
+                  + curElem.getName() + ">.");
         } else {
           // Determine if applies to atomic datasets, default true.
           boolean atomic = true;
@@ -644,11 +662,14 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
           // Determine if regExp or wildcard
           if (regExpAttVal != null) {
-            selectorList.add(new MultiSelectorFilter.Selector(new RegExpMatchOnNameFilter(regExpAttVal), includer, atomic, collection));
+            selectorList.add(new MultiSelectorFilter.Selector(new RegExpMatchOnNameFilter(regExpAttVal), includer,
+                atomic, collection));
           } else if (wildcardAttVal != null) {
-            selectorList.add(new MultiSelectorFilter.Selector(new WildcardMatchOnNameFilter(wildcardAttVal), includer, atomic, collection));
+            selectorList.add(new MultiSelectorFilter.Selector(new WildcardMatchOnNameFilter(wildcardAttVal), includer,
+                atomic, collection));
           } else if (lastModLimitAttVal != null) {
-            selectorList.add(new MultiSelectorFilter.Selector(new LastModifiedLimitFilter(Long.parseLong(lastModLimitAttVal)), includer, atomic, collection));
+            selectorList.add(new MultiSelectorFilter.Selector(
+                new LastModifiedLimitFilter(Long.parseLong(lastModLimitAttVal)), includer, atomic, collection));
           }
         }
       }
@@ -673,13 +694,13 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   protected CrawlableDatasetLabeler readDatasetScanNamer(Element namerElem) {
     CrawlableDatasetLabeler namer;
-//    Element userDefElem = namerElem.getChild( "crawlableDatasetLabelerImpl", defNS );
-//    if ( userDefElem != null )
-//    {
-//      namer = (CrawlableDatasetLabeler) readDatasetScanUserDefined( userDefElem, CrawlableDatasetLabeler.class );
-//    }
-//    else
-//    {
+    // Element userDefElem = namerElem.getChild( "crawlableDatasetLabelerImpl", defNS );
+    // if ( userDefElem != null )
+    // {
+    // namer = (CrawlableDatasetLabeler) readDatasetScanUserDefined( userDefElem, CrawlableDatasetLabeler.class );
+    // }
+    // else
+    // {
     List<CrawlableDatasetLabeler> labelerList = new ArrayList<>();
     for (Element curElem : namerElem.getChildren()) {
       CrawlableDatasetLabeler curLabeler;
@@ -697,7 +718,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       labelerList.add(curLabeler);
     }
     namer = new MultiLabeler(labelerList);
-//    }
+    // }
 
     return namer;
   }
@@ -720,7 +741,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return sorter;
   }
 
-  protected Map<String, ProxyDatasetHandler> readDatasetScanAddProxies(Element addProxiesElem, Element addLatestElem, InvCatalogImpl catalog) {
+  protected Map<String, ProxyDatasetHandler> readDatasetScanAddProxies(Element addProxiesElem, Element addLatestElem,
+      InvCatalogImpl catalog) {
     Map<String, ProxyDatasetHandler> allProxyDsHandlers = new HashMap<>();
 
     // Handle old "addLatest" elements.
@@ -739,14 +761,12 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         ProxyDatasetHandler curPdh;
 
         // Handle "simpleLatest" child elements.
-        if (curChildElem.getName().equals("simpleLatest")
-                && curChildElem.getNamespace().equals(defNS)) {
+        if (curChildElem.getName().equals("simpleLatest") && curChildElem.getNamespace().equals(defNS)) {
           curPdh = readDatasetScanAddLatest(curChildElem, catalog);
         }
 
         // Handle "latestComplete" child elements.
-        else if (curChildElem.getName().equals("latestComplete")
-                && curChildElem.getNamespace().equals(defNS)) {
+        else if (curChildElem.getName().equals("latestComplete") && curChildElem.getNamespace().equals(defNS)) {
           // Get latest name.
           String latestName = curChildElem.getAttributeValue("name");
           if (latestName == null) {
@@ -797,13 +817,14 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         } else {
           curPdh = null;
           // @todo Deal with allowing user defined inserters
-          //Element userDefElem = addLatestElem.getChild( "proxyDatasetHandlerImpl", defNS );
+          // Element userDefElem = addLatestElem.getChild( "proxyDatasetHandlerImpl", defNS );
         }
 
         // Add current proxy dataset handler to map if name is not already in map.
         if (curPdh != null) {
           if (allProxyDsHandlers.containsKey(curPdh.getProxyDatasetName())) {
-            logger.warn("readDatasetScanAddProxies(): proxy map already contains key <" + curPdh.getProxyDatasetName() + ">, skipping.");
+            logger.warn("readDatasetScanAddProxies(): proxy map already contains key <" + curPdh.getProxyDatasetName()
+                + ">, skipping.");
             continue;
           }
           allProxyDsHandlers.put(curPdh.getProxyDatasetName(), curPdh);
@@ -818,7 +839,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
    * Return a SimpleLatestProxyDsHandler, use default values if element is null.
    *
    * @param simpleLatestElem the simpleLatest element
-   * @param catalog          the catalog containing the simpleLatest element.
+   * @param catalog the catalog containing the simpleLatest element.
    * @return a SimpleLatestProxyDsHandler
    */
   private ProxyDatasetHandler readDatasetScanAddLatest(Element simpleLatestElem, InvCatalogImpl catalog) {
@@ -868,10 +889,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return latestAdder;
   }
 
-//  protected CatalogRefExpander readDatasetScanCatRefExpander( Element catRefExpanderElem )
-//  {
-//
-//  }
+  // protected CatalogRefExpander readDatasetScanCatRefExpander( Element catRefExpanderElem )
+  // {
+  //
+  // }
 
   protected DatasetEnhancer readDatasetScanAddTimeCoverage(Element addTimeCovElem) {
     DatasetEnhancer timeCovEnhancer = null;
@@ -881,11 +902,11 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String subst = addTimeCovElem.getAttributeValue("startTimeSubstitutionPattern");
     String duration = addTimeCovElem.getAttributeValue("duration");
     if (matchName != null && subst != null && duration != null) {
-      timeCovEnhancer = RegExpAndDurationTimeCoverageEnhancer
-              .getInstanceToMatchOnDatasetName(matchName, subst, duration);
+      timeCovEnhancer =
+          RegExpAndDurationTimeCoverageEnhancer.getInstanceToMatchOnDatasetName(matchName, subst, duration);
     } else if (matchPath != null && subst != null && duration != null) {
-      timeCovEnhancer = RegExpAndDurationTimeCoverageEnhancer
-              .getInstanceToMatchOnDatasetPath(matchPath, subst, duration);
+      timeCovEnhancer =
+          RegExpAndDurationTimeCoverageEnhancer.getInstanceToMatchOnDatasetPath(matchPath, subst, duration);
     }
 
     return timeCovEnhancer;
@@ -911,7 +932,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
       // Check that the requested Class is a target Class.
       if (!targetClass.isAssignableFrom(requestedClass)) {
-        throw new IllegalArgumentException("Requested class <" + className + "> not an implementation of " + targetClass.getName() + ".");
+        throw new IllegalArgumentException(
+            "Requested class <" + className + "> not an implementation of " + targetClass.getName() + ".");
       }
 
       // Instantiate the desired Object using that classes constructor with a
@@ -947,28 +969,33 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     dirLocation = expandAliasForPath(dirLocation);
 
     if (path != null) {
-      if (path.charAt(0) == '/') path = path.substring(1);
+      if (path.charAt(0) == '/')
+        path = path.substring(1);
       int last = path.length() - 1;
-      if (path.charAt(last) == '/') path = path.substring(0, last);
+      if (path.charAt(last) == '/')
+        path = path.substring(0, last);
     }
 
     if (dirLocation != null) {
       int last = dirLocation.length() - 1;
-      if (dirLocation.charAt(last) != '/') dirLocation = dirLocation + '/';
+      if (dirLocation.charAt(last) != '/')
+        dirLocation = dirLocation + '/';
     }
 
     return new DataRootConfig(path, dirLocation, s.getAttributeValue("cache"));
   }
 
   protected DateType readDate(Element elem) {
-    if (elem == null) return null;
+    if (elem == null)
+      return null;
     String format = elem.getAttributeValue("format");
     String type = elem.getAttributeValue("type");
     return makeDateType(elem.getText(), format, type);
   }
 
   protected DateType makeDateType(String text, String format, String type) {
-    if (text == null) return null;
+    if (text == null)
+      return null;
     try {
       return new DateType(text, format, type);
     } catch (java.text.ParseException e) {
@@ -978,7 +1005,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   protected TimeDuration readDuration(Element elem) {
-    if (elem == null) return null;
+    if (elem == null)
+      return null;
     String text = null;
     try {
       text = elem.getText();
@@ -1008,12 +1036,14 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     // LOOK XHTML ?? !!
 
-    if (InvCatalogFactory.debugXML) System.out.println(" Documentation added: " + doc);
+    if (InvCatalogFactory.debugXML)
+      System.out.println(" Documentation added: " + doc);
     return doc;
   }
 
   protected double readDouble(Element elem) {
-    if (elem == null) return Double.NaN;
+    if (elem == null)
+      return Double.NaN;
     String text = elem.getText();
     try {
       return Double.parseDouble(text);
@@ -1024,7 +1054,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   protected ThreddsMetadata.GeospatialCoverage readGeospatialCoverage(Element gcElem) {
-    if (gcElem == null) return null;
+    if (gcElem == null)
+      return null;
 
     String zpositive = gcElem.getAttributeValue("zpositive");
 
@@ -1044,14 +1075,16 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   protected ThreddsMetadata.Range readGeospatialRange(Element spElem, String defUnits) {
-    if (spElem == null) return null;
+    if (spElem == null)
+      return null;
 
     double start = readDouble(spElem.getChild("start", defNS));
     double size = readDouble(spElem.getChild("size", defNS));
     double resolution = readDouble(spElem.getChild("resolution", defNS));
 
     String units = spElem.getChildText("units", defNS);
-    if (units == null) units = defUnits;
+    if (units == null)
+      units = defUnits;
 
     return new ThreddsMetadata.Range(start, size, resolution, units);
   }
@@ -1060,8 +1093,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     // there are 6 cases to deal with: threddsNamespace vs not & inline vs Xlink & hasConverter or not
     // (the hasConverter only applies when its not threddsNamespace, giving 6 cases)
     // this factory is the converter for threddsNamespace metadata
-    //  and also handles non-threddsNamespace when there is no converter, in which case it just
-    //   propagates the inline dom elements
+    // and also handles non-threddsNamespace when there is no converter, in which case it just
+    // propagates the inline dom elements
 
     // figure out the namespace
     Namespace namespace;
@@ -1077,26 +1110,28 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String inheritedS = mdataElement.getAttributeValue("inherited");
     boolean inherited = (inheritedS != null) && inheritedS.equalsIgnoreCase("true");
 
-    boolean isThreddsNamespace = ((mtype == null) || mtype.equalsIgnoreCase("THREDDS")) &&
-            namespace.getURI().equals(XMLEntityResolver.CATALOG_NAMESPACE_10);
+    boolean isThreddsNamespace = ((mtype == null) || mtype.equalsIgnoreCase("THREDDS"))
+        && namespace.getURI().equals(XMLEntityResolver.CATALOG_NAMESPACE_10);
 
     // see if theres a converter for it.
     MetadataConverterIF metaConverter = factory.getMetadataConverter(namespace.getURI());
-    if (metaConverter == null) metaConverter = factory.getMetadataConverter(mtype);
+    if (metaConverter == null)
+      metaConverter = factory.getMetadataConverter(mtype);
     if (metaConverter != null) {
-      if (debugMetadataRead) System.out.println("found factory for metadata type = " + mtype + " namespace = " +
-              namespace + "=" + metaConverter.getClass().getName());
+      if (debugMetadataRead)
+        System.out.println("found factory for metadata type = " + mtype + " namespace = " + namespace + "="
+            + metaConverter.getClass().getName());
 
       // see if theres any inline content
       Object contentObj;
       if (inlineElements.size() > 0) {
         contentObj = metaConverter.readMetadataContent(dataset, mdataElement);
-        return new InvMetadata(dataset, mtype, namespace.getURI(), namespace.getPrefix(),
-                inherited, false, metaConverter, contentObj);
+        return new InvMetadata(dataset, mtype, namespace.getURI(), namespace.getPrefix(), inherited, false,
+            metaConverter, contentObj);
 
-      } else { // otherwise it  must be an Xlink; defer reading
-        return new InvMetadata(dataset, href, title, mtype, namespace.getURI(),
-                namespace.getPrefix(), inherited, false, metaConverter);
+      } else { // otherwise it must be an Xlink; defer reading
+        return new InvMetadata(dataset, href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited, false,
+            metaConverter);
       }
     }
 
@@ -1104,12 +1139,12 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (!isThreddsNamespace) {
       if (inlineElements.size() > 0) {
         // just hold onto the jdom elements as the "content" LOOK should be DOM?
-        return new InvMetadata(dataset, mtype, namespace.getURI(), namespace.getPrefix(),
-                inherited, false, this, mdataElement);
+        return new InvMetadata(dataset, mtype, namespace.getURI(), namespace.getPrefix(), inherited, false, this,
+            mdataElement);
 
       } else { // otherwise it must be an Xlink, never read
-        return new InvMetadata(dataset, href, title, mtype, namespace.getURI(),
-                namespace.getPrefix(), inherited, false, null);
+        return new InvMetadata(dataset, href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited, false,
+            null);
       }
 
     }
@@ -1118,12 +1153,11 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (inlineElements.size() > 0) {
       ThreddsMetadata tmg = new ThreddsMetadata(false);
       readThreddsMetadata(catalog, dataset, mdataElement, tmg);
-      return new InvMetadata(dataset, mtype, namespace.getURI(), namespace.getPrefix(),
-              inherited, true, this, tmg);
+      return new InvMetadata(dataset, mtype, namespace.getURI(), namespace.getPrefix(), inherited, true, this, tmg);
 
-    } else { // otherwise it  must be an Xlink; defer reading
-      return new InvMetadata(dataset, href, title, mtype, namespace.getURI(),
-              namespace.getPrefix(), inherited, true, this);
+    } else { // otherwise it must be an Xlink; defer reading
+      return new InvMetadata(dataset, href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited, true,
+          this);
     }
 
   }
@@ -1137,7 +1171,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   private SAXBuilder saxBuilder;
 
   private Element readContentFromURL(java.net.URI uri) throws java.io.IOException {
-    if (saxBuilder == null) saxBuilder = new SAXBuilder();
+    if (saxBuilder == null)
+      saxBuilder = new SAXBuilder();
     Document doc;
     try {
       doc = saxBuilder.build(uri.toURL());
@@ -1151,29 +1186,31 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   public Object readMetadataContentFromURL(InvDataset dataset, java.net.URI uri) throws java.io.IOException {
     Element elem = readContentFromURL(uri);
     Object contentObject = readMetadataContent(dataset, elem);
-    if (debugMetadataRead) System.out.println(" convert to " + contentObject.getClass().getName());
+    if (debugMetadataRead)
+      System.out.println(" convert to " + contentObject.getClass().getName());
     return contentObject;
   }
 
-    /* open and read the referenced catalog XML
-    if (debugMetadataRead) System.out.println(" readMetadataContentFromURL = " + url);
-    org.w3c.dom.Element mdataElement = factory.readOtherXML( url);
-    if (mdataElement == null) {
-      factory.appendErr(" ** failed to read thredds metadata at = "+url+" for dataset"+dataset.getName()+"\n");
-      return null;
-    }
-
-    Object contentObject = readMetadataContent( dataset, mdataElement);
-    if (debugMetadataRead) System.out.println(" convert to " + contentObject.getClass().getName());
- return contentObject;  */
+  /*
+   * open and read the referenced catalog XML
+   * if (debugMetadataRead) System.out.println(" readMetadataContentFromURL = " + url);
+   * org.w3c.dom.Element mdataElement = factory.readOtherXML( url);
+   * if (mdataElement == null) {
+   * factory.appendErr(" ** failed to read thredds metadata at = "+url+" for dataset"+dataset.getName()+"\n");
+   * return null;
+   * }
+   * 
+   * Object contentObject = readMetadataContent( dataset, mdataElement);
+   * if (debugMetadataRead) System.out.println(" convert to " + contentObject.getClass().getName());
+   * return contentObject;
+   */
 
   // dummy LOOK
   public boolean validateMetadataContent(Object contentObject, StringBuilder out) {
     return true;
   }
 
-  public void addMetadataContent(org.jdom2.Element mdataElement, Object contentObject) {
-  }
+  public void addMetadataContent(org.jdom2.Element mdataElement, Object contentObject) {}
 
   protected InvProperty readProperty(Element s) {
     String name = s.getAttributeValue("name");
@@ -1182,7 +1219,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   protected ThreddsMetadata.Source readSource(Element elem) {
-    if (elem == null) return null;
+    if (elem == null)
+      return null;
     ThreddsMetadata.Vocab name = readControlledVocabulary(elem.getChild("name", defNS));
     Element contact = elem.getChild("contact", defNS);
     if (contact == null) {
@@ -1220,13 +1258,15 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       service.addService(ss);
     }
 
-    if (InvCatalogFactory.debugXML) System.out.println(" Service added: " + service);
+    if (InvCatalogFactory.debugXML)
+      System.out.println(" Service added: " + service);
     return service;
   }
 
   protected double readDataSize(Element parent) {
     Element elem = parent.getChild("dataSize", defNS);
-    if (elem == null) return Double.NaN;
+    if (elem == null)
+      return Double.NaN;
 
     double size;
     String sizeS = elem.getText();
@@ -1239,16 +1279,22 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     String units = elem.getAttributeValue("units");
     char c = Character.toUpperCase(units.charAt(0));
-    if (c == 'K') size *= 1000;
-    else if (c == 'M') size *= 1000 * 1000;
-    else if (c == 'G') size *= 1000 * 1000 * 1000;
-    else if (c == 'T') size *= 1000.0 * 1000 * 1000 * 1000;
-    else if (c == 'P') size *= 1000.0 * 1000 * 1000 * 1000 * 1000;
+    if (c == 'K')
+      size *= 1000;
+    else if (c == 'M')
+      size *= 1000 * 1000;
+    else if (c == 'G')
+      size *= 1000 * 1000 * 1000;
+    else if (c == 'T')
+      size *= 1000.0 * 1000 * 1000 * 1000;
+    else if (c == 'P')
+      size *= 1000.0 * 1000 * 1000 * 1000 * 1000;
     return size;
   }
 
   protected DateRange readTimeCoverage(Element tElem) {
-    if (tElem == null) return null;
+    if (tElem == null)
+      return null;
 
     DateType start = readDate(tElem.getChild("start", defNS));
     DateType end = readDate(tElem.getChild("end", defNS));
@@ -1335,16 +1381,20 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     // can only be one each of these kinds
     ThreddsMetadata.GeospatialCoverage gc = readGeospatialCoverage(parent.getChild("geospatialCoverage", defNS));
-    if (gc != null) tmg.setGeospatialCoverage(gc);
+    if (gc != null)
+      tmg.setGeospatialCoverage(gc);
 
     DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", defNS));
-    if (tc != null) tmg.setTimeCoverage(tc);
+    if (tc != null)
+      tmg.setTimeCoverage(tc);
 
     Element serviceNameElem = parent.getChild("serviceName", defNS);
-    if (serviceNameElem != null) tmg.setServiceName(serviceNameElem.getText());
+    if (serviceNameElem != null)
+      tmg.setServiceName(serviceNameElem.getText());
 
     Element authElem = parent.getChild("authority", defNS);
-    if (authElem != null) tmg.setAuthority(authElem.getText());
+    if (authElem != null)
+      tmg.setAuthority(authElem.getText());
 
     Element dataTypeElem = parent.getChild("dataType", defNS);
     if (dataTypeElem != null) {
@@ -1377,7 +1427,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   protected ThreddsMetadata.Variable readVariable(Element varElem) {
-    if (varElem == null) return null;
+    if (varElem == null)
+      return null;
 
     String name = varElem.getAttributeValue("name");
     String desc = varElem.getText();
@@ -1390,7 +1441,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
 
   protected ThreddsMetadata.Variables readVariables(InvCatalog cat, InvDataset ds, Element varsElem) {
-    if (varsElem == null) return null;
+    if (varsElem == null)
+      return null;
 
     String vocab = varsElem.getAttributeValue("vocabulary");
     String vocabHref = varsElem.getAttributeValue("href", xlinkNS);
@@ -1419,8 +1471,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
 
     if ((mapUri != null) && vlist.size() > 0) { // cant do both
-      factory.appendErr(" ** Catalog error: cant have variableMap and variable in same element (dataset = " +
-              ds.getName() + "\n");
+      factory.appendErr(
+          " ** Catalog error: cant have variableMap and variable in same element (dataset = " + ds.getName() + "\n");
       mapUri = null;
     }
 
@@ -1445,15 +1497,17 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         logger.warn("Failure reading vaiable mapUri ", e);
       }
 
-      /*org.w3c.dom.Element domElement = factory.readOtherXML(mapUri);
-      if (domElement != null) {
-        Element varsElement = toJDOM(domElement);
-        List list = varsElement.getChildren("variable", defNS);
-        for (int j = 0; j < list.size(); j++) {
-          ThreddsMetadata.Variable v = readVariable( (Element) list.get(j));
-          variables.addVariable(v);
-        }
-      } */
+      /*
+       * org.w3c.dom.Element domElement = factory.readOtherXML(mapUri);
+       * if (domElement != null) {
+       * Element varsElement = toJDOM(domElement);
+       * List list = varsElement.getChildren("variable", defNS);
+       * for (int j = 0; j < list.size(); j++) {
+       * ThreddsMetadata.Variable v = readVariable( (Element) list.get(j));
+       * variables.addVariable(v);
+       * }
+       * }
+       */
 
     }
 
@@ -1468,8 +1522,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
    * Write the catalog as an XML document to the specified stream.
    *
    * @param catalog write this catalog
-   * @param os      write to this OutputStream
-   * @param raw     write raw file if true (for server configuration)
+   * @param os write to this OutputStream
+   * @param raw write raw file if true (for server configuration)
    * @throws IOException
    */
   public void writeXML(InvCatalogImpl catalog, OutputStream os, boolean raw) throws IOException {
@@ -1484,16 +1538,16 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
    * Write the catalog as an XML document to the specified stream.
    *
    * @param catalog write this catalog
-   * @param os      write to this OutputStream
+   * @param os write to this OutputStream
    * @throws IOException
    */
   public void writeXML(InvCatalogImpl catalog, OutputStream os) throws IOException {
     // Output the document, use standard formatter
-    //XMLOutputter fmt = new XMLOutputter();
-    //fmt.setNewlines(true);
-    //fmt.setIndent("  ");
-    //fmt.setTrimAllWhite( true);
-    XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat());  // LOOK maybe compact ??
+    // XMLOutputter fmt = new XMLOutputter();
+    // fmt.setNewlines(true);
+    // fmt.setIndent(" ");
+    // fmt.setTrimAllWhite( true);
+    XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat()); // LOOK maybe compact ??
     fmt.output(writeCatalog(catalog), os);
   }
 
@@ -1572,11 +1626,13 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       catrefElem.setAttribute("restrictAccess", catRef.getRestrictAccess());
     catrefElem.setAttribute("name", "");
 
-    /* List list = catRef.getDocumentation();
-    for (int j=0; j< list.size(); j++) {
-      InvDocumentation doc = (InvDocumentation) list.get(j);
-      catrefElem.addContent( writeDocumentation(doc, "documentation"));
-    } */
+    /*
+     * List list = catRef.getDocumentation();
+     * for (int j=0; j< list.size(); j++) {
+     * InvDocumentation doc = (InvDocumentation) list.get(j);
+     * catrefElem.addContent( writeDocumentation(doc, "documentation"));
+     * }
+     */
 
     return catrefElem;
   }
@@ -1644,7 +1700,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         dsElem.addContent(writeDatasetScanFilter(ds.getFilter()));
 
       // Write addID element
-      //if ( ds.getIdentifier() != null )
+      // if ( ds.getIdentifier() != null )
       dsElem.addContent(writeDatasetScanIdentifier(ds.getIdentifier()));
 
       // Write namer element
@@ -1668,8 +1724,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         dsElem.addContent(writeDatasetScanEnhancer(ds.getChildEnhancerList()));
 
       // @todo Write catalogRefExpander elements
-//      if ( ds.getCatalogRefExpander() != null )
-//        dsElem.addContent( writeDatasetScanCatRefExpander( ds.getCatalogRefExpander()));
+      // if ( ds.getCatalogRefExpander() != null )
+      // dsElem.addContent( writeDatasetScanCatRefExpander( ds.getCatalogRefExpander()));
     } else {
       if (ds.isValid()) {
         dsElem = new Element("catalogRef", defNS);
@@ -1709,7 +1765,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           curSelectorElem.setAttribute("atomic", curSelector.isApplyToAtomicDataset() ? "true" : "false");
           curSelectorElem.setAttribute("collection", curSelector.isApplyToCollectionDataset() ? "true" : "false");
         } else if (curFilter instanceof LastModifiedLimitFilter) {
-          curSelectorElem.setAttribute("lastModLimitInMillis", Long.toString(((LastModifiedLimitFilter) curFilter).getLastModifiedLimitInMillis()));
+          curSelectorElem.setAttribute("lastModLimitInMillis",
+              Long.toString(((LastModifiedLimitFilter) curFilter).getLastModifiedLimitInMillis()));
           curSelectorElem.setAttribute("atomic", curSelector.isApplyToAtomicDataset() ? "true" : "false");
           curSelectorElem.setAttribute("collection", curSelector.isApplyToCollectionDataset() ? "true" : "false");
         } else
@@ -1718,7 +1775,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         filterElem.addContent(curSelectorElem);
       }
     } else {
-      filterElem.addContent(writeDatasetScanUserDefined("crawlableDatasetFilterImpl", filter.getClass().getName(), filter.getConfigObject()));
+      filterElem.addContent(writeDatasetScanUserDefined("crawlableDatasetFilterImpl", filter.getClass().getName(),
+          filter.getConfigObject()));
     }
 
     return filterElem;
@@ -1748,7 +1806,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           }
         }
       } else {
-        namerElem.addContent(writeDatasetScanUserDefined("crawlableDatasetLabelerImpl", namer.getClass().getName(), namer.getConfigObject()));
+        namerElem.addContent(writeDatasetScanUserDefined("crawlableDatasetLabelerImpl", namer.getClass().getName(),
+            namer.getConfigObject()));
       }
     }
 
@@ -1762,7 +1821,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         return identifierElem;
       } else {
         identifierElem = new Element("addID", defNS);
-        identifierElem.addContent(writeDatasetScanUserDefined("crawlableDatasetLabelerImpl", identifier.getClass().getName(), identifier.getConfigObject()));
+        identifierElem.addContent(writeDatasetScanUserDefined("crawlableDatasetLabelerImpl",
+            identifier.getClass().getName(), identifier.getConfigObject()));
       }
     }
 
@@ -1820,8 +1880,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         latestElem.setAttribute("lastModifiedLimit", Long.toString(lcPdh.getLastModifiedLimit()));
         addProxiesElem.addContent(latestElem);
       } else {
-        logger.warn("writeDatasetScanAddProxies(): unknown type of ProxyDatasetHandler <" + curPdh.getProxyDatasetName() + ">.");
-        // latestAdderElem.addContent( writeDatasetScanUserDefined( "datasetInserterImpl", latestAdder.getClass().getName(), latestAdder.getConfigObject() ) );
+        logger.warn("writeDatasetScanAddProxies(): unknown type of ProxyDatasetHandler <" + curPdh.getProxyDatasetName()
+            + ">.");
+        // latestAdderElem.addContent( writeDatasetScanUserDefined( "datasetInserterImpl",
+        // latestAdder.getClass().getName(), latestAdder.getConfigObject() ) );
       }
 
     }
@@ -1835,7 +1897,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       lexElem.setAttribute("increasing", ((LexigraphicByNameSorter) sorter).isIncreasing() ? "true" : "false");
       sorterElem.addContent(lexElem);
     } else {
-      sorterElem.addContent(writeDatasetScanUserDefined("crawlableDatasetSorterImpl", sorter.getClass().getName(), sorter.getConfigObject()));
+      sorterElem.addContent(writeDatasetScanUserDefined("crawlableDatasetSorterImpl", sorter.getClass().getName(),
+          sorter.getConfigObject()));
     }
 
     return sorterElem;
@@ -1859,7 +1922,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
         enhancerElemList.add(timeCovElem);
       } else {
-        enhancerElemList.add(writeDatasetScanUserDefined("datasetEnhancerImpl", curEnhancer.getClass().getName(), curEnhancer.getConfigObject()));
+        enhancerElemList.add(writeDatasetScanUserDefined("datasetEnhancerImpl", curEnhancer.getClass().getName(),
+            curEnhancer.getConfigObject()));
       }
     }
 
@@ -1873,7 +1937,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       if (configObj instanceof Element)
         userDefElem.addContent((Element) configObj);
       else
-        userDefElem.addContent(new Comment("This class <" + className + "> not yet supported. This XML is missing configuration information (of type " + configObj.getClass().getName() + ")."));
+        userDefElem.addContent(new Comment(
+            "This class <" + className + "> not yet supported. This XML is missing configuration information (of type "
+                + configObj.getClass().getName() + ")."));
     }
 
     return userDefElem;
@@ -1904,9 +1970,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     writeInheritedMetadata(dsElem, ds.getLocalMetadataInheritable());
     // writeInheritedMetadata( dsElem, ds.getCat6Metadata()); // LOOK can we get rid of this?
 
-    // access  (local only)
+    // access (local only)
     for (InvAccess a : ds.getAccessLocal()) {
-      dsElem.addContent(writeAccess( (InvAccessImpl) a));
+      dsElem.addContent(writeAccess((InvAccessImpl) a));
     }
 
     if (showNcML && ds.getNcmlElement() != null) {
@@ -1915,7 +1981,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       dsElem.addContent(ncml);
     }
 
-    if (!doNestedDatasets) return;
+    if (!doNestedDatasets)
+      return;
 
     // nested datasets
     for (InvDataset nested : ds.getDatasets()) {
@@ -1924,7 +1991,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       else if (nested instanceof InvCatalogRef)
         dsElem.addContent(writeCatalogRef((InvCatalogRef) nested));
       else
-        dsElem.addContent(writeDataset( (InvDatasetImpl) nested));
+        dsElem.addContent(writeDataset((InvDatasetImpl) nested));
     }
   }
 
@@ -1985,7 +2052,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   private void writeGeospatialRange(Element parent, Element elem, ThreddsMetadata.Range r) {
-    if (r == null) return;
+    if (r == null)
+      return;
 
     elem.addContent(new Element("start", defNS).setText(Double.toString(r.getStart())));
     elem.addContent(new Element("size", defNS).setText(Double.toString(r.getSize())));
@@ -2026,12 +2094,12 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           Element mdataOrg = (Element) mdata.getContentObject();
           List<Element> children = mdataOrg.getChildren();
           for (Element child : children) {
-            mdataElem.addContent( child.clone());
+            mdataElem.addContent(child.clone());
           }
         } else {
-          //org.w3c.dom.Element dome = toDOM(mdataElem);
+          // org.w3c.dom.Element dome = toDOM(mdataElem);
           converter.addMetadataContent(mdataElem, mdata.getContentObject());
-          //mdataElem = toJDOM(dome);
+          // mdataElem = toJDOM(dome);
           mdataElem.detach();
         }
       }
@@ -2129,16 +2197,18 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return sizeElem;
   }
 
-  /* protected void writeCat6InheritedMetadata( Element elem, ThreddsMetadata tmi) {
-    if ((tmi.getDataType() == null) && (tmi.getServiceName() == null) &&
-        (tmi.getAuthority() == null) && ( tmi.getProperties().size() == 0))
-      return;
-
-    Element mdataElem = new Element("metadata", defNS);
-    mdataElem.setAttribute("inherited", "true");
-    writeThreddsMetadata( mdataElem, tmi);
-    elem.addContent( mdataElem);
-  }  */
+  /*
+   * protected void writeCat6InheritedMetadata( Element elem, ThreddsMetadata tmi) {
+   * if ((tmi.getDataType() == null) && (tmi.getServiceName() == null) &&
+   * (tmi.getAuthority() == null) && ( tmi.getProperties().size() == 0))
+   * return;
+   * 
+   * Element mdataElem = new Element("metadata", defNS);
+   * mdataElem.setAttribute("inherited", "true");
+   * writeThreddsMetadata( mdataElem, tmi);
+   * elem.addContent( mdataElem);
+   * }
+   */
 
   protected void writeInheritedMetadata(Element elem, ThreddsMetadata tmi) {
     Element mdataElem = new Element("metadata", defNS);
@@ -2321,18 +2391,20 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return elem;
   }
 
-  /* public org.w3c.dom.Element toDOM( Element elem) {
-    try {
-      if (domOut == null) domOut = new DOMOutputter();
-      return domOut.output(elem);
-    } catch (JDOMException e) {
-      System.out.println("InvCatalogFactory6.readMetadata.toDom error " + e);
-      return null;
-    }
-  }
-
-  public Element toJDOM( org.w3c.dom.Element domElement) {
-    return builder.build(domElement);
-  }   */
+  /*
+   * public org.w3c.dom.Element toDOM( Element elem) {
+   * try {
+   * if (domOut == null) domOut = new DOMOutputter();
+   * return domOut.output(elem);
+   * } catch (JDOMException e) {
+   * System.out.println("InvCatalogFactory6.readMetadata.toDom error " + e);
+   * return null;
+   * }
+   * }
+   * 
+   * public Element toJDOM( org.w3c.dom.Element domElement) {
+   * return builder.build(domElement);
+   * }
+   */
 
 }

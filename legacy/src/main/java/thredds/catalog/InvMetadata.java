@@ -29,19 +29,18 @@ public class InvMetadata {
   /**
    * Constructor for elements with Xlinks.
    *
-   * @param dataset           : dataset that contains the metadata.
-   * @param xlinkHref         : URI of xlink, may be null.
-   * @param title             : xlink title, may be null.
-   * @param type              : metadata type
-   * @param namespaceURI      : namespace URI string of the element, use null for THREDDS
-   * @param prefix            : namespace prefix of the element, use null for THREDDS
-   * @param inherited         : if inherited
+   * @param dataset : dataset that contains the metadata.
+   * @param xlinkHref : URI of xlink, may be null.
+   * @param title : xlink title, may be null.
+   * @param type : metadata type
+   * @param namespaceURI : namespace URI string of the element, use null for THREDDS
+   * @param prefix : namespace prefix of the element, use null for THREDDS
+   * @param inherited : if inherited
    * @param isThreddsMetadata : is threddsMetadata
-   * @param converter         : converter for creating the content object, may be null
+   * @param converter : converter for creating the content object, may be null
    */
-  public InvMetadata(InvDataset dataset, String xlinkHref, String title, String type,
-                     String namespaceURI, String prefix, boolean inherited, boolean isThreddsMetadata,
-                     MetadataConverterIF converter) {
+  public InvMetadata(InvDataset dataset, String xlinkHref, String title, String type, String namespaceURI,
+      String prefix, boolean inherited, boolean isThreddsMetadata, MetadataConverterIF converter) {
     this.dataset = dataset;
     this.xlinkHref = xlinkHref;
 
@@ -57,18 +56,17 @@ public class InvMetadata {
   /**
    * Constructor for elements with inline content.
    *
-   * @param dataset           : dataset that contains the metadata.
-   * @param mtype             : metadata type
-   * @param namespaceURI      : namespace URI string of the element, can use null for THREDDS
-   * @param namespacePrefix   : namespace prefix of the element, use null for THREDDS
-   * @param inherited         : if inherited
+   * @param dataset : dataset that contains the metadata.
+   * @param mtype : metadata type
+   * @param namespaceURI : namespace URI string of the element, can use null for THREDDS
+   * @param namespacePrefix : namespace prefix of the element, use null for THREDDS
+   * @param inherited : if inherited
    * @param isThreddsMetadata : is threddsMetadata
-   * @param converter         : the metadata converter.
-   * @param contentObject     : content object.
+   * @param converter : the metadata converter.
+   * @param contentObject : content object.
    */
-  public InvMetadata(InvDataset dataset, String mtype, String namespaceURI,
-                     String namespacePrefix, boolean inherited, boolean isThreddsMetadata,
-                     MetadataConverterIF converter, Object contentObject) {
+  public InvMetadata(InvDataset dataset, String mtype, String namespaceURI, String namespacePrefix, boolean inherited,
+      boolean isThreddsMetadata, MetadataConverterIF converter, Object contentObject) {
     this.dataset = dataset;
     this.type = mtype;
     this.namespaceURI = namespaceURI;
@@ -85,9 +83,9 @@ public class InvMetadata {
   /**
    * Constructor using an existing ThreddsMetadata object.
    *
-   * @param dataset   : dataset that contains the metadata.
+   * @param dataset : dataset that contains the metadata.
    * @param inherited : if inherited
-   * @param tm        : content object.
+   * @param tm : content object.
    */
   public InvMetadata(InvDataset dataset, boolean inherited, ThreddsMetadata tm) {
     this.dataset = dataset;
@@ -100,6 +98,7 @@ public class InvMetadata {
 
   /**
    * Get the parent dataset of this InvMetadata
+   * 
    * @return the parent dataset of this InvMetadata
    */
   public InvDataset getParentDataset() {
@@ -108,6 +107,7 @@ public class InvMetadata {
 
   /**
    * Get the converter; may be null.
+   * 
    * @return the converter or null
    */
   public MetadataConverterIF getConverter() {
@@ -116,6 +116,7 @@ public class InvMetadata {
 
   /**
    * Get the metadata type.
+   * 
    * @return the metadata type.
    */
   public String getMetadataType() {
@@ -124,6 +125,7 @@ public class InvMetadata {
 
   /**
    * Get the namespace.
+   * 
    * @return the namespace.
    */
   public String getNamespaceURI() {
@@ -132,6 +134,7 @@ public class InvMetadata {
 
   /**
    * Get the prefix mapped to the namespace.
+   * 
    * @return the prefix mapped to the namespace.
    */
   public String getNamespacePrefix() {
@@ -140,6 +143,7 @@ public class InvMetadata {
 
   /**
    * if it has an XLink
+   * 
    * @return true if it has an XLink
    */
   public boolean hasXlink() {
@@ -148,6 +152,7 @@ public class InvMetadata {
 
   /**
    * if its a XLink, get the xlink:href String
+   * 
    * @return the xlink:href or null
    */
   public String getXlinkHref() {
@@ -156,6 +161,7 @@ public class InvMetadata {
 
   /**
    * if its a XLink, get the xlink:href as an absolute URI; may be null
+   * 
    * @return the xlink:href as an absolute URI, or null
    */
   public java.net.URI getXlinkURI() {
@@ -164,6 +170,7 @@ public class InvMetadata {
 
   /**
    * if its a XLink, get the xlink:title attribute
+   * 
    * @return xlink:title or null
    */
   public String getXlinkTitle() {
@@ -172,6 +179,7 @@ public class InvMetadata {
 
   /**
    * if it is inherited
+   * 
    * @return true if it is inherited
    */
   public boolean isInherited() {
@@ -180,6 +188,7 @@ public class InvMetadata {
 
   /**
    * if this element contains ThreddsMetadata
+   * 
    * @return true if this element contains ThreddsMetadata
    */
   public boolean isThreddsMetadata() {
@@ -188,6 +197,7 @@ public class InvMetadata {
 
   /**
    * set if this element contains ThreddsMetadata
+   * 
    * @param isThreddsMetadata true if this element contains ThreddsMetadata
    */
   public void setThreddsMetadata(boolean isThreddsMetadata) {
@@ -196,6 +206,7 @@ public class InvMetadata {
 
   /**
    * set the namespace URI
+   * 
    * @param namespaceURI set the namespace URI
    */
   public void setNamespaceURI(String namespaceURI) {
@@ -205,6 +216,7 @@ public class InvMetadata {
 
   /**
    * get the content object, may be null
+   * 
    * @return the content object, or null
    */
   public Object getContentObject() {
@@ -214,6 +226,7 @@ public class InvMetadata {
 
   /**
    * set the internal ThreddsMetadata; this holds elements from THREDDS namespace
+   * 
    * @param tmd the internal ThreddsMetadata object
    */
   public void setThreddsMetadata(ThreddsMetadata tmd) {
@@ -222,7 +235,8 @@ public class InvMetadata {
 
   /**
    * get the internal ThreddsMetadata, if isThreddsMetadata() is true
-   * @return  the internal ThreddsMetadata, or null
+   * 
+   * @return the internal ThreddsMetadata, or null
    */
   public ThreddsMetadata getThreddsMetadata() {
     return tm;
@@ -234,9 +248,11 @@ public class InvMetadata {
    * If this is an XLink, this will trigger a read of the href the first time called.
    */
   public void finish() {
-    if (init) return;
+    if (init)
+      return;
     init = true;
-    if (xlinkHref == null) return;
+    if (xlinkHref == null)
+      return;
 
     xlinkHref = xlinkHref.trim();
     try {
@@ -258,7 +274,8 @@ public class InvMetadata {
         tm = (ThreddsMetadata) contentObject;
 
     } catch (java.io.IOException e) {
-      log.append("  **InvMetadata on = (").append(xlinkUri).append("): Exception (").append(e.getMessage()).append(")\n");
+      log.append("  **InvMetadata on = (").append(xlinkUri).append("): Exception (").append(e.getMessage())
+          .append(")\n");
       // e.printStackTrace();
     }
   }
@@ -283,8 +300,10 @@ public class InvMetadata {
    * InvMetadata elements with same values are equal.
    */
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof InvMetadata)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof InvMetadata))
+      return false;
     return o.hashCode() == this.hashCode();
   }
 
@@ -304,7 +323,7 @@ public class InvMetadata {
         result = 37 * result + getMetadataType().hashCode();
       result = 37 * result + (isInherited() ? 1 : 0);
       // if (isThreddsMetadata)
-      //  result = 37*result + getThreddsMetadata().hashCode();
+      // result = 37*result + getThreddsMetadata().hashCode();
       hashCode = result;
     }
     return hashCode;
@@ -312,10 +331,12 @@ public class InvMetadata {
 
   private volatile int hashCode = 0; // Bloch, item 8
 
-  /** String representation
-   public String toString() {
-   return " xlink = "+getXlinkHref()+" mtype= "+type+" namespaceURI="+namespaceURI
-   +" isThredds= "+isThreddsMetadata  +" inherit= "+isInherited();
-   } */
+  /**
+   * String representation
+   * public String toString() {
+   * return " xlink = "+getXlinkHref()+" mtype= "+type+" namespaceURI="+namespaceURI
+   * +" isThredds= "+isThreddsMetadata +" inherit= "+isInherited();
+   * }
+   */
 
 }

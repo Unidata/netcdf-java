@@ -9,6 +9,7 @@ import ucar.nc2.util.TableParser;
 
 /**
  * StructureData whose data is stored in ascii, with a TableParser to extract the values.
+ * 
  * @author caron
  * @since Dec 8, 2010
  */
@@ -26,7 +27,7 @@ public class StructureDataAscii extends StructureData {
 
     if (m.getDataType() == DataType.STRING) {
       String result = (String) f.parse(line);
-      return Array.factory(DataType.STRING, new int[] {},  new Object[] {result.trim()});
+      return Array.factory(DataType.STRING, new int[] {}, new Object[] {result.trim()});
 
     } else if (m.getDataType() == DataType.SEQUENCE) {
       return getArraySequence(m);
@@ -85,7 +86,7 @@ public class StructureDataAscii extends StructureData {
 
   @Override
   public double[] getJavaArrayDouble(StructureMembers.Member m) {
-    return new double[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new double[0]; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -100,7 +101,7 @@ public class StructureDataAscii extends StructureData {
     int n = m.getSize();
     float[] result = new float[n];
     TableParser.Field f = (TableParser.Field) m.getDataObject();
-    for (int i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
       Float val = (Float) f.parse(line, i * 8);
       result[i] = (val == null) ? Float.NaN : val;
     }
@@ -118,8 +119,8 @@ public class StructureDataAscii extends StructureData {
     int n = m.getSize();
     byte[] result = new byte[n];
     TableParser.Field f = (TableParser.Field) m.getDataObject();
-    for (int i=0; i<n; i++) {
-      String s = (String) f.parse(line, i*8);
+    for (int i = 0; i < n; i++) {
+      String s = (String) f.parse(line, i * 8);
       result[i] = (s == null) ? 0 : (byte) s.charAt(0);
     }
     return result;
@@ -133,7 +134,7 @@ public class StructureDataAscii extends StructureData {
 
   @Override
   public int[] getJavaArrayInt(StructureMembers.Member m) {
-    return new int[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new int[0]; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -144,7 +145,7 @@ public class StructureDataAscii extends StructureData {
 
   @Override
   public short[] getJavaArrayShort(StructureMembers.Member m) {
-    return new short[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new short[0]; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -155,7 +156,7 @@ public class StructureDataAscii extends StructureData {
 
   @Override
   public long[] getJavaArrayLong(StructureMembers.Member m) {
-    return new long[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new long[0]; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -170,8 +171,8 @@ public class StructureDataAscii extends StructureData {
     int n = m.getSize();
     char[] result = new char[n];
     TableParser.Field f = (TableParser.Field) m.getDataObject();
-    for (int i=0; i<n; i++) {
-      String s = (String) f.parse(line, i*8);
+    for (int i = 0; i < n; i++) {
+      String s = (String) f.parse(line, i * 8);
       result[i] = (s == null) ? 0 : s.charAt(0);
     }
     return result;

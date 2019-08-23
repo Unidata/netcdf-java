@@ -7,14 +7,11 @@ package ucar.nc2.iosp.uamiv;
 
 import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.*;
 import java.util.HashSet;
 import java.util.Arrays;
@@ -30,10 +27,10 @@ import java.util.Arrays;
 public class UAMIVServiceProvider extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UAMIVServiceProvider.class);
 
-  static private final String AVERAGE =   "A   V   E   R   A   G   E               ";
+  static private final String AVERAGE = "A   V   E   R   A   G   E               ";
   static private final String EMISSIONS = "E   M   I   S   S   I   O   N   S       ";
-  static private final String AIRQUALITY ="A   I   R   Q   U   A   L   I   T   Y   ";
-  static private final String INSTANT =   "I   N   S   T   A   N   T               ";
+  static private final String AIRQUALITY = "A   I   R   Q   U   A   L   I   T   Y   ";
+  static private final String INSTANT = "I   N   S   T   A   N   T               ";
 
   static private final String HEIGHT = "HEIGHT";
   static private final String PBL = "PBL";
@@ -89,15 +86,15 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
   /**
    * Open existing file, and populate ncfile with it.
    *
-   * @param raf        the file to work on, it has already passed the isValidFile() test.
-   * @param ncfile     add objects to this NetcdfFile
+   * @param raf the file to work on, it has already passed the isValidFile() test.
+   * @param ncfile add objects to this NetcdfFile
    * @param cancelTask used to monito user cancellation; may be null.
    */
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     /*
      * <b>open</b> initializes the file meta data and creates all variables.
      * The meta-data and variable information is gathered from the UAM-IV
-     * header.  The header format is detailed in the CAMx User's 
+     * header. The header format is detailed in the CAMx User's
      * guide and copied here.
      * 
      * Header:
@@ -127,14 +124,14 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      * mspec - Species names for nspec species (character*4(10,nspec) array)
      *
      *
-     *   time step is HHMMSS
+     * time step is HHMMSS
      *
-     *  the projection is:
-     *   LCC // >  :GDTYP = 2; // int
-     *   First True Latitude (Alpha):  	30N // >  :P_ALP = 30.0; // double
-     *   Second True Latitude (Beta): 	60N // >  :P_BET = 60.0; // double
-     *   Central Longitude (Gamma): 	100W //>  :XCENT = -100.0; // double
-     *   Projection Origin: 	(100W, 40N) //>  :YCENT = 40.0; // double
+     * the projection is:
+     * LCC // > :GDTYP = 2; // int
+     * First True Latitude (Alpha): 30N // > :P_ALP = 30.0; // double
+     * Second True Latitude (Beta): 60N // > :P_BET = 60.0; // double
+     * Central Longitude (Gamma): 100W //> :XCENT = -100.0; // double
+     * Projection Origin: (100W, 40N) //> :YCENT = 40.0; // double
      *
      */
     // Internalize raf and ncfile
@@ -159,29 +156,31 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     // CAMx times are sometimes provided as HH or HHMM.
     // IOAPI times are always provided as HHMMSS.
     // CAMx times less than 100 are HH and should be
-    // multipled by 100 to get HHMM.  CAMx times less
+    // multipled by 100 to get HHMM. CAMx times less
     // 10000 are HHMM and should be multipled by 100
     // to get HHMMSS.
-    if (btimei < 100) btimei = btimei * 100;
-    if (btimei < 10000) btimei = btimei * 100;
+    if (btimei < 100)
+      btimei = btimei * 100;
+    if (btimei < 10000)
+      btimei = btimei * 100;
 
     /*
-    * Dates are YYJJJ and are heuristically converted
-    * to YYYYJJJ based on the following assumption:
-    * YY < 70 are 2000
-    * YY >= 70 are 1900
-    *
-    */
+     * Dates are YYJJJ and are heuristically converted
+     * to YYYYJJJ based on the following assumption:
+     * YY < 70 are 2000
+     * YY >= 70 are 1900
+     *
+     */
     if (bdate < 70000) {
       bdate = bdate + 2000000;
     } else {
       bdate = bdate + 1900000;
     }
 
-    raf.skipBytes(4); //Skip record pad
+    raf.skipBytes(4); // Skip record pad
 
     // Read second line of UAM-IV header
-    raf.skipBytes(4); //Skip record pad
+    raf.skipBytes(4); // Skip record pad
     float plon = raf.readFloat(); // get polar longitude
     float plat = raf.readFloat(); // get polar latitude
     int iutm = raf.readInt(); // get utm
@@ -193,24 +192,24 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     int ny = raf.readInt(); // get number of rows
     int nz = raf.readInt(); // get number of layers
     // get projection number
-    //    (0: lat-lon;
-    //     1: Universal Transverse Mercator;
-    //     2: Lambert Conic Conformal;
-    //     3: Polar stereographic)
+    // (0: lat-lon;
+    // 1: Universal Transverse Mercator;
+    // 2: Lambert Conic Conformal;
+    // 3: Polar stereographic)
     // These translate to IOAPI GDTYP3D values 1, 5, 2, and 6 respectively
-    int iproj = raf.readInt(); 
+    int iproj = raf.readInt();
     int istag = raf.readInt(); // Read stagger indicator
     float tlat1 = raf.readFloat(); // Read true latitude 1
     float tlat2 = raf.readFloat(); // Read true latitude 2
-    raf.skipBytes(4); //Skip 1 dummies
-    raf.skipBytes(4); //Skip record pad
+    raf.skipBytes(4); // Skip 1 dummies
+    raf.skipBytes(4); // Skip record pad
 
     // Read third line of UAM-IV header
-    raf.skipBytes(4); //Skip record pad
-    raf.skipBytes(8); //Skip 2 dummies
+    raf.skipBytes(4); // Skip record pad
+    raf.skipBytes(8); // Skip 2 dummies
     int nx2 = raf.readInt(); // duplicate number of columns
     int ny2 = raf.readInt(); // duplicate number of rows
-    raf.skipBytes(8); //Skip 2 dummies    
+    raf.skipBytes(8); // Skip 2 dummies
     nz = Math.max(nz, 1); // number of layers; Emissions files occasionally report 0 layers
     /*
      * 1) Read each species name
@@ -239,7 +238,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     // Store 3D value size
     this.n3dvals = nx * ny * nz;
 
-    // Store 2D binary data block size: include values (nx*ny), 
+    // Store 2D binary data block size: include values (nx*ny),
     // species name (10), a dummy (1) and 2 record pads
     int spc_2D_block = nx * ny + 10 + 2 + 1;
 
@@ -264,19 +263,21 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     count = 0;
 
     /*
-    * For each species, create a variable with long_name,
-    * and var_desc, and units.  long_name and var_desc are
-    * simply the species name.  units is heuristically
-    * determined from the name
-    */
-    HashSet<String> AeroSpcs = new HashSet<>(Arrays.asList( "PSO4", "PNO3", "PNH4", "PH2O", "SOPA", "SOPB",  "NA", "PCL", "POA", "PEC", "FPRM", "FCRS", "CPRM", "CCRS"));
-    HashSet<String> LULC = new HashSet<>(Arrays.asList("WATER", "ICE", "LAKE", "ENEEDL", "EBROAD", "DNEEDL", "DBROAD", "TBROAD", "DDECID", "ESHRUB", "DSHRUB", "TSHRUB", "SGRASS", "LGRASS", "CROPS", "RICE", "SUGAR", "MAIZE", "COTTON", "ICROPS", "URBAN", "TUNDRA", "SWAMP", "DESERT", "MWOOD", "TFOREST"));
-    
+     * For each species, create a variable with long_name,
+     * and var_desc, and units. long_name and var_desc are
+     * simply the species name. units is heuristically
+     * determined from the name
+     */
+    HashSet<String> AeroSpcs = new HashSet<>(Arrays.asList("PSO4", "PNO3", "PNH4", "PH2O", "SOPA", "SOPB", "NA", "PCL",
+        "POA", "PEC", "FPRM", "FCRS", "CPRM", "CCRS"));
+    HashSet<String> LULC = new HashSet<>(Arrays.asList("WATER", "ICE", "LAKE", "ENEEDL", "EBROAD", "DNEEDL", "DBROAD",
+        "TBROAD", "DDECID", "ESHRUB", "DSHRUB", "TSHRUB", "SGRASS", "LGRASS", "CROPS", "RICE", "SUGAR", "MAIZE",
+        "COTTON", "ICROPS", "URBAN", "TUNDRA", "SWAMP", "DESERT", "MWOOD", "TFOREST"));
+
     while (count < nspec) {
       String spc = spc_names[count++];
       Variable temp = ncfile.addVariable(null, spc, DataType.FLOAT, "TSTEP LAY ROW COL");
-      if (spc.equals(WINDX) || spc.equals(WINDY) ||
-              spc.equals(SPEED)) {
+      if (spc.equals(WINDX) || spc.equals(WINDY) || spc.equals(SPEED)) {
         temp.addAttribute(new Attribute(CDM.UNITS, "m/s"));
       } else if (spc.equals(VERTDIFF)) {
         temp.addAttribute(new Attribute(CDM.UNITS, "m**2/s"));
@@ -291,7 +292,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       } else if (spc.equals(CLDOD) || spc.equals("CLOUDOD")) {
         temp.addAttribute(new Attribute(CDM.UNITS, "none"));
       } else if (spc.equals("SNOWCOVER")) {
-        temp.addAttribute(new Attribute(CDM.UNITS, "yes/no"));        
+        temp.addAttribute(new Attribute(CDM.UNITS, "yes/no"));
       } else if (spc.startsWith("SOA") || AeroSpcs.contains(spc)) {
         if (name.equals(EMISSIONS)) {
           temp.addAttribute(new Attribute(CDM.UNITS, "g/time"));
@@ -299,7 +300,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
           temp.addAttribute(new Attribute(CDM.UNITS, "ug/m**3"));
         }
       } else if (LULC.contains(spc)) {
-          temp.addAttribute(new Attribute(CDM.UNITS, "fraction"));
+        temp.addAttribute(new Attribute(CDM.UNITS, "fraction"));
       } else if (spc.lastIndexOf("_") > -1) {
         String tmpunit = spc.substring(spc.lastIndexOf("_") + 1);
         tmpunit = tmpunit.trim();
@@ -336,8 +337,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     }
 
     /*
-    * Create 1...n array of "sigma" values
-    */
+     * Create 1...n array of "sigma" values
+     */
     double[] sigma = new double[nz + 1];
     count = 0;
     while (count < nz + 1) {
@@ -348,9 +349,9 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     Array sigma_arr = Array.factory(DataType.DOUBLE, size, sigma);
 
     /*
-    * Add meta-data according to the IOAPI conventions
-    * http://www.baronams.com/products/ioapi
-    */
+     * Add meta-data according to the IOAPI conventions
+     * http://www.baronams.com/products/ioapi
+     */
     ncfile.addAttribute(null, new Attribute("VGLVLS", sigma_arr));
     ncfile.addAttribute(null, new Attribute("SDATE", bdate));
     ncfile.addAttribute(null, new Attribute("STIME", btimei));
@@ -370,7 +371,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      * to do:
      * 1) needs earth radius
      * 2) needs better error checking
-    */
+     */
     int gdtyp = 2;
     double p_alp = 20.;
     double p_bet = 60.;
@@ -383,18 +384,18 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       if (iproj == 0) {
         // Lat-Lon (iproj=0) has no additional information
         gdtyp = 1;
-      } else if (iproj == 1){
-        // UTM uses only iutm 
+      } else if (iproj == 1) {
+        // UTM uses only iutm
         gdtyp = 5;
         p_alp = (double) iutm;
-      } else if (iproj == 2){
+      } else if (iproj == 2) {
         gdtyp = 2;
         p_alp = (double) tlat1;
         p_bet = (double) tlat2;
         p_gam = (double) plon;
-      } else if (iproj == 3){
+      } else if (iproj == 3) {
         gdtyp = 6;
-        if (plat == 90){
+        if (plat == 90) {
           p_alp = 1.;
         } else if (plat == -90) {
           p_alp = -1.;
@@ -428,11 +429,13 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     File paramFile = new File(projpath);
 
     if (paramFile.exists()) {
-      try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(paramFile),
-          StandardCharsets.UTF_8))) {
+      try (BufferedReader br =
+          new BufferedReader(new InputStreamReader(new FileInputStream(paramFile), StandardCharsets.UTF_8))) {
         while ((thisLine = br.readLine()) != null) {
-          if (thisLine.length() == 0) continue;
-          if (thisLine.charAt(0) == '#') continue;
+          if (thisLine.length() == 0)
+            continue;
+          if (thisLine.charAt(0) == '#')
+            continue;
           String[] key_value = thisLine.split("=");
           switch (key_value[0]) {
             case "GDTYP":
@@ -462,20 +465,28 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
           }
         }
       }
-      if (!lgdtyp) log.warn("GDTYP not found; using " + gdtyp);
-      if (!lp_alp) log.warn("P_ALP not found; using " + p_alp);
-      if (!lp_bet) log.warn("P_BET not found; using " + p_bet);
-      if (!lp_gam) log.warn("P_GAM not found; using " + p_gam);
-      if (!lxcent) log.warn("XCENT not found; using " + xcent);
-      if (!lycent) log.warn("YCENT not found; using " + ycent);
+      if (!lgdtyp)
+        log.warn("GDTYP not found; using " + gdtyp);
+      if (!lp_alp)
+        log.warn("P_ALP not found; using " + p_alp);
+      if (!lp_bet)
+        log.warn("P_BET not found; using " + p_bet);
+      if (!lp_gam)
+        log.warn("P_GAM not found; using " + p_gam);
+      if (!lxcent)
+        log.warn("XCENT not found; using " + xcent);
+      if (!lycent)
+        log.warn("YCENT not found; using " + ycent);
 
     } else {
-      if (log.isDebugEnabled()) log.debug("UAMIVServiceProvider: adding projection file");
+      if (log.isDebugEnabled())
+        log.debug("UAMIVServiceProvider: adding projection file");
       try (FileOutputStream out = new FileOutputStream(paramFile)) {
         OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
         BufferedWriter bw = new BufferedWriter(fout);
 
-        bw.write("# Projection parameters are based on IOAPI.  For details, see www.baronams.com/products/ioapi/GRIDS.html");
+        bw.write(
+            "# Projection parameters are based on IOAPI.  For details, see www.baronams.com/products/ioapi/GRIDS.html");
         bw.newLine();
         bw.write("GDTYP=");
         bw.write(Integer.toString(gdtyp));
@@ -512,22 +523,22 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
    * Read data from a top level Variable and return a memory resident Array.
    * This Array has the same element type as the Variable, and the requested shape.
    *
-   * @param v2          a top-level Variable
+   * @param v2 a top-level Variable
    * @param wantSection List of type Range specifying the section of data to read.
-   *                    There must be a Range for each Dimension in the variable, in order.
-   *                    Note: no nulls.
+   *        There must be a Range for each Dimension in the variable, in order.
+   *        Note: no nulls.
    * @return the requested data in a memory-resident Array
    * @see ucar.ma2.Range
    */
   public ucar.ma2.Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
     /*
-     * <b>readData</b> seeks and reads the data for each variable.  The variable
+     * <b>readData</b> seeks and reads the data for each variable. The variable
      * data format is detailed in the CAMx User's guide and summarized here.
      * 
      * For each time:
-     *   ibdate,btime,iedate,etime
-     *   Loop from 1 to nspec species:
-     *     ione,mspec(l),((val(i,j,l),i=1,nx),j=1,ny)
+     * ibdate,btime,iedate,etime
+     * Loop from 1 to nspec species:
+     * ione,mspec(l),((val(i,j,l),i=1,nx),j=1,ny)
      *
      *
      * ione - Dummy variable = 1
@@ -538,7 +549,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      * etime - Ending hour (HHMM)
      * mspec - Species names for nspec species (character*4(10,nspec) array)
      * val - Species l, layer k initial concentrations (ppm for gases, ug/m3 for aerosols)
-     *       for nx grid columns and ny grid rows
+     * for nx grid columns and ny grid rows
      *
      */
     // CAMx UAM-IV Files are all big endian
@@ -556,7 +567,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      * We are skipping the data, but checking
      * the consistency of the Fortran "unformatted"
      * data record
-    */
+     */
     int pad1 = raf.readInt();
     raf.skipBytes(16);
     int pad2 = raf.readInt();
@@ -572,9 +583,9 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     }
 
     /*
-    * Skip data associated with species that are prior
-    * in the data block
-    */
+     * Skip data associated with species that are prior
+     * in the data block
+     */
     raf.skipBytes(this.spc_3D_block * spcid * 4);
 
     // Initialize count for indexing arr
@@ -584,10 +595,10 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     while (count < size) {
 
       /*
-      * Read species name and store the initial record pad.
-      * Note: it might be good to compare
-      *       spc string to variable.getShortName
-      */
+       * Read species name and store the initial record pad.
+       * Note: it might be good to compare
+       * spc string to variable.getShortName
+       */
       if (count == 0) {
         pad1 = raf.readInt();
         int ione = raf.readInt();
@@ -595,19 +606,19 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       }
 
       /*
-      * If we have read a 2D slice, read the final record pad
-      * and compare to initial record pad.  If everything is okay, proceed.
-      * (1) skip to next 2D slice
-      * (2) store initial pad
-      * (3) read spc name
-      * Note: it might be good to compare
-      *       spc string to variable.getShortName
-      */
+       * If we have read a 2D slice, read the final record pad
+       * and compare to initial record pad. If everything is okay, proceed.
+       * (1) skip to next 2D slice
+       * (2) store initial pad
+       * (3) read spc name
+       * Note: it might be good to compare
+       * spc string to variable.getShortName
+       */
       if ((count != 0) && ((count % this.n2dvals) == 0)) {
         pad2 = raf.readInt();
         if (pad1 != pad2) {
-          //System.out.println(pad1);
-          //System.out.println(pad2);
+          // System.out.println(pad1);
+          // System.out.println(pad2);
           throw new IOException("Asymmetric fortran buffer values: 2");
         }
         if ((count % this.n3dvals) == 0) {
@@ -619,8 +630,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       }
 
       /*
-      * Attempt to read a Float from the file
-      */
+       * Attempt to read a Float from the file
+       */
       try {
         arr[count++] = raf.readFloat();
       } catch (java.lang.ArrayIndexOutOfBoundsException io) {

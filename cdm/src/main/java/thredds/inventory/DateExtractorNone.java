@@ -5,7 +5,6 @@
 package thredds.inventory;
 
 import ucar.nc2.time.CalendarDate;
-
 import java.util.Date;
 
 /**
@@ -18,9 +17,11 @@ public class DateExtractorNone implements DateExtractor {
   public Date getDate(MFile mfile) {
     return null;
   }
+
   public CalendarDate getCalendarDate(MFile mfile) {
     return null;
   }
+
   public CalendarDate getCalendarDateFromPath(String path) {
     return null;
   }

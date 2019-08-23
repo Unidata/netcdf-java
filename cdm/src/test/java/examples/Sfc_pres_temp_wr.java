@@ -1,19 +1,20 @@
 
-/* This is part of the netCDF package.
- Copyright 2006 University Corporation for Atmospheric Research/Unidata.
- See COPYRIGHT file for conditions of use.
-
- This example writes some surface pressure and temperatures. It is
- intended to illustrate the use of the netCDF Java API. The companion
- program sfc_pres_temp_rd.java shows how to read the netCDF data file
- created by this program.
-
- This example demonstrates the netCDF Java API.
-
- Full documentation of the netCDF Java API can be found at:
-   http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm
-
- Example contributed by Peter Jansen
+/*
+ * This is part of the netCDF package.
+ * Copyright 2006 University Corporation for Atmospheric Research/Unidata.
+ * See COPYRIGHT file for conditions of use.
+ * 
+ * This example writes some surface pressure and temperatures. It is
+ * intended to illustrate the use of the netCDF Java API. The companion
+ * program sfc_pres_temp_rd.java shows how to read the netCDF data file
+ * created by this program.
+ * 
+ * This example demonstrates the netCDF Java API.
+ * 
+ * Full documentation of the netCDF Java API can be found at:
+ * http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm
+ * 
+ * Example contributed by Peter Jansen
  */
 
 package examples;
@@ -28,7 +29,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -85,8 +85,8 @@ public class Sfc_pres_temp_wr {
       // and longitudes of our data grid into the netCDF file.
       dataFile.create();
 
-      Array dataLat = Array.factory(DataType.FLOAT, new int[]{NLAT});
-      Array dataLon = Array.factory(DataType.FLOAT, new int[]{NLON});
+      Array dataLat = Array.factory(DataType.FLOAT, new int[] {NLAT});
+      Array dataLon = Array.factory(DataType.FLOAT, new int[] {NLON});
 
       // Create some pretend data. If this wasn't an example program, we
       // would have some real data to write, for example, model
@@ -107,7 +107,7 @@ public class Sfc_pres_temp_wr {
       // Create the pretend data. This will write our surface pressure and
       // surface temperature data.
 
-      int[] iDim = new int[]{latDim.getLength(), lonDim.getLength()};
+      int[] iDim = new int[] {latDim.getLength(), lonDim.getLength()};
       Array dataTemp = Array.factory(DataType.FLOAT, iDim);
       Array dataPres = Array.factory(DataType.FLOAT, iDim);
 

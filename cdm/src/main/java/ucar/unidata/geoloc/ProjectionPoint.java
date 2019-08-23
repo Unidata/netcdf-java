@@ -29,7 +29,8 @@ public interface ProjectionPoint {
   double getY();
 
   /**
-   * Returns the result of {@link #nearlyEquals(ProjectionPoint, double)}, with {@link Misc#defaultMaxRelativeDiffDouble}.
+   * Returns the result of {@link #nearlyEquals(ProjectionPoint, double)}, with
+   * {@link Misc#defaultMaxRelativeDiffDouble}.
    */
   default boolean nearlyEquals(ProjectionPoint other) {
     return nearlyEquals(other, Misc.defaultMaxRelativeDiffDouble);
@@ -39,8 +40,8 @@ public interface ProjectionPoint {
    * Returns {@code true} if this point is nearly equal to {@code other}. The "near equality" of points is determined
    * using {@link Misc#nearlyEquals(double, double, double)}, with the specified maxRelDiff.
    *
-   * @param other    the other point to check.
-   * @param maxRelDiff  the maximum {@link Misc#relativeDifference relative difference} the two points may have.
+   * @param other the other point to check.
+   * @param maxRelDiff the maximum {@link Misc#relativeDifference relative difference} the two points may have.
    * @return {@code true} if this point is nearly equal to {@code other}.
    */
   boolean nearlyEquals(ProjectionPoint other, double maxRelDiff);

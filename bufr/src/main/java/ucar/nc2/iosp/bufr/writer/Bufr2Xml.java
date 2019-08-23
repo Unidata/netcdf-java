@@ -17,7 +17,6 @@ import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.ma2.*;
 import ucar.unidata.util.StringUtil2;
-
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLOutputFactory;
@@ -47,8 +46,8 @@ public class Bufr2Xml {
       staxWriter = fac.createXMLStreamWriter(os, "UTF-8");
 
       staxWriter.writeStartDocument("UTF-8", "1.0");
-      //staxWriter.writeCharacters("\n");
-      //staxWriter.writeStartElement("bufrMessage");
+      // staxWriter.writeCharacters("\n");
+      // staxWriter.writeStartElement("bufrMessage");
 
       writeMessage(message, ncfile);
 
@@ -115,45 +114,48 @@ public class Bufr2Xml {
       staxWriter.writeCharacters(indent.toString());
       staxWriter.writeEndElement();
 
-    } catch (IOException|XMLStreamException e) {
+    } catch (IOException | XMLStreamException e) {
       e.printStackTrace();
       throw new RuntimeException(e);
     }
   }
 
-  /* void writeStructureArray(StructureDS s, ArrayStructure data, Indent indent) throws IOException, XMLStreamException {
-    StructureDataIterator sdataIter = data.getStructureDataIterator();
-    while (sdataIter.hasNext()) {
-      StructureData sdata = sdataIter.next();
-      staxWriter.writeCharacters("\n");
-      staxWriter.writeCharacters(indent.toString());
-      staxWriter.writeStartElement(s.getShortName());
-
-      indent.incr();
-      for (StructureMembers.Member m : sdata.getMembers()) {
-        Variable v = s.findVariable(m.getName());
-
-        if (m.getDataType().isString() || m.getDataType().isNumeric()) {
-          writeVariable((VariableDS) v, sdata.getArray(m), indent);
-
-        } else if (m.getDataType() == DataType.STRUCTURE) {
-          writeStructureArray((StructureDS) v, (ArrayStructure) sdata.getArray(m), indent);
-
-        } else if (m.getDataType() == DataType.SEQUENCE) {
-          writeSequence((SequenceDS) v, (ArraySequence) sdata.getArray(m), indent);
-        }
-
-        if (m.getDataType().isString() || m.getDataType().isNumeric()) {
-          writeVariable((VariableDS) v, sdata.getArray(m), indent);
-        }
-      }
-      indent.decr();
-
-      staxWriter.writeCharacters("\n");
-      staxWriter.writeCharacters(indent.toString());
-      staxWriter.writeEndElement();
-    }
-  } */
+  /*
+   * void writeStructureArray(StructureDS s, ArrayStructure data, Indent indent) throws IOException, XMLStreamException
+   * {
+   * StructureDataIterator sdataIter = data.getStructureDataIterator();
+   * while (sdataIter.hasNext()) {
+   * StructureData sdata = sdataIter.next();
+   * staxWriter.writeCharacters("\n");
+   * staxWriter.writeCharacters(indent.toString());
+   * staxWriter.writeStartElement(s.getShortName());
+   * 
+   * indent.incr();
+   * for (StructureMembers.Member m : sdata.getMembers()) {
+   * Variable v = s.findVariable(m.getName());
+   * 
+   * if (m.getDataType().isString() || m.getDataType().isNumeric()) {
+   * writeVariable((VariableDS) v, sdata.getArray(m), indent);
+   * 
+   * } else if (m.getDataType() == DataType.STRUCTURE) {
+   * writeStructureArray((StructureDS) v, (ArrayStructure) sdata.getArray(m), indent);
+   * 
+   * } else if (m.getDataType() == DataType.SEQUENCE) {
+   * writeSequence((SequenceDS) v, (ArraySequence) sdata.getArray(m), indent);
+   * }
+   * 
+   * if (m.getDataType().isString() || m.getDataType().isNumeric()) {
+   * writeVariable((VariableDS) v, sdata.getArray(m), indent);
+   * }
+   * }
+   * indent.decr();
+   * 
+   * staxWriter.writeCharacters("\n");
+   * staxWriter.writeCharacters(indent.toString());
+   * staxWriter.writeEndElement();
+   * }
+   * }
+   */
 
   // iterate through the observations
 
@@ -162,7 +164,7 @@ public class Bufr2Xml {
     int count = 0;
     try {
       while (sdataIter.hasNext()) {
-        //out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
+        // out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
         StructureData sdata = sdataIter.next();
 
         staxWriter.writeCharacters("\n");
@@ -226,7 +228,8 @@ public class Bufr2Xml {
       int count = 0;
       mdata.resetLocalIterator();
       while (mdata.hasNext()) {
-        if (count > 0) staxWriter.writeCharacters(" ");
+        if (count > 0)
+          staxWriter.writeCharacters(" ");
         count++;
 
         if (v.getDataType().isNumeric()) {
@@ -238,11 +241,11 @@ public class Bufr2Xml {
           } else if ((v.getDataType() == DataType.FLOAT) || (v.getDataType() == DataType.DOUBLE)) {
             writeFloat(v, val);
 
-          } else {  // numeric, not float
+          } else { // numeric, not float
             staxWriter.writeCharacters(mdata.toString());
           }
 
-        } else {  // not numeric
+        } else { // not numeric
           String s = StringUtil2.filter7bits(mdata.next().toString());
           staxWriter.writeCharacters(escaper.escape(s));
         }

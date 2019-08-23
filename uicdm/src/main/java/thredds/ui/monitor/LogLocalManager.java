@@ -6,31 +6,31 @@ package thredds.ui.monitor;
 
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.IO;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;/*
-
-/**
- * Manage local log files.
- *
- * @author caron
- * @since May 6, 2010
- */
+                    * 
+                    * /**
+                    * Manage local log files.
+                    *
+                    * @author caron
+                    * 
+                    * @since May 6, 2010
+                    */
 
 public class LogLocalManager {
   static File topDir;
 
   static {
     // decide where to put the logs locally
-    String dataDir = System.getProperty( "tdsMonitor.dataDir" );
+    String dataDir = System.getProperty("tdsMonitor.dataDir");
     if (dataDir != null) {
       topDir = new File(dataDir);
     } else {
-      String homeDir = System.getProperty( "user.home" );
+      String homeDir = System.getProperty("user.home");
       topDir = new File(homeDir, "tdsMonitor");
     }
     System.out.printf("logs stored at= %s%n", topDir);
@@ -41,9 +41,9 @@ public class LogLocalManager {
     try {
       cleanServer = java.net.URLEncoder.encode(server, "UTF8");
     } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);   // wont happen
+      throw new RuntimeException(e); // wont happen
     }
-    return new File(topDir, cleanServer+"/"+where);
+    return new File(topDir, cleanServer + "/" + where);
   }
 
   /////////////////////////////////////////////
@@ -62,19 +62,20 @@ public class LogLocalManager {
 
     // default is local time zone
     String format = isAccess ? "yyyy-MM-dd" : "yyyy-MM-dd-HH";
-    localFormat = new SimpleDateFormat(format, Locale.US );
+    localFormat = new SimpleDateFormat(format, Locale.US);
   }
 
   public String getRoots() {
-     File localDir = LogLocalManager.getDirectory(server, "");
-     File file = new File(localDir, "roots.txt");
-     if (!file.exists()) return null;
+    File localDir = LogLocalManager.getDirectory(server, "");
+    File file = new File(localDir, "roots.txt");
+    if (!file.exists())
+      return null;
 
-     try {
-       return IO.readFile(file.getPath());
-     } catch( IOException ioe) {
-       return null;
-     }
+    try {
+      return IO.readFile(file.getPath());
+    } catch (IOException ioe) {
+      return null;
+    }
   }
 
   public List<FileDateRange> getLocalFiles(Date start, Date end) {
@@ -88,10 +89,13 @@ public class LogLocalManager {
 
     List<FileDateRange> list = new ArrayList<>();
     File[] files = localDir.listFiles();
-    if (files == null) return new ArrayList<>(0);
+    if (files == null)
+      return new ArrayList<>(0);
     for (File f : files) {
-      if (f.isDirectory()) continue;
-      if (f.getName().endsWith(".zip")) continue;
+      if (f.isDirectory())
+        continue;
+      if (f.getName().endsWith(".zip"))
+        continue;
       FileDateRange fdr = new FileDateRange(f);
       if (!fdr.bad)
         list.add(fdr);
@@ -102,7 +106,7 @@ public class LogLocalManager {
     FileDateRange prev = null;
     for (FileDateRange fdr : list) {
       if (prev != null)
-        prev.end = new Date(fdr.start.getTime()-1);
+        prev.end = new Date(fdr.start.getTime() - 1);
       prev = fdr;
     }
 
@@ -111,28 +115,30 @@ public class LogLocalManager {
       FileDateRange first = list.get(0);
       long interval = first.end.getTime() - first.start.getTime();
       if (isAccess) {
-        FileDateRange last = list.get(list.size()-1);
-        last.end = new Date(last.start.getTime()+interval);
+        FileDateRange last = list.get(list.size() - 1);
+        last.end = new Date(last.start.getTime() + interval);
       } else {
-        FileDateRange nextLast = list.get(list.size()-2);
-        nextLast.end = new Date(nextLast.start.getTime()+interval);
-        FileDateRange last = list.get(list.size()-1);
+        FileDateRange nextLast = list.get(list.size() - 2);
+        nextLast.end = new Date(nextLast.start.getTime() + interval);
+        FileDateRange last = list.get(list.size() - 1);
         last.start = nextLast.end;
-        last.end = new Date(last.start.getTime()+interval);
+        last.end = new Date(last.start.getTime() + interval);
       }
     } else if (prev != null) { // only one
       if (isAccess)
-         prev.end = new Date(prev.start.getTime()+ 24 * 3600 * 1000);
+        prev.end = new Date(prev.start.getTime() + 24 * 3600 * 1000);
       else {
-        prev.end = new Date(prev.start.getTime()+3600 * 1000);
+        prev.end = new Date(prev.start.getTime() + 3600 * 1000);
       }
     }
 
     // filter by time range
     localFiles = new ArrayList<>();
     for (FileDateRange have : list) {
-      if (start != null && start.after(have.end)) continue;
-      if (end != null && have.start.after(end)) continue;
+      if (start != null && start.after(have.end))
+        continue;
+      if (end != null && have.start.after(end))
+        continue;
       localFiles.add(have);
     }
     return localFiles;
@@ -140,23 +146,29 @@ public class LogLocalManager {
 
   private static class ServletFileCompare implements Comparator<FileDateRange>, Serializable {
     public int compare(FileDateRange o1, FileDateRange o2) {
-      if (o1.f.getName().equals(specialLog)) return 1;
-      if (o2.f.getName().equals(specialLog)) return -1;
+      if (o1.f.getName().equals(specialLog))
+        return 1;
+      if (o2.f.getName().equals(specialLog))
+        return -1;
       return o1.f.getName().compareTo(o2.f.getName());
     }
   }
 
   Date getStartDate() {
-    if (localFiles == null) return null;
-    if (localFiles.size() == 0) return null;
+    if (localFiles == null)
+      return null;
+    if (localFiles.size() == 0)
+      return null;
     FileDateRange f = localFiles.get(0);
     return f.start;
   }
 
   Date getEndDate() {
-    if (localFiles == null) return null;
-    if (localFiles.size() == 0) return null;
-    FileDateRange f = localFiles.get(localFiles.size()-1);
+    if (localFiles == null)
+      return null;
+    if (localFiles.size() == 0)
+      return null;
+    FileDateRange f = localFiles.get(localFiles.size() - 1);
     return f.end;
   }
 
@@ -194,12 +206,12 @@ public class LogLocalManager {
           String filenameDate;
           int len = name.length();
 
-          // all: access.2013-07-29.log  or  localhost_access_log.2015-06-17.txt
+          // all: access.2013-07-29.log or localhost_access_log.2015-06-17.txt
           // 4.3: threddsServlet.log.2013-08-01-14
           // 4.4: threddsServlet.2013-08-01-14.log
           if (name.contains("access")) {
             int pos = name.indexOf(".");
-            filenameDate = name.substring(pos+1, len - 4);
+            filenameDate = name.substring(pos + 1, len - 4);
           } else if (name.startsWith("threddsServlet.log.")) {
             filenameDate = name.substring("threddsServlet.log.".length());
           } else if (name.startsWith("threddsServlet.")) {
@@ -208,7 +220,7 @@ public class LogLocalManager {
             return null;
           }
 
-          return localFormat.parse( filenameDate );
+          return localFormat.parse(filenameDate);
 
         } catch (Exception e) {
           e.printStackTrace();

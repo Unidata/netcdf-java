@@ -16,7 +16,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -32,7 +31,8 @@ public class TestFindXYcoords {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testCoordExtract() throws IOException {
-    try (ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib2/coordExtract/TestCoordExtract.grib2")) {
+    try (ucar.nc2.dt.grid.GridDataset dataset =
+        GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib2/coordExtract/TestCoordExtract.grib2")) {
       System.out.printf("%s%n", dataset.getLocation());
 
       GeoGrid grid = dataset.findGridByName("Convective_inhibition_surface");
@@ -57,7 +57,8 @@ public class TestFindXYcoords {
   @Test
   public void bugReport() throws IOException {
 
-    try (GridDataset dataset = GridDataset.open("http://www.unidata.ucar.edu/software/netcdf/examples/sresa1b_ncar_ccsm3_0_run1_200001.nc")) {
+    try (GridDataset dataset =
+        GridDataset.open("http://www.unidata.ucar.edu/software/netcdf/examples/sresa1b_ncar_ccsm3_0_run1_200001.nc")) {
 
       GridDatatype firstGridInfo = dataset.getGrids().get(0);
       System.out.println("Grid name =" + firstGridInfo.getName());
@@ -69,7 +70,8 @@ public class TestFindXYcoords {
       assert gcs.isLatLon();
 
       LatLonRect rect = gcs.getLatLonBoundingBox();
-      System.out.println("gcs bounding box : latmin=" + rect.getLatMin() + " latmax=" + rect.getLatMax() + " lonmin=" + rect.getLonMin() + " lonmax=" + rect.getLonMax());
+      System.out.println("gcs bounding box : latmin=" + rect.getLatMin() + " latmax=" + rect.getLatMax() + " lonmin="
+          + rect.getLonMin() + " lonmax=" + rect.getLonMax());
       System.out.println("projection       : " + gcs.getProjection());
       System.out.println("width =" + gcs.getXHorizAxis().getSize() + ", height=" + gcs.getYHorizAxis().getSize());
       System.out.println("X is regular     ? " + ((CoordinateAxis1D) gcs.getXHorizAxis()).isRegular());
@@ -94,11 +96,10 @@ public class TestFindXYcoords {
 
       // --------------------------------------------------------------------------
       double latMin = -20.D, latMax = -10.D, lonMin = 35.D, lonMax = 45.D;
-      System.out.println("\nSUBGRID (latmin=" + latMin + "  latmax=" + latMax + "  lonmin=" + lonMin + "  lonmax=" + lonMax + ")");
+      System.out.println(
+          "\nSUBGRID (latmin=" + latMin + "  latmax=" + latMax + "  lonmin=" + lonMin + "  lonmax=" + lonMax + ")");
 
-      LatLonRect latLonRect = new LatLonRect(
-              new LatLonPointImpl(latMin, lonMin),
-              new LatLonPointImpl(latMax, lonMax));
+      LatLonRect latLonRect = new LatLonRect(new LatLonPointImpl(latMin, lonMin), new LatLonPointImpl(latMax, lonMax));
 
       GeoGrid gridSubset = firstGrid.subset(null, null, latLonRect, 0, 1, 1);
 
@@ -106,7 +107,8 @@ public class TestFindXYcoords {
 
       rect = gcs2.getLatLonBoundingBox();
       System.out.println("is lat/lon system ? " + gcs2.isLatLon());
-      System.out.println("gcs bounding box : latmin=" + rect.getLatMin() + " latmax=" + rect.getLatMax() + " lonmin=" + rect.getLonMin() + " lonmax=" + rect.getLonMax());
+      System.out.println("gcs bounding box : latmin=" + rect.getLatMin() + " latmax=" + rect.getLatMax() + " lonmin="
+          + rect.getLonMin() + " lonmax=" + rect.getLonMax());
       System.out.println("projection       : " + gcs.getProjection());
       System.out.println("width =" + gcs2.getXHorizAxis().getSize() + ", height=" + gcs2.getYHorizAxis().getSize());
       System.out.println("X is regular     ? " + ((CoordinateAxis1D) gcs2.getXHorizAxis()).isRegular());

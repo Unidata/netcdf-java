@@ -14,17 +14,17 @@ import thredds.crawlabledataset.CrawlableDataset;
  * @author edavis
  * @since Dec 1, 2005 9:29:18 PM
  */
-public interface DatasetEnhancer
-{
+public interface DatasetEnhancer {
   /**
    * Add metadata to the given InvDataset possibly using information from the
    * corresponding CrawlableDataset.
    *
    * @param dataset the InvDataset to enhance with additional metadata.
-   * @param crDataset the CrawlableDataset that corresponds with the given InvDataset, possibly used to gather information not available from the InvDataset.
+   * @param crDataset the CrawlableDataset that corresponds with the given InvDataset, possibly used to gather
+   *        information not available from the InvDataset.
    * @return true if the InvDataset is successfully enhanced, otherwise false.
    */
-  public boolean addMetadata( InvDataset dataset, CrawlableDataset crDataset );
+  public boolean addMetadata(InvDataset dataset, CrawlableDataset crDataset);
 
   /**
    * Return the configuration object.

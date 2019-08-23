@@ -18,7 +18,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -32,11 +31,12 @@ import java.lang.invoke.MethodHandles;
 public class TestProjectionCoordinates {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static String testDir= TestDir.cdmUnitTestDir + "transforms/";
+  private static String testDir = TestDir.cdmUnitTestDir + "transforms/";
 
   @Test
   public void testPSscaleFactor() throws IOException, InvalidRangeException {
-    testCoordinates(testDir + "stereographic/foster.grib2", 26.023346, 251.023136 - 360.0, 41.527360, 270.784605 - 360.0);
+    testCoordinates(testDir + "stereographic/foster.grib2", 26.023346, 251.023136 - 360.0, 41.527360,
+        270.784605 - 360.0);
   }
 
   @Test
@@ -52,10 +52,11 @@ public class TestProjectionCoordinates {
 
   @Test
   public void testRotatedPole2() throws IOException, InvalidRangeException {
-    testCoordinates(testDir+ "rotatedPole/DMI-HIRHAM5_ERAIN_DM_AMMA-50km_1989-1990_as.nc", -19.8, -35.64, 35.2, 35.2);
+    testCoordinates(testDir + "rotatedPole/DMI-HIRHAM5_ERAIN_DM_AMMA-50km_1989-1990_as.nc", -19.8, -35.64, 35.2, 35.2);
   }
 
-  private void testCoordinates(String filename, double startLat, double startLon, double endLat, double endLon) throws IOException, InvalidRangeException {
+  private void testCoordinates(String filename, double startLat, double startLon, double endLat, double endLon)
+      throws IOException, InvalidRangeException {
     System.out.printf("%n***Open %s%n", filename);
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
     GridDataset gds = new GridDataset(ncd);
@@ -66,7 +67,7 @@ public class TestProjectionCoordinates {
       gsys = g.getGeoCoordSystem();
       for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
         if (t instanceof ProjectionCT) {
-          p = ((ProjectionCT)t).getProjection();
+          p = ((ProjectionCT) t).getProjection();
           break;
         }
       }
@@ -74,12 +75,13 @@ public class TestProjectionCoordinates {
     assert p != null;
 
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
-    CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
-    p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
-    LatLonPoint start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
-    LatLonPoint start2 =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
-    System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
-    System.out.printf( "end = %f %f%n", start2.getLatitude(), start2.getLongitude());
+    CoordinateAxis1D yaxis = (CoordinateAxis1D) gsys.getYHorizAxis();
+    p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPoint start1 = p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPoint start2 =
+        p.projToLatLon(xaxis.getCoordValue((int) xaxis.getSize() - 1), yaxis.getCoordValue((int) yaxis.getSize() - 1));
+    System.out.printf("start = %f %f%n", start1.getLatitude(), start1.getLongitude());
+    System.out.printf("end = %f %f%n", start2.getLatitude(), start2.getLongitude());
 
     assert start1.nearlyEquals(new LatLonPointImpl(startLat, startLon), 2.0E-4);
     assert start2.nearlyEquals(new LatLonPointImpl(endLat, endLon), 2.0E-4);

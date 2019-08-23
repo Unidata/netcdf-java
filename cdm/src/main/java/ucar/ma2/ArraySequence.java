@@ -5,7 +5,6 @@
 package ucar.ma2;
 
 import ucar.nc2.util.Indent;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +30,11 @@ public class ArraySequence extends ArrayStructure {
    * Constructor
    *
    * @param members the members
-   * @param iter    the iterator
-   * @param nelems  iterator count, may be missing (<0)
+   * @param iter the iterator
+   * @param nelems iterator count, may be missing (<0)
    */
   public ArraySequence(StructureMembers members, StructureDataIterator iter, int nelems) {
-    super(members, new int[]{0});
+    super(members, new int[] {0});
     this.iter = iter;
     this.nelems = nelems;
   }
@@ -137,35 +136,43 @@ public class ArraySequence extends ArrayStructure {
         } else {
           if (dataType == DataType.DOUBLE) {
             double[] data = sdata.getJavaArrayDouble(realm);
-            for (double aData : data) resultIter.setDoubleNext(aData);
+            for (double aData : data)
+              resultIter.setDoubleNext(aData);
 
           } else if (dataType == DataType.FLOAT) {
             float[] data = sdata.getJavaArrayFloat(realm);
-            for (float aData : data) resultIter.setFloatNext(aData);
+            for (float aData : data)
+              resultIter.setFloatNext(aData);
 
           } else if (dataType.getPrimitiveClassType() == byte.class) {
             byte[] data = sdata.getJavaArrayByte(realm);
-            for (byte aData : data) resultIter.setByteNext(aData);
+            for (byte aData : data)
+              resultIter.setByteNext(aData);
 
           } else if (dataType.getPrimitiveClassType() == short.class) {
             short[] data = sdata.getJavaArrayShort(realm);
-            for (short aData : data) resultIter.setShortNext(aData);
+            for (short aData : data)
+              resultIter.setShortNext(aData);
 
           } else if (dataType.getPrimitiveClassType() == int.class) {
             int[] data = sdata.getJavaArrayInt(realm);
-            for (int aData : data) resultIter.setIntNext(aData);
+            for (int aData : data)
+              resultIter.setIntNext(aData);
 
           } else if (dataType.getPrimitiveClassType() == long.class) {
             long[] data = sdata.getJavaArrayLong(realm);
-            for (long aData : data) resultIter.setLongNext(aData);
+            for (long aData : data)
+              resultIter.setLongNext(aData);
 
           } else if (dataType == DataType.CHAR) {
             char[] data = sdata.getJavaArrayChar(realm);
-            for (char aData : data) resultIter.setCharNext(aData);
+            for (char aData : data)
+              resultIter.setCharNext(aData);
 
           } else if (dataType == DataType.STRING) {
             String[] data = sdata.getJavaArrayString(realm);
-            for (String aData : data) resultIter.setObjectNext(aData);
+            for (String aData : data)
+              resultIter.setObjectNext(aData);
 
           } else if (dataType == DataType.STRUCTURE) {
             ArrayStructure as = sdata.getArrayStructure(realm);
@@ -198,12 +205,14 @@ public class ArraySequence extends ArrayStructure {
             StructureData sdata = sdataIter.next();
             StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
             double[] data = sdata.getJavaArrayDouble(realm);
-            for (double aData : data) result.add(aData);
+            for (double aData : data)
+              result.add(aData);
             count++;
           }
           double[] da = new double[result.size()];
           int i = 0;
-          for (Double d : result) da[i++] = d;
+          for (Double d : result)
+            da[i++] = d;
           dataArray = da;
           break;
         }
@@ -214,69 +223,74 @@ public class ArraySequence extends ArrayStructure {
             StructureData sdata = sdataIter.next();
             StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
             float[] data = sdata.getJavaArrayFloat(realm);
-            for (float aData : data) result.add(aData);
+            for (float aData : data)
+              result.add(aData);
             count++;
           }
           float[] da = new float[result.size()];
           int i = 0;
-          for (Float d : result) da[i++] = d;
+          for (Float d : result)
+            da[i++] = d;
           dataArray = da;
           break;
         }
 
         case UBYTE:
         case BYTE:
-        case ENUM1:
-        {
+        case ENUM1: {
           ArrayList<Byte> result = new ArrayList<>(initial);
           while (sdataIter.hasNext()) {
             StructureData sdata = sdataIter.next();
             StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
             byte[] data = sdata.getJavaArrayByte(realm);
-            for (byte aData : data) result.add(aData);
+            for (byte aData : data)
+              result.add(aData);
             count++;
           }
           byte[] da = new byte[result.size()];
           int i = 0;
-          for (Byte d : result) da[i++] = d;
+          for (Byte d : result)
+            da[i++] = d;
           dataArray = da;
           break;
         }
 
         case USHORT:
         case SHORT:
-        case ENUM2:
-        {
+        case ENUM2: {
           ArrayList<Short> result = new ArrayList<>(initial);
           while (sdataIter.hasNext()) {
             StructureData sdata = sdataIter.next();
             StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
             short[] data = sdata.getJavaArrayShort(realm);
-            for (short aData : data) result.add(aData);
+            for (short aData : data)
+              result.add(aData);
             count++;
           }
           short[] da = new short[result.size()];
           int i = 0;
-          for (Short d : result) da[i++] = d;
+          for (Short d : result)
+            da[i++] = d;
           dataArray = da;
           break;
         }
 
         case UINT:
         case INT:
-        case ENUM4:
-        {
+        case ENUM4: {
           ArrayList<Integer> result = new ArrayList<>(initial);
           while (sdataIter.hasNext()) {
             StructureData sdata = sdataIter.next();
             StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
             int[] data = sdata.getJavaArrayInt(realm);
-            for (int aData : data) result.add(aData);
+            for (int aData : data)
+              result.add(aData);
             count++;
           }
           int[] da = new int[result.size()];
           int i = 0;
-          for (Integer d : result) da[i++] = d;
+          for (Integer d : result)
+            da[i++] = d;
           dataArray = da;
           break;
         }
@@ -288,12 +302,14 @@ public class ArraySequence extends ArrayStructure {
             StructureData sdata = sdataIter.next();
             StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
             long[] data = sdata.getJavaArrayLong(realm);
-            for (long aData : data) result.add(aData);
+            for (long aData : data)
+              result.add(aData);
             count++;
           }
           long[] da = new long[result.size()];
           int i = 0;
-          for (Long d : result) da[i++] = d;
+          for (Long d : result)
+            da[i++] = d;
           dataArray = da;
           break;
         }
@@ -304,12 +320,14 @@ public class ArraySequence extends ArrayStructure {
             StructureData sdata = sdataIter.next();
             StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
             char[] data = sdata.getJavaArrayChar(realm);
-            for (char aData : data) result.add(aData);
+            for (char aData : data)
+              result.add(aData);
             count++;
           }
           char[] da = new char[result.size()];
           int i = 0;
-          for (Character d : result) da[i++] = d;
+          for (Character d : result)
+            da[i++] = d;
           dataArray = da;
           break;
         }
@@ -325,7 +343,8 @@ public class ArraySequence extends ArrayStructure {
           }
           String[] da = new String[result.size()];
           int i = 0;
-          for (String d : result) da[i++] = d;
+          for (String d : result)
+            da[i++] = d;
           dataArray = da;
           break;
         }
@@ -343,7 +362,8 @@ public class ArraySequence extends ArrayStructure {
           }
 
           rshape[0] = count;
-          StructureMembers membersw = new StructureMembers(proxym.getStructureMembers()); // no data arrays get propagated
+          StructureMembers membersw = new StructureMembers(proxym.getStructureMembers()); // no data arrays get
+                                                                                          // propagated
           return new ArrayStructureW(membersw, rshape, result.toArray(new StructureData[0]));
         }
       }

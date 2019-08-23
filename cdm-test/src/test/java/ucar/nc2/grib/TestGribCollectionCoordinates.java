@@ -21,7 +21,6 @@ import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -51,29 +50,32 @@ public class TestGribCollectionCoordinates {
   @AfterClass
   static public void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
-    /* Formatter out = new Formatter(System.out);
-
-    FileCacheIF cache = GribCdmIndex.gribCollectionCache;
-    if (cache != null) {
-      cache.showTracking(out);
-      cache.showCache(out);
-      cache.clearCache(false);
-    }
-
-    FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
-    if (rafCache != null) {
-      rafCache.showCache(out);
-    }
-
-    System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
-    System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
-    System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
-    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
-
-    FileCache.shutdown();
-    RandomAccessFile.setGlobalFileCache(null);
-    TestDir.checkLeaks();
-    RandomAccessFile.setDebugLeaks(false); */
+    /*
+     * Formatter out = new Formatter(System.out);
+     * 
+     * FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+     * if (cache != null) {
+     * cache.showTracking(out);
+     * cache.showCache(out);
+     * cache.clearCache(false);
+     * }
+     * 
+     * FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
+     * if (rafCache != null) {
+     * rafCache.showCache(out);
+     * }
+     * 
+     * System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
+     * System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
+     * System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
+     * System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC +
+     * PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
+     * 
+     * FileCache.shutdown();
+     * RandomAccessFile.setGlobalFileCache(null);
+     * TestDir.checkLeaks();
+     * RandomAccessFile.setDebugLeaks(false);
+     */
   }
 
   /////////////////////////////////////////////////////////
@@ -82,7 +84,8 @@ public class TestGribCollectionCoordinates {
   @Test
   public void testExtraCoordinates() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/.*gbx9", null, null, null, "file", null);
     config.gribConfig.setExcludeZero(true); // no longer the default
 
@@ -91,10 +94,12 @@ public class TestGribCollectionCoordinates {
 
     boolean ok = true;
 
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/namAlaska22.ncx4")) {
+    try (NetcdfDataset ds =
+        NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/namAlaska22.ncx4")) {
       for (Variable vds : ds.getVariables()) {
         String stdname = ds.findAttValueIgnoreCase(vds, "standard_name", "no");
-        if (!stdname.equalsIgnoreCase("time")) continue;
+        if (!stdname.equalsIgnoreCase("time"))
+          continue;
 
         System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
         assert vds instanceof CoordinateAxis : vds.getFullName();
@@ -136,18 +141,21 @@ public class TestGribCollectionCoordinates {
   // make sure Best reftimes always increase
   @Test
   public void testBestReftimeMonotonic() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("gfs_2p5deg", "test/gfs_2p5deg", FeatureCollectionType.GRIB2,
-            TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null,  null, "file", null);
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("gfs_2p5deg", "test/gfs_2p5deg", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
 
     boolean ok = true;
 
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4")) {
+    try (NetcdfDataset ds =
+        NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4")) {
       for (Variable vds : ds.getVariables()) {
         String stdname = ds.findAttValueIgnoreCase(vds, "standard_name", "no");
-        if (!stdname.equalsIgnoreCase("forecast_reference_time")) continue;
+        if (!stdname.equalsIgnoreCase("forecast_reference_time"))
+          continue;
 
         System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
         assert vds instanceof CoordinateAxis1D : vds.getFullName();

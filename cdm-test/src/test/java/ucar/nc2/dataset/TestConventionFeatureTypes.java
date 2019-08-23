@@ -14,7 +14,6 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -34,25 +33,25 @@ public class TestConventionFeatureTypes {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{"atd", FeatureType.GRID});
-    result.add(new Object[]{"atd-radar", FeatureType.GRID});
-    result.add(new Object[]{"avhrr", FeatureType.GRID});
-    result.add(new Object[]{"awips", FeatureType.GRID});
-    result.add(new Object[]{"cedric", FeatureType.GRID});
-    result.add(new Object[]{"cf", FeatureType.GRID});
-    result.add(new Object[]{"cf/dsc", FeatureType.POINT});
-    result.add(new Object[]{"cfradial", FeatureType.RADIAL});
-    result.add(new Object[]{"coards", FeatureType.GRID});
-    result.add(new Object[]{"csm", FeatureType.GRID});
-    result.add(new Object[]{"gdv", FeatureType.GRID});
-    result.add(new Object[]{"gief", FeatureType.GRID});
-    result.add(new Object[]{"ifps", FeatureType.GRID});
-    result.add(new Object[]{"m3io", FeatureType.GRID});
-    result.add(new Object[]{"mars", FeatureType.GRID});
-    //result.add(new Object[]{"mm5", FeatureType.GRID});   // Dataset lacks X and Y axes.
-    result.add(new Object[]{"nuwg", FeatureType.GRID});
-    result.add(new Object[]{"wrf", FeatureType.GRID});
-    result.add(new Object[]{"zebra", FeatureType.GRID});
+    result.add(new Object[] {"atd", FeatureType.GRID});
+    result.add(new Object[] {"atd-radar", FeatureType.GRID});
+    result.add(new Object[] {"avhrr", FeatureType.GRID});
+    result.add(new Object[] {"awips", FeatureType.GRID});
+    result.add(new Object[] {"cedric", FeatureType.GRID});
+    result.add(new Object[] {"cf", FeatureType.GRID});
+    result.add(new Object[] {"cf/dsc", FeatureType.POINT});
+    result.add(new Object[] {"cfradial", FeatureType.RADIAL});
+    result.add(new Object[] {"coards", FeatureType.GRID});
+    result.add(new Object[] {"csm", FeatureType.GRID});
+    result.add(new Object[] {"gdv", FeatureType.GRID});
+    result.add(new Object[] {"gief", FeatureType.GRID});
+    result.add(new Object[] {"ifps", FeatureType.GRID});
+    result.add(new Object[] {"m3io", FeatureType.GRID});
+    result.add(new Object[] {"mars", FeatureType.GRID});
+    // result.add(new Object[]{"mm5", FeatureType.GRID}); // Dataset lacks X and Y axes.
+    result.add(new Object[] {"nuwg", FeatureType.GRID});
+    result.add(new Object[] {"wrf", FeatureType.GRID});
+    result.add(new Object[] {"zebra", FeatureType.GRID});
 
     return result;
   }
@@ -125,8 +124,8 @@ public class TestConventionFeatureTypes {
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.contains(".gbx") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf") ||
-                name.endsWith(".txt") || name.endsWith(".tar")) {
+        if (name.contains(".gbx") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
+            || name.endsWith(".txt") || name.endsWith(".tar")) {
           files2.remove(f);
 
         } else if (prev != null) {

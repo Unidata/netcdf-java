@@ -31,7 +31,6 @@ import ucar.jpeg.jj2000.j2k.util.FacilityManager;
 import ucar.jpeg.jj2000.j2k.util.MsgLogger;
 import ucar.jpeg.jj2000.j2k.util.ParameterList;
 import ucar.jpeg.jj2000.j2k.wavelet.analysis.ForwardWT;
-
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
@@ -57,12 +56,12 @@ public class Grib2JpegEncoder {
   /**
    * The parameter list (arguments)
    */
-  //private ParameterList pl;
+  // private ParameterList pl;
 
   /**
    * The default parameter list (arguments)
    */
-  //private ParameterList defpl;
+  // private ParameterList defpl;
 
   /**
    * Returns the exit code of the class. This is only initialized after the
@@ -76,12 +75,9 @@ public class Grib2JpegEncoder {
 
   private ParameterList getParameterList(int nbits) {
 
-        // not sure if these are needed in the bowels of jj2000
-    String[] argv = new String[] {
-            "-rate", Integer.toString(nbits),
-            "-verbose", "off",
-            "-file_format", "off",
-           // "-lossless", "on",            // "Cannot use '-rate' and '-lossless' option at  the same time.
+    // not sure if these are needed in the bowels of jj2000
+    String[] argv = new String[] {"-rate", Integer.toString(nbits), "-verbose", "off", "-file_format", "off",
+        // "-lossless", "on", // "Cannot use '-rate' and '-lossless' option at the same time.
 
     };
 
@@ -177,8 +173,7 @@ public class Grib2JpegEncoder {
             return;
           }
           if (infile.lastIndexOf('.') != -1) {
-            inext = infile.substring(infile.lastIndexOf('.'),
-                    infile.length());
+            inext = infile.substring(infile.lastIndexOf('.'), infile.length());
           } else {
             inext = null;
           }
@@ -188,8 +183,7 @@ public class Grib2JpegEncoder {
             ncomp += 1;
           } else if (".PPM".equalsIgnoreCase(inext)) { // PPM file
             if (ncomp > 0) {
-              error("With PPM input format only 1 input " +
-                      "file can be specified", 2);
+              error("With PPM input format only 1 input " + "file can be specified", 2);
               return;
             }
             imreadervec.addElement(new ImgReaderPPM(infile));
@@ -201,7 +195,9 @@ public class Grib2JpegEncoder {
           }
 
         } catch (IOException e) {
-          error("Could not open or read from file " + infile + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 3);
+          error(
+              "Could not open or read from file " + infile + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""),
+              3);
           if (pl.getParameter("debug").equals("on")) {
             e.printStackTrace();
           } else {
@@ -283,12 +279,10 @@ public class Grib2JpegEncoder {
       } catch (NoSuchElementException e) {
         throw new IllegalArgumentException("Error while parsing 'tref' option");
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Invalid number type in " +
-                "'tref' option");
+        throw new IllegalArgumentException("Invalid number type in " + "'tref' option");
       }
       if (trefx < 0 || trefy < 0 || trefx > refx || trefy > refy) {
-        throw new IllegalArgumentException("Invalid value in 'tref' " +
-                "option ");
+        throw new IllegalArgumentException("Invalid value in 'tref' " + "option ");
       }
 
       // Instantiate tiler
@@ -310,18 +304,16 @@ public class Grib2JpegEncoder {
 
       // **** Component transformation ****
       if (ppminput && pl.getParameter("Mct") != null && pl.getParameter("Mct").equals("off")) {
-        FacilityManager.getMsgLogger().
-                printmsg(MsgLogger.WARNING,
-                        "Input image is RGB and no color transform has " +
-                                "been specified. Compression performance and " +
-                                "image quality might be greatly degraded. Use " +
-                                "the 'Mct' option to specify a color transform");
+        FacilityManager.getMsgLogger().printmsg(MsgLogger.WARNING,
+            "Input image is RGB and no color transform has " + "been specified. Compression performance and "
+                + "image quality might be greatly degraded. Use " + "the 'Mct' option to specify a color transform");
       }
       try {
         fctransf = new ForwCompTransf(imgtiler, encSpec);
 
       } catch (IllegalArgumentException e) {
-        error("Could not instantiate forward component transformation" + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2);
+        error("Could not instantiate forward component transformation"
+            + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2);
         if (pl.getParameter("debug").equals("on")) {
           e.printStackTrace();
         } else {
@@ -338,7 +330,8 @@ public class Grib2JpegEncoder {
       try {
         dwt = ForwardWT.createInstance(converter, pl, encSpec);
       } catch (IllegalArgumentException e) {
-        error("Could not instantiate wavelet transform" + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2);
+        error("Could not instantiate wavelet transform" + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""),
+            2);
         if (pl.getParameter("debug").equals("on")) {
           e.printStackTrace();
         } else {
@@ -375,11 +368,8 @@ public class Grib2JpegEncoder {
 
       // **** EntropyCoder ****
       try {
-        ecoder = EntropyCoder.createInstance(rois, pl, encSpec.cblks,
-                encSpec.pss, encSpec.bms,
-                encSpec.mqrs, encSpec.rts,
-                encSpec.css, encSpec.sss,
-                encSpec.lcs, encSpec.tts);
+        ecoder = EntropyCoder.createInstance(rois, pl, encSpec.cblks, encSpec.pss, encSpec.bms, encSpec.mqrs,
+            encSpec.rts, encSpec.css, encSpec.sss, encSpec.lcs, encSpec.tts);
       } catch (IllegalArgumentException e) {
         error("Could not instantiate entropy coder" + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2);
         if (pl.getParameter("debug").equals("on")) {
@@ -408,8 +398,7 @@ public class Grib2JpegEncoder {
 
       // **** Rate allocator ****
       try {
-        ralloc = PostCompRateAllocator.createInstance(ecoder, pl, rate,
-                bwriter, encSpec);
+        ralloc = PostCompRateAllocator.createInstance(ecoder, pl, rate, bwriter, encSpec);
       } catch (IllegalArgumentException e) {
         error("Could not instantiate rate allocator" + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2);
         if (pl.getParameter("debug").equals("on")) {
@@ -451,31 +440,23 @@ public class Grib2JpegEncoder {
       if (pktspertp > 0 || pphTile || pphMain) {
         int headInc;
         try {
-          CodestreamManipulator cm = new CodestreamManipulator(outname, ntiles, pktspertp, pphMain, pphTile, tempSop, tempEph);
+          CodestreamManipulator cm =
+              new CodestreamManipulator(outname, ntiles, pktspertp, pphMain, pphTile, tempSop, tempEph);
           fileLength += cm.doCodestreamManipulation();
           String res = "";
           if (pktspertp > 0) {
-            FacilityManager.
-                    getMsgLogger().println("Created tile-parts " +
-                    "containing at most " +
-                    pktspertp +
-                    " packets per tile.", 4, 6);
+            FacilityManager.getMsgLogger()
+                .println("Created tile-parts " + "containing at most " + pktspertp + " packets per tile.", 4, 6);
           }
           if (pphTile) {
-            FacilityManager.getMsgLogger().
-                    println("Moved packet headers " +
-                            "to tile headers", 4, 6);
+            FacilityManager.getMsgLogger().println("Moved packet headers " + "to tile headers", 4, 6);
           }
           if (pphMain) {
-            FacilityManager.getMsgLogger().
-                    println("Moved packet headers " +
-                            "to main header", 4, 6);
+            FacilityManager.getMsgLogger().println("Moved packet headers " + "to main header", 4, 6);
           }
         } catch (IOException e) {
-          error("Error while creating tileparts or packed packet" +
-                  " headers" +
-                  ((e.getMessage() != null) ?
-                          (":\n" + e.getMessage()) : ""), 2);
+          error("Error while creating tileparts or packed packet" + " headers"
+              + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2);
           if (pl.getParameter("debug").equals("on")) {
             e.printStackTrace();
           } else {
@@ -519,7 +500,7 @@ public class Grib2JpegEncoder {
    * it, and sets the exitCode to 'code'. An exit code different than 0
    * indicates that there where problems.
    *
-   * @param msg  The error message
+   * @param msg The error message
    * @param code The exit code to set
    */
   private void error(String msg, int code) {

@@ -6,7 +6,6 @@
 package ucar.nc2.iosp;
 
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -40,7 +39,7 @@ public class BitReader {
   /**
    * Constructor
    *
-   * @param raf      the RandomAccessFile
+   * @param raf the RandomAccessFile
    * @param startPos points to start of data in data section, in bytes
    * @throws IOException on read error
    */
@@ -72,7 +71,7 @@ public class BitReader {
       raf.seek(startPos + bitOffset / 8);
       bitPos = 8 - (bitOffset % 8);
       bitBuf = (byte) raf.read();
-      bitBuf &= 0xff >> (8 - bitPos);   // mask off consumed bits      
+      bitBuf &= 0xff >> (8 - bitPos); // mask off consumed bits
     }
   }
 

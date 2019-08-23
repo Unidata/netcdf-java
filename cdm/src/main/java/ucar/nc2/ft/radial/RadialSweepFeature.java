@@ -5,7 +5,6 @@
 package ucar.nc2.ft.radial;
 
 import ucar.nc2.Variable;
-
 import java.util.Date;
 
 /**
@@ -14,7 +13,9 @@ import java.util.Date;
  */
 public interface RadialSweepFeature {
 
-  enum Type { NONE }
+  enum Type {
+    NONE
+  }
 
   /**
    * @return the type of the Sweep
@@ -56,7 +57,7 @@ public interface RadialSweepFeature {
    * Get the radial length of each data gate.
    * The radial distance to the ith gate = getRangeToFirstGate() + getGateSize() * i
    *
-   * @return gate size in meters,  for all radials
+   * @return gate size in meters, for all radials
    */
   float getGateSize();
 

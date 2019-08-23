@@ -9,7 +9,6 @@ import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,55 +17,57 @@ import java.util.Map;
 
 /**
  * A Client Catalog Dataset
+ * 
  * @author caron
  * @since 1/7/2015
  */
 @Immutable
 public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
-  public static final String Access = "Access";                 // Access or list of Access
-  public static final String Alias = "Alias";                   // String
-  public static final String Authority = "Authority";           // String
+  public static final String Access = "Access"; // Access or list of Access
+  public static final String Alias = "Alias"; // String
+  public static final String Authority = "Authority"; // String
   public static final String CollectionType = "CollectionType"; // String
-  public static final String Contributors = "Contributors";     // Contributor or List of Contributor
-  public static final String Creators = "Creators";             // String or List of String
+  public static final String Contributors = "Contributors"; // Contributor or List of Contributor
+  public static final String Creators = "Creators"; // String or List of String
   public static final String DataFormatType = "DataFormatType"; // String
-  public static final String Datasets = "Datasets";             // unmodifiable List<Dataset>
-  public static final String DataSize = "DataSize";             // Long
-  public static final String Dates = "Dates";                   // DateType or List of DateType
-  public static final String Documentation = "Documentation";   // Documentation or List of Documentation
-  public static final String FeatureType = "FeatureType";       // String
+  public static final String Datasets = "Datasets"; // unmodifiable List<Dataset>
+  public static final String DataSize = "DataSize"; // Long
+  public static final String Dates = "Dates"; // DateType or List of DateType
+  public static final String Documentation = "Documentation"; // Documentation or List of Documentation
+  public static final String FeatureType = "FeatureType"; // String
   public static final String GeospatialCoverage = "GeospatialCoverage"; // ThreddsMetadata.GeospatialCoverage
-  public static final String Harvest = "Harvest";               // Boolean
-  public static final String Id = "Id";                         // String
-  public static final String Keywords = "Keywords";             // Vocab or List of Vocab
-  public static final String MetadataOther = "MetadataOther";   // MetadataOther or List of MetadataOther
-  public static final String Ncml = "Ncml";                     // jdom2.Element
-  public static final String Projects = "Projects";             // Vocab or List of Vocab
-  public static final String Properties = "Properties";         // Property or List of Property
-  public static final String Publishers = "Publishers";         // Source or List of Source
+  public static final String Harvest = "Harvest"; // Boolean
+  public static final String Id = "Id"; // String
+  public static final String Keywords = "Keywords"; // Vocab or List of Vocab
+  public static final String MetadataOther = "MetadataOther"; // MetadataOther or List of MetadataOther
+  public static final String Ncml = "Ncml"; // jdom2.Element
+  public static final String Projects = "Projects"; // Vocab or List of Vocab
+  public static final String Properties = "Properties"; // Property or List of Property
+  public static final String Publishers = "Publishers"; // Source or List of Source
   public static final String RestrictAccess = "RestrictAccess"; // String
-  public static final String ServiceName = "ServiceName";       // String
+  public static final String ServiceName = "ServiceName"; // String
   public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable"; // ThreddsMetadata
-  public static final String TimeCoverage = "TimeCoverage";             // DateRange
-  public static final String VariableGroups = "VariableGroups";         // VariableGroup or List of VariableGroup
-  public static final String VariableMapLinkURI = "VariableMapLinkURI";    // ThreddsMetadata.UriResolved
-  public static final String UrlPath = "UrlPath";                         // String
-  public static final String UseRemoteCatalogService = "UseRemoteCatalogService";   // Boolean
+  public static final String TimeCoverage = "TimeCoverage"; // DateRange
+  public static final String VariableGroups = "VariableGroups"; // VariableGroup or List of VariableGroup
+  public static final String VariableMapLinkURI = "VariableMapLinkURI"; // ThreddsMetadata.UriResolved
+  public static final String UrlPath = "UrlPath"; // String
+  public static final String UseRemoteCatalogService = "UseRemoteCatalogService"; // Boolean
 
-  public static final String NotAThreddsDataset = "NotAThreddsDataset";   // used to set Property in catalog
+  public static final String NotAThreddsDataset = "NotAThreddsDataset"; // used to set Property in catalog
 
-  public static final ImmutableSet<String> listFlds = ImmutableSet.of(Access, Contributors, Creators, Dates, Documentation, Keywords, MetadataOther, Projects,
-          Properties, Publishers, VariableGroups);
+  public static final ImmutableSet<String> listFlds = ImmutableSet.of(Access, Contributors, Creators, Dates,
+      Documentation, Keywords, MetadataOther, Projects, Properties, Publishers, VariableGroups);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public Dataset(DatasetNode parent, String name, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
+  public Dataset(DatasetNode parent, String name, Map<String, Object> flds, List<AccessBuilder> accessBuilders,
+      List<DatasetBuilder> datasetBuilders) {
     super(parent, name, flds, datasetBuilders);
 
     if (accessBuilders != null && accessBuilders.size() > 0) {
       List<Access> access = new ArrayList<>(accessBuilders.size());
       for (AccessBuilder acc : accessBuilders)
-        access.add ( acc.makeAccess(this));
+        access.add(acc.makeAccess(this));
       flds.put(Access, Collections.unmodifiableList(access));
     }
   }
@@ -76,10 +77,10 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
    * This is used to create a standalone Dataset, outside of an Catalog.
    * An "anonymous" Service is created and attached to the Dataset.
    *
-   * @param urlPath  : construct URL from this path
+   * @param urlPath : construct URL from this path
    * @param featureType : feature type
    * @param dataFormatS : data format
-   * @param serviceType    : ServiceType
+   * @param serviceType : ServiceType
    */
   static public Dataset makeStandalone(String urlPath, String featureType, String dataFormatS, String serviceType) {
     DatasetBuilder builder = new DatasetBuilder(null);
@@ -134,7 +135,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   public Access getAccess(ServiceType type) {
     for (Access acc : getAccess())
-      if (acc.getService().getType() == type) return acc;
+      if (acc.getService().getType() == type)
+        return acc;
     return null;
   }
 
@@ -166,33 +168,41 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
    */
   public String getCatalogUrl() {
     Catalog parent = getParentCatalog();
-    if (parent == null) return null;
+    if (parent == null)
+      return null;
     String baseUri = parent.getUriString();
-    if (baseUri == null) return null;
+    if (baseUri == null)
+      return null;
     return baseUri + "#" + getId();
   }
 
-   /////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////
   // non-inheritable metadata
   public String getCollectionType() {
     return (String) flds.get(CollectionType);
   }
+
   public boolean isDatasetScan() {
     return false;
   }
+
   public boolean isHarvest() {
     Boolean result = (Boolean) flds.get(Harvest);
     return (result != null) && result;
   }
+
   public String getId() {
     return (String) flds.get(Id);
   }
+
   public String getID() {
     return getId();
   }
+
   public String getUrlPath() {
     return (String) flds.get(UrlPath);
   }
+
   public String getIdOrPath() {
     String id = getId();
     return (id != null) ? id : getUrlPath();
@@ -214,15 +224,17 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     ThreddsMetadata tmi = (ThreddsMetadata) flds.get(ThreddsMetadataInheritable);
     if (tmi != null) {
       Object value = tmi.getLocalField(fldName);
-      if (value != null) return value;
+      if (value != null)
+        return value;
     }
     Dataset parent = getParentDataset();
-    return (parent == null) ? null : parent.getInheritedOnlyField( fldName);
+    return (parent == null) ? null : parent.getInheritedOnlyField(fldName);
   }
 
   Object getInheritedField(String fldName) {
     Object value = flds.get(fldName);
-    if (value != null) return value;
+    if (value != null)
+      return value;
     return getInheritedOnlyField(fldName);
   }
 
@@ -236,7 +248,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   public ucar.nc2.constants.DataFormatType getDataFormatType() {
     String name = getDataFormatName();
-    if (name == null) return null;
+    if (name == null)
+      return null;
     try {
       return ucar.nc2.constants.DataFormatType.getType(name);
     } catch (Exception e) {
@@ -267,7 +280,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (String) getInheritedField(FeatureType);
   }
 
- public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
+  public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
     return (ThreddsMetadata.GeospatialCoverage) getInheritedField(GeospatialCoverage);
   }
 
@@ -277,8 +290,9 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   public Service getServiceDefault() {
     Catalog cat = getParentCatalog();
-    if (cat == null) return null;
-    return cat.findService( getServiceNameDefault());
+    if (cat == null)
+      return null;
+    return cat.findService(getServiceNameDefault());
   }
 
   public String getRestrictAccess() {
@@ -299,11 +313,13 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     List result = new ArrayList();
     Object value = flds.get(fldName); // first look for local
     if (value != null) {
-      if (value instanceof List) result.addAll((List) value);
-      else result.add(value);
+      if (value instanceof List)
+        result.addAll((List) value);
+      else
+        result.add(value);
     }
 
-    getAllFromInherited(fldName, result);   // then look for inherited
+    getAllFromInherited(fldName, result); // then look for inherited
     return result;
   }
 
@@ -312,8 +328,10 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     if (tmi != null) {
       Object value = tmi.getLocalField(fldName);
       if (value != null) {
-        if (value instanceof List) result.addAll((List) value);
-        else result.add(value);
+        if (value instanceof List)
+          result.addAll((List) value);
+        else
+          result.add(value);
       }
     }
     Dataset parent = getParentDataset();
@@ -332,7 +350,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   public List<DateType> getDates() {
     return (List<DateType>) getInheritedFieldAsList(Dates);
-  }   // prob only one type
+  } // prob only one type
 
   public List<Documentation> getDocumentation() {
     return (List<Documentation>) getInheritedFieldAsList(Documentation);

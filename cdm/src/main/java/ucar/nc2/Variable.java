@@ -11,7 +11,6 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.rc.RC;
-
 import java.io.OutputStream;
 import java.util.*;
 import java.io.IOException;
@@ -23,7 +22,8 @@ import java.nio.channels.WritableByteChannel;
  * <p/>
  * The data is a multidimensional array of primitive types, Strings, or Structures.
  * Data access is done through the read() methods, which return a memory resident Array.
- * <p> Immutable if setImmutable() was called.
+ * <p>
+ * Immutable if setImmutable() was called.
  *
  * @author caron
  * @see ucar.ma2.Array
@@ -38,8 +38,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   static public boolean permitCaching = true;
 
-  static public int defaultSizeToCache = 4000; // bytes  cache any variable whose size() < defaultSizeToCache
-  static public int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() < defaultSizeToCache
+  static public int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
+  static public int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
+                                                          // defaultSizeToCache
 
   static protected boolean debugCaching = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
@@ -52,7 +53,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
         // Get the list of parent groups
         List<Group> path = Group.collectPath(xg);
         Formatter dapname = new Formatter();
-        for (int i = 1; i < path.size(); i++) {   // start at 1 to skip root group
+        for (int i = 1; i < path.size(); i++) { // start at 1 to skip root group
           Group g = path.get(i);
           dapname.format("/%s", g.getShortName());
         }
@@ -70,9 +71,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   //////////////////////////////////////////////////
   // Instance data and methods
 
-  protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable is self contained.
+  protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable
+                               // is self contained.
   protected int[] shape = new int[0];
-  protected Section shapeAsSection;  // derived from the shape, immutable; used for every read, deferred creation
+  protected Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
 
   protected DataType dataType;
   protected int elementSize;
@@ -82,7 +84,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected boolean isVariableLength = false;
   protected boolean isMetadata = false;
 
-  protected Cache cache = new Cache();           // cache cannot be null
+  protected Cache cache = new Cache(); // cache cannot be null
   protected int sizeToCache = -1; // bytes
 
   protected ProxyReader proxyReader = this;
@@ -102,7 +104,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *         and whose values equal the length of that Dimension.
    */
   public int[] getShape() {
-    int[] result = new int[shape.length];  // optimization over clone()
+    int[] result = new int[shape.length]; // optimization over clone()
     System.arraycopy(shape, 0, result, 0, shape.length);
     return result;
   }
@@ -110,7 +112,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   // if scalar, return int[1], else return getShape()
   public int[] getShapeNotScalar() {
     if (isScalar())
-      return new int[]{1};
+      return new int[] {1};
     return getShape();
   }
 
@@ -216,7 +218,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public boolean isUnlimited() {
     for (Dimension d : dimensions) {
-      if (d.isUnlimited()) return true;
+      if (d.isUnlimited())
+        return true;
     }
     return false;
   }
@@ -239,7 +242,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return requested Dimension, or null if i is out of bounds.
    */
   public Dimension getDimension(int i) {
-    if ((i < 0) || (i >= getRank())) return null;
+    if ((i < 0) || (i >= getRank()))
+      return null;
     return dimensions.get(i);
   }
 
@@ -310,10 +314,12 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public String getUnitsString() {
     String units = null;
     Attribute att = findAttribute(CDM.UNITS);
-    if (att == null) att = findAttributeIgnoreCase(CDM.UNITS);
+    if (att == null)
+      att = findAttributeIgnoreCase(CDM.UNITS);
     if ((att != null) && att.isString()) {
       units = att.getStringValue();
-      if (units != null) units = units.trim();
+      if (units != null)
+        units = units.trim();
     }
     return units;
   }
@@ -342,10 +348,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
           if (len > 0)
             list.add(new Range(d.getShortName(), 0, len - 1));
           else if (len == 0)
-            list.add( Range.EMPTY); // LOOK empty not named
+            list.add(Range.EMPTY); // LOOK empty not named
           else {
             assert d.isVariableLength();
-            list.add( Range.VLEN); // LOOK vlen not named
+            list.add(Range.VLEN); // LOOK vlen not named
           }
         }
         shapeAsSection = new Section(list).makeImmutable();
@@ -371,8 +377,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * No data is read until a read method is called on it.
    *
    * @param ranges List of type ucar.ma2.Range, with size equal to getRank().
-   *               Each Range corresponds to a Dimension, and specifies the section of data to read in that Dimension.
-   *               A Range object may be null, which means use the entire dimension.
+   *        Each Range corresponds to a Dimension, and specifies the section of data to read in that Dimension.
+   *        A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
    * @throws InvalidRangeException if shape and range list dont match
    */
@@ -385,8 +391,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * No data is read until a read method is called on it.
    *
    * @param subsection Section of this variable.
-   *                   Each Range in the section corresponds to a Dimension, and specifies the section of data to read in that Dimension.
-   *                   A Range object may be null, which means use the entire dimension.
+   *        Each Range in the section corresponds to a Dimension, and specifies the section of data to read in that
+   *        Dimension.
+   *        A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
    * @throws InvalidRangeException if section not compatible with shape
    */
@@ -405,7 +412,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     sectionV.dimensions = new ArrayList<>();
     for (int i = 0; i < getRank(); i++) {
       Dimension oldD = getDimension(i);
-      Dimension newD = (oldD.getLength() == sectionV.shape[i]) ? oldD : new Dimension(oldD.getShortName(), sectionV.shape[i], false);
+      Dimension newD =
+          (oldD.getLength() == sectionV.shape[i]) ? oldD : new Dimension(oldD.getShortName(), sectionV.shape[i], false);
       newD.setUnlimited(oldD.isUnlimited());
       sectionV.dimensions.add(newD);
     }
@@ -419,7 +427,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * fixing the specified dimension at the specified index value. This reduces rank by 1.
    * No data is read until a read method is called on it.
    *
-   * @param dim   which dimension to fix
+   * @param dim which dimension to fix
    * @param value at what index value
    * @return a new Variable which is a logical slice of this Variable.
    * @throws InvalidRangeException if dimension or value is illegal
@@ -460,7 +468,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * eliminating the specified dimension(s) of length 1.
    * No data is read until a read method is called on it.
    *
-   * @param dims   list of  dimensions of length 1 to reduce
+   * @param dims list of dimensions of length 1 to reduce
    * @return a new Variable which is a logical slice of this Variable.
    */
   public Variable reduce(List<Dimension> dims) {
@@ -478,7 +486,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     sliceV.setCaching(false); // dont cache
 
     // remove dimension(s) - reduce rank
-    for (Dimension d : dims) sliceV.dimensions.remove(d);
+    for (Dimension d : dims)
+      sliceV.dimensions.remove(d);
     sliceV.resetShape();
     return sliceV;
   }
@@ -490,7 +499,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public NetcdfFile getNetcdfFile() {
     return ncfile;
   }
-   
+
   //////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -514,7 +523,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param enumTypedef set the EnumTypedef, only use if getDataType.isEnum()
    */
   public void setEnumTypedef(EnumTypedef enumTypedef) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     if (!dataType.isEnum())
       throw new UnsupportedOperationException("Can only call Variable.setEnumTypedef() on enum types");
     this.enumTypedef = enumTypedef;
@@ -533,9 +543,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   // IO
   // implementation notes to subclassers
   // all other calls use them, so override only these:
-  //   _read()
-  //   _read(Section section)
-  //   _readNestedData(Section section, boolean flatten)
+  // _read()
+  // _read(Section section)
+  // _readNestedData(Section section, boolean flatten)
 
   /**
    * Read a section of the data for this Variable and return a memory resident Array.
@@ -547,8 +557,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * <p/>
    *
    * @param origin int array specifying the starting index. If null, assume all zeroes.
-   * @param shape  int array specifying the extents in each dimension.
-   *               This becomes the shape of the returned Array.
+   * @param shape int array specifying the extents in each dimension.
+   *        This becomes the shape of the returned Array.
    * @return the requested data in a memory-resident Array
    */
   public Array read(int[] origin, int[] shape) throws IOException, InvalidRangeException {
@@ -581,7 +591,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *
    * @param ranges list of Range specifying the section of data to read.
    * @return the requested data in a memory-resident Array
-   * @throws IOException           if error
+   * @throws IOException if error
    * @throws InvalidRangeException if ranges is invalid
    * @see #read(Section)
    */
@@ -607,11 +617,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * NetcdfFile.read(String sectionSpec, boolean flatten);
    *
    * @param section list of Range specifying the section of data to read.
-   *                Must be null or same rank as variable.
-   *                If list is null, assume all data.
-   *                Each Range corresponds to a Dimension. If the Range object is null, it means use the entire dimension.
+   *        Must be null or same rank as variable.
+   *        If list is null, assume all data.
+   *        Each Range corresponds to a Dimension. If the Range object is null, it means use the entire dimension.
    * @return the requested data in a memory-resident Array
-   * @throws IOException           if error
+   * @throws IOException if error
    * @throws InvalidRangeException if section is invalid
    */
   public Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
@@ -637,9 +647,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Get the value as a byte for a scalar Variable. May also be one-dimensional of length 1.
    *
-   * @throws IOException                   if theres an IO Error
+   * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException  if data type not convertible to byte
+   * @throws ForbiddenConversionException if data type not convertible to byte
    */
   public byte readScalarByte() throws IOException {
     Array data = getScalarData();
@@ -647,11 +657,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   /**
-   * Get the value as a short for a scalar Variable.  May also be one-dimensional of length 1.
+   * Get the value as a short for a scalar Variable. May also be one-dimensional of length 1.
    *
-   * @throws IOException                   if theres an IO Error
-   * @throws UnsupportedOperationException if not a scalar Variable  or one-dimensional of length 1.
-   * @throws ForbiddenConversionException  if data type not convertible to short
+   * @throws IOException if theres an IO Error
+   * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
+   * @throws ForbiddenConversionException if data type not convertible to short
    */
   public short readScalarShort() throws IOException {
     Array data = getScalarData();
@@ -661,9 +671,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Get the value as a int for a scalar Variable. May also be one-dimensional of length 1.
    *
-   * @throws IOException                   if theres an IO Error
+   * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException  if data type not convertible to int
+   * @throws ForbiddenConversionException if data type not convertible to int
    */
   public int readScalarInt() throws IOException {
     Array data = getScalarData();
@@ -671,11 +681,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   /**
-   * Get the value as a long for a scalar Variable.  May also be one-dimensional of length 1.
+   * Get the value as a long for a scalar Variable. May also be one-dimensional of length 1.
    *
-   * @throws IOException                   if theres an IO Error
+   * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable
-   * @throws ForbiddenConversionException  if data type not convertible to long
+   * @throws ForbiddenConversionException if data type not convertible to long
    */
   public long readScalarLong() throws IOException {
     Array data = getScalarData();
@@ -683,11 +693,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   /**
-   * Get the value as a float for a scalar Variable.  May also be one-dimensional of length 1.
+   * Get the value as a float for a scalar Variable. May also be one-dimensional of length 1.
    *
-   * @throws IOException                   if theres an IO Error
+   * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException  if data type not convertible to float
+   * @throws ForbiddenConversionException if data type not convertible to float
    */
   public float readScalarFloat() throws IOException {
     Array data = getScalarData();
@@ -695,11 +705,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   /**
-   * Get the value as a double for a scalar Variable.  May also be one-dimensional of length 1.
+   * Get the value as a double for a scalar Variable. May also be one-dimensional of length 1.
    *
-   * @throws IOException                   if theres an IO Error
+   * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException  if data type not convertible to double
+   * @throws ForbiddenConversionException if data type not convertible to double
    */
   public double readScalarDouble() throws IOException {
     Array data = getScalarData();
@@ -707,12 +717,12 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   /**
-   * Get the value as a String for a scalar Variable.  May also be one-dimensional of length 1.
+   * Get the value as a String for a scalar Variable. May also be one-dimensional of length 1.
    * May also be one-dimensional of type CHAR, which wil be turned into a scalar String.
    *
-   * @throws IOException                   if theres an IO Error
+   * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar or one-dimensional.
-   * @throws ClassCastException            if data type not DataType.STRING or DataType.CHAR.
+   * @throws ClassCastException if data type not DataType.STRING or DataType.CHAR.
    */
   public String readScalarString() throws IOException {
     Array data = getScalarData();
@@ -744,7 +754,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     // caching overrides the proxyReader
     // check if already cached
     if (cache.data != null) {
-      if (debugCaching) System.out.println("got data from cache " + getFullName());
+      if (debugCaching)
+        System.out.println("got data from cache " + getFullName());
       return cache.data.copy();
     }
 
@@ -753,7 +764,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     // optionally cache it
     if (isCaching()) {
       setCachedData(data);
-      if (debugCaching) System.out.println("cache " + getFullName());
+      if (debugCaching)
+        System.out.println("cache " + getFullName());
       return cache.data.copy(); // dont let users get their nasty hands on cached data
     } else {
       return data;
@@ -795,9 +807,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     if (isCaching()) {
       if (cache.data == null) {
         setCachedData(_read()); // read and cache entire array
-        if (debugCaching) System.out.println("cache " + getFullName());
+        if (debugCaching)
+          System.out.println("cache " + getFullName());
       }
-      if (debugCaching) System.out.println("got data from cache " + getFullName());
+      if (debugCaching)
+        System.out.println("got data from cache " + getFullName());
       return cache.data.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
     }
 
@@ -811,7 +825,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @throws IOException on error
    */
   @Override
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
     if (isMemberOfStructure()) {
       throw new UnsupportedOperationException("Cannot directly read section of Member Variable=" + getFullName());
     }
@@ -819,13 +834,15 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return ncfile.readData(this, section);
   }
 
-  /* structure-member Variable;  section has a Range for each array in the parent
-  // stuctures(s) and for the Variable.
-  private Array _readMemberData(List<Range> section, boolean flatten) throws IOException, InvalidRangeException {
-    /*Variable useVar = (ioVar != null) ? ioVar : this;
-    NetcdfFile useFile = (ncfileIO != null) ? ncfileIO : ncfile;
-    return useFile.readMemberData(useVar, section, flatten);
-  } */
+  /*
+   * structure-member Variable; section has a Range for each array in the parent
+   * // stuctures(s) and for the Variable.
+   * private Array _readMemberData(List<Range> section, boolean flatten) throws IOException, InvalidRangeException {
+   * /*Variable useVar = (ioVar != null) ? ioVar : this;
+   * NetcdfFile useFile = (ncfileIO != null) ? ncfileIO : ncfile;
+   * return useFile.readMemberData(useVar, section, flatten);
+   * }
+   */
 
   public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())
@@ -890,9 +907,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Add display name plus the dimensions to the StringBuffer
    *
-   * @param buf         add info to this
+   * @param buf add info to this
    * @param useFullName use full name else short name. strict = true implies short name
-   * @param strict      strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
+   * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
    */
   public void getNameAndDimensions(StringBuilder buf, boolean useFullName, boolean strict) {
     Formatter proxy = new Formatter();
@@ -904,24 +921,27 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Add display name plus the dimensions to the StringBuffer
    *
-   * @param buf         add info to this
+   * @param buf add info to this
    * @param useFullName use full name else short name. strict = true implies short name
-   * @param strict      strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
+   * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
    */
   public void getNameAndDimensions(Formatter buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
     String name = useFullName ? getFullName() : getShortName();
-    if (strict) name = NetcdfFile.makeValidCDLName(getShortName());
+    if (strict)
+      name = NetcdfFile.makeValidCDLName(getShortName());
     buf.format("%s", name);
 
     if (shape != null) {
-      if (getRank() > 0) buf.format("(");
+      if (getRank() > 0)
+        buf.format("(");
       for (int i = 0; i < dimensions.size(); i++) {
         Dimension myd = dimensions.get(i);
         String dimName = myd.getShortName();
         if ((dimName != null) && strict)
           dimName = NetcdfFile.makeValidCDLName(dimName);
-        if (i != 0) buf.format(", ");
+        if (i != 0)
+          buf.format(", ");
         if (myd.isVariableLength()) {
           buf.format("*");
         } else if (myd.isShared()) {
@@ -936,7 +956,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
           buf.format("%d", myd.getLength());
         }
       }
-      if (getRank() > 0) buf.format(")");
+      if (getRank() > 0)
+        buf.format(")");
     }
   }
 
@@ -951,7 +972,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * CDL representation of a Variable.
    *
    * @param useFullName use full name, else use short name
-   * @param strict      strictly comply with ncgen syntax
+   * @param strict strictly comply with ncgen syntax
    * @return CDL representation of the Variable.
    */
   public String writeCDL(boolean useFullName, boolean strict) {
@@ -972,16 +993,18 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     } else
       buf.format("%s", dataType.toString());
 
-    //if (isVariableLength) buf.append("(*)"); // LOOK
+    // if (isVariableLength) buf.append("(*)"); // LOOK
     buf.format(" ");
     getNameAndDimensions(buf, useFullName, strict);
     buf.format(";");
-    if (!strict) buf.format(extraInfo());
+    if (!strict)
+      buf.format(extraInfo());
     buf.format("%n");
 
     indent.incr();
     for (Attribute att : getAttributes()) {
-      if(Attribute.isspecial(att)) continue;
+      if (Attribute.isspecial(att))
+        continue;
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
@@ -1014,7 +1037,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   public String getDatasetLocation() {
-    if (ncfile != null) return ncfile.getLocation();
+    if (ncfile != null)
+      return ncfile.getLocation();
     return "N/A";
   }
 
@@ -1022,19 +1046,29 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Instances which have same content are equal.
    */
   public boolean equals(Object oo) {
-    if (this == oo) return true;
-    if (!(oo instanceof Variable)) return false;
+    if (this == oo)
+      return true;
+    if (!(oo instanceof Variable))
+      return false;
     Variable o = (Variable) oo;
 
-    if (!getShortName().equals(o.getShortName())) return false;
-    if (isScalar() != o.isScalar()) return false;
-    if (getDataType() != o.getDataType()) return false;
-    if (!getParentGroup().equals(o.getParentGroup())) return false;
-    if ((getParentStructure() != null) && !getParentStructure().equals(o.getParentStructure())) return false;
-    if (isVariableLength() != o.isVariableLength()) return false;
-    if (dimensions.size() != o.getDimensions().size()) return false;
+    if (!getShortName().equals(o.getShortName()))
+      return false;
+    if (isScalar() != o.isScalar())
+      return false;
+    if (getDataType() != o.getDataType())
+      return false;
+    if (!getParentGroup().equals(o.getParentGroup()))
+      return false;
+    if ((getParentStructure() != null) && !getParentStructure().equals(o.getParentStructure()))
+      return false;
+    if (isVariableLength() != o.isVariableLength())
+      return false;
+    if (dimensions.size() != o.getDimensions().size())
+      return false;
     for (int i = 0; i < dimensions.size(); i++)
-      if (!getDimension(i).equals(o.getDimension(i))) return false;
+      if (!getDimension(i).equals(o.getDimension(i)))
+        return false;
 
     return true;
   }
@@ -1047,12 +1081,14 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     if (hashCode == 0) {
       int result = 17;
       result = 37 * result + getShortName().hashCode();
-      if (isScalar()) result++;
+      if (isScalar())
+        result++;
       result = 37 * result + getDataType().hashCode();
       result = 37 * result + getParentGroup().hashCode();
       if (getParentStructure() != null)
         result = 37 * result + getParentStructure().hashCode();
-      if (isVariableLength) result++;
+      if (isVariableLength)
+        result++;
       result = 37 * result + dimensions.hashCode();
       hashCode = result;
     }
@@ -1090,15 +1126,14 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /////////////////////////////////////////////////////////////////////////////
 
-  protected Variable() {
-  }
+  protected Variable() {}
 
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
    *
-   * @param ncfile    the containing NetcdfFile.
-   * @param group     the containing group; if null, use rootGroup
-   * @param parent    parent Structure, may be null
+   * @param ncfile the containing NetcdfFile.
+   * @param group the containing group; if null, use rootGroup
+   * @param parent parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
@@ -1114,16 +1149,16 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
    *
-   * @param ncfile    the containing NetcdfFile.
-   * @param group     the containing group; if null, use rootGroup
-   * @param parent    parent Structure, may be null
+   * @param ncfile the containing NetcdfFile.
+   * @param group the containing group; if null, use rootGroup
+   * @param parent parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
-   * @param dtype     the Variable's DataType
-   * @param dims      space delimited list of dimension names. may be null or "" for scalars.
+   * @param dtype the Variable's DataType
+   * @param dims space delimited list of dimension names. may be null or "" for scalars.
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
-    this(ncfile, group, parent, shortName, dtype, (List<Dimension>)null);
-    if(group == null)
+    this(ncfile, group, parent, shortName, dtype, (List<Dimension>) null);
+    if (group == null)
       group = ncfile.getRootGroup();
     setDimensions(Dimension.makeDimensionsList(group, dims));
   }
@@ -1131,15 +1166,15 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
    *
-   * @param ncfile    the containing NetcdfFile.
-   * @param group     the containing group; if null, use rootGroup
-   * @param parent    parent Structure, may be null
+   * @param ncfile the containing NetcdfFile.
+   * @param group the containing group; if null, use rootGroup
+   * @param parent parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
-   * @param dtype     the Variable's DataType
-   * @param dims      dimension names.
+   * @param dtype the Variable's DataType
+   * @param dims dimension names.
    */
-  public Variable(NetcdfFile ncfile, Group group, Structure parent,
-                  String shortName, DataType dtype, List<Dimension> dims) {
+  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype,
+      List<Dimension> dims) {
     this(ncfile, group, parent, shortName);
     setDataType(dtype);
     setDimensions(dims);
@@ -1183,27 +1218,30 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param dataType set to this value
    */
   public void setDataType(DataType dataType) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
 
-    /* why is this needed ??
-    EnumTypedef etd = getEnumTypedef();
-    if (etd != null) {
-      DataType etdtype = etd.getBaseType();
-      if (dataType != etdtype)
-        log.error("Variable.setDataType: enum basetype mismatch: {} != {}", etdtype, dataType);
-
-      /* DataType basetype = null;
-      if (dataType == DataType.ENUM1) basetype = DataType.BYTE;
-      else if (dataType == DataType.ENUM2) basetype = DataType.SHORT;
-      else if (dataType == DataType.ENUM4) basetype = DataType.INT;
-      else basetype = etdtype;
-
-      if (etdtype != null && dataType != etdtype)
-      else
-        etd.setBaseType(basetype);
-    }  */
+    /*
+     * why is this needed ??
+     * EnumTypedef etd = getEnumTypedef();
+     * if (etd != null) {
+     * DataType etdtype = etd.getBaseType();
+     * if (dataType != etdtype)
+     * log.error("Variable.setDataType: enum basetype mismatch: {} != {}", etdtype, dataType);
+     * 
+     * /* DataType basetype = null;
+     * if (dataType == DataType.ENUM1) basetype = DataType.BYTE;
+     * else if (dataType == DataType.ENUM2) basetype = DataType.SHORT;
+     * else if (dataType == DataType.ENUM4) basetype = DataType.INT;
+     * else basetype = etdtype;
+     * 
+     * if (etdtype != null && dataType != etdtype)
+     * else
+     * etd.setBaseType(basetype);
+     * }
+     */
   }
 
   /**
@@ -1213,7 +1251,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return valid CDM object name
    */
   public String setName(String shortName) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     setShortName(shortName);
     return getShortName();
   }
@@ -1224,7 +1263,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param group set to this value
    */
   public void setParentGroup(Group group) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     super.setParentGroup(group);
   }
 
@@ -1236,7 +1276,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param elementSize set to this value
    */
   public void setElementSize(int elementSize) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     this.elementSize = elementSize;
   }
 
@@ -1294,7 +1335,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param dims list of type ucar.nc2.Dimension
    */
   public void setDimensions(List<Dimension> dims) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     this.dimensions = (dims == null) ? new ArrayList<>() : new ArrayList<>(dims);
     resetShape();
   }
@@ -1304,18 +1346,18 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Use when dimensions have changed, to recalculate the shape.
    */
   public void resetShape() {
-    // if (immutable) throw new IllegalStateException("Cant modify");  LOOK allow this for unlimited dimension updating
+    // if (immutable) throw new IllegalStateException("Cant modify"); LOOK allow this for unlimited dimension updating
     this.shape = new int[dimensions.size()];
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension dim = dimensions.get(i);
       shape[i] = dim.getLength();
-      //shape[i] = Math.max(dim.getLength(), 0); // LOOK
+      // shape[i] = Math.max(dim.getLength(), 0); // LOOK
       // if (dim.isUnlimited() && (i != 0)) // LOOK only true for Netcdf-3
-      //   throw new IllegalArgumentException("Unlimited dimension must be outermost");
+      // throw new IllegalArgumentException("Unlimited dimension must be outermost");
       if (dim.isVariableLength()) {
-        //if (dimensions.size() != 1)
-        //  throw new IllegalArgumentException("Unknown dimension can only be used in 1 dim array");
-        //else
+        // if (dimensions.size() != 1)
+        // throw new IllegalArgumentException("Unknown dimension can only be used in 1 dim array");
+        // else
         isVariableLength = true;
       }
     }
@@ -1325,17 +1367,19 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Set the dimensions using the dimensions names. The dimension is searched for recursively in the parent groups.
    *
-   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon dimension. null or empty String is a scalar.
+   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
+   *        dimension. null or empty String is a scalar.
    */
   public void setDimensions(String dimString) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     try {
       setDimensions(Dimension.makeDimensionsList(getParentGroup(), dimString));
-      //this.dimensions = Dimension.makeDimensionsList(getParentGroup(), dimString);
+      // this.dimensions = Dimension.makeDimensionsList(getParentGroup(), dimString);
       resetShape();
     } catch (IllegalStateException e) {
-      throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString +
-              "' FAILED: " + e.getMessage() + " file = " + getDatasetLocation());
+      throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString + "' FAILED: "
+          + e.getMessage() + " file = " + getDatasetLocation());
     }
   }
 
@@ -1344,14 +1388,16 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Shared dimensions are searched for recursively in the parent groups.
    */
   public void resetDimensions() {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     ArrayList<Dimension> newDimensions = new ArrayList<>();
 
     for (Dimension dim : dimensions) {
       if (dim.isShared()) {
         Dimension newD = getParentGroup().findDimension(dim.getShortName());
         if (newD == null)
-          throw new IllegalArgumentException("Variable " + getFullName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
+          throw new IllegalArgumentException(
+              "Variable " + getFullName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
         newDimensions.add(newD);
       } else {
         newDimensions.add(dim);
@@ -1368,7 +1414,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @throws ucar.ma2.InvalidRangeException if any shape < 1
    */
   public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     this.dimensions = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
       if ((shape[i] < 1) && (shape[i] != -1))
@@ -1390,7 +1437,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Set this Variable to be a scalar
    */
   public void setIsScalar() {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     this.dimensions = new ArrayList<>();
     resetShape();
   }
@@ -1402,7 +1450,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param dim to set
    */
   public void setDimension(int idx, Dimension dim) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
     dimensions.set(idx, dim);
     resetShape();
   }
@@ -1459,7 +1508,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return size at which caching happens
    */
   public int getSizeToCache() {
-    if (sizeToCache >= 0) return sizeToCache; // it was set
+    if (sizeToCache >= 0)
+      return sizeToCache; // it was set
     return isCoordinateVariable() ? defaultCoordsSizeToCache : defaultSizeToCache;
   }
 
@@ -1498,7 +1548,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     if (!this.cache.cachingSet) {
       cache.isCaching = !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
-      if (debugCaching) System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(), getSizeToCache());
+      if (debugCaching)
+        System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(),
+            getSizeToCache());
       this.cache.cachingSet = true;
     }
     return cache.isCaching;
@@ -1515,19 +1567,20 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     setCachedData(cacheData, false);
   }
 
-  //public Array getCachedData() {
-  //  return (cache == null) ? null : cache.data;
-  //}
+  // public Array getCachedData() {
+  // return (cache == null) ? null : cache.data;
+  // }
 
   /**
    * Set the data cache
    *
-   * @param cacheData  cache this Array
+   * @param cacheData cache this Array
    * @param isMetadata : synthesized data, set true if must be saved in NcML output (ie data not actually in the file).
    */
   public void setCachedData(Array cacheData, boolean isMetadata) {
     if ((cacheData != null) && (cacheData.getElementType() != getDataType().getPrimitiveClassType()))
-      throw new IllegalArgumentException("setCachedData type=" + cacheData.getElementType() + " incompatible with variable type=" + getDataType());
+      throw new IllegalArgumentException(
+          "setCachedData type=" + cacheData.getElementType() + " incompatible with variable type=" + getDataType());
 
     this.cache.data = cacheData;
     this.isMetadata = isMetadata;
@@ -1562,8 +1615,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     public boolean isCaching = false;
     public boolean cachingSet = false;
 
-    public Cache() {
-    }
+    public Cache() {}
   }
 
   ///////////////////////////////////////////////////////////////////////
@@ -1573,9 +1625,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Generate the list of values from a starting value and an increment.
    * Will reshape to variable if needed.
    *
-   * @param npts  number of values, must = v.getSize()
+   * @param npts number of values, must = v.getSize()
    * @param start starting value
-   * @param incr  increment
+   * @param incr increment
    */
   public void setValues(int npts, double start, double incr) {
     if (npts != getSize())
@@ -1593,11 +1645,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
    */
   public void setValues(List<String> values) throws IllegalArgumentException {
-    Array data = Array.makeArray(getDataType(),  values);
+    Array data = Array.makeArray(getDataType(), values);
 
     if (data.getSize() != getSize())
-      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + getFullName() +
-              " needed= " + getSize() + " given=" + data.getSize());
+      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + getFullName()
+          + " needed= " + getSize() + " given=" + data.getSize());
 
     if (getRank() != 1) // dont have to reshape for rank 1
       data = data.reshape(getShape());
@@ -1628,7 +1680,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   public int[] getShapeAll() {
-    if (getParentStructure() == null) return getShape();
+    if (getParentStructure() == null)
+      return getShape();
     List<Dimension> dimAll = getDimensionsAll();
     int[] shapeAll = new int[dimAll.size()];
     for (int i = 0; i < dimAll.size(); i++)
@@ -1642,16 +1695,20 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * See readAllStructures(Section section, boolean flatten) method for details.
    *
    * @param sectionSpec specification string, eg "1:2,10,:,1:100:10"
-   * @param flatten     if true, remove enclosing StructureData.
+   * 
+   * @param flatten if true, remove enclosing StructureData.
+   * 
    * @return the requested data which has the shape of the request.
+   * 
    * @see #readAllStructures
+   * 
    * @deprecated
    *
-  public Array readAllStructuresSpec(String sectionSpec, boolean flatten) throws IOException, InvalidRangeException {
-    return readAllStructures(new Section(sectionSpec), flatten);
-  }
-
-  /*
+   * public Array readAllStructuresSpec(String sectionSpec, boolean flatten) throws IOException, InvalidRangeException {
+   * return readAllStructures(new Section(sectionSpec), flatten);
+   * }
+   * 
+   * /*
    * Read data from all structures for this Variable.
    * This is used for member variables whose parent Structure(s) is not a scalar.
    * You must specify a Range for each dimension in the enclosing parent Structure(s).
@@ -1666,89 +1723,101 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Structures containing the variable.
    *
    * @param sectionAll an array of Range objects, one for each Dimension of the enclosing Structures, as well as
-   *                   for the Variable itself. If the list is null, use the full shape for everything.
-   *                   If an individual Range is null, use the full shape for that dimension.
-   * @param flatten    if true, remove enclosing StructureData. Otherwise, each parent Structure will create a
-   *                   StructureData container for the returned data array.
+   * for the Variable itself. If the list is null, use the full shape for everything.
+   * If an individual Range is null, use the full shape for that dimension.
+   * 
+   * @param flatten if true, remove enclosing StructureData. Otherwise, each parent Structure will create a
+   * StructureData container for the returned data array.
+   * 
    * @return the requested data which has the shape of the request.
+   * 
    * @deprecated
    *
-  public Array readAllStructures(ucar.ma2.Section sectionAll, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    Section resolved; // resolve all nulls
-    if (sectionAll == null)
-      resolved = makeSectionAddParents(null, false); // everything
-    else {
-      ArrayList<Range> resultAll = new ArrayList<Range>();
-      makeSectionWithParents(resultAll, sectionAll.getRanges(), this);
-      resolved = new Section(resultAll);
-    }
-
-    return _readMemberData(resolved, flatten);
-  }
-
-  // recursively create the section (list of Range) array
-  private List<Range> makeSectionWithParents(List<Range> result, List<Range> orgSection, Variable v) throws InvalidRangeException {
-    List<Range> section = orgSection;
-
-    // do parent stuctures(s) first
-    if (v.isMemberOfStructure())
-      section = makeSectionWithParents(result, orgSection, v.getParentStructure());
-
-    // process just this variable's subList
-    List<Range> myList = section.subList(0, v.getRank());
-    Section mySection = new Section(myList, v.getShape());
-    result.addAll(mySection.getRanges());
-
-    // return section with this variable's sublist removed
-    return section.subList(v.getRank(), section.size());
-  } */
+   * public Array readAllStructures(ucar.ma2.Section sectionAll, boolean flatten) throws java.io.IOException,
+   * ucar.ma2.InvalidRangeException {
+   * Section resolved; // resolve all nulls
+   * if (sectionAll == null)
+   * resolved = makeSectionAddParents(null, false); // everything
+   * else {
+   * ArrayList<Range> resultAll = new ArrayList<Range>();
+   * makeSectionWithParents(resultAll, sectionAll.getRanges(), this);
+   * resolved = new Section(resultAll);
+   * }
+   * 
+   * return _readMemberData(resolved, flatten);
+   * }
+   * 
+   * // recursively create the section (list of Range) array
+   * private List<Range> makeSectionWithParents(List<Range> result, List<Range> orgSection, Variable v) throws
+   * InvalidRangeException {
+   * List<Range> section = orgSection;
+   * 
+   * // do parent stuctures(s) first
+   * if (v.isMemberOfStructure())
+   * section = makeSectionWithParents(result, orgSection, v.getParentStructure());
+   * 
+   * // process just this variable's subList
+   * List<Range> myList = section.subList(0, v.getRank());
+   * Section mySection = new Section(myList, v.getShape());
+   * result.addAll(mySection.getRanges());
+   * 
+   * // return section with this variable's sublist removed
+   * return section.subList(v.getRank(), section.size());
+   * }
+   */
 
   /*
    * Composes this variable's ranges with another list of ranges, adding parent ranges; resolves nulls.
    *
-   * @param section   Section of this Variable, same rank as v, may have nulls or be null.
+   * @param section Section of this Variable, same rank as v, may have nulls or be null.
+   * 
    * @param firstOnly if true, get first parent, else get all parrents.
+   * 
    * @return Section, rank of v plus parents, no nulls
+   * 
    * @throws InvalidRangeException if bad
    *
-  private Section makeSectionAddParents(Section section, boolean firstOnly) throws InvalidRangeException {
-    Section result;
-    if (section == null)
-      result = new Section(getRanges());
-    else
-      result = new Section(section.getRanges(), getShape());
+   * private Section makeSectionAddParents(Section section, boolean firstOnly) throws InvalidRangeException {
+   * Section result;
+   * if (section == null)
+   * result = new Section(getRanges());
+   * else
+   * result = new Section(section.getRanges(), getShape());
+   * 
+   * // add parents
+   * Structure p = getParentStructure();
+   * while (p != null) {
+   * Section parentSection = p.getShapeAsSection();
+   * for (int i = parentSection.getRank() - 1; i >= 0; i--) { // reverse
+   * Range r = parentSection.getRange(i);
+   * result.insertRange(0, firstOnly ? new Range(0, 0) : r);
+   * }
+   * p = p.getParentStructure();
+   * }
+   * 
+   * return result;
+   * }
+   */
 
-    // add parents
-    Structure p = getParentStructure();
-    while (p != null) {
-      Section parentSection = p.getShapeAsSection();
-      for (int i = parentSection.getRank() - 1; i >= 0; i--) { // reverse
-        Range r = parentSection.getRange(i);
-        result.insertRange(0, firstOnly ? new Range(0, 0) : r);
-      }
-      p = p.getParentStructure();
-    }
-
-    return result;
-  } */
-
-  /* private Array readMemberOfStructureFlatten(Section section) throws InvalidRangeException, IOException {
-    // get through first parents element
-    Section sectionAll = makeSectionAddParents(section, true);
-    Array data = _readMemberData(sectionAll, true); // flatten
-
-    // remove parent dimensions.
-    int n = data.getRank() - getRank();
-    for (int i = 0; i < n; i++)
-      if (data.getShape()[0] == 1) data = data.reduce(0);
-    return data;
-  }
-
-  /* structure-member Variable;  section has a Range for each array in the parent
-  // stuctures(s) and for the Variable.
-  protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException {
-    return ncfile.readMemberData(this, section, flatten);
-  } */
+  /*
+   * private Array readMemberOfStructureFlatten(Section section) throws InvalidRangeException, IOException {
+   * // get through first parents element
+   * Section sectionAll = makeSectionAddParents(section, true);
+   * Array data = _readMemberData(sectionAll, true); // flatten
+   * 
+   * // remove parent dimensions.
+   * int n = data.getRank() - getRank();
+   * for (int i = 0; i < n; i++)
+   * if (data.getShape()[0] == 1) data = data.reduce(0);
+   * return data;
+   * }
+   * 
+   * /* structure-member Variable; section has a Range for each array in the parent
+   * // stuctures(s) and for the Variable.
+   * protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException {
+   * return ncfile.readMemberData(this, section, flatten);
+   * }
+   */
 
   ////////////////////////////////
 
@@ -1759,38 +1828,41 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return true if a coordinate variable.
    */
   public boolean isCoordinateVariable() {
-    if ((dataType == DataType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be coordinate variables
+    if ((dataType == DataType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be coordinate
+                                                                   // variables
       return false;
 
     int n = getRank();
     if (n == 1 && dimensions.size() == 1) {
       Dimension firstd = dimensions.get(0);
-      if (getShortName().equals(firstd.getShortName())) { //  : short names match
+      if (getShortName().equals(firstd.getShortName())) { // : short names match
         return true;
       }
     }
-    if (n == 2 && dimensions.size() == 2) {    // two dimensional
+    if (n == 2 && dimensions.size() == 2) { // two dimensional
       Dimension firstd = dimensions.get(0);
       // must be char valued (really a String)
-      return shortName.equals(firstd.getShortName()) &&  // short names match
+      return shortName.equals(firstd.getShortName()) && // short names match
           (getDataType() == DataType.CHAR);
     }
 
     return false;
   }
 
-  /* public Object clone() throws CloneNotSupportedException {
-    Variable clone = (Variable) super.clone();
-
-    // Do we need to clone these?
-    // protected Cache cache = new Cache();
-    // protected int sizeToCache = -1; // bytes
-
-    clone.setParentGroup(group);
-    clone.setParentStructure(getParentStructure());
-    clone.setProxyReader(clone);
-    return clone;
-  }   */
+  /*
+   * public Object clone() throws CloneNotSupportedException {
+   * Variable clone = (Variable) super.clone();
+   * 
+   * // Do we need to clone these?
+   * // protected Cache cache = new Cache();
+   * // protected int sizeToCache = -1; // bytes
+   * 
+   * clone.setParentGroup(group);
+   * clone.setParentStructure(getParentStructure());
+   * clone.setProxyReader(clone);
+   * return clone;
+   * }
+   */
 
 
   ///////////////////////////////////////////////////////////////////////

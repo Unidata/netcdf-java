@@ -6,7 +6,6 @@
 package thredds.inventory;
 
 import ucar.nc2.time.CalendarDate;
-
 import java.util.Date;
 
 /**
@@ -17,7 +16,9 @@ import java.util.Date;
  */
 public interface DateExtractor {
   Date getDate(MFile mfile); // deprecate
+
   CalendarDate getCalendarDate(MFile mfile);
+
   CalendarDate getCalendarDateFromPath(String path);
 
 }

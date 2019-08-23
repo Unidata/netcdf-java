@@ -5,13 +5,13 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
-
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureCCIterator;
 import ucar.nc2.util.IOIterator;
 
 /**
  * Implement NestedPointFeatureCollectionIterator interface
+ * 
  * @author caron
  * @since Mar 20, 2008
  */
@@ -30,7 +30,8 @@ public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, I
 
   @Override
   public boolean hasNext() throws IOException {
-    if (done) return false;
+    if (done)
+      return false;
     pointFeatureCollection = nextFilteredPointFeatureCollection();
     return (pointFeatureCollection != null);
   }
@@ -50,7 +51,8 @@ public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, I
   }
 
   private PointFeatureCC nextFilteredPointFeatureCollection() throws IOException {
-    if ( npfciter == null) return null;
+    if (npfciter == null)
+      return null;
     if (!npfciter.hasNext()) {
       npfciter.close();
       return null;
@@ -58,7 +60,8 @@ public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, I
 
     PointFeatureCC pdata = npfciter.next();
     if (!filter(pdata)) {
-      if (!npfciter.hasNext()) return null;
+      if (!npfciter.hasNext())
+        return null;
       pdata = npfciter.next();
     }
 
@@ -66,6 +69,5 @@ public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, I
   }
 
 }
-
 
 

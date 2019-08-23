@@ -7,7 +7,6 @@ package ucar.nc2.iosp;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,26 +32,26 @@ public class LayoutTiled implements Layout {
   // track the overall iteration
   private long totalNelems, totalNelemsDone; // total number of elemens
 
-  private static final boolean debug = false, debugNext= false;
+  private static final boolean debug = false, debugNext = false;
 
   /**
    * Constructor.
    *
    * @param chunkIterator iterator over all available data chunks
-   * @param chunkSize     all chunks assumed to be the same size
-   * @param elemSize      size of an element in bytes.
-   * @param wantSection   the wanted section of data, contains a List of Range objects. Must be complete
+   * @param chunkSize all chunks assumed to be the same size
+   * @param elemSize size of an element in bytes.
+   * @param wantSection the wanted section of data, contains a List of Range objects. Must be complete
    */
   public LayoutTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, Section wantSection) {
     this.chunkIterator = chunkIterator;
     this.chunkSize = chunkSize;
     this.elemSize = elemSize;
     this.want = wantSection;
-    if(this.want.isVariableLength()) {
-        // remove the varlen
-        List<Range> newrange = new ArrayList<>(this.want.getRanges());
-        newrange.remove(newrange.size()-1);
-        this.want = new Section(newrange);
+    if (this.want.isVariableLength()) {
+      // remove the varlen
+      List<Range> newrange = new ArrayList<>(this.want.getRanges());
+      newrange.remove(newrange.size() - 1);
+      this.want = new Section(newrange);
     }
 
     this.totalNelems = this.want.computeSize();
@@ -70,7 +69,8 @@ public class LayoutTiled implements Layout {
   private Layout.Chunk next = null;
 
   public boolean hasNext() { // have to actually fetch the thing here
-    if (totalNelemsDone >= totalNelems) return false;
+    if (totalNelemsDone >= totalNelems)
+      return false;
 
     if ((index == null) || !index.hasNext()) { // get new data node
       try {
@@ -95,7 +95,8 @@ public class LayoutTiled implements Layout {
 
           // make the dataSection for this chunk
           dataSection = new Section(dataChunk.offset, chunkSize);
-          if (debug) System.out.printf(" dataChunk: %s%n", dataSection);
+          if (debug)
+            System.out.printf(" dataChunk: %s%n", dataSection);
           if (dataSection.intersects(want)) // does it intersect ?
             break;
         }
@@ -118,7 +119,8 @@ public class LayoutTiled implements Layout {
   }
 
   public Layout.Chunk next() {
-    if (debugNext) System.out.println("  next="+next);
+    if (debugNext)
+      System.out.println("  next=" + next);
     return next;
   }
 
@@ -127,7 +129,8 @@ public class LayoutTiled implements Layout {
     sbuff.append("want=").append(want).append("; ");
     sbuff.append("chunkSize=[");
     for (int i = 0; i < chunkSize.length; i++) {
-      if (i > 0) sbuff.append(",");
+      if (i > 0)
+        sbuff.append(",");
       sbuff.append(chunkSize[i]);
     }
     sbuff.append("] totalNelems=").append(totalNelems);
@@ -138,6 +141,7 @@ public class LayoutTiled implements Layout {
 
   public interface DataChunkIterator {
     boolean hasNext();
+
     DataChunk next() throws IOException;
   }
 

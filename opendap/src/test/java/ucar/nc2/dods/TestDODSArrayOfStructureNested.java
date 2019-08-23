@@ -12,26 +12,26 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/** Test nc2 dods in the JUnit framework.
+/**
+ * Test nc2 dods in the JUnit framework.
  * Dataset {
-    Structure {
-        Byte b;
-        Int32 i32;
-        UInt32 ui32;
-        Int16 i16;
-        Structure {
-            UInt16 ui16[10];
-            Float32 f32;
-            Float64 f64;
-            String s;
-            Url u[5];
-        } ss;
-    } types[10];
-} WackyArray02;
+ * Structure {
+ * Byte b;
+ * Int32 i32;
+ * UInt32 ui32;
+ * Int16 i16;
+ * Structure {
+ * UInt16 ui16[10];
+ * Float32 f32;
+ * Float64 f64;
+ * String s;
+ * Url u[5];
+ * } ss;
+ * } types[10];
+ * } WackyArray02;
  */
 public class TestDODSArrayOfStructureNested {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -65,7 +65,7 @@ public class TestDODSArrayOfStructureNested {
     assert v instanceof Structure;
     Structure ss = (Structure) v;
 
-    assert(null != (v = ss.findVariable("f32")));
+    assert (null != (v = ss.findVariable("f32")));
     assert v.getShortName().equals("f32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -75,7 +75,7 @@ public class TestDODSArrayOfStructureNested {
     assert a.getSize() == 10;
     assert a.getElementType() == float.class;
     assert a instanceof ArrayFloat.D1;
-    float val = a.getFloat( a.getIndex());
+    float val = a.getFloat(a.getIndex());
     assert (val == 0.0);
   }
 
@@ -92,7 +92,7 @@ public class TestDODSArrayOfStructureNested {
     Index ima = a.getIndex();
     assert a.getRank() == 2;
     assert a.getSize() == 100;
-    assert a.getInt( ima) == 0;
+    assert a.getInt(ima) == 0;
 
     v = dodsfile.findVariable("types.ss.s");
     assert v != null;
@@ -136,7 +136,7 @@ public class TestDODSArrayOfStructureNested {
     assert v.getDataType() == DataType.STRUCTURE;
 
     DODSStructure struct = (DODSStructure) v;
-    for (int i=0; i<struct.getSize(); i++) {
+    for (int i = 0; i < struct.getSize(); i++) {
       StructureData sd = struct.readStructure(i);
 
       StructureMembers.Member m = sd.findMember("ss");
@@ -145,8 +145,8 @@ public class TestDODSArrayOfStructureNested {
       assert a.getRank() == 0;
       assert a.getElementType() == StructureData.class;
 
-      StructureData ss = (StructureData) a.getObject( a.getIndex());
-      assert ss.getScalarString("s").equals("This is a data test string (pass "+0+").");
+      StructureData ss = (StructureData) a.getObject(a.getIndex());
+      assert ss.getScalarString("s").equals("This is a data test string (pass " + 0 + ").");
     }
   }
 

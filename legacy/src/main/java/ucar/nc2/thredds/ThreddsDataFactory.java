@@ -11,29 +11,28 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.constants.FeatureType;
-
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
-
 import thredds.catalog.*;
 import ucar.nc2.util.Optional;
 import ucar.unidata.util.StringUtil2;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.io.IOException;
 
 /**
- * This tries to translate a THREDDS InvDataset into a data object that can be used, either as a NetcdfDataset or as a FeatureDataset.
+ * This tries to translate a THREDDS InvDataset into a data object that can be used, either as a NetcdfDataset or as a
+ * FeatureDataset.
  * <p/>
  * As input, it can take
- * <ol><li> An InvAccess object.
- * <li> An InvDataset object. If the InvDataset has more that one InvAccess, it has to try to choose which to use,
+ * <ol>
+ * <li>An InvAccess object.
+ * <li>An InvDataset object. If the InvDataset has more that one InvAccess, it has to try to choose which to use,
  * based on what Service type we know how to work with.
- * <li> A url of the form [thredds:]catalog.xml#datasetId. In this case it opens the catalog, and looks for the
+ * <li>A url of the form [thredds:]catalog.xml#datasetId. In this case it opens the catalog, and looks for the
  * InvDataset with the given datasetId.
- * <li> A url of the form thredds:resolve:resolveURL. In this case it expects that the URL will return a catalog with a
+ * <li>A url of the form thredds:resolve:resolveURL. In this case it expects that the URL will return a catalog with a
  * single top level dataset, which is the "resolved" dataset.
  * </ol>
  * <p/>
@@ -51,6 +50,7 @@ public class ThreddsDataFactory {
   static public void setPreferCdm(boolean prefer) {
     preferAccess = prefer ? new ServiceType[] {ServiceType.CdmRemote} : null;
   }
+
   static public void setPreferAccess(ServiceType... prefer) {
     preferAccess = prefer;
   }
@@ -97,7 +97,8 @@ public class ThreddsDataFactory {
   }
 
   /**
-   * Open a FeatureDataset from a URL location string. Example URLS: <ul>
+   * Open a FeatureDataset from a URL location string. Example URLS:
+   * <ul>
    * <li>http://localhost:8080/test/addeStationDataset.xml#surfaceHourly
    * <li>thredds:http://localhost:8080/test/addeStationDataset.xml#surfaceHourly
    * <li>thredds://localhost:8080/test/addeStationDataset.xml#surfaceHourly
@@ -106,11 +107,12 @@ public class ThreddsDataFactory {
    * </ul>
    *
    * @param urlString [thredds:]catalog.xml#datasetId
-   * @param task      may be null
+   * @param task may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws java.io.IOException on read error
    */
-  public ThreddsDataFactory.Result openFeatureDataset(String urlString, ucar.nc2.util.CancelTask task) throws IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(String urlString, ucar.nc2.util.CancelTask task)
+      throws IOException {
 
     ThreddsDataFactory.Result result = new ThreddsDataFactory.Result();
     InvDataset invDataset = processLocation(urlString, task, result);
@@ -124,13 +126,13 @@ public class ThreddsDataFactory {
    * Open a FeatureDataset from a URL location string, and a desired type (may by NONE or null).
    *
    * @param wantFeatureType desired feature type, may be NONE or null
-   * @param urlString       [thredds:]catalog.xml#datasetId
-   * @param task            may be null
+   * @param urlString [thredds:]catalog.xml#datasetId
+   * @param task may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws java.io.IOException on read error
    */
-  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, String urlString, ucar.nc2.util.CancelTask task)
-          throws IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, String urlString,
+      ucar.nc2.util.CancelTask task) throws IOException {
     ThreddsDataFactory.Result result = new ThreddsDataFactory.Result();
     InvDataset invDataset = processLocation(urlString, task, result);
     if (result.fatalError || invDataset == null)
@@ -151,7 +153,7 @@ public class ThreddsDataFactory {
       return openResolver(location, task, result);
     }
 
-    if (!location.startsWith("http:") && !location.startsWith("file:"))   // LOOK whats this for??
+    if (!location.startsWith("http:") && !location.startsWith("file:")) // LOOK whats this for??
       location = "http:" + location;
 
     InvCatalog catalog;
@@ -190,16 +192,17 @@ public class ThreddsDataFactory {
    * Open a FeatureDataset from an InvDataset object, deciding on which InvAccess to use.
    *
    * @param invDataset use this to figure out what type, how to open, etc
-   * @param task       allow user to cancel; may be null
+   * @param task allow user to cancel; may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws IOException on read error
    */
-  public ThreddsDataFactory.Result openFeatureDataset(InvDataset invDataset, ucar.nc2.util.CancelTask task) throws IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(InvDataset invDataset, ucar.nc2.util.CancelTask task)
+      throws IOException {
     return openFeatureDataset(null, invDataset, task, new Result());
   }
 
-  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvDataset invDataset, ucar.nc2.util.CancelTask task, Result result)
-          throws IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvDataset invDataset,
+      ucar.nc2.util.CancelTask task, Result result) throws IOException {
 
     result.featureType = invDataset.getDataType();
     if (result.featureType == null)
@@ -228,15 +231,18 @@ public class ThreddsDataFactory {
 
       if (result.featureType == FeatureType.STATION) {
 
-        /* DqcFactory dqcFactory = new DqcFactory(true);
-        String dqc_location = qc.getStandardUrlName();
-        QueryCapability dqc = dqcFactory.readXML(dqc_location);
-        if (dqc.hasFatalError()) {
-          result.errLog.append(dqc.getErrorMessages());
-          result.fatalError = true;
-        } */
+        /*
+         * DqcFactory dqcFactory = new DqcFactory(true);
+         * String dqc_location = qc.getStandardUrlName();
+         * QueryCapability dqc = dqcFactory.readXML(dqc_location);
+         * if (dqc.hasFatalError()) {
+         * result.errLog.append(dqc.getErrorMessages());
+         * result.fatalError = true;
+         * }
+         */
 
-        result.featureDataset = null; // LOOK FIX ucar.nc2.thredds.DqcStationObsDataset.factory(invDataset, dqc_location, result.errLog);
+        result.featureDataset = null; // LOOK FIX ucar.nc2.thredds.DqcStationObsDataset.factory(invDataset,
+                                      // dqc_location, result.errLog);
         result.fatalError = (result.featureDataset == null);
 
       } else {
@@ -266,11 +272,12 @@ public class ThreddsDataFactory {
    * Open a FeatureDataset from an InvAccess object.
    *
    * @param access use this InvAccess.
-   * @param task   may be null
+   * @param task may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws IOException on read error
    */
-  public ThreddsDataFactory.Result openFeatureDataset(InvAccess access, ucar.nc2.util.CancelTask task) throws IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(InvAccess access, ucar.nc2.util.CancelTask task)
+      throws IOException {
     InvDataset invDataset = access.getDataset();
     ThreddsDataFactory.Result result = new Result();
     if (invDataset.getDataType() == null) {
@@ -282,8 +289,8 @@ public class ThreddsDataFactory {
     return openFeatureDataset(invDataset.getDataType(), access, task, result);
   }
 
-  private ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvAccess access, ucar.nc2.util.CancelTask task, Result result)
-          throws IOException {
+  private ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvAccess access,
+      ucar.nc2.util.CancelTask task, Result result) throws IOException {
     result.featureType = wantFeatureType;
     result.accessUsed = access;
 
@@ -320,10 +327,11 @@ public class ThreddsDataFactory {
     return result;
   }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Open a NetcdfDataset from a URL location string. Example URLS: <ul>
+   * Open a NetcdfDataset from a URL location string. Example URLS:
+   * <ul>
    * <li>http://localhost:8080/test/addeStationDataset.xml#surfaceHourly
    * <li>thredds:http://localhost:8080/test/addeStationDataset.xml#surfaceHourly
    * <li>thredds://localhost:8080/test/addeStationDataset.xml#surfaceHourly
@@ -332,17 +340,19 @@ public class ThreddsDataFactory {
    * </ul>
    *
    * @param location catalog.xml#datasetId, may optionally start with "thredds:"
-   * @param task     may be null
-   * @param log      error messages gp here, may be null
-   * @param acquire  if true, aquire the dataset, else open it
+   * @param task may be null
+   * @param log error messages gp here, may be null
+   * @param acquire if true, aquire the dataset, else open it
    * @return NetcdfDataset
    * @throws java.io.IOException on read error
    */
-  public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
+  public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log)
+      throws IOException {
     Result result = new Result();
     InvDataset invDataset = processLocation(location, task, result);
     if (result.fatalError || invDataset == null) {
-      if (log != null) log.format("%s", result.errLog);
+      if (log != null)
+        log.format("%s", result.errLog);
       return null;
     }
 
@@ -353,20 +363,23 @@ public class ThreddsDataFactory {
    * Try to open as a NetcdfDataset.
    *
    * @param invDataset open this
-   * @param acquire    if true, aquire the dataset, else open it
-   * @param task       may be null
-   * @param log        error message, may be null
+   * @param acquire if true, aquire the dataset, else open it
+   * @param task may be null
+   * @param log error message, may be null
    * @return NetcdfDataset or null if failure
    * @throws IOException on read error
    */
-  public NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
+  public NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log)
+      throws IOException {
     Result result = new Result();
     NetcdfDataset ncd = openDataset(invDataset, acquire, task, result);
-    if (log != null) log.format("%s", result.errLog);
+    if (log != null)
+      log.format("%s", result.errLog);
     return (result.fatalError) ? null : ncd;
   }
 
-  private NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws IOException {
+  private NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task,
+      Result result) throws IOException {
 
     IOException saveException = null;
 
@@ -390,7 +403,8 @@ public class ThreddsDataFactory {
       // deal with RESOLVER type
       if (serviceType == ServiceType.RESOLVER) {
         InvDatasetImpl rds = openResolver(datasetLocation, task, result);
-        if (rds == null) return null;
+        if (rds == null)
+          return null;
         accessList = new ArrayList<>(rds.getAccess());
         continue;
       }
@@ -398,7 +412,7 @@ public class ThreddsDataFactory {
       // ready to open it through netcdf API
       NetcdfDataset ds;
 
-// try to open
+      // try to open
       try {
         ds = openDataset(access, acquire, task, result);
 
@@ -418,42 +432,48 @@ public class ThreddsDataFactory {
       return ds;
     } // loop over accesses
 
-    if (saveException != null) throw saveException;
+    if (saveException != null)
+      throw saveException;
     return null;
   }
 
   /**
    * Try to open invAccess as a NetcdfDataset.
    *
-   * @param access  open this InvAccess
+   * @param access open this InvAccess
    * @param acquire if true, aquire the dataset, else open it
-   * @param task    may be null
-   * @param log     error message, may be null
+   * @param task may be null
+   * @param log error message, may be null
    * @return NetcdfDataset or null if failure
    * @throws IOException on read error
    */
-  public NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
+  public NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log)
+      throws IOException {
     Result result = new Result();
     NetcdfDataset ncd = openDataset(access, acquire, task, result);
-    if (log != null) log.format("%s", result.errLog);
+    if (log != null)
+      log.format("%s", result.errLog);
     return (result.fatalError) ? null : ncd;
   }
 
   private static boolean enhanceMode = false;
 
-  private NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws IOException {
+  private NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Result result)
+      throws IOException {
     InvDataset invDataset = access.getDataset();
     String datasetId = invDataset.getID();
     String title = invDataset.getName();
 
     String datasetLocation = access.getStandardUrlName();
     ServiceType serviceType = access.getService().getServiceType();
-    if (debugOpen) System.out.println("ThreddsDataset.openDataset= " + datasetLocation);
+    if (debugOpen)
+      System.out.println("ThreddsDataset.openDataset= " + datasetLocation);
 
     // deal with RESOLVER type
     if (serviceType == ServiceType.RESOLVER) {
       InvDatasetImpl rds = openResolver(datasetLocation, task, result);
-      if (rds == null) return null;
+      if (rds == null)
+        return null;
       return openDataset(rds, acquire, task, result);
     }
 
@@ -462,39 +482,45 @@ public class ThreddsDataFactory {
 
     // open DODS type
     String prefix = null;
-    if ((serviceType == ServiceType.OPENDAP)|| (serviceType == ServiceType.DODS))
-        prefix = "dods:";
-    else if(serviceType == ServiceType.DAP4)
-        prefix = "dap4:";
-    if(prefix != null) {
+    if ((serviceType == ServiceType.OPENDAP) || (serviceType == ServiceType.DODS))
+      prefix = "dods:";
+    else if (serviceType == ServiceType.DAP4)
+      prefix = "dap4:";
+    if (prefix != null) {
       String curl = datasetLocation;
       if (curl.startsWith("http:")) {
-          curl = prefix + datasetLocation.substring(5);
+        curl = prefix + datasetLocation.substring(5);
       } else if (curl.startsWith("https:")) {
-          curl =  prefix + curl.substring(6);
+        curl = prefix + curl.substring(6);
       }
-      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task)
+          : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
     // open CdmRemote
     else if (serviceType == ServiceType.CdmRemote) {
       String curl = CdmRemote.canonicalURL(datasetLocation);
-      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task)
+          : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
     // open CdmRemote
     else if ((serviceType == ServiceType.HTTP) || (serviceType == ServiceType.HTTPServer)) {
-      String curl =  (datasetLocation.startsWith("http:")) ? "httpserver::" + datasetLocation.substring(5) : datasetLocation;
-      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
+      String curl =
+          (datasetLocation.startsWith("http:")) ? "httpserver::" + datasetLocation.substring(5) : datasetLocation;
+      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task)
+          : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
     else {
       // open through NetcdfDataset API
-      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(datasetLocation), enhanceMode, task) : NetcdfDataset.openDataset(datasetLocation, enhanceMode, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(datasetLocation), enhanceMode, task)
+          : NetcdfDataset.openDataset(datasetLocation, enhanceMode, task);
     }
 
     result.accessUsed = access;
-    if (ds == null) return null;
+    if (ds == null)
+      return null;
 
     ds.setId(datasetId);
     ds.setTitle(title);
@@ -525,7 +551,8 @@ public class ThreddsDataFactory {
     if (preferAccess != null) {
       for (ServiceType type : preferAccess) {
         access = findAccessByServiceType(accessList, type);
-        if (access != null) break;
+        if (access != null)
+          break;
       }
     }
 
@@ -537,25 +564,27 @@ public class ThreddsDataFactory {
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.OPENDAP);
     if (access == null)
-       access = findAccessByServiceType(accessList, ServiceType.DAP4);
+      access = findAccessByServiceType(accessList, ServiceType.DAP4);
     if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.FILE); // should mean that it can be opened through netcdf API
+      access = findAccessByServiceType(accessList, ServiceType.FILE); // should mean that it can be opened through
+                                                                      // netcdf API
     if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.NETCDF); //  ServiceType.NETCDF is deprecated, use FILE
+      access = findAccessByServiceType(accessList, ServiceType.NETCDF); // ServiceType.NETCDF is deprecated, use FILE
 
     // look for HTTP with format we can read
     if (access == null) {
       InvAccess tryAccess = findAccessByServiceType(accessList, ServiceType.HTTPServer);
       if (tryAccess == null)
-        tryAccess = findAccessByServiceType(accessList, ServiceType.HTTP); //  ServiceType.HTTP should be HTTPServer
+        tryAccess = findAccessByServiceType(accessList, ServiceType.HTTP); // ServiceType.HTTP should be HTTPServer
 
       if (tryAccess != null) {
         DataFormatType format = tryAccess.getDataFormatType();
 
         // these are the file types we can read
         if ((DataFormatType.BUFR == format) || (DataFormatType.GINI == format) || (DataFormatType.GRIB1 == format)
-                || (DataFormatType.GRIB2 == format) || (DataFormatType.HDF5 == format) || (DataFormatType.NCML == format)
-                || (DataFormatType.NETCDF == format) || (DataFormatType.NEXRAD2 == format) || (DataFormatType.NIDS == format)) {
+            || (DataFormatType.GRIB2 == format) || (DataFormatType.HDF5 == format) || (DataFormatType.NCML == format)
+            || (DataFormatType.NETCDF == format) || (DataFormatType.NEXRAD2 == format)
+            || (DataFormatType.NIDS == format)) {
           access = tryAccess;
         }
       }
@@ -598,14 +627,14 @@ public class ThreddsDataFactory {
   /**
    * Add information from the InvDataset to the NetcdfDataset.
    *
-   * @param ds        get info from here
+   * @param ds get info from here
    * @param ncDataset add to here
    */
   public static void annotate(InvDataset ds, NetcdfDataset ncDataset) {
     ncDataset.setTitle(ds.getName());
     ncDataset.setId(ds.getID());
 
-// add properties as global attributes
+    // add properties as global attributes
     for (InvProperty p : ds.getProperties()) {
       String name = p.getName();
       if (null == ncDataset.findGlobalAttribute(name)) {
@@ -613,47 +642,52 @@ public class ThreddsDataFactory {
       }
     }
 
-    /* ThreddsMetadata.GeospatialCoverage geoCoverage = ds.getGeospatialCoverage();
-   if (geoCoverage != null) {
-     if ( null != geoCoverage.getNorthSouthRange()) {
-       ncDataset.addAttribute(null, new Attribute("geospatial_lat_min", new Double(geoCoverage.getLatSouth())));
-       ncDataset.addAttribute(null, new Attribute("geospatial_lat_max", new Double(geoCoverage.getLatNorth())));
-     }
-     if ( null != geoCoverage.getEastWestRange()) {
-       ncDataset.addAttribute(null, new Attribute("geospatial_lon_min", new Double(geoCoverage.getLonWest())));
-       ncDataset.addAttribute(null, new Attribute("geospatial_lon_max", new Double(geoCoverage.getLonEast())));
-     }
-     if ( null != geoCoverage.getUpDownRange()) {
-       ncDataset.addAttribute(null, new Attribute("geospatial_vertical_min", new Double(geoCoverage.getHeightStart())));
-       ncDataset.addAttribute(null, new Attribute("geospatial_vertical_max", new Double(geoCoverage.getHeightStart() + geoCoverage.getHeightExtent())));
-     }
-   }
-
-   DateRange timeCoverage = ds.getTimeCoverage();
-   if (timeCoverage != null) {
-     ncDataset.addAttribute(null, new Attribute("time_coverage_start", timeCoverage.getStart().toDateTimeStringISO()));
-     ncDataset.addAttribute(null, new Attribute("time_coverage_end", timeCoverage.getEnd().toDateTimeStringISO()));
-   } */
+    /*
+     * ThreddsMetadata.GeospatialCoverage geoCoverage = ds.getGeospatialCoverage();
+     * if (geoCoverage != null) {
+     * if ( null != geoCoverage.getNorthSouthRange()) {
+     * ncDataset.addAttribute(null, new Attribute("geospatial_lat_min", new Double(geoCoverage.getLatSouth())));
+     * ncDataset.addAttribute(null, new Attribute("geospatial_lat_max", new Double(geoCoverage.getLatNorth())));
+     * }
+     * if ( null != geoCoverage.getEastWestRange()) {
+     * ncDataset.addAttribute(null, new Attribute("geospatial_lon_min", new Double(geoCoverage.getLonWest())));
+     * ncDataset.addAttribute(null, new Attribute("geospatial_lon_max", new Double(geoCoverage.getLonEast())));
+     * }
+     * if ( null != geoCoverage.getUpDownRange()) {
+     * ncDataset.addAttribute(null, new Attribute("geospatial_vertical_min", new Double(geoCoverage.getHeightStart())));
+     * ncDataset.addAttribute(null, new Attribute("geospatial_vertical_max", new Double(geoCoverage.getHeightStart() +
+     * geoCoverage.getHeightExtent())));
+     * }
+     * }
+     * 
+     * DateRange timeCoverage = ds.getTimeCoverage();
+     * if (timeCoverage != null) {
+     * ncDataset.addAttribute(null, new Attribute("time_coverage_start",
+     * timeCoverage.getStart().toDateTimeStringISO()));
+     * ncDataset.addAttribute(null, new Attribute("time_coverage_end", timeCoverage.getEnd().toDateTimeStringISO()));
+     * }
+     */
 
     ncDataset.finish();
   }
 
-//////////////////////////////////////////////////////////////////////////////////
-// image
+  //////////////////////////////////////////////////////////////////////////////////
+  // image
 
-// look for an access method for an image datatype
+  // look for an access method for an image datatype
 
   private InvAccess getImageAccess(InvDataset invDataset, ucar.nc2.util.CancelTask task, Result result) {
 
     List<InvAccess> accessList = new ArrayList<>(invDataset.getAccess()); // a list of all the accesses
     while (accessList.size() > 0) {
       InvAccess access = chooseImageAccess(accessList);
-      if (access != null) return access;
+      if (access != null)
+        return access;
 
-// next choice is resolver type.
+      // next choice is resolver type.
       access = invDataset.getAccess(ServiceType.RESOLVER);
 
-// no valid access
+      // no valid access
       if (access == null) {
         result.errLog.format("No access that could be used for Image Type %s %n", invDataset);
         return null;
@@ -665,7 +699,7 @@ public class ThreddsDataFactory {
       if (rds == null)
         return null;
 
-// use the access list from the resolved dataset
+      // use the access list from the resolved dataset
       accessList = new ArrayList<>(invDataset.getAccess());
     } // loop over accesses
 
@@ -676,13 +710,16 @@ public class ThreddsDataFactory {
     InvAccess access;
 
     access = findAccessByDataFormatType(accessList, DataFormatType.JPEG);
-    if (access != null) return access;
+    if (access != null)
+      return access;
 
     access = findAccessByDataFormatType(accessList, DataFormatType.GIF);
-    if (access != null) return access;
+    if (access != null)
+      return access;
 
     access = findAccessByDataFormatType(accessList, DataFormatType.TIFF);
-    if (access != null) return access;
+    if (access != null)
+      return access;
 
     access = findAccessByServiceType(accessList, ServiceType.ADDE);
     if (access != null) {
@@ -694,9 +731,9 @@ public class ThreddsDataFactory {
     return access;
   }
 
-///////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
 
-// works against the accessList instead of the dataset list, so we can remove and try again
+  // works against the accessList instead of the dataset list, so we can remove and try again
 
   private InvAccess findAccessByServiceType(List<InvAccess> accessList, ServiceType type) {
     for (InvAccess a : accessList) {
@@ -706,7 +743,7 @@ public class ThreddsDataFactory {
     return null;
   }
 
-// works against the accessList instead of the dataset list, so we can remove and try again
+  // works against the accessList instead of the dataset list, so we can remove and try again
 
   private InvAccess findAccessByDataFormatType(List<InvAccess> accessList, DataFormatType type) {
     for (InvAccess a : accessList) {

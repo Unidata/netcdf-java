@@ -5,13 +5,18 @@
 package ucar.ma2;
 
 /**
-   Thrown if an attempt is made to use an invalid
-   Range to index an array.
+ * Thrown if an attempt is made to use an invalid
+ * Range to index an array.
  *
  * @author caron
  */
 
 public class InvalidRangeException extends Exception {
-  public InvalidRangeException() { super(); }
-  public InvalidRangeException(String s) { super(s); }
+  public InvalidRangeException() {
+    super();
+  }
+
+  public InvalidRangeException(String s) {
+    super(s);
+  }
 }

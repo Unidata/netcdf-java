@@ -7,7 +7,6 @@ package ucar.nc2.iosp;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -17,34 +16,35 @@ import java.util.ArrayList;
  *
  * <p/>
  * Example for Integers:
+ * 
  * <pre>
-  int[] read( IndexChunker index, int[] src) {
-    int[] dest = new int[index.getTotalNelems()];
-    while (index.hasNext()) {
-      Indexer2.Chunk chunk = index.next();
-      System.arraycopy(src, chunk.getSrcElem(), dest, chunk.getDestElem(), chunk.getNelems());
-    }
-    return dest;
-  }
-
-  int[] read( IndexChunker index, RandomAccessFile raf, long start_pos) {
-    int[] dest = new int[index.getTotalNelems()];
-    while (index.hasNext()) {
-      Indexer2.Chunk chunk = index.next();
-      raf.seek( start_pos + chunk.getSrcElem() * 4);
-      raf.readInt(dest, chunk.getDestElem(), chunk.getNelems());
-    }
-    return dest;
-  }
-
- // note src and dest misnamed
-  void write( IndexChunker index, int[] src, RandomAccessFile raf, long start_pos) {
-    while (index.hasNext()) {
-      Indexer2.Chunk chunk = index.next();
-      raf.seek( start_pos + chunk.getSrcElem() * 4);
-      raf.writeInt(src, chunk.getDestElem(), chunk.getNelems());
-    }
-  }
+ * int[] read(IndexChunker index, int[] src) {
+ *   int[] dest = new int[index.getTotalNelems()];
+ *   while (index.hasNext()) {
+ *     Indexer2.Chunk chunk = index.next();
+ *     System.arraycopy(src, chunk.getSrcElem(), dest, chunk.getDestElem(), chunk.getNelems());
+ *   }
+ *   return dest;
+ * }
+ * 
+ * int[] read(IndexChunker index, RandomAccessFile raf, long start_pos) {
+ *   int[] dest = new int[index.getTotalNelems()];
+ *   while (index.hasNext()) {
+ *     Indexer2.Chunk chunk = index.next();
+ *     raf.seek(start_pos + chunk.getSrcElem() * 4);
+ *     raf.readInt(dest, chunk.getDestElem(), chunk.getNelems());
+ *   }
+ *   return dest;
+ * }
+ * 
+ * // note src and dest misnamed
+ * void write(IndexChunker index, int[] src, RandomAccessFile raf, long start_pos) {
+ *   while (index.hasNext()) {
+ *     Indexer2.Chunk chunk = index.next();
+ *     raf.seek(start_pos + chunk.getSrcElem() * 4);
+ *     raf.writeInt(src, chunk.getDestElem(), chunk.getNelems());
+ *   }
+ * }
  * </pre>
  *
  * @author caron
@@ -62,6 +62,7 @@ public class IndexChunker {
 
   /**
    * Constructor
+   * 
    * @param srcShape the shape of the source, eg Variable.getShape()
    * @param wantSection the wanted section in srcShape, ie must be subset of srcShape.
    * @throws InvalidRangeException if wantSection is incorrect
@@ -91,11 +92,12 @@ public class IndexChunker {
     }
 
     // merge contiguous inner dimensions for efficiency
-    if (debugMerge) System.out.println("merge= " + this);
+    if (debugMerge)
+      System.out.println("merge= " + this);
 
     // count how many merge dimensions
     int merge = 0;
-    for (int i = 0; i < dimList.size()-1; i++) {
+    for (int i = 0; i < dimList.size() - 1; i++) {
       Dim elem = dimList.get(i);
       Dim elem2 = dimList.get(i + 1);
       if (elem.maxSize == elem.wantSize && (elem2.want.stride() == 1)) {
@@ -113,14 +115,16 @@ public class IndexChunker {
       elem2.wantSize *= elem.wantSize;
       if (elem2.wantSize < 0)
         throw new IllegalArgumentException("array size may not exceed 2^31");
-      if (debugMerge) System.out.println(" ----" + this);
+      if (debugMerge)
+        System.out.println(" ----" + this);
     }
 
     // delete merged
     if (merge > 0) {
       dimList.subList(0, merge).clear();
     }
-    if (debug) System.out.println(" final= " + this);
+    if (debug)
+      System.out.println(" final= " + this);
 
     // how many elements can we do at a time?
     if ((varRank == 0) || (dimList.get(0).want.stride() > 1))
@@ -133,7 +137,7 @@ public class IndexChunker {
 
     start = 0; // first wanted value
     for (Dim dim : dimList) {
-      start += dim.stride * dim.want.first();  // watch for overflow on large files
+      start += dim.stride * dim.want.first(); // watch for overflow on large files
     }
 
     // we will use an Index object to keep track of the chunks, each index represents nelems
@@ -146,7 +150,7 @@ public class IndexChunker {
       shape[rank - i - 1] = dim.wantSize;
     }
     if (debug) {
-      System.out.println("  elemsPerChunk=" + nelems+ "  nchunks=" + IndexLong.computeSize(shape));
+      System.out.println("  elemsPerChunk=" + nelems + "  nchunks=" + IndexLong.computeSize(shape));
       printa("  indexShape=", shape);
       printl("  indexStride=", wstride);
     }
@@ -162,10 +166,10 @@ public class IndexChunker {
   }
 
   private static class Dim {
-    long stride;    // number of elements
-    long maxSize;   // number of elements - must be a long since we may merge
-    Range want;    // desired Range
-    int wantSize;  // keep seperate from want so we can modify when merging
+    long stride; // number of elements
+    long maxSize; // number of elements - must be a long since we may merge
+    Range want; // desired Range
+    int wantSize; // keep seperate from want so we can modify when merging
 
     Dim(long byteStride, int maxSize, Range want) {
       this.stride = byteStride;
@@ -177,6 +181,7 @@ public class IndexChunker {
 
   /**
    * Get total number of elements in wantSection
+   * 
    * @return total number of elements in wantSection
    */
   public long getTotalNelems() {
@@ -184,8 +189,9 @@ public class IndexChunker {
   }
 
   /**
-   * If there are  more chunks to process
-   * @return true if there are  more chunks to process
+   * If there are more chunks to process
+   * 
+   * @return true if there are more chunks to process
    */
   public boolean hasNext() {
     return done < total;
@@ -193,6 +199,7 @@ public class IndexChunker {
 
   /**
    * Get the next chunk
+   * 
    * @return the next chunk
    */
   public Chunk next() {
@@ -203,7 +210,7 @@ public class IndexChunker {
       chunk.incrDestElem(nelems); // always read nelems at a time
     }
 
-    // Get the current element's  index from the start of the file
+    // Get the current element's index from the start of the file
     chunk.setSrcElem(start + chunkIndex.currentElement());
 
     if (debugNext)
@@ -220,8 +227,8 @@ public class IndexChunker {
    * Read nelems from src at srcPos, store in destination at destPos.
    */
   static public class Chunk implements Layout.Chunk {
-    private long srcElem;   // start reading/writing here in the file
-    private int nelems;     // read these many contiguous elements
+    private long srcElem; // start reading/writing here in the file
+    private int nelems; // read these many contiguous elements
     private long destElem; // start writing/reading here in array
     private long srcPos;
 
@@ -233,6 +240,7 @@ public class IndexChunker {
 
     /**
      * Get the position in source where to read or write
+     * 
      * @return position as an element count
      */
     public long getSrcElem() {
@@ -260,6 +268,7 @@ public class IndexChunker {
 
     /**
      * Get the position in destination where to read or write
+     * 
      * @return starting element in the array: "starting array element" (Note: elements, not bytes)
      */
     public long getDestElem() {
@@ -275,15 +284,21 @@ public class IndexChunker {
     }
 
     public String toString() {
-      return  " srcPos=" + srcPos + " srcElem=" + srcElem + " nelems=" + nelems + " destElem=" + destElem;
+      return " srcPos=" + srcPos + " srcElem=" + srcElem + " nelems=" + nelems + " destElem=" + destElem;
     }
 
     // must be set by controlling Layout class - not used here
-    public long getSrcPos() { return srcPos; }
+    public long getSrcPos() {
+      return srcPos;
+    }
+
     public void setSrcPos(long srcPos) {
       this.srcPos = srcPos;
     }
-    public void incrSrcPos(int incr) { this.srcPos += incr; }
+
+    public void incrSrcPos(int incr) {
+      this.srcPos += incr;
+    }
   }
 
   public String toString() {
@@ -291,25 +306,29 @@ public class IndexChunker {
     sbuff.append("wantSize=");
     for (int i = 0; i < dimList.size(); i++) {
       Dim elem = dimList.get(i);
-      if (i > 0) sbuff.append(",");
+      if (i > 0)
+        sbuff.append(",");
       sbuff.append(elem.wantSize);
     }
     sbuff.append(" maxSize=");
     for (int i = 0; i < dimList.size(); i++) {
       Dim elem = dimList.get(i);
-      if (i > 0) sbuff.append(",");
+      if (i > 0)
+        sbuff.append(",");
       sbuff.append(elem.maxSize);
     }
     sbuff.append(" wantStride=");
     for (int i = 0; i < dimList.size(); i++) {
       Dim elem = dimList.get(i);
-      if (i > 0) sbuff.append(",");
+      if (i > 0)
+        sbuff.append(",");
       sbuff.append(elem.want.stride());
     }
     sbuff.append(" stride=");
     for (int i = 0; i < dimList.size(); i++) {
       Dim elem = dimList.get(i);
-      if (i > 0) sbuff.append(",");
+      if (i > 0)
+        sbuff.append(",");
       sbuff.append(elem.stride);
     }
     return sbuff.toString();
@@ -318,19 +337,22 @@ public class IndexChunker {
   // debugging
   static protected String printa(int[] a) {
     StringBuilder sbuff = new StringBuilder();
-    for (int anA : a) sbuff.append(anA).append(" ");
+    for (int anA : a)
+      sbuff.append(anA).append(" ");
     return sbuff.toString();
   }
 
   static protected void printa(String name, int[] a) {
     System.out.print(name + "= ");
-    for (int anA : a) System.out.print(anA + " ");
+    for (int anA : a)
+      System.out.print(anA + " ");
     System.out.println();
   }
 
   static protected void printl(String name, long[] a) {
     System.out.print(name + "= ");
-    for (long anA : a) System.out.print(anA + " ");
+    for (long anA : a)
+      System.out.print(anA + " ");
     System.out.println();
   }
 

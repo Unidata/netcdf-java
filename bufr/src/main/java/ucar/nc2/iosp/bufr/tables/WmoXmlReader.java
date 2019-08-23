@@ -10,7 +10,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -27,19 +26,19 @@ public class WmoXmlReader {
 
     String[] getElemNamesB() {
       if (this == BUFR_14_1_0) {
-        return new String[]{"BC_TableB_BUFR14_1_0_CREX_6_1_0", "ElementName_E"};
+        return new String[] {"BC_TableB_BUFR14_1_0_CREX_6_1_0", "ElementName_E"};
 
       } else if (this == BUFR_14_2_0) {
-        return new String[]{"Exporting_BCTableB_E", "ElementName"};
+        return new String[] {"Exporting_BCTableB_E", "ElementName"};
 
       } else if (this == BUFR_15_1_1) {
-        return new String[]{"Exp_JointTableB_E", "ElementName_E"};
+        return new String[] {"Exp_JointTableB_E", "ElementName_E"};
 
       } else if (this == BUFR_16_0_0) {
-        return new String[]{"Exp_BUFRCREXTableB_E", "ElementName_E"};
+        return new String[] {"Exp_BUFRCREXTableB_E", "ElementName_E"};
 
-      } else if (this == BUFR_WMO) {   // from now on this is the element name
-        return new String[]{null, "ElementName_en"};
+      } else if (this == BUFR_WMO) { // from now on this is the element name
+        return new String[] {null, "ElementName_en"};
 
       }
       return null;
@@ -47,19 +46,19 @@ public class WmoXmlReader {
 
     String[] getElemNamesD() {
       if (this == BUFR_14_1_0) {
-        return new String[]{"B_TableD_BUFR14_1_0_CREX_6_1_0", "ElementName1_E"};
+        return new String[] {"B_TableD_BUFR14_1_0_CREX_6_1_0", "ElementName1_E"};
 
       } else if (this == BUFR_14_2_0) {
-        return new String[]{"Exporting_BUFRTableD_E", "ElementName1"};
+        return new String[] {"Exporting_BUFRTableD_E", "ElementName1"};
 
       } else if (this == BUFR_15_1_1) {
-        return new String[]{"Exp_BUFRTableD_E", "ElementName_E"};
+        return new String[] {"Exp_BUFRTableD_E", "ElementName_E"};
 
       } else if (this == BUFR_16_0_0) {
-        return new String[]{"Exp_BUFRTableD_E", "ElementName_E"};
+        return new String[] {"Exp_BUFRTableD_E", "ElementName_E"};
 
       } else if (this == BUFR_WMO) {
-        return new String[]{null, "ElementName_en"};
+        return new String[] {null, "ElementName_en"};
 
       }
       return null;
@@ -67,109 +66,109 @@ public class WmoXmlReader {
   }
 
   /*
-  14.1
-  <BC_TableB_BUFR14_1_0_CREX_6_1_0>
-    <SNo>1</SNo>
-    <Class>00</Class>
-    <FXY>000001</FXY>
-    <ElementName_E>Table A: entry</ElementName_E>
-    <ElementName_F>Table A : entr?e</ElementName_F>
-    <ElementName_R>??????? ?: ???????</ElementName_R>
-    <ElementName_S>Tabla A: elemento</ElementName_S>
-    <BUFR_Unit>CCITT IA5</BUFR_Unit>
-    <BUFR_Scale>0</BUFR_Scale>
-    <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
-    <BUFR_DataWidth_Bits>24</BUFR_DataWidth_Bits>
-    <CREX_Unit>Character</CREX_Unit>
-    <CREX_Scale>0</CREX_Scale>
-    <CREX_DataWidth>3</CREX_DataWidth>
-    <Status>Operational</Status>
-    <NotesToTable_E>Notes: (see)#BUFR14_1_0_CREX6_1_0_Notes.doc#BC_Cl000</NotesToTable_E>
-</BC_TableB_BUFR14_1_0_CREX_6_1_0>
-
-14.2
-<Exporting_BCTableB_E>
-  <No>2</No>
-  <ClassNo>00</ClassNo>
-  <ClassName>BUFR/CREX table entries</ClassName>
-  <FXY>000002</FXY>
-  <ElementName>Table A: data category description, line 1 </ElementName>
-  <BUFR_Unit>CCITT IA5 </BUFR_Unit>
-  <BUFR_Scale>0</BUFR_Scale>
-  <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
-  <BUFR_DataWidth_Bits>256</BUFR_DataWidth_Bits>
-  <CREX_Unit>Character</CREX_Unit>
-  <CREX_Scale>0</CREX_Scale>
-  <CREX_DataWidth>32</CREX_DataWidth>
-  <Status>Operational</Status>
-</Exporting_BCTableB_E>
-
-15.1
-<Exp_JointTableB_E>
-  <No>1</No>
-  <ClassNo>00</ClassNo>
-  <ClassName_E>BUFR/CREX table entries</ClassName_E>
-  <FXY>000001</FXY>
-  <ElementName_E>Table A: entry</ElementName_E>
-  <BUFR_Unit>CCITT IA5</BUFR_Unit>
-  <BUFR_Scale>0</BUFR_Scale>
-  <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
-  <BUFR_DataWidth_Bits>24</BUFR_DataWidth_Bits>
-  <CREX_Unit>Character</CREX_Unit>
-  <CREX_Scale>0</CREX_Scale>
-  <CREX_DataWidth_Char>3</CREX_DataWidth_Char>
-  <Status>Operational</Status>
-</Exp_JointTableB_E>
-
-16.0
-<Exp_BUFRCREXTableB_E>
-  <No>681</No>
-  <ClassNo>13</ClassNo>
-  <ClassName_E>Hydrographic and hydrological elements</ClassName_E>
-  <FXY>013060</FXY>
-  <ElementName_E>Total accumulated precipitation</ElementName_E>
-  <BUFR_Unit>kg m-2</BUFR_Unit>
-  <BUFR_Scale>1</BUFR_Scale>
-  <BUFR_ReferenceValue>-1</BUFR_ReferenceValue>
-  <BUFR_DataWidth_Bits>17</BUFR_DataWidth_Bits>
-  <CREX_Unit>kg m-2</CREX_Unit>
-  <CREX_Scale>1</CREX_Scale>
-  <CREX_DataWidth_Char>5</CREX_DataWidth_Char>
-  <Status>Operational</Status>
-</Exp_BUFRCREXTableB_E>
-
-<BUFRCREX_17_0_0_TableB_en>
-<No>8</No>
-<ClassNo>00</ClassNo>
-<ClassName_en>BUFR/CREX table entries</ClassName_en>
-<FXY>000008</FXY>
-<ElementName_en>BUFR Local table version number</ElementName_en>
-<Note_en>(see Note 4)</Note_en>
-<BUFR_Unit>CCITT IA5</BUFR_Unit>
-<BUFR_Scale>0</BUFR_Scale>
-<BUFR_ReferenceValue>0</BUFR_ReferenceValue>
-<BUFR_DataWidth_Bits>16</BUFR_DataWidth_Bits>
-<CREX_Unit>Character</CREX_Unit>
-<CREX_Scale>0</CREX_Scale>
-<CREX_DataWidth_Char>2</CREX_DataWidth_Char>
-<Status>Operational</Status>
-</BUFRCREX_17_0_0_TableB_en>
-
-<BUFRCREX_22_0_1_TableB_en>
-<No>1018</No>
-<ClassNo>21</ClassNo>
-<ClassName_en>BUFR/CREX Radar data</ClassName_en>
-<FXY>021073</FXY>
-<ElementName_en>Satellite altimeter instrument mode</ElementName_en>
-<BUFR_Unit>Flag table</BUFR_Unit>
-<BUFR_Scale>0</BUFR_Scale>
-<BUFR_ReferenceValue>0</BUFR_ReferenceValue>
-<BUFR_DataWidth_Bits>9</BUFR_DataWidth_Bits>
-<CREX_Unit>Flag table</CREX_Unit>
-<CREX_Scale>0</CREX_Scale>
-<CREX_DataWidth_Char>3</CREX_DataWidth_Char>
-<Status>Operational</Status>
-</BUFRCREX_22_0_1_TableB_en>
+   * 14.1
+   * <BC_TableB_BUFR14_1_0_CREX_6_1_0>
+   * <SNo>1</SNo>
+   * <Class>00</Class>
+   * <FXY>000001</FXY>
+   * <ElementName_E>Table A: entry</ElementName_E>
+   * <ElementName_F>Table A : entr?e</ElementName_F>
+   * <ElementName_R>??????? ?: ???????</ElementName_R>
+   * <ElementName_S>Tabla A: elemento</ElementName_S>
+   * <BUFR_Unit>CCITT IA5</BUFR_Unit>
+   * <BUFR_Scale>0</BUFR_Scale>
+   * <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
+   * <BUFR_DataWidth_Bits>24</BUFR_DataWidth_Bits>
+   * <CREX_Unit>Character</CREX_Unit>
+   * <CREX_Scale>0</CREX_Scale>
+   * <CREX_DataWidth>3</CREX_DataWidth>
+   * <Status>Operational</Status>
+   * <NotesToTable_E>Notes: (see)#BUFR14_1_0_CREX6_1_0_Notes.doc#BC_Cl000</NotesToTable_E>
+   * </BC_TableB_BUFR14_1_0_CREX_6_1_0>
+   * 
+   * 14.2
+   * <Exporting_BCTableB_E>
+   * <No>2</No>
+   * <ClassNo>00</ClassNo>
+   * <ClassName>BUFR/CREX table entries</ClassName>
+   * <FXY>000002</FXY>
+   * <ElementName>Table A: data category description, line 1 </ElementName>
+   * <BUFR_Unit>CCITT IA5 </BUFR_Unit>
+   * <BUFR_Scale>0</BUFR_Scale>
+   * <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
+   * <BUFR_DataWidth_Bits>256</BUFR_DataWidth_Bits>
+   * <CREX_Unit>Character</CREX_Unit>
+   * <CREX_Scale>0</CREX_Scale>
+   * <CREX_DataWidth>32</CREX_DataWidth>
+   * <Status>Operational</Status>
+   * </Exporting_BCTableB_E>
+   * 
+   * 15.1
+   * <Exp_JointTableB_E>
+   * <No>1</No>
+   * <ClassNo>00</ClassNo>
+   * <ClassName_E>BUFR/CREX table entries</ClassName_E>
+   * <FXY>000001</FXY>
+   * <ElementName_E>Table A: entry</ElementName_E>
+   * <BUFR_Unit>CCITT IA5</BUFR_Unit>
+   * <BUFR_Scale>0</BUFR_Scale>
+   * <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
+   * <BUFR_DataWidth_Bits>24</BUFR_DataWidth_Bits>
+   * <CREX_Unit>Character</CREX_Unit>
+   * <CREX_Scale>0</CREX_Scale>
+   * <CREX_DataWidth_Char>3</CREX_DataWidth_Char>
+   * <Status>Operational</Status>
+   * </Exp_JointTableB_E>
+   * 
+   * 16.0
+   * <Exp_BUFRCREXTableB_E>
+   * <No>681</No>
+   * <ClassNo>13</ClassNo>
+   * <ClassName_E>Hydrographic and hydrological elements</ClassName_E>
+   * <FXY>013060</FXY>
+   * <ElementName_E>Total accumulated precipitation</ElementName_E>
+   * <BUFR_Unit>kg m-2</BUFR_Unit>
+   * <BUFR_Scale>1</BUFR_Scale>
+   * <BUFR_ReferenceValue>-1</BUFR_ReferenceValue>
+   * <BUFR_DataWidth_Bits>17</BUFR_DataWidth_Bits>
+   * <CREX_Unit>kg m-2</CREX_Unit>
+   * <CREX_Scale>1</CREX_Scale>
+   * <CREX_DataWidth_Char>5</CREX_DataWidth_Char>
+   * <Status>Operational</Status>
+   * </Exp_BUFRCREXTableB_E>
+   * 
+   * <BUFRCREX_17_0_0_TableB_en>
+   * <No>8</No>
+   * <ClassNo>00</ClassNo>
+   * <ClassName_en>BUFR/CREX table entries</ClassName_en>
+   * <FXY>000008</FXY>
+   * <ElementName_en>BUFR Local table version number</ElementName_en>
+   * <Note_en>(see Note 4)</Note_en>
+   * <BUFR_Unit>CCITT IA5</BUFR_Unit>
+   * <BUFR_Scale>0</BUFR_Scale>
+   * <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
+   * <BUFR_DataWidth_Bits>16</BUFR_DataWidth_Bits>
+   * <CREX_Unit>Character</CREX_Unit>
+   * <CREX_Scale>0</CREX_Scale>
+   * <CREX_DataWidth_Char>2</CREX_DataWidth_Char>
+   * <Status>Operational</Status>
+   * </BUFRCREX_17_0_0_TableB_en>
+   * 
+   * <BUFRCREX_22_0_1_TableB_en>
+   * <No>1018</No>
+   * <ClassNo>21</ClassNo>
+   * <ClassName_en>BUFR/CREX Radar data</ClassName_en>
+   * <FXY>021073</FXY>
+   * <ElementName_en>Satellite altimeter instrument mode</ElementName_en>
+   * <BUFR_Unit>Flag table</BUFR_Unit>
+   * <BUFR_Scale>0</BUFR_Scale>
+   * <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
+   * <BUFR_DataWidth_Bits>9</BUFR_DataWidth_Bits>
+   * <CREX_Unit>Flag table</CREX_Unit>
+   * <CREX_Scale>0</CREX_Scale>
+   * <CREX_DataWidth_Char>3</CREX_DataWidth_Char>
+   * <Status>Operational</Status>
+   * </BUFRCREX_22_0_1_TableB_en>
    */
 
   static void readWmoXmlTableB(InputStream ios, TableB b) throws IOException {
@@ -200,7 +199,8 @@ public class WmoXmlReader {
     List<Element> featList = root.getChildren();
     for (Element elem : featList) {
       Element ce = elem.getChild(elems[1]);
-      if (ce == null) continue;
+      if (ce == null)
+        continue;
 
       String name = Util.cleanName(elem.getChildTextNormalize(elems[1]));
       String units = cleanUnit(elem.getChildTextNormalize("BUFR_Unit"));
@@ -254,75 +254,75 @@ public class WmoXmlReader {
   }
 
   /*
-  <B_TableD_BUFR14_1_0_CREX_6_1_0>
-    <SNo>2647</SNo>
-    <Category>10</Category>
-    <FXY1>310013</FXY1>
-    <ElementName1_E>(AVHRR (GAC) report)</ElementName1_E>
-    <FXY2>004005</FXY2>
-    <ElementName2_E>Minute</ElementName2_E>
-    <Remarks_E>Minute</Remarks_E>
-    <Status>Operational</Status>
-  </B_TableD_BUFR14_1_0_CREX_6_1_0>
-
-14.2.0
-  <Exporting_BUFRTableD_E>
-    <No>2901</No>
-    <Category>10</Category>
-    <CategoryOfSequences>Vertical sounding sequences (satellite data)</CategoryOfSequences>
-    <FXY1>310025</FXY1>
-    <ElementName1>(SSMIS Temperature data record)</ElementName1>
-    <FXY2>004006</FXY2>
-    <Status>Operational</Status>
-  </Exporting_BUFRTableD_E>
-
-  15.1.1
-  <Exp_BUFRTableD_E>
-    <No>102</No>
-    <Category>01</Category>
-    <CategoryOfSequences_E>Location and identification sequences</CategoryOfSequences_E>
-    <FXY1>301034</FXY1>
-    <Title_E>(Buoy/platform - fixed)</Title_E>
-    <FXY2>001005</FXY2>
-    <ElementName_E>Buoy/platform identifier</ElementName_E>
-    <ExistingElementName_E>Buoy/platform identifier</ExistingElementName_E>
-    <Status>Operational</Status>
-  </Exp_BUFRTableD_E>
-
-  16.0.0
-  <Exp_BUFRTableD_E>
-    <No>402</No>
-    <Category>02</Category>
-    <CategoryOfSequences_E>Meteorological sequences common to surface data</CategoryOfSequences_E>
-    <FXY1>302001</FXY1>
-    <FXY2>010051</FXY2>
-    <ElementName_E>Pressure reduced to mean sea level</ElementName_E>
-    <ExistingElementName_E>Pressure reduced to mean sea level</ExistingElementName_E>
-    <Status>Operational</Status>
-  </Exp_BUFRTableD_E>
-
-  <BUFR_19_1_1_TableD_en>
-  <No>4</No>
-  <Category>00</Category>
-  <CategoryOfSequences_en>BUFR table entries sequences</CategoryOfSequences_en>
-  <FXY1>300003</FXY1>
-  <Title_en>(F, X, Y of descriptor to be added or defined)</Title_en>
-  <FXY2>000011</FXY2>
-  <ElementName_en>X descriptor to be added or defined</ElementName_en>
-  <Status>Operational</Status>
-  </BUFR_19_1_1_TableD_en>
-
-  <BUFR_22_0_1_TableD_en>
-  <No>5874</No>
-  <Category>15</Category>
-  <CategoryOfSequences_en>Oceanographic report sequences</CategoryOfSequences_en>
-  <FXY1>315004</FXY1>
-  <Title_en>(XBT temperature profile data sequence)</Title_en>
-  <FXY2>025061</FXY2>
-  <ElementName_en>Software identification and version number</ElementName_en>
-  <Status>Operational</Status>
-  </BUFR_22_0_1_TableD_en>
-
+   * <B_TableD_BUFR14_1_0_CREX_6_1_0>
+   * <SNo>2647</SNo>
+   * <Category>10</Category>
+   * <FXY1>310013</FXY1>
+   * <ElementName1_E>(AVHRR (GAC) report)</ElementName1_E>
+   * <FXY2>004005</FXY2>
+   * <ElementName2_E>Minute</ElementName2_E>
+   * <Remarks_E>Minute</Remarks_E>
+   * <Status>Operational</Status>
+   * </B_TableD_BUFR14_1_0_CREX_6_1_0>
+   * 
+   * 14.2.0
+   * <Exporting_BUFRTableD_E>
+   * <No>2901</No>
+   * <Category>10</Category>
+   * <CategoryOfSequences>Vertical sounding sequences (satellite data)</CategoryOfSequences>
+   * <FXY1>310025</FXY1>
+   * <ElementName1>(SSMIS Temperature data record)</ElementName1>
+   * <FXY2>004006</FXY2>
+   * <Status>Operational</Status>
+   * </Exporting_BUFRTableD_E>
+   * 
+   * 15.1.1
+   * <Exp_BUFRTableD_E>
+   * <No>102</No>
+   * <Category>01</Category>
+   * <CategoryOfSequences_E>Location and identification sequences</CategoryOfSequences_E>
+   * <FXY1>301034</FXY1>
+   * <Title_E>(Buoy/platform - fixed)</Title_E>
+   * <FXY2>001005</FXY2>
+   * <ElementName_E>Buoy/platform identifier</ElementName_E>
+   * <ExistingElementName_E>Buoy/platform identifier</ExistingElementName_E>
+   * <Status>Operational</Status>
+   * </Exp_BUFRTableD_E>
+   * 
+   * 16.0.0
+   * <Exp_BUFRTableD_E>
+   * <No>402</No>
+   * <Category>02</Category>
+   * <CategoryOfSequences_E>Meteorological sequences common to surface data</CategoryOfSequences_E>
+   * <FXY1>302001</FXY1>
+   * <FXY2>010051</FXY2>
+   * <ElementName_E>Pressure reduced to mean sea level</ElementName_E>
+   * <ExistingElementName_E>Pressure reduced to mean sea level</ExistingElementName_E>
+   * <Status>Operational</Status>
+   * </Exp_BUFRTableD_E>
+   * 
+   * <BUFR_19_1_1_TableD_en>
+   * <No>4</No>
+   * <Category>00</Category>
+   * <CategoryOfSequences_en>BUFR table entries sequences</CategoryOfSequences_en>
+   * <FXY1>300003</FXY1>
+   * <Title_en>(F, X, Y of descriptor to be added or defined)</Title_en>
+   * <FXY2>000011</FXY2>
+   * <ElementName_en>X descriptor to be added or defined</ElementName_en>
+   * <Status>Operational</Status>
+   * </BUFR_19_1_1_TableD_en>
+   * 
+   * <BUFR_22_0_1_TableD_en>
+   * <No>5874</No>
+   * <Category>15</Category>
+   * <CategoryOfSequences_en>Oceanographic report sequences</CategoryOfSequences_en>
+   * <FXY1>315004</FXY1>
+   * <Title_en>(XBT temperature profile data sequence)</Title_en>
+   * <FXY2>025061</FXY2>
+   * <ElementName_en>Software identification and version number</ElementName_en>
+   * <Status>Operational</Status>
+   * </BUFR_22_0_1_TableD_en>
+   * 
    */
   static void readWmoXmlTableD(InputStream ios, TableD tableD) throws IOException {
     org.jdom2.Document doc;
@@ -354,7 +354,8 @@ public class WmoXmlReader {
     List<Element> featList = root.getChildren();
     for (Element elem : featList) {
       Element ce = elem.getChild(elems[1]);
-      if (ce == null) continue;
+      if (ce == null)
+        continue;
 
       String seqs = elem.getChildTextNormalize("FXY1");
       int seq = Integer.parseInt(seqs);

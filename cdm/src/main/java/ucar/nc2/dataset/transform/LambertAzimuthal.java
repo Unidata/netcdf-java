@@ -23,7 +23,8 @@ public class LambertAzimuthal extends AbstractTransformBuilder implements HorizT
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
     ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea proj =
-            new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing, earth_radius);
+        new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing,
+            earth_radius);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

@@ -16,7 +16,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -38,25 +37,25 @@ public class CFGridCoverageWriter2 {
 
   /**
    * Write a netcdf/CF file from a CoverageDataset
-   * @param gdsOrg            the CoverageDataset
-   * @param gridNames         the list of coverage names to be written, or null for all
-   * @param subset            defines the requested subset, or null to include everything in gdsOrg
-   * @param tryToAddLatLon2D  add 2D lat/lon coordinates, if possible
-   * @param writer            this does the actual writing, must not be null
-   * @return  the total number of bytes that the variables in the output file occupy. This is NOT the same as the
-   *          size of the the whole output file, but it's close.
+   * 
+   * @param gdsOrg the CoverageDataset
+   * @param gridNames the list of coverage names to be written, or null for all
+   * @param subset defines the requested subset, or null to include everything in gdsOrg
+   * @param tryToAddLatLon2D add 2D lat/lon coordinates, if possible
+   * @param writer this does the actual writing, must not be null
+   * @return the total number of bytes that the variables in the output file occupy. This is NOT the same as the
+   *         size of the the whole output file, but it's close.
    */
   public static ucar.nc2.util.Optional<Long> write(CoverageCollection gdsOrg, List<String> gridNames,
-          SubsetParams subset, boolean tryToAddLatLon2D, NetcdfFileWriter writer)
-          throws IOException, InvalidRangeException {
+      SubsetParams subset, boolean tryToAddLatLon2D, NetcdfFileWriter writer)
+      throws IOException, InvalidRangeException {
     Preconditions.checkNotNull(writer);
     CFGridCoverageWriter2 writer2 = new CFGridCoverageWriter2();
     return writer2.writeFile(gdsOrg, gridNames, subset, tryToAddLatLon2D, false, writer);
   }
 
   public static ucar.nc2.util.Optional<Long> getSizeOfOutput(CoverageCollection gdsOrg, List<String> gridNames,
-      SubsetParams subset, boolean tryToAddLatLon2D)
-      throws IOException, InvalidRangeException {
+      SubsetParams subset, boolean tryToAddLatLon2D) throws IOException, InvalidRangeException {
     CFGridCoverageWriter2 writer2 = new CFGridCoverageWriter2();
     // null location. It's ok; we'll never write the file.
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(null, false);
@@ -65,9 +64,9 @@ public class CFGridCoverageWriter2 {
   }
 
   private ucar.nc2.util.Optional<Long> writeFile(CoverageCollection gdsOrg, List<String> gridNames,
-          SubsetParams subsetParams, boolean tryToAddLatLon2D, boolean testSizeOnly, NetcdfFileWriter writer)
-          throws IOException, InvalidRangeException {
-    if (gridNames == null) {  // want all of them
+      SubsetParams subsetParams, boolean tryToAddLatLon2D, boolean testSizeOnly, NetcdfFileWriter writer)
+      throws IOException, InvalidRangeException {
+    if (gridNames == null) { // want all of them
       gridNames = new LinkedList<>();
 
       for (Coverage coverage : gdsOrg.getCoverages()) {
@@ -135,26 +134,26 @@ public class CFGridCoverageWriter2 {
    * This method could return {@code false} for several reasons:
    *
    * <ul>
-   *     <li>{@code !tryToAddLatLon2D}</li>
-   *     <li>{@code subsetDataset.getHorizCoordSys().isLatLon2D()}</li>
-   *     <li>{@code !subsetDataset.getHorizCoordSys().isProjection()}</li>
-   *     <li>{@code subsetDataset.getHorizCoordSys() instanceof LatLonProjection}</li>
+   * <li>{@code !tryToAddLatLon2D}</li>
+   * <li>{@code subsetDataset.getHorizCoordSys().isLatLon2D()}</li>
+   * <li>{@code !subsetDataset.getHorizCoordSys().isProjection()}</li>
+   * <li>{@code subsetDataset.getHorizCoordSys() instanceof LatLonProjection}</li>
    * </ul>
    *
-   * @param tryToAddLatLon2D  attempt to add 2D lat/lon vars to output file.
-   * @param subsetDataset     subsetted version of the original CoverageCollection.
-   * @return  {@code true} if we should add 2D latitude & longitude variables to the output file.
+   * @param tryToAddLatLon2D attempt to add 2D lat/lon vars to output file.
+   * @param subsetDataset subsetted version of the original CoverageCollection.
+   * @return {@code true} if we should add 2D latitude & longitude variables to the output file.
    */
   private boolean shouldAddLatLon2D(boolean tryToAddLatLon2D, CoverageCollection subsetDataset) {
-    if (!tryToAddLatLon2D) {  // We don't even want 2D lat/lon vars.
+    if (!tryToAddLatLon2D) { // We don't even want 2D lat/lon vars.
       return false;
     }
 
     HorizCoordSys horizCoordSys = subsetDataset.getHorizCoordSys();
-    if (horizCoordSys.isLatLon2D()) {  // We already have 2D lat/lon vars.
+    if (horizCoordSys.isLatLon2D()) { // We already have 2D lat/lon vars.
       return false;
     }
-    if (!horizCoordSys.isProjection()) {  // CRS doesn't contain a projection, meaning we can't calc 2D lat/lon vars.
+    if (!horizCoordSys.isProjection()) { // CRS doesn't contain a projection, meaning we can't calc 2D lat/lon vars.
       return false;
     }
 
@@ -177,18 +176,20 @@ public class CFGridCoverageWriter2 {
   private void addGlobalAttributes(CoverageCollection gds, NetcdfFileWriter writer) {
     // global attributes
     for (Attribute att : gds.getGlobalAttributes()) {
-      if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
-      if (att.getShortName().equals(_Coordinate._CoordSysBuilder)) continue;
+      if (att.getShortName().equals(CDM.FILE_FORMAT))
+        continue;
+      if (att.getShortName().equals(_Coordinate._CoordSysBuilder))
+        continue;
       writer.addGroupAttribute(null, att);
     }
 
     Attribute att = gds.findAttributeIgnoreCase(CDM.CONVENTIONS);
-    if (att == null || !att.getStringValue().startsWith("CF-"))  // preserve prev version of CF Convention if exists
+    if (att == null || !att.getStringValue().startsWith("CF-")) // preserve prev version of CF Convention if exists
       writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.0"));
 
-    writer.addGroupAttribute(null, new Attribute("History",
-            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridCoverageWriter2)\n" +
-                    "Original Dataset = " + gds.getName() + "; Translation Date = " + CalendarDate.present()));
+    writer.addGroupAttribute(null,
+        new Attribute("History", "Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridCoverageWriter2)\n"
+            + "Original Dataset = " + gds.getName() + "; Translation Date = " + CalendarDate.present()));
 
     LatLonRect llbb = gds.getLatlonBoundingBox();
     if (llbb != null) {
@@ -234,7 +235,7 @@ public class CFGridCoverageWriter2 {
 
       boolean hasBounds = false;
       if (axis.isInterval()) {
-        Variable vb = writer.addVariable(null, axis.getName()+BOUNDS, axis.getDataType(), dims+" "+BOUNDS_DIM);
+        Variable vb = writer.addVariable(null, axis.getName() + BOUNDS, axis.getDataType(), dims + " " + BOUNDS_DIM);
         vb.addAttribute(new Attribute(CDM.UNITS, axis.getUnits()));
         hasBounds = true;
       }
@@ -243,7 +244,7 @@ public class CFGridCoverageWriter2 {
       addVariableAttributes(v, axis.getAttributes());
       v.addAttribute(new Attribute(CDM.UNITS, axis.getUnits())); // override what was in att list
       if (hasBounds)
-        v.addAttribute(new Attribute(CF.BOUNDS, axis.getName()+BOUNDS));
+        v.addAttribute(new Attribute(CF.BOUNDS, axis.getName() + BOUNDS));
       if (axis.getAxisType() == AxisType.TimeOffset)
         v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
     }
@@ -258,8 +259,10 @@ public class CFGridCoverageWriter2 {
 
   private void addVariableAttributes(Variable v, List<Attribute> atts) {
     for (Attribute att : atts) {
-      if (att.getShortName().startsWith("_Coordinate")) continue;
-      if (att.getShortName().startsWith("_Chunk")) continue;
+      if (att.getShortName().startsWith("_Coordinate"))
+        continue;
+      if (att.getShortName().startsWith("_Chunk"))
+        continue;
       v.addAttribute(att);
     }
   }
@@ -340,11 +343,13 @@ public class CFGridCoverageWriter2 {
 
       // LOOK: Commented out because CoverageCoordAxis doesn't have any info about "positive" wrt vertical axes.
       // To fix, we'd need to add that metadata when building the CRS.
-      /* if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) ||
-            (axis.getAxisType() == AxisType.GeoZ)) {
-        if (null != axis.getPositive())
-          newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
-      } */
+      /*
+       * if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) ||
+       * (axis.getAxisType() == AxisType.GeoZ)) {
+       * if (null != axis.getPositive())
+       * newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
+       * }
+       */
 
       if (axis.getAxisType() == AxisType.Lat) {
         newV.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
@@ -367,11 +372,12 @@ public class CFGridCoverageWriter2 {
   }
 
   private void writeCoordinateData(CoverageCollection subsetDataset, NetcdfFileWriter writer)
-          throws IOException, InvalidRangeException {
+      throws IOException, InvalidRangeException {
     for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
       if (v != null) {
-        if (show) System.out.printf("CFGridCoverageWriter2 write axis %s%n", v.getNameAndDimensions());
+        if (show)
+          System.out.printf("CFGridCoverageWriter2 write axis %s%n", v.getNameAndDimensions());
         writer.write(v, axis.getCoordsAsArray());
       } else {
         logger.error("CFGridCoverageWriter2 No variable for {}%n", axis.getName());
@@ -384,8 +390,8 @@ public class CFGridCoverageWriter2 {
     }
   }
 
-  private void writeCoverageData(CoverageCollection gdsOrg, SubsetParams subsetParams,
-          CoverageCollection subsetDataset, NetcdfFileWriter writer) throws IOException, InvalidRangeException {
+  private void writeCoverageData(CoverageCollection gdsOrg, SubsetParams subsetParams, CoverageCollection subsetDataset,
+      NetcdfFileWriter writer) throws IOException, InvalidRangeException {
     for (Coverage coverage : subsetDataset.getCoverages()) {
       // we need to call readData on the original
       Coverage coverageOrg = gdsOrg.findCoverage(coverage.getName());
@@ -395,13 +401,14 @@ public class CFGridCoverageWriter2 {
       checkConformance(coverage, array, gdsOrg.getName());
 
       Variable v = writer.findVariable(coverage.getName());
-      if (show) System.out.printf("CFGridCoverageWriter2 write coverage %s%n", v.getNameAndDimensions());
+      if (show)
+        System.out.printf("CFGridCoverageWriter2 write coverage %s%n", v.getNameAndDimensions());
       writer.write(v, array.getData());
     }
   }
 
   private void writeLatLon2D(CoverageCollection subsetDataset, NetcdfFileWriter writer)
-          throws IOException, InvalidRangeException {
+      throws IOException, InvalidRangeException {
     HorizCoordSys horizCoordSys = subsetDataset.getHorizCoordSys();
     CoverageCoordAxis1D xAxis = horizCoordSys.getXAxis();
     CoverageCoordAxis1D yAxis = horizCoordSys.getYAxis();
@@ -431,12 +438,12 @@ public class CFGridCoverageWriter2 {
 
     Variable latVar = writer.findVariable("lat");
     assert latVar != null : "We should have added lat var in addLatLon2D().";
-    Array latDataArray = Array.factory(DataType.DOUBLE, new int[] { numY, numX }, latData);
+    Array latDataArray = Array.factory(DataType.DOUBLE, new int[] {numY, numX}, latData);
     writer.write(latVar, latDataArray);
 
     Variable lonVar = writer.findVariable("lon");
     assert lonVar != null : "We should have added lon var in addLatLon2D().";
-    Array lonDataArray = Array.factory(DataType.DOUBLE, new int[] { numY, numX }, lonData);
+    Array lonDataArray = Array.factory(DataType.DOUBLE, new int[] {numY, numX}, lonData);
     writer.write(lonVar, lonDataArray);
   }
 
@@ -445,8 +452,8 @@ public class CFGridCoverageWriter2 {
 
     CoverageCoordSys csysData = geo.getCoordSysForData();
 
-    //System.out.printf("    csys=%s%n", csys);
-    //System.out.printf("csysData=%s%n", csysData);
+    // System.out.printf(" csys=%s%n", csys);
+    // System.out.printf("csysData=%s%n", csysData);
 
     Section s = new Section(csys.getShape());
     Section so = new Section(csysData.getShape());
@@ -454,11 +461,11 @@ public class CFGridCoverageWriter2 {
     boolean ok = s.conformal(so);
 
     int[] dataShape = geo.getData().getShape();
-    //System.out.printf("dataShape=%s%n", Misc.showInts(dataShape));
+    // System.out.printf("dataShape=%s%n", Misc.showInts(dataShape));
     Section sdata = new Section(dataShape);
     boolean ok2 = s.conformal(sdata);
 
     if (!ok || !ok2)
-      logger.warn("CFGridCoverageWriter2 checkConformance fails " +where);
+      logger.warn("CFGridCoverageWriter2 checkConformance fails " + where);
   }
 }

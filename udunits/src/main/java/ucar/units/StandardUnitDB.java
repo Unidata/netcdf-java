@@ -29,35 +29,34 @@ public final class StandardUnitDB extends UnitDBImpl {
   /**
    * Constructs from nothing.
    *
-   * @throws UnitParseException     A string specification couldn't be parsed.
+   * @throws UnitParseException A string specification couldn't be parsed.
    * @throws SpecificationException Bad string specification.
-   * @throws UnitDBException        Problem with the unit database.
-   * @throws PrefixDBException      Problem with the prefix database.
-   * @throws NameException          Bad unit name.
-   * @throws OperationException     Improper unit operation.
-   * @throws UnitSystemException    Problem with UnitSystem.
+   * @throws UnitDBException Problem with the unit database.
+   * @throws PrefixDBException Problem with the prefix database.
+   * @throws NameException Bad unit name.
+   * @throws OperationException Improper unit operation.
+   * @throws UnitSystemException Problem with UnitSystem.
    */
-  private StandardUnitDB() throws UnitParseException, SpecificationException,
-          UnitDBException, PrefixDBException, NameException,
-          OperationException, UnitSystemException {
+  private StandardUnitDB() throws UnitParseException, SpecificationException, UnitDBException, PrefixDBException,
+      NameException, OperationException, UnitSystemException {
     super(50, 50);
 
-		/*
+    /*
      * SI units:
-		 */
+     */
     add((UnitDBImpl) SI.instance().getUnitDB());
 
-		/*
-		 * Unit specification strings in the following rely on standard unit
-		 * syntax. Additionally, unit specification strings may not reference
-		 * units that have not yet been defined (i.e. forward referencing is not
-		 * allowed).
-		 */
+    /*
+     * Unit specification strings in the following rely on standard unit
+     * syntax. Additionally, unit specification strings may not reference
+     * units that have not yet been defined (i.e. forward referencing is not
+     * allowed).
+     */
     format = StandardUnitFormat.instance();
 
-		/*
-		 * Constants:
-		 */
+    /*
+     * Constants:
+     */
     au("PI", Double.toString(Math.PI));
     au("percent", "0.01", "%");
     au("bakersdozen", "13");
@@ -69,14 +68,14 @@ public final class StandardUnitDB extends UnitDBImpl {
     au("thousand", "1000");
     au("million", "1e6");
 
-		/*
-		 * Dimensionless derived unit:
-		 */
+    /*
+     * Dimensionless derived unit:
+     */
     addUnit(DerivedUnitImpl.DIMENSIONLESS);
 
-		/*
-		 * Dimensionless derived units (avoid! Use "1e-6 kg/kg" instead):
-		 */
+    /*
+     * Dimensionless derived units (avoid! Use "1e-6 kg/kg" instead):
+     */
     au("ppt", "1e-3");
     au("pptv", "1e-3");
     au("pptm", "1e-3");
@@ -90,9 +89,9 @@ public final class StandardUnitDB extends UnitDBImpl {
     au("ppbm", "1e-9");
     au("ppbn", "1e-9");
 
-		/*
-		 * UNITS OF ELECTRIC CURRENT
-		 */
+    /*
+     * UNITS OF ELECTRIC CURRENT
+     */
     au("abampere", "10 ampere"); // exact
     au("gilbert", "7.957747e-1 ampere");
     au("statampere", "3.335640e-10 ampere");
@@ -100,14 +99,14 @@ public final class StandardUnitDB extends UnitDBImpl {
     aa("amp", "ampere");
     aa("biot", "abampere");
 
-		/*
-		 * UNITS OF LUMINOUS INTENSITY
-		 */
+    /*
+     * UNITS OF LUMINOUS INTENSITY
+     */
     aa("candle", "candela");
 
-		/*
-		 * UNITS OF THERMODYNAMIC TEMPERATURE
-		 */
+    /*
+     * UNITS OF THERMODYNAMIC TEMPERATURE
+     */
     au("rankine", "K/1.8");
     au("fahrenheit", "rankine @ 459.67");
 
@@ -138,9 +137,9 @@ public final class StandardUnitDB extends UnitDBImpl {
     as("degF", "fahrenheit");
     as("deg F", "fahrenheit");
 
-		/*
-		 * UNITS OF MASS
-		 */
+    /*
+     * UNITS OF MASS
+     */
     au("assay ton", "2.916667e-2 kg");
     au("avoirdupois ounce", "2.834952e-2 kg"); // "oz" ambiguous
     au("avoirdupois pound", "4.5359237e-1 kg", "lb"); // exact
@@ -175,9 +174,9 @@ public final class StandardUnitDB extends UnitDBImpl {
     aa("shortton", "short_ton");
     aa("longton", "long_ton");
 
-		/*
-		 * UNITS OF LENGTH
-		 */
+    /*
+     * UNITS OF LENGTH
+     */
     au("astronomical unit", "1.495979e11 m", "AU");
     au("fermi", "femtometer"); // definition
     au("light year", "9.46073e15 m");
@@ -186,10 +185,10 @@ public final class StandardUnitDB extends UnitDBImpl {
     au("parsec", "3.085678e16 m", "prs");
     au("printers point", "3.514598e-4 m");
 
-		/*
-		 * God help us! There's an international foot and a US survey foot and
-		 * they're not the same!
-		 */
+    /*
+     * God help us! There's an international foot and a US survey foot and
+     * they're not the same!
+     */
 
     // US Survey foot stuff:
     au("US survey foot", "1200/3937 m", null, "US survey feet");
@@ -205,8 +204,7 @@ public final class StandardUnitDB extends UnitDBImpl {
 
     // International foot stuff:
     au("international inch", ".0254 m", null, "international inches"); // exact
-    au("international foot", "12 international_inches", null,
-            "international feet"); // exact
+    au("international foot", "12 international_inches", null, "international feet"); // exact
     au("international yard", "3 international_feet"); // exact
     au("international mile", "5280 international_feet"); // exact
 
@@ -231,18 +229,18 @@ public final class StandardUnitDB extends UnitDBImpl {
 
     au("arpentlin", "191.835 ft");
 
-        /*
-         * UNITS OF SUBSTANCE
-         */
-        au("avogadro_constant", "6.02214179e23/mol");
-        au("molecule", "1/avogadro_constant");
-        au("molec", "molecule");
-        au("nucleon", "molecule");
-        au("nuc", "molecule");
+    /*
+     * UNITS OF SUBSTANCE
+     */
+    au("avogadro_constant", "6.02214179e23/mol");
+    au("molecule", "1/avogadro_constant");
+    au("molec", "molecule");
+    au("nucleon", "molecule");
+    au("nuc", "molecule");
 
-		/*
-		 * UNITS OF TIME
-		 */
+    /*
+     * UNITS OF TIME
+     */
     aa("sec", "second"); // avoid
     au("shake", "1e-8 s"); // exact
     au("sidereal day", "8.616409e4 s");
@@ -250,13 +248,13 @@ public final class StandardUnitDB extends UnitDBImpl {
     au("sidereal minute", "5.983617e1 s");
     au("sidereal second", "0.9972696 s");
     au("sidereal year", "3.155815e7 s");
-		/*
-		 * Interval between 2 successive passages of sun through vernal equinox
-		 * (365.242198781 days -- see
-		 * http://www.ast.cam.ac.uk/pubinfo/leaflets/,
-		 * http://aa.usno.navy.mil/AA/ and
-		 * http://adswww.colorado.edu/adswww/astro_coord.html):
-		 */
+    /*
+     * Interval between 2 successive passages of sun through vernal equinox
+     * (365.242198781 days -- see
+     * http://www.ast.cam.ac.uk/pubinfo/leaflets/,
+     * http://aa.usno.navy.mil/AA/ and
+     * http://adswww.colorado.edu/adswww/astro_coord.html):
+     */
     au("tropical year", "3.15569259747e7 s");
     au("lunar month", "29.530589 d");
 
@@ -275,9 +273,9 @@ public final class StandardUnitDB extends UnitDBImpl {
     au("month", "yr/12"); // on average
     aa("anno", "year", null, "ann");
 
-		/*
-		 * UNITS OF PLANE ANGLE
-		 */
+    /*
+     * UNITS OF PLANE ANGLE
+     */
     au("circle", "360 deg");
     au("grade", "0.9 deg"); // exact
 
@@ -313,10 +311,10 @@ public final class StandardUnitDB extends UnitDBImpl {
     aa("degreeT", "degree_true", "degreesT");
     aa("degree T", "degree_true", "degrees T");
 
-		/*
-		 * The following are derived units with special names. They are useful
-		 * for defining other derived units.
-		 */
+    /*
+     * The following are derived units with special names. They are useful
+     * for defining other derived units.
+     */
     au("sphere", "4 PI sr");
     au("standard free fall", "9.806650 m/s2");
 
@@ -342,18 +340,18 @@ public final class StandardUnitDB extends UnitDBImpl {
     as("Hg", "mercury");
     as("H2O", "water");
 
-		/*
-		 * AREA
-		 */
+    /*
+     * AREA
+     */
     au("circular mil", "5.067075e-10 m2");
     au("darcy", "9.869233e-13 m2");
     // porous solid permeability
     aa("ha", "hectare");
     au("acre", "160 rod2"); // exact
 
-		/*
-		 * ELECTRICITY AND MAGNETISM
-		 */
+    /*
+     * ELECTRICITY AND MAGNETISM
+     */
     au("abfarad", "GF");
     au("abhenry", "nH"); // exact
     au("abmho", "GS"); // exact
@@ -380,9 +378,9 @@ public final class StandardUnitDB extends UnitDBImpl {
     aa("faraday", "C12 faraday");
     // charge of 1 mole of electrons
 
-		/*
-		 * ENERGY (INCLUDES WORK)
-		 */
+    /*
+     * ENERGY (INCLUDES WORK)
+     */
     au("electronvolt", "1.602177e-19 J");
     au("erg", "1e-7 J"); // exact
     au("IT Btu", "1.05505585262e3 J");
@@ -404,9 +402,9 @@ public final class StandardUnitDB extends UnitDBImpl {
     as("eV", "electronvolt");
     au("bev", "gigaelectronvolt");
 
-		/*
-		 * FORCE
-		 */
+    /*
+     * FORCE
+     */
     au("dyne", "1e-5 N"); // exact
     au("pond", "9.806650e-3 N"); // exact
     au("force kilogram", "9.806650 N", "kgf"); // exact
@@ -425,14 +423,14 @@ public final class StandardUnitDB extends UnitDBImpl {
     aa("ton force", "force_ton");
     au("gram force", "force_gram");
 
-		/*
-		 * HEAT
-		 */
+    /*
+     * HEAT
+     */
     au("clo", "1.55e-1 K.m2.W-1");
 
-		/*
-		 * LIGHT
-		 */
+    /*
+     * LIGHT
+     */
     au("footcandle", "1.076391e-1 lx");
     au("footlambert", "3.426259 cd/m2");
     au("lambert", "1e4/PI cd/m2"); // exact
@@ -444,21 +442,21 @@ public final class StandardUnitDB extends UnitDBImpl {
 
     aa("apostilb", "blondel");
 
-		/*
-		 * MASS PER UNIT LENGTH
-		 */
+    /*
+     * MASS PER UNIT LENGTH
+     */
     au("denier", "1.111111e-7 kg/m");
     au("tex", "1e-6 kg/m");
 
-		/*
-		 * MASS PER UNIT TIME (INCLUDES FLOW)
-		 */
+    /*
+     * MASS PER UNIT TIME (INCLUDES FLOW)
+     */
     au("perm 0C", "5.72135e-11 kg/(Pa.s.m2)");
     au("perm 23C", "5.74525e-11 kg/(Pa.s.m2)");
 
-		/*
-		 * POWER
-		 */
+    /*
+     * POWER
+     */
     au("voltampere", "V.A", "VA");
     au("boiler horsepower", "9.80950e3 W");
     au("shaft horsepower", "7.456999e2 W");
@@ -471,9 +469,9 @@ public final class StandardUnitDB extends UnitDBImpl {
     aa("horsepower", "shaft_horsepower", null, "hp");
     aa("ton of refrigeration", "refrigeration_ton");
 
-		/*
-		 * PRESSURE OR STRESS
-		 */
+    /*
+     * PRESSURE OR STRESS
+     */
     au("standard atmosphere", "1.01325e5 Pa", "atm"); // exact
     au("technical atmosphere", "kg.(0.01 gravity/m)2", "at");
     au("inch H2O 39F", "inch.water_39F");
@@ -502,27 +500,27 @@ public final class StandardUnitDB extends UnitDBImpl {
     aa("atmosphere", "standard_atmosphere");
     aa("barye", "barie");
 
-		/*
-		 * RADIATION UNITS
-		 */
+    /*
+     * RADIATION UNITS
+     */
     aa("sie", "sievert");
 
-		/*
-		 * VELOCITY (INCLUDES SPEED)
-		 */
+    /*
+     * VELOCITY (INCLUDES SPEED)
+     */
     aa("knot international", "knot");
     aa("international knot", "knot");
 
-		/*
-		 * VISCOSITY
-		 */
+    /*
+     * VISCOSITY
+     */
     au("poise", "1e-1 Pa.s", "P"); // exact
     au("stokes", "1e-4 m2/s", "St"); // exact
     au("rhe", "10 (Pa.s)-1");
 
-		/*
-		 * VOLUME (INCLUDES CAPACITY)
-		 */
+    /*
+     * VOLUME (INCLUDES CAPACITY)
+     */
     au("acre foot", "1.233489e3 m3");
     // but `acre foot' is 1.2334867714897e3 meters^3. Odd.
     au("board foot", "2.359737e-3 m3");
@@ -584,22 +582,22 @@ public final class StandardUnitDB extends UnitDBImpl {
     au("firkin", "1/4 barrel");
     // exact but "barrel" is vague
 
-		/*
-		 * VOLUME PER UNIT TIME (includes FLOW)
-		 */
+    /*
+     * VOLUME PER UNIT TIME (includes FLOW)
+     */
     au("sverdrup", "1e6 m3/s"); // oceanographic flow
 
-		/*
-		 * COMPUTERS AND COMMUNICATION
-		 */
+    /*
+     * COMPUTERS AND COMMUNICATION
+     */
     au("bit", "1"); // unit of information
     au("baud", "s-1", "Bd");
     au("bps", "s-1");
     au("cps", "s-1");
 
-		/*
-		 * MISC
-		 */
+    /*
+     * MISC
+     */
     au("count", "1");
     au("kayser", "100 m-1"); // exact
     au("rps", "r/s");
@@ -632,73 +630,66 @@ public final class StandardUnitDB extends UnitDBImpl {
   /**
    * Adds a derived unit to the database.
    *
-   * @param name       The name of the unit.
+   * @param name The name of the unit.
    * @param definition The definition for the unit.
-   * @throws UnitExistsException    Attempt to redefine an existing unit.
-   * @throws NameException          Bad unit name.
-   * @throws UnitParseException     A string specification couldn't be parsed.
+   * @throws UnitExistsException Attempt to redefine an existing unit.
+   * @throws NameException Bad unit name.
+   * @throws UnitParseException A string specification couldn't be parsed.
    * @throws SpecificationException Bad string specification.
-   * @throws UnitDBException        Problem with the unit database.
-   * @throws PrefixDBException      Problem with the prefix database.
-   * @throws NameException          Bad unit name.
-   * @throws OperationException     Improper unit operation.
-   * @throws UnitSystemException    Problem with UnitSystem.
+   * @throws UnitDBException Problem with the unit database.
+   * @throws PrefixDBException Problem with the prefix database.
+   * @throws NameException Bad unit name.
+   * @throws OperationException Improper unit operation.
+   * @throws UnitSystemException Problem with UnitSystem.
    */
   private void au(final String name, final String definition)
-          throws UnitExistsException, NoSuchUnitException,
-          UnitParseException, SpecificationException, UnitDBException,
-          PrefixDBException, OperationException, NameException,
-          UnitSystemException {
+      throws UnitExistsException, NoSuchUnitException, UnitParseException, SpecificationException, UnitDBException,
+      PrefixDBException, OperationException, NameException, UnitSystemException {
     au(name, definition, null);
   }
 
   /**
    * Adds a derived unit to the database.
    *
-   * @param name       The name of the unit.
+   * @param name The name of the unit.
    * @param definition The definition for the unit.
-   * @param symbol     The symbol for the unit.
-   * @throws UnitExistsException    Attempt to redefine an existing unit.
-   * @throws NameException          Bad unit name.
-   * @throws UnitParseException     A string specification couldn't be parsed.
+   * @param symbol The symbol for the unit.
+   * @throws UnitExistsException Attempt to redefine an existing unit.
+   * @throws NameException Bad unit name.
+   * @throws UnitParseException A string specification couldn't be parsed.
    * @throws SpecificationException Bad string specification.
-   * @throws UnitDBException        Problem with the unit database.
-   * @throws PrefixDBException      Problem with the prefix database.
-   * @throws NameException          Bad unit name.
-   * @throws OperationException     Improper unit operation.
-   * @throws UnitSystemException    Problem with UnitSystem.
+   * @throws UnitDBException Problem with the unit database.
+   * @throws PrefixDBException Problem with the prefix database.
+   * @throws NameException Bad unit name.
+   * @throws OperationException Improper unit operation.
+   * @throws UnitSystemException Problem with UnitSystem.
    */
-  private void au(final String name, final String definition,
-                  final String symbol) throws UnitExistsException,
-          NoSuchUnitException, UnitParseException, SpecificationException,
-          UnitDBException, PrefixDBException, OperationException,
-          NameException, UnitSystemException {
+  private void au(final String name, final String definition, final String symbol)
+      throws UnitExistsException, NoSuchUnitException, UnitParseException, SpecificationException, UnitDBException,
+      PrefixDBException, OperationException, NameException, UnitSystemException {
     au(name, definition, symbol, null);
   }
 
   /**
    * Adds a derived unit to the database.
    *
-   * @param name       The name of the unit.
+   * @param name The name of the unit.
    * @param definition The definition for the unit.
-   * @param symbol     The symbol for the unit.
-   * @param plural     The plural form of the name of the unit.
-   * @throws UnitExistsException    Attempt to redefine an existing unit.
-   * @throws NameException          Bad unit name.
-   * @throws UnitParseException     A string specification couldn't be parsed.
+   * @param symbol The symbol for the unit.
+   * @param plural The plural form of the name of the unit.
+   * @throws UnitExistsException Attempt to redefine an existing unit.
+   * @throws NameException Bad unit name.
+   * @throws UnitParseException A string specification couldn't be parsed.
    * @throws SpecificationException Bad string specification.
-   * @throws UnitDBException        Problem with the unit database.
-   * @throws PrefixDBException      Problem with the prefix database.
-   * @throws NameException          Bad unit name.
-   * @throws OperationException     Improper unit operation.
-   * @throws UnitSystemException    Problem with UnitSystem.
+   * @throws UnitDBException Problem with the unit database.
+   * @throws PrefixDBException Problem with the prefix database.
+   * @throws NameException Bad unit name.
+   * @throws OperationException Improper unit operation.
+   * @throws UnitSystemException Problem with UnitSystem.
    */
-  private void au(final String name, final String definition,
-                  final String symbol, final String plural)
-          throws UnitExistsException, NoSuchUnitException,
-          UnitParseException, SpecificationException, UnitDBException,
-          PrefixDBException, OperationException, NameException,
-          UnitSystemException {
+  private void au(final String name, final String definition, final String symbol, final String plural)
+      throws UnitExistsException, NoSuchUnitException, UnitParseException, SpecificationException, UnitDBException,
+      PrefixDBException, OperationException, NameException, UnitSystemException {
     final Unit unit = format.parse(definition, this);
     if (unit == null) {
       throw new NoSuchUnitException(definition);
@@ -710,71 +701,65 @@ public final class StandardUnitDB extends UnitDBImpl {
    * Adds an alias for a unit to the database.
    *
    * @param alias The alias for the unit.
-   * @param name  The name of the unit.
-   * @throws UnitExistsException    Attempt to redefine an existing unit.
-   * @throws NameException          Bad unit name.
-   * @throws UnitParseException     A string specification couldn't be parsed.
+   * @param name The name of the unit.
+   * @throws UnitExistsException Attempt to redefine an existing unit.
+   * @throws NameException Bad unit name.
+   * @throws UnitParseException A string specification couldn't be parsed.
    * @throws SpecificationException Bad string specification.
-   * @throws UnitDBException        Problem with the unit database.
-   * @throws PrefixDBException      Problem with the prefix database.
-   * @throws NameException          Bad unit name.
-   * @throws OperationException     Improper unit operation.
-   * @throws UnitSystemException    Problem with UnitSystem.
+   * @throws UnitDBException Problem with the unit database.
+   * @throws PrefixDBException Problem with the prefix database.
+   * @throws NameException Bad unit name.
+   * @throws OperationException Improper unit operation.
+   * @throws UnitSystemException Problem with UnitSystem.
    */
   private void aa(final String alias, final String name)
-          throws UnitExistsException, NoSuchUnitException,
-          UnitParseException, SpecificationException, UnitDBException,
-          PrefixDBException, OperationException, NameException,
-          UnitSystemException {
+      throws UnitExistsException, NoSuchUnitException, UnitParseException, SpecificationException, UnitDBException,
+      PrefixDBException, OperationException, NameException, UnitSystemException {
     aa(alias, name, null);
   }
 
   /**
    * Adds an alias for a unit to the database.
    *
-   * @param alias  The alias for the unit.
-   * @param name   The name of the unit.
+   * @param alias The alias for the unit.
+   * @param name The name of the unit.
    * @param plural The plural form of the alias for the unit.
-   * @throws UnitExistsException    Attempt to redefine an existing unit.
-   * @throws NameException          Bad unit name.
-   * @throws UnitParseException     A string specification couldn't be parsed.
+   * @throws UnitExistsException Attempt to redefine an existing unit.
+   * @throws NameException Bad unit name.
+   * @throws UnitParseException A string specification couldn't be parsed.
    * @throws SpecificationException Bad string specification.
-   * @throws UnitDBException        Problem with the unit database.
-   * @throws PrefixDBException      Problem with the prefix database.
-   * @throws NameException          Bad unit name.
-   * @throws OperationException     Improper unit operation.
-   * @throws UnitSystemException    Problem with UnitSystem.
+   * @throws UnitDBException Problem with the unit database.
+   * @throws PrefixDBException Problem with the prefix database.
+   * @throws NameException Bad unit name.
+   * @throws OperationException Improper unit operation.
+   * @throws UnitSystemException Problem with UnitSystem.
    */
   private void aa(final String alias, final String name, final String plural)
-          throws UnitExistsException, NoSuchUnitException,
-          UnitParseException, SpecificationException, UnitDBException,
-          PrefixDBException, OperationException, NameException,
-          UnitSystemException {
+      throws UnitExistsException, NoSuchUnitException, UnitParseException, SpecificationException, UnitDBException,
+      PrefixDBException, OperationException, NameException, UnitSystemException {
     aa(alias, name, plural, null);
   }
 
   /**
    * Adds an alias for a unit to the database.
    *
-   * @param alias  The alias for the unit.
-   * @param name   The name of the unit.
+   * @param alias The alias for the unit.
+   * @param name The name of the unit.
    * @param plural The plural form of the alias for the unit.
    * @param symbol The symbol for the alias.
-   * @throws UnitExistsException    Attempt to redefine an existing unit.
-   * @throws NameException          Bad unit name.
-   * @throws UnitParseException     A string specification couldn't be parsed.
+   * @throws UnitExistsException Attempt to redefine an existing unit.
+   * @throws NameException Bad unit name.
+   * @throws UnitParseException A string specification couldn't be parsed.
    * @throws SpecificationException Bad string specification.
-   * @throws UnitDBException        Problem with the unit database.
-   * @throws PrefixDBException      Problem with the prefix database.
-   * @throws NameException          Bad unit name.
-   * @throws OperationException     Improper unit operation.
-   * @throws UnitSystemException    Problem with UnitSystem.
+   * @throws UnitDBException Problem with the unit database.
+   * @throws PrefixDBException Problem with the prefix database.
+   * @throws NameException Bad unit name.
+   * @throws OperationException Improper unit operation.
+   * @throws UnitSystemException Problem with UnitSystem.
    */
-  private void aa(final String alias, final String name, final String plural,
-                  final String symbol) throws UnitExistsException,
-          NoSuchUnitException, UnitParseException, SpecificationException,
-          UnitDBException, PrefixDBException, OperationException,
-          NameException, UnitSystemException {
+  private void aa(final String alias, final String name, final String plural, final String symbol)
+      throws UnitExistsException, NoSuchUnitException, UnitParseException, SpecificationException, UnitDBException,
+      PrefixDBException, OperationException, NameException, UnitSystemException {
     addAlias(alias, name, symbol, plural);
   }
 
@@ -782,22 +767,20 @@ public final class StandardUnitDB extends UnitDBImpl {
    * Adds a symbol for a unit to the database.
    *
    * @param symbol The symbol for the unit.
-   * @param name   The name of the unit.
-   * @throws UnitExistsException    Attempt to redefine an existing unit.
-   * @throws NameException          Bad unit name.
-   * @throws UnitParseException     A string specification couldn't be parsed.
+   * @param name The name of the unit.
+   * @throws UnitExistsException Attempt to redefine an existing unit.
+   * @throws NameException Bad unit name.
+   * @throws UnitParseException A string specification couldn't be parsed.
    * @throws SpecificationException Bad string specification.
-   * @throws UnitDBException        Problem with the unit database.
-   * @throws PrefixDBException      Problem with the prefix database.
-   * @throws NameException          Bad unit name.
-   * @throws OperationException     Improper unit operation.
-   * @throws UnitSystemException    Problem with UnitSystem.
+   * @throws UnitDBException Problem with the unit database.
+   * @throws PrefixDBException Problem with the prefix database.
+   * @throws NameException Bad unit name.
+   * @throws OperationException Improper unit operation.
+   * @throws UnitSystemException Problem with UnitSystem.
    */
   private void as(final String symbol, final String name)
-          throws UnitExistsException, NoSuchUnitException,
-          UnitParseException, SpecificationException, UnitDBException,
-          PrefixDBException, OperationException, NameException,
-          UnitSystemException {
+      throws UnitExistsException, NoSuchUnitException, UnitParseException, SpecificationException, UnitDBException,
+      PrefixDBException, OperationException, NameException, UnitSystemException {
     addSymbol(symbol, name);
   }
 

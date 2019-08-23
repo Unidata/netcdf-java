@@ -7,7 +7,6 @@ package ucar.nc2.dataset.conv;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
-
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -22,7 +21,6 @@ import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -41,23 +39,24 @@ public class WRFConvention extends CoordSysBuilder {
 
   // static private java.text.SimpleDateFormat dateFormat;
 
- // static {
- //   dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
- //   dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-  //}
+  // static {
+  // dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+  // dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+  // }
 
   public static boolean isMine(NetcdfFile ncfile) {
-    if (null == ncfile.findDimension("south_north")) return false;
+    if (null == ncfile.findDimension("south_north"))
+      return false;
 
     // ARW only
     Attribute att = ncfile.findGlobalAttribute("DYN_OPT");
     if (att != null) {
-      if (att.getNumericValue().intValue() != 2) return false;
+      if (att.getNumericValue().intValue() != 2)
+        return false;
     } else {
       att = ncfile.findGlobalAttribute("GRIDTYPE");
       if (att != null) {
-        if (!att.getStringValue().equalsIgnoreCase("C") &&
-                !att.getStringValue().equalsIgnoreCase("E"))
+        if (!att.getStringValue().equalsIgnoreCase("C") && !att.getStringValue().equalsIgnoreCase("E"))
           return false;
       }
     }
@@ -74,77 +73,80 @@ public class WRFConvention extends CoordSysBuilder {
     this.conventionName = "WRF";
   }
 
-  /* Implementation notes
-
-    There are 2 WRFs : NMM ("Non-hydrostatic Mesoscale Model" developed at NOAA/NCEP) and
-    1) NMM ("Non-hydrostatic Mesoscale Model" developed at NOAA/NCEP)
-      GRIDTYPE="E"
-      DYN_OPT = 4
-
-      This is a staggered grid that requires special processing.
-
-    2) ARW ("Advanced Research WRF", developed at MMM)
-      GRIDTYPE="C"
-      DYN_OPT = 2
-      DX, DY grid spaceing in meters (must be equal)
-
-      the Arakawa C staggered grid (see ARW 2.2 p 3-17)
-      the + are the "non-staggered" grid:
-      
-      + V + V + V +
-      U T U T U T U
-      + V + V + V +
-      U T U T U T U
-      + V + V + V +
-      U T U T U T U
-      + V + V + V +
+  /*
+   * Implementation notes
+   * 
+   * There are 2 WRFs : NMM ("Non-hydrostatic Mesoscale Model" developed at NOAA/NCEP) and
+   * 1) NMM ("Non-hydrostatic Mesoscale Model" developed at NOAA/NCEP)
+   * GRIDTYPE="E"
+   * DYN_OPT = 4
+   * 
+   * This is a staggered grid that requires special processing.
+   * 
+   * 2) ARW ("Advanced Research WRF", developed at MMM)
+   * GRIDTYPE="C"
+   * DYN_OPT = 2
+   * DX, DY grid spaceing in meters (must be equal)
+   * 
+   * the Arakawa C staggered grid (see ARW 2.2 p 3-17)
+   * the + are the "non-staggered" grid:
+   * 
+   * + V + V + V +
+   * U T U T U T U
+   * + V + V + V +
+   * U T U T U T U
+   * + V + V + V +
+   * U T U T U T U
+   * + V + V + V +
    */
 
-  /* ARW Users Guide p 3-19
-  <pre>
-7. MAP_PROJ_NAME: Character string specifying type of map projection. Valid entries are:
-  "polar" -> Polar stereographic
-  "lambert" -> Lambert conformal (secant and tangent)
-  "mercator" -> Mercator
-
-8. MOAD_KNOWN_LAT/MOAD_KNOWN_LON (= CEN_LAT, CEN_LON):
-  Real latitude and longitude of the center point in the grid.
-
-9. MOAD_STAND_LATS (= TRUE_LAT1/2):
-  2 real values for the "true" latitudes (where grid spacing is exact).
-  Must be between -90 and 90, and the values selected depend on projection:
-  Polar-stereographic: First value must be the latitude at which the grid
-spacing is true. Most users will set this equal to their center latitude.
-Second value must be +/-90. for NH/SH grids.
-  Lambert Conformal: Both values should have the same sign as the center
-latitude. For a tangential lambert conformal, set both to the same value
-(often equal to the center latitude). For a secant Lambert Conformal, they
-may be set to different values.
-  Mercator: The first value should be set to the latitude you wish your grid
-  spacing to be true (often your center latitude). Second value is not used.
-
-10. MOAD_STAND_LONS (=STAND_LON): This is one entry specifying the longitude in degrees East (-
-180->180) that is parallel to the y-axis of your grid, (sometimes referred to as the
-orientation of the grid). This should be set equal to the center longitude in most cases.
-
----------------------------------
-version 3.1
-http://www.mmm.ucar.edu/wrf/users/docs/user_guide_V3.1/users_guide_chap5.htm
-
-The definition for map projection options:
-
-map_proj =  1: Lambert Conformal
-            2: Polar Stereographic
-            3: Mercator
-            6: latitude and longitude (including global)
-*/
+  /*
+   * ARW Users Guide p 3-19
+   * <pre>
+   * 7. MAP_PROJ_NAME: Character string specifying type of map projection. Valid entries are:
+   * "polar" -> Polar stereographic
+   * "lambert" -> Lambert conformal (secant and tangent)
+   * "mercator" -> Mercator
+   * 
+   * 8. MOAD_KNOWN_LAT/MOAD_KNOWN_LON (= CEN_LAT, CEN_LON):
+   * Real latitude and longitude of the center point in the grid.
+   * 
+   * 9. MOAD_STAND_LATS (= TRUE_LAT1/2):
+   * 2 real values for the "true" latitudes (where grid spacing is exact).
+   * Must be between -90 and 90, and the values selected depend on projection:
+   * Polar-stereographic: First value must be the latitude at which the grid
+   * spacing is true. Most users will set this equal to their center latitude.
+   * Second value must be +/-90. for NH/SH grids.
+   * Lambert Conformal: Both values should have the same sign as the center
+   * latitude. For a tangential lambert conformal, set both to the same value
+   * (often equal to the center latitude). For a secant Lambert Conformal, they
+   * may be set to different values.
+   * Mercator: The first value should be set to the latitude you wish your grid
+   * spacing to be true (often your center latitude). Second value is not used.
+   * 
+   * 10. MOAD_STAND_LONS (=STAND_LON): This is one entry specifying the longitude in degrees East (-
+   * 180->180) that is parallel to the y-axis of your grid, (sometimes referred to as the
+   * orientation of the grid). This should be set equal to the center longitude in most cases.
+   * 
+   * ---------------------------------
+   * version 3.1
+   * http://www.mmm.ucar.edu/wrf/users/docs/user_guide_V3.1/users_guide_chap5.htm
+   * 
+   * The definition for map projection options:
+   * 
+   * map_proj = 1: Lambert Conformal
+   * 2: Polar Stereographic
+   * 3: Mercator
+   * 6: latitude and longitude (including global)
+   */
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
-    if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
+    if (null != ds.findVariable("x"))
+      return; // check if its already been done - aggregating enhanced datasets.
 
     Attribute att = ds.findGlobalAttribute("GRIDTYPE");
     gridE = att != null && att.getStringValue().equalsIgnoreCase("E");
-    
+
     // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
@@ -163,17 +165,20 @@ map_proj =  1: Lambert Conformal
 
     if (projType == 203) {
 
-      /* centerX = centralLon;
-      centerY = centralLat;
-      ds.addCoordinateAxis( makeLonCoordAxis( ds, "longitude", ds.findDimension("west_east")));
-      ds.addCoordinateAxis( makeLatCoordAxis( ds, "latitude", ds.findDimension("south_north")));  */
+      /*
+       * centerX = centralLon;
+       * centerY = centralLat;
+       * ds.addCoordinateAxis( makeLonCoordAxis( ds, "longitude", ds.findDimension("west_east")));
+       * ds.addCoordinateAxis( makeLatCoordAxis( ds, "latitude", ds.findDimension("south_north")));
+       */
 
       Variable glat = ds.findVariable("GLAT");
       if (glat == null) {
         parseInfo.format("Projection type 203 - expected GLAT variable not found%n");
       } else {
         glat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-        if (gridE) glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
+        if (gridE)
+          glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glat.setDimensions("south_north west_east");
         glat.setCachedData(convertToDegrees(glat), false);
         glat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
@@ -184,7 +189,8 @@ map_proj =  1: Lambert Conformal
         parseInfo.format("Projection type 203 - expected GLON variable not found%n");
       } else {
         glon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-        if (gridE) glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
+        if (gridE)
+          glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glon.setDimensions("south_north west_east");
         glon.setCachedData(convertToDegrees(glon), false);
         glon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
@@ -192,7 +198,7 @@ map_proj =  1: Lambert Conformal
 
       VariableDS v = new VariableDS(ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);
       v.addAttribute(new Attribute(_Coordinate.Axes, "GLAT GLON Time"));
-      Array data = Array.factory(DataType.CHAR, new int[]{}, new char[]{' '});
+      Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] {' '});
       v.setCachedData(data, true);
       ds.addVariable(null, v);
 
@@ -202,8 +208,8 @@ map_proj =  1: Lambert Conformal
     } else {
       double lat1 = findAttributeDouble(ds, "TRUELAT1");
       double lat2 = findAttributeDouble(ds, "TRUELAT2");
-      double centralLat = findAttributeDouble(ds, "CEN_LAT");  // center of grid
-      double centralLon = findAttributeDouble(ds, "CEN_LON");  // center of grid
+      double centralLat = findAttributeDouble(ds, "CEN_LAT"); // center of grid
+      double centralLon = findAttributeDouble(ds, "CEN_LON"); // center of grid
 
       double standardLon = findAttributeDouble(ds, "STAND_LON"); // true longitude
       double standardLat = findAttributeDouble(ds, "MOAD_CEN_LAT");
@@ -223,17 +229,18 @@ map_proj =  1: Lambert Conformal
         case 2:
           // Thanks to Heiko Klein for figuring out WRF Stereographic
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
-          double lat0 = (Double.isNaN(centralLat)) ? lat2 : centralLat;  // ?? 7/20/2010
-          double scaleFactor = (1 + Math.abs( Math.sin(Math.toRadians(lat1)))) / 2.;  // R Schmunk 9/10/07
+          double lat0 = (Double.isNaN(centralLat)) ? lat2 : centralLat; // ?? 7/20/2010
+          double scaleFactor = (1 + Math.abs(Math.sin(Math.toRadians(lat1)))) / 2.; // R Schmunk 9/10/07
           // proj = new Stereographic(lat2, lon0, scaleFactor);
           proj = new Stereographic(lat0, lon0, scaleFactor, 0.0, 0.0, 6370);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
         case 3:
-          proj = new Mercator(standardLon, lat1, 0.0, 0.0, 6370); // thanks to Robert Schmunk with edits for non-MOAD grids
+          proj = new Mercator(standardLon, lat1, 0.0, 0.0, 6370); // thanks to Robert Schmunk with edits for non-MOAD
+                                                                  // grids
           projCT = new ProjectionCT("Mercator", "FGDC", proj);
           // proj = new TransverseMercator(standardLat, standardLon, 1.0);
-          //projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
+          // projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
           break;
         case 6:
           // version 3 "lat-lon", including global
@@ -289,7 +296,8 @@ map_proj =  1: Lambert Conformal
       if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);
         v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
-        if (gridE) v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
+        if (gridE)
+          v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         ds.addVariable(null, v);
       }
     }
@@ -405,25 +413,27 @@ map_proj =  1: Lambert Conformal
   }
 
   /**
-   * Does increasing values of Z go vertical  up?
+   * Does increasing values of Z go vertical up?
    *
    * @param v for thsi axis
    * @return "up" if this is a Vertical (z) coordinate axis which goes up as coords get bigger,
    *         else return "down"
    */
   public String getZisPositive(CoordinateAxis v) {
-    return "down"; //eta coords decrease upward
+    return "down"; // eta coords decrease upward
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   private CoordinateAxis makeLonCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
-    if (dim == null) return null;
+    if (dim == null)
+      return null;
     double dx = 4 * findAttributeDouble(ds, "DX");
     int nx = dim.getLength();
     double startx = centerX - dx * (nx - 1) / 2;
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "degrees_east", "synthesized longitude coordinate");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "degrees_east",
+        "synthesized longitude coordinate");
     v.setValues(nx, startx, dx);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Lon"));
     if (!axisName.equals(dim.getShortName()))
@@ -433,13 +443,15 @@ map_proj =  1: Lambert Conformal
   }
 
   private CoordinateAxis makeLatCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
-    if (dim == null) return null;
+    if (dim == null)
+      return null;
     double dy = findAttributeDouble(ds, "DY");
     int ny = dim.getLength();
     double starty = centerY - dy * (ny - 1) / 2;
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "degrees_north", "synthesized latitude coordinate");
-    v.setValues( ny, starty, dy);
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "degrees_north",
+        "synthesized latitude coordinate");
+    v.setValues(ny, starty, dy);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Lat"));
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
@@ -448,45 +460,53 @@ map_proj =  1: Lambert Conformal
   }
 
   private CoordinateAxis makeXCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
-    if (dim == null) return null;
+    if (dim == null)
+      return null;
     double dx = findAttributeDouble(ds, "DX") / 1000.0; // km ya just gotta know
     int nx = dim.getLength();
     double startx = centerX - dx * (nx - 1) / 2; // ya just gotta know
-    //System.out.println(" originX= "+originX+" startx= "+startx);
+    // System.out.println(" originX= "+originX+" startx= "+startx);
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "km", "synthesized GeoX coordinate from DX attribute");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "km",
+        "synthesized GeoX coordinate from DX attribute");
     v.setValues(nx, startx, dx);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
-    if (gridE) v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
+    if (gridE)
+      v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
     return v;
   }
 
   private CoordinateAxis makeYCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
-    if (dim == null) return null;
+    if (dim == null)
+      return null;
     double dy = findAttributeDouble(ds, "DY") / 1000.0;
     int ny = dim.getLength();
     double starty = centerY - dy * (ny - 1) / 2; // - dy/2; // ya just gotta know
-    //System.out.println(" originY= "+originY+" starty= "+starty);
+    // System.out.println(" originY= "+originY+" starty= "+starty);
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "km", "synthesized GeoY coordinate from DY attribute");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "km",
+        "synthesized GeoY coordinate from DY attribute");
     v.setValues(ny, starty, dy);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
-    if (gridE) v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
+    if (gridE)
+      v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
     return v;
   }
 
   private CoordinateAxis makeZCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
-    if (dim == null) return null;
+    if (dim == null)
+      return null;
 
     String fromWhere = axisName.endsWith("stag") ? "ZNW" : "ZNU";
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "", "eta values from variable " + fromWhere);
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "",
+        "eta values from variable " + fromWhere);
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // eta coordinate is 1.0 at bottom, 0 at top
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals(dim.getShortName()))
@@ -496,13 +516,14 @@ map_proj =  1: Lambert Conformal
     // But they are a function of time though the values are the same in the sample file
     // NOTE: Use first time sample assuming all are the same!
     Variable etaVar = ds.findVariable(fromWhere);
-    if (etaVar == null) return makeFakeCoordAxis(ds, axisName, dim);
+    if (etaVar == null)
+      return makeFakeCoordAxis(ds, axisName, dim);
 
-    int n = etaVar.getShape(1); //number of eta levels
-    int[] origin = new int[]{0, 0};
-    int[] shape = new int[]{1, n};
+    int n = etaVar.getShape(1); // number of eta levels
+    int[] origin = new int[] {0, 0};
+    int[] shape = new int[] {1, n};
     try {
-      Array array = etaVar.read(origin, shape);//read first time slice
+      Array array = etaVar.read(origin, shape);// read first time slice
       ArrayDouble.D1 newArray = new ArrayDouble.D1(n);
       IndexIterator it = array.getIndexIterator();
       int count = 0;
@@ -513,14 +534,16 @@ map_proj =  1: Lambert Conformal
       v.setCachedData(newArray, true);
     } catch (Exception e) {
       e.printStackTrace();
-    }//ADD: error?
+    } // ADD: error?
 
     return v;
   }
 
   private CoordinateAxis makeFakeCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
-    if (dim == null) return null;
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.SHORT, dim.getShortName(), "", "synthesized coordinate: only an index");
+    if (dim == null)
+      return null;
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.SHORT, dim.getShortName(), "",
+        "synthesized coordinate: only an index");
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
@@ -530,10 +553,12 @@ map_proj =  1: Lambert Conformal
   }
 
   private CoordinateAxis makeTimeCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
-    if (dim == null) return null;
+    if (dim == null)
+      return null;
     int nt = dim.getLength();
     Variable timeV = ds.findVariable("Times");
-    if (timeV == null) return null;
+    if (timeV == null)
+      return null;
 
     Array timeData;
     try {
@@ -549,13 +574,13 @@ map_proj =  1: Lambert Conformal
       ArrayChar.StringIterator iter = ((ArrayChar) timeData).getStringIterator();
       String testTimeStr = ((ArrayChar) timeData).getString(0);
       boolean isCanonicalIsoStr = true;
-      // Maybe too specific to require WRF to give 10 digits or 
-      //  dashes for the date (e.g. yyyy-mm-dd)?
+      // Maybe too specific to require WRF to give 10 digits or
+      // dashes for the date (e.g. yyyy-mm-dd)?
       final String wrfDateWithUnderscore = "([\\-\\d]{10})_";
       final Pattern wrfDateWithUnderscorePattern = Pattern.compile(wrfDateWithUnderscore);
       Matcher m = wrfDateWithUnderscorePattern.matcher(testTimeStr);
       isCanonicalIsoStr = m.matches();
-      
+
       while (iter.hasNext()) {
         String dateS = iter.next();
         try {
@@ -563,9 +588,9 @@ map_proj =  1: Lambert Conformal
           if (isCanonicalIsoStr) {
             cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS);
           } else {
-        	cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS.replaceFirst("_", "T"));  
+            cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS.replaceFirst("_", "T"));
           }
-          
+
           values.set(count++, (double) cd.getMillis() / 1000);
 
         } catch (IllegalArgumentException e) {
@@ -578,7 +603,8 @@ map_proj =  1: Lambert Conformal
               CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(null, startAtt);
               values.set(0, (double) cd.getMillis() / 1000);
             } catch (IllegalArgumentException e2) {
-              parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n", startAtt, e2.getMessage());
+              parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n", startAtt,
+                  e2.getMessage());
             }
           }
         }
@@ -598,7 +624,7 @@ map_proj =  1: Lambert Conformal
     }
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(),
-            "secs since 1970-01-01 00:00:00", "synthesized time coordinate from Times(time)");
+        "secs since 1970-01-01 00:00:00", "synthesized time coordinate from Times(time)");
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
@@ -631,17 +657,18 @@ map_proj =  1: Lambert Conformal
 
     String units = ds.findAttValueIgnoreCase(coordVar, CDM.UNITS, "");
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, "soilDepth", DataType.DOUBLE, soilDim.getShortName(), units, "soil depth");
+    CoordinateAxis v =
+        new CoordinateAxis1D(ds, null, "soilDepth", DataType.DOUBLE, soilDim.getShortName(), units, "soil depth");
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // soil depth gets larger as you go down
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     v.addAttribute(new Attribute(CDM.UNITS, CDM.UNITS));
     if (!v.getShortName().equals(soilDim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getShortName()));
 
-    //read first time slice
+    // read first time slice
     int n = coordVar.getShape(1);
-    int[] origin = new int[]{0, 0};
-    int[] shape = new int[]{1, n};
+    int[] origin = new int[] {0, 0};
+    int[] shape = new int[] {1, n};
     try {
       Array array = coordVar.read(origin, shape);
       ArrayDouble.D1 newArray = new ArrayDouble.D1(n);
@@ -661,7 +688,8 @@ map_proj =  1: Lambert Conformal
 
   private double findAttributeDouble(NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
-    if (att == null) return Double.NaN;
+    if (att == null)
+      return Double.NaN;
     return att.getNumericValue().doubleValue();
   }
 
@@ -687,8 +715,8 @@ map_proj =  1: Lambert Conformal
   }
 
   private VerticalCT makeWRFEtaVerticalCoordinateTransform(NetcdfDataset ds, CoordinateSystem cs) {
-    if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) ||
-            (null == ds.findVariable("P")) || (null == ds.findVariable("PB")))
+    if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
+        || (null == ds.findVariable("PB")))
       return null;
 
     WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
@@ -697,167 +725,169 @@ map_proj =  1: Lambert Conformal
 }
 
 /*
- NMM . output from gridgen. these are the input files to WRF i think
-netcdf Q:/grid/netcdf/wrf/geo_nmm.d01.nc {
- dimensions:
-   Time = UNLIMITED;   // (1 currently)
-   DateStrLen = 19;
-   west_east = 136;
-   south_north = 309;
-   land_cat = 24;
-   soil_cat = 16;
-   month = 12;
- variables:
-   char Times(Time=1, DateStrLen=19);
-   float XLAT_M(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "degrees latitude";
-     :description = "Latitude on mass grid";
-     :stagger = "M";
-   float XLONG_M(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "degrees longitude";
-     :description = "Longitude on mass grid";
-     :stagger = "M";
-   float XLAT_V(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "degrees latitude";
-     :description = "Latitude on velocity grid";
-     :stagger = "V";
-   float XLONG_V(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "degrees longitude";
-     :description = "Longitude on velocity grid";
-     :stagger = "V";
-   float E(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "-";
-     :description = "Coriolis E parameter";
-     :stagger = "M";
-   float F(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "-";
-     :description = "Coriolis F parameter";
-     :stagger = "M";
-   float LANDMASK(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "none";
-     :description = "Landmask : 1=land, 0=water";
-     :stagger = "M";
-   float LANDUSEF(Time=1, land_cat=24, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XYZ";
-     :units = "category";
-     :description = "24-category USGS landuse";
-     :stagger = "M";
-   float LU_INDEX(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "category";
-     :description = "Dominant category";
-     :stagger = "M";
-   float HGT_M(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "meters MSL";
-     :description = "Topography height";
-     :stagger = "M";
-   float HGT_V(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "meters MSL";
-     :description = "Topography height";
-     :stagger = "V";
-   float SOILTEMP(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "Kelvin";
-     :description = "Annual mean deep soil temperature";
-     :stagger = "M";
-   float SOILCTOP(Time=1, soil_cat=16, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XYZ";
-     :units = "category";
-     :description = "16-category top-layer soil type";
-     :stagger = "M";
-   float SOILCBOT(Time=1, soil_cat=16, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XYZ";
-     :units = "category";
-     :description = "16-category bottom-layer soil type";
-     :stagger = "M";
-   float ALBEDO12M(Time=1, month=12, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XYZ";
-     :units = "percent";
-     :description = "Monthly surface albedo";
-     :stagger = "M";
-   float GREENFRAC(Time=1, month=12, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XYZ";
-     :units = "fraction";
-     :description = "Monthly green fraction";
-     :stagger = "M";
-   float SNOALB(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "percent";
-     :description = "Maximum snow albedo";
-     :stagger = "M";
-   float SLOPECAT(Time=1, south_north=309, west_east=136);
-     :FieldType = 104; // int
-     :MemoryOrder = "XY ";
-     :units = "category";
-     :description = "Dominant category";
-     :stagger = "M";
-
- :TITLE = "OUTPUT FROM GRIDGEN";
- :SIMULATION_START_DATE = "0000-00-00_00:00:00";
- :WEST-EAST_GRID_DIMENSION = 136; // int
- :SOUTH-NORTH_GRID_DIMENSION = 309; // int
- :BOTTOM-TOP_GRID_DIMENSION = 0; // int
- :WEST-EAST_PATCH_START_UNSTAG = 1; // int
- :WEST-EAST_PATCH_END_UNSTAG = 136; // int
- :WEST-EAST_PATCH_START_STAG = 1; // int
- :WEST-EAST_PATCH_END_STAG = 136; // int
- :SOUTH-NORTH_PATCH_START_UNSTAG = 1; // int
- :SOUTH-NORTH_PATCH_END_UNSTAG = 309; // int
- :SOUTH-NORTH_PATCH_START_STAG = 1; // int
- :SOUTH-NORTH_PATCH_END_STAG = 309; // int
- :GRIDTYPE = "E";
- :DX = 0.111143f; // float
- :DY = 0.106776f; // float
- :DYN_OPT = 4; // int
- :CEN_LAT = 21.0f; // float
- :CEN_LON = 80.0f; // float
- :TRUELAT1 = 1.0E20f; // float
- :TRUELAT2 = 1.0E20f; // float
- :MOAD_CEN_LAT = 0.0f; // float
- :STAND_LON = 1.0E20f; // float
- :POLE_LAT = 90.0f; // float
- :POLE_LON = 0.0f; // float
- :corner_lats = 3.8832555f, 36.602543f, 36.602543f, 3.8832555f, 3.8931324f, 36.61482f, 36.59018f, 3.873307f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f; // float
- :corner_lons = 65.589096f, 61.982986f, 98.01701f, 94.410904f, 65.69548f, 62.114895f, 98.14889f, 94.51727f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f; // float
- :MAP_PROJ = 203; // int
- :MMINLU = "USGS";
- :ISWATER = 16; // int
- :ISICE = 24; // int
- :ISURBAN = 1; // int
- :ISOILWATER = 14; // int
- :grid_id = 1; // int
- :parent_id = 1; // int
- :i_parent_start = 0; // int
- :j_parent_start = 0; // int
- :i_parent_end = 136; // int
- :j_parent_end = 309; // int
- :parent_grid_ratio = 1; // int
-}
-
-*/
+ * NMM . output from gridgen. these are the input files to WRF i think
+ * netcdf Q:/grid/netcdf/wrf/geo_nmm.d01.nc {
+ * dimensions:
+ * Time = UNLIMITED; // (1 currently)
+ * DateStrLen = 19;
+ * west_east = 136;
+ * south_north = 309;
+ * land_cat = 24;
+ * soil_cat = 16;
+ * month = 12;
+ * variables:
+ * char Times(Time=1, DateStrLen=19);
+ * float XLAT_M(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "degrees latitude";
+ * :description = "Latitude on mass grid";
+ * :stagger = "M";
+ * float XLONG_M(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "degrees longitude";
+ * :description = "Longitude on mass grid";
+ * :stagger = "M";
+ * float XLAT_V(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "degrees latitude";
+ * :description = "Latitude on velocity grid";
+ * :stagger = "V";
+ * float XLONG_V(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "degrees longitude";
+ * :description = "Longitude on velocity grid";
+ * :stagger = "V";
+ * float E(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "-";
+ * :description = "Coriolis E parameter";
+ * :stagger = "M";
+ * float F(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "-";
+ * :description = "Coriolis F parameter";
+ * :stagger = "M";
+ * float LANDMASK(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "none";
+ * :description = "Landmask : 1=land, 0=water";
+ * :stagger = "M";
+ * float LANDUSEF(Time=1, land_cat=24, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XYZ";
+ * :units = "category";
+ * :description = "24-category USGS landuse";
+ * :stagger = "M";
+ * float LU_INDEX(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "category";
+ * :description = "Dominant category";
+ * :stagger = "M";
+ * float HGT_M(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "meters MSL";
+ * :description = "Topography height";
+ * :stagger = "M";
+ * float HGT_V(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "meters MSL";
+ * :description = "Topography height";
+ * :stagger = "V";
+ * float SOILTEMP(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "Kelvin";
+ * :description = "Annual mean deep soil temperature";
+ * :stagger = "M";
+ * float SOILCTOP(Time=1, soil_cat=16, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XYZ";
+ * :units = "category";
+ * :description = "16-category top-layer soil type";
+ * :stagger = "M";
+ * float SOILCBOT(Time=1, soil_cat=16, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XYZ";
+ * :units = "category";
+ * :description = "16-category bottom-layer soil type";
+ * :stagger = "M";
+ * float ALBEDO12M(Time=1, month=12, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XYZ";
+ * :units = "percent";
+ * :description = "Monthly surface albedo";
+ * :stagger = "M";
+ * float GREENFRAC(Time=1, month=12, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XYZ";
+ * :units = "fraction";
+ * :description = "Monthly green fraction";
+ * :stagger = "M";
+ * float SNOALB(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "percent";
+ * :description = "Maximum snow albedo";
+ * :stagger = "M";
+ * float SLOPECAT(Time=1, south_north=309, west_east=136);
+ * :FieldType = 104; // int
+ * :MemoryOrder = "XY ";
+ * :units = "category";
+ * :description = "Dominant category";
+ * :stagger = "M";
+ * 
+ * :TITLE = "OUTPUT FROM GRIDGEN";
+ * :SIMULATION_START_DATE = "0000-00-00_00:00:00";
+ * :WEST-EAST_GRID_DIMENSION = 136; // int
+ * :SOUTH-NORTH_GRID_DIMENSION = 309; // int
+ * :BOTTOM-TOP_GRID_DIMENSION = 0; // int
+ * :WEST-EAST_PATCH_START_UNSTAG = 1; // int
+ * :WEST-EAST_PATCH_END_UNSTAG = 136; // int
+ * :WEST-EAST_PATCH_START_STAG = 1; // int
+ * :WEST-EAST_PATCH_END_STAG = 136; // int
+ * :SOUTH-NORTH_PATCH_START_UNSTAG = 1; // int
+ * :SOUTH-NORTH_PATCH_END_UNSTAG = 309; // int
+ * :SOUTH-NORTH_PATCH_START_STAG = 1; // int
+ * :SOUTH-NORTH_PATCH_END_STAG = 309; // int
+ * :GRIDTYPE = "E";
+ * :DX = 0.111143f; // float
+ * :DY = 0.106776f; // float
+ * :DYN_OPT = 4; // int
+ * :CEN_LAT = 21.0f; // float
+ * :CEN_LON = 80.0f; // float
+ * :TRUELAT1 = 1.0E20f; // float
+ * :TRUELAT2 = 1.0E20f; // float
+ * :MOAD_CEN_LAT = 0.0f; // float
+ * :STAND_LON = 1.0E20f; // float
+ * :POLE_LAT = 90.0f; // float
+ * :POLE_LON = 0.0f; // float
+ * :corner_lats = 3.8832555f, 36.602543f, 36.602543f, 3.8832555f, 3.8931324f, 36.61482f, 36.59018f, 3.873307f, 0.0f,
+ * 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f; // float
+ * :corner_lons = 65.589096f, 61.982986f, 98.01701f, 94.410904f, 65.69548f, 62.114895f, 98.14889f, 94.51727f, 0.0f,
+ * 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f; // float
+ * :MAP_PROJ = 203; // int
+ * :MMINLU = "USGS";
+ * :ISWATER = 16; // int
+ * :ISICE = 24; // int
+ * :ISURBAN = 1; // int
+ * :ISOILWATER = 14; // int
+ * :grid_id = 1; // int
+ * :parent_id = 1; // int
+ * :i_parent_start = 0; // int
+ * :j_parent_start = 0; // int
+ * :i_parent_end = 136; // int
+ * :j_parent_end = 309; // int
+ * :parent_grid_ratio = 1; // int
+ * }
+ * 
+ */

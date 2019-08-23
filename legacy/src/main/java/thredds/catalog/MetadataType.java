@@ -45,6 +45,7 @@ public final class MetadataType {
 
   /**
    * Get all MetadataType objects
+   * 
    * @return all MetadataType objects
    */
   public static java.util.Collection<MetadataType> getAllTypes() {
@@ -59,7 +60,8 @@ public final class MetadataType {
    * @return MetadataType or null if no match.
    */
   public static MetadataType findType(String name) {
-    if (name == null) return null;
+    if (name == null)
+      return null;
     for (MetadataType m : members) {
       if (m.name.equalsIgnoreCase(name))
         return m;
@@ -75,9 +77,10 @@ public final class MetadataType {
    * @return the named MetadataType or null if given name is null.
    */
   public static MetadataType getType(String name) {
-    if (name == null) return null;
-    MetadataType type = findType( name );
-    return type != null ? type : new MetadataType( name, false );
+    if (name == null)
+      return null;
+    MetadataType type = findType(name);
+    return type != null ? type : new MetadataType(name, false);
   }
 
   /**
@@ -98,8 +101,10 @@ public final class MetadataType {
    * MetaDataType with same name are equal.
    */
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof MetadataType)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof MetadataType))
+      return false;
     return o.hashCode() == this.hashCode();
   }
 }

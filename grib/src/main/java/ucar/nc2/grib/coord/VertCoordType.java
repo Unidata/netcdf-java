@@ -3,7 +3,7 @@ package ucar.nc2.grib.coord;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Encapsulate the semantics in GRIB level types  (Grib1 table 3, Grib2 code table 4.5).
+ * Encapsulate the semantics in GRIB level types (Grib1 table 3, Grib2 code table 4.5).
  */
 @Immutable
 public class VertCoordType {
@@ -26,7 +26,8 @@ public class VertCoordType {
     this.isLayer = false;
   }
 
-  public VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer) {
+  public VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp,
+      boolean isLayer) {
     this.code = code;
     this.desc = desc;
     this.abbrev = abbrev;

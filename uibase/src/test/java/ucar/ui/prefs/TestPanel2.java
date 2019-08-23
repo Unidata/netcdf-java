@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
-
 import java.beans.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -26,15 +25,13 @@ import javax.swing.*;
 @RunWith(JUnit4.class)
 public class TestPanel2 {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   static {
-    System
-        .setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
 
   private static XMLStore xstore;
@@ -58,8 +55,7 @@ public class TestPanel2 {
     PrefPanel pp = new PrefPanel("title", prefs);
     pp.addTextField("name", "name", "defValue", 0, 0, null);
     Field.Text longF = pp.addTextField("Longname", "Longname",
-        "defValue really long name for to be with starting value gotta adjust the thing", 0, 1,
-        null);
+        "defValue really long name for to be with starting value gotta adjust the thing", 0, 1, null);
     pp.addHeading("Adult Material", 2);
     pp.addTextField("nude", "nude", "nudeCOlumn", 0, 3, null);
     pp.finish();
@@ -83,8 +79,7 @@ public class TestPanel2 {
     pp.addHeading("Basics", row++);
     pp.addTextField("name", "name", "defValue", 0, row++, null);
     Field.Text longF = pp.addTextField("Longname", "Longname",
-        "defValue really long name for to be with starting value gotta adjust the thing", 0, row++,
-        null);
+        "defValue really long name for to be with starting value gotta adjust the thing", 0, row++, null);
     pp.addHeading("Adult Material", row++);
     pp.addTextField("nude", "nude", "nudeCOlumn", 0, row++, null);
     pp.finish();
@@ -112,8 +107,8 @@ public class TestPanel2 {
   @Test
   public void testPanel2() {
     try {
-      PrefPanel.Dialog preferenceDialog = new PrefPanel.Dialog(null, false, "Preference Dialog",
-          (PreferencesExt) store.node("dialog"));
+      PrefPanel.Dialog preferenceDialog =
+          new PrefPanel.Dialog(null, false, "Preference Dialog", (PreferencesExt) store.node("dialog"));
       PrefPanel pp = preferenceDialog.getPrefPanel();
       pp.addTextField("textField", "textField", "defValue");
       Field.Text tt = pp.addTextField("hasaToolTip", "hasaToolTip", "glob");
@@ -123,8 +118,7 @@ public class TestPanel2 {
       Field.Text at = pp.addTextField("acceptListener", "acceptListener", "hitEnterOrAccept");
       at.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
-          System.out
-              .println("got new <" + evt.getNewValue() + "> old = <" + evt.getOldValue() + ">");
+          System.out.println("got new <" + evt.getNewValue() + "> old = <" + evt.getOldValue() + ">");
         }
       });
 
@@ -143,7 +137,7 @@ public class TestPanel2 {
 
       pp.addActionListener(e -> {
         System.out.println("got accept");
-        //xstore.save();
+        // xstore.save();
       });
 
     } catch (HeadlessException e) {
@@ -170,12 +164,10 @@ public class TestPanel2 {
   private PrefPanel makeComboBox() {
 
     PrefPanel pp = new PrefPanel("testCombo", null);
-    Field.TextCombo fcb = pp
-        .addTextComboField("datatypesText", "Datatypes Text", DataType.getTypeNames(), 20, true);
-    Field.TextCombo fcb2 = pp
-        .addTextComboField("datatypesObjects", "Datatypes Objects", DataType.getTypes(), 20, true);
-    Field.TextArea fta = pp.addTextAreaField("textArea", "Text Area",
-        "4 score and seventeen long gloriuos and longer nights ago.", 3);
+    Field.TextCombo fcb = pp.addTextComboField("datatypesText", "Datatypes Text", DataType.getTypeNames(), 20, true);
+    Field.TextCombo fcb2 = pp.addTextComboField("datatypesObjects", "Datatypes Objects", DataType.getTypes(), 20, true);
+    Field.TextArea fta =
+        pp.addTextAreaField("textArea", "Text Area", "4 score and seventeen long gloriuos and longer nights ago.", 3);
     pp.finish();
 
     return pp;
@@ -229,12 +221,14 @@ public class TestPanel2 {
     pp2.addCheckBoxField("testB", "testB", true);
     pp2.setCursor(2, 1);
 
-/*    pp2.addHeading("Another Column:");
-    pp2.addDateField("date", "date", new Date());
-    try {
-      JFormattedTextField tf = new JFormattedTextField(new javax.swing.text.MaskFormatter("(###) ###-####"));
-      pp2.addTextFormattedField("ff", "ff", tf, "(303) 497-1234");
-    } catch (java.text.ParseException e) { } */
+    /*
+     * pp2.addHeading("Another Column:");
+     * pp2.addDateField("date", "date", new Date());
+     * try {
+     * JFormattedTextField tf = new JFormattedTextField(new javax.swing.text.MaskFormatter("(###) ###-####"));
+     * pp2.addTextFormattedField("ff", "ff", tf, "(303) 497-1234");
+     * } catch (java.text.ParseException e) { }
+     */
 
     ArrayList list = new ArrayList(5);
     list.add("this");
@@ -256,19 +250,19 @@ public class TestPanel2 {
       frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
       TestPanel2 tp = new TestPanel2();
-      //PrefPanel pp = tp.makeTestPanelOld(null);
-      //PrefPanel pp = tp.makeTestPanel(null);
-      //PrefPanel pp = tp.makeTestPanelFirstHeading(null);
-      //PrefPanel pp = tp.make3columns();
+      // PrefPanel pp = tp.makeTestPanelOld(null);
+      // PrefPanel pp = tp.makeTestPanel(null);
+      // PrefPanel pp = tp.makeTestPanelFirstHeading(null);
+      // PrefPanel pp = tp.make3columns();
       PrefPanel pp = tp.make3columnsOneLong();
 
-      //PrefPanel pp =  tp.makeComboBox();
-      //PrefPanel pp =  tp.makeDialog().getPrefPanel();
+      // PrefPanel pp = tp.makeComboBox();
+      // PrefPanel pp = tp.makeDialog().getPrefPanel();
 
       frame.getContentPane().add(pp);
       frame.pack();
       frame.setLocation(300, 300);
-      //frame.setSize(300, 300);
+      // frame.setSize(300, 300);
       frame.setVisible(true);
 
       PrefPanel.Dialog d = tp.makeDialog();

@@ -6,7 +6,6 @@ package ucar.unidata.geoloc.vertical;
 
 import java.io.IOException;
 import java.util.List;
-
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayDouble.D1;
@@ -23,7 +22,8 @@ import ucar.unidata.util.Parameter;
 /**
  * Create a 3D height(z,y,x) array using the CF formula for
  * "atmospheric sigma vertical coordinate".
- * <p><strong>pressure(x,y,z) = ptop + sigma(z)*surfacePressure(x,y)</strong>
+ * <p>
+ * <strong>pressure(x,y,z) = ptop + sigma(z)*surfacePressure(x,y)</strong>
  *
  * @author caron
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
@@ -64,9 +64,9 @@ public class AtmosSigma extends VerticalTransformImpl {
   /**
    * Create a new vertical transform for Ocean S coordinates
    *
-   * @param ds      dataset
+   * @param ds dataset
    * @param timeDim time dimension
-   * @param params  list of transformation Parameters
+   * @param params list of transformation Parameters
    */
   public AtmosSigma(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
     super(timeDim);
@@ -79,8 +79,7 @@ public class AtmosSigma extends VerticalTransformImpl {
     try {
       this.ptop = ptopVar.readScalarDouble();
     } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosSigma failed to read "
-          + ptopVar + " err= " + e.getMessage());
+      throw new IllegalArgumentException("AtmosSigma failed to read " + ptopVar + " err= " + e.getMessage());
     }
 
     String sigmaName = getParameterStringValue(params, SIGMA);
@@ -90,12 +89,11 @@ public class AtmosSigma extends VerticalTransformImpl {
       Array data = sigmaVar.read();
       sigma = (double[]) data.get1DJavaArray(double.class);
     } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosSigma failed to read "
-          + sigmaName + " err= " + e.getMessage());
+      throw new IllegalArgumentException("AtmosSigma failed to read " + sigmaName + " err= " + e.getMessage());
     }
 
     units = ds.findAttValueIgnoreCase(psVar, CDM.UNITS, "none");
-    
+
     String ptopUnitStr = ds.findAttValueIgnoreCase(ptopVar, CDM.UNITS, "none");
     if (!units.equalsIgnoreCase(ptopUnitStr)) {
       // Convert ptopVar to units of psVar
@@ -103,8 +101,8 @@ public class AtmosSigma extends VerticalTransformImpl {
       SimpleUnit ptopUnit = SimpleUnit.factory(ptopUnitStr);
       double factor = ptopUnit.convertTo(1.0, psUnit);
       this.ptop = this.ptop * factor;
-    }    
-    
+    }
+
   }
 
   /**
@@ -112,11 +110,10 @@ public class AtmosSigma extends VerticalTransformImpl {
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
-   * @throws IOException           problem reading data
+   * @throws IOException problem reading data
    * @throws InvalidRangeException _more_
    */
-  public ArrayDouble.D3 getCoordinateArray(int timeIndex)
-      throws IOException, InvalidRangeException {
+  public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array ps = readArray(psVar, timeIndex);
     Index psIndex = ps.getIndex();
 
@@ -138,35 +135,34 @@ public class AtmosSigma extends VerticalTransformImpl {
 
     return result;
   }
-  
+
   /**
    * Get the 1D vertical coordinate array for this time step and point
    * 
    * (needds test!!!)
    * 
    * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @param xIndex    the x index
-   * @param yIndex    the y index
+   * @param xIndex the x index
+   * @param yIndex the y index
    * @return vertical coordinate array
    * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_ 
-   */  
-  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
-  		throws IOException, InvalidRangeException {
-	  	  		  		  		 
-	    Array ps = readArray(psVar, timeIndex); 
-	    Index psIndex = ps.getIndex();	  
-	    int nz = sigma.length;  
-	    ArrayDouble.D1 result = new ArrayDouble.D1(nz);
-	    
-        double psVal = ps.getDouble(psIndex.set(yIndex, xIndex));
-        for (int z = 0; z < nz; z++) {
-          result.set(z,  ptop + sigma[z] * (psVal - ptop));
-        }	    
-	    
-	    return result;
-	    
-  }  
-  
+   * @throws ucar.ma2.InvalidRangeException _more_
+   */
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
+
+    Array ps = readArray(psVar, timeIndex);
+    Index psIndex = ps.getIndex();
+    int nz = sigma.length;
+    ArrayDouble.D1 result = new ArrayDouble.D1(nz);
+
+    double psVal = ps.getDouble(psIndex.set(yIndex, xIndex));
+    for (int z = 0; z < nz; z++) {
+      result.set(z, ptop + sigma[z] * (psVal - ptop));
+    }
+
+    return result;
+
+  }
+
 }
 

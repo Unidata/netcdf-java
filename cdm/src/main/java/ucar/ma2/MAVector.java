@@ -21,14 +21,14 @@ public class MAVector {
   /**
    * Create an MAVector out of a double array
    */
-  public MAVector( double[] values) {
-    this( Array.makeFromJavaArray(values, false));
+  public MAVector(double[] values) {
+    this(Array.makeFromJavaArray(values, false));
   }
 
   /**
    * Create an MAVector of the given length.
    */
-  public MAVector( int nelems) {
+  public MAVector(int nelems) {
     this.a = new ArrayDouble.D1(nelems);
     this.nelems = nelems;
     ima = a.getIndex();
@@ -36,30 +36,40 @@ public class MAVector {
 
   /**
    * Create an MAVector using the given rank-1 array.
+   * 
    * @param a rank-1 array
    * @exception IllegalArgumentException is a is not rank 1
    */
-  public MAVector( Array a) {
+  public MAVector(Array a) {
     this.a = a;
     if (a.getRank() != 1)
-      throw new IllegalArgumentException("rank != 1, instead = "+ a.getRank());
+      throw new IllegalArgumentException("rank != 1, instead = " + a.getRank());
     nelems = a.getShape()[0];
     ima = a.getIndex();
   }
 
-  public int getNelems() { return nelems; }
-  public double getDouble(int i) { return a.getDouble(ima.set(i)); }
-  public void setDouble(int i, double val) { a.setDouble(ima.set(i), val); }
+  public int getNelems() {
+    return nelems;
+  }
+
+  public double getDouble(int i) {
+    return a.getDouble(ima.set(i));
+  }
+
+  public void setDouble(int i, double val) {
+    a.setDouble(ima.set(i), val);
+  }
 
   /**
    * Create a new MAVector that is the same as this one, with a copy of the backing store.
    */
   public MAVector copy() {
-    return new MAVector( a.copy());
+    return new MAVector(a.copy());
   }
 
   /**
    * Cos between two vectors = dot(v) / norm() * norm(v)
+   * 
    * @param v cosine with this vector
    * @return double result: cos between this and v
    * @exception IllegalArgumentException if nelems != v.getNelems().
@@ -67,18 +77,19 @@ public class MAVector {
   public double cos(MAVector v) {
 
     if (nelems != v.getNelems())
-      throw new IllegalArgumentException("MAVector.cos "+nelems+" != "+ v.getNelems());
+      throw new IllegalArgumentException("MAVector.cos " + nelems + " != " + v.getNelems());
 
     double norm = norm();
     double normV = v.norm();
     if ((norm == 0.0) || (normV == 0.0))
       return 0.0;
     else
-      return dot(v)/(norm*normV);
+      return dot(v) / (norm * normV);
   }
 
   /**
    * Dot product of 2 vectors
+   * 
    * @param v dot product with this vector
    * @return double result: dot product
    * @exception IllegalArgumentException if nelems != v.getNelems().
@@ -86,10 +97,10 @@ public class MAVector {
   public double dot(MAVector v) {
 
     if (nelems != v.getNelems())
-      throw new IllegalArgumentException("MAVector.dot "+nelems+" != "+ v.getNelems());
+      throw new IllegalArgumentException("MAVector.dot " + nelems + " != " + v.getNelems());
 
     double sum = 0.0;
-    for (int k=0; k<nelems; k++)
+    for (int k = 0; k < nelems; k++)
       sum += getDouble(k) * v.getDouble(k);
 
     return sum;
@@ -97,12 +108,13 @@ public class MAVector {
 
   /**
    * Get the L2 norm of this vector.
+   * 
    * @return double norm
    */
   public double norm() {
 
     double sum = 0.0;
-    for (int k=0; k<nelems; k++) {
+    for (int k = 0; k < nelems; k++) {
       double val = getDouble(k);
       sum += val * val;
     }
@@ -118,9 +130,9 @@ public class MAVector {
     if (norm <= 0.0)
       return;
 
-    for (int k=0; k<nelems; k++) {
+    for (int k = 0; k < nelems; k++) {
       double val = getDouble(k);
-      setDouble(k, val/norm);
+      setDouble(k, val / norm);
     }
   }
 

@@ -16,24 +16,20 @@ import thredds.crawlabledataset.CrawlableDataset;
  * 2) All generated atomic dataset objects (InvDataset) and their corresponding CrawlableDataset objects.
  *
  */
-public class InvCrawlablePair
-{
+public class InvCrawlablePair {
   private CrawlableDataset crawlableDataset;
   private InvDataset invDataset;
 
-  public InvCrawlablePair( CrawlableDataset crawlableDataset, InvDataset invDataset )
-  {
+  public InvCrawlablePair(CrawlableDataset crawlableDataset, InvDataset invDataset) {
     this.crawlableDataset = crawlableDataset;
     this.invDataset = invDataset;
   }
 
-  public CrawlableDataset getCrawlableDataset()
-  {
+  public CrawlableDataset getCrawlableDataset() {
     return crawlableDataset;
   }
 
-  public InvDataset getInvDataset()
-  {
+  public InvDataset getInvDataset() {
     return invDataset;
   }
 }

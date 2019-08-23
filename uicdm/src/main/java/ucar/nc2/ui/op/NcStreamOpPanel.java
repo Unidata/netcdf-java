@@ -8,7 +8,6 @@ package ucar.nc2.ui.op;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
@@ -23,74 +22,71 @@ import javax.swing.JOptionPane;
  *
  */
 public class NcStreamOpPanel extends OpPanel {
-    private NcStreamPanel panel;
+  private NcStreamPanel panel;
 
-/**
- *
- */
-    public NcStreamOpPanel(PreferencesExt p) {
-        super(p, "file:", true, false);
-        panel = new NcStreamPanel(prefs);
-        add(panel, BorderLayout.CENTER);
+  /**
+   *
+   */
+  public NcStreamOpPanel(PreferencesExt p) {
+    super(p, "file:", true, false);
+    panel = new NcStreamPanel(prefs);
+    add(panel, BorderLayout.CENTER);
 
-        final AbstractAction infoAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final Formatter f = new Formatter();
-                try {
-                    panel.showInfo(f);
-                }
-                catch (Exception ioe) {
-                    final StringWriter sw = new StringWriter(5000);
-                    ioe.printStackTrace(new PrintWriter(sw));
-                    detailTA.setText(sw.toString());
-                    detailWindow.show();
-                    return;
-              }
-              detailTA.setText(f.toString());
-              detailTA.gotoTop();
-              detailWindow.show();
-            }
-        };
-        BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
-        BAMutil.addActionToContainer(buttPanel, infoAction);
-    }
-
-/** */
-    @Override
-    public boolean process(Object o) {
-        String command = (String) o;
-        boolean err = false;
-
+    final AbstractAction infoAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        final Formatter f = new Formatter();
         try {
-            panel.setNcStreamFile(command);
+          panel.showInfo(f);
+        } catch (Exception ioe) {
+          final StringWriter sw = new StringWriter(5000);
+          ioe.printStackTrace(new PrintWriter(sw));
+          detailTA.setText(sw.toString());
+          detailWindow.show();
+          return;
         }
-        catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "CdmremotePanel cannot open " + command + "\n" + ioe.getMessage());
-            err = true;
+        detailTA.setText(f.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
       }
-      catch (Exception e) {
-            final StringWriter sw = new StringWriter(5000);
-            e.printStackTrace(new PrintWriter(sw));
-            detailTA.setText(sw.toString());
-            detailWindow.show();
-            err = true;
-        }
+    };
+    BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
+    BAMutil.addActionToContainer(buttPanel, infoAction);
+  }
 
-        return !err;
+  /** */
+  @Override
+  public boolean process(Object o) {
+    String command = (String) o;
+    boolean err = false;
+
+    try {
+      panel.setNcStreamFile(command);
+    } catch (FileNotFoundException ioe) {
+      JOptionPane.showMessageDialog(null, "CdmremotePanel cannot open " + command + "\n" + ioe.getMessage());
+      err = true;
+    } catch (Exception e) {
+      final StringWriter sw = new StringWriter(5000);
+      e.printStackTrace(new PrintWriter(sw));
+      detailTA.setText(sw.toString());
+      detailWindow.show();
+      err = true;
     }
 
-/** */
-    @Override
-    public void save() {
-        panel.save();
-        super.save();
-    }
+    return !err;
+  }
 
-/** */
-    @Override
-    public void closeOpenFiles() throws IOException {
-        panel.closeOpenFiles();
-    }
+  /** */
+  @Override
+  public void save() {
+    panel.save();
+    super.save();
+  }
+
+  /** */
+  @Override
+  public void closeOpenFiles() throws IOException {
+    panel.closeOpenFiles();
+  }
 }
 

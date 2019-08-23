@@ -19,8 +19,11 @@ public class Index5D extends Index {
   /** array shapes */
   private int shape0, shape1, shape2, shape3, shape4;
 
-  Index5D() { super(5); }
-  public Index5D( int[] shape) {
+  Index5D() {
+    super(5);
+  }
+
+  public Index5D(int[] shape) {
     super(shape);
     precalc();
   }
@@ -45,11 +48,11 @@ public class Index5D extends Index {
     curr4 = current[4];
   }
 
-   public String toString() {
-     return curr0+","+curr1+","+curr2+","+curr3+","+curr4;
-   }
+  public String toString() {
+    return curr0 + "," + curr1 + "," + curr2 + "," + curr3 + "," + curr4;
+  }
 
-  public int [] getCurrentCounter() {
+  public int[] getCurrentCounter() {
     current[0] = curr0;
     current[1] = curr1;
     current[2] = curr2;
@@ -59,33 +62,31 @@ public class Index5D extends Index {
   }
 
   public int currentElement() {
-    return offset + curr0*stride0 + curr1*stride1 + curr2*stride2 +
-        + curr3*stride3 + curr4*stride4;
+    return offset + curr0 * stride0 + curr1 * stride1 + curr2 * stride2 + +curr3 * stride3 + curr4 * stride4;
   }
 
   public int incr() {
-        if (++curr4 >= shape4) {
-          curr4 = 0;
-          if (++curr3 >= shape3) {
-            curr3 = 0;
-              if (++curr2 >= shape2) {
-                curr2 = 0;
-                if (++curr1 >= shape1) {
-                  curr1 = 0;
-                  if (++curr0 >= shape0) {
-                    curr0 = 0;    // rollover !
-                  }
-                }
-              }
+    if (++curr4 >= shape4) {
+      curr4 = 0;
+      if (++curr3 >= shape3) {
+        curr3 = 0;
+        if (++curr2 >= shape2) {
+          curr2 = 0;
+          if (++curr1 >= shape1) {
+            curr1 = 0;
+            if (++curr0 >= shape0) {
+              curr0 = 0; // rollover !
             }
           }
+        }
+      }
+    }
 
-    return offset + curr0*stride0 + curr1*stride1 + curr2*stride2 +
-        + curr3*stride3 + curr4*stride4;
+    return offset + curr0 * stride0 + curr1 * stride1 + curr2 * stride2 + +curr3 * stride3 + curr4 * stride4;
   }
 
   public void setDim(int dim, int value) {
-    if (value < 0 || value >= shape[dim])  // check index here
+    if (value < 0 || value >= shape[dim]) // check index here
       throw new ArrayIndexOutOfBoundsException();
 
     if (dim == 4)
@@ -101,41 +102,41 @@ public class Index5D extends Index {
   }
 
   public Index set0(int v) {
-    if (v < 0 || v >= shape0)  // check index here
+    if (v < 0 || v >= shape0) // check index here
       throw new ArrayIndexOutOfBoundsException();
     curr0 = v;
     return this;
   }
 
   public Index set1(int v) {
-    if (v < 0 || v >= shape1)  // check index here
+    if (v < 0 || v >= shape1) // check index here
       throw new ArrayIndexOutOfBoundsException();
     curr1 = v;
     return this;
   }
 
   public Index set2(int v) {
-    if (v < 0 || v >= shape2)  // check index here
+    if (v < 0 || v >= shape2) // check index here
       throw new ArrayIndexOutOfBoundsException();
     curr2 = v;
     return this;
   }
 
   public Index set3(int v) {
-    if (v < 0 || v >= shape3)  // check index here
+    if (v < 0 || v >= shape3) // check index here
       throw new ArrayIndexOutOfBoundsException();
     curr3 = v;
     return this;
   }
 
   public Index set4(int v) {
-    if (v < 0 || v >= shape4)  // check index here
+    if (v < 0 || v >= shape4) // check index here
       throw new ArrayIndexOutOfBoundsException();
     curr4 = v;
     return this;
   }
 
-  public Index set(int[] index){
+  public Index set(int[] index) {
     if (index.length != rank)
       throw new ArrayIndexOutOfBoundsException();
     set0(index[0]);
@@ -159,10 +160,9 @@ public class Index5D extends Index {
     return super.clone();
   }
 
-    //experimental : should be package private
+  // experimental : should be package private
   int setDirect(int v0, int v1, int v2, int v3, int v4) {
-    return offset + v0*stride0 + v1*stride1 + v2*stride2 + v3*stride3 +
-        v4*stride4;
+    return offset + v0 * stride0 + v1 * stride1 + v2 * stride2 + v3 * stride3 + v4 * stride4;
   }
 
 

@@ -16,7 +16,6 @@ import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.StringUtil2;
-
 import java.util.*;
 import java.io.*;
 
@@ -83,7 +82,8 @@ public class WriterProfileObsDataset {
     ncfile.setLength(size);
   }
 
-  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars, int nprofiles, String altVarName) throws IOException {
+  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars, int nprofiles,
+      String altVarName) throws IOException {
     createGlobalAttributes();
     createStations(stns);
     createProfiles(nprofiles);
@@ -109,11 +109,13 @@ public class WriterProfileObsDataset {
     ncfile.addGlobalAttribute("cdm_datatype", "Profile");
     ncfile.addGlobalAttribute("title", title);
     ncfile.addGlobalAttribute("desc", "Extracted by THREDDS/Netcdf Subset Service");
-    /* ncfile.addGlobalAttribute("observationDimension", recordDimName);
-    ncfile.addGlobalAttribute("stationDimension", stationDimName);
-    ncfile.addGlobalAttribute("latitude_coordinate", latName);
-    ncfile.addGlobalAttribute("longitude_coordinate", lonName);
-    ncfile.addGlobalAttribute("time_coordinate", timeName); */
+    /*
+     * ncfile.addGlobalAttribute("observationDimension", recordDimName);
+     * ncfile.addGlobalAttribute("stationDimension", stationDimName);
+     * ncfile.addGlobalAttribute("latitude_coordinate", latName);
+     * ncfile.addGlobalAttribute("longitude_coordinate", lonName);
+     * ncfile.addGlobalAttribute("time_coordinate", timeName);
+     */
   }
 
   private void createStations(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
@@ -123,21 +125,24 @@ public class WriterProfileObsDataset {
     for (int i = 0; i < nstns; i++) {
       ucar.unidata.geoloc.Station stn = stnList.get(i);
 
-      //if (!Double.isNaN(stn.getAltitude()))
-      //  useAlt = true;
+      // if (!Double.isNaN(stn.getAltitude()))
+      // useAlt = true;
       if ((stn.getWmoId() != null) && (stn.getWmoId().trim().length() > 0))
         useWmoId = true;
     }
 
-    /* if (useAlt)
-      ncfile.addGlobalAttribute("altitude_coordinate", altName); */
+    /*
+     * if (useAlt)
+     * ncfile.addGlobalAttribute("altitude_coordinate", altName);
+     */
 
     // find string lengths
     for (int i = 0; i < nstns; i++) {
       ucar.unidata.geoloc.Station station = stnList.get(i);
       name_strlen = Math.max(name_strlen, station.getName().length());
       desc_strlen = Math.max(desc_strlen, station.getDescription().length());
-      if (useWmoId) wmo_strlen = Math.max(wmo_strlen, station.getName().length());
+      if (useWmoId)
+        wmo_strlen = Math.max(wmo_strlen, station.getName().length());
     }
 
     LatLonRect llbb = getBoundingBox(stnList);
@@ -183,7 +188,8 @@ public class WriterProfileObsDataset {
     ncfile.addVariableAttribute(v, new Attribute("long_name", "number of profiles in linked list for this station"));
 
     v = ncfile.addVariable(firstProfileName, DataType.INT, stationDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "index of first profile in linked list for this station"));
+    ncfile.addVariableAttribute(v,
+        new Attribute("long_name", "index of first profile in linked list for this station"));
   }
 
   private void createProfiles(int nprofiles) throws IOException {
@@ -200,7 +206,8 @@ public class WriterProfileObsDataset {
     ncfile.addVariableAttribute(v, new Attribute("long_name", "number of valid profiles"));
 
     v = ncfile.addVariable(firstObsName, DataType.INT, profileDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of first obs in linked list for this profile"));
+    ncfile.addVariableAttribute(v,
+        new Attribute("long_name", "record number of first obs in linked list for this profile"));
 
     // time variable
     Variable timeVar = ncfile.addStringVariable(timeName, profileDims, 20);
@@ -216,16 +223,19 @@ public class WriterProfileObsDataset {
 
   private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
 
-    /* height variable
-    Variable heightVar = ncfile.addStringVariable(altName, recordDims, 20);
-    ncfile.addVariableAttribute(heightVar, new Attribute("long_name", "height of observation"));
-    ncfile.addVariableAttribute(heightVar, new Attribute("units", altUnits));  */
+    /*
+     * height variable
+     * Variable heightVar = ncfile.addStringVariable(altName, recordDims, 20);
+     * ncfile.addVariableAttribute(heightVar, new Attribute("long_name", "height of observation"));
+     * ncfile.addVariableAttribute(heightVar, new Attribute("units", altUnits));
+     */
 
     Variable v = ncfile.addVariable(parentProfileIndex, DataType.INT, recordDimName);
     ncfile.addVariableAttribute(v, new Attribute("long_name", "index of parent profile"));
 
     v = ncfile.addVariable(nextObsName, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of next obs in linked list for this profile"));
+    ncfile.addVariableAttribute(v,
+        new Attribute("long_name", "record number of next obs in linked list for this profile"));
 
 
     // find all dimensions needed by the data variables
@@ -288,7 +298,8 @@ public class WriterProfileObsDataset {
     this.stnList = stnList;
     int nstns = stnList.size();
     stationMap = new HashMap<String, StationTracker>(2 * nstns);
-    if (debug) System.out.println("stationMap created");
+    if (debug)
+      System.out.println("stationMap created");
 
     // now write the station data
     ArrayDouble.D1 latArray = new ArrayDouble.D1(nstns);
@@ -304,20 +315,24 @@ public class WriterProfileObsDataset {
 
       latArray.set(i, stn.getLatitude());
       lonArray.set(i, stn.getLongitude());
-      if (useAlt) altArray.set(i, stn.getAltitude());
+      if (useAlt)
+        altArray.set(i, stn.getAltitude());
 
       idArray.set(i, stn.getName());
       descArray.set(i, stn.getDescription());
-      if (useWmoId) wmoArray.set(i, stn.getWmoId());
+      if (useWmoId)
+        wmoArray.set(i, stn.getWmoId());
     }
 
     try {
       ncfile.write(latName, latArray);
       ncfile.write(lonName, lonArray);
-      if (useAlt) ncfile.write(altName, altArray);
+      if (useAlt)
+        ncfile.write(altName, altArray);
       ncfile.writeStringData(idName, idArray);
       ncfile.writeStringData(descName, descArray);
-      if (useWmoId) ncfile.writeStringData(wmoName, wmoArray);
+      if (useWmoId)
+        ncfile.writeStringData(wmoName, wmoArray);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
@@ -430,7 +445,8 @@ public class WriterProfileObsDataset {
   private int[] originTime = new int[2];
 
   public void writeRecord(StationObsDatatype sobs, StructureData sdata) throws IOException {
-    if (debug) System.out.println("sobs= " + sobs + "; station = " + sobs.getStation());
+    if (debug)
+      System.out.println("sobs= " + sobs + "; station = " + sobs.getStation());
     writeRecord(sobs.getStation().getName(), sobs.getObservationTimeAsDate(), sdata);
   }
 
@@ -461,12 +477,14 @@ public class WriterProfileObsDataset {
     }
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
-    ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
+    ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
     sArray.setStructureData(sdata, 0);
 
     // track the min and max date
-    if ((minDate == null) || minDate.after(obsDate)) minDate = obsDate;
-    if ((maxDate == null) || maxDate.before(obsDate)) maxDate = obsDate;
+    if ((minDate == null) || minDate.after(obsDate))
+      minDate = obsDate;
+    if ((maxDate == null) || maxDate.before(obsDate))
+      maxDate = obsDate;
 
     timeArray.set(0, dateFormatter.toDateTimeStringISO(obsDate));
     parentArray.set(0, proTracker.parent_index);
@@ -526,20 +544,22 @@ public class WriterProfileObsDataset {
     List<VariableSimpleIF> varList = new ArrayList<VariableSimpleIF>();
     for (Variable v : allList) {
       if ((v.getRank() == 1) && v.getDimension(0).equals(manDim)) {
-        // public VariableDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName, DataType dataType,
+        // public VariableDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName, DataType
+        // dataType,
         // String dims, String units, String desc) {
-        varList.add(new VariableDS(ncfile, null, null, v.getShortName(), v.getDataType(), "", v.getUnitsString(), v.getDescription()));
-        //(String name, String desc, String units, DataType dtype, int []shape)
+        varList.add(new VariableDS(ncfile, null, null, v.getShortName(), v.getDataType(), "", v.getUnitsString(),
+            v.getDescription()));
+        // (String name, String desc, String units, DataType dtype, int []shape)
         sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), new int[0]); // scalar
       }
     }
 
-    ArrayStructureMA manAS = new ArrayStructureMA(sm, new int[]{manDim.getLength()});
+    ArrayStructureMA manAS = new ArrayStructureMA(sm, new int[] {manDim.getLength()});
 
     // need the date units
     Variable time = ncfile.findVariable("synTime");
     String timeUnits = ncfile.findAttValueIgnoreCase(time, "units", null);
-    timeUnits = StringUtil2.remove(timeUnits, '(');  // crappy fsl'ism
+    timeUnits = StringUtil2.remove(timeUnits, '('); // crappy fsl'ism
     timeUnits = StringUtil2.remove(timeUnits, ')');
     DateUnit timeUnit = new DateUnit(timeUnits);
 
@@ -561,7 +581,8 @@ public class WriterProfileObsDataset {
       }
     }
 
-    List<ucar.unidata.geoloc.Station> stnList = Arrays.asList(staHash.values().toArray(new ucar.unidata.geoloc.Station[staHash.size()]));
+    List<ucar.unidata.geoloc.Station> stnList =
+        Arrays.asList(staHash.values().toArray(new ucar.unidata.geoloc.Station[staHash.size()]));
     Collections.sort(stnList);
 
     // create the writer

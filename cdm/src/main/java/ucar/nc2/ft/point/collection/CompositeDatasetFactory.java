@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
-
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.TimedCollection;
 import ucar.nc2.Attribute;
@@ -37,7 +36,8 @@ public class CompositeDatasetFactory {
   // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
   static boolean debug = false;
 
-  static public FeatureDataset factory(String location, FeatureType wantFeatureType, MFileCollectionManager dcm, Formatter errlog) throws IOException {
+  static public FeatureDataset factory(String location, FeatureType wantFeatureType, MFileCollectionManager dcm,
+      Formatter errlog) throws IOException {
 
     TimedCollection collection = new TimedCollection(dcm, errlog);
     if (collection.getDatasets().size() == 0) {
@@ -46,11 +46,13 @@ public class CompositeDatasetFactory {
 
     DsgFeatureCollection first;
     TimedCollection.Dataset d = collection.getPrototype();
-    try (FeatureDatasetPoint proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, d.getLocation(), null, errlog)) {
+    try (FeatureDatasetPoint proto =
+        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, d.getLocation(), null, errlog)) {
       if (proto == null) {
         throw new FileNotFoundException("Collection dataset is not a FeatureDatasetPoint; spec=" + dcm);
       }
-      if (wantFeatureType == FeatureType.ANY_POINT) wantFeatureType = proto.getFeatureType();
+      if (wantFeatureType == FeatureType.ANY_POINT)
+        wantFeatureType = proto.getFeatureType();
 
       List<DsgFeatureCollection> fcList = proto.getPointFeatureCollectionList();
       if (fcList.size() == 0) {
@@ -58,20 +60,21 @@ public class CompositeDatasetFactory {
       }
       first = fcList.get(0);
 
-      //LatLonRect bb = null;
+      // LatLonRect bb = null;
       DsgFeatureCollection fc;
       switch (wantFeatureType) {
         case POINT:
           PointFeatureCollection firstPc = (PointFeatureCollection) first;
-          CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), firstPc.getTimeUnit(), firstPc.getAltUnits(), collection);
-          //bb = pfc.getBoundingBox();
+          CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), firstPc.getTimeUnit(),
+              firstPc.getAltUnits(), collection);
+          // bb = pfc.getBoundingBox();
           fc = pfc;
           break;
         case STATION:
           PointFeatureCC firstNpc = (PointFeatureCC) first;
-          CompositeStationCollection sfc = new CompositeStationCollection(
-                  dcm.getCollectionName(), firstNpc.getTimeUnit(), firstNpc.getAltUnits(), collection);
-          //bb = sfc.getBoundingBox();
+          CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(),
+              firstNpc.getTimeUnit(), firstNpc.getAltUnits(), collection);
+          // bb = sfc.getBoundingBox();
           fc = sfc;
           break;
         default:
@@ -82,12 +85,12 @@ public class CompositeDatasetFactory {
     }
   }
 
-  private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection  {
+  private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection {
     private DsgFeatureCollection pfc;
     private List<Attribute> globalAttributes;
 
     public CompositePointDataset(String location, FeatureType featureType, DsgFeatureCollection pfc,
-                                 TimedCollection datasets, LatLonRect bb) {
+        TimedCollection datasets, LatLonRect bb) {
       super(featureType);
       setLocationURI(location);
       setPointFeatureCollection(pfc);
@@ -96,16 +99,16 @@ public class CompositeDatasetFactory {
       this.dateRange = datasets.getDateRange();
 
       if (datasets.getDateRange() != null)
-         setDateRange(datasets.getDateRange());
+        setDateRange(datasets.getDateRange());
 
       if (bb != null)
-         setBoundingBox(bb);
+        setBoundingBox(bb);
 
     }
 
     // defer this if possible
     @Override
-   public List<VariableSimpleIF> getDataVariables() {
+    public List<VariableSimpleIF> getDataVariables() {
       if (dataVariables == null) {
         if (pfc instanceof CompositePointCollection)
           dataVariables = ((CompositePointCollection) pfc).getDataVariables();
@@ -113,8 +116,8 @@ public class CompositeDatasetFactory {
           dataVariables = ((CompositeStationCollection) pfc).getDataVariables();
       }
 
-    return dataVariables;
-  }
+      return dataVariables;
+    }
 
     @Override
     public List<Attribute> getGlobalAttributes() {
@@ -143,26 +146,29 @@ public class CompositeDatasetFactory {
     public CalendarDateRange update() throws IOException {
       UpdateableCollection uc = (UpdateableCollection) pfc;
       return uc.update();
-    }    
+    }
 
-    /* @Override
-    public NetcdfFile getNetcdfFile() {
-      FeatureDatasetPoint proto;
-
-      TimedCollection.Dataset td = datasets.getPrototype();
-      if (td == null) return null;
-
-      String loc = td.getLocation();
-      Formatter errlog = new Formatter();
-      try {
-        proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, loc, null, errlog); // LOOK kludge
-        return proto.getNetcdfFile();
-      } catch (IOException e) {
-        log.error(errlog.toString());
-        e.printStackTrace();
-      }
-      return null;
-    } */
+    /*
+     * @Override
+     * public NetcdfFile getNetcdfFile() {
+     * FeatureDatasetPoint proto;
+     * 
+     * TimedCollection.Dataset td = datasets.getPrototype();
+     * if (td == null) return null;
+     * 
+     * String loc = td.getLocation();
+     * Formatter errlog = new Formatter();
+     * try {
+     * proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, loc, null, errlog); //
+     * LOOK kludge
+     * return proto.getNetcdfFile();
+     * } catch (IOException e) {
+     * log.error(errlog.toString());
+     * e.printStackTrace();
+     * }
+     * return null;
+     * }
+     */
 
   }
 

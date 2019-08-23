@@ -5,14 +5,12 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.TestNcML;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -22,20 +20,20 @@ import java.lang.invoke.MethodHandles;
 public class TestNcMLRenameVar extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestNcMLRenameVar( String name) {
+  public TestNcMLRenameVar(String name) {
     super(name);
   }
 
   NetcdfFile ncfile = null;
-  String filename = "file:./"+TestNcML.topDir + "renameVar.xml";
+  String filename = "file:./" + TestNcML.topDir + "renameVar.xml";
 
   public void setUp() {
     try {
       ncfile = NcMLReader.readNcML(filename, null);
     } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = "+e);
+      System.out.println("bad URL error = " + e);
     } catch (IOException e) {
-      System.out.println("IO error = "+e);
+      System.out.println("IO error = " + e);
       e.printStackTrace();
     }
   }
@@ -111,7 +109,8 @@ public class TestNcMLRenameVar extends TestCase {
       assert close(dataI.getDoubleNext(), 41.0);
       assert close(dataI.getDoubleNext(), 40.0);
       assert close(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
 
   }
 
@@ -158,7 +157,8 @@ public class TestNcMLRenameVar extends TestCase {
       assert dataI.getIntNext() == 3;
       assert dataI.getIntNext() == 4;
       assert dataI.getIntNext() == 5;
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
   }
 
   public void testReadSlice() {
@@ -220,9 +220,9 @@ public class TestNcMLRenameVar extends TestCase {
     }
   }
 
-  boolean close( double d1, double d2) {
-    //System.out.println(d1+" "+d2);
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
+  boolean close(double d1, double d2) {
+    // System.out.println(d1+" "+d2);
+    return Math.abs((d1 - d2) / d1) < 1.0e-5;
   }
 
 }

@@ -15,7 +15,6 @@ import ucar.ma2.MAMath;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -29,34 +28,38 @@ public class RadialCoordSys {
 
   /**
    * Determine if this CoordinateSystem can be made into a RadialCoordSys.
+   * 
    * @param parseInfo put debug information into this Formatter; may be null.
    * @param cs the CoordinateSystem to test
    * @return true if it can be made into a RadialCoordSys.
    */
-  public static boolean isRadialCoordSys( Formatter parseInfo, CoordinateSystem cs) {
+  public static boolean isRadialCoordSys(Formatter parseInfo, CoordinateSystem cs) {
     return (cs.getAzimuthAxis() != null) && (cs.getRadialAxis() != null) && (cs.getElevationAxis() != null);
   }
 
   /**
    * Determine if the CoordinateSystem cs can be made into a GridCoordSys for the Variable v.
+   * 
    * @param parseInfo put debug information into this StringBuffer; may be null.
    * @param cs CoordinateSystem to check.
    * @param v Variable to check.
    * @return the RadialCoordSys made from cs, else null.
    */
-  public static RadialCoordSys makeRadialCoordSys( Formatter parseInfo, CoordinateSystem cs, VariableEnhanced v) {
+  public static RadialCoordSys makeRadialCoordSys(Formatter parseInfo, CoordinateSystem cs, VariableEnhanced v) {
     if (parseInfo != null) {
       parseInfo.format(" ");
       v.getNameAndDimensions(parseInfo, true, false);
       parseInfo.format(" check CS " + cs.getName());
     }
-    if (isRadialCoordSys( parseInfo, cs)) {
-      RadialCoordSys rcs = new RadialCoordSys( cs);
-      if (cs.isComplete( v)) {
-        if (parseInfo != null) parseInfo.format(" OK%n");
+    if (isRadialCoordSys(parseInfo, cs)) {
+      RadialCoordSys rcs = new RadialCoordSys(cs);
+      if (cs.isComplete(v)) {
+        if (parseInfo != null)
+          parseInfo.format(" OK%n");
         return rcs;
       } else {
-        if (parseInfo != null) parseInfo.format(" NOT complete%n");
+        if (parseInfo != null)
+          parseInfo.format(" NOT complete%n");
       }
     }
 
@@ -74,9 +77,10 @@ public class RadialCoordSys {
   private LatLonRect bb;
   private double maxRadial;
 
-  /** Create a RadialCoordSys from an existing Coordinate System.
+  /**
+   * Create a RadialCoordSys from an existing Coordinate System.
    */
-  public RadialCoordSys( CoordinateSystem cs) {
+  public RadialCoordSys(CoordinateSystem cs) {
     super();
 
     aziAxis = cs.getAzimuthAxis();
@@ -84,57 +88,73 @@ public class RadialCoordSys {
     elevAxis = cs.getElevationAxis();
     timeAxis = cs.getTaxis();
 
-    coordAxes.add( aziAxis);
-    coordAxes.add( radialAxis);
-    coordAxes.add( elevAxis);
+    coordAxes.add(aziAxis);
+    coordAxes.add(radialAxis);
+    coordAxes.add(elevAxis);
 
     // make name based on coordinate
     coordAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
-    this.name = CoordinateSystem.makeName( coordAxes);
+    this.name = CoordinateSystem.makeName(coordAxes);
 
   }
 
-  public String getName() { return name; }
-  public List getCoordAxes() { return coordAxes; }
+  public String getName() {
+    return name;
+  }
+
+  public List getCoordAxes() {
+    return coordAxes;
+  }
 
   /** get the Azimuth axis */
-  public CoordinateAxis getAzimuthAxis() { return aziAxis; }
-  /** get the Elevation axis  */
-  public CoordinateAxis getElevationAxis() { return elevAxis; }
-  /** get the Radial axis */
-  public CoordinateAxis getRadialAxis() { return radialAxis; }
-  /** get the Time axis */
-  public CoordinateAxis getTimeAxis() { return timeAxis; }
+  public CoordinateAxis getAzimuthAxis() {
+    return aziAxis;
+  }
 
-    /** get the Azimuth axis data. Calling this will force the data to be cached. */
+  /** get the Elevation axis */
+  public CoordinateAxis getElevationAxis() {
+    return elevAxis;
+  }
+
+  /** get the Radial axis */
+  public CoordinateAxis getRadialAxis() {
+    return radialAxis;
+  }
+
+  /** get the Time axis */
+  public CoordinateAxis getTimeAxis() {
+    return timeAxis;
+  }
+
+  /** get the Azimuth axis data. Calling this will force the data to be cached. */
   public Array getAzimuthAxisDataCached() throws IOException {
     if (aziData == null)
       aziData = aziAxis.read();
     return aziData;
   }
 
-    /** get the Elevation axis data. Calling this will force the data to be cached. */
+  /** get the Elevation axis data. Calling this will force the data to be cached. */
   public Array getElevationAxisDataCached() throws IOException {
     if (elevData == null)
       elevData = elevAxis.read();
     return elevData;
   }
 
-    /** get the Radial axis data. Calling this will force the data to be cached. */
+  /** get the Radial axis data. Calling this will force the data to be cached. */
   public Array getRadialAxisDataCached() throws IOException {
     if (radialData == null)
       radialData = radialAxis.read();
     return radialData;
   }
 
-    /** get the Time axis data. Calling this will force the data to be cached. */
+  /** get the Time axis data. Calling this will force the data to be cached. */
   public Array getTimeAxisDataCached() throws IOException {
     if (timeData == null)
       timeData = timeAxis.read();
     return timeData;
   }
 
-    /** Origin of the coordinate system */
+  /** Origin of the coordinate system */
   public ucar.unidata.geoloc.EarthLocation getOrigin() {
     return origin;
   }
@@ -150,7 +170,7 @@ public class RadialCoordSys {
     if (maxRadial == 0.0) {
       try {
         Array radialData = getRadialAxisDataCached();
-        maxRadial = MAMath.getMaximum( radialData);
+        maxRadial = MAMath.getMaximum(radialData);
 
         String units = getRadialAxis().getUnitsString();
         SimpleUnit radialUnit = SimpleUnit.factory(units);
@@ -169,25 +189,26 @@ public class RadialCoordSys {
     if (origin == null)
       return null;
 
-    double dLat = Math.toDegrees( getMaximumRadial() / Earth.getRadius());
-    double latRadians = Math.toRadians( origin.getLatitude());
+    double dLat = Math.toDegrees(getMaximumRadial() / Earth.getRadius());
+    double latRadians = Math.toRadians(origin.getLatitude());
     double dLon = dLat * Math.cos(latRadians);
 
-    double lat1 = origin.getLatitude() - dLat/2;
-    double lon1 = origin.getLongitude() - dLon/2;
-    bb = new LatLonRect( new LatLonPointImpl( lat1, lon1), dLat, dLon);
+    double lat1 = origin.getLatitude() - dLat / 2;
+    double lon1 = origin.getLongitude() - dLon / 2;
+    bb = new LatLonRect(new LatLonPointImpl(lat1, lon1), dLat, dLon);
 
     return bb;
   }
 
 
-  /** Get the units of Calendar time.
-   *  To get a Date, from a time value, call DateUnit.getStandardDate(double value).
-   *  To get units as a String, call DateUnit.getUnitsString().
+  /**
+   * Get the units of Calendar time.
+   * To get a Date, from a time value, call DateUnit.getStandardDate(double value).
+   * To get units as a String, call DateUnit.getUnitsString().
    */
   public ucar.nc2.units.DateUnit getTimeUnits() throws Exception {
     if (null == dateUnit) {
-      dateUnit = new DateUnit( timeAxis.getUnitsString());
+      dateUnit = new DateUnit(timeAxis.getUnitsString());
     }
     return dateUnit;
   }

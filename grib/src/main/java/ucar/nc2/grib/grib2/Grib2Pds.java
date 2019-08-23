@@ -10,7 +10,6 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.zip.CRC32;
@@ -31,7 +30,7 @@ public abstract class Grib2Pds {
    * Factory for Grib2Pds
    *
    * @param template pds template number
-   * @param input   raw bytes
+   * @param input raw bytes
    * @return Grib2Pds or null on error
    */
   @Nullable
@@ -64,9 +63,9 @@ public abstract class Grib2Pds {
       case 31:
         return new Grib2Pds31(input);
       case 48:
-          return new Grib2Pds48(input);
+        return new Grib2Pds48(input);
       case 61:
-          return new Grib2Pds61(input);
+        return new Grib2Pds61(input);
       default:
         log.warn("Missing template " + template);
         return null;
@@ -80,7 +79,7 @@ public abstract class Grib2Pds {
   /**
    * Constructs a Grib2PDSVariables object from a byte[].
    *
-   * @param input   raw bytes
+   * @param input raw bytes
    */
   protected Grib2Pds(byte[] input) {
     this.input = input;
@@ -101,11 +100,12 @@ public abstract class Grib2Pds {
 
   final float[] getExtraCoordinates() {
     int n = getExtraCoordinatesCount();
-    if (n == 0) return new float[0];
+    if (n == 0)
+      return new float[0];
     float[] result = new float[n];
     int count = templateLength() + 1;
-    for (int i=0; i<n; i++) {
-      result[i] = GribNumbers.float4(getOctet(count++),getOctet(count++),getOctet(count++),getOctet(count++));
+    for (int i = 0; i < n; i++) {
+      result[i] = GribNumbers.float4(getOctet(count++), getOctet(count++), getOctet(count++), getOctet(count++));
     }
     return result;
   }
@@ -161,15 +161,17 @@ public abstract class Grib2Pds {
   }
 
   /**
-    Get Background generating process identifier (defined by originating centre)
-   @return Background generating process identifier
+   * Get Background generating process identifier (defined by originating centre)
+   * 
+   * @return Background generating process identifier
    */
-   public int getBackProcessId() {
-     return GribNumbers.UNDEFINED;
+  public int getBackProcessId() {
+    return GribNumbers.UNDEFINED;
   }
 
   /**
    * Indicator of unit of time range (see Code table 4.4)
+   * 
    * @return unit of time range
    */
   public abstract int getTimeUnit();
@@ -177,6 +179,7 @@ public abstract class Grib2Pds {
   /**
    * Forecast time in units of getTimeUnit()
    * forecast time for points, should not be used for intervals
+   * 
    * @return Forecast time
    */
   public int getForecastTime() {
@@ -231,46 +234,50 @@ public abstract class Grib2Pds {
     return (template == 15);
   }
 
-  /* public int getPerturbationNumber() {
-    return GribNumbers.UNDEFINED;
-  }
+  /*
+   * public int getPerturbationNumber() {
+   * return GribNumbers.UNDEFINED;
+   * }
+   * 
+   * public int getPerturbationType() {
+   * return GribNumbers.UNDEFINED;
+   * }
+   * 
+   * public boolean isEnsembleDerived() {
+   * return false;
+   * }
+   * 
+   * public int getNumberEnsembleForecasts() {
+   * return GribNumbers.UNDEFINED;
+   * }
+   */
 
-  public int getPerturbationType() {
-    return GribNumbers.UNDEFINED;
-  }
-
-  public boolean isEnsembleDerived() {
-    return false;
-  }
-
-  public int getNumberEnsembleForecasts() {
-    return GribNumbers.UNDEFINED;
-  }   */
-
-  /* public double getProbabilityLowerLimit() {
-    return GribNumbers.UNDEFINED;
-  }
-
-  public double getProbabilityUpperLimit() {
-    return GribNumbers.UNDEFINED;
-  }
-
-  public int getProbabilityType() {
-    return GribNumbers.UNDEFINED;
-  }
-
-  public boolean isPercentile() {
-    return false;
-  }
-
-  public int getPercentileValue() {
-    return -1;
-  } */
+  /*
+   * public double getProbabilityLowerLimit() {
+   * return GribNumbers.UNDEFINED;
+   * }
+   * 
+   * public double getProbabilityUpperLimit() {
+   * return GribNumbers.UNDEFINED;
+   * }
+   * 
+   * public int getProbabilityType() {
+   * return GribNumbers.UNDEFINED;
+   * }
+   * 
+   * public boolean isPercentile() {
+   * return false;
+   * }
+   * 
+   * public int getPercentileValue() {
+   * return -1;
+   * }
+   */
 
 
   public void show(Formatter f) {
-    f.format("Grib2Pds{ id=%d-%d template=%d, forecastTime= %d timeUnit=%s vertLevel=%f}", getParameterCategory(), getParameterNumber(),
-            template, getForecastTime(), getTimeUnit(), getLevelValue1());
+    f.format("Grib2Pds{ id=%d-%d template=%d, forecastTime= %d timeUnit=%s vertLevel=%f}", getParameterCategory(),
+        getParameterNumber(), template, getForecastTime(), getTimeUnit(), getLevelValue1());
   }
 
   /**
@@ -286,7 +293,7 @@ public abstract class Grib2Pds {
   }
 
   public final int getInt4StartingAtOctet(int index) {
-    return GribNumbers.int4(getOctet(index), getOctet(index+1), getOctet(index+2), getOctet(index+3));
+    return GribNumbers.int4(getOctet(index), getOctet(index + 1), getOctet(index + 2), getOctet(index + 3));
   }
 
   public final int getOctetSigned(int index) {
@@ -305,7 +312,8 @@ public abstract class Grib2Pds {
   }
 
   public int getStatisticalProcessType() {
-    if (!(this instanceof PdsInterval)) return -1;
+    if (!(this instanceof PdsInterval))
+      return -1;
     PdsInterval pint = (PdsInterval) this;
     TimeInterval[] ti = pint.getTimeIntervals();
     if (ti.length > 0) {
@@ -318,33 +326,48 @@ public abstract class Grib2Pds {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   public interface PdsAerosol {
-    int getAerosolType() ;
+    int getAerosolType();
+
     double getAerosolIntervalSizeType();
+
     double getAerosolSize1();
+
     double getAerosolSize2();
+
     double getAerosolIntervalWavelengthType();
+
     double getAerosolWavelength1();
+
     double getAerosolWavelength2();
   }
 
   public interface PdsInterval {
     int getStatisticalProcessType();
+
     CalendarDate getIntervalTimeEnd();
+
     int getForecastTime();
+
     int getNumberTimeRanges();
+
     int getNumberMissing();
+
     TimeInterval[] getTimeIntervals();
+
     long getIntervalHash();
   }
 
   public interface PdsEnsemble {
     int getPerturbationType();
+
     int getPerturbationNumber();
+
     int getNumberEnsembleForecasts();
   }
 
   public interface PdsEnsembleDerived {
     int getDerivedForecastType();
+
     int getNumberEnsembleForecasts();
   }
 
@@ -354,24 +377,33 @@ public abstract class Grib2Pds {
 
   public interface PdsSpatialInterval {
     int getSpatialStatisticalProcessType();
+
     int getSpatialProcessType();
+
     int getNSpatialDataPoints();
   }
 
   public interface PdsProbability {
     int getForecastProbabilityNumber();
+
     int getNumberForecastProbabilities();
+
     int getProbabilityType();
+
     double getProbabilityLowerLimit();
+
     double getProbabilityUpperLimit();
+
     int getProbabilityHashcode();
+
     String getProbabilityName();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Product definition template 4.0 - analysis or forecast at a horizontal level or in a horizontal layer at a point in time
+   * Product definition template 4.0 - analysis or forecast at a horizontal level or in a horizontal layer at a point in
+   * time
    * Many other templates (1-14) have same fields in sameplaces, so can use this as the superclass.
    */
   private static class Grib2Pds0 extends Grib2Pds {
@@ -512,7 +544,8 @@ public abstract class Grib2Pds {
 
   /**
    * Product definition template 4.1 -
-   * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time
+   * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in
+   * time
    */
   private static class Grib2Pds1 extends Grib2Pds0 implements PdsEnsemble {
     Grib2Pds1(byte[] input) {
@@ -580,7 +613,8 @@ public abstract class Grib2Pds {
     }
 
     /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed field
+     * number of time range specifications describing the time intervals used to calculate the statistically-processed
+     * field
      *
      * @return number of time range
      */
@@ -612,7 +646,7 @@ public abstract class Grib2Pds {
       return crc32.getValue();
     }
 
-     public void show(Formatter f) {
+    public void show(Formatter f) {
       super.show(f);
       f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
       for (TimeInterval ti : getTimeIntervals()) {
@@ -628,7 +662,7 @@ public abstract class Grib2Pds {
    * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous
    * or non-continuous time interval
    */
-  private static class Grib2Pds61 extends Grib2Pds1 implements PdsInterval{
+  private static class Grib2Pds61 extends Grib2Pds1 implements PdsInterval {
 
     Grib2Pds61(byte[] input) {
       super(input);
@@ -653,7 +687,8 @@ public abstract class Grib2Pds {
     }
 
     /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed field
+     * number of time range specifications describing the time intervals used to calculate the statistically-processed
+     * field
      *
      * @return number of time range
      */
@@ -685,7 +720,7 @@ public abstract class Grib2Pds {
       return crc32.getValue();
     }
 
-     public void show(Formatter f) {
+    public void show(Formatter f) {
       super.show(f);
       f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
       for (TimeInterval ti : getTimeIntervals()) {
@@ -694,7 +729,7 @@ public abstract class Grib2Pds {
     }
   }
 
-  
+
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -744,13 +779,13 @@ public abstract class Grib2Pds {
    * continuous or non-continuous time interval
    */
   private static class Grib2Pds12 extends Grib2Pds2 implements PdsInterval {
-    //CalendarDate endInterval; // Date msecs
-    //int ft;
+    // CalendarDate endInterval; // Date msecs
+    // int ft;
 
     Grib2Pds12(byte[] input) {
       super(input);
-      //endInterval = calcTime(37);
-      //ft = makeForecastTime(endInterval, getTimeUnit());
+      // endInterval = calcTime(37);
+      // ft = makeForecastTime(endInterval, getTimeUnit());
     }
 
     /**
@@ -763,7 +798,8 @@ public abstract class Grib2Pds {
     }
 
     /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed field
+     * number of time range specifications describing the time intervals used to calculate the statistically-processed
+     * field
      *
      * @return number of time range
      */
@@ -807,31 +843,32 @@ public abstract class Grib2Pds {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Product definition template 4.5 – probability forecasts at a horizontal level or in a horizontal layer at a point in time
-   Octet No. Contents
-   10 Parameter category (see Code table 4.1)
-   11 Parameter number (see Code table 4.2)
-   12 Type of generating process (see Code table 4.3)
-   13 Background generating process identifier (defined by originating centre)
-   14 Forecast generating process identifier (defined by originating centre)
-   15–16 Hours after reference time of data cut-off (see Note)
-   17 Minutes after reference time of data cut-off
-   18 Indicator of unit of time range (see Code table 4.4)
-   19–22 Forecast time in units defined by octet 18
-   23 Type of first fixed surface (see Code table 4.5)
-   24 Scale factor of first fixed surface
-   25–28 Scaled value of first fixed surface
-   29 Type of second fixed surface (see Code table 4.5)
-   30 Scale factor of second fixed surface
-   31–34 Scaled value of second fixed surface
-   35 Forecast probability number
-   36 Total number of forecast probabilities
-   37 Probability type (see Code table 4.9)
-   38 Scale factor of lower limit
-   39–42 Scaled value of lower limit
-   43 Scale factor of upper limit
-   44–47 Scaled value of upper limit
-   Note: Hours greater than 65534 will be coded as 65534
+   * Product definition template 4.5 – probability forecasts at a horizontal level or in a horizontal layer at a point
+   * in time
+   * Octet No. Contents
+   * 10 Parameter category (see Code table 4.1)
+   * 11 Parameter number (see Code table 4.2)
+   * 12 Type of generating process (see Code table 4.3)
+   * 13 Background generating process identifier (defined by originating centre)
+   * 14 Forecast generating process identifier (defined by originating centre)
+   * 15–16 Hours after reference time of data cut-off (see Note)
+   * 17 Minutes after reference time of data cut-off
+   * 18 Indicator of unit of time range (see Code table 4.4)
+   * 19–22 Forecast time in units defined by octet 18
+   * 23 Type of first fixed surface (see Code table 4.5)
+   * 24 Scale factor of first fixed surface
+   * 25–28 Scaled value of first fixed surface
+   * 29 Type of second fixed surface (see Code table 4.5)
+   * 30 Scale factor of second fixed surface
+   * 31–34 Scaled value of second fixed surface
+   * 35 Forecast probability number
+   * 36 Total number of forecast probabilities
+   * 37 Probability type (see Code table 4.9)
+   * 38 Scale factor of lower limit
+   * 39–42 Scaled value of lower limit
+   * 43 Scale factor of upper limit
+   * 44–47 Scaled value of upper limit
+   * Note: Hours greater than 65534 will be coded as 65534
    */
   private static class Grib2Pds5 extends Grib2Pds0 implements PdsProbability {
 
@@ -921,18 +958,20 @@ public abstract class Grib2Pds {
       }
       return probHash;
     }
+
     int probHash = 0;
 
-        /*
-    Code Table Code table 4.9 - Probability type (4.9)
-        0: Probability of event below lower limit
-        1: Probability of event above upper limit
-        2: Probability of event between lower and upper limits (the range includes the lower limit but not the upper limit)
-        3: Probability of event above lower limit
-        4: Probability of event below upper limit
-       -1: Reserved
-       -1: Reserved for local use
-      255: Missing
+    /*
+     * Code Table Code table 4.9 - Probability type (4.9)
+     * 0: Probability of event below lower limit
+     * 1: Probability of event above upper limit
+     * 2: Probability of event between lower and upper limits (the range includes the lower limit but not the upper
+     * limit)
+     * 3: Probability of event above lower limit
+     * 4: Probability of event below upper limit
+     * -1: Reserved
+     * -1: Reserved for local use
+     * 255: Missing
      */
     @Override
     public String getProbabilityName() {
@@ -979,67 +1018,74 @@ public abstract class Grib2Pds {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Product definition template 4.9 – probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval
-   Octet No. Contents
-   10 Parameter category (see Code table 4.1)
-   11 Parameter number (see Code table 4.2)
-   12 Type of generating process (see Code table 4.3)
-   13 Background generating process identifier (defined by originating centre)
-   14 Forecast generating process identifier (defined by originating centre)
-   15–16 Hours after reference time of data cut-off (see Note 1)
-   17 Minutes after reference time of data cut-off
-   18 Indicator of unit of time range (see Code table 4.4)
-   19–22 Forecast time in units defined by octet 18 (see Note 2)
-   23 Type of first fixed surface (see Code table 4.5)
-   24 Scale factor of first fixed surface
-   25–28 Scaled value of first fixed surface
-   29 Type of second fixed surface (see Code table 4.5)
-   30 Scale factor of second fixed surface
-   31–34 Scaled value of second fixed surface
-   35 Forecast probability number
-   36 Total number of forecast probabilities
-   37 Probability type (see Code table 4.9)
-   38 Scale factor of lower limit
-   39–42 Scaled value of lower limit
-   43 Scale factor of upper limit
-   44–47 Scaled value of upper limit
-   48–49 Year of end of overall time interval
-   50 Month of end of overall time interval
-   51 Day of end of overall time interval
-   52 Hour of end of overall time interval
-   53 Minute of end of overall time interval
-   54 Second of end of overall time interval
-   55 n – number of time range specifications describing the time intervals used to calculate the statistically processed field
-   56–59 Total number of data values missing in the statistical process
-   60–71 Specification of the outermost (or only) time range over which statistical processing is done
-   60 Statistical process used to calculate the processed field from the field at each time increment during the time range (see Code table 4.10)
-   61 Type of time increment between successive fields used in the statistical processing (see Code table 4.11)
-   62 Indicator of unit of time for time range over which statistical processing is done (see Code table 4.4)
-   63–66 Length of the time range over which statistical processing is done, in units defined by the previous octet
-   67 Indicator of unit of time for the increment between the successive fields used (see Code table 4.4)
-   68–71 Time increment between successive fields, in units defined by the previous octet (see Note 3)
-   72–nn These octets are included only if n > 1, where nn = 59 + 12 x n
-   72–83 As octets 60 to 71, next innermost step of processing
-   84–nn Additional time range specifications, included in accordance with the value of n. Contents
-   as octets 60 to 71, repeated as necessary.
-   Notes:
-   (1) Hours greater than 65534 will be coded as 65534.
-   (2) The reference time in section 1 and the forecast time together define the beginning of the overall time interval.
-   (3) An increment of zero means that the statistical processing is the result of a continuous (or near continuous) process, not
-   the processing of a number of discrete samples. Examples of such continuous processes are the temperatures measured
-   by analogue maximum and minimum thermometers or thermographs, and the rainfall measured by a raingauge.
-   The reference and forecast times are successively set to their initial values plus or minus the increment, as defined by
-   the type of time increment (one of octets 46, 58, 70, ...). For all but the innermost (last) time range, the next inner range is
-   then processed using these reference and forecast times as the initial reference and forecast times.
+   * Product definition template 4.9 – probability forecasts at a horizontal level or in a horizontal layer in a
+   * continuous or non-continuous time interval
+   * Octet No. Contents
+   * 10 Parameter category (see Code table 4.1)
+   * 11 Parameter number (see Code table 4.2)
+   * 12 Type of generating process (see Code table 4.3)
+   * 13 Background generating process identifier (defined by originating centre)
+   * 14 Forecast generating process identifier (defined by originating centre)
+   * 15–16 Hours after reference time of data cut-off (see Note 1)
+   * 17 Minutes after reference time of data cut-off
+   * 18 Indicator of unit of time range (see Code table 4.4)
+   * 19–22 Forecast time in units defined by octet 18 (see Note 2)
+   * 23 Type of first fixed surface (see Code table 4.5)
+   * 24 Scale factor of first fixed surface
+   * 25–28 Scaled value of first fixed surface
+   * 29 Type of second fixed surface (see Code table 4.5)
+   * 30 Scale factor of second fixed surface
+   * 31–34 Scaled value of second fixed surface
+   * 35 Forecast probability number
+   * 36 Total number of forecast probabilities
+   * 37 Probability type (see Code table 4.9)
+   * 38 Scale factor of lower limit
+   * 39–42 Scaled value of lower limit
+   * 43 Scale factor of upper limit
+   * 44–47 Scaled value of upper limit
+   * 48–49 Year of end of overall time interval
+   * 50 Month of end of overall time interval
+   * 51 Day of end of overall time interval
+   * 52 Hour of end of overall time interval
+   * 53 Minute of end of overall time interval
+   * 54 Second of end of overall time interval
+   * 55 n – number of time range specifications describing the time intervals used to calculate the statistically
+   * processed field
+   * 56–59 Total number of data values missing in the statistical process
+   * 60–71 Specification of the outermost (or only) time range over which statistical processing is done
+   * 60 Statistical process used to calculate the processed field from the field at each time increment during the time
+   * range (see Code table 4.10)
+   * 61 Type of time increment between successive fields used in the statistical processing (see Code table 4.11)
+   * 62 Indicator of unit of time for time range over which statistical processing is done (see Code table 4.4)
+   * 63–66 Length of the time range over which statistical processing is done, in units defined by the previous octet
+   * 67 Indicator of unit of time for the increment between the successive fields used (see Code table 4.4)
+   * 68–71 Time increment between successive fields, in units defined by the previous octet (see Note 3)
+   * 72–nn These octets are included only if n > 1, where nn = 59 + 12 x n
+   * 72–83 As octets 60 to 71, next innermost step of processing
+   * 84–nn Additional time range specifications, included in accordance with the value of n. Contents
+   * as octets 60 to 71, repeated as necessary.
+   * Notes:
+   * (1) Hours greater than 65534 will be coded as 65534.
+   * (2) The reference time in section 1 and the forecast time together define the beginning of the overall time
+   * interval.
+   * (3) An increment of zero means that the statistical processing is the result of a continuous (or near continuous)
+   * process, not
+   * the processing of a number of discrete samples. Examples of such continuous processes are the temperatures measured
+   * by analogue maximum and minimum thermometers or thermographs, and the rainfall measured by a raingauge.
+   * The reference and forecast times are successively set to their initial values plus or minus the increment, as
+   * defined by
+   * the type of time increment (one of octets 46, 58, 70, ...). For all but the innermost (last) time range, the next
+   * inner range is
+   * then processed using these reference and forecast times as the initial reference and forecast times.
    */
   private static class Grib2Pds9 extends Grib2Pds5 implements PdsInterval {
     // CalendarDate endInterval; // Date msecs
-    //int ft;
+    // int ft;
 
     Grib2Pds9(byte[] input) {
       super(input);
-      //endInterval = calcTime(48);
-      //ft = makeForecastTime(endInterval, getTimeUnit());
+      // endInterval = calcTime(48);
+      // ft = makeForecastTime(endInterval, getTimeUnit());
     }
 
     /**
@@ -1051,13 +1097,16 @@ public abstract class Grib2Pds {
       return calcTime(48);
     }
 
-    /* @Override
-    public int getForecastTime() {
-      return ft;
-    } */
+    /*
+     * @Override
+     * public int getForecastTime() {
+     * return ft;
+     * }
+     */
 
     /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed field
+     * number of time range specifications describing the time intervals used to calculate the statistically-processed
+     * field
      *
      * @return number of time range
      */
@@ -1111,7 +1160,7 @@ public abstract class Grib2Pds {
 
     Grib2Pds8(byte[] input) {
       super(input);
-      //endInterval = calcTime(35);
+      // endInterval = calcTime(35);
     }
 
     /**
@@ -1125,7 +1174,8 @@ public abstract class Grib2Pds {
     }
 
     /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed field
+     * number of time range specifications describing the time intervals used to calculate the statistically-processed
+     * field
      *
      * @return number of time range
      */
@@ -1158,7 +1208,8 @@ public abstract class Grib2Pds {
       super.show(f);
       try {
         f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
-        for (TimeInterval ti : getTimeIntervals()) ti.show(f);
+        for (TimeInterval ti : getTimeIntervals())
+          ti.show(f);
       } catch (Throwable t) {
         f.format("%n   Grib2Pds8: endInterval error=%s%n", t.getMessage());
       }
@@ -1216,7 +1267,7 @@ public abstract class Grib2Pds {
 
     Grib2Pds10(byte[] input) {
       super(input);
-      //endInterval = calcTime(36);
+      // endInterval = calcTime(36);
     }
 
     /**
@@ -1229,7 +1280,8 @@ public abstract class Grib2Pds {
     }
 
     /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed field
+     * number of time range specifications describing the time intervals used to calculate the statistically-processed
+     * field
      *
      * @return number of time range
      */
@@ -1269,7 +1321,7 @@ public abstract class Grib2Pds {
   /**
    * Product definition template 4.30 - satellite product
    *
-   * @deprecated  4.31 should be used
+   * @deprecated 4.31 should be used
    */
   private static class Grib2Pds30 extends Grib2Pds {
 
@@ -1343,109 +1395,111 @@ public abstract class Grib2Pds {
     public double value; // value of central wave number of band nb (units: m**-1)
   }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Product definition template 4.31 - satellite product
-     */
-    private static class Grib2Pds31 extends Grib2Pds {
+  /**
+   * Product definition template 4.31 - satellite product
+   */
+  private static class Grib2Pds31 extends Grib2Pds {
 
-        static final int octetsPerBand = 11;
+    static final int octetsPerBand = 11;
 
-        Grib2Pds31(byte[] input) {
-            super(input);
-        }
-
-        // LOOK - could put this into a dummy superclass in case others need
-
-        @Override
-        public int getTimeUnit() {
-            return 0;
-        }
-
-        @Override
-        public int getForecastTime() {
-            return 0;
-        }
-
-        /**
-         * Observation generating process identifier (defined by originating centre)
-         *
-         * @return GenProcess
-         */
-        public int getGenProcessId() {
-            return getOctet(13);
-        }
-
-        /**
-         * Number of contributing spectral bands (NB)
-         *
-         * @return Number of contributing spectral
-         */
-        public int getNumSatelliteBands() {
-            return getOctet(14);
-        }
-
-        /**
-         * SatelliteBand
-         *
-         * @return SatelliteBands
-         */
-        public SatelliteBand[] getSatelliteBands() {
-            int nb = getNumSatelliteBands();
-            SatelliteBand[] result = new SatelliteBand[nb];
-            int pos = 15;
-            for (int i = 0; i < nb; i++) {
-                SatelliteBand sb = new SatelliteBand();
-                sb.number = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
-                sb.series = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
-                sb.instrumentType = GribNumbers.int2(getOctet(pos + 4), getOctet(pos + 5));
-                int scaleFactor = getOctetSigned(pos + 6);
-                int svalue = GribNumbers.int4(getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9), getOctet(pos +  10));
-                sb.value = applyScaleFactor(scaleFactor, svalue);
-                pos += octetsPerBand;
-                result[i] = sb;
-            }
-            return result;
-        }
-
-        public int templateLength() {
-            return 14 + getNumSatelliteBands() * octetsPerBand;
-        }
+    Grib2Pds31(byte[] input) {
+      super(input);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
+    // LOOK - could put this into a dummy superclass in case others need
 
-  /* Product definition template 4.48 – analysis or forecast at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol
-  Octet No. Contents
-  10 Parameter category (see Code table 4.1)
-  11 Parameter number (see Code table 4.2)
-  12–13 Aerosol type (see Common Code table C–14)
-  14 Type of interval for first and second size (see Code table 4.91)
-  15 Scale factor of first size
-  16–19 Scaled value of first size in metres
-  20 Scale factor of second size
-  21–24 Scaled value of second size in metres
-  25 Type of interval for first and second wavelength (see Code table 4.91)
-  26 Scale factor of first wavelength
-  27–30 Scaled value of first wavelength in metres
-  31 Scale factor of second wavelength
-  32–35 Scaled value of second wavelength in metres
-  36 Type of generating process (see Code table 4.3)
-  37 Background generating process identifier (defined by originating centre)
-  38 Analysis or forecast generating process identifier (defined by originating centre)
-  39–40 Hours of observational data cut-off after reference time (see Note)
-  41 Minutes of observational data cut-off after reference time
-  42 Indicator of unit of time range (see Code table 4.4)
-  43–46 Forecast time in units defined by octet 42
-  47 Type of first fixed surface (see Code table 4.5)
-  48 Scale factor of first fixed surface
-  49–52 Scaled value of first fixed surface
-  53 Type of second fixed surface (see Code table 4.5)
-  54 Scale factor of second fixed surface
-  55–58 Scaled value of second fixed surface
-  Note: Hours greater than 65534 will be coded as 65534.
-  */
+    @Override
+    public int getTimeUnit() {
+      return 0;
+    }
+
+    @Override
+    public int getForecastTime() {
+      return 0;
+    }
+
+    /**
+     * Observation generating process identifier (defined by originating centre)
+     *
+     * @return GenProcess
+     */
+    public int getGenProcessId() {
+      return getOctet(13);
+    }
+
+    /**
+     * Number of contributing spectral bands (NB)
+     *
+     * @return Number of contributing spectral
+     */
+    public int getNumSatelliteBands() {
+      return getOctet(14);
+    }
+
+    /**
+     * SatelliteBand
+     *
+     * @return SatelliteBands
+     */
+    public SatelliteBand[] getSatelliteBands() {
+      int nb = getNumSatelliteBands();
+      SatelliteBand[] result = new SatelliteBand[nb];
+      int pos = 15;
+      for (int i = 0; i < nb; i++) {
+        SatelliteBand sb = new SatelliteBand();
+        sb.number = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
+        sb.series = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
+        sb.instrumentType = GribNumbers.int2(getOctet(pos + 4), getOctet(pos + 5));
+        int scaleFactor = getOctetSigned(pos + 6);
+        int svalue = GribNumbers.int4(getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9), getOctet(pos + 10));
+        sb.value = applyScaleFactor(scaleFactor, svalue);
+        pos += octetsPerBand;
+        result[i] = sb;
+      }
+      return result;
+    }
+
+    public int templateLength() {
+      return 14 + getNumSatelliteBands() * octetsPerBand;
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /*
+   * Product definition template 4.48 – analysis or forecast at a horizontal level or in a horizontal layer at a point
+   * in time for optical properties of aerosol
+   * Octet No. Contents
+   * 10 Parameter category (see Code table 4.1)
+   * 11 Parameter number (see Code table 4.2)
+   * 12–13 Aerosol type (see Common Code table C–14)
+   * 14 Type of interval for first and second size (see Code table 4.91)
+   * 15 Scale factor of first size
+   * 16–19 Scaled value of first size in metres
+   * 20 Scale factor of second size
+   * 21–24 Scaled value of second size in metres
+   * 25 Type of interval for first and second wavelength (see Code table 4.91)
+   * 26 Scale factor of first wavelength
+   * 27–30 Scaled value of first wavelength in metres
+   * 31 Scale factor of second wavelength
+   * 32–35 Scaled value of second wavelength in metres
+   * 36 Type of generating process (see Code table 4.3)
+   * 37 Background generating process identifier (defined by originating centre)
+   * 38 Analysis or forecast generating process identifier (defined by originating centre)
+   * 39–40 Hours of observational data cut-off after reference time (see Note)
+   * 41 Minutes of observational data cut-off after reference time
+   * 42 Indicator of unit of time range (see Code table 4.4)
+   * 43–46 Forecast time in units defined by octet 42
+   * 47 Type of first fixed surface (see Code table 4.5)
+   * 48 Scale factor of first fixed surface
+   * 49–52 Scaled value of first fixed surface
+   * 53 Type of second fixed surface (see Code table 4.5)
+   * 54 Scale factor of second fixed surface
+   * 55–58 Scaled value of second fixed surface
+   * Note: Hours greater than 65534 will be coded as 65534.
+   */
 
   private static class Grib2Pds48 extends Grib2Pds implements PdsAerosol {
 
@@ -1453,120 +1507,120 @@ public abstract class Grib2Pds {
       super(input);
     }
 
-    //   12–13 Aerosol type (see Common Code table C–14)
+    // 12–13 Aerosol type (see Common Code table C–14)
     public int getAerosolType() {
       return GribNumbers.uint2(getOctet(12), getOctet(13));
     }
 
-    //  14 Type of interval for first and second size (see Code table 4.91)
+    // 14 Type of interval for first and second size (see Code table 4.91)
     public double getAerosolIntervalSizeType() {
       return getOctet(14);
     }
 
-    //  15 Scale factor of first size
-    //  16–19 Scaled value of first size in metres
+    // 15 Scale factor of first size
+    // 16–19 Scaled value of first size in metres
     public double getAerosolSize1() {
       return getScaledValue(15);
     }
 
-    //  20 Scale factor of second size
-    //  21–24 Scaled value of second size in metres
+    // 20 Scale factor of second size
+    // 21–24 Scaled value of second size in metres
     public double getAerosolSize2() {
       return getScaledValue(20);
     }
 
-    //  25 Type of interval for first and second wavelength (see Code table 4.91)
+    // 25 Type of interval for first and second wavelength (see Code table 4.91)
     public double getAerosolIntervalWavelengthType() {
       return getOctet(25);
     }
 
-    //  26 Scale factor of first wavelength
-    //  27–30 Scaled value of first wavelength in metres
+    // 26 Scale factor of first wavelength
+    // 27–30 Scaled value of first wavelength in metres
     public double getAerosolWavelength1() {
       return getScaledValue(26);
     }
 
-    //  31 Scale factor of second wavelength
-    //  32–35 Scaled value of second wavelength in metres
+    // 31 Scale factor of second wavelength
+    // 32–35 Scaled value of second wavelength in metres
     public double getAerosolWavelength2() {
       return getScaledValue(31);
     }
 
-    //  36 Type of generating process (see Code table 4.3)
+    // 36 Type of generating process (see Code table 4.3)
     @Override
     public int getGenProcessType() {
       return getOctet(36);
     }
 
-    //  37 Background generating process identifier (defined by originating centre)
+    // 37 Background generating process identifier (defined by originating centre)
     @Override
     public int getBackProcessId() {
       return getOctet(37);
     }
 
-    //  38 Analysis or forecast generating process identifier (defined by originating centre)
+    // 38 Analysis or forecast generating process identifier (defined by originating centre)
     @Override
     public int getGenProcessId() {
       return getOctet(38);
     }
 
-    //  39–40 Hours of observational data cut-off after reference time (see Note)
-    //  Note: Hours greater than 65534 will be coded as 65534.
+    // 39–40 Hours of observational data cut-off after reference time (see Note)
+    // Note: Hours greater than 65534 will be coded as 65534.
     public int getHoursAfterCutoff() {
       return GribNumbers.int2(getOctet(39), getOctet(40));
     }
 
-    //  41 Minutes of observational data cut-off after reference time
+    // 41 Minutes of observational data cut-off after reference time
     public int getMinutesAfterCutoff() {
       return getOctet(41);
     }
 
-    //  42 Indicator of unit of time range (see Code table 4.4)
+    // 42 Indicator of unit of time range (see Code table 4.4)
     @Override
     public int getTimeUnit() {
       return getOctet(42);
     }
 
-    //  43–46 Forecast time in units defined by octet 42
+    // 43–46 Forecast time in units defined by octet 42
     public int getForecastTime() {
       return GribNumbers.int4(getOctet(43), getOctet(44), getOctet(45), getOctet(46));
     }
 
-    //  47 Type of first fixed surface (see Code table 4.5)
+    // 47 Type of first fixed surface (see Code table 4.5)
     @Override
     public int getLevelType1() {
       return getOctet(47);
     }
 
-    //  48 Scale factor of first fixed surface
+    // 48 Scale factor of first fixed surface
     @Override
     public int getLevelScale1() {
       return getOctet(48);
     }
 
-    //  49–52 Scaled value of first fixed surface
+    // 49–52 Scaled value of first fixed surface
     @Override
     public double getLevelValue1() {
       return getScaledValue(48);
     }
 
-    //  53 Type of second fixed surface (see Code table 4.5)
+    // 53 Type of second fixed surface (see Code table 4.5)
     @Override
     public int getLevelType2() {
       return getOctet(53);
     }
 
-    //  54 Scale factor of second fixed surface
+    // 54 Scale factor of second fixed surface
     @Override
     public int getLevelScale2() {
       return getOctet(54);
     }
 
-     // 55–58 Scaled value of second fixed surface
-     @Override
-     public double getLevelValue2() {
-       return getScaledValue(54);
-     }
+    // 55–58 Scaled value of second fixed surface
+    @Override
+    public double getLevelValue2() {
+      return getScaledValue(54);
+    }
 
     public int templateLength() {
       return 58;
@@ -1589,11 +1643,11 @@ public abstract class Grib2Pds {
     if ((year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0))
       return CalendarDate.UNKNOWN;
 
-   // href.t00z.prob.f36.grib2
-     if (hour > 23) {
-       day += (hour/24);
-       hour = hour % 24;
-     }
+    // href.t00z.prob.f36.grib2
+    if (hour > 23) {
+      day += (hour / 24);
+      hour = hour % 24;
+    }
 
     return CalendarDate.of(null, year, month, day, hour, minute, second);
   }
@@ -1603,7 +1657,7 @@ public abstract class Grib2Pds {
    *
    * @param scale signed scale factor
    * @param value apply to this value
-   * @return   value ^ -scale
+   * @return value ^ -scale
    */
   double applyScaleFactor(int scale, int value) {
     return ((scale == 0) || (scale == 255) || (value == 0)) ? value : value * Math.pow(10, -scale);
@@ -1616,64 +1670,85 @@ public abstract class Grib2Pds {
       ti.statProcessType = getOctet(startIndex++);
       ti.timeIncrementType = getOctet(startIndex++);
       ti.timeRangeUnit = getOctet(startIndex++);
-      ti.timeRangeLength = GribNumbers.int4(getOctet(startIndex++), getOctet(startIndex++), getOctet(startIndex++), getOctet(startIndex++));
+      ti.timeRangeLength = GribNumbers.int4(getOctet(startIndex++), getOctet(startIndex++), getOctet(startIndex++),
+          getOctet(startIndex++));
       ti.timeIncrementUnit = getOctet(startIndex++);
-      ti.timeIncrement = GribNumbers.int4(getOctet(startIndex++), getOctet(startIndex++), getOctet(startIndex++), getOctet(startIndex++));
+      ti.timeIncrement = GribNumbers.int4(getOctet(startIndex++), getOctet(startIndex++), getOctet(startIndex++),
+          getOctet(startIndex++));
       result[i] = ti;
     }
     return result;
   }
 
   public static class TimeInterval {
-    public int statProcessType; // (code table 4.10) Statistical process used to calculate the processed field from the field at each time increment during the time range
-    public int timeIncrementType;  // (code table 4.11) Type of time increment between successive fields used in the statistical processing<
-    public int timeRangeUnit;  // (code table 4.4) Indicator of unit of time for time range over which statistical processing is done
-    public int timeRangeLength; // Length of the time range over which statistical processing is done, in units defined by the previous octet
-    public int timeIncrementUnit; // (code table 4.4) Indicator of unit of time for the increment between the successive fields used
+    public int statProcessType; // (code table 4.10) Statistical process used to calculate the processed field from the
+                                // field at each time increment during the time range
+    public int timeIncrementType; // (code table 4.11) Type of time increment between successive fields used in the
+                                  // statistical processing<
+    public int timeRangeUnit; // (code table 4.4) Indicator of unit of time for time range over which statistical
+                              // processing is done
+    public int timeRangeLength; // Length of the time range over which statistical processing is done, in units defined
+                                // by the previous octet
+    public int timeIncrementUnit; // (code table 4.4) Indicator of unit of time for the increment between the successive
+                                  // fields used
     public int timeIncrement; // Time increment between successive fields, in units defined by the previous octet
 
     public void show(Formatter f) {
-      f.format("  TimeInterval: statProcessType= %d, timeIncrementType= %d, timeRangeUnit= %d, timeRangeLength= %d, timeIncrementUnit= %d, timeIncrement=%d%n",
-              statProcessType, timeIncrementType, timeRangeUnit, timeRangeLength, timeIncrementUnit, timeIncrement);
+      f.format(
+          "  TimeInterval: statProcessType= %d, timeIncrementType= %d, timeRangeUnit= %d, timeRangeLength= %d, timeIncrementUnit= %d, timeIncrement=%d%n",
+          statProcessType, timeIncrementType, timeRangeUnit, timeRangeLength, timeIncrementUnit, timeIncrement);
     }
   }
 }
 
 /*
-
-Hi John,
-
-I did create the degrib program, but I'm fairly positive you're using your own software and are just wondering about how to interpret NDFD's encoding of the valid time.  The correct people to answer that would be the people who encoded the messages which is why I've included nws.ndfd@noaa.gov.  There probably should be a FAQ on this subject.
-
-As you point out, the reference time (Ref) is easy (The reference time is 2010-09-21T12:00:00Z)
-The forecast time (ForeT) can similarly be read (Forecast time in units defined by previous octet == 6) (Presumably the earlier units was hours)
-The time range (range) also can be read (51: Length of the time range over which statistical processing is done, in units defined by the previous octet == 6)
-
-So now the question is what does one do with these?  We know we have a 6 hour interval which starts or stops around Ref + ForeT.  So we could either have:
-A) End of Interval = Ref + ForeT + range; Begin of Interval = Ref + ForeT
-or
-B) End of Interval = Ref + ForeT; Begin of Interval = Ref  + ForeT - range
-
-The way NDFD decided to encode it is with B).  The reasoning was that the valid times are always the end of the period, so B made more sense to the folks encoding the NDFD.  Also, the logic went, if decoders were confused, then the "end of overall time interval" would clarify whether A) or B) was chosen.
-
-So now we go back to the note:
-> (2) The reference time in section 1 and the forecast time together
->      define the beginning of the overall time interval.
-and try to determine whether the people encoding the message were in error.  It specifies that the two values together "define" the beginning, but it doesn't say that "the sum of those two values equals the beginning of the overall time interval".  If you think that is funky logic, consider the statement that "Pressure and Volume together define Temperature".  Does that mean P + V = T?  No, it meas P*V / nR = T.  So note 2, as written, unfortunately has a lot of wiggle room.
-
-The result is that when I was writing degrib, I couldn't trust either equation A) or B), so I went with a simpler method... I simply read the end of the interval.  If there was a range I used:
-
-End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
-C1) End of Interval = EI;      Begin of Interval = EI - range
-
-and if there was no interval then I used:
-C2) End of Interval = Begin of Interval = Ref + ForeT.
-
-Using equations C1 and C2 has the elegance of being simple, and not having to convert the word 'define' into an equation.
-
-Does that help?
-
-Arthur
-Arthur.Taylor@noaa.gov
-
+ * 
+ * Hi John,
+ * 
+ * I did create the degrib program, but I'm fairly positive you're using your own software and are just wondering about
+ * how to interpret NDFD's encoding of the valid time. The correct people to answer that would be the people who encoded
+ * the messages which is why I've included nws.ndfd@noaa.gov. There probably should be a FAQ on this subject.
+ * 
+ * As you point out, the reference time (Ref) is easy (The reference time is 2010-09-21T12:00:00Z)
+ * The forecast time (ForeT) can similarly be read (Forecast time in units defined by previous octet == 6) (Presumably
+ * the earlier units was hours)
+ * The time range (range) also can be read (51: Length of the time range over which statistical processing is done, in
+ * units defined by the previous octet == 6)
+ * 
+ * So now the question is what does one do with these? We know we have a 6 hour interval which starts or stops around
+ * Ref + ForeT. So we could either have:
+ * A) End of Interval = Ref + ForeT + range; Begin of Interval = Ref + ForeT
+ * or
+ * B) End of Interval = Ref + ForeT; Begin of Interval = Ref + ForeT - range
+ * 
+ * The way NDFD decided to encode it is with B). The reasoning was that the valid times are always the end of the
+ * period, so B made more sense to the folks encoding the NDFD. Also, the logic went, if decoders were confused, then
+ * the "end of overall time interval" would clarify whether A) or B) was chosen.
+ * 
+ * So now we go back to the note:
+ * > (2) The reference time in section 1 and the forecast time together
+ * > define the beginning of the overall time interval.
+ * and try to determine whether the people encoding the message were in error. It specifies that the two values together
+ * "define" the beginning, but it doesn't say that
+ * "the sum of those two values equals the beginning of the overall time interval". If you think that is funky logic,
+ * consider the statement that "Pressure and Volume together define Temperature". Does that mean P + V = T? No, it meas
+ * P*V / nR = T. So note 2, as written, unfortunately has a lot of wiggle room.
+ * 
+ * The result is that when I was writing degrib, I couldn't trust either equation A) or B), so I went with a simpler
+ * method... I simply read the end of the interval. If there was a range I used:
+ * 
+ * End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
+ * C1) End of Interval = EI; Begin of Interval = EI - range
+ * 
+ * and if there was no interval then I used:
+ * C2) End of Interval = Begin of Interval = Ref + ForeT.
+ * 
+ * Using equations C1 and C2 has the elegance of being simple, and not having to convert the word 'define' into an
+ * equation.
+ * 
+ * Does that help?
+ * 
+ * Arthur
+ * Arthur.Taylor@noaa.gov
+ * 
  */

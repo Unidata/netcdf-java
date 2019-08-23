@@ -20,7 +20,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
@@ -35,7 +34,7 @@ public class TestH5OddTypes {
 
   @AfterClass
   static public void after() {
-    H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
+    H5header.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 
   @Test
@@ -81,17 +80,19 @@ public class TestH5OddTypes {
     }
   }
 
-  /* public void testTime() throws IOException {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("support/time.h5");
-
-    Variable v = ncfile.findVariable("dset");
-    Array data = v.read();
-    NCdump.printArray(data, "dset", System.out, null);
-    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
-    ncfile.close();
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
-  }  */
+  /*
+   * public void testTime() throws IOException {
+   * H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+   * NetcdfFile ncfile = TestH5.openH5("support/time.h5");
+   * 
+   * Variable v = ncfile.findVariable("dset");
+   * Array data = v.read();
+   * NCdump.printArray(data, "dset", System.out, null);
+   * System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
+   * ncfile.close();
+   * H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+   * }
+   */
 
   // not supporting bitfield, poor documentation
   @Test
@@ -118,7 +119,7 @@ public class TestH5OddTypes {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testAttString() throws InvalidRangeException, IOException {
-    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("support/attstr.h5")) {
     }
   }
@@ -159,7 +160,7 @@ public class TestH5OddTypes {
 
   @Test
   public void testMisc() {
-    byte[] heapId = new byte[]{0, 22, 32, 0, 0, 0, -19, 5};
+    byte[] heapId = new byte[] {0, 22, 32, 0, 0, 0, -19, 5};
     int offset = makeIntFromBytes(heapId, 1, 5);
     System.out.printf("%d%n", offset);
   }

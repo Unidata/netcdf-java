@@ -55,16 +55,16 @@ public final class UnknownUnit extends BaseUnit {
     return unit;
   }
 
-    /*
-     * From Unit:
-     */
+  /*
+   * From Unit:
+   */
 
   /**
    * Indicates if this unit is semantically identical to an object.
    *
    * @param object The object.
    * @return <code>true</code> if and only if this instance is semantically
-   * identical to the object.
+   *         identical to the object.
    */
   @Override
   public boolean equals(final Object object) {

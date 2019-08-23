@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -49,55 +49,55 @@ import java.lang.reflect.*;
 
 public abstract class Tools {
 
-    //#*******************************************************************************
+  // #*******************************************************************************
 
-    /**
-     * Show me lots of stuff about the passed in object
-     */
-    public static void probeObject(Object o) {
+  /**
+   * Show me lots of stuff about the passed in object
+   */
+  public static void probeObject(Object o) {
 
-        Class c = o.getClass();
+    Class c = o.getClass();
 
-        Class interfaces[] = c.getInterfaces();
-        Class parent = c.getSuperclass();
-        Method m[] = c.getMethods();
+    Class interfaces[] = c.getInterfaces();
+    Class parent = c.getSuperclass();
+    Method m[] = c.getMethods();
 
-        System.out.println("********* OBJECT PROBE *********");
-        System.out.println("Class Name:  " + c.getName());
-        System.out.println("Super Class: " + parent.getName());
-        System.out.println("Interfaces: ");
-        for (int i = 0; i < interfaces.length; i++) {
-            System.out.println("    " + interfaces[i].getName());
-        }
-
-
-        System.out.println("Methods:");
-        for (int i = 0; i < m.length; i++) {
-
-
-            Class params[] = m[i].getParameterTypes();
-            Class excepts[] = m[i].getExceptionTypes();
-            Class ret = m[i].getReturnType();
-
-            System.out.print("    " + ret.getName() + "  " + m[i].getName() + "(");
-
-            for (int j = 0; j < params.length; j++) {
-                if (j > 0)
-                    System.out.print(", ");
-                System.out.print(params[j].getName());
-            }
-            System.out.print(")  throws ");
-            for (int j = 0; j < excepts.length; j++) {
-                if (j > 0)
-                    System.out.print(", ");
-                System.out.print(excepts[j].getName());
-            }
-            System.out.println("");
-        }
-        System.out.println("******************");
-
+    System.out.println("********* OBJECT PROBE *********");
+    System.out.println("Class Name:  " + c.getName());
+    System.out.println("Super Class: " + parent.getName());
+    System.out.println("Interfaces: ");
+    for (int i = 0; i < interfaces.length; i++) {
+      System.out.println("    " + interfaces[i].getName());
     }
-    //#*******************************************************************************
+
+
+    System.out.println("Methods:");
+    for (int i = 0; i < m.length; i++) {
+
+
+      Class params[] = m[i].getParameterTypes();
+      Class excepts[] = m[i].getExceptionTypes();
+      Class ret = m[i].getReturnType();
+
+      System.out.print("    " + ret.getName() + "  " + m[i].getName() + "(");
+
+      for (int j = 0; j < params.length; j++) {
+        if (j > 0)
+          System.out.print(", ");
+        System.out.print(params[j].getName());
+      }
+      System.out.print(")  throws ");
+      for (int j = 0; j < excepts.length; j++) {
+        if (j > 0)
+          System.out.print(", ");
+        System.out.print(excepts[j].getName());
+      }
+      System.out.println("");
+    }
+    System.out.println("******************");
+
+  }
+  // #*******************************************************************************
 
 
 }

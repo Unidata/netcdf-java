@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Section;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.nc2.write.Nc4ChunkingStrategy;
-
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
@@ -27,12 +26,12 @@ public class TestChunkingIndex {
 
   @Test
   public void testChunkingIndex() {
-    testOne(new int[]{100,100}, 500);
-    testOne(new int[]{100,100}, 499);
-    testOne(new int[]{100,100}, 100*100);
-    testOne(new int[]{77, 3712, 2332}, 500*1000);
-    testOne(new int[]{77, 3712, 2332}, 50*1000);
-    testOne(new int[]{77, 3712, 2332}, 5*1000);
+    testOne(new int[] {100, 100}, 500);
+    testOne(new int[] {100, 100}, 499);
+    testOne(new int[] {100, 100}, 100 * 100);
+    testOne(new int[] {77, 3712, 2332}, 500 * 1000);
+    testOne(new int[] {77, 3712, 2332}, 50 * 1000);
+    testOne(new int[] {77, 3712, 2332}, 5 * 1000);
   }
 
   private void testOne(int[] shape, long maxChunkElems) {
@@ -48,7 +47,8 @@ public class TestChunkingIndex {
 
   private void show(String what, int[] result) {
     System.out.printf("%s= (", what);
-    for (int r : result) System.out.printf("%d,", r);
+    for (int r : result)
+      System.out.printf("%d,", r);
     System.out.printf(")%n");
   }
 
@@ -59,16 +59,16 @@ public class TestChunkingIndex {
     Dimension d20 = new Dimension("20", 20);
     Dimension dun = new Dimension("u", 0, true, true, false);
 
-    testOneStrategy(new Dimension[]{dun, d10, d20}, 50, 40);
-    testOneStrategy(new Dimension[]{dun, d10, d20}, 500, 400);
-    testOneStrategy(new Dimension[]{dun}, 500, 500);
-    testOneStrategy(new Dimension[]{dun, d2}, 101, 100);
-    testOneStrategy(new Dimension[]{dun, d10}, 777, 770);
-    testOneStrategy(new Dimension[]{dun, dun}, 100, 100);
-    testOneStrategy(new Dimension[]{dun, d10, dun}, 100, 90);
-    testOneStrategy(new Dimension[]{dun, dun, d2}, 100, 98);
-    testOneStrategy(new Dimension[]{dun, dun, d2}, 400, 392);
-    testOneStrategy(new Dimension[]{dun, dun, dun}, 400, 343);
+    testOneStrategy(new Dimension[] {dun, d10, d20}, 50, 40);
+    testOneStrategy(new Dimension[] {dun, d10, d20}, 500, 400);
+    testOneStrategy(new Dimension[] {dun}, 500, 500);
+    testOneStrategy(new Dimension[] {dun, d2}, 101, 100);
+    testOneStrategy(new Dimension[] {dun, d10}, 777, 770);
+    testOneStrategy(new Dimension[] {dun, dun}, 100, 100);
+    testOneStrategy(new Dimension[] {dun, d10, dun}, 100, 90);
+    testOneStrategy(new Dimension[] {dun, dun, d2}, 100, 98);
+    testOneStrategy(new Dimension[] {dun, dun, d2}, 400, 392);
+    testOneStrategy(new Dimension[] {dun, dun, dun}, 400, 343);
   }
 
   private void testOneStrategy(Dimension[] shape, int maxChunkElems, long expectSize) {
@@ -84,13 +84,14 @@ public class TestChunkingIndex {
     long shapeSize = new Section(result).computeSize();
     System.out.printf(" size = %d%n%n", shapeSize);
     assert shapeSize <= maxChunkElems;
-    assert shapeSize >= maxChunkElems/2;
-    assert shapeSize == expectSize : shapeSize +" != "+ expectSize;
+    assert shapeSize >= maxChunkElems / 2;
+    assert shapeSize == expectSize : shapeSize + " != " + expectSize;
   }
 
   private void show(String what, List<Dimension> dims) {
     System.out.printf("%s= (", what);
-    for (Dimension r : dims) System.out.printf("%d,", r.getLength());
+    for (Dimension r : dims)
+      System.out.printf("%d,", r.getLength());
     System.out.printf(")%n");
   }
 
@@ -101,7 +102,7 @@ public class TestChunkingIndex {
     Dimension d20 = new Dimension("20", 20);
     Dimension dun = new Dimension("u", 0, true, true, false);
 
-    testRealStrategy(new Dimension[]{dun}, 8);
+    testRealStrategy(new Dimension[] {dun}, 8);
   }
 
   private void testRealStrategy(Dimension[] shape, int elemSize) {
@@ -115,7 +116,7 @@ public class TestChunkingIndex {
     long shapeSize = new Section(result).computeSize();
     System.out.printf(" size = %d%n%n", shapeSize);
     int expectSize = chunker.getMinChunksize() / elemSize;
-    assert shapeSize == expectSize : shapeSize +" != "+ expectSize;
+    assert shapeSize == expectSize : shapeSize + " != " + expectSize;
   }
 
 

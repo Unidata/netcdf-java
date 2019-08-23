@@ -1,15 +1,15 @@
 package ucar.nc2.ft2.simpgeometry;
 
 public enum GeometryType {
-    POINT("Point"), LINE("Line"), POLYGON("Polygon");
+  POINT("Point"), LINE("Line"), POLYGON("Polygon");
 
-    private String description;
+  private String description;
 
-    public String getDescription() {
-        return this.description;
-    }
+  public String getDescription() {
+    return this.description;
+  }
 
-    GeometryType(String description) {
-        this.description = description;
-    }
+  GeometryType(String description) {
+    this.description = description;
+  }
 }

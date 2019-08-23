@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -42,7 +42,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 import java.util.*;
@@ -72,7 +71,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
 
   // do not use after building
   public Map<String, Object> getFlds() {
-    if (immutable) throw new UnsupportedOperationException();
+    if (immutable)
+      throw new UnsupportedOperationException();
     return flds;
   }
 
@@ -84,14 +84,16 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     if (immutable)
       throw new UnsupportedOperationException();
     if (fldValue != null)
-      flds.put( fldName, fldValue);
+      flds.put(fldName, fldValue);
     else
       flds.remove(fldName);
   }
 
   public void addToList(String fldName, Object fldValue) {
-    if (immutable) throw new UnsupportedOperationException();
-    if (fldValue != null) DatasetBuilder.addToList(flds, fldName, fldValue);
+    if (immutable)
+      throw new UnsupportedOperationException();
+    if (fldValue != null)
+      DatasetBuilder.addToList(flds, fldName, fldValue);
   }
 
   public void finish() {
@@ -111,7 +113,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
   public List<Object> getLocalFieldAsList(String fldName) {
     Object value = flds.get(fldName);
     if (value != null) {
-      if (value instanceof List) return (List<Object>) value;
+      if (value instanceof List)
+        return (List<Object>) value;
       List<Object> result = new ArrayList<>(1);
       result.add(value);
       return result;
@@ -209,10 +212,12 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
    */
   @Immutable
   static public class GeospatialCoverage {
-    /* static private GeospatialRange defaultEastwest = new GeospatialRange(0.0, 0.0, Double.NaN, CDM.LON_UNITS);
-    static private GeospatialRange defaultNorthsouth = new GeospatialRange(0.0, 0.0, Double.NaN, CDM.LAT_UNITS);
-    static private GeospatialRange defaultUpdown = new GeospatialRange(0.0, 0.0, Double.NaN, "km");
-    static private GeospatialCoverage empty = new GeospatialCoverage();  */
+    /*
+     * static private GeospatialRange defaultEastwest = new GeospatialRange(0.0, 0.0, Double.NaN, CDM.LON_UNITS);
+     * static private GeospatialRange defaultNorthsouth = new GeospatialRange(0.0, 0.0, Double.NaN, CDM.LAT_UNITS);
+     * static private GeospatialRange defaultUpdown = new GeospatialRange(0.0, 0.0, Double.NaN, "km");
+     * static private GeospatialCoverage empty = new GeospatialCoverage();
+     */
 
     public final GeospatialRange eastwest, northsouth, updown;
     public final boolean isGlobal;
@@ -220,10 +225,11 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final List<Vocab> names;
 
     // constructor from catalog
-    public GeospatialCoverage(GeospatialRange eastwest, GeospatialRange northsouth, GeospatialRange updown, List<Vocab> names, String zpositive) {
-      this.eastwest = eastwest; //  : new Range(defaultEastwest);
+    public GeospatialCoverage(GeospatialRange eastwest, GeospatialRange northsouth, GeospatialRange updown,
+        List<Vocab> names, String zpositive) {
+      this.eastwest = eastwest; // : new Range(defaultEastwest);
       this.northsouth = northsouth; // : new Range(defaultNorthsouth);
-      this.updown = updown; //  : new Range(defaultUpdown);
+      this.updown = updown; // : new Range(defaultUpdown);
       this.zpositive = (zpositive != null) ? zpositive : "up";
 
       this.names = names;
@@ -231,13 +237,14 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       if (names != null) {
         for (Vocab name : names) {
           String elem = name.getText();
-          if (elem.equalsIgnoreCase("global")) isGlobalCheck = true;
+          if (elem.equalsIgnoreCase("global"))
+            isGlobalCheck = true;
         }
       }
       this.isGlobal = isGlobalCheck;
     }
 
-        // constructor from dataset
+    // constructor from dataset
     public GeospatialCoverage(LatLonRect bb, CoordinateAxis1D vaxis, double dX, double dY) {
       if (bb == null) {
         this.eastwest = null;
@@ -253,7 +260,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
         this.eastwest = new GeospatialRange(llpt.getLongitude(), bb.getWidth(), dX, CDM.LON_UNITS);
         this.northsouth = new GeospatialRange(llpt.getLatitude(), height, dY, CDM.LAT_UNITS);
 
-        if ((bb.getWidth() >= (360-dX)) && (height >= (180-dY))) {
+        if ((bb.getWidth() >= (360 - dX)) && (height >= (180 - dY))) {
           this.isGlobal = true;
           // serialize isGlobal
           this.names = new ArrayList<>();
@@ -284,9 +291,11 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
 
     }
 
-    /* public boolean isEmpty() {
-      return this.equals(empty);
-    } */
+    /*
+     * public boolean isEmpty() {
+     * return this.equals(empty);
+     * }
+     */
 
     public GeospatialRange getEastWestRange() {
       return eastwest;
@@ -387,12 +396,14 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
 
     // LOOK not dealing with units degrees_west
     public double getLonEast() {
-      if (eastwest == null) return Double.NaN;
+      if (eastwest == null)
+        return Double.NaN;
       return Math.max(eastwest.start, eastwest.start + eastwest.size);
     }
 
     public double getLonWest() {
-      if (eastwest == null) return Double.NaN;
+      if (eastwest == null)
+        return Double.NaN;
       return Math.min(eastwest.start, eastwest.start + eastwest.size);
     }
 
@@ -425,8 +436,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     }
 
     public LatLonRect getBoundingBox() {
-      return isGlobal ? new LatLonRect() :
-              new LatLonRect(new LatLonPointImpl(getLatStart(), getLonStart()), getLatExtent(), getLonExtent());
+      return isGlobal ? new LatLonRect()
+          : new LatLonRect(new LatLonPointImpl(getLatStart(), getLonStart()), getLatExtent(), getLonExtent());
     }
   }
 
@@ -441,10 +452,10 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     /**
      * Constructor
      *
-     * @param start      starting value
-     * @param size       ending = start + size
+     * @param start starting value
+     * @param size ending = start + size
      * @param resolution data resolution, or NaN if unknown
-     * @param units      what units are start, size in?
+     * @param units what units are start, size in?
      */
     public GeospatialRange(double start, double size, double resolution, String units) {
       this.start = start;
@@ -571,8 +582,10 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     }
 
     public List<Variable> getVariableList() {
-      if (variables.size() > 0) return variables;
-      if (variableMap != null) return getVariablesFromMap();
+      if (variables.size() > 0)
+        return variables;
+      if (variableMap != null)
+        return getVariablesFromMap();
       return variables;
     }
 
@@ -589,10 +602,10 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
         }
         return variables;
 
-     } catch (Exception e) {
-       logger.error("failed to read VariablesFromMap at {}", variableMap.resolved.toString(), e);
-       return new ArrayList<>(0);
-     }
+      } catch (Exception e) {
+        logger.error("failed to read VariablesFromMap at {}", variableMap.resolved.toString(), e);
+        return new ArrayList<>(0);
+      }
     }
 
   }
@@ -605,7 +618,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final boolean isInherited;
     public final Object contentObject;
 
-    public MetadataOther(String xlinkHref, String title, String type, String namespaceURI, String prefix, boolean inherited) {
+    public MetadataOther(String xlinkHref, String title, String type, String namespaceURI, String prefix,
+        boolean inherited) {
       this.xlinkHref = xlinkHref;
       this.title = title;
       this.type = type;
@@ -615,7 +629,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       this.contentObject = null;
     }
 
-    public MetadataOther(String mtype, String namespaceURI, String namespacePrefix, boolean inherited, Object contentObject) {
+    public MetadataOther(String mtype, String namespaceURI, String namespacePrefix, boolean inherited,
+        Object contentObject) {
       this.xlinkHref = null;
       this.title = null;
       this.type = mtype;

@@ -5,7 +5,7 @@
 
 package ucar.nc2.ui.simplegeom;
 
-//import thredds.wcs.Request;
+// import thredds.wcs.Request;
 // import thredds.wcs.v1_0_0_1.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -15,7 +15,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
-
 import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.ui.widget.*;
@@ -23,7 +22,6 @@ import ucar.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
 import ucar.unidata.geoloc.ProjectionImpl;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;
@@ -31,7 +29,6 @@ import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.List;
 import java.io.IOException;
-
 import javax.swing.*;
 
 /**
@@ -63,7 +60,8 @@ public class SimpleGeomTable extends JPanel {
         Variable v = vb.geogrid.getVariable();
         infoTA.clear();
         if (v == null)
-          infoTA.appendLine("Cant find variable " + vb.getName() + " escaped= (" + NetcdfFile.makeValidPathName(vb.getName()) + ")");
+          infoTA.appendLine(
+              "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFile.makeValidPathName(vb.getName()) + ")");
         else {
           infoTA.appendLine("Variable " + v.getFullName() + " :");
           infoTA.appendLine(v.toString());
@@ -92,7 +90,8 @@ public class SimpleGeomTable extends JPanel {
     // optionally show coordinate systems and axis
     Component comp = varTable;
     if (showCS) {
-      csTable = new BeanTable(GeoCoordinateSystemBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
+      csTable =
+          new BeanTable(GeoCoordinateSystemBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
       axisTable = new BeanTable(GeoAxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
       simpleGeomTable = new BeanTable(SimpleGeomBean.class, (PreferencesExt) prefs.node("SimpleGeomBean"), false);
 
@@ -101,10 +100,10 @@ public class SimpleGeomTable extends JPanel {
 
       split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, axisTable);
       split2.setDividerLocation(prefs.getInt("splitPos2", 500));
-      
+
       split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, simpleGeomTable);
       split3.setDividerLocation(prefs.getInt("splitPos3", 500));
-      
+
       comp = split3;
     }
 
@@ -115,34 +114,36 @@ public class SimpleGeomTable extends JPanel {
   public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-    infoButton.addActionListener(e ->{
-        if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
-          ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
-          infoTA.clear();
-          infoTA.appendLine(gdsImpl.getDetailInfo());
-          infoTA.gotoTop();
-          infoWindow.show();
-        }
+    infoButton.addActionListener(e -> {
+      if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
+        ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
+        infoTA.clear();
+        infoTA.appendLine(gdsImpl.getDetailInfo());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
     });
     buttPanel.add(infoButton);
 
     JButton invButton = new JButton("GridInv");
     invButton.addActionListener(e -> {
-        if (gridDataset == null) return;
-        GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
-        try {
-          infoTA.setText(inv.writeXML(new Date()));
-          infoTA.gotoTop();
-          infoWindow.show();
-        } catch (Exception e1) {
-          e1.printStackTrace();
-        }
+      if (gridDataset == null)
+        return;
+      GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
+      try {
+        infoTA.setText(inv.writeXML(new Date()));
+        infoTA.gotoTop();
+        infoWindow.show();
+      } catch (Exception e1) {
+        e1.printStackTrace();
+      }
     });
     buttPanel.add(invButton);
 
     AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        if (gridDataset == null) return;
+        if (gridDataset == null)
+          return;
         List<String> gridList = getSelectedGrids();
         if (gridList.size() == 0) {
           JOptionPane.showMessageDialog(SimpleGeomTable.this, "No Simple Geometries are selected");
@@ -165,35 +166,36 @@ public class SimpleGeomTable extends JPanel {
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
     /*
- AbstractAction writeAction = new AbstractAction() {
-   public void actionPerformed(ActionEvent e) {
-     if (gridDataset == null) return;
-     List<String> gridList = getSelectedGrids();
-     if (gridList.size() == 0) {
-       JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
-       return;
-     }
-     String location = gridDataset.getLocationURI();
-     if (location == null) location = "test";
-     String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
-     int pos = location.lastIndexOf(".");
-     if (pos > 0)
-       location = location.substring(0, pos);
-
-     String filename = fileChooser.chooseFilenameToSave(location + suffix);
-     if (filename == null) return;
-
-     try {
-       NetcdfCFWriter.makeFileVersioned(filename, gridDataset, gridList, null, null);
-       JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
-     } catch (Exception ioe) {
-       JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
-       ioe.printStackTrace();
-     }
-   }
- };
- BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
- BAMutil.addActionToContainer(buttPanel, writeAction);  */
+     * AbstractAction writeAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * if (gridDataset == null) return;
+     * List<String> gridList = getSelectedGrids();
+     * if (gridList.size() == 0) {
+     * JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
+     * return;
+     * }
+     * String location = gridDataset.getLocationURI();
+     * if (location == null) location = "test";
+     * String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
+     * int pos = location.lastIndexOf(".");
+     * if (pos > 0)
+     * location = location.substring(0, pos);
+     * 
+     * String filename = fileChooser.chooseFilenameToSave(location + suffix);
+     * if (filename == null) return;
+     * 
+     * try {
+     * NetcdfCFWriter.makeFileVersioned(filename, gridDataset, gridList, null, null);
+     * JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
+     * } catch (Exception ioe) {
+     * JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
+     * ioe.printStackTrace();
+     * }
+     * }
+     * };
+     * BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
+     * BAMutil.addActionToContainer(buttPanel, writeAction);
+     */
   }
 
   private void showCoordinates(GeoGridBean vb, Formatter f) {
@@ -202,10 +204,14 @@ public class SimpleGeomTable extends JPanel {
   }
 
   private void writeNetcdf(NetcdfOutputChooser.Data data) {
-    if (data.version == NetcdfFileWriter.Version.ncstream) return;
+    if (data.version == NetcdfFileWriter.Version.ncstream)
+      return;
 
     try {
-      NetcdfFileWriter writer = NetcdfFileWriter.createNew(data.version, data.outputFilename, null); // default chunking - let user control at some point
+      NetcdfFileWriter writer = NetcdfFileWriter.createNew(data.version, data.outputFilename, null); // default chunking
+                                                                                                     // - let user
+                                                                                                     // control at some
+                                                                                                     // point
       CFGridWriter2.writeFile(gridDataset, getSelectedGrids(), null, null, 1, null, null, 1, false, writer);
       JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (Exception ioe) {
@@ -221,10 +227,14 @@ public class SimpleGeomTable extends JPanel {
   public void save() {
     varTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (csTable != null) csTable.saveState(false);
-    if (axisTable != null) axisTable.saveState(false);
+    if (split != null)
+      prefs.putInt("splitPos", split.getDividerLocation());
+    if (split2 != null)
+      prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (csTable != null)
+      csTable.saveState(false);
+    if (axisTable != null)
+      axisTable.saveState(false);
   }
 
   public void clear() {
@@ -242,13 +252,13 @@ public class SimpleGeomTable extends JPanel {
     for (GridDatatype g : list)
       beanList.add(new GeoGridBean(g));
     varTable.setBeans(beanList);
-    
+
     List<SimpleGeomBean> sgList = new ArrayList<>();
     java.util.List<GridDatatype> list2 = gridDataset.getGrids();
     for (GridDatatype g : list2)
-        sgList.add(new SimpleGeomBean(g));
-      varTable.setBeans(sgList);
-    
+      sgList.add(new SimpleGeomBean(g));
+    varTable.setBeans(sgList);
+
 
     if (csTable != null) {
       List<GeoCoordinateSystemBean> csList = new ArrayList<>();
@@ -301,7 +311,8 @@ public class SimpleGeomTable extends JPanel {
 
   private boolean contains(List<GeoAxisBean> axisList, String name) {
     for (GeoAxisBean axis : axisList)
-      if (axis.getName().equals(name)) return true;
+      if (axis.getName().equals(name))
+        return true;
     return false;
   }
 
@@ -340,8 +351,7 @@ public class SimpleGeomTable extends JPanel {
     String dims, x, y, z, t, ens, rt;
 
     // no-arg constructor
-    public GeoGridBean() {
-    }
+    public GeoGridBean() {}
 
     // create from a dataset
     public GeoGridBean(GridDatatype geogrid) {
@@ -358,7 +368,8 @@ public class SimpleGeomTable extends JPanel {
       java.util.List dims = geogrid.getDimensions();
       for (int j = 0; j < dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        if (j > 0) buff.append(",");
+        if (j > 0)
+          buff.append(",");
         buff.append(dim.getLength());
       }
       setShape(buff.toString());
@@ -370,30 +381,32 @@ public class SimpleGeomTable extends JPanel {
       rt = getAxisName(gcs.getRunTimeAxis());
       ens = getAxisName(gcs.getEnsembleAxis());
 
-      /* Dimension d= geogrid.getXDimension();
-      if (d != null) setX( d.getName());
-      d= geogrid.getYDimension();
-      if (d != null) setY( d.getName());
-      d= geogrid.getZDimension();
-      if (d != null) setZ( d.getName());
-
-      GridCoordSystem gcs = geogrid.getCoordinateSystem();
-
-      d= geogrid.getTimeDimension();
-      if (d != null)
-        setT( d.getName());
-      else {
-        CoordinateAxis taxis = gcs.getTimeAxis();
-        if (taxis != null) setT( taxis.getName());
-      }
-
-      CoordinateAxis1D axis = gcs.getEnsembleAxis();
-      if (axis != null)
-        setEns( axis.getDimension(0).getName());
-
-      axis = gcs.getRunTimeAxis();
-      if (axis != null)
-        setRt( axis.getDimension(0).getName()); */
+      /*
+       * Dimension d= geogrid.getXDimension();
+       * if (d != null) setX( d.getName());
+       * d= geogrid.getYDimension();
+       * if (d != null) setY( d.getName());
+       * d= geogrid.getZDimension();
+       * if (d != null) setZ( d.getName());
+       * 
+       * GridCoordSystem gcs = geogrid.getCoordinateSystem();
+       * 
+       * d= geogrid.getTimeDimension();
+       * if (d != null)
+       * setT( d.getName());
+       * else {
+       * CoordinateAxis taxis = gcs.getTimeAxis();
+       * if (taxis != null) setT( taxis.getName());
+       * }
+       * 
+       * CoordinateAxis1D axis = gcs.getEnsembleAxis();
+       * if (axis != null)
+       * setEns( axis.getDimension(0).getName());
+       * 
+       * axis = gcs.getRunTimeAxis();
+       * if (axis != null)
+       * setRt( axis.getDimension(0).getName());
+       */
     }
 
     public String getName() {
@@ -473,8 +486,7 @@ public class SimpleGeomTable extends JPanel {
     private int ngrids = -1;
 
     // no-arg constructor
-    public GeoCoordinateSystemBean() {
-    }
+    public GeoCoordinateSystemBean() {}
 
     public GeoCoordinateSystemBean(GridDataset.Gridset gset) {
       gcs = gset.getGeoCoordSystem();
@@ -525,8 +537,10 @@ public class SimpleGeomTable extends JPanel {
       return ((GridCoordSys) gcs).isGeoXY();
     }
 
-    /* public boolean isProductSet() { return isProductSet; }
-    public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }  */
+    /*
+     * public boolean isProductSet() { return isProductSet; }
+     * public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }
+     */
 
     public int getDomainRank() {
       return gcs.getDomain().size();
@@ -571,8 +585,7 @@ public class SimpleGeomTable extends JPanel {
     boolean isCoordVar;
 
     // no-arg constructor
-    public GeoAxisBean() {
-    }
+    public GeoAxisBean() {}
 
     // create from a dataset
     public GeoAxisBean(CoordinateAxis v) {
@@ -686,75 +699,74 @@ public class SimpleGeomTable extends JPanel {
       this.incr = incr;
     }
   }
-  
+
   public class SimpleGeomBean {
-	    // static public String editableProperties() { return "title include logging freq"; }
+    // static public String editableProperties() { return "title include logging freq"; }
 
-	    GridDatatype v;
-	    String line, polygon, geoX, geoY;
-
-
-	    // no-arg constructor
-	    public SimpleGeomBean() {
-	    }
-
-	    public String getName() {
-			// TODO Auto-generated method stub
-			return "";
-		}
-
-		// create from a dataset
-	    public SimpleGeomBean(GridDatatype v) {
-	      this.v = v;
-
-	      setLine("");
-	      setPolygon("");
-	      setGeoX("");
-	      setGeoY("");
-	    }
+    GridDatatype v;
+    String line, polygon, geoX, geoY;
 
 
-	    public String getLine() {
-	      return line;
-	    }
+    // no-arg constructor
+    public SimpleGeomBean() {}
 
-	    public void setLine(String line) {
-	      this.line = line;
-	    }
-	    
-	    public String getPolygon() {
-		  return polygon;
-		}
+    public String getName() {
+      // TODO Auto-generated method stub
+      return "";
+    }
 
-	    public void setPolygon(String polygon) {
-		  this.polygon = polygon;
-		}
-	    
-	    public String getGeoX() {
-		  return geoX;
-		}
+    // create from a dataset
+    public SimpleGeomBean(GridDatatype v) {
+      this.v = v;
 
-		public void setGeoX(String geoX) {
-		  this.geoX = geoX;
-		}
-		    
-		public String getGeoY() {
-		  return geoY;
-		}
+      setLine("");
+      setPolygon("");
+      setGeoX("");
+      setGeoY("");
+    }
 
-		public void setGeoY(String geoY) {
-		  this.geoY = geoY;
-		}
-	  }
-	    
+
+    public String getLine() {
+      return line;
+    }
+
+    public void setLine(String line) {
+      this.line = line;
+    }
+
+    public String getPolygon() {
+      return polygon;
+    }
+
+    public void setPolygon(String polygon) {
+      this.polygon = polygon;
+    }
+
+    public String getGeoX() {
+      return geoX;
+    }
+
+    public void setGeoX(String geoX) {
+      this.geoX = geoX;
+    }
+
+    public String getGeoY() {
+      return geoY;
+    }
+
+    public void setGeoY(String geoY) {
+      this.geoY = geoY;
+    }
+  }
+
 
 
   /**
    * Wrap this in a JDialog component.
    *
    * @param parent JFrame (application) or JApplet (applet) or null
-   * @param title  dialog window title
-   * @param modal  modal dialog or not
+   * @param title dialog window title
+   * @param modal modal dialog or not
    * @return JDialog
    */
   public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {
@@ -774,13 +786,15 @@ public class SimpleGeomTable extends JPanel {
         }
       });
 
-      /* add a dismiss button
-      JButton dismissButton = new JButton("Dismiss");
-      buttPanel.add(dismissButton, null);
-
-      dismissButton.addActionListener(e -> {
-          setVisible(false);
-      }); */
+      /*
+       * add a dismiss button
+       * JButton dismissButton = new JButton("Dismiss");
+       * buttPanel.add(dismissButton, null);
+       * 
+       * dismissButton.addActionListener(e -> {
+       * setVisible(false);
+       * });
+       */
 
       // add it to contentPane
       Container cp = getContentPane();

@@ -8,16 +8,12 @@ package ucar.nc2.iosp.misc;
 
 
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
-
 import java.nio.ByteBuffer;
 
 
@@ -31,38 +27,38 @@ import java.nio.ByteBuffer;
 public class Nldn extends AbstractLightningIOSP {
 
   /*
-    Field               Example
-    -------------------+---------------------
-    date/time (msec)    09/22/93 10:22:33.334
-    latitude                            47.33
-    longitude                         -87.116
-    polarity/signal strength           -188.7
-    multiplicity                            6
-    ellipse angle                         174
-    semi-major axis                       6.0
-    eccentricity                          2.0
-    chi-square                            1.0
-
-The specifics for the binary NLDN data record contained in the IDD is:
-
-    Size     Name      Description
-    --------+---------+----------------------------------------------------
-    char[4]  NLDN      'NLDN' marks the start of record
-    int[4]   tsec      time in seconds since 1970
-    int[4]   nsec      nanoseconds since tsec (seems to be thousandths)
-    int[4]   lat       latitude [deg] * 1000
-    int[4]   lon       longitude [deg] * 1000
-    short[2] fill      padding
-    short[2] sgnl      signal strength * 10 [150 NLDN measures ~= 30 kAmps]
-    short[2] fill      padding
-    short[2] mult      multiplicity [#strokes per flash]
-    char[1]  fill      padding
-    char[1]  semimaj   semi-major axis
-    char[1]  eccent    eccentricity
-    char[1]  angle     ellipse angle
-    char[1]  chisqr    chi-square
-
-  */
+   * Field Example
+   * -------------------+---------------------
+   * date/time (msec) 09/22/93 10:22:33.334
+   * latitude 47.33
+   * longitude -87.116
+   * polarity/signal strength -188.7
+   * multiplicity 6
+   * ellipse angle 174
+   * semi-major axis 6.0
+   * eccentricity 2.0
+   * chi-square 1.0
+   * 
+   * The specifics for the binary NLDN data record contained in the IDD is:
+   * 
+   * Size Name Description
+   * --------+---------+----------------------------------------------------
+   * char[4] NLDN 'NLDN' marks the start of record
+   * int[4] tsec time in seconds since 1970
+   * int[4] nsec nanoseconds since tsec (seems to be thousandths)
+   * int[4] lat latitude [deg] * 1000
+   * int[4] lon longitude [deg] * 1000
+   * short[2] fill padding
+   * short[2] sgnl signal strength * 10 [150 NLDN measures ~= 30 kAmps]
+   * short[2] fill padding
+   * short[2] mult multiplicity [#strokes per flash]
+   * char[1] fill padding
+   * char[1] semimaj semi-major axis
+   * char[1] eccent eccentricity
+   * char[1] angle ellipse angle
+   * char[1] chisqr chi-square
+   * 
+   */
 
   /**
    * The magic mushroom
@@ -144,9 +140,9 @@ The specifics for the binary NLDN data record contained in the IDD is:
    * object will be empty except for the location String and the
    * IOServiceProvider associated with this NetcdfFile object.
    *
-   * @param raf        the file to work on, it has already passed the
-   *                   isValidFile() test.
-   * @param ncfile     add objects to this empty NetcdfFile
+   * @param raf the file to work on, it has already passed the
+   *        isValidFile() test.
+   * @param ncfile add objects to this empty NetcdfFile
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if read error
    */
@@ -157,46 +153,37 @@ The specifics for the binary NLDN data record contained in the IDD is:
     ncfile.addVariable(null, seq);
 
     /*
-    makeLightningVariable(NetcdfFile ncfile, Group group,
-                          Structure seq, String name,
-                          DataType dataType, String dims,
-                          String longName, String cfName,
-                          String units, AxisType type) {
-    */
-    Variable v = makeLightningVariable(ncfile, null, seq, TSEC, DataType.INT,
-            "", "time of stroke", null,
-            secondsSince1970,
-            AxisType.Time);
+     * makeLightningVariable(NetcdfFile ncfile, Group group,
+     * Structure seq, String name,
+     * DataType dataType, String dims,
+     * String longName, String cfName,
+     * String units, AxisType type) {
+     */
+    Variable v = makeLightningVariable(ncfile, null, seq, TSEC, DataType.INT, "", "time of stroke", null,
+        secondsSince1970, AxisType.Time);
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, "nsec", DataType.INT,
-            "", "nanoseconds since tsec", null,
-            "1.0e-9 s", null);
+    v = makeLightningVariable(ncfile, null, seq, "nsec", DataType.INT, "", "nanoseconds since tsec", null, "1.0e-9 s",
+        null);
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, LAT, DataType.INT, "",
-            "latitude", "latitude", CDM.LAT_UNITS,
-            AxisType.Lat);
+    v = makeLightningVariable(ncfile, null, seq, LAT, DataType.INT, "", "latitude", "latitude", CDM.LAT_UNITS,
+        AxisType.Lat);
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0e-3f));
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, LON, DataType.INT, "",
-            "longitude", "longitude", CDM.LON_UNITS,
-            AxisType.Lon);
+    v = makeLightningVariable(ncfile, null, seq, LON, DataType.INT, "", "longitude", "longitude", CDM.LON_UNITS,
+        AxisType.Lon);
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0e-3f));
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(
-            ncfile, null, seq, SIGNAL, DataType.SHORT, "",
-            "signal strength/polarity [150 NLDN measures ~= 30 kAmps]", null, "",
-            null);
+    v = makeLightningVariable(ncfile, null, seq, SIGNAL, DataType.SHORT, "",
+        "signal strength/polarity [150 NLDN measures ~= 30 kAmps]", null, "", null);
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0e-1f));
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, MULTIPLICITY,
-            DataType.BYTE, "",
-            "multiplicity [#strokes per flash]", null,
-            "", null);
+    v = makeLightningVariable(ncfile, null, seq, MULTIPLICITY, DataType.BYTE, "", "multiplicity [#strokes per flash]",
+        null, "", null);
     seq.addMemberVariable(v);
 
     v = new Variable(ncfile, null, seq, FILL);
@@ -204,26 +191,19 @@ The specifics for the binary NLDN data record contained in the IDD is:
     v.setDimensions("");
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, MAJOR_AXIS,
-            DataType.BYTE, "",
-            "error ellipse semi-major axis", null, "",
-            null);
+    v = makeLightningVariable(ncfile, null, seq, MAJOR_AXIS, DataType.BYTE, "", "error ellipse semi-major axis", null,
+        "", null);
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, ECCENTRICITY,
-            DataType.BYTE, "",
-            "error ellipse eccentricity ", null, "",
-            null);
+    v = makeLightningVariable(ncfile, null, seq, ECCENTRICITY, DataType.BYTE, "", "error ellipse eccentricity ", null,
+        "", null);
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, ELLIPSE_ANGLE,
-            DataType.BYTE, "",
-            "error ellipse axis angle of orientation ",
-            null, "degrees", null);
+    v = makeLightningVariable(ncfile, null, seq, ELLIPSE_ANGLE, DataType.BYTE, "",
+        "error ellipse axis angle of orientation ", null, "degrees", null);
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, CHISQR, DataType.BYTE,
-            "", "chi-squared", null, "", null);
+    v = makeLightningVariable(ncfile, null, seq, CHISQR, DataType.BYTE, "", "chi-squared", null, "", null);
     seq.addMemberVariable(v);
 
     addLightningGlobalAttributes(ncfile);
@@ -252,63 +232,64 @@ The specifics for the binary NLDN data record contained in the IDD is:
    */
   protected void addLightningGlobalAttributes(NetcdfFile ncfile) {
     super.addLightningGlobalAttributes(ncfile);
-    ncfile.addAttribute(null,
-            new Attribute("title", "NLDN Lightning Data"));
+    ncfile.addAttribute(null, new Attribute("title", "NLDN Lightning Data"));
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "NLDN-CDM"));
   }
 
-  /* The specifics for the binary NLDN data record contained in the IDD is:
+  /*
+   * The specifics for the binary NLDN data record contained in the IDD is:
+   * 
+   * Size Name Description
+   * --------+---------+----------------------------------------------------
+   * char[4] NLDN 'NLDN' marks the start of record
+   * int[4] tsec time in seconds since 1970
+   * int[4] nsec nanoseconds since tsec (seems to be thousandths)
+   * int[4] lat latitude [deg] * 1000
+   * int[4] lon longitude [deg] * 1000
+   * short[2] fill padding
+   * short[2] sgnl signal strength * 10 [150 NLDN measures ~= 30 kAmps]
+   * short[2] fill padding
+   * short[2] mult multiplicity [#strokes per flash]
+   * char[1] fill padding
+   * char[1] semimaj semi-major axis
+   * char[1] eccent eccentricity
+   * char[1] angle ellipse angle
+   * char[1] chisqr chi-square
+   */
 
-    Size     Name      Description
-    --------+---------+----------------------------------------------------
-    char[4]  NLDN      'NLDN' marks the start of record
-    int[4]   tsec      time in seconds since 1970
-    int[4]   nsec      nanoseconds since tsec (seems to be thousandths)
-    int[4]   lat       latitude [deg] * 1000
-    int[4]   lon       longitude [deg] * 1000
-    short[2] fill      padding
-    short[2] sgnl      signal strength * 10 [150 NLDN measures ~= 30 kAmps]
-    short[2] fill      padding
-    short[2] mult      multiplicity [#strokes per flash]
-    char[1]  fill      padding
-    char[1]  semimaj   semi-major axis
-    char[1]  eccent    eccentricity
-    char[1]  angle     ellipse angle
-    char[1]  chisqr    chi-square
-  */
-
-  /* public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-  Range r = section.getRange(0);
-  int nrecs = r.length();
-  byte[] bb = new byte[nrecs * recSize];
-
-  int pos = 0;
-  Range.Iterator iter = r.getIterator();
-  while (iter.hasNext()) {
-    int index = iter.next();
-    raf.seek(recHeader + index * recSize);
-    raf.read(bb, pos, recSize);
-    pos += recSize;
-  }
-
-  return new ArrayStructureBB(sm, new int[]{nrecs}, ByteBuffer.wrap(bb), 0);
-}  */
+  /*
+   * public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+   * Range r = section.getRange(0);
+   * int nrecs = r.length();
+   * byte[] bb = new byte[nrecs * recSize];
+   * 
+   * int pos = 0;
+   * Range.Iterator iter = r.getIterator();
+   * while (iter.hasNext()) {
+   * int index = iter.next();
+   * raf.seek(recHeader + index * recSize);
+   * raf.read(bb, pos, recSize);
+   * pos += recSize;
+   * }
+   * 
+   * return new ArrayStructureBB(sm, new int[]{nrecs}, ByteBuffer.wrap(bb), 0);
+   * }
+   */
 
   /**
    * Read data from a top level Variable and return a memory resident Array.
    * This Array has the same element type as the Variable, and the requested shape.
    *
-   * @param v2      a top-level Variable
+   * @param v2 a top-level Variable
    * @param section the section of data to read.
-   *                There must be a Range for each Dimension in the variable, in order.
-   *                Note: no nulls allowed. IOSP may not modify.
+   *        There must be a Range for each Dimension in the variable, in order.
+   *        Note: no nulls allowed. IOSP may not modify.
    * @return the requested data in a memory-resident Array
-   * @throws IOException           if read error
+   * @throws IOException if read error
    * @see ucar.ma2.Range
    */
-  public Array readData(Variable v2, Section section)
-          throws IOException {
+  public Array readData(Variable v2, Section section) throws IOException {
     return new ArraySequence(sm, new SeqIter(), nelems);
   }
 
@@ -317,14 +298,12 @@ The specifics for the binary NLDN data record contained in the IDD is:
   /**
    * Get the structure iterator
    *
-   * @param s          the Structure
+   * @param s the Structure
    * @param bufferSize the buffersize
    * @return the data iterator
    * @throws java.io.IOException if problem reading data
    */
-  public StructureDataIterator getStructureIterator(Structure s,
-                                                    int bufferSize)
-          throws java.io.IOException {
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     return new SeqIter();
   }
 
@@ -434,7 +413,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
       nextIndex = 0;
 
       ByteBuffer bbdata = ByteBuffer.wrap(data);
-      asbb = new ArrayStructureBB(sm, new int[]{count}, bbdata, 0);
+      asbb = new ArrayStructureBB(sm, new int[] {count}, bbdata, 0);
       return true;
     }
 
@@ -447,62 +426,64 @@ The specifics for the binary NLDN data record contained in the IDD is:
 
 
   // this is thye start of a buffererd iterator
-  /* private class MySDIter implements StructureDataIterator {
-   private int done = 0;
-   private int readStart = 0;
-   private int recsAlreadyRead = 0;
-   private int readAtaTime;
-   private ArrayStructureBB asbb = null;
-
-   private int recsLeft;
-   private int recsDone;
-
-   MySDIter(int bufferSize) throws IOException {
-     setBufferSize( bufferSize);
-     recsLeft = (int) raf.length() / recSize;
-     recsDone = 0;
-   }
-
-   public boolean hasNext() {
-     if (done < recsAlreadyRead) return true;
-     return (recsLeft > 0);
-   }
-
-   public StructureDataIterator reset() {
-     done = 0;
-     readStart = 0;
-     readRead = 0;
-     return this;
-   }
-
-   public StructureData next() throws IOException {
-     if (done >= readStart) {
-       readNextBuffer();
-     }
-     done++;
-     return asbb.getStructureData( readRead++);
-   }
-
-   private void readNextBuffer() throws IOException {
-     bytesLeft = (int)(raf.length() - raf.getFilePointer());
-     int recsLeft = bytesLeft / recSize;
-     int recsToRead = Math.min(recsLeft, readAtaTime);
-
-     byte[] bb = new byte[recsToRead * recSize];
-     ByteBuffer.wrap(bb);
-     asbb = new ArrayStructureBB(sm, new int[]{nrecs}, bb, 0);
-
-     recsAlreadyRead += recsToRead;
-     readRead = 0;
-   }
-
-   public void setBufferSize(int bytes) {
-     if (done > 0) return; // too late
-     if (bytes <= 0)
-       bytes = defaultBufferSize;
-     readAtaTime = Math.max( 10, bytes / recSize);
-   }
- } */
+  /*
+   * private class MySDIter implements StructureDataIterator {
+   * private int done = 0;
+   * private int readStart = 0;
+   * private int recsAlreadyRead = 0;
+   * private int readAtaTime;
+   * private ArrayStructureBB asbb = null;
+   * 
+   * private int recsLeft;
+   * private int recsDone;
+   * 
+   * MySDIter(int bufferSize) throws IOException {
+   * setBufferSize( bufferSize);
+   * recsLeft = (int) raf.length() / recSize;
+   * recsDone = 0;
+   * }
+   * 
+   * public boolean hasNext() {
+   * if (done < recsAlreadyRead) return true;
+   * return (recsLeft > 0);
+   * }
+   * 
+   * public StructureDataIterator reset() {
+   * done = 0;
+   * readStart = 0;
+   * readRead = 0;
+   * return this;
+   * }
+   * 
+   * public StructureData next() throws IOException {
+   * if (done >= readStart) {
+   * readNextBuffer();
+   * }
+   * done++;
+   * return asbb.getStructureData( readRead++);
+   * }
+   * 
+   * private void readNextBuffer() throws IOException {
+   * bytesLeft = (int)(raf.length() - raf.getFilePointer());
+   * int recsLeft = bytesLeft / recSize;
+   * int recsToRead = Math.min(recsLeft, readAtaTime);
+   * 
+   * byte[] bb = new byte[recsToRead * recSize];
+   * ByteBuffer.wrap(bb);
+   * asbb = new ArrayStructureBB(sm, new int[]{nrecs}, bb, 0);
+   * 
+   * recsAlreadyRead += recsToRead;
+   * readRead = 0;
+   * }
+   * 
+   * public void setBufferSize(int bytes) {
+   * if (done > 0) return; // too late
+   * if (bytes <= 0)
+   * bytes = defaultBufferSize;
+   * readAtaTime = Math.max( 10, bytes / recSize);
+   * }
+   * }
+   */
 
 
 }

@@ -18,7 +18,9 @@ public class TestMyMouseAdapter {
     try {
       JFrame frame = new JFrame("Test MyMouseAdapter");
       frame.addWindowListener(new WindowAdapter() {
-        public void windowClosing(WindowEvent e) {System.exit(0);}
+        public void windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
       });
 
       JLabel comp = new JLabel("test  sdfk sdf ks;dflk ;sdlkf ldsk lk");
@@ -26,12 +28,12 @@ public class TestMyMouseAdapter {
       comp.setBackground(Color.white);
       comp.setForeground(Color.black);
 
-      comp.addMouseListener( new MyMouseAdapter());
+      comp.addMouseListener(new MyMouseAdapter());
 
       JPanel main = new JPanel(new FlowLayout());
       frame.getContentPane().add(main);
       main.setPreferredSize(new Dimension(200, 200));
-      main.add( comp);
+      main.add(comp);
 
       frame.pack();
       frame.setLocation(300, 300);

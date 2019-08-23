@@ -7,7 +7,6 @@ package ucar.nc2.iosp.bufr;
 import java.util.Objects;
 import ucar.nc2.iosp.bufr.tables.TableC;
 import ucar.nc2.iosp.bufr.tables.TableB;
-
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public class DataDescriptor {
   short fxy;
   int f, x, y;
   String name, units, desc, source;
-  boolean bad;  // no descriptor found
+  boolean bad; // no descriptor found
   boolean localOverride;
 
   // may get modified by TableC operators
@@ -49,8 +48,7 @@ public class DataDescriptor {
   Object refersTo; // temporary place to put a sequence object
   DataDescriptorTreeConstructor.DataPresentIndicator dpi;
 
-  DataDescriptor() {
-  }
+  DataDescriptor() {}
 
   public DataDescriptor(short fxy, BufrTableLookup lookup) {
     this.fxy = fxy;
@@ -89,7 +87,7 @@ public class DataDescriptor {
 
     if (units.equalsIgnoreCase("CCITT IA5") || units.equalsIgnoreCase("CCITT_IA5")) {
       this.type = 1; // String
-      //this.bitWidth *= 8;
+      // this.bitWidth *= 8;
     }
 
     // LOOK what about flag table ??
@@ -98,15 +96,17 @@ public class DataDescriptor {
     }
   }
 
-  /* for dpi fields
-  DataDescriptor makeStatField(String statType) {
-    DataDescriptor statDD = new DataDescriptor();
-    statDD.name = name + "_" + statType;
-    statDD.units = units;
-    statDD.refVal = 0;
-
-    return statDD;
-  } */
+  /*
+   * for dpi fields
+   * DataDescriptor makeStatField(String statType) {
+   * DataDescriptor statDD = new DataDescriptor();
+   * statDD.name = name + "_" + statType;
+   * statDD.units = units;
+   * statDD.refVal = 0;
+   * 
+   * return statDD;
+   * }
+   */
 
   // for associated fields
   DataDescriptor makeAssociatedField(int bitWidth) {
@@ -121,7 +121,7 @@ public class DataDescriptor {
     assDD.f = 0;
     assDD.x = 31;
     assDD.y = 22;
-    assDD.fxy =  (short) ((f << 14) + (x << 8) + (y));
+    assDD.fxy = (short) ((f << 14) + (x << 8) + (y));
 
     return assDD;
   }
@@ -156,7 +156,7 @@ public class DataDescriptor {
   }
 
   public String getFxyName() {
-    return Descriptor.makeString(f,x,y);
+    return Descriptor.makeString(f, x, y);
   }
 
 
@@ -192,8 +192,9 @@ public class DataDescriptor {
     return desc;
   }
 
-  public float convert( long raw) {
-    if ( BufrNumbers.isMissing(raw, bitWidth)) return Float.NaN;
+  public float convert(long raw) {
+    if (BufrNumbers.isMissing(raw, bitWidth))
+      return Float.NaN;
 
     // bpacked = (value * 10^scale - refVal)
     // value = (bpacked + refVal) / 10^scale
@@ -202,8 +203,9 @@ public class DataDescriptor {
     return fscale * fval;
   }
 
-  public static float convert( long raw, int scale, int refVal, int bitWidth) {
-    if ( BufrNumbers.isMissing(raw, bitWidth)) return Float.NaN;
+  public static float convert(long raw, int scale, int refVal, int bitWidth) {
+    if (BufrNumbers.isMissing(raw, bitWidth))
+      return Float.NaN;
 
     // bpacked = (value * 10^scale - refVal)
     // value = (bpacked + refVal) / 10^scale
@@ -214,14 +216,16 @@ public class DataDescriptor {
 
   /**
    * Transfer info from the "proto message" to another message with the exact same structure.
+   * 
    * @param fromList transfer from here
    * @param toList to here
    */
-  static public void transferInfo(List<DataDescriptor> fromList, List<DataDescriptor> toList) { // get info from proto message
+  static public void transferInfo(List<DataDescriptor> fromList, List<DataDescriptor> toList) { // get info from proto
+                                                                                                // message
     if (fromList.size() != toList.size())
-      throw new IllegalArgumentException("list sizes dont match "+fromList.size()+" != "+toList.size());
+      throw new IllegalArgumentException("list sizes dont match " + fromList.size() + " != " + toList.size());
 
-    for (int i=0; i<fromList.size(); i++) {
+    for (int i = 0; i < fromList.size(); i++) {
       DataDescriptor from = fromList.get(i);
       DataDescriptor to = toList.get(i);
       to.refersTo = from.refersTo;
@@ -282,9 +286,12 @@ public class DataDescriptor {
       return total_nbytesCDM;
 
     // numeric or enum
-    if (bitWidth < 9) return 1;
-    if (bitWidth < 17) return 2;
-    if (bitWidth < 33) return 4;
+    if (bitWidth < 9)
+      return 1;
+    if (bitWidth < 17)
+      return 2;
+    if (bitWidth < 33)
+      return 4;
     return 8;
   }
 
@@ -304,7 +311,7 @@ public class DataDescriptor {
       }
 
     } else if (f == 1) {
-      sbuff.append(id).append(": ").append( "Replication");
+      sbuff.append(id).append(": ").append("Replication");
       if (replication != 1)
         sbuff.append(" count=").append(replication);
       if (replicationCountSize != 0)
@@ -316,11 +323,12 @@ public class DataDescriptor {
 
     } else if (f == 2) {
       String desc = TableC.getOperatorName(x);
-      if (desc == null) desc = "Operator";
+      if (desc == null)
+        desc = "Operator";
       sbuff.append(id).append(": ").append(desc);
 
     } else
-      sbuff.append(id).append(": ").append( name);
+      sbuff.append(id).append(": ").append(name);
 
     return sbuff.toString();
   }
@@ -331,20 +339,30 @@ public class DataDescriptor {
   boolean isBad;
   int total_nbits;
 
-  public int getTotalBits() { return total_nbits; }
-  public boolean isVarLength() { return isVarLength; }
+  public int getTotalBits() {
+    return total_nbits;
+  }
+
+  public boolean isVarLength() {
+    return isVarLength;
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // LOOK need different hashCode, reader assumes using object id
   public boolean equals2(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     DataDescriptor that = (DataDescriptor) o;
 
-    if (fxy != that.fxy) return false;
-    if (replication != that.replication) return false;
-    if (type != that.type) return false;
+    if (fxy != that.fxy)
+      return false;
+    if (replication != that.replication)
+      return false;
+    if (type != that.type)
+      return false;
     return Objects.equals(subKeys, that.subKeys);
 
   }
@@ -359,10 +377,11 @@ public class DataDescriptor {
 
   // has to use hashCode2, so cant use list.hashCode()
   private int getListHash() {
-    if (subKeys == null) return 0;
+    if (subKeys == null)
+      return 0;
     int result = 1;
     for (DataDescriptor e : subKeys)
-      result = 31*result + (e==null ? 0 : e.hashCode2());
+      result = 31 * result + (e == null ? 0 : e.hashCode2());
     return result;
   }
 

@@ -15,11 +15,9 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
-
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
-//import ucar.units.ConversionException;
-
+// import ucar.units.ConversionException;
 import java.io.IOException;
 import java.util.*;
 
@@ -43,7 +41,8 @@ public class ADASConvention extends CoordSysBuilder {
    * create a NetcdfDataset out of this NetcdfFile, adding coordinates etc.
    */
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
+    if (null != ds.findVariable("x"))
+      return; // check if its already been done - aggregating enhanced datasets.
 
     // old way
     Attribute att = ds.findGlobalAttribute("MAPPROJ");
@@ -71,7 +70,8 @@ public class ADASConvention extends CoordSysBuilder {
         lat2 = (att2.getLength() > 1) ? att2.getNumericValue(1).doubleValue() : lat1;
       }
     } else {
-      if (projType == 2) projName = "lambert_conformal_conic";
+      if (projType == 2)
+        projName = "lambert_conformal_conic";
     }
 
     Variable coord_var = ds.findVariable("x_stag");
@@ -91,7 +91,8 @@ public class ADASConvention extends CoordSysBuilder {
     if ((projName != null) && projName.equalsIgnoreCase("lambert_conformal_conic")) {
       proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing);
       projCT = new ProjectionCT("Projection", "FGDC", proj);
-      if (false_easting == 0.0) calcCenterPoints(ds, proj); // old way
+      if (false_easting == 0.0)
+        calcCenterPoints(ds, proj); // old way
     } else {
       parseInfo.format("ERROR: unknown projection type = %s%n", projName);
     }
@@ -227,14 +228,14 @@ public class ADASConvention extends CoordSysBuilder {
   }
 
   /**
-   * Does increasing values of Z go vertical  up?
+   * Does increasing values of Z go vertical up?
    *
    * @param v for this axis
    * @return "up" if this is a Vertical (z) coordinate axis which goes up as coords get bigger,
    *         else return "down"
    */
   public String getZisPositive(CoordinateAxis v) {
-    return "down"; //eta coords decrease upward
+    return "down"; // eta coords decrease upward
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +245,7 @@ public class ADASConvention extends CoordSysBuilder {
     Array data_stag = stagV.read();
     int n = (int) data_stag.getSize() - 1;
     DataType dt = DataType.getType(data_stag);
-    Array data = Array.factory(dt, new int[]{n});
+    Array data = Array.factory(dt, new int[] {n});
     Index stagIndex = data_stag.getIndex();
     Index dataIndex = data.getIndex();
     for (int i = 0; i < n; i++) {
@@ -254,47 +255,51 @@ public class ADASConvention extends CoordSysBuilder {
 
     DataType dtype = DataType.getType(data);
     String units = ds.findAttValueIgnoreCase(stagV, CDM.UNITS, "m");
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, dtype, axisName, units, "synthesized non-staggered " + axisName + " coordinate");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, dtype, axisName, units,
+        "synthesized non-staggered " + axisName + " coordinate");
     v.setCachedData(data, true);
     return v;
   }
 
   private double findAttributeDouble(NetcdfDataset ds, String attname, double defValue) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
-    if (att == null) return defValue;
+    if (att == null)
+      return defValue;
     return att.getNumericValue().doubleValue();
   }
 
-  /* private VerticalCT makeWRFEtaVerticalCoordinateTransform(NetcdfDataset ds, CoordinateSystem cs) {
-    if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) ||
-        (null == ds.findVariable("P")) || (null == ds.findVariable("PB")))
-      return null;
-
-  	VerticalCT.Type type = VerticalCT.Type.WRFEta;
-  	VerticalCT ct = new VerticalCT(type.toString(), conventionName, type);
-
-  	ct.addParameter(new Parameter("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
-  	ct.addParameter(new Parameter("perturbation geopotential variable name", "PH"));
-  	ct.addParameter(new Parameter("base state geopotential variable name", "PHB"));
-  	ct.addParameter(new Parameter("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
-  	ct.addParameter(new Parameter("perturbation pressure variable name", "P"));
-  	ct.addParameter(new Parameter("base state pressure variable name", "PB"));
-  	ct.addParameter(new Parameter("staggered x", ""+isStaggered(cs.getXaxis())));
-  	ct.addParameter(new Parameter("staggered y", ""+isStaggered(cs.getYaxis())));
-  	ct.addParameter(new Parameter("staggered z", ""+isStaggered(cs.getZaxis())));
-  	ct.addParameter(new Parameter("eta", ""+cs.getZaxis().getName()));
-
-    parseInfo.append(" added vertical coordinate transform = "+type+"\n");
-  	return ct;
-  }
-
-  private boolean isStaggered(CoordinateAxis axis) {
-  	if (axis == null) return false;
-  	String name = axis.getName();
-  	if (name == null) return false;
-  	if (name.endsWith("stag")) return true;
-  	return false;
-  } */
+  /*
+   * private VerticalCT makeWRFEtaVerticalCoordinateTransform(NetcdfDataset ds, CoordinateSystem cs) {
+   * if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) ||
+   * (null == ds.findVariable("P")) || (null == ds.findVariable("PB")))
+   * return null;
+   * 
+   * VerticalCT.Type type = VerticalCT.Type.WRFEta;
+   * VerticalCT ct = new VerticalCT(type.toString(), conventionName, type);
+   * 
+   * ct.addParameter(new Parameter("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
+   * ct.addParameter(new Parameter("perturbation geopotential variable name", "PH"));
+   * ct.addParameter(new Parameter("base state geopotential variable name", "PHB"));
+   * ct.addParameter(new Parameter("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
+   * ct.addParameter(new Parameter("perturbation pressure variable name", "P"));
+   * ct.addParameter(new Parameter("base state pressure variable name", "PB"));
+   * ct.addParameter(new Parameter("staggered x", ""+isStaggered(cs.getXaxis())));
+   * ct.addParameter(new Parameter("staggered y", ""+isStaggered(cs.getYaxis())));
+   * ct.addParameter(new Parameter("staggered z", ""+isStaggered(cs.getZaxis())));
+   * ct.addParameter(new Parameter("eta", ""+cs.getZaxis().getName()));
+   * 
+   * parseInfo.append(" added vertical coordinate transform = "+type+"\n");
+   * return ct;
+   * }
+   * 
+   * private boolean isStaggered(CoordinateAxis axis) {
+   * if (axis == null) return false;
+   * String name = axis.getName();
+   * if (name == null) return false;
+   * if (name.endsWith("stag")) return true;
+   * return false;
+   * }
+   */
 
   /**
    * Assign CoordinateTransform objects to Coordinate Systems.
@@ -319,8 +324,8 @@ public class ADASConvention extends CoordSysBuilder {
   }
 
   private VerticalCT makeWRFEtaVerticalCoordinateTransform(NetcdfDataset ds, CoordinateSystem cs) {
-    if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) ||
-        (null == ds.findVariable("P")) || (null == ds.findVariable("PB")))
+    if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
+        || (null == ds.findVariable("PB")))
       return null;
 
     WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);

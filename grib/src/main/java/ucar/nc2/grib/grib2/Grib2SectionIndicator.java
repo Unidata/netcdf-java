@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -19,7 +18,7 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib2SectionIndicator {
-  private static final byte[] MAGIC = new byte[]{'G','R','I','B'};
+  private static final byte[] MAGIC = new byte[] {'G', 'R', 'I', 'B'};
 
   private final long messageLength;
   private final int discipline;
@@ -65,12 +64,12 @@ public class Grib2SectionIndicator {
   }
 
   public long getStartPos() {
-   return startPos;
- }
+    return startPos;
+  }
 
   public long getEndPos() {
-   return startPos + messageLength;
- }
+    return startPos + messageLength;
+  }
 
   /**
    * Discipline - GRIB Master Table Number.

@@ -14,7 +14,6 @@ import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
-
 import java.io.*;
 import java.util.*;
 
@@ -28,8 +27,7 @@ public class CdmIndexReportPanel extends ReportPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public enum Report {
-    dupAndMissing,
-    misplacedFlds             // find misplaced records for NCDC
+    dupAndMissing, misplacedFlds // find misplaced records for NCDC
   }
 
   public CdmIndexReportPanel(PreferencesExt prefs) {
@@ -42,16 +40,17 @@ public class CdmIndexReportPanel extends ReportPanel {
   }
 
   @Override
-  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
-      switch ((Report) option) {
-        case dupAndMissing:
-          doDupAndMissing(f, dcm, eachFile, extra);
-          break;
+  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile,
+      boolean extra) throws IOException {
+    switch ((Report) option) {
+      case dupAndMissing:
+        doDupAndMissing(f, dcm, eachFile, extra);
+        break;
 
-        case misplacedFlds:
-          doMisplacedFields(f, dcm, useIndex, eachFile, extra);
-          break;
-      }
+      case misplacedFlds:
+        doMisplacedFields(f, dcm, useIndex, eachFile, extra);
+        break;
+    }
   }
 
   ///////////////////////////////////////////////
@@ -68,11 +67,8 @@ public class CdmIndexReportPanel extends ReportPanel {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-              .add("nrecords", nrecords)
-              .add("ndups", ndups)
-              .add("nmissing", nmissing)
-              .toString();
+      return MoreObjects.toStringHelper(this).add("nrecords", nrecords).add("ndups", ndups).add("nmissing", nmissing)
+          .toString();
     }
   }
 
@@ -86,8 +82,9 @@ public class CdmIndexReportPanel extends ReportPanel {
     f.format("total %s%n", total);
   }
 
-    // seperate report for each file in collection
-  private void doDupAndMissingEach(Formatter f, MFile mfile, boolean each, boolean extra, Accum accum) throws IOException {
+  // seperate report for each file in collection
+  private void doDupAndMissingEach(Formatter f, MFile mfile, boolean each, boolean extra, Accum accum)
+      throws IOException {
 
     if (each)
       f.format("%nFile %s%n", mfile.getPath());
@@ -125,6 +122,7 @@ public class CdmIndexReportPanel extends ReportPanel {
   }
 
   String lastFilename = null;
+
   void showIfNonZero(Formatter f, GribCollectionImmutable.VariableIndex v, String filename) {
     if ((v.getNdups() != 0) || (v.getNmissing() != 0)) {
       if (!filename.equals(lastFilename))
@@ -138,7 +136,8 @@ public class CdmIndexReportPanel extends ReportPanel {
   ///////////////////////////////////////////////////
   private static final int MIN_COUNT = 400;
 
-  protected void doMisplacedFields(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+  protected void doMisplacedFields(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra)
+      throws IOException {
 
     if (eachFile) {
 
@@ -151,17 +150,18 @@ public class CdmIndexReportPanel extends ReportPanel {
 
       f.format("%nAll files%n");
       for (String filename : filenames)
-      f.format("  %s%n", filename);
+        f.format("  %s%n", filename);
 
 
-    } else {  // eachFile false
-          doMisplacedFields(f, dcm, extra);
+    } else { // eachFile false
+      doMisplacedFields(f, dcm, extra);
 
     }
   }
 
   // seperate report for each file in collection
-  private void doMisplacedFieldsEach(Formatter f2, MFile mfile, Set<String> filenames, boolean extra) throws IOException {
+  private void doMisplacedFieldsEach(Formatter f2, MFile mfile, Set<String> filenames, boolean extra)
+      throws IOException {
     Formatter f = new Formatter(System.out);
     f.format("Check Misplaced Fields for %s, records count < %d%n", mfile, MIN_COUNT);
     Map<Integer, VarInfo> varCount = new HashMap<>();
@@ -175,8 +175,10 @@ public class CdmIndexReportPanel extends ReportPanel {
     Collections.sort(sorted);
     for (VarInfo vinfo : sorted) {
       f.format(" %20s = %d%n", vinfo.name, vinfo.count);
-      if (vinfo.count > MIN_COUNT) vinfo.ok = true; // LOOK arbitrary cutoff
-      if (!vinfo.ok) countMisplaced += vinfo.count;
+      if (vinfo.count > MIN_COUNT)
+        vinfo.ok = true; // LOOK arbitrary cutoff
+      if (!vinfo.ok)
+        countMisplaced += vinfo.count;
     }
     f.format("countMisplaced = %d%n", countMisplaced);
 
@@ -188,38 +190,40 @@ public class CdmIndexReportPanel extends ReportPanel {
     f2.format("%s", f.toString());
   }
 
-   //  report over all files in collection
+  // report over all files in collection
   private void doMisplacedFields(Formatter f, MCollection dcm, boolean extra) throws IOException {
-     f.format("Check Misplaced Fields, records count < %d%n", MIN_COUNT);
-     Map<Integer, VarInfo> varCount = new HashMap<>();
+    f.format("Check Misplaced Fields, records count < %d%n", MIN_COUNT);
+    Map<Integer, VarInfo> varCount = new HashMap<>();
 
-     for (MFile mfile : dcm.getFilesSorted()) {
-       f.format("%n%s%n", mfile.getPath());
-       countTop(mfile.getPath(), f, varCount);
-     }
+    for (MFile mfile : dcm.getFilesSorted()) {
+      f.format("%n%s%n", mfile.getPath());
+      countTop(mfile.getPath(), f, varCount);
+    }
 
-     int countMisplaced=0;
-     f.format("%nTotals%n");
-     List<VarInfo> sorted = new ArrayList<>(varCount.values());
-     Collections.sort(sorted);
-     for (VarInfo vinfo : sorted) {
-       f.format(" %20s = %d%n", vinfo.name, vinfo.count);
-       if (vinfo.count > MIN_COUNT) vinfo.ok = true; // LOOK arbitrary cutoff
-       if (!vinfo.ok) countMisplaced += vinfo.count;
-     }
-     f.format("countMisplaced = %d%n", countMisplaced);
+    int countMisplaced = 0;
+    f.format("%nTotals%n");
+    List<VarInfo> sorted = new ArrayList<>(varCount.values());
+    Collections.sort(sorted);
+    for (VarInfo vinfo : sorted) {
+      f.format(" %20s = %d%n", vinfo.name, vinfo.count);
+      if (vinfo.count > MIN_COUNT)
+        vinfo.ok = true; // LOOK arbitrary cutoff
+      if (!vinfo.ok)
+        countMisplaced += vinfo.count;
+    }
+    f.format("countMisplaced = %d%n", countMisplaced);
 
-     Set<String> filenames = new HashSet<>();
-     countMisplaced=0; // count again
-     f.format("%nFind Misplaced Files%n");
-     for (MFile mfile : dcm.getFilesSorted()) {
-       File indexFile = new File(mfile.getPath());
-       countMisplaced += doOneIndex(indexFile, f, varCount, filenames, new Indent(2), extra);
-     }
-     f.format("%nDone countMisplaced=%d (n < %d)%n%nFiles%n", MIN_COUNT, countMisplaced);
-     for (String filename : filenames)
-       f.format("  %s%n", filename);
-   }
+    Set<String> filenames = new HashSet<>();
+    countMisplaced = 0; // count again
+    f.format("%nFind Misplaced Files%n");
+    for (MFile mfile : dcm.getFilesSorted()) {
+      File indexFile = new File(mfile.getPath());
+      countMisplaced += doOneIndex(indexFile, f, varCount, filenames, new Indent(2), extra);
+    }
+    f.format("%nDone countMisplaced=%d (n < %d)%n%nFiles%n", MIN_COUNT, countMisplaced);
+    for (String filename : filenames)
+      f.format("  %s%n", filename);
+  }
 
   ///////////////////////////////////////////////
 
@@ -244,15 +248,16 @@ public class CdmIndexReportPanel extends ReportPanel {
     FeatureCollectionConfig config = new FeatureCollectionConfig();
     try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFile, config, false, logger)) {
       if (gc == null)
-        throw new IOException(indexFile+ " not a grib collection index file");
+        throw new IOException(indexFile + " not a grib collection index file");
 
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
-        if (!ds.getType().equals(GribCollectionImmutable.Type.TwoD)) continue;
+        if (!ds.getType().equals(GribCollectionImmutable.Type.TwoD))
+          continue;
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
           f.format(" Group %s%n", g.getDescription());
 
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
-            String name = vi.makeVariableName();                    // LOOK not actually right - some are partitioned by level
+            String name = vi.makeVariableName(); // LOOK not actually right - some are partitioned by level
             int nrecords = vi.getNRecords();
             f.format("  %7d: %s%n", nrecords, name);
             int hash = vi.hashCode() + g.getGdsHash().hashCode(); // must be both group and var
@@ -269,68 +274,80 @@ public class CdmIndexReportPanel extends ReportPanel {
   }
 
   // recursively look for leaf files of records in vars
-  private int doOneIndex(File indexFile, Formatter f, Map<Integer, VarInfo> varCount, Set<String> filenames, Indent indent, boolean showScan) throws IOException {
+  private int doOneIndex(File indexFile, Formatter f, Map<Integer, VarInfo> varCount, Set<String> filenames,
+      Indent indent, boolean showScan) throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig();
 
     try (ucar.unidata.io.RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "r")) {
       GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
-      if (showScan) f.format("%sIndex %s type=%s", indent, indexFile, type);
+      if (showScan)
+        f.format("%sIndex %s type=%s", indent, indexFile, type);
     }
 
     int totalMisplaced = 0;
 
-    //File parent = indexFile.getParentFile();
+    // File parent = indexFile.getParentFile();
     try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFile.getPath(), config, false, logger)) {
       if (gc == null)
-        throw new IOException(indexFile+ " not a grib collection index file");
+        throw new IOException(indexFile + " not a grib collection index file");
 
       // see if it has any misplaced
       int countMisplaced = 0;
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
-        if (ds.getType().equals(GribCollectionImmutable.Type.Best)) continue;
+        if (ds.getType().equals(GribCollectionImmutable.Type.Best))
+          continue;
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
             int hash = vi.hashCode() + g.getGdsHash().hashCode();
             VarInfo vinfo = varCount.get(hash);
-            if (vinfo == null) f.format("ERROR on vi %s%n", vi);
-            else{
-              if (!vinfo.ok) countMisplaced += vi.getNRecords();
+            if (vinfo == null)
+              f.format("ERROR on vi %s%n", vi);
+            else {
+              if (!vinfo.ok)
+                countMisplaced += vi.getNRecords();
             }
           }
         }
       }
 
       if (countMisplaced == 0) {
-        if (showScan) f.format(" none%n");
+        if (showScan)
+          f.format(" none%n");
         return 0;
       }
 
       indent.incr();
       if (gc instanceof PartitionCollectionImmutable) {
         PartitionCollectionImmutable pc = (PartitionCollectionImmutable) gc;
-        boolean isPoP =  pc.isPartitionOfPartitions();
-        if (showScan) f.format(" isPofP=%s%n", isPoP);
+        boolean isPoP = pc.isPartitionOfPartitions();
+        if (showScan)
+          f.format(" isPofP=%s%n", isPoP);
         for (PartitionCollectionImmutable.Partition partition : pc.getPartitions()) {
-          //File partParent = new File(partition.getDirectory());
-          //File reparent =  new File(parent, partParent.getName());
-          // File nestedIndex =  isPoP ? new File(reparent, partition.getFilename()) : new File(parent, partition.getFilename()); // JMJ
-          File nestedIndex =  new File(partition.getIndexFilenameInCache());
-          if (showScan) f.format("%sPartition index= %s exists=%s%n", indent, nestedIndex, nestedIndex.exists());
+          // File partParent = new File(partition.getDirectory());
+          // File reparent = new File(parent, partParent.getName());
+          // File nestedIndex = isPoP ? new File(reparent, partition.getFilename()) : new File(parent,
+          // partition.getFilename()); // JMJ
+          File nestedIndex = new File(partition.getIndexFilenameInCache());
+          if (showScan)
+            f.format("%sPartition index= %s exists=%s%n", indent, nestedIndex, nestedIndex.exists());
           if (nestedIndex.exists()) {
             totalMisplaced += doOneIndex(nestedIndex, f, varCount, filenames, indent.incr(), showScan);
             indent.decr();
           } else {
-            f.format("%sdir=%s filename=%s nestedIndex %s NOT EXIST%n", indent, gc.getDirectory(), partition.getFilename(), nestedIndex.getPath());
+            f.format("%sdir=%s filename=%s nestedIndex %s NOT EXIST%n", indent, gc.getDirectory(),
+                partition.getFilename(), nestedIndex.getPath());
           }
         }
 
       } else {
-        if (showScan) f.format("%n");
+        if (showScan)
+          f.format("%n");
         f.format("%sIndex %s count=%d%n", indent, indexFile, countMisplaced);
         indent.incr();
 
         for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
-          if (ds.getType().equals(GribCollectionImmutable.Type.Best)) continue;
+          if (ds.getType().equals(GribCollectionImmutable.Type.Best))
+            continue;
           for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
             for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
               int hash = vi.hashCode() + g.getGdsHash().hashCode();

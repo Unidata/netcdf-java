@@ -5,7 +5,6 @@
 package ucar.nc2;
 
 import ucar.ma2.Array;
-
 import java.io.IOException;
 
 /**
@@ -16,7 +15,7 @@ public class TimeRecords2 {
   static void doOne(String filename, String varName) throws IOException {
     System.out.println("\nTime " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);
-    readOneVariable( ncfile, varName);
+    readOneVariable(ncfile, varName);
     readColumns(ncfile);
     ncfile.close();
   }
@@ -30,18 +29,18 @@ public class TimeRecords2 {
     }
     double took = (System.currentTimeMillis() - start) * .001;
     System.out.println("   nvars = " + ncfile.getVariables().size());
-    System.out.println(" readCols took=" + took + " secs ("+total+")");
+    System.out.println(" readCols took=" + took + " secs (" + total + ")");
   }
 
   static private void readOneVariable(NetcdfFile ncfile, String varName) throws IOException {
     long start = System.currentTimeMillis();
     long total = 0;
     Variable variable = ncfile.findVariable(varName);
-      Array data = variable.read();
-      total += data.getSize();
+    Array data = variable.read();
+    total += data.getSize();
     double took = (System.currentTimeMillis() - start) * .001;
-    System.out.println("   read var = " + varName+" from "+ncfile.getLocation());
-    System.out.println(" readOneVariable took=" + took + " secs ("+total+")");
+    System.out.println("   read var = " + varName + " from " + ncfile.getLocation());
+    System.out.println(" readOneVariable took=" + took + " secs (" + total + ")");
   }
 
   static public void main(String[] args) throws IOException {

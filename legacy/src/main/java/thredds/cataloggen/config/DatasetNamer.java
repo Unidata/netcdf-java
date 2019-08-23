@@ -7,16 +7,23 @@ package thredds.cataloggen.config;
 
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDataset;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * <p>Title: Catalog Generator</p>
- * <p>Description: Tool for generating THREDDS catalogs.</p>
- * <p>Copyright: Copyright (c) 2001</p>
- * <p>Company: UCAR/Unidata</p>
+ * <p>
+ * Title: Catalog Generator
+ * </p>
+ * <p>
+ * Description: Tool for generating THREDDS catalogs.
+ * </p>
+ * <p>
+ * Copyright: Copyright (c) 2001
+ * </p>
+ * <p>
+ * Company: UCAR/Unidata
+ * </p>
  *
  * @author Ethan Davis
  * @version 1.0
@@ -54,15 +61,14 @@ public class DatasetNamer {
    * @param attribContainer
    * @param attribName
    */
-  public DatasetNamer( InvDataset parentDs, String name, String addLevelBoolean, String typeName,
-                       String matchPattern, String substitutePattern, String attribContainer, String attribName)
-  {
-    this( parentDs, name, Boolean.parseBoolean(addLevelBoolean), DatasetNamerType.getType(typeName),
-          matchPattern, substitutePattern, attribContainer, attribName);
+  public DatasetNamer(InvDataset parentDs, String name, String addLevelBoolean, String typeName, String matchPattern,
+      String substitutePattern, String attribContainer, String attribName) {
+    this(parentDs, name, Boolean.parseBoolean(addLevelBoolean), DatasetNamerType.getType(typeName), matchPattern,
+        substitutePattern, attribContainer, attribName);
     // Check that type is not null.
-    if ( this.getType() == null ) {
+    if (this.getType() == null) {
       this.isValid = false;
-      msgLog.append( " ** DatasetNamer (1): invalid type [" + typeName + "] for datasetNamer [" + name + "]." );
+      msgLog.append(" ** DatasetNamer (1): invalid type [" + typeName + "] for datasetNamer [" + name + "].");
     }
   }
 
@@ -78,31 +84,25 @@ public class DatasetNamer {
    * @param attribContainer
    * @param attribName
    */
-  public DatasetNamer( InvDataset parentDs, String name, boolean addLevel, DatasetNamerType type,
-                       String matchPattern, String substitutePattern, String attribContainer, String attribName)
-  {
+  public DatasetNamer(InvDataset parentDs, String name, boolean addLevel, DatasetNamerType type, String matchPattern,
+      String substitutePattern, String attribContainer, String attribName) {
     this.parentDataset = parentDs;
     this.name = name;
     this.addLevel = addLevel;
-    if ( type == null ) {
+    if (type == null) {
       this.isValid = false;
-      msgLog.append( " ** DatasetNamer (1): null type for datasetNamer [" + name + "]." );
+      msgLog.append(" ** DatasetNamer (1): null type for datasetNamer [" + name + "].");
     }
     this.type = type;
 
-    if ( matchPattern != null )
-    {
+    if (matchPattern != null) {
       this.matchPattern = matchPattern;
-      if ( DatasetNamerType.REGULAR_EXPRESSION.equals( this.type ))
-      {
-        try
-        {
-          this.regExpPattern = java.util.regex.Pattern.compile( this.matchPattern );
-        }
-        catch ( PatternSyntaxException e )
-        {
+      if (DatasetNamerType.REGULAR_EXPRESSION.equals(this.type)) {
+        try {
+          this.regExpPattern = java.util.regex.Pattern.compile(this.matchPattern);
+        } catch (PatternSyntaxException e) {
           isValid = false;
-          msgLog.append( " ** DatasetNamer (3): invalid matchPattern [" + this.matchPattern + "]." );
+          msgLog.append(" ** DatasetNamer (3): invalid matchPattern [" + this.matchPattern + "].");
         }
       }
     }
@@ -204,11 +204,11 @@ public class DatasetNamer {
 
     // Check that addLevel is not null.
     // boolean can't be null
-    //if ( this.getAddLevel() == null)
-    //{
-    //  this.isValid = false;
-    //  out.append(" ** DatasetNamer (2): null value for addLevel is not valid.");
-    //}
+    // if ( this.getAddLevel() == null)
+    // {
+    // this.isValid = false;
+    // out.append(" ** DatasetNamer (2): null value for addLevel is not valid.");
+    // }
 
     // Check that type is not null.
     if (this.getType() == null) {
@@ -216,21 +216,20 @@ public class DatasetNamer {
       out.append(" ** DatasetNamer (3): null value for type is not valid (set with bad string?).");
     }
 
-    if ( this.getType() == DatasetNamerType.REGULAR_EXPRESSION
-         && ( this.getMatchPattern() == null || this.getSubstitutePattern() == null ))
-    {
+    if (this.getType() == DatasetNamerType.REGULAR_EXPRESSION
+        && (this.getMatchPattern() == null || this.getSubstitutePattern() == null)) {
       this.isValid = false;
-      out.append(" ** DatasetNamer (4): invalid datasetNamer <" + this.getName() + ">;" +
-              " type is " + this.getType().toString() + ": matchPattern(" + this.getMatchPattern() + ") and substitutionPattern(" + this.getSubstitutePattern() + ") " +
-              "must not be null.");
+      out.append(" ** DatasetNamer (4): invalid datasetNamer <" + this.getName() + ">;" + " type is "
+          + this.getType().toString() + ": matchPattern(" + this.getMatchPattern() + ") and substitutionPattern("
+          + this.getSubstitutePattern() + ") " + "must not be null.");
     }
 
-    if ( this.getType() == DatasetNamerType.DODS_ATTRIBUTE
-            && ( this.getAttribContainer() == null || this.getAttribName() == null ) )
-    {
+    if (this.getType() == DatasetNamerType.DODS_ATTRIBUTE
+        && (this.getAttribContainer() == null || this.getAttribName() == null)) {
       this.isValid = false;
-      out.append(" ** DatasetNamer (5): invalid datasetNamer <" + this.getName() + ">;" +
-              " type is " + this.getType().toString() + ": attriuteContainer(" + this.getAttribContainer() + ") and attributeName(" + this.getAttribName() + ") must not be null.");
+      out.append(" ** DatasetNamer (5): invalid datasetNamer <" + this.getName() + ">;" + " type is "
+          + this.getType().toString() + ": attriuteContainer(" + this.getAttribContainer() + ") and attributeName("
+          + this.getAttribName() + ") must not be null.");
     }
 
     return (this.isValid);
@@ -241,12 +240,10 @@ public class DatasetNamer {
    */
   public String toString() {
     StringBuffer tmp = new StringBuffer();
-    tmp.append("DatasetNamer[name:<" + this.getName() + "> addLevel:<" +
-            this.getAddLevel() + "> type:<" + this.getType() +
-            "> matchPattern:<" + this.getMatchPattern() +
-            "> substitutePatter:<" + this.getSubstitutePattern() +
-            "> attribContainer:<" + this.getAttribContainer() +
-            "> attribName:<" + this.getAttribName() + ">]");
+    tmp.append(
+        "DatasetNamer[name:<" + this.getName() + "> addLevel:<" + this.getAddLevel() + "> type:<" + this.getType()
+            + "> matchPattern:<" + this.getMatchPattern() + "> substitutePatter:<" + this.getSubstitutePattern()
+            + "> attribContainer:<" + this.getAttribContainer() + "> attribName:<" + this.getAttribName() + ">]");
     return (tmp.toString());
   }
 
@@ -256,10 +253,12 @@ public class DatasetNamer {
   public boolean nameDataset(InvDatasetImpl dataset) {
     if (this.type == DatasetNamerType.REGULAR_EXPRESSION) {
       return (this.nameDatasetRegExp(dataset));
-    } /* else if (this.type == DatasetNamerType.DODS_ATTRIBUTE) {
-      return (this.nameDatasetDodsAttrib(dataset));
-    } */
-          else {
+    } /*
+       * else if (this.type == DatasetNamerType.DODS_ATTRIBUTE) {
+       * return (this.nameDatasetDodsAttrib(dataset));
+       * }
+       */
+    else {
       String tmpMsg = "This DatasetNamer <" + this.getName() + "> has unsupported type <" + this.type.toString() + ">.";
       logger.error("nameDataset(): " + tmpMsg);
       throw new IllegalStateException(tmpMsg);
@@ -270,8 +269,7 @@ public class DatasetNamer {
   /**
    * Try to name the given dataset.
    */
-  public boolean nameDatasetList(java.util.List datasetList)
-          throws java.lang.Exception {
+  public boolean nameDatasetList(java.util.List datasetList) throws java.lang.Exception {
     boolean returnValue = false;
 
     InvDatasetImpl curDataset = null;
@@ -283,155 +281,157 @@ public class DatasetNamer {
   }
 
   /**  */
-  private boolean nameDatasetRegExp(InvDatasetImpl dataset)
-  {
+  private boolean nameDatasetRegExp(InvDatasetImpl dataset) {
     boolean isMatch;
     Matcher matcher;
 
     // Test for a match on the urlPath
     if (dataset.getUrlPath() != null) {
       logger.debug("nameDatasetRegExp(): try naming on urlPath <{}>", dataset.getUrlPath());
-      matcher = this.regExpPattern.matcher( dataset.getUrlPath() );
+      matcher = this.regExpPattern.matcher(dataset.getUrlPath());
       isMatch = matcher.find();
     } else {
-      matcher = this.regExpPattern.matcher( dataset.getName() );
+      matcher = this.regExpPattern.matcher(dataset.getName());
       isMatch = matcher.find();
     }
 
-    if ( isMatch) {
+    if (isMatch) {
       // Test for substitution.
       StringBuffer resultingName = new StringBuffer();
-      matcher.appendReplacement( resultingName, this.substitutePattern );
-      resultingName.delete( 0, matcher.start() );
+      matcher.appendReplacement(resultingName, this.substitutePattern);
+      resultingName.delete(0, matcher.start());
 
-      if ( resultingName.length() != 0) {
-        logger.debug( "nameDatasetRegExp(): Setting name to \"" + resultingName + "\".");
-        dataset.setName( resultingName.toString());
+      if (resultingName.length() != 0) {
+        logger.debug("nameDatasetRegExp(): Setting name to \"" + resultingName + "\".");
+        dataset.setName(resultingName.toString());
         return true;
       } else {
-        logger.debug( "nameDatasetRegExp(): No name for regEx substitution.");
+        logger.debug("nameDatasetRegExp(): No name for regEx substitution.");
         return false;
       }
     }
     if (logger.isDebugEnabled())
-      logger.debug("nameDatasetRegExp(): Neither URL <" + dataset.getUrlPath() + "> or name <" +
-              dataset.getName() + "> matched pattern <" + this.matchPattern + "> .");
+      logger.debug("nameDatasetRegExp(): Neither URL <" + dataset.getUrlPath() + "> or name <" + dataset.getName()
+          + "> matched pattern <" + this.matchPattern + "> .");
     return false;
   }
 
   /**
-  private boolean nameDatasetDodsAttrib(InvDatasetImpl dataset)
-//    throws java.lang.Exception
-  {
-    DConnect dodsConnection = null;
-    DAS das = null;
-
-    boolean acceptDeflate = true;
-
-    String newDatasetName = null;
-
-    //-----
-    // Test that this dataset has a DODS type service.
-    //-----
-    InvAccess access = dataset.getAccess(ServiceType.DODS);
-
-    if (access == null) {
-      logger.warn("nameDatasetDodsAttrib(): dataset is not DODS accessible and so cannot be named using DODS attributes.");
-      return (false);
-    }
-
-    //-----
-    // Connect to DODS dataset.
-    //-----
-    String url = access.getStandardUrlName();
-
-    try {
-      dodsConnection = new DConnect(url, acceptDeflate);
-    }
-    catch (java.io.FileNotFoundException e) {
-      logger.error("nameDatasetDodsAttrib(): URL <" + url + "> not found: " + e.getMessage());
-      return (false);
-    }
-    catch (Exception e) // java.lang.NullPointerException
-    {
-      logger.error("nameDatasetDodsAttrib(): Failed DODS connect: " + e.getMessage());
-      return (false);
-    }
-
-    logger.debug("nameDatasetDodsAttrib(): Got DODS Connect <url={}>", url);
-
-    //-----
-    // Get the DAS
-    //-----
-    try {
-      das = dodsConnection.getDAS();
-    }
-    catch (DAP2Exception e) // DODSException and DASException
-    {
-      logger.error("nameDatasetDodsAttrib(): Failed to get DAS: " + e.getMessage());
-      return (false);
-    }
-    catch (opendap.dap.parsers.ParseException e) {
-      logger.error("nameDatasetDodsAttrib(): Failed to get DAS: " + e.getMessage());
-      return (false);
-    }
-    catch (Exception e) // java.net.MalformedURLException, java.io.IOException
-    {
-      logger.error("nameDatasetDodsAttrib(): Failed to get DAS: " + e.getMessage());
-      return (false);
-    }
-
-    logger.debug("nameDatasetDodsAttrib(): Got DAS");
-
-    //-----
-    // Get attribute value from attribute container.
-    //-----
-    AttributeTable dodsAttTable = null;
-    try {
-      dodsAttTable = das.getAttributeTable(this.attribContainer);
-
-      if (dodsAttTable != null) {
-        Attribute desiredAtt =
-                dodsAttTable.getAttribute(this.attribName);
-        // Check that desired attribute is a string
-        if (desiredAtt.getType() == opendap.dap.Attribute.STRING) {
-          java.util.Enumeration enumValues = desiredAtt.getValues();
-          if (enumValues.hasMoreElements()) {
-            newDatasetName = (String) enumValues.nextElement();
-            // Java DODS string attributes are enclosed in double quotes.
-            // Remove them.
-            newDatasetName = newDatasetName.substring(1, newDatasetName.length() - 1);
-            if (enumValues.hasMoreElements()) {
-              // If attribute has more than one value, return false.
-              logger.warn("nameDatasetDodsAttrib(): attribute has multiple values, only using first value <" + newDatasetName + ">");
-              dataset.setName(newDatasetName);
-              return (true);
-            }
-            // Desired attribute is a string and contains only one value,
-            // set the dataset name and return true.
-            logger.debug("nameDatasetDodsAttrib(): setting dataset name to <{}>.", newDatasetName);
-            dataset.setName(newDatasetName);
-            return (true);
-          } else {
-            // If attribute has no values, return false.
-            logger.debug("nameDatasetDodsAttrib(): attribute has no value");
-            return (false);
-          }
-        } else {
-          // Desired attribute is not a string, return false.
-          logger.debug("nameDatasetDodsAttrib(): attribute value is not a string.");
-          return (false);
-        }
-      } else {
-        // No such attribute container, return false.
-        logger.debug("nameDatasetDodsAttrib(): attribute container does not exist.");
-        return (false);
-      }
-
-    } catch (NoSuchAttributeException e) {
-        // No such attribute container, return false.
-        logger.debug("nameDatasetDodsAttrib(): attribute container does not exist.");
-        return (false);
-    }
-  } */
+   * private boolean nameDatasetDodsAttrib(InvDatasetImpl dataset)
+   * // throws java.lang.Exception
+   * {
+   * DConnect dodsConnection = null;
+   * DAS das = null;
+   * 
+   * boolean acceptDeflate = true;
+   * 
+   * String newDatasetName = null;
+   * 
+   * //-----
+   * // Test that this dataset has a DODS type service.
+   * //-----
+   * InvAccess access = dataset.getAccess(ServiceType.DODS);
+   * 
+   * if (access == null) {
+   * logger.warn("nameDatasetDodsAttrib(): dataset is not DODS accessible and so cannot be named using DODS
+   * attributes.");
+   * return (false);
+   * }
+   * 
+   * //-----
+   * // Connect to DODS dataset.
+   * //-----
+   * String url = access.getStandardUrlName();
+   * 
+   * try {
+   * dodsConnection = new DConnect(url, acceptDeflate);
+   * }
+   * catch (java.io.FileNotFoundException e) {
+   * logger.error("nameDatasetDodsAttrib(): URL <" + url + "> not found: " + e.getMessage());
+   * return (false);
+   * }
+   * catch (Exception e) // java.lang.NullPointerException
+   * {
+   * logger.error("nameDatasetDodsAttrib(): Failed DODS connect: " + e.getMessage());
+   * return (false);
+   * }
+   * 
+   * logger.debug("nameDatasetDodsAttrib(): Got DODS Connect <url={}>", url);
+   * 
+   * //-----
+   * // Get the DAS
+   * //-----
+   * try {
+   * das = dodsConnection.getDAS();
+   * }
+   * catch (DAP2Exception e) // DODSException and DASException
+   * {
+   * logger.error("nameDatasetDodsAttrib(): Failed to get DAS: " + e.getMessage());
+   * return (false);
+   * }
+   * catch (opendap.dap.parsers.ParseException e) {
+   * logger.error("nameDatasetDodsAttrib(): Failed to get DAS: " + e.getMessage());
+   * return (false);
+   * }
+   * catch (Exception e) // java.net.MalformedURLException, java.io.IOException
+   * {
+   * logger.error("nameDatasetDodsAttrib(): Failed to get DAS: " + e.getMessage());
+   * return (false);
+   * }
+   * 
+   * logger.debug("nameDatasetDodsAttrib(): Got DAS");
+   * 
+   * //-----
+   * // Get attribute value from attribute container.
+   * //-----
+   * AttributeTable dodsAttTable = null;
+   * try {
+   * dodsAttTable = das.getAttributeTable(this.attribContainer);
+   * 
+   * if (dodsAttTable != null) {
+   * Attribute desiredAtt =
+   * dodsAttTable.getAttribute(this.attribName);
+   * // Check that desired attribute is a string
+   * if (desiredAtt.getType() == opendap.dap.Attribute.STRING) {
+   * java.util.Enumeration enumValues = desiredAtt.getValues();
+   * if (enumValues.hasMoreElements()) {
+   * newDatasetName = (String) enumValues.nextElement();
+   * // Java DODS string attributes are enclosed in double quotes.
+   * // Remove them.
+   * newDatasetName = newDatasetName.substring(1, newDatasetName.length() - 1);
+   * if (enumValues.hasMoreElements()) {
+   * // If attribute has more than one value, return false.
+   * logger.warn("nameDatasetDodsAttrib(): attribute has multiple values, only using first value <" + newDatasetName +
+   * ">");
+   * dataset.setName(newDatasetName);
+   * return (true);
+   * }
+   * // Desired attribute is a string and contains only one value,
+   * // set the dataset name and return true.
+   * logger.debug("nameDatasetDodsAttrib(): setting dataset name to <{}>.", newDatasetName);
+   * dataset.setName(newDatasetName);
+   * return (true);
+   * } else {
+   * // If attribute has no values, return false.
+   * logger.debug("nameDatasetDodsAttrib(): attribute has no value");
+   * return (false);
+   * }
+   * } else {
+   * // Desired attribute is not a string, return false.
+   * logger.debug("nameDatasetDodsAttrib(): attribute value is not a string.");
+   * return (false);
+   * }
+   * } else {
+   * // No such attribute container, return false.
+   * logger.debug("nameDatasetDodsAttrib(): attribute container does not exist.");
+   * return (false);
+   * }
+   * 
+   * } catch (NoSuchAttributeException e) {
+   * // No such attribute container, return false.
+   * logger.debug("nameDatasetDodsAttrib(): attribute container does not exist.");
+   * return (false);
+   * }
+   * }
+   */
 }

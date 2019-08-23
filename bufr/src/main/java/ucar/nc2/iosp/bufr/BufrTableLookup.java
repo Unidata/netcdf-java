@@ -7,7 +7,6 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.iosp.bufr.tables.*;
 import ucar.nc2.wmo.CommonCodeTable;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -24,21 +23,26 @@ public class BufrTableLookup {
 
   static public BufrTableLookup factory(Message m) throws IOException {
     return new BufrTableLookup(m.is.getBufrEdition(), m.ids.getCenterId(), m.ids.getSubCenterId(),
-            m.ids.getMasterTableId(), m.ids.getMasterTableVersion(), m.ids.getLocalTableVersion(),
-            m.ids.getCategory(), m.ids.getSubCategory(), m.ids.getLocalSubCategory());
+        m.ids.getMasterTableId(), m.ids.getMasterTableVersion(), m.ids.getLocalTableVersion(), m.ids.getCategory(),
+        m.ids.getSubCategory(), m.ids.getLocalSubCategory());
   }
 
-  /* static public BufrTableLookup factory(int bufrEdition, int center, int subCenter, int masterId, int masterVersion, int localVersion,
-                                       int category, int subCategory, int localSubCategory) {
-    return new BufrTableLookup(bufrEdition, center, subCenter, masterId, masterVersion, localVersion, category, subCategory, localSubCategory);
-  } */
+  /*
+   * static public BufrTableLookup factory(int bufrEdition, int center, int subCenter, int masterId, int masterVersion,
+   * int localVersion,
+   * int category, int subCategory, int localSubCategory) {
+   * return new BufrTableLookup(bufrEdition, center, subCenter, masterId, masterVersion, localVersion, category,
+   * subCategory, localSubCategory);
+   * }
+   */
 
   //////////////////////////////////////////////////////////
 
-  private int center, subCenter, masterId, masterVersion, localVersion, bufrEdition, category, subCategory, localSubCategory;
+  private int center, subCenter, masterId, masterVersion, localVersion, bufrEdition, category, subCategory,
+      localSubCategory;
 
   private BufrTableLookup(int bufrEdition, int center, int subCenter, int masterId, int masterVersion, int localVersion,
-                         int category, int subCategory, int localSubCategory) throws IOException {
+      int category, int subCategory, int localSubCategory) throws IOException {
     this.bufrEdition = bufrEdition;
     this.center = center;
     this.subCenter = subCenter;
@@ -91,7 +95,8 @@ public class BufrTableLookup {
   public String getCenterName() {
     String name = CommonCodeTable.getCenterNameBufr(getCenter(), getBufrEdition());
     String subname = CommonCodeTable.getSubCenterName(getCenter(), getSubCenter());
-    if (subname != null) name = name +" / " + subname;
+    if (subname != null)
+      name = name + " / " + subname;
     return getCenter() + "." + getSubCenter() + " (" + name + ")";
   }
 
@@ -108,9 +113,9 @@ public class BufrTableLookup {
     String subcatName = getSubCategoryName();
 
     if (subcatName != null)
-      return getCategoryNo() + "="+ catName + " / " + subcatName;
+      return getCategoryNo() + "=" + catName + " / " + subcatName;
     else
-      return getCategoryNo() + "="+ catName;
+      return getCategoryNo() + "=" + catName;
   }
 
   public String getSubCategoryName() { // throws IOException {
@@ -129,15 +134,15 @@ public class BufrTableLookup {
 
   public String getCategoryNo() {
     String result = getCategory() + "." + getSubCategory();
-    if (getLocalSubCategory() >= 0) result += "." + getLocalSubCategory();
+    if (getLocalSubCategory() >= 0)
+      result += "." + getLocalSubCategory();
     return result;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private TableLookup tlookup;
 
-  private void init() {
-  }
+  private void init() {}
 
   public void setTableLookup(TableLookup tlookup) {
     this.tlookup = tlookup;
@@ -176,12 +181,15 @@ public class BufrTableLookup {
       int f = (fxy & 0xC000) >> 14;
       if (f == 3) {
         List<Short> sublist = getDescriptorListTableD(fxy);
-        if (sublist == null) out.format("%s, ", Descriptor.makeString(fxy));
-        else showMissingFields(sublist, out);
+        if (sublist == null)
+          out.format("%s, ", Descriptor.makeString(fxy));
+        else
+          showMissingFields(sublist, out);
 
-      } else if (f == 0) {  // skip the 2- operators for now
+      } else if (f == 0) { // skip the 2- operators for now
         TableB.Descriptor b = getDescriptorTableB(fxy);
-        if (b == null) out.format("%s, ", Descriptor.makeString(fxy));
+        if (b == null)
+          out.format("%s, ", Descriptor.makeString(fxy));
       }
     }
   }
@@ -189,7 +197,8 @@ public class BufrTableLookup {
   public List<String> getDescriptorListTableD(String fxy) {
     short id = Descriptor.getFxy(fxy);
     List<Short> seq = getDescriptorListTableD(id);
-    if (seq == null) return null;
+    if (seq == null)
+      return null;
     List<String> result = new ArrayList<>(seq.size());
     for (Short s : seq)
       result.add(Descriptor.makeString(s));

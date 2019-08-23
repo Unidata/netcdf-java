@@ -31,21 +31,19 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
    */
   public static boolean isMine(NetcdfFile ncfile) {
     String cs = ncfile.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
-    if (cs != null) return false;
+    if (cs != null)
+      return false;
 
     String s = ncfile.findAttValueIgnoreCase(null, "DataType", null);
     if ((s == null) || !(s.equalsIgnoreCase("LatLonGrid") || s.equalsIgnoreCase("LatLonHeightGrid")))
       return false;
 
-    if ((null == ncfile.findGlobalAttribute("Latitude")) ||
-        (null == ncfile.findGlobalAttribute("Longitude")) ||
-        (null == ncfile.findGlobalAttribute("LatGridSpacing")) ||
-        (null == ncfile.findGlobalAttribute("LonGridSpacing")) ||
-        (null == ncfile.findGlobalAttribute("Time")))
+    if ((null == ncfile.findGlobalAttribute("Latitude")) || (null == ncfile.findGlobalAttribute("Longitude"))
+        || (null == ncfile.findGlobalAttribute("LatGridSpacing"))
+        || (null == ncfile.findGlobalAttribute("LonGridSpacing")) || (null == ncfile.findGlobalAttribute("Time")))
       return false;
 
-    return !(null == ncfile.findDimension("Lat") ||
-            null == ncfile.findDimension("Lon"));
+    return !(null == ncfile.findDimension("Lat") || null == ncfile.findDimension("Lon"));
 
   }
 
@@ -54,9 +52,11 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
-    if (null != ds.findVariable("Lat")) return; // check if its already been done - aggregating enhanced datasets.
+    if (null != ds.findVariable("Lat"))
+      return; // check if its already been done - aggregating enhanced datasets.
     String s = ds.findAttValueIgnoreCase(null, "DataType", null);
-    if (s == null) return;
+    if (s == null)
+      return;
 
     if (s.equalsIgnoreCase("LatLonGrid"))
       augment2D(ds, cancelTask);
@@ -70,7 +70,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     ds.addAttribute(null, new Attribute(CDM.CONVENTIONS, "NSSL National Reflectivity Mosaic"));
 
     addLongName(ds, "mrefl_mosaic", "3-D reflectivity mosaic grid");
-    addCoordinateAxisType(ds, "Height", AxisType.Height);  
+    addCoordinateAxisType(ds, "Height", AxisType.Height);
     addCoordSystem(ds);
 
     Variable var = ds.findVariable("mrefl_mosaic");
@@ -85,7 +85,8 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     att = ds.findGlobalAttributeIgnoreCase("MissingData");
     if (null != att) {
       float val = att.getNumericValue().floatValue();
-      if (!Float.isNaN(scale_factor)) val *= scale_factor;
+      if (!Float.isNaN(scale_factor))
+        val *= scale_factor;
       var.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) val));
     }
     // hack
@@ -114,23 +115,24 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
 
     // fix the variable attributes
     for (Variable var : ds.getVariables()) {
-      //boolean need_enhance = false;
+      // boolean need_enhance = false;
       float scale_factor = Float.NaN;
       Attribute att = var.findAttributeIgnoreCase("Scale");
       if (att != null) {
         scale_factor = att.getNumericValue().floatValue();
         var.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0f / scale_factor));
-        //need_enhance = true;
+        // need_enhance = true;
       }
       att = var.findAttributeIgnoreCase("MissingData");
       if (null != att) {
         float val = att.getNumericValue().floatValue();
-        if (!Float.isNaN(scale_factor)) val *= scale_factor;
+        if (!Float.isNaN(scale_factor))
+          val *= scale_factor;
         var.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) val));
-        //need_enhance = true;
+        // need_enhance = true;
       }
-      //if (need_enhance)
-      //  ((VariableDS)var).enhance();
+      // if (need_enhance)
+      // ((VariableDS)var).enhance();
     }
 
     ds.finish();
@@ -142,7 +144,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
       v.addAttribute(new Attribute(CDM.LONG_NAME, longName));
   }
 
-    private void addCoordinateAxisType(NetcdfDataset ds, String varName, AxisType type) {
+  private void addCoordinateAxisType(NetcdfDataset ds, String varName, AxisType type) {
     Variable v = ds.findVariable(varName);
     if (v != null)
       v.addAttribute(new Attribute(_Coordinate.AxisType, type.name()));
@@ -156,29 +158,32 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     double dlon = ds.findGlobalAttributeIgnoreCase("LonGridSpacing").getNumericValue().doubleValue();
     int time = ds.findGlobalAttributeIgnoreCase("Time").getNumericValue().intValue();
 
-    if (debug) System.out.println(ds.getLocation() + " Lat/Lon=" + lat + "/" + lon);
+    if (debug)
+      System.out.println(ds.getLocation() + " Lat/Lon=" + lat + "/" + lon);
 
     int nlat = ds.findDimension("Lat").getLength();
     int nlon = ds.findDimension("Lon").getLength();
 
     // add lat
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, "Lat", DataType.FLOAT, "Lat", CDM.LAT_UNITS, "latitude coordinate");
+    CoordinateAxis v =
+        new CoordinateAxis1D(ds, null, "Lat", DataType.FLOAT, "Lat", CDM.LAT_UNITS, "latitude coordinate");
     v.setValues(nlat, lat, -dlat);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    ds.addCoordinateAxis( v);
+    ds.addCoordinateAxis(v);
 
     // add lon
     v = new CoordinateAxis1D(ds, null, "Lon", DataType.FLOAT, "Lon", CDM.LON_UNITS, "longitude coordinate");
     v.setValues(nlon, lon, dlon);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-    ds.addCoordinateAxis( v);
+    ds.addCoordinateAxis(v);
 
     // add time
     ds.addDimension(null, new Dimension("Time", 1));
-    v = new CoordinateAxis1D(ds, null, "Time", DataType.INT, "Time", "seconds since 1970-1-1 00:00:00", "time coordinate");
+    v = new CoordinateAxis1D(ds, null, "Time", DataType.INT, "Time", "seconds since 1970-1-1 00:00:00",
+        "time coordinate");
     v.setValues(1, time, 1);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-    ds.addCoordinateAxis( v);
+    ds.addCoordinateAxis(v);
   }
 
 }

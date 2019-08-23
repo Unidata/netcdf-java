@@ -80,13 +80,15 @@ public class EcmwfCodeTableCompare {
           System.out.printf("%s", out);
           latest = next;
         }
-        if (!verbose) break;
+        if (!verbose)
+          break;
       }
     }
   }
 
   public static void main(String[] args) {
-    final String PATH = "/usr/local/google/home/jlcaron/github/thredds/grib/src/main/resources/resources/grib2/ecmwf/tables/21";
+    final String PATH =
+        "/usr/local/google/home/jlcaron/github/thredds/grib/src/main/resources/resources/grib2/ecmwf/tables/21";
     System.out.printf("EcmwfCodeTableCompare on %s%n", CalendarDate.present());
     System.out.printf("  ECMWF = %s%n", PATH);
     System.out.printf("  WMO   = %s%n", WmoCodeFlagTables.standard.getResourceName());

@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -50,27 +50,27 @@ package opendap.servers;
  * @version $Revision: 15901 $
  */
 public class InvalidOperatorException extends DAP2ServerSideException {
-    /**
-     * Construct a <code>InvalidOperatorException</code> with the specified
-     * detail message.
-     *
-     * @param s the detail message.
-     */
-    public InvalidOperatorException(String s) {
-        super(opendap.dap.DAP2Exception.MALFORMED_EXPR, "Invalid Operator Exception: " + s);
-    }
+  /**
+   * Construct a <code>InvalidOperatorException</code> with the specified
+   * detail message.
+   *
+   * @param s the detail message.
+   */
+  public InvalidOperatorException(String s) {
+    super(opendap.dap.DAP2Exception.MALFORMED_EXPR, "Invalid Operator Exception: " + s);
+  }
 
 
-    /**
-     * Construct a <code>InvalidOperatorException</code> with the specified
-     * message and OPeNDAP error code (see <code>DAP2Exception</code>).
-     *
-     * @param err the OPeNDAP error code.
-     * @param s   the detail message.
-     */
-    public InvalidOperatorException(int err, String s) {
-        super(err, s);
-    }
+  /**
+   * Construct a <code>InvalidOperatorException</code> with the specified
+   * message and OPeNDAP error code (see <code>DAP2Exception</code>).
+   *
+   * @param err the OPeNDAP error code.
+   * @param s the detail message.
+   */
+  public InvalidOperatorException(int err, String s) {
+    super(err, s);
+  }
 }
 
 

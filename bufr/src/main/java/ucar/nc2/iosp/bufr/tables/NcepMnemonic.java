@@ -5,8 +5,10 @@
 package ucar.nc2.iosp.bufr.tables;
 
 /*
- * BufrRead mnemonic.java  1.0  05/09/2008
- * @author  Robb Kambic
+ * BufrRead mnemonic.java 1.0 05/09/2008
+ * 
+ * @author Robb Kambic
+ * 
  * @version 1.0
  */
 
@@ -14,22 +16,22 @@ import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
-
 import java.io.*;
 import java.lang.Integer;
 import java.util.*;
 
 /**
- * A class that reads a  mnemonic table. It doesn't include X < 48 and Y < 192 type of
+ * A class that reads a mnemonic table. It doesn't include X < 48 and Y < 192 type of
  * descriptors because they are already stored in the latest WMO tables.
  */
 
 public class NcepMnemonic {
 
-  //| HEADR    | 362001 | TABLE D ENTRY - PROFILE COORDINATES                      |                      |
+  // | HEADR | 362001 | TABLE D ENTRY - PROFILE COORDINATES | |
   private static final Pattern fields3 = Pattern.compile("^\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|\\s+(.*)\\s*\\|");
   private static final Pattern fields2 = Pattern.compile("^\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|");
-  private static final Pattern fields5 = Pattern.compile("^\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|");
+  private static final Pattern fields5 =
+      Pattern.compile("^\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|\\s+(.*)\\s+\\|");
 
   /**
    * Pattern to get 3 integers from beginning of line.
@@ -62,23 +64,30 @@ public class NcepMnemonic {
     try {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
-      // read  mnemonic table
+      // read mnemonic table
       Matcher m;
       // read header info and disregard
       while (true) {
         String line = dataIS.readLine();
-        if (line == null) throw new RuntimeException("Bad NCEP mnemonic BUFR table ");
-        if (line.contains("MNEMONIC")) break;
+        if (line == null)
+          throw new RuntimeException("Bad NCEP mnemonic BUFR table ");
+        if (line.contains("MNEMONIC"))
+          break;
       }
       // read mnemonic, number, and description
-      //| HEADR    | 362001 | TABLE D ENTRY - PROFILE COORDINATES                      |
+      // | HEADR | 362001 | TABLE D ENTRY - PROFILE COORDINATES |
       while (true) {
         String line = dataIS.readLine();
-        if (line == null) break;
-        if (line.contains("MNEMONIC")) break;
-        if (line.contains("----")) continue;
-        if (line.startsWith("*")) continue;
-        if (line.startsWith("|       ")) continue;
+        if (line == null)
+          break;
+        if (line.contains("MNEMONIC"))
+          break;
+        if (line.contains("----"))
+          continue;
+        if (line.startsWith("*"))
+          continue;
+        if (line.startsWith("|       "))
+          continue;
         m = fields3.matcher(line);
         if (m.find()) {
           String mnu = m.group(1).trim();
@@ -98,14 +107,19 @@ public class NcepMnemonic {
         }
       }
       // read in sequences using mnemonics
-      //| ETACLS1  | HEADR {PROFILE} SURF FLUX HYDR D10M {SLYR} XTRA                   |
+      // | ETACLS1 | HEADR {PROFILE} SURF FLUX HYDR D10M {SLYR} XTRA |
       while (true) {
         String line = dataIS.readLine();
-        if (line == null) break;
-        if (line.contains("MNEMONIC")) break;
-        if (line.contains("----")) continue;
-        if (line.startsWith("|       ")) continue;
-        if (line.startsWith("*")) continue;
+        if (line == null)
+          break;
+        if (line.contains("MNEMONIC"))
+          break;
+        if (line.contains("----"))
+          continue;
+        if (line.startsWith("|       "))
+          continue;
+        if (line.startsWith("*"))
+          continue;
         m = fields2.matcher(line);
         if (m.find()) {
           String mnu = m.group(1).trim();
@@ -173,14 +187,14 @@ public class NcepMnemonic {
         // these are in latest tables
         if (XlocalCutoff > Integer.parseInt(X) && YlocalCutoff > Integer.parseInt(Y))
           continue;
-        //key = F + "-" + X + "-" + Y;
+        // key = F + "-" + X + "-" + Y;
 
         short seqX = Short.parseShort(X.trim());
         short seqY = Short.parseShort(Y.trim());
 
         tables.d.addDescriptor(seqX, seqY, ent.getKey(), list);
-        //short id = Descriptor.getFxy(key);
-        //sequences.put(Short.valueOf(id), tableD);
+        // short id = Descriptor.getFxy(key);
+        // sequences.put(Short.valueOf(id), tableD);
       }
 
       // add some static repetition sequences
@@ -190,53 +204,57 @@ public class NcepMnemonic {
       list.add(Descriptor.getFxy("1-1-0"));
       list.add(Descriptor.getFxy("0-31-2"));
       tables.d.addDescriptor((short) 60, (short) 1, "", list);
-      //tableD = new DescriptorTableD("", "3-60-1", list, false);
-      //tableD.put( "3-60-1", d);
-      //short id = Descriptor.getFxy("3-60-1");
-      //sequences.put(Short.valueOf(id), tableD);
+      // tableD = new DescriptorTableD("", "3-60-1", list, false);
+      // tableD.put( "3-60-1", d);
+      // short id = Descriptor.getFxy("3-60-1");
+      // sequences.put(Short.valueOf(id), tableD);
 
       list = new ArrayList<>();
       // 8 bit delayed repetition
       list.add(Descriptor.getFxy("1-1-0"));
       list.add(Descriptor.getFxy("0-31-1"));
       tables.d.addDescriptor((short) 60, (short) 2, "", list);
-      //tableD = new DescriptorTableD("", "3-60-2", list, false);
-      //tableD.put( "3-60-2", d);
-      //id = Descriptor.getFxy("3-60-2");
-      //sequences.put(Short.valueOf(id), tableD);
+      // tableD = new DescriptorTableD("", "3-60-2", list, false);
+      // tableD.put( "3-60-2", d);
+      // id = Descriptor.getFxy("3-60-2");
+      // sequences.put(Short.valueOf(id), tableD);
 
       list = new ArrayList<>();
       // 8 bit delayed repetition
       list.add(Descriptor.getFxy("1-1-0"));
       list.add(Descriptor.getFxy("0-31-1"));
       tables.d.addDescriptor((short) 60, (short) 3, "", list);
-      //tableD = new DescriptorTableD("", "3-60-3", list, false);
-      //tableD.put( "3-60-3", d);
-      //id = Descriptor.getFxy("3-60-3");
-      //sequences.put(Short.valueOf(id), tableD);
+      // tableD = new DescriptorTableD("", "3-60-3", list, false);
+      // tableD.put( "3-60-3", d);
+      // id = Descriptor.getFxy("3-60-3");
+      // sequences.put(Short.valueOf(id), tableD);
 
       list = new ArrayList<>();
       // 1 bit delayed repetition
       list.add(Descriptor.getFxy("1-1-0"));
       list.add(Descriptor.getFxy("0-31-0"));
       tables.d.addDescriptor((short) 60, (short) 4, "", list);
-      //tableD = new DescriptorTableD("", "3-60-4", list, false);
-      //tableD.put( "3-60-4", d);
-      //id = Descriptor.getFxy("3-60-4");
-      //sequences.put(Short.valueOf(id), tableD);
+      // tableD = new DescriptorTableD("", "3-60-4", list, false);
+      // tableD.put( "3-60-4", d);
+      // id = Descriptor.getFxy("3-60-4");
+      // sequences.put(Short.valueOf(id), tableD);
 
       // add in element descriptors
-      //  MNEMONIC | SCAL | REFERENCE   | BIT | UNITS
-      //| FTIM     |    0 |           0 |  24 | SECONDS                  |-------------|
+      // MNEMONIC | SCAL | REFERENCE | BIT | UNITS
+      // | FTIM | 0 | 0 | 24 | SECONDS |-------------|
 
-      //tableB = new TableB(tablename, tablename);
+      // tableB = new TableB(tablename, tablename);
 
       while (true) {
         String line = dataIS.readLine();
-        if (line == null) break;
-        if (line.contains("MNEMONIC")) break;
-        if (line.startsWith("|       ")) continue;
-        if (line.startsWith("*")) continue;
+        if (line == null)
+          break;
+        if (line.contains("MNEMONIC"))
+          break;
+        if (line.startsWith("|       "))
+          continue;
+        if (line.startsWith("*"))
+          continue;
         m = fields5.matcher(line);
         if (m.find()) {
           if (m.group(1).equals("")) {
@@ -252,7 +270,7 @@ public class NcepMnemonic {
             short x = Short.parseShort(X.trim());
             short y = Short.parseShort(Y.trim());
 
-            // these are in latest tables so skip  LOOK WHY
+            // these are in latest tables so skip LOOK WHY
             if (XlocalCutoff > x && YlocalCutoff > y)
               continue;
 

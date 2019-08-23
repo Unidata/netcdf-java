@@ -7,7 +7,6 @@ package ucar.ma2;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 
 /** Test ma2 get/put methods in the JUnit framework. */
@@ -15,17 +14,17 @@ import java.lang.invoke.MethodHandles;
 public class TestTxCompose extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestTxCompose( String name) {
+  public TestTxCompose(String name) {
     super(name);
   }
 
   int m = 4, n = 3, p = 2;
-  int [] sA = { m, n, p };
+  int[] sA = {m, n, p};
   int stride1 = p;
   int stride2 = n * p;
 
   ArrayDouble A = new ArrayDouble(sA);
-  int i,j,k;
+  int i, j, k;
 
   ArrayDouble secA;
   int m1 = 2;
@@ -36,20 +35,20 @@ public class TestTxCompose extends TestCase {
     Index ima = A.getIndex();
 
     // write
-    for (i=0; i<m; i++) {
-      for (j=0; j<n; j++) {
-        for (k=0; k<p; k++) {
-          A.setDouble(ima.set(i,j,k), (double) (i*100+j*10+k));
+    for (i = 0; i < m; i++) {
+      for (j = 0; j < n; j++) {
+        for (k = 0; k < p; k++) {
+          A.setDouble(ima.set(i, j, k), (double) (i * 100 + j * 10 + k));
         }
       }
     }
 
-      // section
+    // section
     try {
-      Range [] ranges = {new Range(m1, m2), null, null};
-      secA = (ArrayDouble) A.section( new Section(m1+":"+m2+",:,:").getRanges());
+      Range[] ranges = {new Range(m1, m2), null, null};
+      secA = (ArrayDouble) A.section(new Section(m1 + ":" + m2 + ",:,:").getRanges());
     } catch (InvalidRangeException e) {
-      fail("testMAsection failed == "+ e);
+      fail("testMAsection failed == " + e);
       return;
     }
 
@@ -60,13 +59,13 @@ public class TestTxCompose extends TestCase {
     ArrayDouble flipA = (ArrayDouble) A.flip(1);
     Index ima = flipA.getIndex();
 
-    for (i=0; i<m; i++) {
-      for (j=0; j<n; j++) {
-        for (k=0; k<p; k++) {
-          double val = flipA.getDouble(ima.set(i,j,k));
-          double myVal = i*100+(n-j-1)*10+k;
+    for (i = 0; i < m; i++) {
+      for (j = 0; j < n; j++) {
+        for (k = 0; k < p; k++) {
+          double val = flipA.getDouble(ima.set(i, j, k));
+          double myVal = i * 100 + (n - j - 1) * 10 + k;
 
-          //System.out.println(val+" "+myVal);
+          // System.out.println(val+" "+myVal);
           assert (val == myVal);
         }
       }
@@ -75,16 +74,16 @@ public class TestTxCompose extends TestCase {
   }
 
   public void testTranspose() {
-    ArrayDouble trA = (ArrayDouble) A.transpose(0,1);
+    ArrayDouble trA = (ArrayDouble) A.transpose(0, 1);
     Index ima = trA.getIndex();
 
-    for (i=0; i<m; i++) {
-      for (j=0; j<n; j++) {
-        for (k=0; k<p; k++) {
-          double val = trA.getDouble(ima.set(j,i,k));
-          double myVal = i*100+j*10+k;
+    for (i = 0; i < m; i++) {
+      for (j = 0; j < n; j++) {
+        for (k = 0; k < p; k++) {
+          double val = trA.getDouble(ima.set(j, i, k));
+          double myVal = i * 100 + j * 10 + k;
 
-          //System.out.println(val+" "+myVal);
+          // System.out.println(val+" "+myVal);
           assert (val == myVal);
         }
       }
@@ -93,16 +92,16 @@ public class TestTxCompose extends TestCase {
   }
 
   public void testPermute() {
-    ArrayDouble pA = (ArrayDouble) A.permute(new int[] {2,0,1});
+    ArrayDouble pA = (ArrayDouble) A.permute(new int[] {2, 0, 1});
     Index ima = pA.getIndex();
 
-    for (i=0; i<m; i++) {
-      for (j=0; j<n; j++) {
-        for (k=0; k<p; k++) {
-          double val = pA.getDouble(ima.set(k,i,j));
-          double myVal = i*100+j*10+k;
+    for (i = 0; i < m; i++) {
+      for (j = 0; j < n; j++) {
+        for (k = 0; k < p; k++) {
+          double val = pA.getDouble(ima.set(k, i, j));
+          double myVal = i * 100 + j * 10 + k;
 
-          //System.out.println(val+" "+myVal);
+          // System.out.println(val+" "+myVal);
           assert (val == myVal);
         }
       }
@@ -111,17 +110,17 @@ public class TestTxCompose extends TestCase {
   }
 
   public void testCompose() {
-    ArrayDouble trA = (ArrayDouble) A.transpose(0,1);
+    ArrayDouble trA = (ArrayDouble) A.transpose(0, 1);
     ArrayDouble composeA = (ArrayDouble) trA.flip(1);
     Index ima = composeA.getIndex();
 
-    for (i=0; i<m; i++) {
-      for (j=0; j<n; j++) {
-        for (k=0; k<p; k++) {
-          double val = composeA.getDouble(ima.set(j,i,k));
-          double myVal = (m-i-1)*100+j*10+k;
+    for (i = 0; i < m; i++) {
+      for (j = 0; j < n; j++) {
+        for (k = 0; k < p; k++) {
+          double val = composeA.getDouble(ima.set(j, i, k));
+          double myVal = (m - i - 1) * 100 + j * 10 + k;
 
-          //System.out.println(val+" "+myVal);
+          // System.out.println(val+" "+myVal);
           assert (val == myVal);
         }
       }
@@ -131,16 +130,16 @@ public class TestTxCompose extends TestCase {
 
   public void testCompose2() {
     ArrayDouble flipA = (ArrayDouble) A.flip(1);
-    ArrayDouble composeA = (ArrayDouble) flipA.transpose(0,1);
+    ArrayDouble composeA = (ArrayDouble) flipA.transpose(0, 1);
     Index ima = composeA.getIndex();
 
-    for (i=0; i<m; i++) {
-      for (j=0; j<n; j++) {
-        for (k=0; k<p; k++) {
-          double val = composeA.getDouble(ima.set(j,i,k));
-          double myVal = i*100+(n-j-1)*10+k;
+    for (i = 0; i < m; i++) {
+      for (j = 0; j < n; j++) {
+        for (k = 0; k < p; k++) {
+          double val = composeA.getDouble(ima.set(j, i, k));
+          double myVal = i * 100 + (n - j - 1) * 10 + k;
 
-          //System.out.println(val+" "+myVal);
+          // System.out.println(val+" "+myVal);
           assert (val == myVal);
         }
       }
@@ -153,22 +152,22 @@ public class TestTxCompose extends TestCase {
     int ival = 2;
 
     try {
-      secA2 = (ArrayDouble) A.section( new Section(ival+",:,:").getRanges() );
+      secA2 = (ArrayDouble) A.section(new Section(ival + ",:,:").getRanges());
     } catch (InvalidRangeException e) {
-      System.out.println("testDoubleRange2 failed == "+ e);
+      System.out.println("testDoubleRange2 failed == " + e);
       return;
     }
 
-    ArrayDouble composeA = (ArrayDouble) secA2.permute(new int[]{1,0});
+    ArrayDouble composeA = (ArrayDouble) secA2.permute(new int[] {1, 0});
     Index ima = composeA.getIndex();
 
-      for (j=0; j<n; j++) {
-        for (k=0; k<p; k++) {
-          double val = composeA.getDouble(ima.set(k,j));
-          double myVal = ival*100+j*10+k;
-          assert (val == myVal);
-        }
+    for (j = 0; j < n; j++) {
+      for (k = 0; k < p; k++) {
+        double val = composeA.getDouble(ima.set(k, j));
+        double myVal = ival * 100 + j * 10 + k;
+        assert (val == myVal);
       }
+    }
     System.out.println("testCompose section/permute");
   }
 

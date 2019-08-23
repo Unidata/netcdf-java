@@ -6,7 +6,6 @@ package ucar.unidata.geoloc;
 
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.Format;
-
 import java.util.Formatter;
 
 /**
@@ -110,7 +109,7 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
   // convenience setting routines
 
   /**
-   * set x,y location from  pt
+   * set x,y location from pt
    *
    * @param pt point to use for values
    */
@@ -119,9 +118,9 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
   }
 
   public void setLocation(double x, double y) {
-       this.x = x;
-       this.y = y;
-   }
+    this.x = x;
+    this.y = y;
+  }
 
   /**
    * See if either coordinate is +/- infinite. This happens sometimes
@@ -130,10 +129,8 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
    * @return true if either coordinate is +/- infinite.
    */
   public boolean isInfinite() {
-    return (x == java.lang.Double.POSITIVE_INFINITY)
-        || (x == java.lang.Double.NEGATIVE_INFINITY)
-        || (y == java.lang.Double.POSITIVE_INFINITY)
-        || (y == java.lang.Double.NEGATIVE_INFINITY);
+    return (x == java.lang.Double.POSITIVE_INFINITY) || (x == java.lang.Double.NEGATIVE_INFINITY)
+        || (y == java.lang.Double.POSITIVE_INFINITY) || (y == java.lang.Double.NEGATIVE_INFINITY);
   }
 
   /**
@@ -144,9 +141,7 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
    * @return true if either coordinate is +/- infinite.
    */
   static public boolean isInfinite(ProjectionPoint pt) {
-    return (pt.getX() == java.lang.Double.POSITIVE_INFINITY)
-        || (pt.getX() == java.lang.Double.NEGATIVE_INFINITY)
-        || (pt.getY() == java.lang.Double.POSITIVE_INFINITY)
-        || (pt.getY() == java.lang.Double.NEGATIVE_INFINITY);
+    return (pt.getX() == java.lang.Double.POSITIVE_INFINITY) || (pt.getX() == java.lang.Double.NEGATIVE_INFINITY)
+        || (pt.getY() == java.lang.Double.POSITIVE_INFINITY) || (pt.getY() == java.lang.Double.NEGATIVE_INFINITY);
   }
 }

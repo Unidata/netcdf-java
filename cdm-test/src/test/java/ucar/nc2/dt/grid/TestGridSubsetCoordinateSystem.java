@@ -24,7 +24,6 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,31 +39,41 @@ import java.util.List;
 public class TestGridSubsetCoordinateSystem {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", "Temperature_sigma"});         // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", "Pressure_surface"});                                         // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2001/ds083.2_Aggregation-2001.ncx4", "Temperature_surface"});  // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation.ncx4", "Temperature_surface"});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/yearPartition-1979.ncx4", "Runoff_surface_12_Hour_Average"});  // MRSTC
+    result
+        .add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",
+            "Temperature_sigma"}); // SRC // TP
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", "Pressure_surface"}); // TP
+    result.add(
+        new Object[] {TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2001/ds083.2_Aggregation-2001.ncx4",
+            "Temperature_surface"}); // TP
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation.ncx4",
+        "Temperature_surface"});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4",
+        "Best/Soil_temperature_depth_below_surface_layer"}); // TwoD Best
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4",
+        "TwoD/Soil_temperature_depth_below_surface_layer"}); // TwoD
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/yearPartition-1979.ncx4",
+        "Runoff_surface_12_Hour_Average"}); // MRSTC
 
-    //result.add(new Object[]{"B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Accum_snow_surface"});
-    //result.add(new Object[]{"B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Convective_cloud_cover_entire_atmosphere_3_Hour_Average"});  // need more than one time/reftime
+    // result.add(new Object[]{"B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Accum_snow_surface"});
+    // result.add(new Object[]{"B:/ncdc/0409/narr/Narr_A_fc.ncx4",
+    // "Convective_cloud_cover_entire_atmosphere_3_Hour_Average"}); // need more than one time/reftime
 
     return result;
   }
 
   final String filename, gridName;
+
   public TestGridSubsetCoordinateSystem(String filename, String gridName) {
     this.filename = filename;
     this.gridName = gridName;
   }
 
-      // has runtime(time), time(time)
+  // has runtime(time), time(time)
   @Test
   public void testGridDomain() throws Exception {
     System.err.printf("%nOpen %s grid='%s'%n", filename, gridName);
@@ -90,9 +99,10 @@ public class TestGridSubsetCoordinateSystem {
       List<Dimension> dims = axis.getDimensions();
       for (Dimension d : dims)
         if (!domain.contains(d)) {
-          System.err.printf("    %s: illegal dimension '%s' in axis %s%n", which, d.getFullName(), axis.getNameAndDimensions());
+          System.err.printf("    %s: illegal dimension '%s' in axis %s%n", which, d.getFullName(),
+              axis.getNameAndDimensions());
           assert false;
-      }
+        }
     }
   }
 
@@ -102,9 +112,9 @@ public class TestGridSubsetCoordinateSystem {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
 
     try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
-      Assert.assertNotNull( filename, ncd);
+      Assert.assertNotNull(filename, ncd);
       VariableDS vds = (VariableDS) ncd.findVariable(gridName);
-      Assert.assertNotNull( gridName, vds);
+      Assert.assertNotNull(gridName, vds);
       for (CoordinateSystem cs : vds.getCoordinateSystems()) {
         System.err.printf("  CoordinateSystem= '%s'%n", cs);
         testDomain("CoordinateSystem ", vds.getDimensions(), cs.getCoordinateAxes());

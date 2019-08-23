@@ -6,7 +6,6 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -81,7 +80,7 @@ public class BufrIdentificationSection {
    * Constructs a <tt>BufrIdentificationSection</tt> object from a raf.
    *
    * @param raf RandomAccessFile with Section 1 content
-   * @param is  the BufrIndicatorSection, needed for the bufr edition number
+   * @param is the BufrIndicatorSection, needed for the bufr edition number
    * @throws IOException if raf contains no valid BUFR file
    */
   public BufrIdentificationSection(RandomAccessFile raf, BufrIndicatorSection is) throws IOException {
@@ -93,31 +92,32 @@ public class BufrIdentificationSection {
     master_table = raf.read();
 
     if (is.getBufrEdition() < 4) {
-      if (length < 17) throw new IOException("Invalid BUFR message on "+raf.getLocation());
+      if (length < 17)
+        throw new IOException("Invalid BUFR message on " + raf.getLocation());
 
       if (is.getBufrEdition() == 2) {
         subcenter_id = 255;
-        // Center  octet 5-6
+        // Center octet 5-6
         center_id = BufrNumbers.int2(raf);
 
       } else { // edition 3
-        // Center  octet 5
+        // Center octet 5
         subcenter_id = raf.read();
-        // Center  octet 6
+        // Center octet 6
         center_id = raf.read();
       }
 
-      // Update sequence number  octet 7
+      // Update sequence number octet 7
       update_sequence = raf.read();
 
       // Optional section octet 8
       int optional = raf.read();
       hasOptionalSection = (optional & 0x80) != 0;
 
-      // Category  octet 9
+      // Category octet 9
       category = raf.read();
 
-      // Category  octet 10
+      // Category octet 10
       subCategory = raf.read();
       localSubCategory = -1; // not used
 
@@ -135,49 +135,52 @@ public class BufrIdentificationSection {
       int tempMonth = raf.read();
       month = (tempMonth == 0) ? 1 : tempMonth; // joda time does not allow 0 month
       int tempDay = raf.read();
-      day = (tempDay == 0) ? 1 : tempDay;   // joda time does not allow 0 day
+      day = (tempDay == 0) ? 1 : tempDay; // joda time does not allow 0 day
       hour = raf.read();
       minute = raf.read();
       second = 0;
       if (warnDate && (tempMonth == 0 || tempDay == 0)) {
         // From manual on codes
-        // When accuracy of the time does not define a time unit, then the value for this unit shall be set to zero (e.g. for a
+        // When accuracy of the time does not define a time unit, then the value for this unit shall be set to zero
+        // (e.g. for a
         // SYNOP observation at 09 UTC, minute = 0, second = 0.
         // NCEP codes their BUFR table messages with 0/0/0 0:0:0 in edition 3
-        log.warn(raf.getLocation()+": month or day is zero, set to 1. {}/{}/{} {}:{}:{}", year, tempMonth, tempDay, hour, minute, second);
+        log.warn(raf.getLocation() + ": month or day is zero, set to 1. {}/{}/{} {}:{}:{}", year, tempMonth, tempDay,
+            hour, minute, second);
       }
 
       int n = length - 17;
       localUse = new byte[n];
       int nRead = raf.read(localUse);
       if (nRead != localUse.length)
-          throw new IOException("Error reading BUFR local use field.");
-    } else {  // BUFR Edition 4 and above are slightly different
-      if (length < 22) throw new IOException("Invalid BUFR message");
+        throw new IOException("Error reading BUFR local use field.");
+    } else { // BUFR Edition 4 and above are slightly different
+      if (length < 22)
+        throw new IOException("Invalid BUFR message");
 
-      //    	 Center  octet 5 - 6
+      // Center octet 5 - 6
       center_id = BufrNumbers.int2(raf);
 
-      // Sub Center  octet 7-8
+      // Sub Center octet 7-8
       subcenter_id = BufrNumbers.int2(raf);
 
-      //	    Update sequence number  octet 9
+      // Update sequence number octet 9
       update_sequence = raf.read();
 
       // Optional section octet 10
       int optional = raf.read();
       hasOptionalSection = (optional & 0x40) != 0;
 
-      //	    Category  octet 11
+      // Category octet 11
       category = raf.read();
 
-      // International Sub Category  octet 12
+      // International Sub Category octet 12
       subCategory = raf.read();
 
       // Local Sub Category Octet 13 - just read this for now
       localSubCategory = raf.read();
 
-      //	    master table version octet 14
+      // master table version octet 14
       master_table_version = raf.read();
 
       // local table version octet 15
@@ -196,13 +199,14 @@ public class BufrIdentificationSection {
       localUse = new byte[n];
       int nRead = raf.read(localUse);
       if (nRead != localUse.length)
-          throw new IOException("Error reading BUFR local use field.");
+        throw new IOException("Error reading BUFR local use field.");
     }
 
     // skip optional section, but store position so can read if caller wants it
     if (hasOptionalSection) {
       int optionalLen = BufrNumbers.int3(raf);
-      if (optionalLen % 2 != 0) optionalLen++;
+      if (optionalLen % 2 != 0)
+        optionalLen++;
       optionalSectionLen = optionalLen - 4;
       raf.skipBytes(1);
       optionalSectionPos = raf.getFilePointer();
@@ -284,16 +288,15 @@ public class BufrIdentificationSection {
     return localUse;
   }
 
-  public final byte[] getOptiondsalSection(RandomAccessFile raf) throws
-          IOException {
-    if (!hasOptionalSection) return null;
+  public final byte[] getOptiondsalSection(RandomAccessFile raf) throws IOException {
+    if (!hasOptionalSection)
+      return null;
 
     byte[] optionalSection = new byte[optionalSectionLen - 4];
     raf.seek(optionalSectionPos);
     int nRead = raf.read(optionalSection);
     if (nRead != optionalSection.length)
-        log.warn("Error reading optional section -- expected " +
-                optionalSection.length + " but read " + nRead);
+      log.warn("Error reading optional section -- expected " + optionalSection.length + " but read " + nRead);
     return optionalSection;
   }
 

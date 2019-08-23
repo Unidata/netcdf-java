@@ -15,7 +15,6 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.ma2.*;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -43,7 +42,8 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     return null;
   }
 
-  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) {
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task,
+      Formatter errlog) {
     return new Dorade2RadialAdapter(ncd);
   }
 
@@ -52,8 +52,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
   }
 
   // needed for FeatureDatasetFactory
-  public Dorade2RadialAdapter() {
-  }
+  public Dorade2RadialAdapter() {}
 
   /**
    * Constructor.
@@ -65,7 +64,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     this.ncd = ds;
 
     desc = "dorade radar dataset";
-    //EarthLocation y = getEarthLocation() ;
+    // EarthLocation y = getEarthLocation() ;
     try {
       elev = (float[]) ncd.findVariable("elevation").read().get1DJavaArray(Float.TYPE);
       aziv = (float[]) ncd.findVariable("azimuth").read().get1DJavaArray(Float.TYPE);
@@ -80,7 +79,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
       rangv = ncd.findVariable("Unambiguous_Range").readScalarFloat();
       contv = ncd.findVariable("Radar_Constant").readScalarFloat();
       rgainv = ncd.findVariable("rcvr_gain").readScalarFloat();
-      //bwidthv = ncd.findVariable("bm_width").readScalarFloat();
+      // bwidthv = ncd.findVariable("bm_width").readScalarFloat();
 
       setStartDate();
       setEndDate();
@@ -110,12 +109,12 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
   public boolean isStationary() {
     String t = ncd.findGlobalAttribute("IsStationary").getStringValue();
 
-    return t.equals("1");       //  if t == "1" return true
+    return t.equals("1"); // if t == "1" return true
   }
 
-  //public boolean isRadial() {
-  //     return true;
-  //}
+  // public boolean isRadial() {
+  // return true;
+  // }
 
   public boolean isVolume() {
     return false;
@@ -195,13 +194,15 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     }
   }
 
-  private class Dorade2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {//extends VariableSimpleAdapter {
+  private class Dorade2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {// extends
+                                                                                                              // VariableSimpleAdapter
+                                                                                                              // {
     ArrayList<Dorade2Sweep> sweeps;
     String name;
 
     float azi;
-    //float rt;
-    //RadialDatasetSweep.Sweep sweep;
+    // float rt;
+    // RadialDatasetSweep.Sweep sweep;
 
 
     public int getNumSweeps() {
@@ -253,7 +254,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
       int nrays, ngates;
       double meanElevation = Double.NaN;
       Variable sweepVar;
-      //int[] shape, origi;
+      // int[] shape, origi;
 
       Dorade2Sweep(Variable v, int sweepno, int rays, int gates) {
         this.sweepVar = v;

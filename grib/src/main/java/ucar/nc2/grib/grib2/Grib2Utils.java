@@ -38,15 +38,17 @@ public class Grib2Utils {
   public static String cleanupHeader(byte[] raw) {
     String result = StringUtil2.cleanup(raw);
     int pos = result.indexOf("data");
-    if (pos > 0) result = result.substring(pos);
+    if (pos > 0)
+      result = result.substring(pos);
     return result;
   }
 
   public static String getVariableName(Grib2Record gr) {
-    GribTables.Parameter p = WmoParamTable.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+    GribTables.Parameter p = WmoParamTable.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(),
+        gr.getPDS().getParameterNumber());
     String s = (p == null) ? null : p.getName();
     if (s == null)
-      s = "U"+ gr.getDiscipline()+"-"+gr.getPDS().getParameterCategory()+"-" + gr.getPDS().getParameterNumber();
+      s = "U" + gr.getDiscipline() + "-" + gr.getPDS().getParameterCategory() + "-" + gr.getPDS().getParameterNumber();
     return s;
   }
 
@@ -85,6 +87,7 @@ public class Grib2Utils {
 
   /**
    * Check to see if this pds is a layer variable
+   * 
    * @param pds record to check
    * @return true if a layer
    */
@@ -108,25 +111,28 @@ public class Grib2Utils {
   // isLatLon2D is true, check parameter to see if its a 2D lat/lon coordinate
   @Nullable
   public static LatLon2DCoord getLatLon2DcoordType(int discipline, int category, int parameter) {
-    if ((discipline != 0) || (category != 2) || (parameter < 198 || parameter > 203)) return null;
+    if ((discipline != 0) || (category != 2) || (parameter < 198 || parameter > 203))
+      return null;
     switch (parameter) {
       case 198:
         return LatLon2DCoord.U_Latitude;
       case 199:
-         return LatLon2DCoord.U_Longitude;
+        return LatLon2DCoord.U_Longitude;
       case 200:
         return LatLon2DCoord.V_Latitude;
       case 201:
         return LatLon2DCoord.V_Longitude;
       case 202:
-       return LatLon2DCoord.P_Latitude;
+        return LatLon2DCoord.P_Latitude;
       case 203:
-       return LatLon2DCoord.P_Longitude;
+        return LatLon2DCoord.P_Longitude;
     }
     return null;
   }
 
-  public enum LatLonCoordType {U, V, P }
+  public enum LatLonCoordType {
+    U, V, P
+  }
   public enum LatLon2DCoord {
     U_Latitude, U_Longitude, V_Latitude, V_Longitude, P_Latitude, P_Longitude;
 
@@ -137,15 +143,20 @@ public class Grib2Utils {
 
   /**
    * This looks for snippets in the variable name/desc as to whether it wants U, V, or P 2D coordinates
+   * 
    * @param desc variable name/desc
-   * @return  U, V, or P for normal variables, null for the coordinates themselves
+   * @return U, V, or P for normal variables, null for the coordinates themselves
    */
   public static LatLonCoordType getLatLon2DcoordType(String desc) {
     LatLonCoordType type;
-    if (desc.contains("u-component")) type = LatLonCoordType.U;
-    else if (desc.contains("v-component")) type = LatLonCoordType.V;
-    else if (desc.contains("Latitude of") || desc.contains("Longitude of")) type = null;
-    else type = LatLonCoordType.P;
+    if (desc.contains("u-component"))
+      type = LatLonCoordType.U;
+    else if (desc.contains("v-component"))
+      type = LatLonCoordType.V;
+    else if (desc.contains("Latitude of") || desc.contains("Longitude of"))
+      type = null;
+    else
+      type = LatLonCoordType.P;
     return type;
   }
 

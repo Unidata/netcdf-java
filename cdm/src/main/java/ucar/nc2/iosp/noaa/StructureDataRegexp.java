@@ -33,8 +33,8 @@ public class StructureDataRegexp extends StructureData {
       svalue = matcher.group(fldno);
     else
       svalue = " ";
-    //  System.out.printf("HEY! %d>= %d %n", field, matcher.groupCount());
-    //String svalue = matcher.group(field);
+    // System.out.printf("HEY! %d>= %d %n", field, matcher.groupCount());
+    // String svalue = matcher.group(field);
 
     if (dt == DataType.STRING)
       return svalue.trim();
@@ -51,8 +51,7 @@ public class StructureDataRegexp extends StructureData {
         return (vinfo.hasScale) ? result * vinfo.scale : result;
       } else if (dt == DataType.INT) {
         return isBlank ? 0 : new Integer(svalue);
-      }
-      else if (dt == DataType.LONG)
+      } else if (dt == DataType.LONG)
         return isBlank ? 0L : new Long(svalue);
 
     } catch (NumberFormatException e) {
@@ -70,7 +69,7 @@ public class StructureDataRegexp extends StructureData {
 
     if (m.getDataType() == DataType.STRING) {
       String result = matcher.group(f.fldno);
-      return Array.factory(DataType.STRING, new int[] {},  new Object[] {result.trim()});
+      return Array.factory(DataType.STRING, new int[] {}, new Object[] {result.trim()});
 
     } else if (m.getDataType() == DataType.SEQUENCE) {
       return getArraySequence(m);
@@ -129,13 +128,13 @@ public class StructureDataRegexp extends StructureData {
 
   @Override
   public double[] getJavaArrayDouble(StructureMembers.Member m) {
-    return new double[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new double[0]; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
   public float getScalarFloat(StructureMembers.Member m) {
     VinfoField f = (VinfoField) m.getDataObject();
-    Object result =  parse(m.getDataType(), f);
+    Object result = parse(m.getDataType(), f);
     return (result instanceof Float) ? (Float) result : ((Double) result).floatValue();
   }
 
@@ -144,8 +143,8 @@ public class StructureDataRegexp extends StructureData {
     int n = m.getSize();
     float[] result = new float[n];
     VinfoField f = (VinfoField) m.getDataObject();
-    for (int i=0; i<n; i++)
-      result[i] = (Float) parse(m.getDataType(), f, f.fldno + f.stride*i);
+    for (int i = 0; i < n; i++)
+      result[i] = (Float) parse(m.getDataType(), f, f.fldno + f.stride * i);
     return result;
   }
 
@@ -160,8 +159,8 @@ public class StructureDataRegexp extends StructureData {
     int n = m.getSize();
     byte[] result = new byte[n];
     VinfoField f = (VinfoField) m.getDataObject();
-    for (int i=0; i<n; i++) {
-      String s = (String) parse(m.getDataType(), f, f.fldno + f.stride*i);
+    for (int i = 0; i < n; i++) {
+      String s = (String) parse(m.getDataType(), f, f.fldno + f.stride * i);
       result[i] = (byte) s.charAt(0);
     }
     return result;
@@ -175,7 +174,7 @@ public class StructureDataRegexp extends StructureData {
 
   @Override
   public int[] getJavaArrayInt(StructureMembers.Member m) {
-    return new int[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new int[0]; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -186,7 +185,7 @@ public class StructureDataRegexp extends StructureData {
 
   @Override
   public short[] getJavaArrayShort(StructureMembers.Member m) {
-    return new short[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new short[0]; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -197,7 +196,7 @@ public class StructureDataRegexp extends StructureData {
 
   @Override
   public long[] getJavaArrayLong(StructureMembers.Member m) {
-    return new long[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new long[0]; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -212,8 +211,8 @@ public class StructureDataRegexp extends StructureData {
     int n = m.getSize();
     char[] result = new char[n];
     VinfoField f = (VinfoField) m.getDataObject();
-    for (int i=0; i<n; i++) {
-      String s = (String) parse(m.getDataType(), f, f.fldno + f.stride*i);
+    for (int i = 0; i < n; i++) {
+      String s = (String) parse(m.getDataType(), f, f.fldno + f.stride * i);
       result[i] = s.charAt(0);
     }
     return result;
@@ -244,7 +243,7 @@ public class StructureDataRegexp extends StructureData {
   public ArraySequence getArraySequence(StructureMembers.Member m) {
     return null;
   }
-  
+
   static public class Vinfo {
     RandomAccessFile rafile;
     StructureMembers sm;
@@ -268,7 +267,7 @@ public class StructureDataRegexp extends StructureData {
       this.fldno = fldno;
     }
   }
-  
+
 
 }
 

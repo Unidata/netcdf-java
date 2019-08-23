@@ -6,35 +6,38 @@
 package ucar.nc2.iosp.nexrad2;
 
 import ucar.nc2.util.TableParser;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Map;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.jdom2.*;
 import org.jdom2.input.*;
 
 /**
  * Manage Nexrad Stations "database"
+ * 
  * @author caron
  */
 public class NexradStationDB {
 
   private static boolean showStations = false;
-  private static Map<String,Station> stationTableHash = null;
-  private static Map<String,Station> stationTableHash1 = null;
+  private static Map<String, Station> stationTableHash = null;
+  private static Map<String, Station> stationTableHash1 = null;
 
   public static synchronized void init() throws IOException {
     if (stationTableHash == null)
       readStationTableXML();
   }
 
-  public static Station get(String id) { return stationTableHash.get(id); }
+  public static Station get(String id) {
+    return stationTableHash.get(id);
+  }
 
-  public static Station getByIdNumber(String idn) { return stationTableHash1.get(idn); }
+  public static Station getByIdNumber(String idn) {
+    return stationTableHash1.get(idn);
+  }
 
   private static void readStationTableXML() throws IOException {
     stationTableHash = new HashMap<>();
@@ -78,28 +81,28 @@ public class NexradStationDB {
     }
   }
 
-    private static double parseDegree( String s) {
-      StringTokenizer stoke = new StringTokenizer(s, ":");
-      String degS = stoke.nextToken();
-      String minS = stoke.nextToken();
-      String secS = stoke.nextToken();
+  private static double parseDegree(String s) {
+    StringTokenizer stoke = new StringTokenizer(s, ":");
+    String degS = stoke.nextToken();
+    String minS = stoke.nextToken();
+    String secS = stoke.nextToken();
 
-      try {
-        double deg = Double.parseDouble( degS);
-        double min = Double.parseDouble( minS);
-        double sec = Double.parseDouble( secS);
-        if (deg < 0)
-          return deg - min/60 - sec/3600;
-        else
-          return deg + min/60 + sec/3600;
-      } catch (NumberFormatException e) {
-        e.printStackTrace();
-      }
-      return 0.0;
+    try {
+      double deg = Double.parseDouble(degS);
+      double min = Double.parseDouble(minS);
+      double sec = Double.parseDouble(secS);
+      if (deg < 0)
+        return deg - min / 60 - sec / 3600;
+      else
+        return deg + min / 60 + sec / 3600;
+    } catch (NumberFormatException e) {
+      e.printStackTrace();
     }
+    return 0.0;
+  }
 
   // this is the old Gempak table, not as precise
-   private static void readStationTable() throws IOException {
+  private static void readStationTable() throws IOException {
     stationTableHash = new HashMap<>();
 
     ClassLoader cl = Level2VolumeScan.class.getClassLoader();
@@ -115,7 +118,8 @@ public class NexradStationDB {
       s.elev = (Double) record.get(6);
 
       stationTableHash.put(s.id, s);
-      if (showStations) System.out.println(" station= " + s);
+      if (showStations)
+        System.out.println(" station= " + s);
     }
   }
 
@@ -125,7 +129,9 @@ public class NexradStationDB {
     public double lon;
     public double elev;
 
-    public String toString() { return id +" <"+ name +">   "+ lat +" "+ lon +" "+ elev; }
+    public String toString() {
+      return id + " <" + name + ">   " + lat + " " + lon + " " + elev;
+    }
   }
 
 }

@@ -7,12 +7,10 @@ package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
-
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.Parameter;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -38,9 +36,9 @@ public class VTfromExistingData extends VerticalTransformImpl {
   /**
    * Constructor.
    *
-   * @param ds      containing Dataset
+   * @param ds containing Dataset
    * @param timeDim time Dimension
-   * @param params  list of transformation Parameters
+   * @param params list of transformation Parameters
    */
   public VTfromExistingData(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
     super(timeDim);
@@ -58,27 +56,26 @@ public class VTfromExistingData extends VerticalTransformImpl {
     MAMath.copyDouble(ddata, data);
     return ddata;
   }
-  
+
   /**
    * Get the 1D vertical coordinate array for this time step and point
    * 
    * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @param xIndex    the x index
-   * @param yIndex    the y index
+   * @param xIndex the x index
+   * @param yIndex the y index
    * @return vertical coordinate array
    * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_ 
-   */  
-  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
-  		throws IOException, InvalidRangeException {
-	  
-	    
-	    ArrayDouble.D3 ddata = getCoordinateArray(timeIndex);
-	    int[] origin = new int[]{0, yIndex, xIndex };
-	    int[] shape = new int[]{ ddata.getShape()[0] , 1, 1 };
-	    
-	    return (ArrayDouble.D1)ddata.section(origin, shape).reduce();	    
+   * @throws ucar.ma2.InvalidRangeException _more_
+   */
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
+
+
+    ArrayDouble.D3 ddata = getCoordinateArray(timeIndex);
+    int[] origin = new int[] {0, yIndex, xIndex};
+    int[] shape = new int[] {ddata.getShape()[0], 1, 1};
+
+    return (ArrayDouble.D1) ddata.section(origin, shape).reduce();
   }
-  
+
 }
 

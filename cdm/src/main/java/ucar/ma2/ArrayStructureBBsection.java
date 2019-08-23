@@ -44,7 +44,7 @@ public class ArrayStructureBBsection extends ArrayStructureBB {
   @Override
   protected int calcOffsetSetOrder(int recnum, StructureMembers.Member m) {
     if (null != m.getDataObject())
-      bbuffer.order( (ByteOrder) m.getDataObject());
+      bbuffer.order((ByteOrder) m.getDataObject());
     return bb_offset + orgRecnum[recnum] * getStructureSize() + m.getDataParam();
   }
 }

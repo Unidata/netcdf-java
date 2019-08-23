@@ -25,10 +25,14 @@ public class ArrayChar extends Array implements Iterable<String> {
     return ArrayChar.factory(index, null);
   }
 
-  /* create new ArrayChar with given indexImpl and backing store.
+  /*
+   * create new ArrayChar with given indexImpl and backing store.
    * Should be private.
+   * 
    * @param index use this Index
+   * 
    * @param stor. use this storage. if null, allocate.
+   * 
    * @return. new ArrayDouble.D<rank> or ArrayDouble object.
    */
   static ArrayChar factory(Index index, char[] storage) {
@@ -71,14 +75,16 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Create a new Array using the given IndexArray and backing store.
    * used for sections. Trusted package private.
    *
-   * @param ima  use this IndexArray as the index
+   * @param ima use this IndexArray as the index
    * @param data use this as the backing store
    */
   ArrayChar(Index ima, char[] data) {
     super(DataType.CHAR, ima);
-    /* replace by something better
-    if (ima.getSize() != data.length)
-      throw new IllegalArgumentException("bad data length"); */
+    /*
+     * replace by something better
+     * if (ima.getSize() != data.length)
+     * throw new IllegalArgumentException("bad data length");
+     */
     if (data != null)
       storage = data;
     else
@@ -88,7 +94,7 @@ public class ArrayChar extends Array implements Iterable<String> {
   public ArrayChar(String s) {
     super(DataType.CHAR, new int[] {s.length()});
     storage = new char[s.length()];
-    for (int i=0; i<s.length(); i++)
+    for (int i = 0; i < s.length(); i++)
       storage[i] = s.charAt(i);
   }
 
@@ -107,7 +113,8 @@ public class ArrayChar extends Array implements Iterable<String> {
   // copy from javaArray to storage using the iterator: used by factory( Object);
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     char[] ja = (char[]) javaArray;
-    for (char aJa : ja) iter.setCharNext(aJa);
+    for (char aJa : ja)
+      iter.setCharNext(aJa);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
@@ -121,14 +128,15 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Trasfer data to a ByteBuffer.
    * Note we cast char to byte, discarding top byte, if any.
    * This is because CDM char is really a byte, not a java char.
+   * 
    * @return data in a ByteBuffer
    */
-    @Override
+  @Override
   public ByteBuffer getDataAsByteBuffer() {
-    ByteBuffer bb = ByteBuffer.allocate((int)getSize());
+    ByteBuffer bb = ByteBuffer.allocate((int) getSize());
     resetLocalIterator();
     while (hasNext())
-      bb.put( nextByte());
+      bb.put(nextByte());
     return bb;
   }
 
@@ -281,9 +289,10 @@ public class ArrayChar extends Array implements Iterable<String> {
    * <p/>
    * If rank=1, then this will make a string out of the entire CharArray, ignoring ima.
    * If rank is greater than 1, then make a String out of the characters of the last dimension,
-   * indexed by ima.  This method treats the CharArray like an array of Strings, and
+   * indexed by ima. This method treats the CharArray like an array of Strings, and
    * allows you to iterate over them, eg for a 2D ArrayChar:
-   * <p><code>
+   * <p>
+   * <code>
    * ArrayChar ca;
    * Index ima = ca.getIndex();
    * for (int i=0; i<ca.getShape()[0]; i++)
@@ -343,7 +352,8 @@ public class ArrayChar extends Array implements Iterable<String> {
    * This treats the ArrayChar as a 1D array of Strings.
    * If String val longer than ArrayChar, ignore extra chars; if shorter, fill with 0.
    * <p/>
-   * <p><code>
+   * <p>
+   * <code>
    * String[] val = new String[n];
    * ArrayChar ca;
    * Index ima = ca.getIndex();
@@ -352,7 +362,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * </code>
    *
    * @param index index into 1D String array, must be < getShape(0).
-   * @param val   set chars from this sString
+   * @param val set chars from this sString
    */
   public void setString(int index, String val) {
     int rank = getRank();
@@ -370,7 +380,8 @@ public class ArrayChar extends Array implements Iterable<String> {
    * If rank 1, set entire ArrayChar, ignoring ima.
    * If rank > 1, treat the ArrayChar like an array of Strings of rank-1, and set the
    * row indexed by ima. For example, rank 3:
-   * <p><code>
+   * <p>
+   * <code>
    * String[][] val;
    * ArrayChar ca;
    * Index ima = ca.getIndex();
@@ -491,7 +502,7 @@ public class ArrayChar extends Array implements Iterable<String> {
      * Constructor.
      */
     public D0() {
-      super(new int[]{});
+      super(new int[] {});
       ix = (Index0D) indexCalc;
     }
 
@@ -525,7 +536,7 @@ public class ArrayChar extends Array implements Iterable<String> {
      * Constructor for array of shape {len0}.
      */
     public D1(int len0) {
-      super(new int[]{len0});
+      super(new int[] {len0});
       ix = (Index1D) indexCalc;
     }
 
@@ -559,7 +570,7 @@ public class ArrayChar extends Array implements Iterable<String> {
      * Constructor for array of shape {len0,len1}.
      */
     public D2(int len0, int len1) {
-      super(new int[]{len0, len1});
+      super(new int[] {len0, len1});
       ix = (Index2D) indexCalc;
     }
 
@@ -593,7 +604,7 @@ public class ArrayChar extends Array implements Iterable<String> {
      * Constructor for array of shape {len0,len1,len2}.
      */
     public D3(int len0, int len1, int len2) {
-      super(new int[]{len0, len1, len2});
+      super(new int[] {len0, len1, len2});
       ix = (Index3D) indexCalc;
     }
 
@@ -627,7 +638,7 @@ public class ArrayChar extends Array implements Iterable<String> {
      * Constructor for array of shape {len0,len1,len2,len3}.
      */
     public D4(int len0, int len1, int len2, int len3) {
-      super(new int[]{len0, len1, len2, len3});
+      super(new int[] {len0, len1, len2, len3});
       ix = (Index4D) indexCalc;
     }
 
@@ -661,7 +672,7 @@ public class ArrayChar extends Array implements Iterable<String> {
      * Constructor for array of shape {len0,len1,len2,len3,len4}.
      */
     public D5(int len0, int len1, int len2, int len3, int len4) {
-      super(new int[]{len0, len1, len2, len3, len4});
+      super(new int[] {len0, len1, len2, len3, len4});
       ix = (Index5D) indexCalc;
     }
 
@@ -695,7 +706,7 @@ public class ArrayChar extends Array implements Iterable<String> {
      * Constructor for array of shape {len0,len1,len2,len3,len4,len5,}.
      */
     public D6(int len0, int len1, int len2, int len3, int len4, int len5) {
-      super(new int[]{len0, len1, len2, len3, len4, len5});
+      super(new int[] {len0, len1, len2, len3, len4, len5});
       ix = (Index6D) indexCalc;
     }
 
@@ -729,7 +740,7 @@ public class ArrayChar extends Array implements Iterable<String> {
      * Constructor for array of shape {len0,len1,len2,len3,len4,len5,len6}.
      */
     public D7(int len0, int len1, int len2, int len3, int len4, int len5, int len6) {
-      super(new int[]{len0, len1, len2, len3, len4, len5, len6});
+      super(new int[] {len0, len1, len2, len3, len4, len5, len6});
       ix = (Index7D) indexCalc;
     }
 
@@ -758,7 +769,8 @@ public class ArrayChar extends Array implements Iterable<String> {
     StringIterator ii = getStringIterator();
     int count = 0;
     while (ii.hasNext()) {
-      if (count > 0) sbuff.append(",");
+      if (count > 0)
+        sbuff.append(",");
       String data = ii.next();
       sbuff.append(data);
       count++;
@@ -823,8 +835,8 @@ public class ArrayChar extends Array implements Iterable<String> {
    * @return 1D ArrayObject of Strings
    */
   public ArrayObject make1DStringArray() {
-    int nelems = (getRank() == 0) ? 1 : (int) getSize() / indexCalc.getShape(getRank()-1);
-    Array sarr = Array.factory(DataType.STRING, new int[]{nelems});
+    int nelems = (getRank() == 0) ? 1 : (int) getSize() / indexCalc.getShape(getRank() - 1);
+    Array sarr = Array.factory(DataType.STRING, new int[] {nelems});
     IndexIterator newsiter = sarr.getIndexIterator();
 
     ArrayChar.StringIterator siter = getStringIterator();
@@ -842,9 +854,9 @@ public class ArrayChar extends Array implements Iterable<String> {
    * @return equivilent ArrayChar
    */
   public static ArrayChar makeFromString(String s, int max) {
-    ArrayChar result = new ArrayChar.D1( max);
-    for (int i=0; i<max && i<s.length(); i++)
-      result.setChar( i, s.charAt(i));
+    ArrayChar result = new ArrayChar.D1(max);
+    for (int i = 0; i < max && i < s.length(); i++)
+      result.setChar(i, s.charAt(i));
 
     return result;
   }

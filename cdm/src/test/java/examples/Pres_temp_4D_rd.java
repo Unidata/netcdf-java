@@ -1,17 +1,18 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
-   See COPYRIGHT file for conditions of use.
-
-   This is an example which reads some 4D pressure and
-   temperatures. The data file read by this program is produced by the
-   companion program pres_temp_4D_wr.java. It is intended to
-   illustrate the use of the netCDF Java API.
-
-   This example demonstrates the netCDF Java API.
-
-   Full documentation of the netCDF Java API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf-java/
-*/
+/*
+ * This is part of the netCDF package.
+ * Copyright 2006 University Corporation for Atmospheric Research/Unidata.
+ * See COPYRIGHT file for conditions of use.
+ * 
+ * This is an example which reads some 4D pressure and
+ * temperatures. The data file read by this program is produced by the
+ * companion program pres_temp_4D_wr.java. It is intended to
+ * illustrate the use of the netCDF Java API.
+ * 
+ * This example demonstrates the netCDF Java API.
+ * 
+ * Full documentation of the netCDF Java API can be found at:
+ * http://www.unidata.ucar.edu/software/netcdf-java/
+ */
 
 package examples;
 
@@ -21,7 +22,6 @@ import ucar.ma2.ArrayFloat;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -97,7 +97,7 @@ public class Pres_temp_4D_rd {
 
       // loop over the rec dimension
       for (int rec = 0; rec < recLen; rec++) {
-        origin[0] = rec;  // read this index
+        origin[0] = rec; // read this index
 
         // read 3D array for that index
         ArrayFloat.D3 presArray, tempArray;
@@ -111,8 +111,8 @@ public class Pres_temp_4D_rd {
         for (int lvl = 0; lvl < NLVL; lvl++)
           for (int lat = 0; lat < NLAT; lat++)
             for (int lon = 0; lon < NLON; lon++) {
-              if ((presArray.get(lvl, lat, lon) != SAMPLE_PRESSURE + count) ||
-                      (tempArray.get(lvl, lat, lon) != SAMPLE_TEMP + count))
+              if ((presArray.get(lvl, lat, lon) != SAMPLE_PRESSURE + count)
+                  || (tempArray.get(lvl, lat, lon) != SAMPLE_TEMP + count))
                 System.err.println("ERROR incorrect value in variable pressure or temperature");
               count++;
             }

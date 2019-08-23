@@ -46,9 +46,6 @@ public class WildcardMatchOnPath implements MFileFilter {
 
   @Override
   public String toString() {
-    return "WildcardMatchOnPath{" +
-            "wildcard=" + wildcardString +
-            " regexp=" + pattern +
-            '}';
+    return "WildcardMatchOnPath{" + "wildcard=" + wildcardString + " regexp=" + pattern + '}';
   }
 }

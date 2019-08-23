@@ -4,13 +4,11 @@
  */
 package ucar.nc2.ui.grid;
 
-import ucar.ma2.*;       // for Array, Index, MAMath
+import ucar.ma2.*; // for Array, Index, MAMath
 import ucar.nc2.dt.GridDatatype;
-
 import ucar.ui.prefs.Debug;
-
-import java.awt.geom.*;  // for Point2D.Double
-import java.util.*;      // for Iterator and ArrayList
+import java.awt.geom.*; // for Point2D.Double
+import java.util.*; // for Iterator and ArrayList
 
 
 /**
@@ -48,7 +46,7 @@ import java.util.*;      // for Iterator and ArrayList
  * grid. One less than dimension.
  * <p/>
  * contourOnVertlEdge is an int array the size of the data grid,
- * with each value 0 or 1.  This is used
+ * with each value 0 or 1. This is used
  * for an indication whether a contour of a certain level crosses between this
  * point and the next one of one larger y index.
  * This array is recalculated for each contour level.
@@ -65,9 +63,9 @@ import java.util.*;      // for Iterator and ArrayList
  * Each grid cell is identified by the lower left grid point (i,j).
  * The cell edge to the right of (i,j) is the horizontal edge for grid cell
  * (i,j) and the cell edge above (i,j) is the vertical edge.
- * i increases to the  right and j increases upward.
+ * i increases to the right and j increases upward.
  * <p/>
- * Contouring  proceeds one level at a time, starting at the lowest level.
+ * Contouring proceeds one level at a time, starting at the lowest level.
  * For each level the crossing indicators contourOnVertlEdge and
  * contourOnHorizEdge are set first.
  * <p/>
@@ -138,7 +136,7 @@ import java.util.*;      // for Iterator and ArrayList
  * every contour level.
  * <p/>
  * Some tricks to contouring appear when details of how contours can cross a
- * cell are considered.  Normally a single contour for one level
+ * cell are considered. Normally a single contour for one level
  * comes in one side of a cell and goes out a different side. It
  * is possible for a data grid point to exactly equal the contour level, in
  * which case the side associated
@@ -169,13 +167,13 @@ public class ContourGrid {
   private List<Double> contourValues = new ArrayList<>(); // contour levels
   private List<ContourLine> contourLines = new ArrayList<>(); // the contours made here
 
-  private int [][] contourOnVertlEdge; // flag if a cell has a contour in it
-  private int [][] contourOnHorizEdge; // ditto - crossing bottom or top
-  private double [] xpositions;     // list of x positions along the grid
-  private double [] ypositions;     // list of y positions of the grid
-  private double conLevel;          // a working contour level
-  private int xMaxInd;              // the data grid's max x index (not size)
-  private int yMaxInd;                 // the data grid's max y index
+  private int[][] contourOnVertlEdge; // flag if a cell has a contour in it
+  private int[][] contourOnHorizEdge; // ditto - crossing bottom or top
+  private double[] xpositions; // list of x positions along the grid
+  private double[] ypositions; // list of y positions of the grid
+  private double conLevel; // a working contour level
+  private int xMaxInd; // the data grid's max x index (not size)
+  private int yMaxInd; // the data grid's max y index
   private int dimX;
   private int numLevel;
   private double gridmax, gridmin;
@@ -189,15 +187,14 @@ public class ContourGrid {
    * <p/>
    * The object made contains the data used to make contours.
    *
-   * @param dataGrid         the data grid of value
+   * @param dataGrid the data grid of value
    * @param allContourValues list of level or values or contour lines
-   * @param xPosition        the x position values of columns in the grid
-   * @param yPosition        the y position values of rows in the grid
-   * @param geogrid          a GeoGridImpl which is used for its missing data methods.
+   * @param xPosition the x position values of columns in the grid
+   * @param yPosition the y position values of rows in the grid
+   * @param geogrid a GeoGridImpl which is used for its missing data methods.
    */
-  public ContourGrid(ucar.ma2.Array dataGrid, List<Double> allContourValues,
-          double [] xPosition, double [] yPosition,
-          GridDatatype geogrid) {
+  public ContourGrid(ucar.ma2.Array dataGrid, List<Double> allContourValues, double[] xPosition, double[] yPosition,
+      GridDatatype geogrid) {
     this.geogrid = geogrid;
 
     dgIndex = dataGrid.getIndex();
@@ -209,110 +206,112 @@ public class ContourGrid {
     xpositions = xPosition;
     ypositions = yPosition;
 
-    /* Determine the largest possible x and y index in the data grid,
-* the dimension less 1; getShape returns an int[] */
+    /*
+     * Determine the largest possible x and y index in the data grid,
+     * the dimension less 1; getShape returns an int[]
+     */
     xMaxInd = (dataGrid.getShape())[0] - 1;
     yMaxInd = (dataGrid.getShape())[1] - 1;
 
     conLevel = 0.0;
 
-    /* Determine max and min values in the data grid,
-    * used here to determine valid contour levels to use.
-    * JCaron changes 2/15/2001
-    */
+    /*
+     * Determine max and min values in the data grid,
+     * used here to determine valid contour levels to use.
+     * JCaron changes 2/15/2001
+     */
     MAMath.MinMax minmax = geogrid.getMinMaxSkipMissingData(dataGrid);
     gridmax = minmax.max;
     gridmin = minmax.min;
 
-    /* if a grid with missing values, reset grid max and grid min
-   if (dataismissing && (gridmax == missvalue || gridmin == missvalue)) {
-       //   first reset to any value not the missing data value
-       if (gridmax == missvalue)
-           gridmax = gridmin;
-       else if (gridmin == missvalue)
-           gridmin = gridmax;
-       // then search grid for valid max and min
-       for (int i=0; i<=xMaxInd; i++)
-           for (int j=0; j<=yMaxInd; j++) {
-               double val = value(i,j);
-               if (val != missvalue) {
-                   if (val > gridmax)
-                       gridmax=val;
-                   else if (val < gridmin)
-                       gridmin = val;
-               }
-           }
-   } */
+    /*
+     * if a grid with missing values, reset grid max and grid min
+     * if (dataismissing && (gridmax == missvalue || gridmin == missvalue)) {
+     * // first reset to any value not the missing data value
+     * if (gridmax == missvalue)
+     * gridmax = gridmin;
+     * else if (gridmin == missvalue)
+     * gridmin = gridmax;
+     * // then search grid for valid max and min
+     * for (int i=0; i<=xMaxInd; i++)
+     * for (int j=0; j<=yMaxInd; j++) {
+     * double val = value(i,j);
+     * if (val != missvalue) {
+     * if (val > gridmax)
+     * gridmax=val;
+     * else if (val < gridmin)
+     * gridmin = val;
+     * }
+     * }
+     * }
+     */
 
     if (Debug.isSet("contour/debugContours")) {
-      System.out.println("  cstr: grid x dim = " + xMaxInd +
-              "  y dim = " + yMaxInd);
-      System.out.println("  cstr: input grid has x coord limits "
-              + xpositions[0]
-              + " to " + xpositions[yMaxInd]);
-      System.out.println("  cstr: input grid has y coord limits "
-              + ypositions[0]
-              + " to " + ypositions[yMaxInd]);
-      System.out.println("  cstr: grid max value = "
-              + gridmax + "  grid min = " + gridmin);
+      System.out.println("  cstr: grid x dim = " + xMaxInd + "  y dim = " + yMaxInd);
+      System.out.println("  cstr: input grid has x coord limits " + xpositions[0] + " to " + xpositions[yMaxInd]);
+      System.out.println("  cstr: input grid has y coord limits " + ypositions[0] + " to " + ypositions[yMaxInd]);
+      System.out.println("  cstr: grid max value = " + gridmax + "  grid min = " + gridmin);
     }
 
     /*
-      Determine contour level values to use.
-      Find *working* contour levels, the levels that will actually be
-      used in making contours in this object, which may not
-      include some supplied to the constructor.
-      If any contour values were supplied:
+     * Determine contour level values to use.
+     * Find *working* contour levels, the levels that will actually be
+     * used in making contours in this object, which may not
+     * include some supplied to the constructor.
+     * If any contour values were supplied:
      */
     if (allContourValues.size() > 0) {
-      //boolean spanBottom=false, spanTop=false;
+      // boolean spanBottom=false, spanTop=false;
 
       if (Debug.isSet("contour/debugContours"))
-        System.out.println
-                ("  Supplied contour levels are" + allContourValues);
+        System.out.println("  Supplied contour levels are" + allContourValues);
 
-      /* Loop over all supplied contour values;
-      * if value is contained between gridmin and gridmax, add to
-      * working array of contour values "contourValues".
-      * Check if supplied contour values cover the entire data range */
+      /*
+       * Loop over all supplied contour values;
+       * if value is contained between gridmin and gridmax, add to
+       * working array of contour values "contourValues".
+       * Check if supplied contour values cover the entire data range
+       */
       for (Double cv : allContourValues) {
         if ((cv >= gridmin) && (cv <= gridmax)) {
           contourValues.add(cv);
         }
 
         // indicate if the supplied values cover the data supplied
-        //if (cv <= gridmin  && !spanBottom)
-        //    spanBottom=true;
-        //if (cv >= gridmax && !spanTop)
-        //    spanTop=true;
+        // if (cv <= gridmin && !spanBottom)
+        // spanBottom=true;
+        // if (cv >= gridmax && !spanTop)
+        // spanTop=true;
       }
 
       /*
-          // spanning not in any way mandatory, so don't worry about it;
-          // the user may only want to look at part of the values.
-              if (Debug.isSet("contour.debugContours") &&
-            !geogrid.hasMissingData())
-                  if (!spanTop || !spanBottom)
-                      System.out.println
-              (" Supplied contour values fail to span " +
-         "the entire range of data values in the grid.");
-        */
-    } else  // if not contour levels were supplied
+       * // spanning not in any way mandatory, so don't worry about it;
+       * // the user may only want to look at part of the values.
+       * if (Debug.isSet("contour.debugContours") &&
+       * !geogrid.hasMissingData())
+       * if (!spanTop || !spanBottom)
+       * System.out.println
+       * (" Supplied contour values fail to span " +
+       * "the entire range of data values in the grid.");
+       */
+    } else // if not contour levels were supplied
     {
       double interval;
-      /* No contour values were provided as input to cstr
-      * so have to make up suitable contour values.
-      * THE DIVISOR SETS HOW MANY CONTOUR LEVELS ARE MADE HERE AND USED.
-      * May be non-integer values, which is ok:
-      * non-integer values accomodate data grid with a very small range
-      * such as absolute vorticity with all
-* |values| < 0.005.
-      */
+      /*
+       * No contour values were provided as input to cstr
+       * so have to make up suitable contour values.
+       * THE DIVISOR SETS HOW MANY CONTOUR LEVELS ARE MADE HERE AND USED.
+       * May be non-integer values, which is ok:
+       * non-integer values accomodate data grid with a very small range
+       * such as absolute vorticity with all
+       * |values| < 0.005.
+       */
       interval = (gridmax - gridmin) / 10.0;
 
-      /* Error trap: same grid values at all points in the grid
-      * no contours possible - set indicator contour value of -999;
-      */
+      /*
+       * Error trap: same grid values at all points in the grid
+       * no contours possible - set indicator contour value of -999;
+       */
       if (interval == 0.0) {
         Double dob = -999.0;
         contourValues.add(dob);
@@ -329,24 +328,22 @@ public class ContourGrid {
     } // end find working contour levels
 
     // set size of arrays of flags of where contours cross grid edges
-    contourOnVertlEdge = new int
-            [contourValues.size()][(xMaxInd + 1) * (yMaxInd + 1)];
+    contourOnVertlEdge = new int[contourValues.size()][(xMaxInd + 1) * (yMaxInd + 1)];
 
-    contourOnHorizEdge = new int
-            [contourValues.size()][(xMaxInd + 1) * (yMaxInd + 1)];
+    contourOnHorizEdge = new int[contourValues.size()][(xMaxInd + 1) * (yMaxInd + 1)];
 
-    //long t2 = System.currentTimeMillis();
-    //long dt = t2-t1;
-    //System.out.println("  cstr used "+dt+" ms elapsed");
+    // long t2 = System.currentTimeMillis();
+    // long dt = t2-t1;
+    // System.out.println(" cstr used "+dt+" ms elapsed");
 
-    //for (int m=0; m<contourValues.size(); m++)
-    //    System.out.println("  contour value "+
-    //		       ((Double)contourValues.get(m)).doubleValue());
+    // for (int m=0; m<contourValues.size(); m++)
+    // System.out.println(" contour value "+
+    // ((Double)contourValues.get(m)).doubleValue());
 
     // System.out.println(" Completed ContourGrid cstr. ");
 
   }
-  //  end ContourGrid constructor
+  // end ContourGrid constructor
 
 
   /**
@@ -391,9 +388,11 @@ public class ContourGrid {
       sweepfromWest();
       sweepfromTop();
 
-      /* contouring is done for this contour level; make a
-         a ContourFeature which is an AbstractGisFeature
-         from the ContourLine ArrayList just completed. */
+      /*
+       * contouring is done for this contour level; make a
+       * a ContourFeature which is an AbstractGisFeature
+       * from the ContourLine ArrayList just completed.
+       */
       ContourFeature oneLevelLines = new ContourFeature(contourLines);
 
       contourFeatureList.add(oneLevelLines);
@@ -426,14 +425,14 @@ public class ContourGrid {
 
     // create working array of contour levels
     // to save multiple access
-    double [] clevels = new double[contourValues.size()];
+    double[] clevels = new double[contourValues.size()];
     for (m = 0; m < contourValues.size(); m++)
       clevels[m] = contourValues.get(m);
 
     // for each row, look at each pair of grid point values;
     // see if a contour crossing of any value occurs there
     for (j = 0; j <= yMaxInd; j++) {
-      v1 = value(0, j);  // call method "value(i,j)"
+      v1 = value(0, j); // call method "value(i,j)"
       for (i = 0; i < xMaxInd; i++) {
         v2 = value(i + 1, j);
         boolean v1IsMissingData = geogrid.isMissingData(v1);
@@ -447,14 +446,13 @@ public class ContourGrid {
           contourOnHorizEdge[m][j + i * dimX] = 0;
 
           if (!v1IsMissingData && !v2IsMissingData) {
-            if (((clevel >= v1 && clevel < v2) ||
-                    (clevel >= v2 && clevel < v1))) {
+            if (((clevel >= v1 && clevel < v2) || (clevel >= v2 && clevel < v1))) {
               contourOnHorizEdge[m][j + i * dimX] = 1;
             }
           }
         }
         v1 = v2; // save repeated value for next step
-      }  // loop on i
+      } // loop on i
     }
 
     // same for all vertical grid edges defined by pairs of grid points
@@ -473,8 +471,7 @@ public class ContourGrid {
           contourOnVertlEdge[m][j + i * dimX] = 0;
 
           if (!v1IsMissingData && !v2IsMissingData) {
-            if (((clevel >= v1 && clevel < v2) ||
-                    (clevel >= v2 && clevel < v1)))
+            if (((clevel >= v1 && clevel < v2) || (clevel >= v2 && clevel < v1)))
               contourOnVertlEdge[m][j + i * dimX] = 1;
           }
         }
@@ -482,7 +479,7 @@ public class ContourGrid {
       }
     }
 
-  }    // end setupContourCrossings
+  } // end setupContourCrossings
 
 
   /**
@@ -491,7 +488,7 @@ public class ContourGrid {
    * <p/>
    * Use ONLY for contour generation - special adjustment is possible -
    * If the value at a gridpoint is equal to the contour level, then the
-   * value returned is offset slightly.  This avoids the special case
+   * value returned is offset slightly. This avoids the special case
    * where a contour intersects at a gridpoint (cell corner) exactly,
    * and consequently which edge has the intersection is undefined.
    *
@@ -524,8 +521,7 @@ public class ContourGrid {
       if (contourOnVertlEdge[numLevel][j + i * dimX] == 1)
       // found an intersection on W edge of grid
       {
-        ContourLine cline = new
-                ContourLine(followContour('W', i, j), conLevel);
+        ContourLine cline = new ContourLine(followContour('W', i, j), conLevel);
         contourLines.add(cline);
         contourOnVertlEdge[numLevel][j + i * dimX] = 0;
       }
@@ -535,8 +531,8 @@ public class ContourGrid {
 
   // searchEastEdge()
   // Check each cell along the east edge for a contour crossing this level.
-  //  Create the complete contour, if a crossing is found.
-  //  east edge is composed of cells with i = xMaxInd the max index in x.
+  // Create the complete contour, if a crossing is found.
+  // east edge is composed of cells with i = xMaxInd the max index in x.
   //
   private void searchEastEdge() {
     int i, j;
@@ -548,8 +544,7 @@ public class ContourGrid {
       // found an intersection on east edge of grid; the west edge
       // of cell at i,j which is the east edge of cell (i-1, j)
       {
-        ContourLine cline = new
-                ContourLine(followContour('E', i - 1, j), conLevel);
+        ContourLine cline = new ContourLine(followContour('E', i - 1, j), conLevel);
         contourLines.add(cline);
         contourOnVertlEdge[numLevel][j + i * dimX] = 0;
       }
@@ -566,7 +561,7 @@ public class ContourGrid {
   private void searchNorthEdge() {
     int i, j;
 
-    j = yMaxInd;  // top row of cells has index j = yMaxInd
+    j = yMaxInd; // top row of cells has index j = yMaxInd
     for (i = 0; i < xMaxInd; i++) {
 
       if (contourOnHorizEdge[numLevel][j + i * dimX] == 1)
@@ -575,8 +570,7 @@ public class ContourGrid {
       // this will be the south side of that cell, which is
       // the N side of cell (i,j-1)
       {
-        ContourLine cline =
-                new ContourLine(followContour('N', i, j - 1), conLevel);
+        ContourLine cline = new ContourLine(followContour('N', i, j - 1), conLevel);
         contourLines.add(cline);
         contourOnHorizEdge[numLevel][j + i * dimX] = 0;
       }
@@ -598,8 +592,7 @@ public class ContourGrid {
       if (contourOnHorizEdge[numLevel][j + i * dimX] == 1)
       // found an intersec on S edge
       {
-        ContourLine cline =
-                new ContourLine(followContour('S', i, j), conLevel);
+        ContourLine cline = new ContourLine(followContour('S', i, j), conLevel);
         contourLines.add(cline);
         contourOnHorizEdge[numLevel][j + i * dimX] = 0;
       }
@@ -626,9 +619,7 @@ public class ContourGrid {
         if (contourOnHorizEdge[numLevel][j + i * dimX] == 1) {
           // there is an intersection on S edge of cell;
           // follow this contour line to its end.
-          ContourLine cline =
-                  new ContourLine(followContour('S', i, j),
-                      conLevel);
+          ContourLine cline = new ContourLine(followContour('S', i, j), conLevel);
           contourLines.add(cline);
           // set false (turn off indicator of crossing);
           contourOnHorizEdge[numLevel][j + i * dimX] = 0;
@@ -651,9 +642,7 @@ public class ContourGrid {
         if (contourOnVertlEdge[numLevel][j + i * dimX] == 1) {
           // there is an intersection on W edge of cell;
           // follow this contour line to its end.
-          ContourLine cline =
-                  new ContourLine(followContour('W', i, j),
-                      conLevel);
+          ContourLine cline = new ContourLine(followContour('W', i, j), conLevel);
           contourLines.add(cline);
           // set false (turn off indicator of crossing):
           contourOnVertlEdge[numLevel][j + i * dimX] = 0;
@@ -698,12 +687,10 @@ public class ContourGrid {
     startGridPoint = contourEdgeIntersection(startSide, i, j);
 
     if (Debug.isSet("contour/debugContours"))
-      System.out.println("    point 1 x = " + (float) startGridPoint.getX()
-              + "  y = " + (float) startGridPoint.getY());
+      System.out.println("    point 1 x = " + (float) startGridPoint.getX() + "  y = " + (float) startGridPoint.getY());
 
     // Add the first position to the path.
-    Point2D.Double dob = new Point2D.Double(startGridPoint.getX(),
-            startGridPoint.getY());
+    Point2D.Double dob = new Point2D.Double(startGridPoint.getX(), startGridPoint.getY());
     cLinePts.add(dob);
 
     // keep hold of point found on the contour for later use
@@ -715,7 +702,7 @@ public class ContourGrid {
 
     boolean match = false, onedge = false, atMissing = false;
 
-    //  work through grid, appending points to the contour, until
+    // work through grid, appending points to the contour, until
     // it ends on an edge or it closes on itself.
     do {
       // get the next side of the this cell where this contour crosses
@@ -726,7 +713,7 @@ public class ContourGrid {
         // data, or otherwise ended but not at a grid edge.
         if (cLinePts.size() <= 1) {
           ArrayList empty = new ArrayList();
-          //System.out.println("  unexpected end of contour ");
+          // System.out.println(" unexpected end of contour ");
           return empty;
         } else
           return cLinePts;
@@ -740,13 +727,12 @@ public class ContourGrid {
       mainGridPoint = contourEdgeIntersection(heading, i, j);
 
       // append this contour point on cell edge to the contour
-      Point2D.Double dob2 =
-              new Point2D.Double(mainGridPoint.getX(), mainGridPoint.getY());
+      Point2D.Double dob2 = new Point2D.Double(mainGridPoint.getX(), mainGridPoint.getY());
       cLinePts.add(dob2);
 
       if (Debug.isSet("contour/debugContours"))
-        System.out.println("    next position on contour = " +
-                (float) mainGridPoint.getX() + "," + (float) mainGridPoint.getY());
+        System.out.println(
+            "    next position on contour = " + (float) mainGridPoint.getX() + "," + (float) mainGridPoint.getY());
 
       oldx = mainGridPoint.getX();
       oldy = mainGridPoint.getY();
@@ -779,23 +765,23 @@ public class ContourGrid {
       }
 
       if (Debug.isSet("contour/debugContours")) {
-        System.out.println("    new startside =" + startSide + "  i,j =" +
-                i + "," + j + "  old heading =" + heading
-                + " xMaxInd=" + xMaxInd + "  yMaxInd=" + yMaxInd);
+        System.out.println("    new startside =" + startSide + "  i,j =" + i + "," + j + "  old heading =" + heading
+            + " xMaxInd=" + xMaxInd + "  yMaxInd=" + yMaxInd);
       }
 
-      /* "while" checks if contour closed on its first point,
-* or if the contour has come to an end against the edge of grid;
-* if not, process another step along the contour line. */
+      /*
+       * "while" checks if contour closed on its first point,
+       * or if the contour has come to an end against the edge of grid;
+       * if not, process another step along the contour line.
+       */
 
-      /*    test if have got back to starting position */
-      if (mainGridPoint.getX() == startGridPoint.getX() &&
-              mainGridPoint.getY() == startGridPoint.getY())
+      /* test if have got back to starting position */
+      if (mainGridPoint.getX() == startGridPoint.getX() && mainGridPoint.getY() == startGridPoint.getY())
         match = true;
 
-      /*     test if have hit an edge of the grid */
-      if ((heading == 'N' && j >= yMaxInd) || (heading == 'S' && j < 0)
-              || (heading == 'E' && i >= xMaxInd) || (heading == 'W' && i < 0))
+      /* test if have hit an edge of the grid */
+      if ((heading == 'N' && j >= yMaxInd) || (heading == 'S' && j < 0) || (heading == 'E' && i >= xMaxInd)
+          || (heading == 'W' && i < 0))
         onedge = true;
 
     } while (!match && !onedge && !atMissing);
@@ -805,11 +791,11 @@ public class ContourGrid {
         System.out.println("  END contour at " + i + ", " + j + " by match");
       if (onedge)
         System.out.println("  END contour at " + i + ", " + j + " on edge");
-      //System.out.println(" ");
+      // System.out.println(" ");
     }
 
     return cLinePts;
-  }   // end followContour
+  } // end followContour
 
 
   /**
@@ -828,33 +814,32 @@ public class ContourGrid {
 
     switch (side) {
       case 'N':
-        intersection.setLocation(xpositions[i] +
-                (xpositions[i + 1] - xpositions[i])
-                        * interpPosition(conLevel, value(i, j + 1), value(i + 1, j + 1)),
-                ypositions[j + 1]);
+        intersection.setLocation(
+            xpositions[i]
+                + (xpositions[i + 1] - xpositions[i]) * interpPosition(conLevel, value(i, j + 1), value(i + 1, j + 1)),
+            ypositions[j + 1]);
         break;
 
       case 'S':
-        intersection.setLocation(xpositions[i] + (xpositions[i + 1] - xpositions[i])
-                * interpPosition(conLevel, value(i, j), value(i + 1, j)), ypositions[j]);
+        intersection.setLocation(
+            xpositions[i]
+                + (xpositions[i + 1] - xpositions[i]) * interpPosition(conLevel, value(i, j), value(i + 1, j)),
+            ypositions[j]);
         break;
 
       case 'E':
-        intersection.setLocation(xpositions[i + 1],
-                ypositions[j] + (ypositions[j + 1] - ypositions[j])
-                        * interpPosition(conLevel, value(i + 1, j), value(i + 1, j + 1)));
+        intersection.setLocation(xpositions[i + 1], ypositions[j]
+            + (ypositions[j + 1] - ypositions[j]) * interpPosition(conLevel, value(i + 1, j), value(i + 1, j + 1)));
         break;
 
       case 'W':
-        intersection.setLocation(xpositions[i],
-                ypositions[j] + (ypositions[j + 1] - ypositions[j])
-                        * interpPosition(conLevel, value(i, j), value(i, j + 1)));
+        intersection.setLocation(xpositions[i], ypositions[j]
+            + (ypositions[j + 1] - ypositions[j]) * interpPosition(conLevel, value(i, j), value(i, j + 1)));
         break;
 
       default:
         System.out.println(
-                "Impossible direction in contourEdgeIntersection" +
-                        "  i=" + i + "  j=" + j + " direction=" + side);
+            "Impossible direction in contourEdgeIntersection" + "  i=" + i + "  j=" + j + " direction=" + side);
     }
 
     return intersection;
@@ -882,14 +867,12 @@ public class ContourGrid {
     switch (startSide) // switch on incoming cell edge
     {
       case 'N':
-        if (contourOnVertlEdge[numLevel][j + i * dimX] == 1
-                && contourOnHorizEdge[numLevel][j + i * dimX] == 1
-                && contourOnVertlEdge[numLevel][j + (i + 1) * dimX] == 1)
+        if (contourOnVertlEdge[numLevel][j + i * dimX] == 1 && contourOnHorizEdge[numLevel][j + i * dimX] == 1
+            && contourOnVertlEdge[numLevel][j + (i + 1) * dimX] == 1)
         // saddle point; pick the adjacent edge closest to where
         // the contour crosses this edge.
         {
-          if (Math.abs(conLevel - value(i, j + 1))
-                  > Math.abs(conLevel - value(i + 1, j + 1)))
+          if (Math.abs(conLevel - value(i, j + 1)) > Math.abs(conLevel - value(i + 1, j + 1)))
             return 'E';
           else
             return 'W';
@@ -905,10 +888,9 @@ public class ContourGrid {
 
       case 'S':
         if (contourOnVertlEdge[numLevel][j + (i + 1) * dimX] == 1
-                && contourOnHorizEdge[numLevel][(j + 1) + i * dimX] == 1
-                && contourOnVertlEdge[numLevel][j + i * dimX] == 1) {
-          if (Math.abs(conLevel - value(i + 1, j))
-                  > Math.abs(conLevel - value(i, j)))
+            && contourOnHorizEdge[numLevel][(j + 1) + i * dimX] == 1
+            && contourOnVertlEdge[numLevel][j + i * dimX] == 1) {
+          if (Math.abs(conLevel - value(i + 1, j)) > Math.abs(conLevel - value(i, j)))
             return 'W';
           else
             return 'E';
@@ -923,11 +905,9 @@ public class ContourGrid {
         break;
 
       case 'E':
-        if (contourOnHorizEdge[numLevel][(j + 1) + i * dimX] == 1
-                && contourOnVertlEdge[numLevel][j + i * dimX] == 1
-                && contourOnHorizEdge[numLevel][j + i * dimX] == 1) {
-          if (Math.abs(conLevel - value(i + 1, j + 1))
-                  > Math.abs(conLevel - value(i + 1, j)))
+        if (contourOnHorizEdge[numLevel][(j + 1) + i * dimX] == 1 && contourOnVertlEdge[numLevel][j + i * dimX] == 1
+            && contourOnHorizEdge[numLevel][j + i * dimX] == 1) {
+          if (Math.abs(conLevel - value(i + 1, j + 1)) > Math.abs(conLevel - value(i + 1, j)))
             return 'S';
           else
             return 'N';
@@ -942,11 +922,9 @@ public class ContourGrid {
         break;
 
       case 'W':
-        if (contourOnHorizEdge[numLevel][j + i * dimX] == 1
-                && contourOnVertlEdge[numLevel][j + (i + 1) * dimX] == 1
-                && contourOnHorizEdge[numLevel][(j + 1) + i * dimX] == 1) {
-          if (Math.abs(conLevel - value(i, j))
-                  > Math.abs(conLevel - value(i, j + 1)))
+        if (contourOnHorizEdge[numLevel][j + i * dimX] == 1 && contourOnVertlEdge[numLevel][j + (i + 1) * dimX] == 1
+            && contourOnHorizEdge[numLevel][(j + 1) + i * dimX] == 1) {
+          if (Math.abs(conLevel - value(i, j)) > Math.abs(conLevel - value(i, j + 1)))
             return 'N';
           else
             return 'S';
@@ -961,18 +939,16 @@ public class ContourGrid {
         break;
 
       default:
-        System.out.println("Impossible direction " + startSide +
-                " in directionToGoFrom()");
+        System.out.println("Impossible direction " + startSide + " in directionToGoFrom()");
 
     } // end switch
 
     if (Debug.isSet("contour/debugContours"))
-      System.out.println("   Contour does not exit from cell i=" + i +
-              " j=" + j + "   start side is " + startSide +
-              "  level = " + conLevel);
+      System.out.println("   Contour does not exit from cell i=" + i + " j=" + j + "   start side is " + startSide
+          + "  level = " + conLevel);
 
     return startSide;
-  }  //  end directionToGoFrom
+  } // end directionToGoFrom
 
 
   /**
@@ -986,10 +962,11 @@ public class ContourGrid {
    * @return double
    */
   private double interpPosition(double cv, double v1, double v2) {
-    /* (Might improve slightly by nonlinear fit to
-      four points along grid row or column. Probably would be big increase
-      in time required, for an undetectable improvement in
-      quality of contours and is not justified by data resolution anyway.)
+    /*
+     * (Might improve slightly by nonlinear fit to
+     * four points along grid row or column. Probably would be big increase
+     * in time required, for an undetectable improvement in
+     * quality of contours and is not justified by data resolution anyway.)
      */
     if (v2 == v1) {
       return 0.5;
@@ -997,4 +974,4 @@ public class ContourGrid {
       return ((cv - v1) / (v2 - v1));
   }
 
-}   /*  end class ContourGrid */
+} /* end class ContourGrid */

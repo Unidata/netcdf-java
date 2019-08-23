@@ -9,7 +9,6 @@ import ucar.ui.widget.MultilineTooltip;
 import ucar.nc2.units.DateType;
 import ucar.util.prefs.PersistenceManager;
 import ucar.ui.prefs.FldInputVerifier;
-
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
@@ -27,9 +26,9 @@ public class DateField extends ucar.ui.prefs.Field {
   /**
    * Constructor.
    *
-   * @param name      of the field; must be unique within the store
-   * @param label     to display to the user
-   * @param defValue  default value to start with.
+   * @param name of the field; must be unique within the store
+   * @param label to display to the user
+   * @param defValue default value to start with.
    * @param storeData store/fetch data from here, may be null.
    */
   public DateField(String name, String label, DateType defValue, PersistenceManager storeData) {
@@ -46,7 +45,7 @@ public class DateField extends ucar.ui.prefs.Field {
 
     if (validValue != null)
       tf.setText(validValue.toString());
-        
+
     finish();
   }
 
@@ -65,7 +64,8 @@ public class DateField extends ucar.ui.prefs.Field {
       new DateType(tf.getText(), null, null);
       return true;
     } catch (java.text.ParseException e) {
-      if (null != buff) buff.append(name).append(": ").append(e.getMessage());
+      if (null != buff)
+        buff.append(name).append(": ").append(e.getMessage());
       return false;
     }
   }
@@ -110,7 +110,8 @@ public class DateField extends ucar.ui.prefs.Field {
       if (value2 != null)
         value = value2;
     }
-    if (value == null) return null;
+    if (value == null)
+      return null;
     return new DateType((DateType) value);
   }
 }

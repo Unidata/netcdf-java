@@ -10,10 +10,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import ucar.ma2.DataType;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -37,7 +35,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
  * @author caron
  */
 @Category(NeedsCdmUnitTest.class)
-public class TestConventions  {
+public class TestConventions {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
@@ -72,7 +70,8 @@ public class TestConventions  {
 
   @Test
   public void testAWIPSsatLatlon() throws IOException {
-    try (GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/awips/20150602_0830_sport_imerg_noHemis_rr.nc")) {
+    try (GridDataset ds =
+        GridDataset.open(TestDir.cdmUnitTestDir + "conventions/awips/20150602_0830_sport_imerg_noHemis_rr.nc")) {
       GeoGrid grid = ds.findGridByName("image");
       assert grid != null;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -84,7 +83,7 @@ public class TestConventions  {
   @Test
   public void testIfps() throws IOException {
     Optional<FeatureDatasetCoverage> ds =
-            CoverageDatasetFactory.openCoverageDataset(TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf");
+        CoverageDatasetFactory.openCoverageDataset(TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf");
     assert ds.isPresent();
     CoverageCollection cc = ds.get().getSingleCoverageCollection();
     assert cc != null;

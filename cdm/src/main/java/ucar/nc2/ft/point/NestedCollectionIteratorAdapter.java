@@ -5,7 +5,6 @@
 package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.PointFeatureCCIterator;
-
 import java.io.IOException;
 import java.util.Iterator;
 

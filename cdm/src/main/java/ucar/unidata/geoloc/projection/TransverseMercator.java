@@ -27,8 +27,8 @@ public class TransverseMercator extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result =  new TransverseMercator(getOriginLat(), getTangentLon(),
-            getScale(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    ProjectionImpl result = new TransverseMercator(getOriginLat(), getTangentLon(), getScale(), getFalseEasting(),
+        getFalseNorthing(), getEarthRadius());
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -44,9 +44,9 @@ public class TransverseMercator extends ProjectionImpl {
   /**
    * Construct a TransverseMercator Projection.
    *
-   * @param lat0       origin of projection coord system is at (lat0, tangentLon)
+   * @param lat0 origin of projection coord system is at (lat0, tangentLon)
    * @param tangentLon longitude that the cylinder is tangent at ("central meridian")
-   * @param scale      scale factor along the central meridian
+   * @param scale scale factor along the central meridian
    */
   public TransverseMercator(double lat0, double tangentLon, double scale) {
     this(lat0, tangentLon, scale, 0.0, 0.0, EARTH_RADIUS);
@@ -55,11 +55,11 @@ public class TransverseMercator extends ProjectionImpl {
   /**
    * Construct a TransverseMercator Projection.
    *
-   * @param lat0       origin of projection coord system is at (lat0, tangentLon)
+   * @param lat0 origin of projection coord system is at (lat0, tangentLon)
    * @param tangentLon longitude that the cylinder is tangent at ("central meridian")
-   * @param scale      scale factor along the central meridian
-   * @param east       false easting in km
-   * @param north      false northing in km
+   * @param scale scale factor along the central meridian
+   * @param east false easting in km
+   * @param north false northing in km
    */
   public TransverseMercator(double lat0, double tangentLon, double scale, double east, double north) {
     this(lat0, tangentLon, scale, east, north, EARTH_RADIUS);
@@ -68,12 +68,12 @@ public class TransverseMercator extends ProjectionImpl {
   /**
    * Construct a TransverseMercator Projection.
    *
-   * @param lat0       origin of projection coord system is at (lat0, tangentLon)
+   * @param lat0 origin of projection coord system is at (lat0, tangentLon)
    * @param tangentLon longitude that the cylinder is tangent at ("central meridian")
-   * @param scale      scale factor along the central meridian
-   * @param east       false easting in units of km
-   * @param north      false northing in units of km
-   * @param radius     earth radius in km
+   * @param scale scale factor along the central meridian
+   * @param east false easting in units of km
+   * @param north false northing in units of km
+   * @param radius earth radius in km
    */
   public TransverseMercator(double lat0, double tangentLon, double scale, double east, double north, double radius) {
     super("TransverseMercator", false);
@@ -156,19 +156,19 @@ public class TransverseMercator extends ProjectionImpl {
   /**
    * Set the scale
    *
-   * @param scale  the scale
+   * @param scale the scale
    */
   public void setScale(double scale) {
-      this.scale = earthRadius * scale;
+    this.scale = earthRadius * scale;
   }
 
   /**
    * Set the origin latitude
    *
-   * @param lat  the origin latitude
+   * @param lat the origin latitude
    */
   public void setOriginLat(double lat) {
-      lat0 = Math.toRadians(lat);
+    lat0 = Math.toRadians(lat);
   }
 
   /**
@@ -177,25 +177,27 @@ public class TransverseMercator extends ProjectionImpl {
    * @param lon the tangent longitude
    */
   public void setTangentLon(double lon) {
-      lon0 = Math.toRadians(lon);
+    lon0 = Math.toRadians(lon);
   }
 
   /**
    * Set the false_easting, in km.
    * natural_x_coordinate + false_easting = x coordinate
+   * 
    * @param falseEasting x offset
    */
   public void setFalseEasting(double falseEasting) {
-      this.falseEasting = falseEasting;
+    this.falseEasting = falseEasting;
   }
 
   /**
    * Set the false northing, in km.
    * natural_y_coordinate + false_northing = y coordinate
+   * 
    * @param falseNorthing y offset
    */
   public void setFalseNorthing(double falseNorthing) {
-      this.falseNorthing = falseNorthing;
+    this.falseNorthing = falseNorthing;
   }
 
   /////////////////////////////////////////////
@@ -221,14 +223,8 @@ public class TransverseMercator extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "TransverseMercator{" +
-            "lat0=" + lat0 +
-            ", lon0=" + lon0 +
-            ", scale=" + scale +
-            ", earthRadius=" + earthRadius +
-            ", falseEasting=" + falseEasting +
-            ", falseNorthing=" + falseNorthing +
-            '}';
+    return "TransverseMercator{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", scale=" + scale + ", earthRadius="
+        + earthRadius + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + '}';
   }
 
   /**
@@ -240,8 +236,7 @@ public class TransverseMercator extends ProjectionImpl {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1)
-            || ProjectionPointImpl.isInfinite(pt2)) {
+    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
       return true;
     }
 
@@ -254,20 +249,29 @@ public class TransverseMercator extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     TransverseMercator that = (TransverseMercator) o;
     double tolerance = 1e-6;
 
-    if (DoubleMath.fuzzyCompare(that.earthRadius,   earthRadius,   tolerance) != 0) return false;
-    if (DoubleMath.fuzzyCompare(that.falseEasting,  falseEasting,  tolerance) != 0) return false;
-    if (DoubleMath.fuzzyCompare(that.falseNorthing, falseNorthing, tolerance) != 0) return false;
-    if (DoubleMath.fuzzyCompare(that.lat0,          lat0,          tolerance) != 0) return false;
-    if (DoubleMath.fuzzyCompare(that.lon0,          lon0,          tolerance) != 0) return false;
-    if (DoubleMath.fuzzyCompare(that.scale,         scale,         tolerance) != 0) return false;
+    if (DoubleMath.fuzzyCompare(that.earthRadius, earthRadius, tolerance) != 0)
+      return false;
+    if (DoubleMath.fuzzyCompare(that.falseEasting, falseEasting, tolerance) != 0)
+      return false;
+    if (DoubleMath.fuzzyCompare(that.falseNorthing, falseNorthing, tolerance) != 0)
+      return false;
+    if (DoubleMath.fuzzyCompare(that.lat0, lat0, tolerance) != 0)
+      return false;
+    if (DoubleMath.fuzzyCompare(that.lon0, lon0, tolerance) != 0)
+      return false;
+    if (DoubleMath.fuzzyCompare(that.scale, scale, tolerance) != 0)
+      return false;
 
-    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    if ((defaultMapArea == null) != (that.defaultMapArea == null))
+      return false; // common case is that these are null
     return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
   }
@@ -291,41 +295,43 @@ public class TransverseMercator extends ProjectionImpl {
     return result;
   }
 
-  /*MACROBODY
-    projToLatLon {} {
-    double x = (fromX-falseEasting)/scale;
-    double d = (fromY-falseNorthing)/scale + lat0;
-    toLon = Math.toDegrees(lon0 + Math.atan2(SpecialMathFunction.sinh(x), Math.cos(d)));
-    toLat = Math.toDegrees(Math.asin( Math.sin(d)/ SpecialMathFunction.cosh(x)));
-    }
+  /*
+   * MACROBODY
+   * projToLatLon {} {
+   * double x = (fromX-falseEasting)/scale;
+   * double d = (fromY-falseNorthing)/scale + lat0;
+   * toLon = Math.toDegrees(lon0 + Math.atan2(SpecialMathFunction.sinh(x), Math.cos(d)));
+   * toLat = Math.toDegrees(Math.asin( Math.sin(d)/ SpecialMathFunction.cosh(x)));
+   * }
+   * 
+   * latLonToProj {} {
+   * double lon = Math.toRadians(fromLon);
+   * double lat = Math.toRadians(fromLat);
+   * double dlon = lon-lon0;
+   * double b = Math.cos( lat) * Math.sin(dlon);
+   * // infinite projection
+   * if ((Math.abs(Math.abs(b) - 1.0)) < TOLERANCE) {
+   * toX = 0.0; toY = 0.0;
+   * } else {
+   * toX = scale * SpecialMathFunction.atanh(b) + falseEasting;
+   * toY = scale * (Math.atan2(Math.tan(lat),Math.cos(dlon)) - lat0) + falseNorthing;
+   * }
+   * }
+   * 
+   * 
+   * 
+   * MACROBODY
+   */
 
-    latLonToProj {} {
-    double lon = Math.toRadians(fromLon);
-    double lat = Math.toRadians(fromLat);
-    double dlon = lon-lon0;
-    double b = Math.cos( lat) * Math.sin(dlon);
-    // infinite projection
-    if ((Math.abs(Math.abs(b) - 1.0)) < TOLERANCE) {
-        toX = 0.0; toY =  0.0;
-    } else {
-    toX = scale * SpecialMathFunction.atanh(b) + falseEasting;
-    toY = scale * (Math.atan2(Math.tan(lat),Math.cos(dlon)) - lat0) + falseNorthing;
-    }
-}
-
-
-
-  MACROBODY*/
-
-  /*BEGINGENERATED*/
+  /* BEGINGENERATED */
 
   /*
-  Note this section has been generated using the convert.tcl script.
-  This script, run as:
-  tcl convert.tcl TransverseMercator.java
-  takes the actual projection conversion code defined in the MACROBODY
-  section above and generates the following 6 methods
-  */
+   * Note this section has been generated using the convert.tcl script.
+   * This script, run as:
+   * tcl convert.tcl TransverseMercator.java
+   * takes the actual projection conversion code defined in the MACROBODY
+   * section above and generates the following 6 methods
+   */
 
 
   /**
@@ -335,8 +341,7 @@ public class TransverseMercator extends ProjectionImpl {
    * @param result the object to write to
    * @return the given result
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon,
-                                      ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
@@ -362,12 +367,11 @@ public class TransverseMercator extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
-  public LatLonPoint projToLatLon(ProjectionPoint world,
-                                  LatLonPointImpl result) {
+  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
     double fromX = world.getX();
     double fromY = world.getY();
@@ -385,18 +389,17 @@ public class TransverseMercator extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
    */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
-                                int lonIndex) {
+  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     float[] fromLatA = from[latIndex];
     float[] fromLonA = from[lonIndex];
@@ -431,11 +434,11 @@ public class TransverseMercator extends ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
   public float[][] projToLatLon(float[][] from, float[][] to) {
@@ -464,18 +467,17 @@ public class TransverseMercator extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
    */
-  public double[][] latLonToProj(double[][] from, double[][] to,
-                                 int latIndex, int lonIndex) {
+  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     double[] fromLatA = from[latIndex];
     double[] fromLonA = from[lonIndex];
@@ -510,11 +512,11 @@ public class TransverseMercator extends ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
   public double[][] projToLatLon(double[][] from, double[][] to) {
@@ -540,7 +542,7 @@ public class TransverseMercator extends ProjectionImpl {
     return to;
   }
 
-  /*ENDGENERATED*/
+  /* ENDGENERATED */
 
 
 }

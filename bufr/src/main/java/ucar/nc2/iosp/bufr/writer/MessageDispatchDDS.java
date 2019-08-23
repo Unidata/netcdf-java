@@ -10,7 +10,6 @@ import ucar.nc2.iosp.bufr.BufrTableLookup;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-
 import java.io.*;
 import java.util.*;
 import java.nio.channels.WritableByteChannel;
@@ -45,7 +44,7 @@ public class MessageDispatchDDS {
   long total_bytes;
   int total_obs;
 
-  //boolean checkBad = true;
+  // boolean checkBad = true;
   boolean showMatch = false;
   boolean showBad = false;
   boolean showConfig = false;
@@ -63,25 +62,28 @@ public class MessageDispatchDDS {
 
   /**
    * Dispatch BUFR Messages based on their DDS.
+   * 
    * @param configFilename Dispatch configuration file.
    * @param dispatchDir Write to this directory.
    */
   MessageDispatchDDS(String configFilename, File dispatchDir) throws IOException {
     this.dispatchDir = dispatchDir;
 
-    /* if (writeSamples) {
-      File file = new File(dispatchDir + "abad.bufr");
-      FileOutputStream fos = new FileOutputStream(file);
-      badWbc = fos.getChannel();
-
-      file = new File(dispatchDir + "asample.bufr");
-      fos = new FileOutputStream(file);
-      sampleWbc = fos.getChannel();
-
-      file = new File(dispatchDir + "asampleAll.bufr");
-      fos = new FileOutputStream(file);
-      allWbc = fos.getChannel();
-    } */
+    /*
+     * if (writeSamples) {
+     * File file = new File(dispatchDir + "abad.bufr");
+     * FileOutputStream fos = new FileOutputStream(file);
+     * badWbc = fos.getChannel();
+     * 
+     * file = new File(dispatchDir + "asample.bufr");
+     * fos = new FileOutputStream(file);
+     * sampleWbc = fos.getChannel();
+     * 
+     * file = new File(dispatchDir + "asampleAll.bufr");
+     * fos = new FileOutputStream(file);
+     * allWbc = fos.getChannel();
+     * }
+     */
 
     // MessageWriter.setRootDir(dispatchDir);
 
@@ -89,17 +91,20 @@ public class MessageDispatchDDS {
     if (configFilename != null) {
       File inputFile = new File(configFilename);
       if (inputFile.exists()) {
-        try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(
-                new FileInputStream(inputFile), CDM.utf8Charset))) {
+        try (BufferedReader dataIS =
+            new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), CDM.utf8Charset))) {
           while (true) {
             String line = dataIS.readLine();
-            if (line == null) break;
+            if (line == null)
+              break;
             line = line.trim();
-            if (line.length() == 0) break;
-            if (line.charAt(0) == '#') continue;
+            if (line.length() == 0)
+              break;
+            if (line.charAt(0) == '#')
+              continue;
 
             String[] toke = line.split(",");
-            //String hashS = toke[0].substring(2); // remove the "0x"
+            // String hashS = toke[0].substring(2); // remove the "0x"
             int hash = Integer.parseInt(toke[0]);
             String bitsOk = (toke.length > 8) ? toke[7].trim() : "";
             typeMap.put(hash, new MessType(hash, toke[1], toke[2], toke[3], bitsOk));
@@ -159,10 +164,11 @@ public class MessageDispatchDDS {
     }
 
     boolean written = matched.scheduleWrite(m);
-    if (written) matched.countBytes += m.getRawBytes().length + m.getHeader().length();
+    if (written)
+      matched.countBytes += m.getRawBytes().length + m.getHeader().length();
 
     if (written && newOne) {
-      writeSample(m, sampleWbc);  // keep samples
+      writeSample(m, sampleWbc); // keep samples
     }
   }
 
@@ -186,7 +192,8 @@ public class MessageDispatchDDS {
         }
       }
 
-      if (showBad) logger.warn("bad <" + m.getHeader() + ">");
+      if (showBad)
+        logger.warn("bad <" + m.getHeader() + ">");
       badCount++;
       badBytes += m.getRawBytes().length + m.getHeader().length();
     }
@@ -194,7 +201,8 @@ public class MessageDispatchDDS {
   }
 
   private void writeSample(Message m, WritableByteChannel wbc) {
-    if (!writeSamples) return;
+    if (!writeSamples)
+      return;
 
     try {
       if (m.getHeader() != null)
@@ -210,53 +218,59 @@ public class MessageDispatchDDS {
       for (MessageWriter writer : writers.values())
         writer.close();
 
-      if (badWbc != null) badWbc.close();
-      if (sampleWbc != null) sampleWbc.close();
-      if (allWbc != null) allWbc.close();
+      if (badWbc != null)
+        badWbc.close();
+      if (sampleWbc != null)
+        sampleWbc.close();
+      if (allWbc != null)
+        allWbc.close();
 
     } catch (IOException ioe) {
       logger.error("MessageDispatchDDS.exit", ioe);
     }
 
-    //for (MessType mtype : typeMap.values())
-    //  if (mtype.indexer != null) mtype.indexer.close();
+    // for (MessType mtype : typeMap.values())
+    // if (mtype.indexer != null) mtype.indexer.close();
 
     // report out
-    if (out != null) out.format("%n===============================================%n");
+    if (out != null)
+      out.format("%n===============================================%n");
 
     int avg_msg = (total_msgs == 0) ? 0 : (int) (total_bytes / total_msgs);
     int avg_obs = (total_msgs == 0) ? 0 : (total_obs / total_msgs);
     if (out != null) {
-      out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d %n",
-              total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
-      out.format("matched=%d types=%d bad=%d badTypes=%d badBytes=%d ignored=%d failWrite=%d %n",
-              match, typeMap.size(), badCount, badHashSet.size(), badBytes, ignored, failWrite);
+      out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d %n", total_msgs, total_obs,
+          total_bytes, avg_msg, avg_obs);
+      out.format("matched=%d types=%d bad=%d badTypes=%d badBytes=%d ignored=%d failWrite=%d %n", match, typeMap.size(),
+          badCount, badHashSet.size(), badBytes, ignored, failWrite);
     }
 
     if ((inputFilenameOut != null)) {
       try (FileOutputStream cout = new FileOutputStream(inputFilenameOut)) {
         Formatter cfg = new Formatter(cout, CDM.utf8Charset.name());
-        cfg.format("#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
+        cfg.format(
+            "#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
         List<MessType> mtypes = new ArrayList<>(typeMap.values());
         mtypes.sort(new MessTypeSorter());
         for (MessType mtype : mtypes) {
           if (mtype.proto == null) {
-            if (out != null) out.format(" MessType %s count=%d fileout= %s%n", mtype.name, mtype.count, mtype.fileout);
-            cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f %n",
-                    mtype.hash, mtype.fileout, mtype.name, mtype.index,
-                    mtype.count, mtype.countObs, mtype.countBytes / 1000);
+            if (out != null)
+              out.format(" MessType %s count=%d fileout= %s%n", mtype.name, mtype.count, mtype.fileout);
+            cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f %n", mtype.hash, mtype.fileout, mtype.name, mtype.index,
+                mtype.count, mtype.countObs, mtype.countBytes / 1000);
             continue;
           }
           Message m = mtype.proto;
           boolean hasBadMessages = badHashSet.contains(m.hashCode()); // did we find any messages that fail bit count ??
-          if (out != null) out.format(" MessType %s count=%d fileout= %s%n", mtype.name, mtype.count, mtype.fileout);
-          cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f, %5s, %5s, %d, %s, %s, %s, %s%n",
-                  mtype.hash, mtype.fileout, mtype.name, mtype.index,
-                  mtype.count, mtype.countObs, mtype.countBytes / 1000,
-                  m.isTablesComplete(), !hasBadMessages, mtype.nbad,
-                  m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.is.getBufrEdition(), m.getLookup().getCategoryNo());
+          if (out != null)
+            out.format(" MessType %s count=%d fileout= %s%n", mtype.name, mtype.count, mtype.fileout);
+          cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f, %5s, %5s, %d, %s, %s, %s, %s%n", mtype.hash, mtype.fileout,
+              mtype.name, mtype.index, mtype.count, mtype.countObs, mtype.countBytes / 1000, m.isTablesComplete(),
+              !hasBadMessages, mtype.nbad, m.getLookup().getCenterNo(), m.getLookup().getTableName(),
+              m.is.getBufrEdition(), m.getLookup().getCategoryNo());
         }
-        if (out != null) out.format("%n");
+        if (out != null)
+          out.format("%n");
 
       } catch (IOException ioe) {
         logger.error("MessageDispatchDDS.exit", ioe);
@@ -300,7 +314,8 @@ public class MessageDispatchDDS {
         }
       }
 
-      if (showConfig) System.out.printf(" add hash=%d name=%s filename=%s index=%s%n", hash, name, fileout, index);
+      if (showConfig)
+        System.out.printf(" add hash=%d name=%s filename=%s index=%s%n", hash, name, fileout, index);
     }
 
     MessType(Message proto) {
@@ -309,12 +324,13 @@ public class MessageDispatchDDS {
 
       if (useHeader) {
         this.name = extractName(proto.getHeader());
-        if (this.name == null) this.name = Integer.toHexString(this.hash);
+        if (this.name == null)
+          this.name = Integer.toHexString(this.hash);
         Integer nameCount = nameMap.get(this.name);
         if (nameCount != null) {
           nameCount++;
           nameMap.put(this.name, nameCount); // increment this name counter
-          this.name = name + "-" + nameCount;  // form a new one to avoid filename collision
+          this.name = name + "-" + nameCount; // form a new one to avoid filename collision
         }
         nameMap.put(this.name, 0);
 
@@ -323,11 +339,13 @@ public class MessageDispatchDDS {
       }
 
       this.fileout = name;
-      if (showConfig) System.out.println(" add new MessType <" + name + "> fileout= " + fileout);
+      if (showConfig)
+        System.out.println(" add new MessType <" + name + "> fileout= " + fileout);
     }
 
     String extractName(String header) {
-      if (header.length() < 12) return null;
+      if (header.length() < 12)
+        return null;
       return header.substring(7, 11) + "-" + header.substring(0, 6);
     }
 
@@ -343,16 +361,18 @@ public class MessageDispatchDDS {
 
           if (useCatSubdirs) {
             BufrTableLookup lookup = m.getLookup();
-            //String centerDir = "Center-"+lookup.getCenter()+"."+lookup.getSubCenter();
-            //File dir1 = new File(dispatchDir, centerDir);
-            //if (!dir1.exists() && !dir1.mkdirs()) logger.warn("Failed to make "+dir1.getPath());
+            // String centerDir = "Center-"+lookup.getCenter()+"."+lookup.getSubCenter();
+            // File dir1 = new File(dispatchDir, centerDir);
+            // if (!dir1.exists() && !dir1.mkdirs()) logger.warn("Failed to make "+dir1.getPath());
             String catDir = "Category-" + lookup.getCategory() + "." + lookup.getSubCategory();
             File dir2 = new File(dispatchDir, catDir);
-            if (!dir2.exists() && !dir2.mkdirs()) logger.warn("Failed to make " + dir2.getPath());
+            if (!dir2.exists() && !dir2.mkdirs())
+              logger.warn("Failed to make " + dir2.getPath());
             String filename = (dayRollover) ? fileout + "." + CalendarDateFormatter.toDateString(cd) : fileout;
             file2write = new File(dir2, filename + ".bufr");
 
-            System.out.printf("Start %s internalTableMessages=%d%n   %s%n   %s%n", file2write, bufrTableMessages.size(), lookup.getCenterName(), lookup.getCategoryFullName());
+            System.out.printf("Start %s internalTableMessages=%d%n   %s%n   %s%n", file2write, bufrTableMessages.size(),
+                lookup.getCenterName(), lookup.getCategoryFullName());
 
           } else {
             file2write = new File(dispatchDir, writerName + ".bufr");
@@ -371,7 +391,8 @@ public class MessageDispatchDDS {
       }
 
       writer.write(m); // put it on the write queue
-      if (showMatch) System.out.println("match <" + m.getHeader() + ">");
+      if (showMatch)
+        System.out.println("match <" + m.getHeader() + ">");
       match++;
 
       return true;
@@ -381,7 +402,7 @@ public class MessageDispatchDDS {
 
   private static class MessTypeSorter implements Comparator<MessType> {
     public int compare(MessType o1, MessType o2) {
-      //return o2.count - o1.count; // largest first
+      // return o2.count - o1.count; // largest first
       return o1.name.compareTo(o2.name);
     }
   }

@@ -20,7 +20,6 @@ import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.URLnaming;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,8 +50,7 @@ public class CatalogBuilder {
     if (baseURI == null) {
       try {
         baseURI = new URI(location);
-      }
-      catch (URISyntaxException e) {
+      } catch (URISyntaxException e) {
         errlog.format("Bad location = '%s' err='%s'%n", location, e.getMessage());
         logger.error("Bad location = '{}' err='{}}'", location, e.getMessage());
         fatalError = true;
@@ -80,7 +78,7 @@ public class CatalogBuilder {
       return null;
     }
     this.baseURI = catrefURI;
-    Catalog result =  buildFromURI(catrefURI);
+    Catalog result = buildFromURI(catrefURI);
     catref.setRead(!fatalError);
     return fatalError ? null : result;
   }
@@ -126,11 +124,11 @@ public class CatalogBuilder {
   public CatalogBuilder() {}
 
   public CatalogBuilder(Catalog from) {
-    this.name       = from.getName();
-    this.expires    = from.getExpires();
-    this.baseURI    = from.getBaseURI();
+    this.name = from.getName();
+    this.expires = from.getExpires();
+    this.baseURI = from.getBaseURI();
     this.properties = from.getProperties();
-    this.services   = from.getServices();  // ??
+    this.services = from.getServices(); // ??
   }
 
   public void setName(String name) {
@@ -168,7 +166,7 @@ public class CatalogBuilder {
     }
     if (services == null) {
       services = new ArrayList<>();
-      }
+    }
     if (!services.contains(s) && !containsService(s.getName())) {
       services.add(s);
     }
@@ -224,10 +222,18 @@ public class CatalogBuilder {
   protected Map<String, Object> setFields() {
     Map<String, Object> flds = new HashMap<>(10);
 
-    if (expires    != null) { flds.put(Catalog.Expires,    expires); }
-    if (version    != null) { flds.put(Catalog.Version,    version); }
-    if (services   != null) { flds.put(Catalog.Services,   services); }
-    if (properties != null) { flds.put(Dataset.Properties, properties); }
+    if (expires != null) {
+      flds.put(Catalog.Expires, expires);
+    }
+    if (version != null) {
+      flds.put(Catalog.Version, version);
+    }
+    if (services != null) {
+      flds.put(Catalog.Services, services);
+    }
+    if (properties != null) {
+      flds.put(Dataset.Properties, properties);
+    }
 
     return flds;
   }
@@ -279,33 +285,31 @@ public class CatalogBuilder {
   // JDOM
 
   private void readXML(String location) {
-     try {
-       SAXBuilder saxBuilder = new SAXBuilder();
-       Document jdomDoc = saxBuilder.build(location);
-       readCatalog(jdomDoc.getRootElement());
-     }
-     catch (Exception e) {
-       errlog.format("failed to read catalog at '%s' err='%s'%n", location, e);
-       logger.error("failed to read catalog at {}, {}", location, e.toString());
-       if (logger.isTraceEnabled()) {
-         e.printStackTrace();
-       }
-       fatalError = true;
-     }
-   }
+    try {
+      SAXBuilder saxBuilder = new SAXBuilder();
+      Document jdomDoc = saxBuilder.build(location);
+      readCatalog(jdomDoc.getRootElement());
+    } catch (Exception e) {
+      errlog.format("failed to read catalog at '%s' err='%s'%n", location, e);
+      logger.error("failed to read catalog at {}, {}", location, e.toString());
+      if (logger.isTraceEnabled()) {
+        e.printStackTrace();
+      }
+      fatalError = true;
+    }
+  }
 
   private void readXML(URI uri) {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
       Document jdomDoc = saxBuilder.build(uri.toURL());
       readCatalog(jdomDoc.getRootElement());
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
       logger.error("failed to read catalog at {}, {}", uri.toString(), e.toString());
-       if (logger.isTraceEnabled()) {
-         e.printStackTrace();
-       }
+      if (logger.isTraceEnabled()) {
+        e.printStackTrace();
+      }
       fatalError = true;
     }
   }
@@ -313,16 +317,15 @@ public class CatalogBuilder {
   private void readXMLfromString(String catalogAsString) {
     try {
       StringReader in = new StringReader(catalogAsString);
-      SAXBuilder saxBuilder = new SAXBuilder();    // LOOK non-validating
+      SAXBuilder saxBuilder = new SAXBuilder(); // LOOK non-validating
       Document jdomDoc = saxBuilder.build(in);
       readCatalog(jdomDoc.getRootElement());
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       errlog.format("failed to read catalogAsString err='%s'%n", e);
       logger.error("failed to read catalogAsString at {}, {}", baseURI.toString(), e.toString());
-       if (logger.isTraceEnabled()) {
-         e.printStackTrace();
-       }
+      if (logger.isTraceEnabled()) {
+        e.printStackTrace();
+      }
       fatalError = true;
     }
   }
@@ -332,35 +335,35 @@ public class CatalogBuilder {
       SAXBuilder saxBuilder = new SAXBuilder();
       Document jdomDoc = saxBuilder.build(stream);
       readCatalog(jdomDoc.getRootElement());
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       errlog.format("failed to read catalogAsString err='%s'%n", e);
       logger.error("failed to read catalogAsString at {}, {}", baseURI.toString(), e.toString());
-       if (logger.isTraceEnabled()) {
-         e.printStackTrace();
-       }
+      if (logger.isTraceEnabled()) {
+        e.printStackTrace();
+      }
       fatalError = true;
     }
   }
 
-  /* <xsd:element name="catalog">
-     <xsd:complexType>
-       <xsd:sequence>
-         <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
-         <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
-       </xsd:sequence>
-
-       <xsd:attribute name="name" type="xsd:string" />
-       <xsd:attribute name="expires" type="dateType"/>
-       <xsd:attribute name="version" type="xsd:token" default="1.0.2" />
-     </xsd:complexType>
-   </xsd:element>
+  /*
+   * <xsd:element name="catalog">
+   * <xsd:complexType>
+   * <xsd:sequence>
+   * <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+   * <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+   * <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
+   * </xsd:sequence>
+   * 
+   * <xsd:attribute name="name" type="xsd:string" />
+   * <xsd:attribute name="expires" type="dateType"/>
+   * <xsd:attribute name="version" type="xsd:token" default="1.0.2" />
+   * </xsd:complexType>
+   * </xsd:element>
    */
   private void readCatalog(Element catalogElem) {
 
     String name = catalogElem.getAttributeValue("name");
-    String catSpecifiedBaseURL = catalogElem.getAttributeValue("base");   // LOOK what is this ??
+    String catSpecifiedBaseURL = catalogElem.getAttributeValue("base"); // LOOK what is this ??
     String expiresS = catalogElem.getAttributeValue("expires");
     String version = catalogElem.getAttributeValue("version");
 
@@ -368,8 +371,7 @@ public class CatalogBuilder {
     if (expiresS != null) {
       try {
         expires = CalendarDateFormatter.isoStringToCalendarDate(null, expiresS);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         errlog.format("bad expires date '%s' err='%s'%n", expiresS, e.getMessage());
         logger.debug("bad expires date '{}' err='{}'%n", expiresS, e.getMessage());
       }
@@ -379,8 +381,7 @@ public class CatalogBuilder {
       try {
         URI userSpecifiedBaseUri = new URI(catSpecifiedBaseURL);
         this.baseURI = userSpecifiedBaseUri;
-      }
-      catch (URISyntaxException e) {
+      } catch (URISyntaxException e) {
         errlog.format("readCatalog(): bad catalog specified base URI='%s' %n", catSpecifiedBaseURL);
         logger.debug("bad catalog specified base URI='{}'", catSpecifiedBaseURL);
       }
@@ -407,11 +408,9 @@ public class CatalogBuilder {
     for (Element e : allChildren) {
       if (e.getName().equals("dataset")) {
         addDataset(readDataset(null, e));
-      }
-      else if (e.getName().equals("catalogRef")) {
+      } else if (e.getName().equals("catalogRef")) {
         addDataset(readCatalogRef(null, e));
-      }
-      else {
+      } else {
         addDataset(buildOtherDataset(null, e));
       }
     }
@@ -422,17 +421,18 @@ public class CatalogBuilder {
     return null;
   }
 
-  /* <xsd:element name="access">
-     <xsd:complexType>
-       <xsd:sequence>
-         <xsd:element ref="dataSize" minOccurs="0"/>   // whyd we do that ?
-       </xsd:sequence>
-       <xsd:attribute name="urlPath" type="xsd:token" use="required"/>
-       <xsd:attribute name="serviceName" type="xsd:string"/>
-       <xsd:attribute name="dataFormat" type="dataFormatTypes"/>
-     </xsd:complexType>
-   </xsd:element >
-  */
+  /*
+   * <xsd:element name="access">
+   * <xsd:complexType>
+   * <xsd:sequence>
+   * <xsd:element ref="dataSize" minOccurs="0"/> // whyd we do that ?
+   * </xsd:sequence>
+   * <xsd:attribute name="urlPath" type="xsd:token" use="required"/>
+   * <xsd:attribute name="serviceName" type="xsd:string"/>
+   * <xsd:attribute name="dataFormat" type="dataFormatTypes"/>
+   * </xsd:complexType>
+   * </xsd:element >
+   */
   protected AccessBuilder readAccess(DatasetBuilder dataset, Element accessElem) {
     String urlPath = accessElem.getAttributeValue("urlPath");
     String serviceName = accessElem.getAttributeValue("serviceName");
@@ -452,21 +452,22 @@ public class CatalogBuilder {
     return new Property(name, value);
   }
 
-  /* <xsd:element name="service">
-    <xsd:complexType>
-     <xsd:sequence>
-       <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
-       <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" />
-     </xsd:sequence>
-
-     <xsd:attribute name="name" type="xsd:string" use="required" />
-     <xsd:attribute name="base" type="xsd:string" use="required" />
-     <xsd:attribute name="serviceType" type="serviceTypes" use="required" />
-     <xsd:attribute name="desc" type="xsd:string"/>
-     <xsd:attribute name="accessType" type="xsd:string"/>
-     <xsd:attribute name="suffix" type="xsd:string" />
-    </xsd:complexType>
-   </xsd:element>
+  /*
+   * <xsd:element name="service">
+   * <xsd:complexType>
+   * <xsd:sequence>
+   * <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+   * <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" />
+   * </xsd:sequence>
+   * 
+   * <xsd:attribute name="name" type="xsd:string" use="required" />
+   * <xsd:attribute name="base" type="xsd:string" use="required" />
+   * <xsd:attribute name="serviceType" type="serviceTypes" use="required" />
+   * <xsd:attribute name="desc" type="xsd:string"/>
+   * <xsd:attribute name="accessType" type="xsd:string"/>
+   * <xsd:attribute name="suffix" type="xsd:string" />
+   * </xsd:complexType>
+   * </xsd:element>
    */
   protected Service readService(Element s) {
     String name = s.getAttributeValue("name");
@@ -480,8 +481,7 @@ public class CatalogBuilder {
     if (type == null) {
       errlog.format(" non-standard service type = '%s'%n", typeS);
       logger.debug(" non-standard service type = '{}'", typeS);
-    }
-    else {
+    } else {
       if (desc == null) {
         desc = type.getDescription();
       }
@@ -516,16 +516,16 @@ public class CatalogBuilder {
 
 
   /*
-    <xsd:element name="catalogRef" substitutionGroup="dataset">
-    <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="DatasetType">
-          <xsd:attributeGroup ref="XLink"/>
-          <xsd:attribute name="useRemoteCatalogService" type="xsd:boolean"/>
-        </xsd:extension>
-      </xsd:complexContent>
-    </xsd:complexType>
-  </xsd:element>
+   * <xsd:element name="catalogRef" substitutionGroup="dataset">
+   * <xsd:complexType>
+   * <xsd:complexContent>
+   * <xsd:extension base="DatasetType">
+   * <xsd:attributeGroup ref="XLink"/>
+   * <xsd:attribute name="useRemoteCatalogService" type="xsd:boolean"/>
+   * </xsd:extension>
+   * </xsd:complexContent>
+   * </xsd:complexType>
+   * </xsd:element>
    */
   protected DatasetBuilder readCatalogRef(DatasetBuilder parent, Element catRefElem) {
     String title = catRefElem.getAttributeValue("title", Catalog.xlinkNS);
@@ -534,33 +534,35 @@ public class CatalogBuilder {
     }
     String href = catRefElem.getAttributeValue("href", Catalog.xlinkNS);
     CatalogRefBuilder catRef = new CatalogRefBuilder(parent);
-    readDatasetInfo( catRef, catRefElem);
+    readDatasetInfo(catRef, catRefElem);
     catRef.setTitle(title);
     catRef.setHref(href);
     return catRef;
   }
 
-  /* <xsd:complexType name="DatasetType">
-     <xsd:sequence>
-       <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" />
-
-       <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
-       <xsd:element ref="ncml:netcdf" minOccurs="0"/>
-       <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/>
-     </xsd:sequence>
-
-     <xsd:attribute name="name" type="xsd:string" use="required"/>
-     <xsd:attribute name="alias" type="xsd:token"/>
-     <xsd:attribute name="authority" type="xsd:string"/> <!-- deprecated : use element -->
-     <xsd:attribute name="collectionType" type="collectionTypes"/>
-     <xsd:attribute name="dataType" type="dataTypes"/> <!-- deprecated : use element -->
-     <xsd:attribute name="harvest" type="xsd:boolean"/>
-     <xsd:attribute name="ID" type="xsd:token"/>
-     <xsd:attribute name="resourceControl" type="xsd:string"/>
-
-     <xsd:attribute name="serviceName" type="xsd:string" /> <!-- deprecated : use element -->
-     <xsd:attribute name="urlPath" type="xsd:token" />
-   </xsd:complexType> */
+  /*
+   * <xsd:complexType name="DatasetType">
+   * <xsd:sequence>
+   * <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" />
+   * 
+   * <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
+   * <xsd:element ref="ncml:netcdf" minOccurs="0"/>
+   * <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/>
+   * </xsd:sequence>
+   * 
+   * <xsd:attribute name="name" type="xsd:string" use="required"/>
+   * <xsd:attribute name="alias" type="xsd:token"/>
+   * <xsd:attribute name="authority" type="xsd:string"/> <!-- deprecated : use element -->
+   * <xsd:attribute name="collectionType" type="collectionTypes"/>
+   * <xsd:attribute name="dataType" type="dataTypes"/> <!-- deprecated : use element -->
+   * <xsd:attribute name="harvest" type="xsd:boolean"/>
+   * <xsd:attribute name="ID" type="xsd:token"/>
+   * <xsd:attribute name="resourceControl" type="xsd:string"/>
+   * 
+   * <xsd:attribute name="serviceName" type="xsd:string" /> <!-- deprecated : use element -->
+   * <xsd:attribute name="urlPath" type="xsd:token" />
+   * </xsd:complexType>
+   */
   protected DatasetBuilder readDataset(DatasetBuilder parent, Element dsElem) {
 
     DatasetBuilder dataset = new DatasetBuilder(parent);
@@ -577,12 +579,10 @@ public class CatalogBuilder {
     for (Element e : allChildren) {
       if (e.getName().equals("dataset")) {
         dataset.addDataset(readDataset(dataset, e));
-      }
-      else if (e.getName().equals("catalogRef")) {
+      } else if (e.getName().equals("catalogRef")) {
         dataset.addDataset(readCatalogRef(dataset, e));
-      }
-      else {
-        dataset.addDataset( buildOtherDataset(dataset, e));
+      } else {
+        dataset.addDataset(buildOtherDataset(dataset, e));
       }
     }
 
@@ -595,26 +595,24 @@ public class CatalogBuilder {
     if (name == null) {
       if (dsElem.getName().equals("catalogRef")) {
         dataset.setName("");
-      }
-      else {
+      } else {
         errlog.format(" ** warning: dataset must have a name = '%s'%n", dsElem);
         logger.debug(" ** warning: dataset must have a name = '{}'", dsElem);
       }
-    }
-    else {
+    } else {
       dataset.setName(name);
     }
 
-    dataset.put( Dataset.Alias, dsElem.getAttributeValue("alias"));
-    dataset.put( Dataset.Authority, dsElem.getAttributeValue("authority"));
-    dataset.put( Dataset.CollectionType, dsElem.getAttributeValue("collectionType"));
-    dataset.put( Dataset.Id, dsElem.getAttributeValue("ID"));
-    dataset.putInheritedField( Dataset.RestrictAccess, dsElem.getAttributeValue("restrictAccess"));
-    dataset.put( Dataset.ServiceName, dsElem.getAttributeValue("serviceName"));
-    dataset.put( Dataset.UrlPath, dsElem.getAttributeValue("urlPath"));
+    dataset.put(Dataset.Alias, dsElem.getAttributeValue("alias"));
+    dataset.put(Dataset.Authority, dsElem.getAttributeValue("authority"));
+    dataset.put(Dataset.CollectionType, dsElem.getAttributeValue("collectionType"));
+    dataset.put(Dataset.Id, dsElem.getAttributeValue("ID"));
+    dataset.putInheritedField(Dataset.RestrictAccess, dsElem.getAttributeValue("restrictAccess"));
+    dataset.put(Dataset.ServiceName, dsElem.getAttributeValue("serviceName"));
+    dataset.put(Dataset.UrlPath, dsElem.getAttributeValue("urlPath"));
 
     String dataTypeName = dsElem.getAttributeValue("dataType");
-    dataset.put( Dataset.FeatureType, dataTypeName);
+    dataset.put(Dataset.FeatureType, dataTypeName);
     if (dataTypeName != null) {
       FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
       if (dataType == null) {
@@ -635,34 +633,34 @@ public class CatalogBuilder {
   }
 
   /*
-   <!-- group of elements can be used in a dataset or in metadata elements -->
-  <xsd:group name="threddsMetadataGroup">
-    <xsd:choice>
-      <xsd:element name="documentation" type="documentationType"/>
-      <xsd:element ref="metadata"/>
-      <xsd:element ref="property"/>
-
-      <xsd:element ref="contributor"/>
-      <xsd:element name="creator" type="sourceType"/>
-      <xsd:element name="date" type="dateTypeFormatted"/>
-      <xsd:element name="keyword" type="controlledVocabulary"/>
-      <xsd:element name="project" type="controlledVocabulary"/>
-      <xsd:element name="publisher" type="sourceType"/>
-
-      <xsd:element ref="geospatialCoverage"/>
-      <xsd:element name="timeCoverage" type="timeCoverageType"/>
-      <xsd:element ref="variables"/>
-      <xsd:element ref="variableMap"/>
-
-      <xsd:element name="dataType" type="dataTypes"/>
-      <xsd:element name="dataFormat" type="dataFormatTypes"/>
-      <xsd:element name="serviceName" type="xsd:string"/>
-      <xsd:element name="authority" type="xsd:string"/>
-      <xsd:element ref="dataSize"/>
-    </xsd:choice>
-  </xsd:group>
+   * <!-- group of elements can be used in a dataset or in metadata elements -->
+   * <xsd:group name="threddsMetadataGroup">
+   * <xsd:choice>
+   * <xsd:element name="documentation" type="documentationType"/>
+   * <xsd:element ref="metadata"/>
+   * <xsd:element ref="property"/>
+   * 
+   * <xsd:element ref="contributor"/>
+   * <xsd:element name="creator" type="sourceType"/>
+   * <xsd:element name="date" type="dateTypeFormatted"/>
+   * <xsd:element name="keyword" type="controlledVocabulary"/>
+   * <xsd:element name="project" type="controlledVocabulary"/>
+   * <xsd:element name="publisher" type="sourceType"/>
+   * 
+   * <xsd:element ref="geospatialCoverage"/>
+   * <xsd:element name="timeCoverage" type="timeCoverageType"/>
+   * <xsd:element ref="variables"/>
+   * <xsd:element ref="variableMap"/>
+   * 
+   * <xsd:element name="dataType" type="dataTypes"/>
+   * <xsd:element name="dataFormat" type="dataFormatTypes"/>
+   * <xsd:element name="serviceName" type="xsd:string"/>
+   * <xsd:element name="authority" type="xsd:string"/>
+   * <xsd:element ref="dataSize"/>
+   * </xsd:choice>
+   * </xsd:group>
    */
-  protected void readThreddsMetadataGroup(Map<String,Object> flds, DatasetBuilder dataset, Element parent) {
+  protected void readThreddsMetadataGroup(Map<String, Object> flds, DatasetBuilder dataset, Element parent) {
     List<Element> list;
 
     // look for creators - kind of a Source
@@ -726,7 +724,8 @@ public class CatalogBuilder {
     }
 
     // can only be one each of these kinds
-    ThreddsMetadata.GeospatialCoverage gc = readGeospatialCoverage(parent.getChild("geospatialCoverage", Catalog.defNS));
+    ThreddsMetadata.GeospatialCoverage gc =
+        readGeospatialCoverage(parent.getChild("geospatialCoverage", Catalog.defNS));
     if (gc != null) {
       flds.put(Dataset.GeospatialCoverage, gc);
     }
@@ -802,8 +801,7 @@ public class CatalogBuilder {
     String sizeS = elem.getText();
     try {
       size = Double.parseDouble(sizeS);
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       errlog.format(" ** Parse error: Bad double format in size element = '%s'%n", sizeS);
       logger.debug(" ** Parse error: Bad double format in size element = '{}'", sizeS);
       return -1;
@@ -813,17 +811,13 @@ public class CatalogBuilder {
     char c = Character.toUpperCase(units.charAt(0));
     if (c == 'K') {
       size *= 1000;
-    }
-    else if (c == 'M') {
+    } else if (c == 'M') {
       size *= 1000 * 1000;
-    }
-    else if (c == 'G') {
+    } else if (c == 'G') {
       size *= 1000 * 1000 * 1000;
-    }
-    else if (c == 'T') {
+    } else if (c == 'T') {
       size *= 1000.0 * 1000 * 1000 * 1000;
-    }
-    else if (c == 'P') {
+    } else if (c == 'P') {
       size *= 1000.0 * 1000 * 1000 * 1000 * 1000;
     }
     return (long) size;
@@ -842,8 +836,7 @@ public class CatalogBuilder {
     if (href != null) {
       try {
         uri = Catalog.resolveUri(baseURI, href);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         errlog.format(" ** Invalid documentation href = '%s' err='%s'%n", href, e.getMessage());
         logger.debug(" ** Invalid documentation href = '{}' err='{}'", href, e.getMessage());
       }
@@ -859,8 +852,7 @@ public class CatalogBuilder {
     String text = elem.getText();
     try {
       return Double.parseDouble(text);
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       errlog.format(" ** Parse error: Bad double format = '%s'%n", text);
       logger.debug(" ** Parse error: Bad double format = '{}'", text);
       return Double.NaN;
@@ -868,34 +860,34 @@ public class CatalogBuilder {
   }
 
   /*
-    <xsd:element name="geospatialCoverage">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="northsouth" type="spatialRange" minOccurs="0"/>
-        <xsd:element name="eastwest" type="spatialRange" minOccurs="0"/>
-        <xsd:element name="updown" type="spatialRange" minOccurs="0"/>
-        <xsd:element name="name" type="controlledVocabulary" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-
-      <xsd:attribute name="zpositive" type="upOrDown" default="up"/>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:complexType name="spatialRange">
-    <xsd:sequence>
-      <xsd:element name="start" type="xsd:double"/>
-      <xsd:element name="size" type="xsd:double"/>
-      <xsd:element name="resolution" type="xsd:double" minOccurs="0"/>
-      <xsd:element name="units" type="xsd:string" minOccurs="0"/>
-    </xsd:sequence>
-  </xsd:complexType>
-
-  <xsd:simpleType name="upOrDown">
-    <xsd:restriction base="xsd:token">
-      <xsd:enumeration value="up"/>
-      <xsd:enumeration value="down"/>
-    </xsd:restriction>
-  </xsd:simpleType>
+   * <xsd:element name="geospatialCoverage">
+   * <xsd:complexType>
+   * <xsd:sequence>
+   * <xsd:element name="northsouth" type="spatialRange" minOccurs="0"/>
+   * <xsd:element name="eastwest" type="spatialRange" minOccurs="0"/>
+   * <xsd:element name="updown" type="spatialRange" minOccurs="0"/>
+   * <xsd:element name="name" type="controlledVocabulary" minOccurs="0" maxOccurs="unbounded"/>
+   * </xsd:sequence>
+   * 
+   * <xsd:attribute name="zpositive" type="upOrDown" default="up"/>
+   * </xsd:complexType>
+   * </xsd:element>
+   * 
+   * <xsd:complexType name="spatialRange">
+   * <xsd:sequence>
+   * <xsd:element name="start" type="xsd:double"/>
+   * <xsd:element name="size" type="xsd:double"/>
+   * <xsd:element name="resolution" type="xsd:double" minOccurs="0"/>
+   * <xsd:element name="units" type="xsd:string" minOccurs="0"/>
+   * </xsd:sequence>
+   * </xsd:complexType>
+   * 
+   * <xsd:simpleType name="upOrDown">
+   * <xsd:restriction base="xsd:token">
+   * <xsd:enumeration value="up"/>
+   * <xsd:enumeration value="down"/>
+   * </xsd:restriction>
+   * </xsd:simpleType>
    */
   protected ThreddsMetadata.GeospatialCoverage readGeospatialCoverage(Element gcElem) {
     if (gcElem == null) {
@@ -904,8 +896,10 @@ public class CatalogBuilder {
 
     String zpositive = gcElem.getAttributeValue("zpositive");
 
-    ThreddsMetadata.GeospatialRange northsouth = readGeospatialRange(gcElem.getChild("northsouth", Catalog.defNS), CDM.LAT_UNITS);
-    ThreddsMetadata.GeospatialRange eastwest = readGeospatialRange(gcElem.getChild("eastwest", Catalog.defNS), CDM.LON_UNITS);
+    ThreddsMetadata.GeospatialRange northsouth =
+        readGeospatialRange(gcElem.getChild("northsouth", Catalog.defNS), CDM.LAT_UNITS);
+    ThreddsMetadata.GeospatialRange eastwest =
+        readGeospatialRange(gcElem.getChild("eastwest", Catalog.defNS), CDM.LON_UNITS);
     ThreddsMetadata.GeospatialRange updown = readGeospatialRange(gcElem.getChild("updown", Catalog.defNS), "m");
 
     // look for names
@@ -937,28 +931,28 @@ public class CatalogBuilder {
   }
 
   /*
-    <xsd:element name="metadata">
-    <xsd:complexType>
-      <xsd:choice>
-        <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-      </xsd:choice>
-
-      <xsd:attribute name="inherited" type="xsd:boolean" default="false"/>
-      <xsd:attribute name="metadataType" type="metadataTypeEnum"/>
-      <xsd:attributeGroup ref="XLink"/>
-    </xsd:complexType>
-  </xsd:element>
+   * <xsd:element name="metadata">
+   * <xsd:complexType>
+   * <xsd:choice>
+   * <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>
+   * <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+   * </xsd:choice>
+   * 
+   * <xsd:attribute name="inherited" type="xsd:boolean" default="false"/>
+   * <xsd:attribute name="metadataType" type="metadataTypeEnum"/>
+   * <xsd:attributeGroup ref="XLink"/>
+   * </xsd:complexType>
+   * </xsd:element>
    */
-  protected ThreddsMetadata.MetadataOther readMetadata(Map<String,Object> flds, DatasetBuilder dataset, Element mdataElement) {
+  protected ThreddsMetadata.MetadataOther readMetadata(Map<String, Object> flds, DatasetBuilder dataset,
+      Element mdataElement) {
     // there are 6 cases to deal with: threddsNamespace vs not & inline vs Xlink & (if thredds) inherited or not
     Namespace namespace;
     List inlineElements = mdataElement.getChildren();
     if (inlineElements.size() > 0) {
       // look at the namespace of the children, if they exist
       namespace = ((Element) inlineElements.get(0)).getNamespace();
-    }
-    else {
+    } else {
       namespace = mdataElement.getNamespace(); // will be thredds
     }
 
@@ -968,23 +962,25 @@ public class CatalogBuilder {
     String inheritedS = mdataElement.getAttributeValue("inherited");
     boolean inherited = (inheritedS != null) && inheritedS.equalsIgnoreCase("true");
 
-    boolean isThreddsNamespace = ((mtype == null) || mtype.equalsIgnoreCase("THREDDS")) && namespace.getURI().equals(Catalog.CATALOG_NAMESPACE_10);
+    boolean isThreddsNamespace = ((mtype == null) || mtype.equalsIgnoreCase("THREDDS"))
+        && namespace.getURI().equals(Catalog.CATALOG_NAMESPACE_10);
 
     // the case where its not ThreddsMetadata
     if (!isThreddsNamespace) {
       if (inlineElements.size() > 0) {
         // just hold onto the jdom elements as the "content"
-         return new ThreddsMetadata.MetadataOther( mtype, namespace.getURI(), namespace.getPrefix(), inherited, mdataElement);
+        return new ThreddsMetadata.MetadataOther(mtype, namespace.getURI(), namespace.getPrefix(), inherited,
+            mdataElement);
 
-      }
-      else {
+      } else {
         // otherwise it must be an Xlink
-        return new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited);
+        return new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(),
+            inherited);
       }
     }
 
     // the case where its ThreddsMetadata
-    Map<String,Object> useFlds;
+    Map<String, Object> useFlds;
     if (inherited) {
       // the case where its inherited ThreddsMetadata: gonna put stuff in the tmi.
       ThreddsMetadata tmi = (ThreddsMetadata) dataset.get(Dataset.ThreddsMetadataInheritable);
@@ -994,28 +990,27 @@ public class CatalogBuilder {
       }
       useFlds = tmi.getFlds();
 
-    }
-    else {
+    } else {
       // the case where its non-inherited ThreddsMetadata: gonna put stuff directly into the dataset
       useFlds = flds;
     }
     readThreddsMetadataGroup(useFlds, dataset, mdataElement);
 
-    // also need to capture any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
+    // also need to capture any XLinks. see
+    // http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
     // in this case we just suck it in as if it was inline
     if (href != null) {
       try {
         URI xlinkUri = Catalog.resolveUri(baseURI, href);
         Element remoteMdata = readMetadataFromUrl(xlinkUri);
         return readMetadata(useFlds, dataset, remoteMdata);
-      }
-      catch (Exception ioe) {
+      } catch (Exception ioe) {
         errlog.format("Cant read in referenced metadata %s err=%s%n", href, ioe.getMessage());
         logger.debug("Can't read in referenced metadata {} err={}}", href, ioe.getMessage());
       }
 
     }
-    return null;  // ThreddsMetadata.MetadataOther was directly added
+    return null; // ThreddsMetadata.MetadataOther was directly added
   }
 
   private Element readMetadataFromUrl(java.net.URI uri) throws java.io.IOException {
@@ -1023,27 +1018,26 @@ public class CatalogBuilder {
     Document doc;
     try {
       doc = saxBuilder.build(uri.toURL());
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new IOException(e.getMessage());
     }
     return doc.getRootElement();
   }
 
   /*
-    <xsd:complexType name="sourceType">
-    <xsd:sequence>
-      <xsd:element name="name" type="controlledVocabulary"/>
-
-      <xsd:element name="contact">
-        <xsd:complexType>
-          <xsd:attribute name="email" type="xsd:string" use="required"/>
-          <xsd:attribute name="url" type="xsd:anyURI"/>
-        </xsd:complexType>
-      </xsd:element>
-
-    </xsd:sequence>
-  </xsd:complexType>
+   * <xsd:complexType name="sourceType">
+   * <xsd:sequence>
+   * <xsd:element name="name" type="controlledVocabulary"/>
+   * 
+   * <xsd:element name="contact">
+   * <xsd:complexType>
+   * <xsd:attribute name="email" type="xsd:string" use="required"/>
+   * <xsd:attribute name="url" type="xsd:anyURI"/>
+   * </xsd:complexType>
+   * </xsd:element>
+   * 
+   * </xsd:sequence>
+   * </xsd:complexType>
    */
   protected ThreddsMetadata.Source readSource(Element elem) {
     if (elem == null) {
@@ -1060,65 +1054,65 @@ public class CatalogBuilder {
   }
 
   /*
-    <xsd:complexType name="timeCoverageType">
-    <xsd:sequence>
-      <xsd:attribute name="calendar" type="xsd:string"/>
-      <xsd:choice minOccurs="2" maxOccurs="3">
-        <xsd:element name="start" type="dateTypeFormatted"/>
-        <xsd:element name="end" type="dateTypeFormatted"/>
-        <xsd:element name="duration" type="duration"/>
-      </xsd:choice>
-      <xsd:element name="resolution" type="duration" minOccurs="0"/>
-    </xsd:sequence>
-  </xsd:complexType>
-
-  <!-- may be a dateType or have a format attribute  -->
-  <xsd:complexType name="dateTypeFormatted">
-    <xsd:simpleContent>
-      <xsd:extension base="dateType">
-        <xsd:attribute name="format" type="xsd:string"/>
-        <!-- follow java.text.SimpleDateFormat -->
-        <xsd:attribute name="type" type="dateEnumTypes"/>
-      </xsd:extension>
-    </xsd:simpleContent>
-  </xsd:complexType>
-
-  <!-- may be a built in date or dateTIme, or a udunit encoded string -->
-  <xsd:simpleType name="dateType">
-    <xsd:union memberTypes="xsd:date xsd:dateTime udunitDate">
-      <xsd:simpleType>
-        <xsd:restriction base="xsd:token">
-          <xsd:enumeration value="present"/>
-        </xsd:restriction>
-      </xsd:simpleType>
-    </xsd:union>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="udunitDate">
-    <xsd:restriction base="xsd:string">
-      <xsd:annotation>
-        <xsd:documentation>Must conform to complete udunits date string, eg "20 days since 1991-01-01"</xsd:documentation>
-      </xsd:annotation>
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="duration">
-    <xsd:union memberTypes="xsd:duration udunitDuration"/>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="udunitDuration">
-    <xsd:restriction base="xsd:string">
-      <xsd:annotation>
-        <xsd:documentation>Must conform to udunits time duration, eg "20.1 hours"</xsd:documentation>
-      </xsd:annotation>
-    </xsd:restriction>
-  </xsd:simpleType>
+   * <xsd:complexType name="timeCoverageType">
+   * <xsd:sequence>
+   * <xsd:attribute name="calendar" type="xsd:string"/>
+   * <xsd:choice minOccurs="2" maxOccurs="3">
+   * <xsd:element name="start" type="dateTypeFormatted"/>
+   * <xsd:element name="end" type="dateTypeFormatted"/>
+   * <xsd:element name="duration" type="duration"/>
+   * </xsd:choice>
+   * <xsd:element name="resolution" type="duration" minOccurs="0"/>
+   * </xsd:sequence>
+   * </xsd:complexType>
+   * 
+   * <!-- may be a dateType or have a format attribute -->
+   * <xsd:complexType name="dateTypeFormatted">
+   * <xsd:simpleContent>
+   * <xsd:extension base="dateType">
+   * <xsd:attribute name="format" type="xsd:string"/>
+   * <!-- follow java.text.SimpleDateFormat -->
+   * <xsd:attribute name="type" type="dateEnumTypes"/>
+   * </xsd:extension>
+   * </xsd:simpleContent>
+   * </xsd:complexType>
+   * 
+   * <!-- may be a built in date or dateTIme, or a udunit encoded string -->
+   * <xsd:simpleType name="dateType">
+   * <xsd:union memberTypes="xsd:date xsd:dateTime udunitDate">
+   * <xsd:simpleType>
+   * <xsd:restriction base="xsd:token">
+   * <xsd:enumeration value="present"/>
+   * </xsd:restriction>
+   * </xsd:simpleType>
+   * </xsd:union>
+   * </xsd:simpleType>
+   * 
+   * <xsd:simpleType name="udunitDate">
+   * <xsd:restriction base="xsd:string">
+   * <xsd:annotation>
+   * <xsd:documentation>Must conform to complete udunits date string, eg "20 days since 1991-01-01"</xsd:documentation>
+   * </xsd:annotation>
+   * </xsd:restriction>
+   * </xsd:simpleType>
+   * 
+   * <xsd:simpleType name="duration">
+   * <xsd:union memberTypes="xsd:duration udunitDuration"/>
+   * </xsd:simpleType>
+   * 
+   * <xsd:simpleType name="udunitDuration">
+   * <xsd:restriction base="xsd:string">
+   * <xsd:annotation>
+   * <xsd:documentation>Must conform to udunits time duration, eg "20.1 hours"</xsd:documentation>
+   * </xsd:annotation>
+   * </xsd:restriction>
+   * </xsd:simpleType>
    */
   protected DateRange readTimeCoverage(Element tElem) {
     if (tElem == null) {
       return null;
     }
-    
+
     Calendar calendar = readCalendar(tElem.getAttributeValue("calendar"));
     DateType start = readDate(tElem.getChild("start", Catalog.defNS), calendar);
     DateType end = readDate(tElem.getChild("end", Catalog.defNS), calendar);
@@ -1128,8 +1122,7 @@ public class CatalogBuilder {
 
     try {
       return new DateRange(start, end, duration, resolution);
-    }
-    catch (java.lang.IllegalArgumentException e) {
+    } catch (java.lang.IllegalArgumentException e) {
       errlog.format(" ** warning: TimeCoverage error ='%s'%n", e.getMessage());
       logger.debug(" ** warning: TimeCoverage error ='{}'", e.getMessage());
       return null;
@@ -1166,8 +1159,7 @@ public class CatalogBuilder {
     }
     try {
       return new DateType(text, format, type, calendar);
-    }
-    catch (java.text.ParseException e) {
+    } catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad date format = '%s'%n", text);
       return null;
     }
@@ -1181,54 +1173,53 @@ public class CatalogBuilder {
     try {
       text = elem.getText();
       return new TimeDuration(text);
-    }
-    catch (java.text.ParseException e) {
+    } catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad duration format = '%s'%n", text);
       return null;
     }
   }
 
   /*
-    <xsd:element name="variables">
-    <xsd:complexType>
-      <xsd:choice>
-        <xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element ref="variableMap" minOccurs="0"/>
-      </xsd:choice>
-      <xsd:attribute name="vocabulary" type="variableNameVocabulary" use="optional"/>
-      <xsd:attributeGroup ref="XLink"/>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="variable">
-    <xsd:complexType mixed="true">
-      <xsd:attribute name="name" type="xsd:string" use="required"/>
-      <xsd:attribute name="vocabulary_name" type="xsd:string" use="optional"/>
-      <xsd:attribute name="vocabulary_id" type="xsd:string" use="optional"/>
-      <xsd:attribute name="units" type="xsd:string"/>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="variableMap">
-    <xsd:complexType>
-      <xsd:attributeGroup ref="XLink"/>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:simpleType name="variableNameVocabulary">
-    <xsd:union memberTypes="xsd:token">
-      <xsd:simpleType>
-        <xsd:restriction base="xsd:token">
-          <xsd:enumeration value="CF-1.0"/>
-          <xsd:enumeration value="DIF"/>
-          <xsd:enumeration value="GRIB-1"/>
-          <xsd:enumeration value="GRIB-2"/>
-        </xsd:restriction>
-      </xsd:simpleType>
-    </xsd:union>
-  </xsd:simpleType>
+   * <xsd:element name="variables">
+   * <xsd:complexType>
+   * <xsd:choice>
+   * <xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
+   * <xsd:element ref="variableMap" minOccurs="0"/>
+   * </xsd:choice>
+   * <xsd:attribute name="vocabulary" type="variableNameVocabulary" use="optional"/>
+   * <xsd:attributeGroup ref="XLink"/>
+   * </xsd:complexType>
+   * </xsd:element>
+   * 
+   * <xsd:element name="variable">
+   * <xsd:complexType mixed="true">
+   * <xsd:attribute name="name" type="xsd:string" use="required"/>
+   * <xsd:attribute name="vocabulary_name" type="xsd:string" use="optional"/>
+   * <xsd:attribute name="vocabulary_id" type="xsd:string" use="optional"/>
+   * <xsd:attribute name="units" type="xsd:string"/>
+   * </xsd:complexType>
+   * </xsd:element>
+   * 
+   * <xsd:element name="variableMap">
+   * <xsd:complexType>
+   * <xsd:attributeGroup ref="XLink"/>
+   * </xsd:complexType>
+   * </xsd:element>
+   * 
+   * <xsd:simpleType name="variableNameVocabulary">
+   * <xsd:union memberTypes="xsd:token">
+   * <xsd:simpleType>
+   * <xsd:restriction base="xsd:token">
+   * <xsd:enumeration value="CF-1.0"/>
+   * <xsd:enumeration value="DIF"/>
+   * <xsd:enumeration value="GRIB-1"/>
+   * <xsd:enumeration value="GRIB-2"/>
+   * </xsd:restriction>
+   * </xsd:simpleType>
+   * </xsd:union>
+   * </xsd:simpleType>
    */
-  protected ThreddsMetadata.VariableGroup readVariables( Element varsElem) {
+  protected ThreddsMetadata.VariableGroup readVariables(Element varsElem) {
     if (varsElem == null) {
       return null;
     }
@@ -1251,18 +1242,18 @@ public class CatalogBuilder {
   }
 
   static public ThreddsMetadata.Variable readVariable(Element varElem) {
-     if (varElem == null) {
-       return null;
-     }
+    if (varElem == null) {
+      return null;
+    }
 
-     String name = varElem.getAttributeValue("name");
-     String desc = varElem.getText();
-     String vocabulary_name = varElem.getAttributeValue("vocabulary_name");
-     String units = varElem.getAttributeValue("units");
-     String id = varElem.getAttributeValue("vocabulary_id");
+    String name = varElem.getAttributeValue("name");
+    String desc = varElem.getText();
+    String vocabulary_name = varElem.getAttributeValue("vocabulary_name");
+    String units = varElem.getAttributeValue("units");
+    String id = varElem.getAttributeValue("vocabulary_id");
 
-     return new ThreddsMetadata.Variable(name, desc, vocabulary_name, units, id);
-   }
+    return new ThreddsMetadata.Variable(name, desc, vocabulary_name, units, id);
+  }
 
   protected ThreddsMetadata.Vocab readControlledVocabulary(Element elem) {
     if (elem == null) {
@@ -1283,8 +1274,7 @@ public class CatalogBuilder {
     try {
       String mapUri = URLnaming.resolve(baseURI.toString(), mapHref);
       return new ThreddsMetadata.UriResolved(mapHref, new URI(mapUri));
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       errlog.format(" ** Invalid %s URI= '%s' err='%s'%n", what, mapHref, e.getMessage());
       return null;
     }

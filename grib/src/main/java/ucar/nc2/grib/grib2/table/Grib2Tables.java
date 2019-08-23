@@ -24,7 +24,6 @@ import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.wmo.CommonCodeTable;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
@@ -47,14 +46,16 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   public static Grib2Tables factory(Grib2Record gr) {
     Grib2SectionIdentification ids = gr.getId();
     Grib2Pds pds = gr.getPDS();
-    return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version(), pds.getGenProcessId());
+    return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(),
+        ids.getLocal_table_version(), pds.getGenProcessId());
   }
 
   // Lazy instantiation.
   public static Grib2Tables factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
     Grib2TablesId id = new Grib2TablesId(center, subCenter, masterVersion, localVersion, genProcessId);
     Grib2Tables cust = tables.get(id);
-    if (cust != null) return cust;
+    if (cust != null)
+      return cust;
 
     // note that we match on id, so same Grib2Customizer may be mapped to multiple id's (eg match on -1)
     Grib2TableConfig config = Grib2TableConfig.matchTable(id);
@@ -66,17 +67,27 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
   private static Grib2Tables build(Grib2TableConfig config) {
     switch (config.getType()) {
-      case cfsr: return new CfsrLocalTables(config);
-      case eccodes: return new EccodesLocalTables(config);
-      case gempak: return new GempakLocalTables(config); // LOOK: not used
-      case gsd: return new FslHrrrLocalTables(config);
-      case kma: return new KmaLocalTables(config);
-      case ncep: return new NcepLocalTables(config);
-      case ndfd: return new NdfdLocalTables(config);
-      case mrms: return new MrmsLocalTables(config);
-      case nwsDev: return new NwsMetDevTables(config);
+      case cfsr:
+        return new CfsrLocalTables(config);
+      case eccodes:
+        return new EccodesLocalTables(config);
+      case gempak:
+        return new GempakLocalTables(config); // LOOK: not used
+      case gsd:
+        return new FslHrrrLocalTables(config);
+      case kma:
+        return new KmaLocalTables(config);
+      case ncep:
+        return new NcepLocalTables(config);
+      case ndfd:
+        return new NdfdLocalTables(config);
+      case mrms:
+        return new MrmsLocalTables(config);
+      case nwsDev:
+        return new NwsMetDevTables(config);
       default:
-        if (wmoStandardTable == null) wmoStandardTable = new Grib2Tables(config);
+        if (wmoStandardTable == null)
+          wmoStandardTable = new Grib2Tables(config);
         return wmoStandardTable;
     }
   }
@@ -241,22 +252,22 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     return GribStatType.getStatTypeFromGrib2(grib2StatCode);
   }
 
-   /*
-Code Table Code table 4.7 - Derived forecast (4.7)
-    0: Unweighted mean of all members
-    1: Weighted mean of all members
-    2: Standard deviation with respect to cluster mean
-    3: Standard deviation with respect to cluster mean, normalized
-    4: Spread of all members
-    5: Large anomaly index of all members
-    6: Unweighted mean of the cluster members
-    7: Interquartile range (range between the 25th and 75th quantile)
-    8: Minimum of all ensemble members
-    9: Maximum of all ensemble members
-   -1: Reserved
-   -1: Reserved for local use
-  255: Missing
-  */
+  /*
+   * Code Table Code table 4.7 - Derived forecast (4.7)
+   * 0: Unweighted mean of all members
+   * 1: Weighted mean of all members
+   * 2: Standard deviation with respect to cluster mean
+   * 3: Standard deviation with respect to cluster mean, normalized
+   * 4: Spread of all members
+   * 5: Large anomaly index of all members
+   * 6: Unweighted mean of the cluster members
+   * 7: Interquartile range (range between the 25th and 75th quantile)
+   * 8: Minimum of all ensemble members
+   * 9: Maximum of all ensemble members
+   * -1: Reserved
+   * -1: Reserved for local use
+   * 255: Missing
+   */
   public String getProbabilityNameShort(int id) {
     switch (id) {
       case 0:
@@ -297,7 +308,8 @@ Code Table Code table 4.7 - Derived forecast (4.7)
    */
   @Override
   public VertCoordType getVertUnit(int code) {
-    //     VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
+    // VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean
+    // isLayer)
     switch (code) {
 
       case 11:
@@ -443,16 +455,18 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   ////////////////////////////////////////////////////////////////////////////////////////////
   // Time utilities, generally Grib2 specific.
 
-  private TimeUnitConverter timeUnitConverter;  // LOOK not really immutable
+  private TimeUnitConverter timeUnitConverter; // LOOK not really immutable
 
   public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
-    if (this.timeUnitConverter != null) throw new RuntimeException("Cant modify timeUnitConverter once its been set");
+    if (this.timeUnitConverter != null)
+      throw new RuntimeException("Cant modify timeUnitConverter once its been set");
     this.timeUnitConverter = timeUnitConverter;
   }
 
   @Override
   public int convertTimeUnit(int timeUnit) {
-    if (timeUnitConverter == null) return timeUnit;
+    if (timeUnitConverter == null)
+      return timeUnit;
     return timeUnitConverter.convertTimeUnit(timeUnit);
   }
 
@@ -466,52 +480,62 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     } else {
       int val = pds.getForecastTime();
       CalendarPeriod period = Grib2Utils.getCalendarPeriod(convertTimeUnit(pds.getTimeUnit()));
-      if (period == null) return null;
+      if (period == null)
+        return null;
       return gr.getReferenceDate().add(period.multiply(val));
     }
   }
 
   /*
-  Code Table Code table 4.11 - Type of time intervals (4.11)
-    0: Reserved
-    1: Successive times processed have same forecast time, start time of forecast is incremented
-    2: Successive times processed have same start time of forecast, forecast time is incremented
-    3: Successive times processed have start time of forecast incremented and forecast time decremented so that valid time remains constant
-    4: Successive times processed have start time of forecast decremented and forecast time incremented so that valid time remains constant
-    5: Floating subinterval of time between forecast time and end of overall time interval
-
-  public static class TimeInterval {
-    public int statProcessType; // (code table 4.10) Statistical process used to calculate the processed field from the field at each time increment during the time range
-    public int timeIncrementType;  // (code table 4.11) Type of time increment between successive fields used in the statistical processing
-    public int timeRangeUnit;  // (code table 4.4) Indicator of unit of time for time range over which statistical processing is done
-    public int timeRangeLength; // Length of the time range over which statistical processing is done, in units defined by the previous octet
-    public int timeIncrementUnit; // (code table 4.4) Indicator of unit of time for the increment between the successive fields used
-    public int timeIncrement; // Time increment between successive fields, in units defined by the previous octet
-
-    from NDFD site:
-    timeRangeUnit:    8-14 Day Outlooks = 2 (days); Monthly and Seasonal Outlooks = 3 (months)
-    timeRangeLength:  8-14 Day Outlooks = 6 (days); Monthly Outlooks = 1 (month); Seasonal Outlooks = 3 (months)
+   * Code Table Code table 4.11 - Type of time intervals (4.11)
+   * 0: Reserved
+   * 1: Successive times processed have same forecast time, start time of forecast is incremented
+   * 2: Successive times processed have same start time of forecast, forecast time is incremented
+   * 3: Successive times processed have start time of forecast incremented and forecast time decremented so that valid
+   * time remains constant
+   * 4: Successive times processed have start time of forecast decremented and forecast time incremented so that valid
+   * time remains constant
+   * 5: Floating subinterval of time between forecast time and end of overall time interval
+   * 
+   * public static class TimeInterval {
+   * public int statProcessType; // (code table 4.10) Statistical process used to calculate the processed field from the
+   * field at each time increment during the time range
+   * public int timeIncrementType; // (code table 4.11) Type of time increment between successive fields used in the
+   * statistical processing
+   * public int timeRangeUnit; // (code table 4.4) Indicator of unit of time for time range over which statistical
+   * processing is done
+   * public int timeRangeLength; // Length of the time range over which statistical processing is done, in units defined
+   * by the previous octet
+   * public int timeIncrementUnit; // (code table 4.4) Indicator of unit of time for the increment between the
+   * successive fields used
+   * public int timeIncrement; // Time increment between successive fields, in units defined by the previous octet
+   * 
+   * from NDFD site:
+   * timeRangeUnit: 8-14 Day Outlooks = 2 (days); Monthly and Seasonal Outlooks = 3 (months)
+   * timeRangeLength: 8-14 Day Outlooks = 6 (days); Monthly Outlooks = 1 (month); Seasonal Outlooks = 3 (months)
    */
 
   /**
    * Get the time interval in units of gr.getPDS().getTimeUnit()
    *
-   * @param gr Grib record, must have pds that is a  time interval.
+   * @param gr Grib record, must have pds that is a time interval.
    * @return time interval in units of gr.getPDS().getTimeUnit()
    */
   @Nullable
   public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
-    // note  from Arthur Taylor (degrib):
-    /* If there was a range I used:
-
-    End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
-    C1) End of Interval = EI;
-    Begin of Interval = EI - range
-
-    and if there was no interval then I used:
-    C2) End of Interval = Begin of Interval = Ref + ForeT.
-    */
-    if (!gr.getPDS().isTimeInterval()) return null;
+    // note from Arthur Taylor (degrib):
+    /*
+     * If there was a range I used:
+     * 
+     * End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
+     * C1) End of Interval = EI;
+     * Begin of Interval = EI - range
+     * 
+     * and if there was no interval then I used:
+     * C2) End of Interval = Begin of Interval = Ref + ForeT.
+     */
+    if (!gr.getPDS().isTimeInterval())
+      return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
     int timeUnitOrg = gr.getPDS().getTimeUnit();
 
@@ -520,25 +544,29 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
       if (ti.timeRangeUnit == 255)
         continue;
-      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
+      if ((ti.timeRangeUnit != timeUnitOrg)
+          || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         if (!timeUnitWarnWasSent) {
-          logger.warn("TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
+          logger.warn(
+              "TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
           timeUnitWarnWasSent = true;
           // throw new RuntimeException("TimeInterval(2) has different units");
         }
       }
 
       range += ti.timeRangeLength;
-      if (ti.timeIncrementUnit != 255) range += ti.timeIncrement;
+      if (ti.timeIncrementUnit != 255)
+        range += ti.timeIncrement;
     }
 
     CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
-    if (unitPeriod == null) return null;
+    if (unitPeriod == null)
+      return null;
     CalendarPeriod period = unitPeriod.multiply(range);
 
     // End of Interval as date
     CalendarDate EI = pdsIntv.getIntervalTimeEnd();
-    if (EI == CalendarDate.UNKNOWN) {  // all values were set to zero   LOOK guessing!
+    if (EI == CalendarDate.UNKNOWN) { // all values were set to zero LOOK guessing!
       return new TimeCoordIntvDateValue(gr.getReferenceDate(), period);
     } else {
       return new TimeCoordIntvDateValue(period, EI);
@@ -548,6 +576,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   /**
    * Get interval size in units of hours.
    * Only use in GribVariable to decide on variable identity when intvMerge = false.
+   * 
    * @param pds must be a Grib2Pds.PdsInterval
    * @return interval size in units of hours
    */
@@ -560,23 +589,28 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
       if (ti.timeRangeUnit == 255)
         continue;
-      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
-        logger.warn("TimeInterval(2) has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
+      if ((ti.timeRangeUnit != timeUnitOrg)
+          || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
+        logger.warn("TimeInterval(2) has different units timeUnit org=" + timeUnitOrg + " TimeInterval="
+            + ti.timeIncrementUnit);
         throw new RuntimeException("TimeInterval(2) has different units");
       }
 
       range += ti.timeRangeLength;
-      if (ti.timeIncrementUnit != 255) range += ti.timeIncrement;
+      if (ti.timeIncrementUnit != 255)
+        range += ti.timeIncrement;
     }
 
     // now convert that range to units of the requested period.
     CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
-    if (timeUnitPeriod == null) return GribNumbers.UNDEFINEDD;
-    if (timeUnitPeriod.equals(CalendarPeriod.Hour)) return range;
+    if (timeUnitPeriod == null)
+      return GribNumbers.UNDEFINEDD;
+    if (timeUnitPeriod.equals(CalendarPeriod.Hour))
+      return range;
 
     double fac;
     if (timeUnitPeriod.getField() == CalendarPeriod.Field.Month) {
-      fac = 30.0 * 24.0;  // nominal hours in a month
+      fac = 30.0 * 24.0; // nominal hours in a month
     } else if (timeUnitPeriod.getField() == CalendarPeriod.Field.Year) {
       fac = 365.0 * 24.0; // nominal hours in a year
     } else {
@@ -594,12 +628,14 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   @Nullable
   public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
     TimeCoordIntvDateValue tinvd = getForecastTimeInterval(gr);
-    if (tinvd == null) return null;
+    if (tinvd == null)
+      return null;
 
     Grib2Pds pds = gr.getPDS();
     int unit = convertTimeUnit(pds.getTimeUnit());
     TimeCoordIntvValue tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
-    if (tinv == null) return null;
+    if (tinv == null)
+      return null;
     int[] result = new int[2];
     result[0] = tinv.getBounds1();
     result[1] = tinv.getBounds2();
@@ -638,15 +674,11 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     return allParams.build();
   }
 
-  public void lookForProblems(Formatter f) {
-  }
+  public void lookForProblems(Formatter f) {}
 
-  public void showDetails(Formatter f) {
-  }
+  public void showDetails(Formatter f) {}
 
-  public void showEntryDetails(Formatter f, List<GribTables.Parameter> params) {
-  }
+  public void showEntryDetails(Formatter f, List<GribTables.Parameter> params) {}
 
-  public void showSpecialPdsInfo(Grib2Record pds, Formatter f) {
-  }
+  public void showSpecialPdsInfo(Grib2Record pds, Formatter f) {}
 }

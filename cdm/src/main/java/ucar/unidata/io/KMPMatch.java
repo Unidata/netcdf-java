@@ -11,7 +11,8 @@ import javax.annotation.concurrent.Immutable;
  * Immutable
  *
  * @author caron
- * @see <a href="http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html">http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html</a>
+ * @see <a href=
+ *      "http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html">http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html</a>
  * @since May 9, 2008
  */
 @Immutable
@@ -22,6 +23,7 @@ public class KMPMatch {
 
   /**
    * Constructor
+   * 
    * @param match search for this byte pattern
    */
   public KMPMatch(byte[] match) {
@@ -29,10 +31,13 @@ public class KMPMatch {
     failure = computeFailure(match);
   }
 
-  public int getMatchLength() { return match.length; }
+  public int getMatchLength() {
+    return match.length;
+  }
 
   /**
    * Finds the first occurrence of match in data.
+   * 
    * @param data search in this byte block
    * @param start start at data[start]
    * @param max end at data[start+max]
@@ -40,7 +45,8 @@ public class KMPMatch {
    */
   public int indexOf(byte[] data, int start, int max) {
     int j = 0;
-    if (data.length == 0) return -1;
+    if (data.length == 0)
+      return -1;
     if (start + max > data.length)
       System.out.println("HEY KMPMatch");
 
@@ -60,28 +66,33 @@ public class KMPMatch {
 
   /*
    * Finds the first occurrence of match in data.
+   * 
    * @param data search in this byte block
+   * 
    * @param start start at data[start]
+   * 
    * @param max end at data[start+max]
+   * 
    * @return index into block of first match, else -1 if not found.
    *
-  public int scan(InputStream is, int start, int max) {
-    int j = 0;
-    if (data.length == 0) return -1;
-
-    for (int i = start; i < start + max; i++) {
-      while (j > 0 && match[j] != data[i])
-        j = failure[j - 1];
-
-      if (match[j] == data[i])
-        j++;
-
-      if (j == match.length)
-        return i - match.length + 1;
-
-    }
-    return -1;
-  } // */
+   * public int scan(InputStream is, int start, int max) {
+   * int j = 0;
+   * if (data.length == 0) return -1;
+   * 
+   * for (int i = start; i < start + max; i++) {
+   * while (j > 0 && match[j] != data[i])
+   * j = failure[j - 1];
+   * 
+   * if (match[j] == data[i])
+   * j++;
+   * 
+   * if (j == match.length)
+   * return i - match.length + 1;
+   * 
+   * }
+   * return -1;
+   * } //
+   */
 
 
   private int[] computeFailure(byte[] match) {

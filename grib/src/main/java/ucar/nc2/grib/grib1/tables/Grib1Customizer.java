@@ -14,7 +14,6 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.wmo.CommonCodeTable;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -27,7 +26,8 @@ import java.util.Map;
  * This class handles the default case, using only standard WMO tables.
  * Subclasses override as needed.
  *
- * Bit of a contradiction, since getParamter() allows different center, subcenter, version (the version is for sure needed)
+ * Bit of a contradiction, since getParamter() allows different center, subcenter, version (the version is for sure
+ * needed)
  * But other tables are fixed by center.
  *
  * @author caron
@@ -45,19 +45,26 @@ public class Grib1Customizer implements GribTables {
 
   public static Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
     switch (center) {
-      case 7: return new NcepTables(tables);
-      case 9: return new NcepRfcTables(tables);
-      case 34: return new JmaTables(tables);
-      case 57: return new AfwaTables(tables);
-      case 58: return new FnmocTables(tables);
-      case 60: return new NcarTables(tables);
-      default: return new Grib1Customizer(center, tables);
+      case 7:
+        return new NcepTables(tables);
+      case 9:
+        return new NcepRfcTables(tables);
+      case 34:
+        return new JmaTables(tables);
+      case 57:
+        return new AfwaTables(tables);
+      case 58:
+        return new FnmocTables(tables);
+      case 60:
+        return new NcarTables(tables);
+      default:
+        return new Grib1Customizer(center, tables);
     }
   }
 
   public static String getSubCenterNameStatic(int center, int subcenter) {
     Grib1Customizer cust = Grib1Customizer.factory(center, subcenter, 0, null);
-    return cust.getSubCenterName( subcenter);
+    return cust.getSubCenterName(subcenter);
   }
 
   ///////////////////////////////////////
@@ -148,7 +155,8 @@ public class Grib1Customizer implements GribTables {
   public String getLevelNameShort(int levelType) {
     VertCoordType lt = getLevelType(levelType);
     String result = lt.getAbbrev();
-    if (result == null) result = "unknownLevel"+levelType;
+    if (result == null)
+      result = "unknownLevel" + levelType;
     return result;
   }
 
@@ -188,24 +196,25 @@ public class Grib1Customizer implements GribTables {
   }
 
   public int convertTimeUnit(int timeUnit) {
-    if (timeUnitConverter == null) return timeUnit;
+    if (timeUnitConverter == null)
+      return timeUnit;
     return timeUnitConverter.convertTimeUnit(timeUnit);
   }
 
   ////////////////////////////////////////////////////////////////////////
 
-  private static Map<Integer, VertCoordType> wmoTable3;  // shared by all instances
+  private static Map<Integer, VertCoordType> wmoTable3; // shared by all instances
 
   protected VertCoordType getLevelType(int code) {
     VertCoordType result = wmoTable3.get(code);
     if (result == null)
-      result = new VertCoordType(code, "unknownLayer"+code, null, "unknownLayer"+code, null, false, false);
+      result = new VertCoordType(code, "unknownLayer" + code, null, "unknownLayer" + code, null, false, false);
     return result;
   }
 
   @Nullable
   protected synchronized Map<Integer, VertCoordType> readTable3(String path) {
-    try (InputStream is =  GribResourceReader.getInputStream(path)) {
+    try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -224,7 +233,7 @@ public class Grib1Customizer implements GribTables {
         result.put(code, lt);
       }
 
-      return Collections.unmodifiableMap(result);  // all at once - thread safe
+      return Collections.unmodifiableMap(result); // all at once - thread safe
     } catch (IOException | JDOMException e) {
       logger.error("Cant parse NcepLevelTypes = " + path, e);
       return null;

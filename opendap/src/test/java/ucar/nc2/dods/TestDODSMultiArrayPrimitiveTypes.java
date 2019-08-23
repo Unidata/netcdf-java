@@ -9,10 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import static org.junit.Assert.assertEquals;
 
 /** Test nc2 dods in the JUnit framework. */
@@ -27,7 +25,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     Array a = null;
 
     // byte
-    assert(null != (v = dodsfile.findVariable("b")));
+    assert (null != (v = dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
@@ -44,7 +42,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
 
     // int16
-    assert(null != (v = dodsfile.findVariable("i16")));
+    assert (null != (v = dodsfile.findVariable("i16")));
     assert v.getShortName().equals("i16");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
@@ -60,7 +58,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     }
 
     // int32
-    assert(null != (v = dodsfile.findVariable("i32")));
+    assert (null != (v = dodsfile.findVariable("i32")));
     assert v.getShortName().equals("i32");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
@@ -77,7 +75,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
 
     // uint16
-    assert(null != (v = dodsfile.findVariable("ui16")));
+    assert (null != (v = dodsfile.findVariable("ui16")));
     assert v.getShortName().equals("ui16");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
@@ -95,7 +93,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
 
     // uint32
-    assert(null != (v = dodsfile.findVariable("ui32")));
+    assert (null != (v = dodsfile.findVariable("ui32")));
     assert v.getShortName().equals("ui32");
     assert v.getRank() == 5;
     assert v.getSize() == 16 * 9;
@@ -111,7 +109,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     }
 
     // float
-    assert(null != (v = dodsfile.findVariable("f32")));
+    assert (null != (v = dodsfile.findVariable("f32")));
     assert v.getShortName().equals("f32");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
@@ -120,10 +118,8 @@ public class TestDODSMultiArrayPrimitiveTypes {
     assert a.getElementType() == float.class;
     assert a instanceof ArrayFloat.D3;
 
-    float[] tFloat32 = {0.0f, 0.009999833f,
-      0.019998666f, 0.029995501f,
-    0.039989334f, 0.04997917f,
-    0.059964005f, 0.06994285f };
+    float[] tFloat32 =
+        {0.0f, 0.009999833f, 0.019998666f, 0.029995501f, 0.039989334f, 0.04997917f, 0.059964005f, 0.06994285f};
 
     iter = a.getIndexIterator();
     count = 0;
@@ -133,7 +129,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     }
 
     // double
-    assert(null != (v = dodsfile.findVariable("f64")));
+    assert (null != (v = dodsfile.findVariable("f64")));
     assert v.getShortName().equals("f64");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
@@ -142,10 +138,8 @@ public class TestDODSMultiArrayPrimitiveTypes {
     assert a.getElementType() == double.class;
     assert a instanceof ArrayDouble.D3;
 
-    double[] tFloat64 = new double[] { 1.0, 0.9999500004166653,
-      0.9998000066665778, 0.9995500337489875,
-      0.9992001066609779, 0.9987502603949663,
-      0.9982005399352042, 0.9975510002532796 };
+    double[] tFloat64 = new double[] {1.0, 0.9999500004166653, 0.9998000066665778, 0.9995500337489875,
+        0.9992001066609779, 0.9987502603949663, 0.9982005399352042, 0.9975510002532796};
 
     iter = a.getIndexIterator();
     count = 0;
@@ -155,7 +149,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     }
 
     // string
-    assert(null != (v = dodsfile.findVariable("s0")));
+    assert (null != (v = dodsfile.findVariable("s0")));
     assert v.getShortName().equals("s0");
     assert v.getRank() == 3;
     assert v.getDataType() == DataType.STRING : v.getDataType();
@@ -166,12 +160,12 @@ public class TestDODSMultiArrayPrimitiveTypes {
     count = 0;
     while (siter.hasNext()) {
       String str = (String) siter.next();
-      assert str.equals("This is a data test string (pass "+count+").") : str;
+      assert str.equals("This is a data test string (pass " + count + ").") : str;
       count++;
     }
 
     // url
-    assert(null != (v = dodsfile.findVariable("u")));
+    assert (null != (v = dodsfile.findVariable("u")));
     assert v.getShortName().equals("u");
     assert v.getRank() == 3;
     assert v.getDataType() == DataType.STRING : v.getDataType();
@@ -196,14 +190,14 @@ public class TestDODSMultiArrayPrimitiveTypes {
     Array a = null;
 
     // uint32
-    assert(null != (v = (DODSVariable) dodsfile.findVariable("b")));
+    assert (null != (v = (DODSVariable) dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getDataType() == DataType.UBYTE;
 
     // Byte b[2][3][4];
-    a = v.read( "0:1:2, 0:2:1, 0:3:2" );
+    a = v.read("0:1:2, 0:2:1, 0:3:2");
     assert a.getElementType() == byte.class;
     assert a instanceof ArrayByte.D3;
     assert a.getRank() == 3;
@@ -226,15 +220,15 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
   @Test
   public void testSection() throws IOException, InvalidRangeException {
-    DODSNetcdfFile.setPreload( false);
+    DODSNetcdfFile.setPreload(false);
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
-    DODSNetcdfFile.setPreload( true);
+    DODSNetcdfFile.setPreload(true);
 
     DODSVariable v = null;
     Array a = null;
 
     // uint32
-    assert(null != (v = (DODSVariable) dodsfile.findVariable("b")));
+    assert (null != (v = (DODSVariable) dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
@@ -242,7 +236,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     v.setCaching(false);
 
     // Byte b[2][3][4];
-    a = v.read( "0:1:2, 0:2:1, 0:3:2" );
+    a = v.read("0:1:2, 0:2:1, 0:3:2");
     assert a.getElementType() == byte.class;
     assert a instanceof ArrayByte.D3;
     assert a.getRank() == 3;

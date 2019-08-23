@@ -38,7 +38,7 @@ public class CF {
   public static final String SCALE_FACTOR = "scale_factor";
   public static final String STANDARD_NAME = "standard_name";
   public static final String UNITS = "units";
-  
+
   // data types
   public static final String CHAR = "char";
   public static final String BYTE = "byte";
@@ -56,10 +56,10 @@ public class CF {
   public static final String MISSING_VALUE = "missing_value";
 
   // flag related attributes
-  public static final String FLAG_MASKS = "flag_masks"; 
+  public static final String FLAG_MASKS = "flag_masks";
   public static final String FLAG_VALUES = "flag_values";
   public static final String FLAG_MEANINGS = "flag_meanings";
-  
+
   // general file attributes, though not required for compatibility with COOARDS
   public static final String TITLE = "title";
   public static final String HISTORY = "history";
@@ -83,11 +83,11 @@ public class CF {
   public static final String POINT = "point";
   public static final String LINE = "line";
   public static final String POLYGON = "polygon";
-  
+
   // calendar leap specification
   public static final String LEAP_MONTH = "leap_month";
   public static final String LEAP_YEAR = "leap_year";
-  
+
   // grid mapping names
   public static final String ALBERS_CONICAL_EQUAL_AREA = "albers_conical_equal_area";
   public static final String AZIMUTHAL_EQUIDISTANT = "azimuthal_equidistant";
@@ -101,7 +101,7 @@ public class CF {
   public static final String POLAR_STEREOGRAPHIC = "polar_stereographic";
   public static final String ROTATED_LATITUDE_LONGITUDE = "rotated_latitude_longitude";
   public static final String STEREOGRAPHIC = "stereographic";
-  public static final String SINUSOIDAL = "sinusoidal";       // NOY
+  public static final String SINUSOIDAL = "sinusoidal"; // NOY
   public static final String TRANSVERSE_MERCATOR = "transverse_mercator";
   public static final String VERTICAL_PERSPECTIVE = "vertical_perspective";
 
@@ -112,9 +112,9 @@ public class CF {
   public static final String GRID_LATITUDE = "grid_latitude";
   public static final String GRID_LONGITUDE = "grid_longitude";
   public static final String GRID_MAPPING = "grid_mapping";
-  public static final String FIXED_ANGLE_AXIS = "fixed_angle_axis";  //  geostationary
+  public static final String FIXED_ANGLE_AXIS = "fixed_angle_axis"; // geostationary
   public static final String GRID_MAPPING_NAME = "grid_mapping_name";
-  public static final String GRID_NORTH_POLE_LATITUDE = "grid_north_pole_latitude";   // rotated grid
+  public static final String GRID_NORTH_POLE_LATITUDE = "grid_north_pole_latitude"; // rotated grid
   public static final String GRID_NORTH_POLE_LONGITUDE = "grid_north_pole_longitude"; // rotated grid
   public static final String INVERSE_FLATTENING = "inverse_flattening";
   public static final String LATITUDE_OF_PROJECTION_ORIGIN = "latitude_of_projection_origin";
@@ -122,8 +122,9 @@ public class CF {
   public static final String LATITUDE_OF_PRIME_MERIDIAN = "latitude_of_prime_meridian";
   public static final String LONGITUDE_OF_PRIME_MERIDIAN = "longitude_of_prime_meridian";
   public static final String LONGITUDE_OF_CENTRAL_MERIDIAN = "longitude_of_central_meridian";
-  public static final String NORTH_POLE_GRID_LONGITUDE = "north_pole_grid_longitude";  // rotated grid synonym for GRID_NORTH_POLE_LONGITUDE
-  public static final String PERSPECTIVE_POINT_HEIGHT = "perspective_point_height";   // geostationary
+  public static final String NORTH_POLE_GRID_LONGITUDE = "north_pole_grid_longitude"; // rotated grid synonym for
+                                                                                      // GRID_NORTH_POLE_LONGITUDE
+  public static final String PERSPECTIVE_POINT_HEIGHT = "perspective_point_height"; // geostationary
   public static final String SCALE_FACTOR_AT_CENTRAL_MERIDIAN = "scale_factor_at_central_meridian";
   public static final String SCALE_FACTOR_AT_PROJECTION_ORIGIN = "scale_factor_at_projection_origin";
   public static final String SEMI_MAJOR_AXIS = "semi_major_axis";
@@ -135,7 +136,8 @@ public class CF {
   // vertical coordinate
   public static final String atmosphere_ln_pressure_coordinate = "atmosphere_ln_pressure_coordinate";
   public static final String atmosphere_sigma_coordinate = "atmosphere_sigma_coordinate";
-  public static final String atmosphere_hybrid_sigma_pressure_coordinate = "atmosphere_hybrid_sigma_pressure_coordinate";
+  public static final String atmosphere_hybrid_sigma_pressure_coordinate =
+      "atmosphere_hybrid_sigma_pressure_coordinate";
   public static final String atmosphere_hybrid_height_coordinate = "atmosphere_hybrid_height_coordinate";
   public static final String atmosphere_sleve_coordinate = "atmosphere_sleve_coordinate";
   public static final String ocean_sigma_coordinate = "ocean_sigma_coordinate";
@@ -149,9 +151,12 @@ public class CF {
   public static final String ENSEMBLE = "realization";
   public static final String LATITUDE = "latitude";
   public static final String LONGITUDE = "longitude";
-  public static final String TIME = "time";                               // valid; time, obs time
-  public static final String TIME_REFERENCE = "forecast_reference_time";  // the "data time", the time of the analysis from which the forecast was made.
-  public static final String TIME_OFFSET = "forecast_period";  // Forecast period is the time interval between the forecast reference time and the validity time. A period is an interval of time,
+  public static final String TIME = "time"; // valid; time, obs time
+  public static final String TIME_REFERENCE = "forecast_reference_time"; // the "data time", the time of the analysis
+                                                                         // from which the forecast was made.
+  public static final String TIME_OFFSET = "forecast_period"; // Forecast period is the time interval between the
+                                                              // forecast reference time and the validity time. A period
+                                                              // is an interval of time,
 
   public static final String PROJECTION_X_COORDINATE = "projection_x_coordinate";
   public static final String PROJECTION_Y_COORDINATE = "projection_y_coordinate";
@@ -167,7 +172,7 @@ public class CF {
 
   public static final String PLATFORM_NAME = "platform_name"; // instead of STATION_DESC
   public static final String SURFACE_ALTITUDE = "surface_altitude"; // alias STATION_ALTITUDE
-  public static final String PLATFORM_ID = "platform_id";  // alias STATION_WMOID
+  public static final String PLATFORM_ID = "platform_id"; // alias STATION_WMOID
 
   // not official - used in CFwriter for attribute name
   public static final String DSG_REPRESENTATION = "DSG_representation";
@@ -230,17 +235,28 @@ public class CF {
     }
 
     public static FeatureType getFeatureType(String s) {
-      if (s.equalsIgnoreCase("point")) return FeatureType.point;
-      if (s.equalsIgnoreCase("timeSeries")) return FeatureType.timeSeries;
-      if (s.equalsIgnoreCase("stationTimeSeries")) return FeatureType.timeSeries;
-      if (s.equalsIgnoreCase("station")) return FeatureType.timeSeries;
-      if (s.equalsIgnoreCase("profile")) return FeatureType.profile;
-      if (s.equalsIgnoreCase("trajectory")) return FeatureType.trajectory;
-      if (s.equalsIgnoreCase("timeSeriesProfile")) return FeatureType.timeSeriesProfile;
-      if (s.equalsIgnoreCase("stationProfile")) return FeatureType.timeSeriesProfile;
-      if (s.equalsIgnoreCase("stationProfileTimeSeries")) return FeatureType.timeSeriesProfile;
-      if (s.equalsIgnoreCase("trajectoryProfile")) return FeatureType.trajectoryProfile;
-      if (s.equalsIgnoreCase("section")) return FeatureType.trajectoryProfile;
+      if (s.equalsIgnoreCase("point"))
+        return FeatureType.point;
+      if (s.equalsIgnoreCase("timeSeries"))
+        return FeatureType.timeSeries;
+      if (s.equalsIgnoreCase("stationTimeSeries"))
+        return FeatureType.timeSeries;
+      if (s.equalsIgnoreCase("station"))
+        return FeatureType.timeSeries;
+      if (s.equalsIgnoreCase("profile"))
+        return FeatureType.profile;
+      if (s.equalsIgnoreCase("trajectory"))
+        return FeatureType.trajectory;
+      if (s.equalsIgnoreCase("timeSeriesProfile"))
+        return FeatureType.timeSeriesProfile;
+      if (s.equalsIgnoreCase("stationProfile"))
+        return FeatureType.timeSeriesProfile;
+      if (s.equalsIgnoreCase("stationProfileTimeSeries"))
+        return FeatureType.timeSeriesProfile;
+      if (s.equalsIgnoreCase("trajectoryProfile"))
+        return FeatureType.trajectoryProfile;
+      if (s.equalsIgnoreCase("section"))
+        return FeatureType.trajectoryProfile;
       return null;
     }
 
@@ -274,21 +290,21 @@ public class CF {
           return CellMethods.maximum; // "Maximum";
         case 3:
           return CellMethods.minimum; // "Minimum";
-        //case 4: return	"Difference"; // (Value at the end of time range minus value at the beginning)";
-        //case 5: return	"RootMeanSquare";
+        // case 4: return "Difference"; // (Value at the end of time range minus value at the beginning)";
+        // case 5: return "RootMeanSquare";
         case 6:
           return CellMethods.standard_deviation; // "StandardDeviation";
         case 7:
           return CellMethods.variance; // "Covariance"; // (Temporal variance)";
-        //case 8: return	"Difference"; // (Value at the start of time range minus value at the end)";
-        //case 9: return	"Ratio";
+        // case 8: return "Difference"; // (Value at the start of time range minus value at the end)";
+        // case 9: return "Ratio";
         default:
           return null;
       }
     }
   }
-  
-      // class not interface, per Bloch edition 2 item 19
+
+  // class not interface, per Bloch edition 2 item 19
   private CF() {} // disable instantiation
 
 }

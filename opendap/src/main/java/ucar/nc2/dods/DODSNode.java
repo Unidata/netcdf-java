@@ -11,8 +11,8 @@ package ucar.nc2.dods;
  * @author Heimbigner
  */
 
-public interface DODSNode
-{
-    String getDODSName();
-    void setDODSName(String name);
+public interface DODSNode {
+  String getDODSName();
+
+  void setDODSName(String name);
 }

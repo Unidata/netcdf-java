@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -34,20 +34,16 @@
 
 package dap4.core.dmr.parser.bison;
 
-public class LexException extends java.lang.Exception
-{
-    public LexException(String msg)
-    {
-        super(msg);
-    }
+public class LexException extends java.lang.Exception {
+  public LexException(String msg) {
+    super(msg);
+  }
 
-    public LexException(Throwable e)
-    {
-        super(e);
-    }
+  public LexException(Throwable e) {
+    super(e);
+  }
 
-    public LexException(String msg, Throwable e)
-    {
-        super(msg, e);
-    }
+  public LexException(String msg, Throwable e) {
+    super(msg, e);
+  }
 }

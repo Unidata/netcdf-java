@@ -20,7 +20,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -33,13 +32,13 @@ public class TestOffAggDirDateFormat {
 
   @BeforeClass
   public static void setupClass() throws IOException {
-    String filename = "file:"+ TestDir.cdmUnitTestDir + "formats/gini/aggDateFormat.ncml";
-    gds = ucar.nc2.dt.grid.GridDataset.open( filename);
+    String filename = "file:" + TestDir.cdmUnitTestDir + "formats/gini/aggDateFormat.ncml";
+    gds = ucar.nc2.dt.grid.GridDataset.open(filename);
   }
 
   @AfterClass
   public static void teardownClass() throws IOException {
-    if (gds != null) {  // Could be null if setupClass() throws an exception.
+    if (gds != null) { // Could be null if setupClass() throws an exception.
       gds.close();
     }
   }
@@ -49,7 +48,7 @@ public class TestOffAggDirDateFormat {
     Dimension latDim = gds.getNetcdfFile().findDimension("y");
     assert null != latDim;
     assert latDim.getShortName().equals("y");
-    assert latDim.getLength() == 1008 : latDim.getLength() +"!="+ 1008;
+    assert latDim.getLength() == 1008 : latDim.getLength() + "!=" + 1008;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = gds.getNetcdfFile().findDimension("x");
@@ -61,7 +60,7 @@ public class TestOffAggDirDateFormat {
     Dimension timeDim = gds.getNetcdfFile().findDimension("time");
     assert null != timeDim;
     assert timeDim.getShortName().equals("time");
-    assert timeDim.getLength() == ntimes : timeDim.getLength() +"!="+ ntimes;
+    assert timeDim.getLength() == ntimes : timeDim.getLength() + "!=" + ntimes;
   }
 
   @Test

@@ -11,7 +11,6 @@ import ucar.nc2.util.*;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,18 +28,18 @@ public class CoverageCoordSys {
     for (String axisName : axisNames) {
       sb.append(axisName).append(' ');
     }
-    return sb.deleteCharAt(sb.length() - 1).toString();  // Nuke trailing space.
+    return sb.deleteCharAt(sb.length() - 1).toString(); // Nuke trailing space.
   }
 
   //////////////////////////////////////////////////
-  protected CoordSysContainer dataset;  // almost immutable, need to wire these in after the constructor
-  private HorizCoordSys horizCoordSys;  // required
+  protected CoordSysContainer dataset; // almost immutable, need to wire these in after the constructor
+  private HorizCoordSys horizCoordSys; // required
   private Time2DCoordSys time2DCoordSys;// optional
   private Map<String, List<CoverageCoordAxis>> dependentMap;
   private boolean isConstantForecast, immutable;
 
   private final String name;
-  private final List<String> axisNames;        // must be in order
+  private final List<String> axisNames; // must be in order
   private final List<String> transformNames;
   private final FeatureType type;
 
@@ -85,12 +84,13 @@ public class CoverageCoordSys {
         for (String indAxisName : axis.dependsOn) {
           CoverageCoordAxis independentAxis = dataset.findCoordAxis(indAxisName);
           if (independentAxis == null)
-            throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in Dataset");
+            throw new RuntimeException(
+                "Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in Dataset");
           if (!axisNames.contains(indAxisName))
-            throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in CoordSys");
+            throw new RuntimeException(
+                "Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in CoordSys");
 
-          List<CoverageCoordAxis> dependents = dependentMap
-              .computeIfAbsent(indAxisName, k -> new ArrayList<>());
+          List<CoverageCoordAxis> dependents = dependentMap.computeIfAbsent(indAxisName, k -> new ArrayList<>());
           dependents.add(axis);
         }
       }
@@ -139,7 +139,8 @@ public class CoverageCoordSys {
   }
 
   public void setHorizCoordSys(HorizCoordSys horizCoordSys) {
-    if (immutable) throw new RuntimeException("Cant change CoverageCoordSys horizCoordSys once set immutable");
+    if (immutable)
+      throw new RuntimeException("Cant change CoverageCoordSys horizCoordSys once set immutable");
     this.horizCoordSys = horizCoordSys;
   }
 
@@ -174,7 +175,8 @@ public class CoverageCoordSys {
   public CoverageTransform getHorizTransform() {
     for (String name : getTransformNames()) {
       CoverageTransform ct = dataset.findCoordTransform(name);
-      if (ct != null && ct.isHoriz()) return ct;
+      if (ct != null && ct.isHoriz())
+        return ct;
     }
     return null;
   }
@@ -238,8 +240,9 @@ public class CoverageCoordSys {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
       if (axis == null)
-        throw new IllegalStateException("Cant find axis with name "+axisName);
-      if (axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.Height || axis.getAxisType() == AxisType.Pressure)
+        throw new IllegalStateException("Cant find axis with name " + axisName);
+      if (axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.Height
+          || axis.getAxisType() == AxisType.Pressure)
         return axis;
     }
     return null;
@@ -256,7 +259,7 @@ public class CoverageCoordSys {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
       if (axis == null)
-        throw new IllegalStateException("Cant find axis with name "+axisName);
+        throw new IllegalStateException("Cant find axis with name " + axisName);
       else if (axis.getAxisType() == type) {
         return axis;
       }
@@ -289,9 +292,12 @@ public class CoverageCoordSys {
       rank += time2DCoordSys.getShape().length; // might have scalar runtime
 
     for (CoverageCoordAxis axis : getAxes()) {
-      if (axis.getAxisType().isHoriz()) continue;
-      if (isTime2D(axis)) continue;
-      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) rank++;
+      if (axis.getAxisType().isHoriz())
+        continue;
+      if (isTime2D(axis))
+        continue;
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
+        rank++;
     }
 
     int[] result = new int[rank];
@@ -303,8 +309,10 @@ public class CoverageCoordSys {
     }
 
     for (CoverageCoordAxis axis : getAxes()) {
-      if (axis.getAxisType().isHoriz()) continue;
-      if (isTime2D(axis)) continue;
+      if (axis.getAxisType().isHoriz())
+        continue;
+      if (isTime2D(axis))
+        continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
         result[count++] = axis.getNcoords();
     }
@@ -319,7 +327,8 @@ public class CoverageCoordSys {
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
-      if (axis.getAxisType().isHoriz()) continue;
+      if (axis.getAxisType().isHoriz())
+        continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
         result.add(axis.getRangeIterator());
     }
@@ -332,7 +341,8 @@ public class CoverageCoordSys {
   public boolean isRegularSpatial() {
     CoverageCoordAxis xaxis = getXAxis();
     CoverageCoordAxis yaxis = getYAxis();
-    if (!(xaxis instanceof CoverageCoordAxis1D) || !xaxis.isRegular()) return false;
+    if (!(xaxis instanceof CoverageCoordAxis1D) || !xaxis.isRegular())
+      return false;
     return yaxis instanceof CoverageCoordAxis1D && yaxis.isRegular();
   }
 
@@ -357,14 +367,16 @@ public class CoverageCoordSys {
     @Override
     public CoverageTransform findCoordTransform(String transformName) {
       for (CoverageTransform ct : transforms)
-        if (ct.getName().equalsIgnoreCase(transformName)) return ct;
+        if (ct.getName().equalsIgnoreCase(transformName))
+          return ct;
       return null;
     }
 
     @Override
     public CoverageCoordAxis findCoordAxis(String axisName) {
       for (CoverageCoordAxis axis : axes) {
-        if (axis.getName().equalsIgnoreCase(axisName)) return axis;
+        if (axis.getName().equalsIgnoreCase(axisName))
+          return axis;
       }
       return null;
     }
@@ -372,11 +384,15 @@ public class CoverageCoordSys {
 
   ////////////////////////////////////////////////
 
-  public boolean isTime2D( CoverageCoordAxis axis) {
-    if (time2DCoordSys == null) return false;
-    if (axis instanceof TimeOffsetAxis) return true;
-    if (axis instanceof TimeAxis2DFmrc) return true;
-    return (axis.getAxisType() == AxisType.RunTime) && (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent);
+  public boolean isTime2D(CoverageCoordAxis axis) {
+    if (time2DCoordSys == null)
+      return false;
+    if (axis instanceof TimeOffsetAxis)
+      return true;
+    if (axis instanceof TimeAxis2DFmrc)
+      return true;
+    return (axis.getAxisType() == AxisType.RunTime)
+        && (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent);
   }
 
   public Optional<CoverageCoordSys> subset(SubsetParams params) {
@@ -387,9 +403,12 @@ public class CoverageCoordSys {
     Formatter errMessages = new Formatter();
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
-      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
-      if (axis.getAxisType().isHoriz()) continue;
-      if (isTime2D(axis)) continue;
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent)
+        continue;
+      if (axis.getAxisType().isHoriz())
+        continue;
+      if (isTime2D(axis))
+        continue;
 
       ucar.nc2.util.Optional<CoverageCoordAxis> axiso = axis.subset(params);
       if (!axiso.isPresent())
@@ -401,15 +420,18 @@ public class CoverageCoordSys {
         // subset any dependent axes
         for (CoverageCoordAxis dependent : getDependentAxes(subsetInd)) {
           Optional<CoverageCoordAxis> depo = dependent.subsetDependent(subsetInd);
-          if (depo.isPresent()) subsetAxes.add(depo.get());
-          else errMessages.format("%s;%n", depo.getErrorMessage());
+          if (depo.isPresent())
+            subsetAxes.add(depo.get());
+          else
+            errMessages.format("%s;%n", depo.getErrorMessage());
         }
       }
     }
 
     AtomicBoolean isConstantForecast = new AtomicBoolean(false); // need a mutable boolean
     if (time2DCoordSys != null) {
-      ucar.nc2.util.Optional<List<CoverageCoordAxis>> time2Do = time2DCoordSys.subset(params, isConstantForecast, makeCFcompliant);
+      ucar.nc2.util.Optional<List<CoverageCoordAxis>> time2Do =
+          time2DCoordSys.subset(params, isConstantForecast, makeCFcompliant);
       if (!time2Do.isPresent())
         errMessages.format("%s;%n", time2Do.getErrorMessage());
       else
@@ -434,12 +456,14 @@ public class CoverageCoordSys {
     for (CoverageCoordAxis axis : subsetAxes)
       names.add(axis.getName());
 
-    CoverageCoordSys resultCoordSys = new CoverageCoordSys(null, names, this.getTransformNames(), this.getCoverageType());
+    CoverageCoordSys resultCoordSys =
+        new CoverageCoordSys(null, names, this.getTransformNames(), this.getCoverageType());
     MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     resultCoordSys.setDataset(fakeDataset);
     resultCoordSys.setHorizCoordSys(resultCoordSys.makeHorizCoordSys());
     resultCoordSys.setIsConstantForecast(isConstantForecast.get());
-    if (finish) resultCoordSys.setImmutable();
+    if (finish)
+      resultCoordSys.setImmutable();
 
     return Optional.of(resultCoordSys);
   }

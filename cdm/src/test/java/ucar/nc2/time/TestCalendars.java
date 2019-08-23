@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -35,7 +35,6 @@ package ucar.nc2.time;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -70,7 +69,8 @@ public class TestCalendars {
     CalendarDate base = null;
     for (int i = 0; i < 13; i++) {
       CalendarDate cd = cdu.makeCalendarDate(i);
-      if (base == null) base = cd;
+      if (base == null)
+        base = cd;
       double diff = cd.getDifferenceInMsecs(base) * 1.0e-6;
       System.out.printf(" %d %s == %s diff = %f%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd), diff);
     }
@@ -79,28 +79,28 @@ public class TestCalendars {
 
 
   /*
-  double time(time) ;
-      time:units = "days since 2289-12-1" ;
-      time:calendar = "360_day" ;
-      time:axis = "T" ;
-      time:standard_name = "time" ;
-
-      {25200.0, 46800.0}
-
-      days since 2289-12-1
-      time =
-        {25200.0, 46800.0}
-
-       2358-11-30T00:00:00.000Z
-       2418-01-19T00:00:00.000Z
-
+   * double time(time) ;
+   * time:units = "days since 2289-12-1" ;
+   * time:calendar = "360_day" ;
+   * time:axis = "T" ;
+   * time:standard_name = "time" ;
+   * 
+   * {25200.0, 46800.0}
+   * 
+   * days since 2289-12-1
+   * time =
+   * {25200.0, 46800.0}
+   * 
+   * 2358-11-30T00:00:00.000Z
+   * 2418-01-19T00:00:00.000Z
+   * 
    */
 
   @Test
   public void test360bug() {
     CalendarDateUnit unit = CalendarDateUnit.withCalendar(Calendar.uniform30day, "days since 2289-12-1");
-    CalendarDate cd1 = unit.makeCalendarDate(25200.0);  // 70 years =  2359-12-1
-    CalendarDate cd2 = unit.makeCalendarDate(46800.0);  // 130 =       2419-12-1
+    CalendarDate cd1 = unit.makeCalendarDate(25200.0); // 70 years = 2359-12-1
+    CalendarDate cd2 = unit.makeCalendarDate(46800.0); // 130 = 2419-12-1
     System.out.printf("%s%n", unit);
     System.out.printf("%s%n", cd1);
     System.out.printf("%s%n", cd2);
@@ -111,7 +111,8 @@ public class TestCalendars {
 
   @Test
   public void testCalendarToDate() {
-    CalendarDate cdate = CalendarDateFormatter.isoStringToCalendarDate(Calendar.uniform30day, "1968-01-30T15:00:00.000Z");
+    CalendarDate cdate =
+        CalendarDateFormatter.isoStringToCalendarDate(Calendar.uniform30day, "1968-01-30T15:00:00.000Z");
     System.out.printf("%s%n", cdate);
     System.out.printf("%s%n", cdate.getDateTime());
     System.out.printf("%s%n", cdate.toDate());
@@ -134,7 +135,8 @@ public class TestCalendars {
   // from Q:/cdmUnitTest/conventions/cf/year0.nc
   @Test
   public void testZeroYear() {
-    double[] times = new double[] {366.0, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 5479.395, 6209.88, 6940.365, 7670.85, 8401.335};
+    double[] times = new double[] {366.0, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 5479.395, 6209.88,
+        6940.365, 7670.85, 8401.335};
     CalendarDateUnit unit = CalendarDateUnit.withCalendar(null, "hour since 0000-01-01 00:00:00");
     for (double time : times) {
       CalendarDate cd1 = unit.makeCalendarDate(time);

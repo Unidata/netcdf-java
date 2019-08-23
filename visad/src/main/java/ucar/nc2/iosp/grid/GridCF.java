@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -33,7 +33,7 @@
 package ucar.nc2.iosp.grid;
 
 /**
- *  A centralized place to store CF conventions for the Grid Iosp
+ * A centralized place to store CF conventions for the Grid Iosp
  */
 
 public interface GridCF {
@@ -46,54 +46,54 @@ public interface GridCF {
   /**
    * major axis of earth
    */
-  String SEMI_MAJOR_AXIS  = "semi_major_axis";
+  String SEMI_MAJOR_AXIS = "semi_major_axis";
 
   /**
    * minor axis of earth
    */
-  String SEMI_MINOR_AXIS  = "semi_minor_axis";
+  String SEMI_MINOR_AXIS = "semi_minor_axis";
 
 
   /**
    * grid_mapping_name
    */
-  String GRID_MAPPING_NAME  = "grid_mapping_name";
+  String GRID_MAPPING_NAME = "grid_mapping_name";
 
 
- /**
+  /**
    * earth_shape
    */
- String EARTH_SHAPE  = "earth_shape";
+  String EARTH_SHAPE = "earth_shape";
 
- /**
+  /**
    * standard_parallel
    */
- String STANDARD_PARALLEL  = "standard_parallel";
+  String STANDARD_PARALLEL = "standard_parallel";
 
   /**
    * longitude_of_central_meridian
    */
-  String LONGITUDE_OF_CENTRAL_MERIDIAN  = "longitude_of_central_meridian";
+  String LONGITUDE_OF_CENTRAL_MERIDIAN = "longitude_of_central_meridian";
 
   /**
    * latitude_of_projection_origin
    */
-  String LATITUDE_OF_PROJECTION_ORIGIN  = "latitude_of_projection_origin";
+  String LATITUDE_OF_PROJECTION_ORIGIN = "latitude_of_projection_origin";
 
   /**
    * longitude_of_projection_origin
    */
-  String LONGITUDE_OF_PROJECTION_ORIGIN  = "longitude_of_projection_origin";
+  String LONGITUDE_OF_PROJECTION_ORIGIN = "longitude_of_projection_origin";
 
   /**
    * straight_vertical_longitude_from_pole
    */
-  String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE  = "straight_vertical_longitude_from_pole";
+  String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
 
   /**
    * scale_factor_at_projection_origin
    */
-  String SCALE_FACTOR_AT_PROJECTION_ORIGIN  = "scale_factor_at_projection_origin";
+  String SCALE_FACTOR_AT_PROJECTION_ORIGIN = "scale_factor_at_projection_origin";
 
 
   /**
@@ -101,7 +101,7 @@ public interface GridCF {
    *
    */
   enum VectorComponentFlag {
-     easterlyNortherlyRelative, gridRelative;
+    easterlyNortherlyRelative, gridRelative;
 
     static public String of(int val) {
       if (val == 0) {

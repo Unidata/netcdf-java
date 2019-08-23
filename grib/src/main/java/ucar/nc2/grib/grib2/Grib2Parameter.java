@@ -8,7 +8,6 @@ package ucar.nc2.grib.grib2;
 import javax.annotation.Nonnull;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.wmo.Util;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -23,9 +22,8 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
   public final String name, unit, abbrev, desc;
   public final Float fill, missing;
 
-  public Grib2Parameter(int discipline, int category, int number, String name,
-                        String unit, String abbrev, String desc, float fill,
-                        float missing) {
+  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc,
+      float fill, float missing) {
     this.discipline = discipline;
     this.category = category;
     this.number = number;
@@ -37,7 +35,8 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     this.missing = missing;
   }
 
-  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc) {
+  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev,
+      String desc) {
     this.discipline = discipline;
     this.category = category;
     this.number = number;
@@ -68,9 +67,11 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
 
   public int compareTo(@Nonnull Grib2Parameter o) {
     int c = discipline - o.discipline;
-    if (c != 0) return c;
+    if (c != 0)
+      return c;
     c = category - o.category;
-    if (c != 0) return c;
+    if (c != 0)
+      return c;
     return number - o.number;
   }
 
@@ -127,17 +128,9 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
 
   @Override
   public String toString() {
-    return "Grib2Parameter{" +
-            "discipline=" + discipline +
-            ", category=" + category +
-            ", number=" + number +
-            ", name='" + name + '\'' +
-            ", unit='" + unit + '\'' +
-            ", abbrev='" + abbrev + '\'' +
-            ", desc='" + desc + '\'' +
-            ", fill='" + fill + '\'' +
-            ", missing='" + missing + '\'' +
-            '}';
+    return "Grib2Parameter{" + "discipline=" + discipline + ", category=" + category + ", number=" + number + ", name='"
+        + name + '\'' + ", unit='" + unit + '\'' + ", abbrev='" + abbrev + '\'' + ", desc='" + desc + '\'' + ", fill='"
+        + fill + '\'' + ", missing='" + missing + '\'' + '}';
   }
 }
 

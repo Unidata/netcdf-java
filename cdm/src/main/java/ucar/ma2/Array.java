@@ -33,7 +33,8 @@ import java.nio.*;
  * superclass e.g. ArrayDouble. The Array class itself is used for fully general handling of any type and rank array.
  * Use the Array.factory() methods to create Arrays in a general way.
  * <p/>
- * The stride index calculations allow <b>logical views</b> to be efficiently implemented, eg subset, transpose, slice, etc.
+ * The stride index calculations allow <b>logical views</b> to be efficiently implemented, eg subset, transpose, slice,
+ * etc.
  * These views use the same data storage as the original Array they are derived from. The index stride calculations are
  * equally efficient for any composition of logical views.
  * <p/>
@@ -53,7 +54,7 @@ public abstract class Array {
    * Generate new Array with given dataType and shape and zeroed storage.
    *
    * @param dataType instance of DataType.
-   * @param shape    shape of the array.
+   * @param shape shape of the array.
    * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
    */
   static public Array factory(DataType dataType, int[] shape) {
@@ -64,8 +65,8 @@ public abstract class Array {
    * Generate new Array with given dataType, shape, storage.
    *
    * @param dataType DataType, eg DataType.DOUBLE.
-   * @param shape    shape of the array.
-   * @param storage  primitive array of correct type
+   * @param shape shape of the array.
+   * @param storage primitive array of correct type
    * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
    * @throws ClassCastException wrong storage type
    */
@@ -111,16 +112,18 @@ public abstract class Array {
         return ArrayObject.factory(dtype, ByteBuffer.class, false, index, (Object[]) storage);
     }
 
-    throw new RuntimeException("Cant use this method for datatype "+dtype);
+    throw new RuntimeException("Cant use this method for datatype " + dtype);
 
-      // used for VLEN ??
-      //default:
-      //  return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+    // used for VLEN ??
+    // default:
+    // return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage); // LOOK dont know the
+    // object class
     // }
   }
 
   /**
    * Make a vlen array
+   * 
    * @param shape the outer shape, ie excluding the vlen dimension
    * @param storage must be an Array type. must not be null
    * @return ArrayObject
@@ -139,13 +142,13 @@ public abstract class Array {
    * storage data needs to be in canonical order
    *
    * @param classType element class type, eg double.class. Corresponding Object types like Double.class are
-   *                  mapped to double.class. Any reference types use ArrayObject.
-   * @param shape     array shape
-   * @param storage   1D java array of type classType, except object types like Double.class are mapped to
-   *                  their corresponding primitive type, eg double.class.
+   *        mapped to double.class. Any reference types use ArrayObject.
+   * @param shape array shape
+   * @param storage 1D java array of type classType, except object types like Double.class are mapped to
+   *        their corresponding primitive type, eg double.class.
    * @return Array of given type, shape and storage
    * @throws IllegalArgumentException storage.length != product of shapes
-   * @throws ClassCastException       wrong storage type
+   * @throws ClassCastException wrong storage type
    */
   static public Array makeObjectArray(DataType dtype, Class classType, int[] shape, Object storage) {
     Index index = Index.factory(shape);
@@ -155,8 +158,8 @@ public abstract class Array {
   /**
    * Generate new Array with given type and shape and an Index that always return 0.
    *
-   * @param dtype   data type
-   * @param shape   shape of the array.
+   * @param dtype data type
+   * @param shape shape of the array.
    * @param storage primitive array of correct type of length 1
    * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
    */
@@ -202,7 +205,8 @@ public abstract class Array {
         return new ArrayObject(dtype, ByteBuffer.class, false, index, (Object[]) storage);
 
       default:
-        return ArrayObject.factory(DataType.OBJECT, Object.class, false, index, (Object[]) storage);  // LOOK dont know the object class
+        return ArrayObject.factory(DataType.OBJECT, Object.class, false, index, (Object[]) storage); // LOOK dont know
+                                                                                                     // the object class
     }
   }
 
@@ -252,20 +256,20 @@ public abstract class Array {
   static private void reflectArrayCopyIn(Object jArray, Array aa, IndexIterator aaIter) {
     Class cType = jArray.getClass().getComponentType();
     if (cType.isPrimitive()) {
-      aa.copyFrom1DJavaArray(aaIter, jArray);  // subclass does type-specific copy
+      aa.copyFrom1DJavaArray(aaIter, jArray); // subclass does type-specific copy
     } else {
-      for (int i = 0; i < java.lang.reflect.Array.getLength(jArray); i++)  // recurse
+      for (int i = 0; i < java.lang.reflect.Array.getLength(jArray); i++) // recurse
         reflectArrayCopyIn(java.lang.reflect.Array.get(jArray, i), aa, aaIter);
     }
   }
 
   static private void reflectArrayCopyOut(Object jArray, Array aa, IndexIterator aaIter) {
     Class cType = jArray.getClass().getComponentType();
-    //if (cType.isPrimitive()) { // Rob Weingruber <weingrub@rap.ucar.edu> May 11, 2011
+    // if (cType.isPrimitive()) { // Rob Weingruber <weingrub@rap.ucar.edu> May 11, 2011
     if (!cType.isArray()) {
-      aa.copyTo1DJavaArray(aaIter, jArray);  // subclass does type-specific copy
+      aa.copyTo1DJavaArray(aaIter, jArray); // subclass does type-specific copy
     } else {
-      for (int i = 0; i < java.lang.reflect.Array.getLength(jArray); i++)  // recurse
+      for (int i = 0; i < java.lang.reflect.Array.getLength(jArray); i++) // recurse
         reflectArrayCopyOut(java.lang.reflect.Array.get(jArray, i), aa, aaIter);
     }
   }
@@ -276,10 +280,10 @@ public abstract class Array {
    * Exposed for efficiency; use at your own risk.
    *
    * @param arraySrc copy from here : if not in canonical order, an extra copy will be done
-   * @param srcPos   starting at
+   * @param srcPos starting at
    * @param arrayDst copy to here : must be in canonical order
-   * @param dstPos   starting at
-   * @param len      number of elements to copy
+   * @param dstPos starting at
+   * @param len number of elements to copy
    */
   static public void arraycopy(Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len) {
     // deal with special case
@@ -299,13 +303,13 @@ public abstract class Array {
    * Make a 1D array from a start and incr.
    *
    * @param dtype data type of result. must be convertible to double.
-   * @param npts  number of points
+   * @param npts number of points
    * @param start starting values
-   * @param incr  increment
+   * @param incr increment
    * @return 1D array
    */
   static public Array makeArray(DataType dtype, int npts, double start, double incr) {
-    Array result = Array.factory(dtype, new int[]{npts});
+    Array result = Array.factory(dtype, new int[] {npts});
     IndexIterator dataI = result.getIndexIterator();
     for (int i = 0; i < npts; i++) {
       double val = start + i * incr;
@@ -317,13 +321,13 @@ public abstract class Array {
   /**
    * Make an 1D array from a list of strings.
    *
-   * @param dtype        data type of the array.
+   * @param dtype data type of the array.
    * @param stringValues list of strings.
    * @return resulting 1D array.
    * @throws NumberFormatException if string values not parseable to specified data type
    */
   static public Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
-    Array result = Array.factory(dtype, new int[]{stringValues.size()});
+    Array result = Array.factory(dtype, new int[] {stringValues.size()});
     IndexIterator dataI = result.getIndexIterator();
 
     for (String s : stringValues) {
@@ -333,14 +337,14 @@ public abstract class Array {
       } else if (dtype == DataType.LONG) {
         if (dtype.isUnsigned()) {
           BigInteger biggy = new BigInteger(s);
-          dataI.setLongNext(biggy.longValue());  // > 63 bits will become "negetive".
+          dataI.setLongNext(biggy.longValue()); // > 63 bits will become "negetive".
 
         } else {
           long val = Long.parseLong(s);
           dataI.setLongNext(val);
         }
 
-      } else {   // this works for other numerics (LOOK not unsigned)
+      } else { // this works for other numerics (LOOK not unsigned)
         double val = Double.parseDouble(s);
         dataI.setDoubleNext(val);
       }
@@ -351,7 +355,7 @@ public abstract class Array {
   /**
    * Make an 1D array from an array of strings.
    *
-   * @param dtype        data type of the array. Assumed unsigned
+   * @param dtype data type of the array. Assumed unsigned
    * @param stringValues list of strings.
    * @return resulting 1D array.
    * @throws NumberFormatException if string values not parseable to specified data type
@@ -433,7 +437,7 @@ public abstract class Array {
    * Get the shape: length of array in each dimension.
    *
    * @return array whose length is the rank of this
-   * Array and whose elements represent the length of each of its indices.
+   *         Array and whose elements represent the length of each of its indices.
    */
   public int[] getShape() {
     return indexCalc.getShape();
@@ -463,8 +467,8 @@ public abstract class Array {
    * This is equivalent to Array.section(ranges).getIterator();
    *
    * @param ranges list of Ranges that specify the array subset.
-   *               Must be same rank as original Array.
-   *               A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
+   *        Must be same rank as original Array.
+   *        A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
    * @return an IndexIterator over the named range.
    * @throws InvalidRangeException if ranges is invalid
    */
@@ -475,14 +479,16 @@ public abstract class Array {
   /*
    * Get an index iterator for traversing the array in arbitrary order.
    * Use this if you dont care what order the elements are returned, eg if you are summing an Array.
-   * To get an iteration in order,  use getIndexIterator(), which returns a fast iterator if possible.
+   * To get an iteration in order, use getIndexIterator(), which returns a fast iterator if possible.
    *
    * @return an IndexIterator for traversing the array in arbitrary order.
+   * 
    * @deprecated use getIndexIterator
    *
-  public IndexIterator getIndexIteratorFast() {
-    return indexCalc.getIndexIteratorFast(this);
-  }  */
+   * public IndexIterator getIndexIteratorFast() {
+   * return indexCalc.getIndexIteratorFast(this);
+   * }
+   */
 
   /**
    * Get the element class type of this Array
@@ -503,10 +509,10 @@ public abstract class Array {
   // methods cannot be overridden in classes in other packages.
   // If the methods are declared protected, however, they
   // can be overridden; just one of those Java things.
-  // 
+  //
   // So, modify the following methods to be protected:
-  //     copyFrom1DJavaArray, copyTo1DJavaArray, and createView.
-  // 
+  // copyFrom1DJavaArray, copyTo1DJavaArray, and createView.
+  //
   // This has consequences all over ucar.ma2.
 
   // used to create Array from java array
@@ -527,9 +533,9 @@ public abstract class Array {
    * No data is moved, so the new Array references the same backing store as the original.
    *
    * @param ranges list of Ranges that specify the array subset.
-   *               Must be same rank as original Array.
-   *               A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
-   *               If Range[dim].length == 1, then the rank of the resulting Array is reduced at that dimension.
+   *        Must be same rank as original Array.
+   *        A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
+   *        If Range[dim].length == 1, then the rank of the resulting Array is reduced at that dimension.
    * @return the new Array
    * @throws InvalidRangeException if ranges is invalid
    */
@@ -543,9 +549,9 @@ public abstract class Array {
    * <p/>
    *
    * @param origin int array specifying the starting index. Must be same rank as original Array.
-   * @param shape  int array specifying the extents in each dimension.
-   *               This becomes the shape of the returned Array. Must be same rank as original Array.
-   *               If shape[dim] == 1, then the rank of the resulting Array is reduced at that dimension.
+   * @param shape int array specifying the extents in each dimension.
+   *        This becomes the shape of the returned Array. Must be same rank as original Array.
+   *        If shape[dim] == 1, then the rank of the resulting Array is reduced at that dimension.
    * @return the new Array
    * @throws InvalidRangeException if ranges is invalid
    */
@@ -559,9 +565,9 @@ public abstract class Array {
    * <p/>
    *
    * @param origin int array specifying the starting index. Must be same rank as original Array.
-   * @param shape  int array specifying the extents in each dimension.
-   *               This becomes the shape of the returned Array. Must be same rank as original Array.
-   *               If shape[dim] == 1, then the rank of the resulting Array is reduced at that dimension.
+   * @param shape int array specifying the extents in each dimension.
+   *        This becomes the shape of the returned Array. Must be same rank as original Array.
+   *        If shape[dim] == 1, then the rank of the resulting Array is reduced at that dimension.
    * @param stride int array specifying the strides in each dimension. If null, assume all ones.
    * @return the new Array
    * @throws InvalidRangeException if ranges is invalid
@@ -570,7 +576,8 @@ public abstract class Array {
     List<Range> ranges = new ArrayList<>(origin.length);
     if (stride == null) {
       stride = new int[origin.length];
-      for (int i = 0; i < stride.length; i++) stride[i] = 1;
+      for (int i = 0; i < stride.length; i++)
+        stride[i] = 1;
     }
     for (int i = 0; i < origin.length; i++)
       ranges.add(new Range(origin[i], origin[i] + stride[i] * shape[i] - 1, stride[i]));
@@ -583,8 +590,8 @@ public abstract class Array {
    * Vlen is transferred over unchanged.
    *
    * @param ranges list of Ranges that specify the array subset.
-   *               Must be same rank as original Array.
-   *               A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
+   *        Must be same rank as original Array.
+   *        A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
    * @return the new Array
    * @throws InvalidRangeException if ranges is invalid
    */
@@ -597,8 +604,8 @@ public abstract class Array {
    * No data is moved, so the new Array references the same backing store as the original.
    *
    * @param origin int array specifying the starting index. Must be same rank as original Array.
-   * @param shape  int array specifying the extents in each dimension.
-   *               This becomes the shape of the returned Array. Must be same rank as original Array.
+   * @param shape int array specifying the extents in each dimension.
+   *        This becomes the shape of the returned Array. Must be same rank as original Array.
    * @param stride int array specifying the strides in each dimension. If null, assume all ones.
    * @return the new Array
    * @throws InvalidRangeException if ranges is invalid
@@ -607,7 +614,8 @@ public abstract class Array {
     List<Range> ranges = new ArrayList<>(origin.length);
     if (stride == null) {
       stride = new int[origin.length];
-      for (int i = 0; i < stride.length; i++) stride[i] = 1;
+      for (int i = 0; i < stride.length; i++)
+        stride[i] = 1;
     }
     for (int i = 0; i < origin.length; i++) {
       if (shape[i] < 0) // VLEN
@@ -622,7 +630,7 @@ public abstract class Array {
    * Create a new Array using same backing store as this Array, by
    * fixing the specified dimension at the specified index value. This reduces rank by 1.
    *
-   * @param dim   which dimension to fix
+   * @param dim which dimension to fix
    * @param value at what index value
    * @return a new Array
    */
@@ -632,7 +640,7 @@ public abstract class Array {
     origin[dim] = value;
     shape[dim] = 1;
     try {
-      return sectionNoReduce(origin, shape, null).reduce(dim);  // preserve other dim 1
+      return sectionNoReduce(origin, shape, null).reduce(dim); // preserve other dim 1
     } catch (InvalidRangeException e) {
       throw new IllegalArgumentException();
     }
@@ -661,7 +669,8 @@ public abstract class Array {
     if (wantType == getDataType()) {
       if (indexCalc.isFastIterator())
         return getStorage(); // already in order
-      else return copyTo1DJavaArray(); // gotta copy
+      else
+        return copyTo1DJavaArray(); // gotta copy
     }
 
     // gotta convert to new type
@@ -696,7 +705,8 @@ public abstract class Array {
 
   public ByteBuffer getDataAsByteBuffer(int capacity, ByteOrder order) {
     ByteBuffer bb = ByteBuffer.allocate(capacity);
-    if(order != null) bb.order(order);
+    if (order != null)
+      bb.order(order);
     return bb;
   }
 
@@ -706,7 +716,7 @@ public abstract class Array {
    *
    * @param dtype type of data
    * @param shape shape of data; if null, then use int[]{bb.limit()}
-   * @param bb    data is in here
+   * @param bb data is in here
    * @return equivilent Array
    */
   public static Array factory(DataType dtype, int[] shape, ByteBuffer bb) {
@@ -719,7 +729,8 @@ public abstract class Array {
       case BYTE:
       case CHAR:
         size = bb.limit();
-        if (shape == null) shape = new int[]{size};
+        if (shape == null)
+          shape = new int[] {size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setByte(i, bb.get(i));
@@ -730,7 +741,8 @@ public abstract class Array {
       case SHORT:
         ShortBuffer sb = bb.asShortBuffer();
         size = sb.limit();
-        if (shape == null) shape = new int[]{size};
+        if (shape == null)
+          shape = new int[] {size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setShort(i, sb.get(i));
@@ -741,7 +753,8 @@ public abstract class Array {
       case INT:
         IntBuffer ib = bb.asIntBuffer();
         size = ib.limit();
-        if (shape == null) shape = new int[]{size};
+        if (shape == null)
+          shape = new int[] {size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setInt(i, ib.get(i));
@@ -751,7 +764,8 @@ public abstract class Array {
       case LONG:
         LongBuffer lb = bb.asLongBuffer();
         size = lb.limit();
-        if (shape == null) shape = new int[]{size};
+        if (shape == null)
+          shape = new int[] {size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setLong(i, lb.get(i));
@@ -760,7 +774,8 @@ public abstract class Array {
       case FLOAT:
         FloatBuffer ffb = bb.asFloatBuffer();
         size = ffb.limit();
-        if (shape == null) shape = new int[]{size};
+        if (shape == null)
+          shape = new int[] {size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setFloat(i, ffb.get(i));
@@ -769,7 +784,8 @@ public abstract class Array {
       case DOUBLE:
         DoubleBuffer db = bb.asDoubleBuffer();
         size = db.limit();
-        if (shape == null) shape = new int[]{size};
+        if (shape == null)
+          shape = new int[] {size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setDouble(i, db.get(i));
@@ -883,7 +899,8 @@ public abstract class Array {
    */
   public Array reduce() {
     Index ri = indexCalc.reduce();
-    if (ri == indexCalc) return this;
+    if (ri == indexCalc)
+      return this;
     return createView(ri);
   }
 
@@ -939,7 +956,7 @@ public abstract class Array {
   /**
    * Set the array element at the current element of ima.
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value; cast to underlying data type if necessary.
    */
   public abstract void setDouble(Index ima, double value);
@@ -955,7 +972,7 @@ public abstract class Array {
   /**
    * Set the array element at the current element of ima.
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value; cast to underlying data type if necessary.
    */
   public abstract void setFloat(Index ima, float value);
@@ -971,7 +988,7 @@ public abstract class Array {
   /**
    * Set the array element at the current element of ima.
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value; cast to underlying data type if necessary.
    */
   public abstract void setLong(Index ima, long value);
@@ -987,7 +1004,7 @@ public abstract class Array {
   /**
    * Set the array element at the current element of ima.
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value; cast to underlying data type if necessary.
    */
   public abstract void setInt(Index ima, int value);
@@ -1003,7 +1020,7 @@ public abstract class Array {
   /**
    * Set the array element at the current element of ima.
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value; cast to underlying data type if necessary.
    */
   public abstract void setShort(Index ima, short value);
@@ -1019,7 +1036,7 @@ public abstract class Array {
   /**
    * Set the array element at the current element of ima.
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value; cast to underlying data type if necessary.
    */
   public abstract void setByte(Index ima, byte value);
@@ -1035,7 +1052,7 @@ public abstract class Array {
   /**
    * Set the array element at the current element of ima.
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value; cast to underlying data type if necessary.
    */
   public abstract void setChar(Index ima, char value);
@@ -1052,7 +1069,7 @@ public abstract class Array {
   /**
    * Set the array element at the current element of ima.
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value; cast to underlying data type if necessary.
    * @throws ForbiddenConversionException if underlying array not boolean
    */
@@ -1072,10 +1089,10 @@ public abstract class Array {
    * Set the array element at index to the specified value.
    * the value must be passed wrapped in the appropriate Object (eg Double for double)
    *
-   * @param ima   Index with current element set
+   * @param ima Index with current element set
    * @param value the new value.
    * @throws ArrayIndexOutOfBoundsException if index incorrect rank or out of bounds
-   * @throws ClassCastException             if Object is incorrect type
+   * @throws ClassCastException if Object is incorrect type
    */
   abstract public void setObject(Index ima, Object value);
 
@@ -1122,10 +1139,10 @@ public abstract class Array {
     IndexIterator ii = getIndexIterator();
     while (ii.hasNext()) {
       Object value = ii.getObjectNext();
-  
+
       if (isUnsigned()) {
         assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
-    
+
         // "value" is an unsigned number, but it will be treated as signed when we print it below, because Java only
         // has signed types. If it's large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted
         // as the sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're
@@ -1146,12 +1163,14 @@ public abstract class Array {
    */
   public String shapeToString() {
     int[] shape = getShape();
-    if (shape.length == 0) return "";
+    if (shape.length == 0)
+      return "";
     StringBuilder sb = new StringBuilder();
     sb.append('(');
     for (int i = 0; i < shape.length; i++) {
       int s = shape[i];
-      if (i > 0) sb.append(",");
+      if (i > 0)
+        sb.append(",");
       sb.append(s);
     }
     sb.append(')');
@@ -1161,13 +1180,14 @@ public abstract class Array {
   /////////////////////////////////////////////////////////////////////////////////////////
   // can we replace with replace with foreach ??
 
-  private IndexIterator ii;     // local iterator
+  private IndexIterator ii; // local iterator
 
   /**
    * Check if more elements in the local iterator.
    * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
    * You cannot call any of the array.nextXXX() methods without calling hasNext() first.
    * If you are not sure of the state of the iterator, you must reset it before use. Example:
+   * 
    * <pre>
    * arr.resetLocalIterator();
    * while (arr.hasNext()) {
@@ -1179,7 +1199,8 @@ public abstract class Array {
    * @return true if there are more elements in the iteration
    */
   public boolean hasNext() {
-    if (null == ii) ii = getIndexIterator();
+    if (null == ii)
+      ii = getIndexIterator();
     return ii.hasNext();
   }
 

@@ -10,9 +10,7 @@ import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.crawlabledataset.CrawlableDatasetFactory;
-
 import java.io.IOException;
-
 import org.jdom2.Document;
 
 /**
@@ -21,8 +19,7 @@ import org.jdom2.Document;
  * @author edavis
  * @since Dec 7, 2005 2:04:28 PM
  */
-class CatalogBuilderHelper
-{
+class CatalogBuilderHelper {
 
 
   /**
@@ -38,59 +35,52 @@ class CatalogBuilderHelper
    * @throws NullPointerException if the given path or ancestor dataset are null.
    * @throws IllegalArgumentException if the abstract dataset is not a descendant of the ancestor dataset.
    */
-  static CrawlableDataset verifyDescendantDataset( CrawlableDataset ancestorCrDs,
-                                                   String path,
-                                                   CrawlableDatasetFilter filter )
-  {
+  static CrawlableDataset verifyDescendantDataset(CrawlableDataset ancestorCrDs, String path,
+      CrawlableDatasetFilter filter) {
     // Make sure requested path is descendant of ancestor dataset.
-    if ( ! ancestorCrDs.isCollection() )
-      throw new IllegalArgumentException( "Ancestor dataset <" + ancestorCrDs.getPath() + "> not a collection." );
-    if ( ! path.startsWith( ancestorCrDs.getPath() ) )
-      throw new IllegalArgumentException( "Dataset path <" + path + "> not descendant of given dataset <" + ancestorCrDs.getPath() + ">." );
+    if (!ancestorCrDs.isCollection())
+      throw new IllegalArgumentException("Ancestor dataset <" + ancestorCrDs.getPath() + "> not a collection.");
+    if (!path.startsWith(ancestorCrDs.getPath()))
+      throw new IllegalArgumentException(
+          "Dataset path <" + path + "> not descendant of given dataset <" + ancestorCrDs.getPath() + ">.");
 
     // If path and ancestor are the same, return ancestor.
-    if ( path.length() == ancestorCrDs.getPath().length() )
+    if (path.length() == ancestorCrDs.getPath().length())
       return ancestorCrDs;
 
     // Crawl into the dataset collection through each level of the given path
     // checking that each level is accepted by the given CrawlableDatasetFilter.
-    String remainingPath = path.substring( ancestorCrDs.getPath().length() );
-    if ( remainingPath.startsWith( "/" ) )
-      remainingPath = remainingPath.substring( 1 );
+    String remainingPath = path.substring(ancestorCrDs.getPath().length());
+    if (remainingPath.startsWith("/"))
+      remainingPath = remainingPath.substring(1);
 
-    String[] pathSegments = remainingPath.split( "/" );
+    String[] pathSegments = remainingPath.split("/");
     CrawlableDataset curCrDs = ancestorCrDs;
-    for ( int i = 0; i < pathSegments.length; i++ )
-    {
-      curCrDs = curCrDs.getDescendant( pathSegments[i]);
-      if ( filter != null )
-        if ( ! filter.accept( curCrDs ) )
+    for (int i = 0; i < pathSegments.length; i++) {
+      curCrDs = curCrDs.getDescendant(pathSegments[i]);
+      if (filter != null)
+        if (!filter.accept(curCrDs))
           return null;
     }
     // Only check complete path for existence since speed of check depends on implementation.
-    if ( ! curCrDs.exists() )
+    if (!curCrDs.exists())
       return null;
     return curCrDs;
   }
 
-  static Document convertCatalogToDocument( InvCatalog catalog )
-  {
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-    InvCatalogConvertIF converter = fac.getCatalogConverter( XMLEntityResolver.CATALOG_NAMESPACE_10 );
+  static Document convertCatalogToDocument(InvCatalog catalog) {
+    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory(false);
+    InvCatalogConvertIF converter = fac.getCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_10);
     InvCatalogFactory10 fac10 = (InvCatalogFactory10) converter;
 
-    return fac10.writeCatalog( (InvCatalogImpl) catalog );
+    return fac10.writeCatalog((InvCatalogImpl) catalog);
   }
 
-  static String convertCatalogToString( InvCatalog catalog )
-  {
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-    try
-    {
-      return fac.writeXML( (InvCatalogImpl) catalog );
-    }
-    catch ( IOException e )
-    {
+  static String convertCatalogToString(InvCatalog catalog) {
+    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory(false);
+    try {
+      return fac.writeXML((InvCatalogImpl) catalog);
+    } catch (IOException e) {
       return null;
     }
   }

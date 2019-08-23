@@ -33,8 +33,7 @@ public class TimeCoordIntvDateValue implements Comparable<TimeCoordIntvDateValue
       return false;
     }
     TimeCoordIntvDateValue that = (TimeCoordIntvDateValue) o;
-    return start.equals(that.start) &&
-        end.equals(that.end);
+    return start.equals(that.start) && end.equals(that.end);
   }
 
   @Override
@@ -60,12 +59,12 @@ public class TimeCoordIntvDateValue implements Comparable<TimeCoordIntvDateValue
     if (timeUnit == null) {
       throw new IllegalArgumentException("null time unit");
     }
-    int startOffset = timeUnit.getOffset(refDate, start);   // LOOK wrong - not dealing with value ??
+    int startOffset = timeUnit.getOffset(refDate, start); // LOOK wrong - not dealing with value ??
     int endOffset = timeUnit.getOffset(refDate, end);
     return new TimeCoordIntvValue(startOffset, endOffset);
   }
 
-  public int compareTo(@Nonnull TimeCoordIntvDateValue that) {  // first compare start, then end
+  public int compareTo(@Nonnull TimeCoordIntvDateValue that) { // first compare start, then end
     int c1 = start.compareTo(that.start);
     return (c1 == 0) ? end.compareTo(that.end) : c1;
   }

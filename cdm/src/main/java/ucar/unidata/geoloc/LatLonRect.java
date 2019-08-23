@@ -7,7 +7,6 @@ package ucar.unidata.geoloc;
 import com.google.common.base.Preconditions;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.Format;
-
 import java.util.Objects;
 import java.util.StringTokenizer;
 
@@ -55,7 +54,7 @@ public class LatLonRect {
    * Construct a lat/lon bounding box from a point, and a delta lat, lon.
    * This disambiguates which way the box wraps around the globe.
    *
-   * @param p1       one corner of the box
+   * @param p1 one corner of the box
    * @param deltaLat delta lat from p1. (may be positive or negetive)
    * @param deltaLon delta lon from p1. (may be positive or negetive)
    */
@@ -96,7 +95,7 @@ public class LatLonRect {
    * then start increasing again) until pt2.lon
    * The order of lat doesnt matter: smaller will go to "lower" point (further south)
    *
-   * @param left  left corner
+   * @param left left corner
    * @param right right corner
    */
   public LatLonRect(LatLonPoint left, LatLonPoint right) {
@@ -106,13 +105,15 @@ public class LatLonRect {
 
   /**
    * Construct a lat/lon bounding box from a string.
+   * 
    * @param spec "lat, lon, deltaLat, deltaLon"
    * @see #LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon)
    */
   public LatLonRect(String spec) {
-    StringTokenizer stoker = new StringTokenizer( spec, " ,");
+    StringTokenizer stoker = new StringTokenizer(spec, " ,");
     int n = stoker.countTokens();
-    if (n != 4) throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
+    if (n != 4)
+      throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
     double lat = Double.parseDouble(stoker.nextToken());
     double lon = Double.parseDouble(stoker.nextToken());
     double deltaLat = Double.parseDouble(stoker.nextToken());
@@ -128,7 +129,8 @@ public class LatLonRect {
    * @param r rectangle to copy
    */
   public LatLonRect(LatLonRect r) {
-    this(r.getLowerLeftPoint(), r.getUpperRightPoint().getLatitude() - r.getLowerLeftPoint().getLatitude(), r.getWidth());
+    this(r.getLowerLeftPoint(), r.getUpperRightPoint().getLatitude() - r.getLowerLeftPoint().getLatitude(),
+        r.getWidth());
   }
 
   /**
@@ -184,7 +186,8 @@ public class LatLonRect {
   }
 
   // Exact comparison is needed in order to be consistent with hashCode().
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
@@ -195,7 +198,8 @@ public class LatLonRect {
     return Objects.equals(upperRight, that.upperRight) && Objects.equals(lowerLeft, that.lowerLeft);
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return Objects.hash(upperRight, lowerLeft);
   }
 
@@ -210,13 +214,13 @@ public class LatLonRect {
    * Returns {@code true} if this rectangle is nearly equal to {@code other}. The "near equality" of corners is
    * determined using {@link LatLonPoint#nearlyEquals(LatLonPoint, double)}, with the specified maxRelDiff.
    *
-   * @param other    the other rectangle to check.
-   * @param maxRelDiff  the maximum {@link Misc#relativeDifference relative difference} that two corners may have.
+   * @param other the other rectangle to check.
+   * @param maxRelDiff the maximum {@link Misc#relativeDifference relative difference} that two corners may have.
    * @return {@code true} if this rectangle is nearly equal to {@code other}.
    */
   public boolean nearlyEquals(LatLonRect other, double maxRelDiff) {
-    return this.getLowerLeftPoint() .nearlyEquals(other.getLowerLeftPoint(),  maxRelDiff) &&
-           this.getUpperRightPoint().nearlyEquals(other.getUpperRightPoint(), maxRelDiff);
+    return this.getLowerLeftPoint().nearlyEquals(other.getLowerLeftPoint(), maxRelDiff)
+        && this.getUpperRightPoint().nearlyEquals(other.getUpperRightPoint(), maxRelDiff);
   }
 
   /**
@@ -327,38 +331,39 @@ public class LatLonRect {
    * @return true if b contained in this bounding box
    */
   public boolean containedIn(LatLonRect b) {
-    return (b.getWidth() >= width) && b.contains(upperRight)
-        && b.contains(lowerLeft);
+    return (b.getWidth() >= width) && b.contains(upperRight) && b.contains(lowerLeft);
   }
 
   /*
-  * Determine if a specified LatLonRect intersects this
-  * @param b the specified box to be tested
-  *
-  * @param p
-  * @return true if b intersects this bounding box
-  *
-  * public boolean intersects(LatLonRect b) {
-  *     if (b.getUpperRightPoint().getLatitude() < lowerLeft.getLatitude())
-  * return false;
-  *     if (b.getLowerLeftPoint().getLatitude() > upperRight.getLatitude())
-  * return false;
-  *
-  * double blon0 = b.getCenterLon();
-  * double normal = (blon0 + lon0) / 2;
-  * if (Math.abs(blon0-lon0) > 180.0)
-  * normal += 180;
-  * blon0 = LatLonPoint.lonNormal(blon0, normal);
-  * double mylon0 = LatLonPoint.lonNormal(lon0, normal);
-  *
-  *     if (blon0 + b.getWidth() < mylon0 - width)
-  * return false;
-  *     if (blon0 - b.getWidth() > mylon0 + width)
-  * return false;
-  *
-  * return true;
-  * }
-  */
+   * Determine if a specified LatLonRect intersects this
+   * 
+   * @param b the specified box to be tested
+   *
+   * @param p
+   * 
+   * @return true if b intersects this bounding box
+   *
+   * public boolean intersects(LatLonRect b) {
+   * if (b.getUpperRightPoint().getLatitude() < lowerLeft.getLatitude())
+   * return false;
+   * if (b.getLowerLeftPoint().getLatitude() > upperRight.getLatitude())
+   * return false;
+   *
+   * double blon0 = b.getCenterLon();
+   * double normal = (blon0 + lon0) / 2;
+   * if (Math.abs(blon0-lon0) > 180.0)
+   * normal += 180;
+   * blon0 = LatLonPoint.lonNormal(blon0, normal);
+   * double mylon0 = LatLonPoint.lonNormal(lon0, normal);
+   *
+   * if (blon0 + b.getWidth() < mylon0 - width)
+   * return false;
+   * if (blon0 - b.getWidth() > mylon0 + width)
+   * return false;
+   *
+   * return true;
+   * }
+   */
 
   /**
    * Extend the bounding box to contain this point
@@ -388,7 +393,7 @@ public class LatLonRect {
       // bounding box crosses the +/- 180 seam
       double d1 = lon - upperRight.getLongitude();
       double d2 = lowerLeft.getLongitude() - lon;
-      if ((d1 > 0.0) && (d2 > 0.0)) {  // needed ?
+      if ((d1 > 0.0) && (d2 > 0.0)) { // needed ?
         if (d1 > d2) {
           lowerLeft.setLongitude(lon);
         } else {
@@ -454,7 +459,7 @@ public class LatLonRect {
     double lonMin = getLonMin();
     double lonMax = getLonMax();
 
-    double nlonMin = LatLonPointImpl.lonNormal( r.getLonMin(), lonMin);
+    double nlonMin = LatLonPointImpl.lonNormal(r.getLonMin(), lonMin);
     double nlonMax = nlonMin + r.getWidth();
     lonMin = Math.min(lonMin, nlonMin);
     lonMax = Math.max(lonMax, nlonMax);
@@ -467,10 +472,10 @@ public class LatLonRect {
     } else {
       lonMin = LatLonPointImpl.lonNormal(lonMin);
     }
-    
+
     lowerLeft.setLongitude(lonMin);
-    upperRight.setLongitude(lonMin+width);
-    lon0 = lonMin+width/2;
+    upperRight.setLongitude(lonMin + width);
+    lon0 = lonMin + width / 2;
     crossDateline = lowerLeft.getLongitude() > upperRight.getLongitude();
   }
 
@@ -520,7 +525,10 @@ public class LatLonRect {
 
   /**
    * Return a String representation of this object.
-   * <pre>eg: ll: 90.0S .0E+ ur: 90.0N .0E</pre>
+   * 
+   * <pre>
+   * eg: ll: 90.0S .0E+ ur: 90.0N .0E
+   * </pre>
    *
    * @return a String representation of this object.
    */
@@ -531,12 +539,15 @@ public class LatLonRect {
 
   /**
    * Return a String representation of this object.
-   * <pre>lat= [-90.00,90.00] lon= [0.00,360.00</pre>
+   * 
+   * <pre>
+   * lat= [-90.00,90.00] lon= [0.00,360.00
+   * </pre>
    *
    * @return a String representation of this object.
    */
   public String toString2() {
-    return " lat= [" + Format.dfrac(getLatMin(), 2) + "," + Format.dfrac(getLatMax(), 2) +
-        "] lon= [" + Format.dfrac(getLonMin(), 2) + "," + Format.dfrac(getLonMax(), 2) + "]";
+    return " lat= [" + Format.dfrac(getLatMin(), 2) + "," + Format.dfrac(getLatMax(), 2) + "] lon= ["
+        + Format.dfrac(getLonMin(), 2) + "," + Format.dfrac(getLonMax(), 2) + "]";
   }
 }

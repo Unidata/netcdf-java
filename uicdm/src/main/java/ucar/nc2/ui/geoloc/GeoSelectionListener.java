@@ -3,10 +3,12 @@
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.geoloc;
+
 /**
  * Listeners for new geographic area selection events.
+ * 
  * @author John Caron
  */
 public interface GeoSelectionListener extends java.util.EventListener {
-    void actionPerformed(GeoSelectionEvent e);
+  void actionPerformed(GeoSelectionEvent e);
 }

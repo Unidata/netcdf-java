@@ -8,7 +8,6 @@ package ucar.nc2.grib.grib1;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.zip.CRC32;
@@ -16,6 +15,7 @@ import java.util.zip.CRC32;
 /**
  * The Grid Definition Section for GRIB-1 files
  * Effectively immutable, but caching lazy gds
+ * 
  * @author caron
  */
 
@@ -32,7 +32,7 @@ public class Grib1SectionGridDefinition {
    * Read Grib Definition section from raf.
    *
    * @param raf RandomAccessFile, with pointer at start of section
-   * @throws java.io.IOException      on I/O error
+   * @throws java.io.IOException on I/O error
    * @throws IllegalArgumentException if not a GRIB-2 record
    */
   public Grib1SectionGridDefinition(RandomAccessFile raf) throws IOException {
@@ -88,7 +88,7 @@ public class Grib1SectionGridDefinition {
   /**
    * Calculate the CRC of the entire byte array
    *
-   * @return CRC  of the entire byte array
+   * @return CRC of the entire byte array
    */
   public long calcCRC() {
     long crc;
@@ -121,7 +121,8 @@ public class Grib1SectionGridDefinition {
 
   /**
    * From pds.getGridDefinition
-   * @return  pds.getGridDefinition, or -1 if uses a real Grib1SectionGridDefinition
+   * 
+   * @return pds.getGridDefinition, or -1 if uses a real Grib1SectionGridDefinition
    */
   public int getPredefinedGridDefinition() {
     return predefinedGridDefinition;
@@ -129,14 +130,17 @@ public class Grib1SectionGridDefinition {
 
   private int getOctet(int index) {
     if (rawData == null)
-      return 255;   // predefined
-    if (index > rawData.length) return GribNumbers.UNDEFINED;
+      return 255; // predefined
+    if (index > rawData.length)
+      return GribNumbers.UNDEFINED;
     return rawData[index - 1] & 0xff;
   }
 
   private Grib1Gds gds = null;
+
   public synchronized Grib1Gds getGDS() {
-    if (gds != null) return gds;
+    if (gds != null)
+      return gds;
 
     if (predefinedGridDefinition != -1) {
       gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(predefinedGridDefinitionCenter, predefinedGridDefinition);
@@ -160,7 +164,8 @@ public class Grib1SectionGridDefinition {
    * @return if a thin grid
    */
   public final boolean isThin() {
-    if (rawData == null) return false;
+    if (rawData == null)
+      return false;
     int octet5 = getOctet(5);
     int nv = getOctet(4);
     return (octet5 != 255) && (nv == 0 || nv == 255);
@@ -169,14 +174,15 @@ public class Grib1SectionGridDefinition {
   /**
    * Gets the number of points in each line for Quasi/Thin grids
    * "List of numbers of points in each row (length = NROWS x 2 octets, where NROWS is the
-   *  total number of rows defined within the grid description)"
+   * total number of rows defined within the grid description)"
+   * 
    * @return number of points in each line as int[]
    */
   private int[] getNptsInLine(Grib1Gds gds) {
     int numPts;
     if ((gds.getScanMode() & 32) == 0) { // bit3 = 0 : Adjacent points in i direction are consecutive
       numPts = gds.getNy();
-    } else {                             // bit3 = 1 : Adjacent points in j direction are consecutive
+    } else { // bit3 = 1 : Adjacent points in j direction are consecutive
       numPts = gds.getNx();
     }
 
@@ -191,7 +197,8 @@ public class Grib1SectionGridDefinition {
   /////////////////////////////////////////////////
 
   public boolean hasVerticalCoordinateParameters() {
-    if (rawData == null) return false;
+    if (rawData == null)
+      return false;
     int octet5 = getOctet(5);
     int nv = getOctet(4);
     return (octet5 != 255) && (nv != 0 && nv != 255);
@@ -199,13 +206,15 @@ public class Grib1SectionGridDefinition {
 
   @Nullable
   private double[] getVerticalCoordinateParameters() {
-    if (!hasVerticalCoordinateParameters()) return null;
+    if (!hasVerticalCoordinateParameters())
+      return null;
 
     int offset = getOctet(5);
     int n = getOctet(4);
-    double[] vertCoords = new double[ n ];
+    double[] vertCoords = new double[n];
     for (int i = 0; i < n; i++) {
-      vertCoords[i] = GribNumbers.float4(getOctet(offset++), getOctet(offset++), getOctet(offset++), getOctet(offset++)) ;
+      vertCoords[i] =
+          GribNumbers.float4(getOctet(offset++), getOctet(offset++), getOctet(offset++), getOctet(offset++));
     }
     return vertCoords;
   }

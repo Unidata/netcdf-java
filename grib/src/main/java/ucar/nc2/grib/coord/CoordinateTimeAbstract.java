@@ -8,7 +8,6 @@ package ucar.nc2.grib.coord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -23,11 +22,11 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   public static final String MIXED_INTERVALS = "Mixed_intervals";
   public static CalendarDateFactory cdf;
 
-  final String periodName;                   // used to create the udunit
-  protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
-  protected final CalendarPeriod timeUnit;   // time duration, based on code
-  protected final CalendarDate refDate;      // used to create the udunit
-  protected final int[] time2runtime;        // for each time, which runtime is used; index into master runtime
+  final String periodName; // used to create the udunit
+  protected final int code; // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
+  protected final CalendarPeriod timeUnit; // time duration, based on code
+  protected final CalendarDate refDate; // used to create the udunit
+  protected final int[] time2runtime; // for each time, which runtime is used; index into master runtime
 
   protected String name = "time";
 
@@ -39,7 +38,7 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
     CalendarPeriod.Field cf = timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar "+ cf.toString();
+      this.periodName = "calendar " + cf.toString();
     else
       this.periodName = cf.toString();
   }
@@ -64,7 +63,8 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   }
 
   public void setName(String name) {
-    if (!this.name.equals("time")) throw new IllegalStateException("Cant modify");
+    if (!this.name.equals("time"))
+      throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 
@@ -81,8 +81,10 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   }
 
   public int getMasterRuntimeIndex(int timeIdx) {
-    if (time2runtime == null) return -1;
-    if (timeIdx < 0 || timeIdx >= time2runtime.length) return -1;
+    if (time2runtime == null)
+      return -1;
+    if (timeIdx < 0 || timeIdx >= time2runtime.length)
+      return -1;
     return time2runtime[timeIdx];
   }
 
@@ -99,13 +101,14 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   /**
    * Implements coverting a "complete best" to a "monotonic best".
    * The reftime is not allowed to decrease
+   * 
    * @return "monotonic best" CoordinateTimeAbstract, based on this one, which is a "complete best"
    */
   public CoordinateTimeAbstract makeBestFromComplete() {
     int[] best = new int[time2runtime.length];
     int last = -1;
     int count = 0;
-    for (int i=0; i<time2runtime.length; i++) {
+    for (int i = 0; i < time2runtime.length; i++) {
       int time = time2runtime[i];
       if (time >= last) {
         last = time;

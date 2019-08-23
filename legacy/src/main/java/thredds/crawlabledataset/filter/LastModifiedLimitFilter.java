@@ -6,7 +6,6 @@ package thredds.crawlabledataset.filter;
 
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-
 import java.util.Date;
 
 /**
@@ -15,8 +14,7 @@ import java.util.Date;
  *
  * @author edavis
  */
-public class LastModifiedLimitFilter implements CrawlableDatasetFilter
-{
+public class LastModifiedLimitFilter implements CrawlableDatasetFilter {
   private long lastModifiedLimitInMillis;
 
   /**
@@ -24,8 +22,7 @@ public class LastModifiedLimitFilter implements CrawlableDatasetFilter
    *
    * @param lastModifiedLimitInMillis accept datasets whose lastModified() time is at least this many msecs in the past
    */
-  public LastModifiedLimitFilter(long lastModifiedLimitInMillis )
-  {
+  public LastModifiedLimitFilter(long lastModifiedLimitInMillis) {
     this.lastModifiedLimitInMillis = lastModifiedLimitInMillis;
   }
 
@@ -36,18 +33,21 @@ public class LastModifiedLimitFilter implements CrawlableDatasetFilter
    * @param dataset the dataset to filter
    * @return true if the datasets last modified date is at least lastModifiedLimitInMillis in the past.
    */
-  public boolean accept( CrawlableDataset dataset)
-  {
+  public boolean accept(CrawlableDataset dataset) {
     Date lastModDate = dataset.lastModified();
-    if ( lastModDate != null )
-    {
+    if (lastModDate != null) {
       long now = System.currentTimeMillis();
-      if ( now - lastModDate.getTime() > lastModifiedLimitInMillis )
+      if (now - lastModDate.getTime() > lastModifiedLimitInMillis)
         return true;
     }
     return false;
   }
 
-  public Object getConfigObject()   { return null; }
-  public long getLastModifiedLimitInMillis()   { return lastModifiedLimitInMillis; }
+  public Object getConfigObject() {
+    return null;
+  }
+
+  public long getLastModifiedLimitInMillis() {
+    return lastModifiedLimitInMillis;
+  }
 }

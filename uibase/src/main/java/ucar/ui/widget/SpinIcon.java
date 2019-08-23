@@ -24,48 +24,71 @@ public class SpinIcon implements javax.swing.Icon {
     orientH = (type == TypeUp) || (type == TypeDown);
   }
 
-  public void paintIcon(Component c, Graphics g, int x, int y){
-    JComponent component = (JComponent)c;
+  public void paintIcon(Component c, Graphics g, int x, int y) {
+    JComponent component = (JComponent) c;
     int iconWidth = 10;
-    g.translate( x, y );
+    g.translate(x, y);
 
-    g.setColor( component.isEnabled() ? MetalLookAndFeel.getControlInfo() :
-                                        MetalLookAndFeel.getControlShadow() );
+    g.setColor(component.isEnabled() ? MetalLookAndFeel.getControlInfo() : MetalLookAndFeel.getControlShadow());
     int line = 0;
     if (type == TypeUp) {
-      g.drawLine( 4, line, 4 + (iconWidth - 9), line ); line++;
-      g.drawLine( 3, line, 3 + (iconWidth - 7), line ); line++;
-      g.drawLine( 2, line, 2 + (iconWidth - 5), line ); line++;
-      g.drawLine( 1, line, 1 + (iconWidth - 3), line ); line++;
-      g.drawLine( 0, line, iconWidth - 1, line ); line++;
+      g.drawLine(4, line, 4 + (iconWidth - 9), line);
+      line++;
+      g.drawLine(3, line, 3 + (iconWidth - 7), line);
+      line++;
+      g.drawLine(2, line, 2 + (iconWidth - 5), line);
+      line++;
+      g.drawLine(1, line, 1 + (iconWidth - 3), line);
+      line++;
+      g.drawLine(0, line, iconWidth - 1, line);
+      line++;
     } else if (type == TypeDown) {
-      g.drawLine( 0, line, iconWidth - 1, line ); line++;
-      g.drawLine( 1, line, 1 + (iconWidth - 3), line ); line++;
-      g.drawLine( 2, line, 2 + (iconWidth - 5), line ); line++;
-      g.drawLine( 3, line, 3 + (iconWidth - 7), line ); line++;
-      g.drawLine( 4, line, 4 + (iconWidth - 9), line ); line++;
+      g.drawLine(0, line, iconWidth - 1, line);
+      line++;
+      g.drawLine(1, line, 1 + (iconWidth - 3), line);
+      line++;
+      g.drawLine(2, line, 2 + (iconWidth - 5), line);
+      line++;
+      g.drawLine(3, line, 3 + (iconWidth - 7), line);
+      line++;
+      g.drawLine(4, line, 4 + (iconWidth - 9), line);
+      line++;
     } else if (type == TypeRight) {
-      g.drawLine( line, 0, line, iconWidth - 1 ); line++;
-      g.drawLine( line, 1, line, 1 + (iconWidth - 3) ); line++;
-      g.drawLine( line, 2, line, 2 + (iconWidth - 5) ); line++;
-      g.drawLine( line, 3, line, 3 + (iconWidth - 7) ); line++;
-      g.drawLine( line, 4, line, 4 + (iconWidth - 9) ); line++;
+      g.drawLine(line, 0, line, iconWidth - 1);
+      line++;
+      g.drawLine(line, 1, line, 1 + (iconWidth - 3));
+      line++;
+      g.drawLine(line, 2, line, 2 + (iconWidth - 5));
+      line++;
+      g.drawLine(line, 3, line, 3 + (iconWidth - 7));
+      line++;
+      g.drawLine(line, 4, line, 4 + (iconWidth - 9));
+      line++;
     } else {
-      g.drawLine( line, 4, line, 4 + (iconWidth - 9) ); line++;
-      g.drawLine( line, 3, line, 3 + (iconWidth - 7) ); line++;
-      g.drawLine( line, 2, line, 2 + (iconWidth - 5) ); line++;
-      g.drawLine( line, 1, line, 1 + (iconWidth - 3) ); line++;
-      g.drawLine( line, 0, line, iconWidth - 1 ); line++;
+      g.drawLine(line, 4, line, 4 + (iconWidth - 9));
+      line++;
+      g.drawLine(line, 3, line, 3 + (iconWidth - 7));
+      line++;
+      g.drawLine(line, 2, line, 2 + (iconWidth - 5));
+      line++;
+      g.drawLine(line, 1, line, 1 + (iconWidth - 3));
+      line++;
+      g.drawLine(line, 0, line, iconWidth - 1);
+      line++;
     }
 
-    g.translate( -x, -y );
+    g.translate(-x, -y);
   }
 
   /*** stubbed to satisfy the interface. */
-  public int getIconWidth() { return orientH ? 10 : 5; }
+  public int getIconWidth() {
+    return orientH ? 10 : 5;
+  }
 
   /*** stubbed to satisfy the interface. */
-  public int getIconHeight()  { return orientH ? 5 : 10; }
+  public int getIconHeight() {
+    return orientH ? 5 : 10;
+  }
 
   public static class Type {
   }

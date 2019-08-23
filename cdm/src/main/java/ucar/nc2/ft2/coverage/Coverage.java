@@ -13,7 +13,6 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.util.Indent;
-
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Formatter;
@@ -38,7 +37,8 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
 
   private CoverageCoordSys coordSys; // almost immutable
 
-  public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description, CoverageReader reader, Object user) {
+  public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units,
+      String description, CoverageReader reader, Object user) {
     this.name = name;
     this.dataType = dataType;
     this.atts = new AttributeContainerHelper(name, atts);
@@ -61,8 +61,9 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
     this.user = from.user;
   }
 
-  void setCoordSys (CoverageCoordSys coordSys) {
-    if (this.coordSys != null) throw new RuntimeException("Cant change coordSys once set");
+  void setCoordSys(CoverageCoordSys coordSys) {
+    if (this.coordSys != null)
+      throw new RuntimeException("Cant change coordSys once set");
     this.coordSys = coordSys;
   }
 
@@ -138,7 +139,8 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   public String getIndependentAxisNamesOrdered() {
     StringBuilder sb = new StringBuilder();
     for (CoverageCoordAxis axis : coordSys.getAxes()) {
-      if (!(axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)) continue;
+      if (!(axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent))
+        continue;
       sb.append(axis.getName());
       sb.append(" ");
     }
@@ -184,7 +186,7 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
     return coordSys.getShape();
   }
 
- // @Override
+  // @Override
   public List<Dimension> getDimensions() {
     return null;
   }

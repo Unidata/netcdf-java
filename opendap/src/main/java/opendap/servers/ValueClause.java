@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -41,7 +41,6 @@ package opendap.servers;
 
 import java.util.*;
 import java.io.*;
-
 import opendap.dap.BaseType;
 
 /**
@@ -53,73 +52,69 @@ import opendap.dap.BaseType;
  * @author Joe Wielgosz (joew@cola.iges.org)
  * @see ClauseFactory
  */
-public class ValueClause
-        extends AbstractClause
-        implements SubClause {
+public class ValueClause extends AbstractClause implements SubClause {
 
 
 
-    protected BaseType value;
-    protected Clause parent;
+  protected BaseType value;
+  protected Clause parent;
 
 
-    /**
-     * Creates a new ValueClause.
-     *
-     * @param value    The BaseType represented by this clause. This can
-     *                 be either a BaseType taken from the DDS of a dataset, or a BaseType
-     *                 object created to hold a constant value.
-     * @param constant Should be set to false if the value parameter is
-     *                 from the DDS of a dataset, and true if the value parameter is a
-     *                 constant value.
-     */
-    protected ValueClause(BaseType value,
-                          boolean constant) {
-        this.value = value;
-        this.constant = constant;
-        this.defined = constant;
-        this.children = new ArrayList();
+  /**
+   * Creates a new ValueClause.
+   *
+   * @param value The BaseType represented by this clause. This can
+   *        be either a BaseType taken from the DDS of a dataset, or a BaseType
+   *        object created to hold a constant value.
+   * @param constant Should be set to false if the value parameter is
+   *        from the DDS of a dataset, and true if the value parameter is a
+   *        constant value.
+   */
+  protected ValueClause(BaseType value, boolean constant) {
+    this.value = value;
+    this.constant = constant;
+    this.defined = constant;
+    this.children = new ArrayList();
+  }
+
+  /**
+   * Returns the BaseType represented by this clause.
+   */
+  public BaseType getValue() {
+    return value;
+  }
+
+  /**
+   * Returns the BaseType represented by this clause. Equivalent to
+   * getValue(), except that
+   * calling this method flags this clause as "defined".
+   *
+   * @throws DAP2ServerSideException Not thrown by this type of clause.
+   */
+  public BaseType evaluate() {
+    defined = true;
+    return value;
+  }
+
+  public Clause getParent() {
+    return parent;
+  }
+
+  public void setParent(Clause parent) {
+    this.parent = parent;
+  }
+
+  /**
+   * Prints the original string representation of this clause.
+   * For use in debugging.
+   */
+  public void printConstraint(PrintWriter os) {
+    if (constant) {
+      value.printVal(os, "", false);
+    } else {
+      value.printConstraint(os);
     }
-
-    /**
-     * Returns the BaseType represented by this clause.
-     */
-    public BaseType getValue() {
-        return value;
-    }
-
-    /**
-     * Returns the BaseType represented by this clause. Equivalent to
-     * getValue(), except that
-     * calling this method flags this clause as "defined".
-     *
-     * @throws DAP2ServerSideException Not thrown by this type of clause.
-     */
-    public BaseType evaluate() {
-        defined = true;
-        return value;
-    }
-
-    public Clause getParent() {
-        return parent;
-    }
-
-    public void setParent(Clause parent) {
-        this.parent = parent;
-    }
-
-    /**
-     * Prints the original string representation of this clause.
-     * For use in debugging.
-     */
-    public void printConstraint(PrintWriter os)
-    {
-        if (constant) {
-            value.printVal(os, "", false);
-        } else {
-            value.printConstraint(os);
-        }
-    }
+  }
 
 }
 

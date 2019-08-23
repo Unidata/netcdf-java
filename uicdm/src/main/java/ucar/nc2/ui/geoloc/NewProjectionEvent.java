@@ -6,7 +6,9 @@ package ucar.nc2.ui.geoloc;
 
 import ucar.unidata.geoloc.ProjectionImpl;
 
-/** Used to notify listeners that there is a new Projection.
+/**
+ * Used to notify listeners that there is a new Projection.
+ * 
  * @author John Caron
  */
 public class NewProjectionEvent extends java.util.EventObject {

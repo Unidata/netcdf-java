@@ -5,7 +5,6 @@
 package timing.IO;
 
 import ucar.nc2.util.IO;
-
 import java.io.*;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -13,48 +12,50 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.Random;
 
-/*  Conclusions.
-
-    Deflate vs GZIP, Random floats
-    Buffering gives factor of 7-8, no diff between buffer size 1000 and 10000
-        No performance diff between deflate and gzip on random floats
-        only 12% compression
-
-        deflateRandom took = 5.25 sec; compress = 1.120589430040201
-        deflateRandom took = 0.75 sec; compress = 1.120589430040201
-        gzipRandom took = 6.406 sec; compress = 1.1205793843648921
-        gzipRandom took = 0.766 sec; compress = 1.1206478240941524
-
-    Buffering gives factor of 15, no diff bewteen buffer size 1000 and 10000
-       No performance diff between inflate and gunzip on random floats
-
-       inflate took = 4.828 sec
-       inflate took = 0.328 sec
-       unzip took = 4.781 sec
-       unzip took = 0.329 sec
-
-    Deflate vs GZIP, Real data files
-
-    No performance diff between deflate and gzip on real files;
-       4.4 X compression on real data file, which are 99% floats
-
-     deflate took = 6.532 sec; rate = 7.987679118187385Mb/sec; compress = 4.4094069227210015
-     gzip took = 6.656000000000001 sec; rate = 7.838870192307692Mb/sec; compress = 4.409402451003301
-
-    inflate took = 1.203 sec; rate = 9.836055694098087Mb/sec; compress = 4.4094069227210015
-    gunzip took = 1.578 sec; rate = 7.4985975918884655Mb/sec; compress = 4.409402451003301
-
-    inflate took = 1.875 sec; rate = 6.310813333333333Mb/sec; compress = 4.4094069227210015
-    gunzip took = 1.171 sec; rate = 10.10485653287788Mb/sec; compress = 4.409402451003301
-
-    inflate took = 1.3900000000000001 sec; rate = 8.512787769784172Mb/sec; compress = 4.4094069227210015
-    gunzip took = 1.453 sec; rate = 8.143693737095663Mb/sec; compress = 4.409402451003301
-    // */
+/*
+ * Conclusions.
+ * 
+ * Deflate vs GZIP, Random floats
+ * Buffering gives factor of 7-8, no diff between buffer size 1000 and 10000
+ * No performance diff between deflate and gzip on random floats
+ * only 12% compression
+ * 
+ * deflateRandom took = 5.25 sec; compress = 1.120589430040201
+ * deflateRandom took = 0.75 sec; compress = 1.120589430040201
+ * gzipRandom took = 6.406 sec; compress = 1.1205793843648921
+ * gzipRandom took = 0.766 sec; compress = 1.1206478240941524
+ * 
+ * Buffering gives factor of 15, no diff bewteen buffer size 1000 and 10000
+ * No performance diff between inflate and gunzip on random floats
+ * 
+ * inflate took = 4.828 sec
+ * inflate took = 0.328 sec
+ * unzip took = 4.781 sec
+ * unzip took = 0.329 sec
+ * 
+ * Deflate vs GZIP, Real data files
+ * 
+ * No performance diff between deflate and gzip on real files;
+ * 4.4 X compression on real data file, which are 99% floats
+ * 
+ * deflate took = 6.532 sec; rate = 7.987679118187385Mb/sec; compress = 4.4094069227210015
+ * gzip took = 6.656000000000001 sec; rate = 7.838870192307692Mb/sec; compress = 4.409402451003301
+ * 
+ * inflate took = 1.203 sec; rate = 9.836055694098087Mb/sec; compress = 4.4094069227210015
+ * gunzip took = 1.578 sec; rate = 7.4985975918884655Mb/sec; compress = 4.409402451003301
+ * 
+ * inflate took = 1.875 sec; rate = 6.310813333333333Mb/sec; compress = 4.4094069227210015
+ * gunzip took = 1.171 sec; rate = 10.10485653287788Mb/sec; compress = 4.409402451003301
+ * 
+ * inflate took = 1.3900000000000001 sec; rate = 8.512787769784172Mb/sec; compress = 4.4094069227210015
+ * gunzip took = 1.453 sec; rate = 8.143693737095663Mb/sec; compress = 4.409402451003301
+ * //
+ */
 
 public class TimeCompression {
   static boolean debug = false;
 
-  static public void main( String[] args) throws IOException {
+  static public void main(String[] args) throws IOException {
     testCompressRandom();
     testCompressFile("D:/data/NAM_CONUS_80km_20070501_1200.nc");
     testCompressFile("D:/data/NAM_CONUS_80km_20070501_1200.nc");
@@ -69,9 +70,10 @@ public class TimeCompression {
   }
 
   // test Deflater on real files
-  static public void compressFile( String filenameIn, String filenameOut, boolean inflate) throws IOException {
+  static public void compressFile(String filenameIn, String filenameOut, boolean inflate) throws IOException {
     long lenIn = new File(filenameIn).length();
-    if (debug) System.out.println("read "+filenameIn+ " len = "+lenIn);
+    if (debug)
+      System.out.println("read " + filenameIn + " len = " + lenIn);
 
     FileInputStream fin = new FileInputStream(filenameIn);
     InputStream in = new BufferedInputStream(fin, 1000);
@@ -81,7 +83,7 @@ public class TimeCompression {
     out = new BufferedOutputStream(out, 1000);
 
     long start = System.currentTimeMillis();
-    IO.copyB( in, out, 10000);
+    IO.copyB(in, out, 10000);
     out.flush();
     double took = .001 * (System.currentTimeMillis() - start);
 
@@ -89,17 +91,19 @@ public class TimeCompression {
     fin.close();
 
     long lenOut = new File(filenameOut).length();
-    if (debug) System.out.println(" write compressed file= "+filenameOut+ " len = "+lenOut);
+    if (debug)
+      System.out.println(" write compressed file= " + filenameOut + " len = " + lenOut);
 
-    double rate = lenIn/took/(1000*1000);
-    double ratio = (double) lenIn/lenOut;
+    double rate = lenIn / took / (1000 * 1000);
+    double ratio = (double) lenIn / lenOut;
     String name = inflate ? "deflate" : "gzip";
-    System.out.println(" "+name + " took = "+took+" sec; rate = "+ rate+"Mb/sec; compress = "+ratio);
+    System.out.println(" " + name + " took = " + took + " sec; rate = " + rate + "Mb/sec; compress = " + ratio);
   }
 
-  static public void uncompressFile( String filenameIn, String filenameOut, boolean inflate) throws IOException {
+  static public void uncompressFile(String filenameIn, String filenameOut, boolean inflate) throws IOException {
     long lenIn = new File(filenameIn).length();
-    if (debug) System.out.println("read compressed file= "+filenameIn+ " len = "+lenIn);
+    if (debug)
+      System.out.println("read compressed file= " + filenameIn + " len = " + lenIn);
 
     FileInputStream fin = new FileInputStream(filenameIn);
     InputStream in = (inflate) ? new InflaterInputStream(fin) : new GZIPInputStream(fin);
@@ -109,7 +113,7 @@ public class TimeCompression {
     OutputStream out = new BufferedOutputStream(fout, 1000);
 
     long start = System.currentTimeMillis();
-    IO.copyB( in, out, 10000);
+    IO.copyB(in, out, 10000);
     out.flush();
     double took = .001 * (System.currentTimeMillis() - start);
 
@@ -117,12 +121,13 @@ public class TimeCompression {
     fin.close();
 
     long lenOut = new File(filenameOut).length();
-    if (debug) System.out.println(" write uncompressed file= "+filenameOut+ " len = "+lenOut);
-    double rate = lenIn/took/(1000*1000);
-    double ratio = (double) lenOut/lenIn;
+    if (debug)
+      System.out.println(" write uncompressed file= " + filenameOut + " len = " + lenOut);
+    double rate = lenIn / took / (1000 * 1000);
+    double ratio = (double) lenOut / lenIn;
 
     String name = inflate ? "inflate" : "gunzip";
-    System.out.println(name+" took = "+took+" sec; rate = "+ rate+"Mb/sec; compress = "+ratio);
+    System.out.println(name + " took = " + took + " sec; rate = " + rate + "Mb/sec; compress = " + ratio);
   }
 
   /////////////////////////////////////////////////////////////
@@ -142,7 +147,7 @@ public class TimeCompression {
   }
 
   // test DeflaterOutputStream - write 1M random floats
-  static public void deflateRandom( String filenameOut, boolean buffer) throws IOException {
+  static public void deflateRandom(String filenameOut, boolean buffer) throws IOException {
     FileOutputStream fout = new FileOutputStream(filenameOut);
     OutputStream out = new DeflaterOutputStream(fout);
     if (buffer)
@@ -151,7 +156,7 @@ public class TimeCompression {
 
     Random r = new Random();
     long start = System.currentTimeMillis();
-    for (int i=0; i<(1000*1000);i++) {
+    for (int i = 0; i < (1000 * 1000); i++) {
       dout.writeFloat(r.nextFloat());
     }
     dout.flush();
@@ -160,7 +165,7 @@ public class TimeCompression {
     File f = new File(filenameOut);
     long len = f.length();
     double ratio = 4 * 1000.0 * 1000.0 / len;
-    System.out.println(" deflateRandom took = "+took+" sec; compress = "+ratio);
+    System.out.println(" deflateRandom took = " + took + " sec; compress = " + ratio);
   }
 
   // test GZIPOutputStream - write 1M random floats
@@ -173,7 +178,7 @@ public class TimeCompression {
 
     Random r = new Random();
     long start = System.currentTimeMillis();
-    for (int i=0; i<(1000*1000);i++) {
+    for (int i = 0; i < (1000 * 1000); i++) {
       dout.writeFloat(r.nextFloat());
     }
     fout.flush();
@@ -182,11 +187,11 @@ public class TimeCompression {
     File f = new File(filenameOut);
     long len = f.length();
     double ratio = 4 * 1000.0 * 1000.0 / len;
-    System.out.println(" gzipRandom took = "+took+" sec; compress = "+ratio);
+    System.out.println(" gzipRandom took = " + took + " sec; compress = " + ratio);
   }
 
   // test InflaterInputStream
-  static public void inflateRandom( String filename, boolean buffer) throws IOException {
+  static public void inflateRandom(String filename, boolean buffer) throws IOException {
     FileInputStream fin = new FileInputStream(filename);
     InputStream in = new InflaterInputStream(fin);
     if (buffer)
@@ -200,15 +205,15 @@ public class TimeCompression {
         total += din.readFloat();
       }
     } catch (EOFException e) {
-      System.out.println("total="+total);
+      System.out.println("total=" + total);
     }
     fin.close();
     double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(" inflate took = "+took+" sec");
+    System.out.println(" inflate took = " + took + " sec");
   }
 
   // test InflaterInputStream
-  static public void unzipRandom( String filename, boolean buffer) throws IOException {
+  static public void unzipRandom(String filename, boolean buffer) throws IOException {
     FileInputStream fin = new FileInputStream(filename);
     InputStream in = new GZIPInputStream(fin);
     if (buffer)
@@ -222,15 +227,15 @@ public class TimeCompression {
         total += din.readFloat();
       }
     } catch (EOFException e) {
-      System.out.println("total="+total);
+      System.out.println("total=" + total);
     }
     fin.close();
     double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(" unzip took = "+took+" sec");
+    System.out.println(" unzip took = " + took + " sec");
   }
 
-   // test DeflaterOutputStream
-  static public void main2( String[] args) throws IOException {
+  // test DeflaterOutputStream
+  static public void main2(String[] args) throws IOException {
     String filenameIn = "C:/temp/tempFile2";
     String filenameOut = "C:/temp/tempFile2.compress2";
 
@@ -242,7 +247,7 @@ public class TimeCompression {
     long start = System.currentTimeMillis();
     IO.copyB(fin, out, 10 * 1000);
     double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(" that took = "+took+"sec");
+    System.out.println(" that took = " + took + "sec");
 
     fin.close();
     fout.close();

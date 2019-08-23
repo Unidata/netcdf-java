@@ -20,7 +20,8 @@ import java.lang.invoke.MethodHandles;
 public class TestDebug {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
+  @ClassRule
+  public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static PreferencesExt store;
   private static XMLStore xstore;
@@ -31,27 +32,27 @@ public class TestDebug {
 
     xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
     store = xstore.getPreferences();
-    //store = new PreferencesExt(null,"");
-    Debug.setStore( store.node("Debug"));
+    // store = new PreferencesExt(null,"");
+    Debug.setStore(store.node("Debug"));
   }
 
   @Test
   public void testDebug() {
     Debug.set("testit", true);
-    assert( Debug.isSet("testit"));
+    assert (Debug.isSet("testit"));
 
     Debug.set("fart/allow", true);
-    //assert( Debug.isSet("fart.allow"));
-    assert( Debug.isSet("fart/allow"));
+    // assert( Debug.isSet("fart.allow"));
+    assert (Debug.isSet("fart/allow"));
 
     Debug.set("fart/allow", false);
-    assert( !Debug.isSet("fart/allow"));
+    assert (!Debug.isSet("fart/allow"));
 
-    assert( !Debug.isSet("fart/notSet"));
+    assert (!Debug.isSet("fart/notSet"));
     try {
-      assert( !store.nodeExists("fart"));
-      assert( store.nodeExists("/Debug/fart"));
-      assert( store.nodeExists("Debug/fart"));
+      assert (!store.nodeExists("fart"));
+      assert (store.nodeExists("/Debug/fart"));
+      assert (store.nodeExists("Debug/fart"));
     } catch (Exception e) {
       assert (false);
     }
@@ -59,11 +60,11 @@ public class TestDebug {
 
   @Test
   public void testMenu() {
-    Debug.constructMenu( new javax.swing.JMenu());
+    Debug.constructMenu(new javax.swing.JMenu());
     try {
       xstore.save();
     } catch (java.io.IOException e) {
-      assert(false);
+      assert (false);
     }
   }
 }

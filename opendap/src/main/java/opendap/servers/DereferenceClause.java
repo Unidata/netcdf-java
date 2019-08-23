@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -41,7 +41,6 @@ package opendap.servers;
 
 import java.util.*;
 import java.io.*;
-
 import opendap.dap.BaseType;
 
 /**
@@ -52,58 +51,51 @@ import opendap.dap.BaseType;
  * @author joew
  * @see ClauseFactory
  */
-public class DereferenceClause
-        extends AbstractClause
-        implements SubClause {
+public class DereferenceClause extends AbstractClause implements SubClause {
 
-    /**
-     * Creates a new DereferenceClause
-     */
-    protected DereferenceClause(String url)
-            throws DAP2ServerSideException {
-        this.url = url;
-        this.constant = true;
-        this.defined = true;
-        this.value = retrieve(url);
-        this.children = new ArrayList();
-    }
+  /**
+   * Creates a new DereferenceClause
+   */
+  protected DereferenceClause(String url) throws DAP2ServerSideException {
+    this.url = url;
+    this.constant = true;
+    this.defined = true;
+    this.value = retrieve(url);
+    this.children = new ArrayList();
+  }
 
-    public BaseType getValue() {
-        return value;
-    }
+  public BaseType getValue() {
+    return value;
+  }
 
-    public BaseType evaluate() {
-        return value;
-    }
+  public BaseType evaluate() {
+    return value;
+  }
 
-    public Clause getParent() {
-        return parent;
-    }
+  public Clause getParent() {
+    return parent;
+  }
 
-    public void setParent(Clause parent) {
-        this.parent = parent;
-    }
+  public void setParent(Clause parent) {
+    this.parent = parent;
+  }
 
-    public String getURL() {
-        return url;
-    }
+  public String getURL() {
+    return url;
+  }
 
-    protected BaseType retrieve(String url)
-            throws DAP2ServerSideException {
+  protected BaseType retrieve(String url) throws DAP2ServerSideException {
 
-        throw new DAP2ServerSideException(opendap.dap.DAP2Exception.UNKNOWN_ERROR, "dereferencing not supported");
-    }
+    throw new DAP2ServerSideException(opendap.dap.DAP2Exception.UNKNOWN_ERROR, "dereferencing not supported");
+  }
 
-    public void printConstraint(PrintWriter os)
-    {
-       os.print("*\"" + url + "\"");
-    }
+  public void printConstraint(PrintWriter os) {
+    os.print("*\"" + url + "\"");
+  }
 
-    protected String url;
-    protected Clause parent;
-    protected BaseType value;
+  protected String url;
+  protected Clause parent;
+  protected BaseType value;
 }
-
-
 
 

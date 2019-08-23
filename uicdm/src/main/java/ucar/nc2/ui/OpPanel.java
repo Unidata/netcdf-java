@@ -12,7 +12,6 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.ui.widget.StopButton;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -33,8 +32,7 @@ import javax.swing.JScrollPane;
  */
 public abstract class OpPanel extends JPanel {
 
-  static final org.slf4j.Logger logger
-      = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected PreferencesExt prefs;
   protected ComboBox cb;
@@ -63,8 +61,7 @@ public abstract class OpPanel extends JPanel {
   /**
    *
    */
-  public OpPanel(PreferencesExt prefs, String command, boolean addFileButton,
-      boolean addCoordButton) {
+  public OpPanel(PreferencesExt prefs, String command, boolean addFileButton, boolean addCoordButton) {
     this(prefs, command, true, addFileButton, addCoordButton);
   }
 
@@ -78,8 +75,8 @@ public abstract class OpPanel extends JPanel {
 
     cb = new ComboBox(prefs);
     cb.addActionListener(e -> {
-      logger.debug(" doit {} cmd={} when={} class={}", cb.getSelectedItem(),
-          e.getActionCommand(), e.getWhen(), getClass().getName());
+      logger.debug(" doit {} cmd={} when={} class={}", cb.getSelectedItem(), e.getActionCommand(), e.getWhen(),
+          getClass().getName());
 
       // eliminate multiple events from same selection by ignoring events occurring within 100ms of last one.
       if (eventOK && (e.getWhen() > lastEvent + 100)) {
@@ -112,8 +109,7 @@ public abstract class OpPanel extends JPanel {
           cb.setSelectedItem(filename);
         }
       };
-      BAMutil
-          .setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
+      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
     }
 
@@ -124,7 +120,7 @@ public abstract class OpPanel extends JPanel {
           addCoords = (Boolean) getValue(BAMutil.STATE);
           String tooltip = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
           coordButt.setToolTipText(tooltip);
-          //doit( cb.getSelectedItem()); // called from cb action listener
+          // doit( cb.getSelectedItem()); // called from cb action listener
         }
       };
       addCoords = prefs.getBoolean("coordState", false);
@@ -153,10 +149,8 @@ public abstract class OpPanel extends JPanel {
 
     detailTA = new TextHistoryPane();
     detailTA.setFont(new Font("Monospaced", Font.PLAIN, 12));
-    detailWindow = new IndependentWindow("Details", BAMutil.getImage("nj22/NetcdfUI"),
-        new JScrollPane(detailTA));
-    Rectangle bounds = (Rectangle) prefs
-        .getBean(ToolsUI.FRAME_SIZE, new Rectangle(200, 50, 500, 700));
+    detailWindow = new IndependentWindow("Details", BAMutil.getImage("nj22/NetcdfUI"), new JScrollPane(detailTA));
+    Rectangle bounds = (Rectangle) prefs.getBean(ToolsUI.FRAME_SIZE, new Rectangle(200, 50, 500, 700));
     detailWindow.setBounds(bounds);
   }
 
@@ -190,8 +184,7 @@ public abstract class OpPanel extends JPanel {
   /**
    *
    */
-  public void closeOpenFiles() throws IOException {
-  }
+  public void closeOpenFiles() throws IOException {}
 
   /**
    *

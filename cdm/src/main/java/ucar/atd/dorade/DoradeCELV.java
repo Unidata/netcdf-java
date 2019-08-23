@@ -30,14 +30,12 @@ class DoradeCELV extends DoradeDescriptor {
       System.out.println(this);
   }
 
-  protected DoradeCELV() {
-  }
+  protected DoradeCELV() {}
 
   public String toString() {
     String s = "CELV\n";
     s += "  number of cells: " + nCells + "\n";
-    s += "  ranges: " + ranges[0] + ", " + ranges[1] + ", ..., " +
-            ranges[nCells - 1];
+    s += "  ranges: " + ranges[0] + ", " + ranges[1] + ", ..., " + ranges[nCells - 1];
     return s;
   }
 

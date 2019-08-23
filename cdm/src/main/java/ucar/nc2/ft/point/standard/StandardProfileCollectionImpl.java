@@ -8,7 +8,6 @@ package ucar.nc2.ft.point.standard;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.annotation.Nonnull;
-
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.constants.FeatureType;
@@ -63,8 +62,8 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     StructureData profileData;
 
     StandardProfileFeature(Cursor cursor, double time, StructureData profileData) {
-      super(ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(), StandardProfileCollectionImpl.this.getAltUnits(),
-              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super(ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(),
+          StandardProfileCollectionImpl.this.getAltUnits(), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
 
       this.cursor = cursor;
       this.profileData = profileData;
@@ -78,9 +77,11 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
-            if (name == null) this.name = timeUnit.makeCalendarDate(this.time).toString();
+            if (name == null)
+              this.name = timeUnit.makeCalendarDate(this.time).toString();
           } else {
-            if (name == null) this.name = "empty";
+            if (name == null)
+              this.name = "empty";
             getInfo().nfeatures = 0;
           }
         } catch (IOException e) {
@@ -110,14 +111,16 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
     private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
 
-      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) {
+      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter,
+          Cursor cursor) {
         super(StandardProfileFeature.this, ft, timeUnit, structIter, cursor);
       }
 
       @Override
       protected boolean isMissing() throws IOException {
         // standard filter is to check for missing time data
-        if (super.isMissing()) return true;
+        if (super.isMissing())
+          return true;
 
         // must also check for missing z values
         return ft.isAltMissing(this.cursor);
@@ -193,11 +196,13 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
         if (!structIter.hasNext()) {
           structIter.close();
-          if (calcInfo != null) calcInfo.setComplete();
+          if (calcInfo != null)
+            calcInfo.setComplete();
           return false;
         }
         nextProfileData = structIter.next();
-        if (!ft.isFeatureMissing(nextProfileData)) break;
+        if (!ft.isFeatureMissing(nextProfileData))
+          break;
       }
       return true;
     }
@@ -222,37 +227,39 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  /* adapt a PointFeatureCollectionIterator to an Iterator<ProfileFeature>
-  // LOOK could generify
-  private class ProfileFeatureIterator implements Iterator<ProfileFeature> {
-    PointFeatureCollectionIterator pfIterator;
-
-    public ProfileFeatureIterator() {
-      try {
-        this.pfIterator = getPointFeatureCollectionIterator(-1);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public boolean hasNext() {
-      try {
-        return pfIterator.hasNext();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public ProfileFeature next() {
-      try {
-        return (ProfileFeature) pfIterator.next();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  } */
+  /*
+   * adapt a PointFeatureCollectionIterator to an Iterator<ProfileFeature>
+   * // LOOK could generify
+   * private class ProfileFeatureIterator implements Iterator<ProfileFeature> {
+   * PointFeatureCollectionIterator pfIterator;
+   * 
+   * public ProfileFeatureIterator() {
+   * try {
+   * this.pfIterator = getPointFeatureCollectionIterator(-1);
+   * } catch (IOException e) {
+   * throw new RuntimeException(e);
+   * }
+   * }
+   * 
+   * @Override
+   * public boolean hasNext() {
+   * try {
+   * return pfIterator.hasNext();
+   * } catch (IOException e) {
+   * throw new RuntimeException(e);
+   * }
+   * }
+   * 
+   * @Override
+   * public ProfileFeature next() {
+   * try {
+   * return (ProfileFeature) pfIterator.next();
+   * } catch (IOException e) {
+   * throw new RuntimeException(e);
+   * }
+   * }
+   * }
+   */
 
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +269,8 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
   @Override
   public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
+    if (localIterator == null)
+      resetIteration();
     return localIterator.hasNext();
   }
 

@@ -25,7 +25,7 @@ public interface InvCatalogConvertIF {
    * @param uri : the URI for the document.
    * @return an InvCatalog object
    */
-  public InvCatalogImpl parseXML( InvCatalogFactory fac, org.jdom2.Document doc, java.net.URI uri);
+  public InvCatalogImpl parseXML(InvCatalogFactory fac, org.jdom2.Document doc, java.net.URI uri);
 
   /**
    * Write the catalog as an XML document to the specified stream.
@@ -35,5 +35,6 @@ public interface InvCatalogConvertIF {
    * @throws java.io.IOException on error
    */
   public void writeXML(InvCatalogImpl catalog, java.io.OutputStream os) throws java.io.IOException;
+
   public void writeXML(InvCatalogImpl catalog, OutputStream os, boolean raw) throws IOException;
 }

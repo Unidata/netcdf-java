@@ -34,7 +34,7 @@ import ucar.unidata.util.test.TestDir;
 @Category(NeedsCdmUnitTest.class)
 public class TestNc4IospReading {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  
+
   private boolean showCompareResults = true;
   private int countNotOK = 0;
 
@@ -46,12 +46,11 @@ public class TestNc4IospReading {
     Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
   }
 
-    // i dont trust our code, compare with jni reading
+  // i dont trust our code, compare with jni reading
   @Test
   public void sectionStringsWithFilter() throws IOException, InvalidRangeException {
     String filename = TestH5.testDir + "StringsWFilter.h5";
-    try (NetcdfFile ncfile = NetcdfFile.open(filename);
-      NetcdfFile jni = openJni(filename)) {
+    try (NetcdfFile ncfile = NetcdfFile.open(filename); NetcdfFile jni = openJni(filename)) {
 
       Variable v = ncfile.findVariable("/sample/ids");
       assert v != null;
@@ -59,7 +58,7 @@ public class TestNc4IospReading {
       Assert.assertEquals(1, shape.length);
       Assert.assertEquals(3107, shape[0]);
 
-      Array dataSection = v.read("700:900:2");      // make sure to go acrross a chunk boundary
+      Array dataSection = v.read("700:900:2"); // make sure to go acrross a chunk boundary
       Assert.assertEquals(1, dataSection.getRank());
       Assert.assertEquals(101, dataSection.getShape()[0]);
 
@@ -80,14 +79,13 @@ public class TestNc4IospReading {
   @Test
   public void testReadSubsection() throws IOException, InvalidRangeException {
     String location = TestDir.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4";
-    try (NetcdfFile ncfile = NetcdfFile.open(location);
-         NetcdfFile jni = openJni(location)) {
+    try (NetcdfFile ncfile = NetcdfFile.open(location); NetcdfFile jni = openJni(location)) {
 
       jni.setLocation(location + " (jni)");
 
       // float salinity(time=1, depth=40, lat=667, lon=622);
       Array data1 = read(ncfile, "salinity", "0,11:12,22,:");
-      //NCdumpW.printArray(data1);
+      // NCdumpW.printArray(data1);
       System.out.printf("Read from jni%n");
       Array data2 = read(jni, "salinity", "0,11:12,22,:");
       assert MAMath.nearlyEquals(data1, data2);
@@ -98,7 +96,7 @@ public class TestNc4IospReading {
   private Array read(NetcdfFile ncfile, String vname, String section) throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable(vname);
     assert v != null;
-    return v.read(section) ;
+    return v.read(section);
   }
 
   @Test
@@ -115,7 +113,8 @@ public class TestNc4IospReading {
 
   // @Test
   public void timeRead() throws IOException {
-    String location = TestDir.cdmUnitTestDir+"/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";  // file not found
+    String location = TestDir.cdmUnitTestDir + "/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4"; // file not
+                                                                                                          // found
 
     try (NetcdfFile jni = openJni(location)) {
       Variable v = jni.findVariable("time");
@@ -146,27 +145,31 @@ public class TestNc4IospReading {
   }
 
   /*
-    ** Missing dim phony_dim_0 = 15; not in file2
-    ...
+   ** Missing dim phony_dim_0 = 15; not in file2
+   * ...
    */
   // @Test
   public void problem() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "formats\\hdf5\\OMI-Aura_L2G-OMCLDRRG_2007m0105_v003-2008m0105t101212.he5";
+    String filename =
+        TestDir.cdmUnitTestDir + "formats\\hdf5\\OMI-Aura_L2G-OMCLDRRG_2007m0105_v003-2008m0105t101212.he5";
     System.out.printf("***READ %s%n", filename);
     doCompare(filename, false, false, false);
   }
 
-  private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
+  private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData)
+      throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(location);
     NetcdfFile jni = openJni(location);
-    jni.setLocation(location+" (jni)");
-    //System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(), jni.getIosp().getClass().getName());
+    jni.setLocation(location + " (jni)");
+    // System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(),
+    // jni.getIosp().getClass().getName());
 
-    Formatter f= new Formatter();
+    Formatter f = new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
     boolean ok = tc.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
     System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
-    if (!ok ||(showCompare && showCompareResults)) System.out.printf("%s%n=====================================%n", f);
+    if (!ok || (showCompare && showCompareResults))
+      System.out.printf("%s%n=====================================%n", f);
     ncfile.close();
     jni.close();
     return ok;

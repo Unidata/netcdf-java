@@ -5,7 +5,6 @@
 package ucar.ma2;
 
 import ucar.nc2.util.Indent;
-
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,35 +18,38 @@ import java.util.Map;
  */
 
 public class StructureDataW extends StructureData {
-  protected final Map<StructureMembers.Member,Array> memberData;
+  protected final Map<StructureMembers.Member, Array> memberData;
 
   /**
    * Constructor.
    *
-   * @param members    StructureData is always contained in a StructureArray.
+   * @param members StructureData is always contained in a StructureArray.
    */
   public StructureDataW(StructureMembers members) {
     super(members);
-    memberData = new HashMap<>(2*members.getMembers().size());
+    memberData = new HashMap<>(2 * members.getMembers().size());
   }
 
   public StructureDataW(StructureMembers members, int size) {
     super(members);
-    memberData = new HashMap<>(2*size);
+    memberData = new HashMap<>(2 * size);
   }
 
-  /* Copy constructor.
-   *  This makes a local copy of all the data in the from StrucureData.
+  /*
+   * Copy constructor.
+   * This makes a local copy of all the data in the from StrucureData.
+   * 
    * @param from copy from here
    *
-  public StructureDataW (StructureData from) {
-    this(from.getStructureMembers());
-    List<StructureMembers.Member> members = getMembers();
-    for (StructureMembers.Member m : members) {
-      Array data = from.getArray(m);
-      setMemberData(m, data.copy());  // LOOK wont work for StructureData
-    }
-  } */
+   * public StructureDataW (StructureData from) {
+   * this(from.getStructureMembers());
+   * List<StructureMembers.Member> members = getMembers();
+   * for (StructureMembers.Member m : members) {
+   * Array data = from.getArray(m);
+   * setMemberData(m, data.copy()); // LOOK wont work for StructureData
+   * }
+   * }
+   */
 
   public void setMemberData(StructureMembers.Member m, Array data) {
     if (data == null)
@@ -65,11 +67,13 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get member data array of any type as an Array.
+   * 
    * @param m get data from this StructureMembers.Member.
    * @return Array values.
    */
   public Array getArray(StructureMembers.Member m) {
-    if (m == null) throw new IllegalArgumentException("member is null");
+    if (m == null)
+      throw new IllegalArgumentException("member is null");
     return memberData.get(m);
   }
 
@@ -93,6 +97,7 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get member data of type double.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type double.
    * @return scalar double value
    */
@@ -104,18 +109,20 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get java double array for a member of type double.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type double.
    * @return 1D java array of doubles
    */
   public double[] getJavaArrayDouble(StructureMembers.Member m) {
     Array data = getArray(m);
-    return (double []) data.getStorage();
+    return (double[]) data.getStorage();
   }
 
   ////////////////
 
   /**
    * Get member data of type float.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return scalar double value
    */
@@ -126,18 +133,20 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get java float array for a member of type float.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return 1D java array of floats
    */
   public float[] getJavaArrayFloat(StructureMembers.Member m) {
     Array data = getArray(m);
-    return (float []) data.getStorage();
+    return (float[]) data.getStorage();
   }
 
   /////
 
   /**
    * Get member data of type byte.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return scalar byte value
    */
@@ -148,18 +157,20 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get java byte array for a member of type byte.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return 1D java array of bytes
    */
   public byte[] getJavaArrayByte(StructureMembers.Member m) {
     Array data = getArray(m);
-    return (byte []) data.getStorage();
+    return (byte[]) data.getStorage();
   }
 
   /////
 
   /**
    * Get member data of type int.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type int.
    * @return scalar int value
    */
@@ -170,18 +181,20 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get java int array for a member of type int.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type int.
    * @return 1D java array of ints
    */
   public int[] getJavaArrayInt(StructureMembers.Member m) {
     Array data = getArray(m);
-    return (int []) data.getStorage();
+    return (int[]) data.getStorage();
   }
 
   /////
 
   /**
    * Get member data of type short.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type short.
    * @return scalar short value
    */
@@ -192,12 +205,13 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get java short array for a member of type short.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type short.
    * @return 1D java array of shorts
    */
   public short[] getJavaArrayShort(StructureMembers.Member m) {
     Array data = getArray(m);
-    return (short []) data.getStorage();
+    return (short[]) data.getStorage();
   }
 
 
@@ -205,6 +219,7 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get member data of type long.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type long.
    * @return scalar long value
    */
@@ -215,19 +230,21 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get java long array for a member of type long.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type long.
    * @return 1D java array of longs
    */
   public long[] getJavaArrayLong(StructureMembers.Member m) {
     Array data = getArray(m);
-    return (long []) data.getStorage();
+    return (long[]) data.getStorage();
   }
 
 
-/////
+  /////
 
   /**
    * Get member data of type char.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return scalar char value
    */
@@ -238,16 +255,18 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get java char array for a member of type char.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return 1D java array of chars
    */
   public char[] getJavaArrayChar(StructureMembers.Member m) {
     Array data = getArray(m);
-    return (char []) data.getStorage();
+    return (char[]) data.getStorage();
   }
 
   /**
    * Get String value, from rank 0 String or rank 1 char member array.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type char or String.
    */
   public String getScalarString(StructureMembers.Member m) {
@@ -260,7 +279,8 @@ public class StructureDataW extends StructureData {
       char[] ba = getJavaArrayChar(m);
       int count = 0;
       while (count < ba.length) {
-        if (0 == ba[count]) break;
+        if (0 == ba[count])
+          break;
         count++;
       }
       return new String(ba, 0, count);
@@ -274,23 +294,24 @@ public class StructureDataW extends StructureData {
       String[] result = new String[n];
       for (int i = 0; i < result.length; i++)
         result[i] = (String) data.getObject(i);
-     return result;
+      return result;
 
     } else if (m.getDataType() == DataType.CHAR) {
       ArrayChar data = (ArrayChar) getArray(m);
       ArrayChar.StringIterator iter = data.getStringIterator();
-      String[] result = new String[ iter.getNumElems()];
+      String[] result = new String[iter.getNumElems()];
       int count = 0;
       while (iter.hasNext())
-        result[count++] =  iter.next();
+        result[count++] = iter.next();
       return result;
     }
 
-    throw new IllegalArgumentException("getJavaArrayString: not String DataType :"+m.getDataType());
+    throw new IllegalArgumentException("getJavaArrayString: not String DataType :" + m.getDataType());
   }
 
   /**
    * Get member data of type Structure.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return StructureData
    */
@@ -301,6 +322,7 @@ public class StructureDataW extends StructureData {
 
   /**
    * Get member data of type Structure.
+   * 
    * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return StructureData
    */

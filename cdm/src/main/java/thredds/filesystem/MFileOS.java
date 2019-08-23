@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -34,7 +34,6 @@ package thredds.filesystem;
 
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 
@@ -49,13 +48,16 @@ public class MFileOS implements MFile {
 
   /**
    * Make MFileOS if file exists, otherwise return null
+   * 
    * @param filename name of the existing file.
    * @return MFileOS or null
    */
   static public MFileOS getExistingFile(String filename) {
-    if (filename == null) return null;
+    if (filename == null)
+      return null;
     File file = new File(filename);
-    if (file.exists()) return new MFileOS(file);
+    if (file.exists())
+      return new MFileOS(file);
     return null;
   }
 
@@ -106,10 +108,10 @@ public class MFileOS implements MFile {
 
   @Override
   public int compareTo(MFile o) {
-    return getPath().compareTo( o.getPath());
+    return getPath().compareTo(o.getPath());
   }
 
-    @Override
+  @Override
   public Object getAuxInfo() {
     return auxInfo;
   }
@@ -121,9 +123,7 @@ public class MFileOS implements MFile {
 
   @Override
   public String toString() {
-    String sb = "MFileOS{" + "file=" + file.getPath()
-        + ", lastModified=" + lastModified
-        + '}';
+    String sb = "MFileOS{" + "file=" + file.getPath() + ", lastModified=" + lastModified + '}';
     return sb;
   }
 

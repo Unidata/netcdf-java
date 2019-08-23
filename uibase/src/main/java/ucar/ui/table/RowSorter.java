@@ -20,8 +20,9 @@ package ucar.ui.table;
 
 public interface RowSorter {
 
-  /** May make a copy of the Array, or return the original, but must not copy the
-   *  rows themselves.
+  /**
+   * May make a copy of the Array, or return the original, but must not copy the
+   * rows themselves.
    */
   java.util.ArrayList sort(int sortCol, boolean reverse, java.util.ArrayList docs);
 

@@ -4,7 +4,9 @@
  */
 package ucar.ui.event;
 
-/** Listeners for ActionValueEvents.
+/**
+ * Listeners for ActionValueEvents.
+ * 
  * @author John Caron
  */
 public interface ActionValueListener extends java.util.EventListener {

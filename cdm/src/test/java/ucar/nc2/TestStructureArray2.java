@@ -11,7 +11,6 @@ import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UtilsTestStructureArray;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -22,7 +21,7 @@ public class TestStructureArray2 extends TestCase {
 
   UtilsTestStructureArray test;
 
-  public TestStructureArray2( String name) {
+  public TestStructureArray2(String name) {
     super(name);
     test = new UtilsTestStructureArray();
   }
@@ -34,34 +33,34 @@ public class TestStructureArray2 extends TestCase {
     Structure v = (Structure) ncfile.findVariable("record");
     assert v != null;
 
-    assert( v.getDataType() == DataType.STRUCTURE);
+    assert (v.getDataType() == DataType.STRUCTURE);
 
     Array data = v.read();
-    assert( data instanceof ArrayStructure);
-    assert( data instanceof ArrayStructureBB);
-    assert(data.getElementType() == StructureData.class);
+    assert (data instanceof ArrayStructure);
+    assert (data instanceof ArrayStructureBB);
+    assert (data.getElementType() == StructureData.class);
 
-    test.testArrayStructure( (ArrayStructure) data);
+    test.testArrayStructure((ArrayStructure) data);
 
     ncfile.close();
   }
 
   public void testMA() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = TestDir.openFileLocal("jan.nc");
-    NetcdfDataset ncd = new NetcdfDataset( ncfile);
+    NetcdfDataset ncd = new NetcdfDataset(ncfile);
     Dimension dim = ncd.findDimension("time");
     assert dim != null;
 
-    Structure p = new ucar.nc2.dataset.StructurePseudoDS( ncd, null, "Psuedo", null, dim);
+    Structure p = new ucar.nc2.dataset.StructurePseudoDS(ncd, null, "Psuedo", null, dim);
 
-    assert( p.getDataType() == DataType.STRUCTURE);
+    assert (p.getDataType() == DataType.STRUCTURE);
 
     Array data = p.read();
-    assert( data instanceof ArrayStructure);
-    assert( data instanceof ArrayStructureMA);
-    assert(data.getElementType() == StructureData.class);
+    assert (data instanceof ArrayStructure);
+    assert (data instanceof ArrayStructureMA);
+    assert (data.getElementType() == StructureData.class);
 
-    test.testArrayStructure( (ArrayStructure) data);
+    test.testArrayStructure((ArrayStructure) data);
 
     ncfile.close();
   }

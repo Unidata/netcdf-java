@@ -39,7 +39,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    if (!readAndTest(raf, NcStream.MAGIC_START)) return false; // must start with these 4 bytes
+    if (!readAndTest(raf, NcStream.MAGIC_START))
+      return false; // must start with these 4 bytes
     byte[] b = new byte[4];
     raf.readFully(b);
     return test(b, NcStream.MAGIC_HEADER) || test(b, NcStream.MAGIC_DATA); // immed followed by one of these
@@ -89,12 +90,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
 
     @Override
     public String toString() {
-      return "size=" + size +
-              ", filePos=" + filePos +
-              ", section=" + section +
-              ", nelems=" + nelems +
-              ", isVlen=" + isVlen +
-              ", isDeflate=" + isDeflate;
+      return "size=" + size + ", filePos=" + filePos + ", section=" + section + ", nelems=" + nelems + ", isVlen="
+          + isVlen + ", isDeflate=" + isDeflate;
     }
   }
 
@@ -123,7 +120,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
           IO.copy(in, bout);
           byte[] resultb = bout.toByteArray();
           result = ByteBuffer.wrap(resultb); // look - an extra copy !! override ByteArrayOutputStream to fix
-          if (debug) System.out.printf(" uncompressedLen header=%d actual=%d%n", dataStorage.uncompressedLen , resultb.length);
+          if (debug)
+            System.out.printf(" uncompressedLen header=%d actual=%d%n", dataStorage.uncompressedLen, resultb.length);
           result.order(dataStorage.bo);
 
         } else {
@@ -133,10 +131,11 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       }
     }
 
-    if (result == null) return null;
+    if (result == null)
+      return null;
 
     return Array.factory(v.getDataType(), v.getShape(), result);
-    //return dataArray.sectionNoReduce(section.getRanges());
+    // return dataArray.sectionNoReduce(section.getRanges());
   }
 
   private Array readStructureData(Structure v, Section section, DataStorage dataStorage) {
@@ -145,7 +144,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     StructureMembers sm = v.makeStructureMembers();
     ArrayStructureBB.setOffsets(sm);
     // StructureMembers members, int[] shape, ByteBuffer bbuffer, int offset
-    ArrayStructureBB all =  new ArrayStructureBB(sm, v.getShape(), bb, 0);
+    ArrayStructureBB all = new ArrayStructureBB(sm, v.getShape(), bb, 0);
     return ArrayStructureBBsection.factory(all, section);
   }
 
@@ -163,8 +162,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       result[elem] = dataArray;
     }
     // return Array.makeObjectArray(v.getDataType(), result[0].getClass(), new int[]{nelems}, result);
-    return Array.makeVlenArray(new int[]{nelems}, result);
-    //return dataArray.section(section.getRanges());
+    return Array.makeVlenArray(new int[] {nelems}, result);
+    // return dataArray.section(section.getRanges());
   }
 
   private int readVInt(RandomAccessFile raf) throws IOException {
@@ -184,9 +183,11 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   }
 
   private boolean test(byte[] bread, byte[] test) {
-    if (bread.length != test.length) return false;
+    if (bread.length != test.length)
+      return false;
     for (int i = 0; i < bread.length; i++)
-      if (bread[i] != test[i]) return false;
+      if (bread[i] != test[i])
+        return false;
     return true;
   }
 
@@ -205,7 +206,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       }
       throw new IOException("Data corrupted on " + raf.getLocation());
     }
-    if (ncm != null) ncm.add(new NcsMess(pos, 4, "MAGIC_START"));
+    if (ncm != null)
+      ncm.add(new NcsMess(pos, 4, "MAGIC_START"));
 
     pos = raf.getFilePointer();
     if (!readAndTest(raf, NcStream.MAGIC_HEADER)) {
@@ -215,7 +217,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       }
       throw new IOException("Data corrupted on " + ncfile.getLocation());
     }
-    if (ncm != null) ncm.add(new NcsMess(pos, 4,  "MAGIC_HEADER"));
+    if (ncm != null)
+      ncm.add(new NcsMess(pos, 4, "MAGIC_HEADER"));
 
     // assume for the moment it always starts with one header message
     pos = raf.getFilePointer();
@@ -223,7 +226,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     byte[] m = new byte[msize];
     raf.readFully(m);
     NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
-    if (ncm != null) ncm.add(new NcsMess(pos, msize, proto));
+    if (ncm != null)
+      ncm.add(new NcsMess(pos, msize, proto));
     version = proto.getVersion();
 
     NcStreamProto.Group root = proto.getRoot();
@@ -236,7 +240,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       byte[] b = new byte[4];
       raf.readFully(b);
       if (test(b, NcStream.MAGIC_END)) {
-        if (ncm != null) ncm.add(new NcsMess(pos, 4, "MAGIC_END"));
+        if (ncm != null)
+          ncm.add(new NcsMess(pos, 4, "MAGIC_END"));
         break;
       }
 
@@ -245,15 +250,18 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         byte[] dp = new byte[esize];
         raf.readFully(dp);
         NcStreamProto.Error error = NcStreamProto.Error.parseFrom(dp);
-        if (ncm != null) ncm.add(new NcsMess(pos, esize, error.getMessage()));
+        if (ncm != null)
+          ncm.add(new NcsMess(pos, esize, error.getMessage()));
         break; // assume broken now ?
       }
 
       if (!test(b, NcStream.MAGIC_DATA)) {
-        if (ncm != null) ncm.add(new NcsMess(pos, 4, "MAGIC_DATA missing - abort"));
+        if (ncm != null)
+          ncm.add(new NcsMess(pos, 4, "MAGIC_DATA missing - abort"));
         break;
       }
-      if (ncm != null) ncm.add(new NcsMess(pos, 4, "MAGIC_DATA"));
+      if (ncm != null)
+        ncm.add(new NcsMess(pos, 4, "MAGIC_DATA"));
 
       // data messages
       pos = raf.getFilePointer();
@@ -267,8 +275,10 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       if (v == null) {
         System.out.printf(" ERR cant find var %s%n%s%n", dproto.getVarName(), dproto);
       }
-      if (debug) System.out.printf(" dproto = %s for %s%n", dproto, v.getShortName());
-      if (ncm != null) ncm.add(new NcsMess(pos, psize, dproto));
+      if (debug)
+        System.out.printf(" dproto = %s for %s%n", dproto, v.getShortName());
+      if (ncm != null)
+        ncm.add(new NcsMess(pos, psize, dproto));
       List<DataStorage> storage;
       if (v != null) {
         storage = (List<DataStorage>) v.getSPobject(); // LOOK could be an in memory Rtree using section
@@ -288,7 +298,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         NcStreamProto.StructureData sdata = NcStreamProto.StructureData.parseFrom(m);
         DataStorage dataStorage = new DataStorage(msize, pos, dproto);
         dataStorage.sdata = sdata;
-        if (ncm != null) ncm.add(new NcsMess(dataStorage.filePos, msize, sdata));
+        if (ncm != null)
+          ncm.add(new NcsMess(dataStorage.filePos, msize, sdata));
         storage.add(dataStorage);
 
       } else if (dproto.getVdata()) {
@@ -302,13 +313,15 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         }
         dataStorage.nelems = nelems;
         dataStorage.size = totalSize;
-        if (ncm != null) ncm.add(new NcsMess(dataStorage.filePos, totalSize, dataStorage));
+        if (ncm != null)
+          ncm.add(new NcsMess(dataStorage.filePos, totalSize, dataStorage));
         storage.add(dataStorage);
 
-      } else {  // regular data
+      } else { // regular data
         int dsize = readVInt(raf);
         DataStorage dataStorage = new DataStorage(dsize, raf.getFilePointer(), dproto);
-        if (ncm != null) ncm.add(new NcsMess(dataStorage.filePos, dsize, dataStorage));
+        if (ncm != null)
+          ncm.add(new NcsMess(dataStorage.filePos, dsize, dataStorage));
         storage.add(dataStorage);
         raf.skipBytes(dsize);
 
@@ -335,8 +348,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         Section s = NcStream.decodeSection(dataMess.getSection());
         if (s != null)
           this.nelems = (int) s.computeSize();
-      }
-      else if (what instanceof DataStorage)
+      } else if (what instanceof DataStorage)
         this.nelems = ((DataStorage) what).nelems;
     }
 
@@ -358,7 +370,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         IO.copy(bin, dout);
         dout.close();
         int deflatedSize = bout.size();
-        float ratio = ((float)data.length) / deflatedSize;
+        float ratio = ((float) data.length) / deflatedSize;
         f.format("Original size = %d bytes, deflated = %d bytes ratio = %f %n", data.length, deflatedSize, ratio);
         return f.toString();
 

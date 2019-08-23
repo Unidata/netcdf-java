@@ -10,7 +10,6 @@ package ucar.nc2.iosp.mcidas;
 import edu.wisc.ssec.mcidas.AREAnav;
 import edu.wisc.ssec.mcidas.AreaFile;
 import edu.wisc.ssec.mcidas.McIDASException;
-
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Parameter;
@@ -130,7 +129,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     anav.setMag(1, 1);
     lines = dir[8];
     elements = dir[9];
-    anav.setFlipLineCoordinates(dir[8]);  // invert Y axis coordinates
+    anav.setFlipLineCoordinates(dir[8]); // invert Y axis coordinates
 
     addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
     addParameter(new Parameter(ATTR_AREADIR, makeDoubleArray(dir)));
@@ -168,29 +167,31 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     return auxBlock;
   }
 
-    /*MACROBODY
-      latLonToProj {} {
-        double[][] xy = anav.toLinEle(new double[][] {{fromLat},{fromLon}});
-        toX = xy[0][0];
-        toY = xy[1][0];
-      }
+  /*
+   * MACROBODY
+   * latLonToProj {} {
+   * double[][] xy = anav.toLinEle(new double[][] {{fromLat},{fromLon}});
+   * toX = xy[0][0];
+   * toY = xy[1][0];
+   * }
+   * 
+   * projToLatLon {} {
+   * double[][] latlon = anav.toLatLon(new double[][] {{fromX},{fromY}});
+   * toLat = latlon[0][0];
+   * toLon = latlon[1][0];
+   * }
+   * 
+   * MACROBODY
+   */
+  /* BEGINGENERATED */
 
-      projToLatLon {} {
-        double[][] latlon = anav.toLatLon(new double[][] {{fromX},{fromY}});
-        toLat = latlon[0][0];
-        toLon = latlon[1][0];
-      }
-
-    MACROBODY*/
-    /*BEGINGENERATED*/
-
-    /*
-    Note this section has been generated using the convert.tcl script.
-    This script, run as:
-    tcl convert.tcl McIDASAreaProjection.java
-    takes the actual projection conversion code defined in the MACROBODY
-    section above and generates the following 6 methods
-    */
+  /*
+   * Note this section has been generated using the convert.tcl script.
+   * This script, run as:
+   * tcl convert.tcl McIDASAreaProjection.java
+   * takes the actual projection conversion code defined in the MACROBODY
+   * section above and generates the following 6 methods
+   */
 
 
   /**
@@ -206,8 +207,9 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     double fromLon = latLon.getLongitude();
 
 
-    double[][] xy = anav.toLinEle(new double[][]{{fromLat}, {fromLon}});
-    if (xy == null) return null;
+    double[][] xy = anav.toLinEle(new double[][] {{fromLat}, {fromLon}});
+    if (xy == null)
+      return null;
     toX = xy[0][0];
     toY = xy[1][0];
 
@@ -219,7 +221,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
@@ -229,7 +231,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     double fromY = world.getY();
 
 
-    double[][] latlon = anav.toLatLon(new double[][]{{fromX}, {fromY}});
+    double[][] latlon = anav.toLatLon(new double[][] {{fromX}, {fromY}});
     toLat = latlon[0][0];
     toLon = latlon[1][0];
 
@@ -241,12 +243,12 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
@@ -255,8 +257,9 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     float[] fromLatA = from[latIndex];
     float[] fromLonA = from[lonIndex];
 
-    float[][] xy = anav.toLinEle(new float[][]{fromLatA, fromLonA});
-    if (xy == null) return null;
+    float[][] xy = anav.toLinEle(new float[][] {fromLatA, fromLonA});
+    if (xy == null)
+      return null;
     to[INDEX_X] = xy[0];
     to[INDEX_Y] = xy[1];
     return to;
@@ -266,17 +269,17 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
   public float[][] projToLatLon(float[][] from, float[][] to) {
     float[] fromXA = from[INDEX_X];
     float[] fromYA = from[INDEX_Y];
-    float[][] latlon = anav.toLatLon(new float[][]{fromXA, fromYA});
+    float[][] latlon = anav.toLatLon(new float[][] {fromXA, fromYA});
     to[INDEX_LAT] = latlon[0];
     to[INDEX_LON] = latlon[1];
     return to;
@@ -285,12 +288,12 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
@@ -299,8 +302,9 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     double[] fromLatA = from[latIndex];
     double[] fromLonA = from[lonIndex];
 
-    double[][] xy = anav.toLinEle(new double[][]{fromLatA, fromLonA});
-    if (xy == null) return null;
+    double[][] xy = anav.toLinEle(new double[][] {fromLatA, fromLonA});
+    if (xy == null)
+      return null;
     to[INDEX_X] = xy[0];
     to[INDEX_Y] = xy[1];
     return to;
@@ -310,23 +314,23 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
   public double[][] projToLatLon(double[][] from, double[][] to) {
     double[] fromXA = from[INDEX_X];
     double[] fromYA = from[INDEX_Y];
-    double[][] latlon = anav.toLatLon(new double[][]{fromXA, fromYA});
+    double[][] latlon = anav.toLatLon(new double[][] {fromXA, fromYA});
     to[INDEX_LAT] = latlon[0];
     to[INDEX_LON] = latlon[1];
     return to;
   }
 
-    /*ENDGENERATED*/
+  /* ENDGENERATED */
 
   /**
    * Get the bounds for this image
@@ -354,42 +358,47 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
       return true;
     }
     // opposite signed X values, larger then 5000 km
-    return (pt1.getX() * pt2.getX() < 0)
-            && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
+    return (pt1.getX() * pt2.getX() < 0) && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
   }
 
   /*
    * Determines whether or not the <code>Object</code> in question is
-   * the same as this <code>McIDASAreaProjection</code>.  The specified
+   * the same as this <code>McIDASAreaProjection</code>. The specified
    * <code>Object</code> is equal to this <CODE>McIDASAreaProjection</CODE>
    * if it is an instance of <CODE>McIDASAreaProjection</CODE> and it has
    * the same navigation module and default map area as this one.
    *
    * @param obj the Object in question
+   * 
    * @return true if they are equal
    *
-  public boolean equals(Object obj) {
-    if (!(obj instanceof McIDASAreaProjection)) {
-      return false;
-    }
-    McIDASAreaProjection that = (McIDASAreaProjection) obj;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
-    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
-
-    return (this == that)
-            || (anav.equals(that.anav) && (this.lines == that.lines)
-            && (this.elements == that.elements));
-  }  */
+   * public boolean equals(Object obj) {
+   * if (!(obj instanceof McIDASAreaProjection)) {
+   * return false;
+   * }
+   * McIDASAreaProjection that = (McIDASAreaProjection) obj;
+   * if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+   * if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+   * 
+   * return (this == that)
+   * || (anav.equals(that.anav) && (this.lines == that.lines)
+   * && (this.elements == that.elements));
+   * }
+   */
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     McIDASAreaProjection that = (McIDASAreaProjection) o;
 
-    if (elements != that.elements) return false;
-    if (lines != that.lines) return false;
+    if (elements != that.elements)
+      return false;
+    if (lines != that.lines)
+      return false;
     return anav.equals(that.anav);
 
   }

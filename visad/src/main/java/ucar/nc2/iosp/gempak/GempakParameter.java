@@ -10,7 +10,7 @@ import ucar.unidata.util.StringUtil2;
 
 
 /**
- * Class which represents a GEMPAK parameter.  Add on decimal scale
+ * Class which represents a GEMPAK parameter. Add on decimal scale
  * and numeric flag to the superclass.
  */
 
@@ -38,15 +38,14 @@ public class GempakParameter extends GridParameter {
   /**
    * Create a new GEMPAK parameter
    *
-   * @param number      parameter number
-   * @param name        name
+   * @param number parameter number
+   * @param name name
    * @param description description
-   * @param unit        of parameter
-   * @param scale       decimal (10E*) scaling factor
-   * @param isNumeric   flag for numeric
+   * @param unit of parameter
+   * @param scale decimal (10E*) scaling factor
+   * @param isNumeric flag for numeric
    */
-  public GempakParameter(int number, String name, String description,
-                         String unit, int scale, boolean isNumeric) {
+  public GempakParameter(int number, String name, String description, String unit, int scale, boolean isNumeric) {
     super(number, name, description, unit);
     decimalScale = scale;
     this.isNumeric = isNumeric;

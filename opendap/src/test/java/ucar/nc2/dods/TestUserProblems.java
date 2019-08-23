@@ -14,7 +14,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DebugFlagsImpl;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -36,7 +35,8 @@ public class TestUserProblems {
   @org.junit.Test
   public void testGrid() throws IOException, InvalidRangeException {
     System.setProperty("httpservices.urlencode", "false");
-    try (DODSNetcdfFile dodsfile = TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods")) {
+    try (DODSNetcdfFile dodsfile =
+        TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods")) {
 
       Variable dataV = null;
 
@@ -62,7 +62,7 @@ public class TestUserProblems {
     // This server is running TDS v4.2, and there appears to be an issue with encoded urls?
     System.setProperty("httpservices.urlencode", "false");
     DODSNetcdfFile.setDebugFlags(new DebugFlagsImpl("DODS/serverCall"));
-  		/* The temperature is recorded */
+    /* The temperature is recorded */
     String testfile = "http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2";
     try (NetcdfFile ncfile = NetcdfDataset.openFile(testfile, null)) {
       System.out.printf("The GRIB file %s, temperature is displayed.", testfile);
@@ -80,11 +80,13 @@ public class TestUserProblems {
         System.out.print(" ");
       }
 
-      int[] origin = new int[4];//4-Dimensional
+      int[] origin = new int[4];// 4-Dimensional
 
-  			/*Till here the code works fine. I get the error
-  			 * opendap.dap.DAP2Exception: Method failed:HTTP/1.1 403 Forbidden
-  			 * for the below read() method. */
+      /*
+       * Till here the code works fine. I get the error
+       * opendap.dap.DAP2Exception: Method failed:HTTP/1.1 403 Forbidden
+       * for the below read() method.
+       */
       ArrayFloat.D4 Temperature = (ArrayFloat.D4) V2.read(origin, shape).reduce();
 
     } catch (IOException ioe) {

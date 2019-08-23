@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -39,20 +38,21 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
    * Check if this is a POINT datatype. If so, a TableAnalyser is used to analyze its structure.
    * The TableAnalyser is reused when the dataset is opened.
    * <ol>
-   * <li> Can handle ANY_POINT FeatureType.
-   * <li> Must have time, lat, lon axis (from CoordSysBuilder)
-   * <li> Call TableAnalyzer.factory() to create a TableAnalyzer
-   * <li> TableAnalyzer must agree it can handle the requested FeatureType
+   * <li>Can handle ANY_POINT FeatureType.
+   * <li>Must have time, lat, lon axis (from CoordSysBuilder)
+   * <li>Call TableAnalyzer.factory() to create a TableAnalyzer
+   * <li>TableAnalyzer must agree it can handle the requested FeatureType
    * </ol>
    *
    * @param wantFeatureType desired feature type, null means FeatureType.ANY_POINT
-   * @param ds              analyse this dataset
-   * @param errlog          log error messages here (may not be null)
+   * @param ds analyse this dataset
+   * @param errlog log error messages here (may not be null)
    * @return if successful, return non-null. This object is then passed back into open(), so analysis can be reused.
    */
   @Override
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
-    if (wantFeatureType == null) wantFeatureType = FeatureType.ANY_POINT;
+    if (wantFeatureType == null)
+      wantFeatureType = FeatureType.ANY_POINT;
     if (wantFeatureType != FeatureType.ANY_POINT) {
       if (!wantFeatureType.isPointFeatureType())
         return null;
@@ -66,11 +66,11 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       boolean hasLat = false;
       boolean hasLon = false;
       for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-        if (axis.getAxisType() == AxisType.Time) //&& (axis.getRank() == 1))
+        if (axis.getAxisType() == AxisType.Time) // && (axis.getRank() == 1))
           hasTime = true;
-        if (axis.getAxisType() == AxisType.Lat) //&& (axis.getRank() == 1))
+        if (axis.getAxisType() == AxisType.Lat) // && (axis.getRank() == 1))
           hasLat = true;
-        if (axis.getAxisType() == AxisType.Lon) //&& (axis.getRank() == 1))
+        if (axis.getAxisType() == AxisType.Lon) // && (axis.getRank() == 1))
           hasLon = true;
       }
 
@@ -100,7 +100,8 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   }
 
   @Override
-  public FeatureDataset open(FeatureType wantFeatureType, NetcdfDataset ncd, Object analyser, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+  public FeatureDataset open(FeatureType wantFeatureType, NetcdfDataset ncd, Object analyser,
+      ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     if (analyser == null)
       analyser = TableAnalyzer.factory(null, wantFeatureType, ncd);
 
@@ -109,14 +110,14 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
 
   @Override
   public FeatureType[] getFeatureTypes() {
-    return new FeatureType[]{FeatureType.ANY_POINT};
+    return new FeatureType[] {FeatureType.ANY_POINT};
   }
 
   /////////////////////////////////////////////////////////////////////
 
   static class PointDatasetStandard extends PointDatasetImpl {
     private TableAnalyzer analyser;
-    //private DateUnit timeUnit;
+    // private DateUnit timeUnit;
 
     PointDatasetStandard(FeatureType wantFeatureType, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) {
       super(ds, null);
@@ -130,7 +131,8 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         try {
           timeUnit = flatTable.getTimeUnit();
         } catch (Exception e) {
-          if (null != errlog) errlog.format("%s%n", e.getMessage());
+          if (null != errlog)
+            errlog.format("%s%n", e.getMessage());
           timeUnit = CalendarDateUnit.unixDateUnit;
         }
 
@@ -183,7 +185,9 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       return super.getImplementationName();
     }
 
-    TableAnalyzer getTableAnalyzer() { return analyser; } 
+    TableAnalyzer getTableAnalyzer() {
+      return analyser;
+    }
   }
 
 }

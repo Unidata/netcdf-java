@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -25,7 +24,9 @@ import java.util.zip.Deflater;
 public class GribData {
   private static Logger logger = LoggerFactory.getLogger(GribData.class);
 
-  public enum InterpolationMethod {none, cubic, linear}
+  public enum InterpolationMethod {
+    none, cubic, linear
+  }
 
   private static GribData.InterpolationMethod useInterpolationMethod = GribData.InterpolationMethod.linear; // default
 
@@ -60,48 +61,50 @@ public class GribData {
   }
 
   /*
-  Code table 11 – Flag
-  Bit No. Value Meaning
-  1 0 Grid-point data
-    1 Spherical harmonic coefficients
-  2 0 Simple packing
-    1 Complex or second-order packing
-  3 0 Floating point values (in the original data) are represented
-    1 Integer values (in the original data) are represented
-  4 0 No additional flags at octet 14
-    1 Octet 14 contains additional flag bits
-
-  The following gives the meaning of the bits in octet 14 ONLY if bit 4 is set to 1. Otherwise octet 14 contains
-  regular binary data.
-  Bit No. Value Meaning
-  5 Reserved – set to zero
-  6 0 Single datum at each grid point
-    1 Matrix of values at each grid point
-  7 0 No secondary bit-maps
-    1 Secondary bit-maps present
-  8 0 Second-order values constant width
-    1 Second-order values different widths
-  9–12 Reserved for future use
-  Notes:
-  (1) Bit 4 shall be set to 1 to indicate that bits 5 to 12 are contained in octet 14 of the Binary data section.
-  (2) Bit 3 shall be set to 1 to indicate that the data represented are integer values; where integer values are
-  represented, any reference values, if not zero, should be rounded to integer before being applied.
-  (3) Where secondary bit-maps are present in the data (used in association with second-order packing and, optionally,
-  with a matrix of values at each point), this shall be indicated by setting bit 7 to 1.
-  (4) The indicated meaning of bit 6 shall be retained in anticipation of the future reintroduction of a system to define a
-  matrix of values at each grid point.
-  ____________
+   * Code table 11 – Flag
+   * Bit No. Value Meaning
+   * 1 0 Grid-point data
+   * 1 Spherical harmonic coefficients
+   * 2 0 Simple packing
+   * 1 Complex or second-order packing
+   * 3 0 Floating point values (in the original data) are represented
+   * 1 Integer values (in the original data) are represented
+   * 4 0 No additional flags at octet 14
+   * 1 Octet 14 contains additional flag bits
+   * 
+   * The following gives the meaning of the bits in octet 14 ONLY if bit 4 is set to 1. Otherwise octet 14 contains
+   * regular binary data.
+   * Bit No. Value Meaning
+   * 5 Reserved – set to zero
+   * 6 0 Single datum at each grid point
+   * 1 Matrix of values at each grid point
+   * 7 0 No secondary bit-maps
+   * 1 Secondary bit-maps present
+   * 8 0 Second-order values constant width
+   * 1 Second-order values different widths
+   * 9–12 Reserved for future use
+   * Notes:
+   * (1) Bit 4 shall be set to 1 to indicate that bits 5 to 12 are contained in octet 14 of the Binary data section.
+   * (2) Bit 3 shall be set to 1 to indicate that the data represented are integer values; where integer values are
+   * represented, any reference values, if not zero, should be rounded to integer before being applied.
+   * (3) Where secondary bit-maps are present in the data (used in association with second-order packing and,
+   * optionally,
+   * with a matrix of values at each point), this shall be indicated by setting bit 7 to 1.
+   * (4) The indicated meaning of bit 6 shall be retained in anticipation of the future reintroduction of a system to
+   * define a
+   * matrix of values at each grid point.
+   * ____________
    */
 
   public static class Info {
-    public int bitmapLength;     // length of the bitmap section if any
-    public long msgLength;       // length of the entire GRIB message
-    public long dataLength;       // length of the data section
-    public int ndataPoints;      // for Grib1, gds.getNumberPoints; for GRIB2, n data points stored
-    public int nPoints;         //  number of points in the GRID
+    public int bitmapLength; // length of the bitmap section if any
+    public long msgLength; // length of the entire GRIB message
+    public long dataLength; // length of the data section
+    public int ndataPoints; // for Grib1, gds.getNumberPoints; for GRIB2, n data points stored
+    public int nPoints; // number of points in the GRID
     public float referenceValue;
     public int binaryScaleFactor, decimalScaleFactor, numberOfBits;
-    public int originalType;  // code table 5.1
+    public int originalType; // code table 5.1
 
     // GRIB-1 only
     public int flag;
@@ -119,7 +122,7 @@ public class GribData {
     }
 
     public boolean hasOctet14() {
-      return GribNumbers.testGribBitIsSet(flag,  4);
+      return GribNumbers.testGribBitIsSet(flag, 4);
     }
 
     public String getGridPointS() {
@@ -137,21 +140,25 @@ public class GribData {
     private float DD, EE;
     private int missing_value;
     private boolean init = false;
+
     public float convert(int val) {
       if (!init) {
         DD = (float) java.lang.Math.pow((double) 10, decimalScaleFactor);
-        EE = (float) java.lang.Math.pow( 2.0, binaryScaleFactor);
-        missing_value = (2 << numberOfBits - 1) - 1;       // all ones - reserved for missing value
+        EE = (float) java.lang.Math.pow(2.0, binaryScaleFactor);
+        missing_value = (2 << numberOfBits - 1) - 1; // all ones - reserved for missing value
         init = true;
       }
 
-      if (val == missing_value) return Float.NaN;
+      if (val == missing_value)
+        return Float.NaN;
       return (referenceValue + val * EE) / DD;
     }
   }
 
-  /** This reports how well different compression schemes would work on the specific data.
-   * Should be renamed */
+  /**
+   * This reports how well different compression schemes would work on the specific data.
+   * Should be renamed
+   */
   public static void calcScaleOffset(GribData.Bean bean1, Formatter f) {
     float[] data;
     try {
@@ -166,10 +173,10 @@ public class GribData {
     // "If the packed values are intended to be interpreted as signed/unsigned integers"
     // http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
     int nbits = bean1.getNBits();
-    int width = (2 << nbits - 1) - 2;                // unsigned
-    int missing_value = (2 << nbits - 1) - 1;       // all ones - reserved for missing value
+    int width = (2 << nbits - 1) - 2; // unsigned
+    int missing_value = (2 << nbits - 1) - 1; // all ones - reserved for missing value
 
-    // int width2 = (2 << (nbits-1)) - 1;  // signed
+    // int width2 = (2 << (nbits-1)) - 1; // signed
     f.format(" nbits = %d%n", nbits);
     f.format(" npoints = %d%n", npoints);
     f.format(" width = %d (0x%s) %n", width, Long.toHexString(width));
@@ -180,7 +187,8 @@ public class GribData {
     float dataMin = Float.MAX_VALUE;
     float dataMax = -Float.MAX_VALUE;
     for (float fd : data) {
-      if (Float.isNaN(fd)) continue;
+      if (Float.isNaN(fd))
+        continue;
       dataMin = Math.min(dataMin, fd);
       dataMax = Math.max(dataMax, fd);
     }
@@ -195,7 +203,7 @@ public class GribData {
 
     double scale_factor = (dataMax - dataMin) / width;
     // float add_offset = dataMin + width2 * scale_factor / 2; // signed
-    double add_offset = dataMin;                             // unsigned
+    double add_offset = dataMin; // unsigned
 
     f.format(" scale_factor = %g%n", scale_factor);
     f.format(" add_offset = %g%n", add_offset);
@@ -215,7 +223,8 @@ public class GribData {
       }
 
       // otherwise pack it
-      int packed_data = (int) Math.round((fd - add_offset) / scale_factor);   // nint((unpacked_data_value - add_offset) / scale_factor)
+      int packed_data = (int) Math.round((fd - add_offset) / scale_factor); // nint((unpacked_data_value - add_offset) /
+                                                                            // scale_factor)
       double unpacked_data = packed_data * scale_factor + add_offset;
       double diff = Math.abs(fd - unpacked_data);
       if (diff > scale_factor / 2)
@@ -281,13 +290,14 @@ public class GribData {
     // "If the packed values are intended to be interpreted as signed/unsigned integers"
     // http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
     int nbits = bean.getNBits();
-    int width = (2 << nbits - 1) - 2;                // unsigned
-    int missing_value = (2 << nbits - 1) - 1;       // all ones - reserved for missing value
+    int width = (2 << nbits - 1) - 2; // unsigned
+    int missing_value = (2 << nbits - 1) - 1; // all ones - reserved for missing value
 
     float dataMin = Float.MAX_VALUE;
     float dataMax = -Float.MAX_VALUE;
     for (float fd : data) {
-      if (Float.isNaN(fd)) continue;
+      if (Float.isNaN(fd))
+        continue;
       dataMin = Math.min(dataMin, fd);
       dataMax = Math.max(dataMax, fd);
     }
@@ -297,7 +307,7 @@ public class GribData {
 
     double scale_factor = (dataMax - dataMin) / width;
     // float add_offset = dataMin + width2 * scale_factor / 2; // signed
-    double add_offset = dataMin;                             // unsigned
+    double add_offset = dataMin; // unsigned
 
     // unpacked_data_value = packed_data_value * scale_factor + add_offset
     // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
@@ -313,7 +323,8 @@ public class GribData {
       if (Float.isNaN(fd)) {
         bb.putInt(missing_value);
       } else {
-        int packed_data = (int) Math.round((fd - add_offset) / scale_factor);   // nint((unpacked_data_value - add_offset) / scale_factor)
+        int packed_data = (int) Math.round((fd - add_offset) / scale_factor); // nint((unpacked_data_value - add_offset)
+                                                                              // / scale_factor)
         bb.putInt(packed_data);
       }
     }
@@ -328,13 +339,15 @@ public class GribData {
 
   public static byte[] convertToBytes(float[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
-    for (float val : data) bb.putFloat(val);
+    for (float val : data)
+      bb.putFloat(val);
     return bb.array();
   }
 
   public static byte[] convertToBytes(int[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
-    for (int val : data) bb.putInt(val);
+    for (int val : data)
+      bb.putInt(val);
     return bb.array();
   }
 
@@ -351,7 +364,8 @@ public class GribData {
     double iln2 = 1.0 / Math.log(2.0);
     double sum = 0.0;
     for (int i = 0; i < 256; i++) {
-      if (p[i] == 0) continue;
+      if (p[i] == 0)
+        continue;
       double prob = ((double) p[i]) / n;
       sum += Math.log(prob) * prob * iln2;
     }
@@ -360,7 +374,8 @@ public class GribData {
   }
 
   public static double entropy(int nbits, int[] data) {
-    if (data == null) return 0.0;
+    if (data == null)
+      return 0.0;
 
     int n = (int) Math.pow(2, nbits);
     int[] p = new int[n];
@@ -381,7 +396,8 @@ public class GribData {
     double iln2 = 1.0 / Math.log(2.0);
     double sum = 0.0;
     for (int i = 0; i < n; i++) {
-      if (p[i] == 0) continue;
+      if (p[i] == 0)
+        continue;
       double prob = ((double) p[i]) / len;
       sum += Math.log(prob) * prob * iln2;
     }

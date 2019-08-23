@@ -9,7 +9,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -28,7 +27,8 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
   private List<File> partIndexFiles;
   private final FeatureCollectionConfig config;
 
-  public PartitionManagerFromIndexDirectory(String name, FeatureCollectionConfig config, File directory, String suffix, org.slf4j.Logger logger) {
+  public PartitionManagerFromIndexDirectory(String name, FeatureCollectionConfig config, File directory, String suffix,
+      org.slf4j.Logger logger) {
     super(name, logger);
     this.config = config;
     this.root = directory.getPath();
@@ -65,15 +65,16 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
 
       File nextFile = iter.next();
       try {
-        MCollection result = new CollectionSingleIndexFile( new MFileOS7(nextFile.getPath()), logger);
-        if (wasRemoved(result)) return hasNext();
+        MCollection result = new CollectionSingleIndexFile(new MFileOS7(nextFile.getPath()), logger);
+        if (wasRemoved(result))
+          return hasNext();
 
         result.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
         next = result;
         return true;
 
       } catch (IOException e) {
-        logger.error("PartitionManagerFromList failed on "+nextFile.getPath(), e);
+        logger.error("PartitionManagerFromList failed on " + nextFile.getPath(), e);
         throw new RuntimeException(e);
       }
 
@@ -85,16 +86,15 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
     }
 
     @Override
-    public void remove() {
-    }
+    public void remove() {}
   }
 
   @Override
-  public void close() { }
+  public void close() {}
 
   @Override
   public Iterable<MFile> getFilesSorted() {
-    return Collections.emptyList() ;
+    return Collections.emptyList();
   }
 
   @Override
@@ -111,17 +111,17 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
       }
 
       @Override
-      public void close() {
-      }
+      public void close() {}
     };
   }
 
-    /////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
   // partitions can be removed (!)
   private List<String> removed;
 
-  public void removePartition( MCollection partition) {
-    if (removed == null) removed = new ArrayList<>();
+  public void removePartition(MCollection partition) {
+    if (removed == null)
+      removed = new ArrayList<>();
     removed.add(partition.getCollectionName());
   }
 

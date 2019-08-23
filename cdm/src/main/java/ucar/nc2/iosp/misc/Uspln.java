@@ -5,26 +5,18 @@
 package ucar.nc2.iosp.misc;
 
 import com.google.re2j.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
-
 import java.nio.ByteBuffer;
-
 import java.text.ParseException;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -40,87 +32,87 @@ public class Uspln extends AbstractLightningIOSP {
   static private final Logger logger = LoggerFactory.getLogger(Uspln.class);
 
   /*
-    USPLN/NAPLN data format:
-
-    Each 1 minute packet sent has an ASCII header, followed by a record for
-    each lightning detection during the past 1 minute.
-
-    Header
-    The ASCII header provides information on the creation time of the one
-    minute packet and ending date and time of the file.
-
-    Sample Header:
-
-    (original format)
-    LIGHTNING-USPLN1,2004-10-11T20:45:02,2004-10-11T20:45:02
-
-    (extended format)
-    LIGHTNING-USPLN1EX,2004-10-11T20:45:02,2004-10-11T20:45:02
-
-    Description:
-    Name of Product: LIGHTNING-USPLN1
-    Creation of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
-    Ending of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
-
-    NOTE: All times in UTC
-
-    Stroke Record Following the header, an individual record is provided for
-    each lightning stroke in a comma delimited format.
-
-    Sample Stroke Records (original format):
-    2004-10-11T20:44:02,32.6785331,-105.4344587,-96.1,1
-    2004-10-11T20:44:05,21.2628231,-86.9596634,53.1,1
-    2004-10-11T20:44:05,21.2967119,-86.9702106,50.3,1
-    2004-10-11T20:44:06,19.9044769,-100.7082608,43.1,1
-    2004-10-11T20:44:11,21.4523434,-82.5202274,-62.8,1
-    2004-10-11T20:44:11,21.8155306,-82.6708778,80.9,1
-
-    Sample Stroke Records (extended format):
-    2004-10-11T20:44:02,32.6785331,-105.4344587,-96.1,0.5,0.25,0
-    2004-10-11T20:44:05,21.2628231,-86.9596634,53.1,0.25,0.25,41
-    2004-10-11T20:44:05,21.2967119,-86.9702106,50.3,0.25,0.25,78
-    2004-10-11T20:44:06,19.9044769,-100.7082608,43.1,0.75,0.25,-51
-    2004-10-11T20:44:11,21.4523434,-82.5202274,-62.8,0.25,0.25,-58
-    2004-10-11T20:44:11,21.8155306,-82.6708778,80.9,0.25,0.25,-86
-
-    Description:
-
-    Stroke Date/Time (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:44:02
-
-    Stroke Latitude (deg): 32.6785331
-    Stroke Longitude (deg): -105.4344587
-    Stroke Amplitude (kAmps, see note below): -96.1
-
-    (original format)
-    Stroke Count (number of strokes per flash): 1
-    Note: At the present time USPLN data are only provided in stroke format,
-    so the stroke count will always be 1.
-
-    (extended format)
-    Error Ellipse Major Axis (km): 0.5
-    Error Ellipse Minor Axis (km): 0.25
-    Error Ellipse Major Axis Orientation (degrees): 0
-
-    Notes about Decoding Stroke Amplitude
-    The amplitude field is utilized to indicate the amplitude of strokes and
-    polarity of strokes for all Cloud-to- Ground Strokes.
-
-    For other types of detections this field is utilized to provide
-    information on the type of stroke detected.
-
-    The amplitude number for Cloud-to-Ground strokes provides the amplitude
-    of the stroke and the sign (+/-) provides the polarity of the stroke.
-
-    An amplitude of 0 indicates USPLN Cloud Flash Detections rather than
-    Cloud-to-Ground detections.
-
-    Cloud flash detections include cloud-to-cloud, cloud-to-air, and
-    intra-cloud flashes.
-
-    An amplitude of -999 or 999 indicates a valid cloud-to-ground stroke
-    detection in which an amplitude was not able to be determined. Typically
-    these are long-range detections.
-  */
+   * USPLN/NAPLN data format:
+   * 
+   * Each 1 minute packet sent has an ASCII header, followed by a record for
+   * each lightning detection during the past 1 minute.
+   * 
+   * Header
+   * The ASCII header provides information on the creation time of the one
+   * minute packet and ending date and time of the file.
+   * 
+   * Sample Header:
+   * 
+   * (original format)
+   * LIGHTNING-USPLN1,2004-10-11T20:45:02,2004-10-11T20:45:02
+   * 
+   * (extended format)
+   * LIGHTNING-USPLN1EX,2004-10-11T20:45:02,2004-10-11T20:45:02
+   * 
+   * Description:
+   * Name of Product: LIGHTNING-USPLN1
+   * Creation of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
+   * Ending of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
+   * 
+   * NOTE: All times in UTC
+   * 
+   * Stroke Record Following the header, an individual record is provided for
+   * each lightning stroke in a comma delimited format.
+   * 
+   * Sample Stroke Records (original format):
+   * 2004-10-11T20:44:02,32.6785331,-105.4344587,-96.1,1
+   * 2004-10-11T20:44:05,21.2628231,-86.9596634,53.1,1
+   * 2004-10-11T20:44:05,21.2967119,-86.9702106,50.3,1
+   * 2004-10-11T20:44:06,19.9044769,-100.7082608,43.1,1
+   * 2004-10-11T20:44:11,21.4523434,-82.5202274,-62.8,1
+   * 2004-10-11T20:44:11,21.8155306,-82.6708778,80.9,1
+   * 
+   * Sample Stroke Records (extended format):
+   * 2004-10-11T20:44:02,32.6785331,-105.4344587,-96.1,0.5,0.25,0
+   * 2004-10-11T20:44:05,21.2628231,-86.9596634,53.1,0.25,0.25,41
+   * 2004-10-11T20:44:05,21.2967119,-86.9702106,50.3,0.25,0.25,78
+   * 2004-10-11T20:44:06,19.9044769,-100.7082608,43.1,0.75,0.25,-51
+   * 2004-10-11T20:44:11,21.4523434,-82.5202274,-62.8,0.25,0.25,-58
+   * 2004-10-11T20:44:11,21.8155306,-82.6708778,80.9,0.25,0.25,-86
+   * 
+   * Description:
+   * 
+   * Stroke Date/Time (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:44:02
+   * 
+   * Stroke Latitude (deg): 32.6785331
+   * Stroke Longitude (deg): -105.4344587
+   * Stroke Amplitude (kAmps, see note below): -96.1
+   * 
+   * (original format)
+   * Stroke Count (number of strokes per flash): 1
+   * Note: At the present time USPLN data are only provided in stroke format,
+   * so the stroke count will always be 1.
+   * 
+   * (extended format)
+   * Error Ellipse Major Axis (km): 0.5
+   * Error Ellipse Minor Axis (km): 0.25
+   * Error Ellipse Major Axis Orientation (degrees): 0
+   * 
+   * Notes about Decoding Stroke Amplitude
+   * The amplitude field is utilized to indicate the amplitude of strokes and
+   * polarity of strokes for all Cloud-to- Ground Strokes.
+   * 
+   * For other types of detections this field is utilized to provide
+   * information on the type of stroke detected.
+   * 
+   * The amplitude number for Cloud-to-Ground strokes provides the amplitude
+   * of the stroke and the sign (+/-) provides the polarity of the stroke.
+   * 
+   * An amplitude of 0 indicates USPLN Cloud Flash Detections rather than
+   * Cloud-to-Ground detections.
+   * 
+   * Cloud flash detections include cloud-to-cloud, cloud-to-air, and
+   * intra-cloud flashes.
+   * 
+   * An amplitude of -999 or 999 indicates a valid cloud-to-ground stroke
+   * detection in which an amplitude was not able to be determined. Typically
+   * these are long-range detections.
+   */
 
   /**
    * Magic string for determining if this is my type of file.
@@ -210,9 +202,9 @@ public class Uspln extends AbstractLightningIOSP {
    * object will be empty except for the location String and the
    * IOServiceProvider associated with this NetcdfFile object.
    *
-   * @param raf        the file to work on, it has already passed the
-   *                   isValidFile() test.
-   * @param ncfile     add objects to this empty NetcdfFile
+   * @param raf the file to work on, it has already passed the
+   *        isValidFile() test.
+   * @param ncfile add objects to this empty NetcdfFile
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if read error
    */
@@ -222,9 +214,7 @@ public class Uspln extends AbstractLightningIOSP {
     isExtended = checkFormat();
     isoDateFormat = new SimpleDateFormat();
     isoDateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-    isoDateFormat.applyPattern(isExtended
-            ? TIME_FORMAT_EX
-            : TIME_FORMAT);
+    isoDateFormat.applyPattern(isExtended ? TIME_FORMAT_EX : TIME_FORMAT);
     Sequence seq = makeSequence(ncfile);
     ncfile.addVariable(null, seq);
     addLightningGlobalAttributes(ncfile);
@@ -237,50 +227,39 @@ public class Uspln extends AbstractLightningIOSP {
 
     Sequence seq = new Sequence(ncfile, null, null, RECORD);
 
-    Variable v = makeLightningVariable(ncfile, null, seq, TIME,
-            DataType.DOUBLE, "",
-            "time of stroke", null,
-            secondsSince1970, AxisType.Time);
+    Variable v = makeLightningVariable(ncfile, null, seq, TIME, DataType.DOUBLE, "", "time of stroke", null,
+        secondsSince1970, AxisType.Time);
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, LAT, DataType.DOUBLE,
-            "", "latitude", "latitude", CDM.LAT_UNITS, AxisType.Lat);
+    v = makeLightningVariable(ncfile, null, seq, LAT, DataType.DOUBLE, "", "latitude", "latitude", CDM.LAT_UNITS,
+        AxisType.Lat);
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, LON, DataType.DOUBLE,
-            "", "longitude", "longitude",
-            CDM.LON_UNITS, AxisType.Lon);
+    v = makeLightningVariable(ncfile, null, seq, LON, DataType.DOUBLE, "", "longitude", "longitude", CDM.LON_UNITS,
+        AxisType.Lon);
     seq.addMemberVariable(v);
 
-    v = makeLightningVariable(ncfile, null, seq, SIGNAL, DataType.FLOAT,
-            "", "signed peak amplitude (signal strength)", null, "kAmps", null);
+    v = makeLightningVariable(ncfile, null, seq, SIGNAL, DataType.FLOAT, "", "signed peak amplitude (signal strength)",
+        null, "kAmps", null);
     v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999d));
     seq.addMemberVariable(v);
 
-    if (isExtended) {  // extended
-      v = makeLightningVariable(ncfile, null, seq, MAJOR_AXIS,
-              DataType.FLOAT, "",
-              "error ellipse semi-major axis", null,
-              "km", null);
+    if (isExtended) { // extended
+      v = makeLightningVariable(ncfile, null, seq, MAJOR_AXIS, DataType.FLOAT, "", "error ellipse semi-major axis",
+          null, "km", null);
       seq.addMemberVariable(v);
 
-      v = makeLightningVariable(ncfile, null, seq, MINOR_AXIS,
-              DataType.FLOAT, "",
-              "error ellipse minor axis ", null,
-              "km", null);
+      v = makeLightningVariable(ncfile, null, seq, MINOR_AXIS, DataType.FLOAT, "", "error ellipse minor axis ", null,
+          "km", null);
       seq.addMemberVariable(v);
 
-      v = makeLightningVariable(
-              ncfile, null, seq, ELLIPSE_ANGLE, DataType.INT, "",
-              "error ellipse axis angle of orientation ", null, "degrees",
-              null);
+      v = makeLightningVariable(ncfile, null, seq, ELLIPSE_ANGLE, DataType.INT, "",
+          "error ellipse axis angle of orientation ", null, "degrees", null);
       seq.addMemberVariable(v);
 
-    } else {  // original format
-      v = makeLightningVariable(ncfile, null, seq, MULTIPLICITY,
-              DataType.INT, "",
-              "multiplicity [#strokes per flash]",
-              null, "", null);
+    } else { // original format
+      v = makeLightningVariable(ncfile, null, seq, MULTIPLICITY, DataType.INT, "", "multiplicity [#strokes per flash]",
+          null, "", null);
       seq.addMemberVariable(v);
     }
     return seq;
@@ -293,36 +272,31 @@ public class Uspln extends AbstractLightningIOSP {
    */
   protected void addLightningGlobalAttributes(NetcdfFile ncfile) {
     super.addLightningGlobalAttributes(ncfile);
-    ncfile.addAttribute(null,
-            new Attribute("title", "USPLN Lightning Data"));
-    ncfile.addAttribute(null,
-            new Attribute("file_format",
-                    "USPLN1 " + (isExtended
-                            ? "(extended)"
-                            : "(original)")));
+    ncfile.addAttribute(null, new Attribute("title", "USPLN Lightning Data"));
+    ncfile.addAttribute(null, new Attribute("file_format", "USPLN1 " + (isExtended ? "(extended)" : "(original)")));
 
     /*
-    ncfile.addAttribute(null,
-                        new Attribute("time_coverage_start",
-                                      time_min + " " + secondsSince1970));
-    ncfile.addAttribute(null,
-                        new Attribute("time_coverage_end",
-                                      time_max + " " + secondsSince1970));
-
-    ncfile.addAttribute(null,
-                        new Attribute("geospatial_lat_min",
-                                      new Double(lat_min)));
-    ncfile.addAttribute(null,
-                        new Attribute("geospatial_lat_max",
-                                      new Double(lat_max)));
-
-    ncfile.addAttribute(null,
-                        new Attribute("geospatial_lon_min",
-                                      new Double(lon_min)));
-    ncfile.addAttribute(null,
-                        new Attribute("geospatial_lon_max",
-                                      new Double(lon_max)));
-    */
+     * ncfile.addAttribute(null,
+     * new Attribute("time_coverage_start",
+     * time_min + " " + secondsSince1970));
+     * ncfile.addAttribute(null,
+     * new Attribute("time_coverage_end",
+     * time_max + " " + secondsSince1970));
+     * 
+     * ncfile.addAttribute(null,
+     * new Attribute("geospatial_lat_min",
+     * new Double(lat_min)));
+     * ncfile.addAttribute(null,
+     * new Attribute("geospatial_lat_max",
+     * new Double(lat_max)));
+     * 
+     * ncfile.addAttribute(null,
+     * new Attribute("geospatial_lon_min",
+     * new Double(lon_min)));
+     * ncfile.addAttribute(null,
+     * new Attribute("geospatial_lon_max",
+     * new Double(lon_max)));
+     */
 
   }
 
@@ -355,16 +329,14 @@ public class Uspln extends AbstractLightningIOSP {
    *
    * @param raf the file to read
    * @return the number of strokes
-   * @throws IOException           if read error
+   * @throws IOException if read error
    * @throws NumberFormatException if problem parsing data
-   * @throws ParseException        if parse problem
+   * @throws ParseException if parse problem
    */
-  int readAllData(RandomAccessFile raf)
-          throws IOException, NumberFormatException, ParseException {
+  int readAllData(RandomAccessFile raf) throws IOException, NumberFormatException, ParseException {
     ArrayList<Long> offsetList = new ArrayList<>();
 
-    java.text.SimpleDateFormat isoDateTimeFormat =
-            new java.text.SimpleDateFormat(TIME_FORMAT);
+    java.text.SimpleDateFormat isoDateTimeFormat = new java.text.SimpleDateFormat(TIME_FORMAT);
     isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
 
     lat_min = 1000.0;
@@ -394,8 +366,8 @@ public class Uspln extends AbstractLightningIOSP {
         continue;
       }
 
-      // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,1             (original)
-      // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,0.25,0.5,80   (extended)
+      // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,1 (original)
+      // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,0.25,0.5,80 (extended)
 
       StringTokenizer stoker = new StringTokenizer(line, ",\r\n");
       while (stoker.hasMoreTokens()) {
@@ -415,10 +387,8 @@ public class Uspln extends AbstractLightningIOSP {
           nstrokes = Integer.parseInt(stoker.nextToken());
         }
 
-        Stroke s = isExtended
-                ? new Stroke(date, lat, lon, amp, axisMaj,
-                axisMin, orient)
-                : new Stroke(date, lat, lon, amp, nstrokes);
+        Stroke s = isExtended ? new Stroke(date, lat, lon, amp, axisMaj, axisMin, orient)
+            : new Stroke(date, lat, lon, amp, nstrokes);
         lat_min = Math.min(lat_min, s.lat);
         lat_max = Math.max(lat_max, s.lat);
         lon_min = Math.min(lon_min, s.lon);
@@ -437,7 +407,7 @@ public class Uspln extends AbstractLightningIOSP {
       offsets[i] = off;
     }
 
-    //System.out.println("processed " + count + " records");
+    // System.out.println("processed " + count + " records");
     return count;
   }
 
@@ -445,16 +415,15 @@ public class Uspln extends AbstractLightningIOSP {
    * Read data from a top level Variable and return a memory resident Array.
    * This Array has the same element type as the Variable, and the requested shape.
    *
-   * @param v2      a top-level Variable
+   * @param v2 a top-level Variable
    * @param section the section of data to read.
-   *                There must be a Range for each Dimension in the variable, in order.
-   *                Note: no nulls allowed. IOSP may not modify.
+   *        There must be a Range for each Dimension in the variable, in order.
+   *        Note: no nulls allowed. IOSP may not modify.
    * @return the requested data in a memory-resident Array
-   * @throws IOException           if read error
+   * @throws IOException if read error
    * @see ucar.ma2.Range
    */
-  public Array readData(Variable v2, Section section)
-          throws IOException {
+  public Array readData(Variable v2, Section section) throws IOException {
     return new ArraySequence(sm, getStructureIterator(null, 0), nelems);
   }
 
@@ -463,14 +432,12 @@ public class Uspln extends AbstractLightningIOSP {
   /**
    * Get the structure iterator
    *
-   * @param s          the Structure
+   * @param s the Structure
    * @param bufferSize the buffersize
    * @return the data iterator
    * @throws java.io.IOException if problem reading data
    */
-  public StructureDataIterator getStructureIterator(Structure s,
-                                                    int bufferSize)
-          throws java.io.IOException {
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     return new UsplnSeqIter();
   }
 
@@ -539,8 +506,8 @@ public class Uspln extends AbstractLightningIOSP {
         return readStroke();
       }
 
-      // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,1             (original)
-      // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,0.25,0.5,80   (extended)
+      // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,1 (original)
+      // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,0.25,0.5,80 (extended)
       Stroke stroke = null;
 
       StringTokenizer stoker = new StringTokenizer(line, ",\r\n");
@@ -562,10 +529,8 @@ public class Uspln extends AbstractLightningIOSP {
             nstrokes = Integer.parseInt(stoker.nextToken());
           }
 
-          stroke = isExtended
-                  ? new Stroke(date, lat, lon, amp, axisMaj,
-                  axisMin, orient)
-                  : new Stroke(date, lat, lon, amp, nstrokes);
+          stroke = isExtended ? new Stroke(date, lat, lon, amp, axisMaj, axisMin, orient)
+              : new Stroke(date, lat, lon, amp, nstrokes);
         }
       } catch (Exception e) {
         logger.error("bad header: {}", line.trim());
@@ -607,7 +572,7 @@ public class Uspln extends AbstractLightningIOSP {
             break;
         }
       }
-      asbb = new ArrayStructureBB(sm, new int[]{1}, bbdata, 0);
+      asbb = new ArrayStructureBB(sm, new int[] {1}, bbdata, 0);
       return true;
     }
 
@@ -686,13 +651,12 @@ public class Uspln extends AbstractLightningIOSP {
     /**
      * Create a Stroke from the file data and time formatter
      *
-     * @param offset            offset into the file
+     * @param offset offset into the file
      * @param isoDateTimeFormat the time formatter
-     * @throws IOException    problem reading the file
+     * @throws IOException problem reading the file
      * @throws ParseException problem parsing the file
      */
-    Stroke(long offset, java.text.SimpleDateFormat isoDateTimeFormat)
-            throws IOException, ParseException {
+    Stroke(long offset, java.text.SimpleDateFormat isoDateTimeFormat) throws IOException, ParseException {
       raf.seek(offset);
       String line = raf.readLine();
       if ((line == null) || pMAGIC.matcher(line).find() || pMAGIC_OLD.matcher(line).find()) {
@@ -700,8 +664,7 @@ public class Uspln extends AbstractLightningIOSP {
       }
 
       StringTokenizer stoker = new StringTokenizer(line, ",\r\n");
-      Date date =
-              isoDateTimeFormat.parse(stoker.nextToken());
+      Date date = isoDateTimeFormat.parse(stoker.nextToken());
       makeSecs(date);
       lat = Double.parseDouble(stoker.nextToken());
       lon = Double.parseDouble(stoker.nextToken());
@@ -721,10 +684,10 @@ public class Uspln extends AbstractLightningIOSP {
      * Create a stroke from the info
      *
      * @param date The Date
-     * @param lat  the latitude
-     * @param lon  the longitude
-     * @param amp  the amplitude
-     * @param n    the number of strokes
+     * @param lat the latitude
+     * @param lon the longitude
+     * @param amp the amplitude
+     * @param n the number of strokes
      */
     Stroke(Date date, double lat, double lon, double amp, int n) {
       makeSecs(date);
@@ -737,16 +700,15 @@ public class Uspln extends AbstractLightningIOSP {
     /**
      * Create a stroke from the info
      *
-     * @param date   The Date
-     * @param lat    the latitude
-     * @param lon    the longitude
-     * @param amp    the amplitude
-     * @param maj    error ellipse major axis
-     * @param min    error ellipse minor axis
+     * @param date The Date
+     * @param lat the latitude
+     * @param lon the longitude
+     * @param amp the amplitude
+     * @param maj error ellipse major axis
+     * @param min error ellipse minor axis
      * @param orient orientation of the major axis
      */
-    Stroke(Date date, double lat, double lon, double amp, double maj,
-           double min, int orient) {
+    Stroke(Date date, double lat, double lon, double amp, double maj, double min, int orient) {
       makeSecs(date);
       this.lat = lat;
       this.lon = lon;
@@ -771,10 +733,8 @@ public class Uspln extends AbstractLightningIOSP {
      * @return the String representation
      */
     public String toString() {
-      return (isExtended)
-              ? lat + " " + lon + " " + amp + " " + axisMajor + "/"
-              + axisMinor + " " + axisOrient
-              : lat + " " + lon + " " + amp + " " + n;
+      return (isExtended) ? lat + " " + lon + " " + amp + " " + axisMajor + "/" + axisMinor + " " + axisOrient
+          : lat + " " + lon + " " + amp + " " + n;
     }
 
   }

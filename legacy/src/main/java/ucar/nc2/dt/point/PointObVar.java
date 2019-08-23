@@ -38,7 +38,7 @@ public class PointObVar {
     setUnits(v.getUnitsString());
     setDesc(v.getDescription());
     setDataType(v.getDataType());
-    //if (v.getRank() > 0) setLen( v.getShape()[0]);
+    // if (v.getRank() > 0) setLen( v.getShape()[0]);
   }
 
   public String getName() {
@@ -80,5 +80,5 @@ public class PointObVar {
   public void setLen(int len) {
     this.len = len;
   }
-  
+
 }

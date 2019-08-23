@@ -19,9 +19,9 @@ public class Grib {
 
   // do not use
   public static boolean debugRead = false;
-  public static boolean debugGbxIndexOnly = false;  // we are running with only ncx and gbx index files, no data
-  static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
-  static boolean debugIndexOnly = false;      // we are running with only ncx index files, no data
+  public static boolean debugGbxIndexOnly = false; // we are running with only ncx and gbx index files, no data
+  static boolean debugIndexOnlyShow = false; // debugIndexOnly must be true; show record fetch
+  static boolean debugIndexOnly = false; // we are running with only ncx index files, no data
 
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {

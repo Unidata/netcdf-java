@@ -16,7 +16,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -26,10 +25,10 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestH4eosRdAll {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Parameterized.Parameters(name="{0}")
- 	public static Collection<Object[]> getTestParameters() throws IOException {
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> getTestParameters() throws IOException {
     Collection<Object[]> filenames = new ArrayList<>();
 
     try {
@@ -43,11 +42,11 @@ public class TestH4eosRdAll {
       // Naturally, if we execute a test using that nonsense value, it'll fail. That's fine; we need to deal with the
       // root cause. However, it is more likely that the exception occurred because "!isCdmUnitTestDirAvailable", and
       // as a result, all NeedsCdmUnitTest tests will be excluded.
-      filenames.add(new Object[]{e.getMessage()});
+      filenames.add(new Object[] {e.getMessage()});
     }
 
     return filenames;
- 	}
+  }
 
   static class H4EosFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
@@ -56,6 +55,7 @@ public class TestH4eosRdAll {
   }
 
   String filename;
+
   public TestH4eosRdAll(String filename) {
     this.filename = filename;
   }
@@ -64,12 +64,13 @@ public class TestH4eosRdAll {
   public void testForStructMetadata() throws IOException {
     System.out.printf("TestH4eosReadAll %s%n", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
-       Group root = ncfile.getRootGroup();
-       Group g = root.findGroup("HDFEOS INFORMATION");
-       if (g == null) g = ncfile.getRootGroup();
+      Group root = ncfile.getRootGroup();
+      Group g = root.findGroup("HDFEOS INFORMATION");
+      if (g == null)
+        g = ncfile.getRootGroup();
 
-       Variable dset = g.findVariable("StructMetadata.0");
-       assert (dset != null);
-     }
-   }
+      Variable dset = g.findVariable("StructMetadata.0");
+      assert (dset != null);
+    }
+  }
 }

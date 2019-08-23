@@ -14,7 +14,7 @@ public class ArrayScalar extends Array {
   private final Object value;
 
   public ArrayScalar(Object value, boolean isUnsigned) {
-    super(DataType.getType(value.getClass(), isUnsigned), new int [] {});
+    super(DataType.getType(value.getClass(), isUnsigned), new int[] {});
     this.value = value;
   }
 
@@ -30,17 +30,17 @@ public class ArrayScalar extends Array {
 
   @Override
   public Object getStorage() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
   protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -49,8 +49,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setDouble(Index ima, double value) {
-  }
+  public void setDouble(Index ima, double value) {}
 
   @Override
   public float getFloat(Index ima) {
@@ -58,8 +57,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setFloat(Index ima, float value) {
-  }
+  public void setFloat(Index ima, float value) {}
 
   @Override
   public long getLong(Index ima) {
@@ -67,8 +65,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setLong(Index ima, long value) {
-  }
+  public void setLong(Index ima, long value) {}
 
   @Override
   public int getInt(Index ima) {
@@ -76,8 +73,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setInt(Index ima, int value) {
-  }
+  public void setInt(Index ima, int value) {}
 
   @Override
   public short getShort(Index ima) {
@@ -85,8 +81,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setShort(Index ima, short value) {
-  }
+  public void setShort(Index ima, short value) {}
 
   @Override
   public byte getByte(Index ima) {
@@ -94,8 +89,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setByte(Index ima, byte value) {
-  }
+  public void setByte(Index ima, byte value) {}
 
   @Override
   public char getChar(Index ima) {
@@ -103,8 +97,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setChar(Index ima, char value) {
-  }
+  public void setChar(Index ima, char value) {}
 
   @Override
   public boolean getBoolean(Index ima) {
@@ -112,8 +105,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setBoolean(Index ima, boolean value) {
-  }
+  public void setBoolean(Index ima, boolean value) {}
 
   @Override
   public Object getObject(Index ima) {
@@ -121,8 +113,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setObject(Index ima, Object value) {
-  }
+  public void setObject(Index ima, Object value) {}
 
   @Override
   public double getDouble(int elem) {
@@ -130,8 +121,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setDouble(int elem, double val) {
-  }
+  public void setDouble(int elem, double val) {}
 
   @Override
   public float getFloat(int elem) {
@@ -139,8 +129,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setFloat(int elem, float val) {
-  }
+  public void setFloat(int elem, float val) {}
 
   @Override
   public long getLong(int elem) {
@@ -148,8 +137,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setLong(int elem, long value) {
-  }
+  public void setLong(int elem, long value) {}
 
   @Override
   public int getInt(int elem) {
@@ -157,8 +145,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setInt(int elem, int value) {
-  }
+  public void setInt(int elem, int value) {}
 
   @Override
   public short getShort(int elem) {
@@ -166,8 +153,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setShort(int elem, short value) {
-  }
+  public void setShort(int elem, short value) {}
 
   @Override
   public byte getByte(int elem) {
@@ -175,8 +161,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setByte(int elem, byte value) {
-  }
+  public void setByte(int elem, byte value) {}
 
   @Override
   public char getChar(int elem) {
@@ -184,8 +169,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setChar(int elem, char value) {
-  }
+  public void setChar(int elem, char value) {}
 
   @Override
   public boolean getBoolean(int elem) {
@@ -193,8 +177,7 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setBoolean(int elem, boolean value) {
-  }
+  public void setBoolean(int elem, boolean value) {}
 
   @Override
   public Object getObject(int elem) {
@@ -202,6 +185,5 @@ public class ArrayScalar extends Array {
   }
 
   @Override
-  public void setObject(int elem, Object value) {
-  }
+  public void setObject(int elem, Object value) {}
 }

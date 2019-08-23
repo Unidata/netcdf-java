@@ -7,7 +7,6 @@ package ucar.nc2.util.xml;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-
 import java.io.IOException;
 
 /**
@@ -39,11 +38,13 @@ public class Parse {
 
   /**
    * Make sure that text is XML safe
+   * 
    * @param text check this
    * @return original text if ok, else with bad characters removed
    */
   static public String cleanCharacterData(String text) {
-    if (text == null) return null;
+    if (text == null)
+      return null;
 
     boolean bad = false;
     for (int i = 0, len = text.length(); i < len; i++) {
@@ -54,7 +55,8 @@ public class Parse {
       }
     }
 
-    if (!bad) return text;
+    if (!bad)
+      return text;
 
     StringBuilder sbuff = new StringBuilder(text.length());
     for (int i = 0, len = text.length(); i < len; i++) {

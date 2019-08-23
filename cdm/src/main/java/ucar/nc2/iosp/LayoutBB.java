@@ -14,20 +14,21 @@ import java.nio.*;
  * 
  * <p/>
  * Example for Integers:
+ * 
  * <pre>
-
-  int[] read( LayoutBB index, int[] pa) {
-      while (index.hasNext()) {
-        LayoutBB.Chunk chunk = index.next();
-        IntBuffer buff = chunk.getIntBuffer();
-        buff.position(chunk.getSrcElem());
-        int pos = (int) chunk.getDestElem();
-        for (int i = 0; i < chunk.getNelems(); i++)
-          pa[pos++] = buff.get();
-      }
-      return pa;
-  }
-
+ * 
+ * int[] read(LayoutBB index, int[] pa) {
+ *   while (index.hasNext()) {
+ *     LayoutBB.Chunk chunk = index.next();
+ *     IntBuffer buff = chunk.getIntBuffer();
+ *     buff.position(chunk.getSrcElem());
+ *     int pos = (int) chunk.getDestElem();
+ *     for (int i = 0; i < chunk.getNelems(); i++)
+ *       pa[pos++] = buff.get();
+ *   }
+ *   return pa;
+ * }
+ * 
  * </pre>
  *
  * @author caron
@@ -72,15 +73,21 @@ public interface LayoutBB extends Layout {
 
     /**
      * Get the position in source <Type>Buffer where to read or write: "file position"
+     * 
      * @return position as a element index into the <Type>Buffer
      */
     int getSrcElem();
 
     ByteBuffer getByteBuffer();
+
     ShortBuffer getShortBuffer();
+
     IntBuffer getIntBuffer();
+
     FloatBuffer getFloatBuffer();
+
     DoubleBuffer getDoubleBuffer();
+
     LongBuffer getLongBuffer();
 
     /**
@@ -91,7 +98,8 @@ public interface LayoutBB extends Layout {
     int getNelems();
 
     /**
-     * Get starting element position as a 1D element index into the destination, eg the requested array with shape "wantSection".
+     * Get starting element position as a 1D element index into the destination, eg the requested array with shape
+     * "wantSection".
      *
      * @return starting element in the array (Note: elements, not bytes)
      */

@@ -14,7 +14,6 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
-
 import java.lang.invoke.MethodHandles;
 
 public class TestCoverageHorizSubset {
@@ -41,15 +40,15 @@ public class TestCoverageHorizSubset {
 
       Assert.assertEquals("coordSys", 3, cs.getShape().length);
 
-      // bbox =  ll: 16.79S 20.5W+ ur: 14.1N 20.09E
+      // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), new LatLonPointImpl(14.1, 20.9));
 
       ProjectionImpl p = hcs.getTransform().getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
       System.out.printf("%s -> %s %n", bbox, prect);
 
-      ProjectionRect expected = new ProjectionRect(
-              new ProjectionPointImpl(-2129.5688, -1793.0041), 4297.8453, 3308.3885);
+      ProjectionRect expected =
+          new ProjectionRect(new ProjectionPointImpl(-2129.5688, -1793.0041), 4297.8453, 3308.3885);
       assert prect.nearlyEquals(expected);
 
       LatLonRect bb2 = p.projToLatLonBB(prect);
@@ -85,10 +84,10 @@ public class TestCoverageHorizSubset {
       Assert.assertEquals("rank", 2, cs.getShape().length);
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
-      checkLatLonSubset(gcs, coverage, bbox, new int[]{141, 281});
+      checkLatLonSubset(gcs, coverage, bbox, new int[] {141, 281});
 
       bbox = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
-      checkLatLonSubset(gcs, coverage, bbox, new int[]{800, 1300});
+      checkLatLonSubset(gcs, coverage, bbox, new int[] {800, 1300});
     }
   }
 
@@ -114,7 +113,7 @@ public class TestCoverageHorizSubset {
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
-      checkLatLonSubset(gcs, coverage, bbox, new int[]{1, 11, 21});
+      checkLatLonSubset(gcs, coverage, bbox, new int[] {1, 11, 21});
     }
   }
 
@@ -141,14 +140,15 @@ public class TestCoverageHorizSubset {
       LatLonRect llbb = gcs.getLatlonBoundingBox();
       LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
 
-      checkLatLonSubset(gcs, coverage, llbb_subset, new int[]{1, 35, 46});
+      checkLatLonSubset(gcs, coverage, llbb_subset, new int[] {1, 35, 46});
     }
   }
 
   @Test
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteSubset() throws Exception {
-    String filename = "cdmremote:http://thredds-dev.unidata.ucar.edu/thredds/cdmremote/grib/NCEP/NAM/CONUS_40km/conduit/best";
+    String filename =
+        "cdmremote:http://thredds-dev.unidata.ucar.edu/thredds/cdmremote/grib/NCEP/NAM/CONUS_40km/conduit/best";
     System.out.printf("open %s%n", filename);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
@@ -169,7 +169,7 @@ public class TestCoverageHorizSubset {
 
       System.out.println("subset lat/lon bbox= " + llbb_subset);
 
-      checkLatLonSubset(gcs, coverage, llbb_subset, new int[]{1, 1, 129, 185});
+      checkLatLonSubset(gcs, coverage, llbb_subset, new int[] {1, 1, 129, 185});
     }
   }
 
@@ -196,12 +196,14 @@ public class TestCoverageHorizSubset {
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
-      checkLatLonSubset(gcs, coverage, bbox, new int[]{1, 21, 241});
+      checkLatLonSubset(gcs, coverage, bbox, new int[] {1, 21, 241});
     }
   }
 
-  private void checkLatLonSubset(CoverageCollection gcs, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws Exception {
-    System.out.printf(" coverage llbb = %s width=%f%n", gcs.getLatlonBoundingBox().toString2(), gcs.getLatlonBoundingBox().getWidth());
+  private void checkLatLonSubset(CoverageCollection gcs, Coverage coverage, LatLonRect bbox, int[] expectedShape)
+      throws Exception {
+    System.out.printf(" coverage llbb = %s width=%f%n", gcs.getLatlonBoundingBox().toString2(),
+        gcs.getLatlonBoundingBox().getWidth());
     System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
 
     SubsetParams params = new SubsetParams().setLatLonBoundingBox(bbox).setTimePresent();

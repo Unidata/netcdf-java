@@ -13,7 +13,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Structure;
 import ucar.nc2.Attribute;
 import ucar.ma2.DataType;
-
 import java.util.Formatter;
 
 /**
@@ -33,12 +32,14 @@ public abstract class Evaluator {
     }
   }
 
-  static public String findNameVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
+  static public String findNameVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name,
+      Dimension outer, Formatter errlog) {
     Variable v = findVariableWithAttributeAndDimension(ds, CF.STANDARD_NAME, standard_name, outer, errlog);
     return (v == null) ? null : v.getShortName();
   }
 
-  static public Variable findVariableWithAttributeAndDimension(NetcdfDataset ds, String att_name, String att_value, Dimension outer, Formatter errlog) {
+  static public Variable findVariableWithAttributeAndDimension(NetcdfDataset ds, String att_name, String att_value,
+      Dimension outer, Formatter errlog) {
     for (Variable v : ds.getVariables()) {
       String attValue = ds.findAttValueIgnoreCase(v, att_name, null);
       if ((attValue != null) && attValue.equalsIgnoreCase(att_value)) {
@@ -49,7 +50,7 @@ public abstract class Evaluator {
       }
     }
 
-     // descend into structures
+    // descend into structures
     for (Variable v : ds.getVariables()) {
       if (v instanceof Structure) {
         Structure s = (Structure) v;
@@ -74,14 +75,15 @@ public abstract class Evaluator {
   /**
    * Find first variable with given attribute name
    *
-   * @param ds      in this dataset
+   * @param ds in this dataset
    * @param attName attribute name, case insensitive
    * @return first variable with given attribute name, or null
    */
   static public VarAtt findVariableWithAttribute(NetcdfDataset ds, String attName) {
     for (Variable v : ds.getVariables()) {
       Attribute att = v.findAttributeIgnoreCase(attName);
-      if (att != null) return new VarAtt(v, att);
+      if (att != null)
+        return new VarAtt(v, att);
     }
 
     // descend into structures
@@ -90,7 +92,8 @@ public abstract class Evaluator {
         Structure s = (Structure) v;
         for (Variable vs : s.getVariables()) {
           Attribute att = vs.findAttributeIgnoreCase(attName);
-          if (att != null) return new VarAtt(vs, att);
+          if (att != null)
+            return new VarAtt(vs, att);
         }
       }
     }
@@ -101,8 +104,8 @@ public abstract class Evaluator {
    * Find first variable with given attribute name and value.
    * If not found, search one level into structures.
    *
-   * @param ds       in this dataset
-   * @param attName  attribute name, case insensitive
+   * @param ds in this dataset
+   * @param attName attribute name, case insensitive
    * @param attValue attribute value, case sensitive
    * @return first variable with given attribute name and value, or null
    */
@@ -117,7 +120,8 @@ public abstract class Evaluator {
     for (Variable v : ds.getVariables()) {
       if (v instanceof Structure) {
         Variable vn = findVariableWithAttributeValue((Structure) v, attName, attValue);
-        if (null != vn) return vn;
+        if (null != vn)
+          return vn;
       }
     }
     return null;
@@ -126,8 +130,8 @@ public abstract class Evaluator {
   /**
    * Find first variable with given attribute name and value
    *
-   * @param ds       in this dataset
-   * @param attName  attribute name, case insensitive
+   * @param ds in this dataset
+   * @param attName attribute name, case insensitive
    * @param attValue attribute value, case sensitive
    * @return name of first variable with given attribute name and value, or null
    */
@@ -139,8 +143,8 @@ public abstract class Evaluator {
   /**
    * Find first member variable in this struct with given attribute name and value
    *
-   * @param struct   in this structure
-   * @param attName  attribute name, case insensitive
+   * @param struct in this structure
+   * @param attName attribute name, case insensitive
    * @param attValue attribute value, case sensitive
    * @return first member variable with given attribute name and value, or null
    */
@@ -156,26 +160,29 @@ public abstract class Evaluator {
   /**
    * Find structure variable of rank 2 with the 2 given dimensions
    * (or) Find structure variable of rank 1 with the 1 given dimension
-   * @param ds  in this dataset
+   * 
+   * @param ds in this dataset
    * @param dim0 first dimension
-   * @param dim1 second dimension  (ok to be null)
+   * @param dim1 second dimension (ok to be null)
    * @return structure variable or null
    */
   static public Structure findStructureWithDimensions(NetcdfDataset ds, Dimension dim0, Dimension dim1) {
     for (Variable v : ds.getVariables()) {
-      if (!(v instanceof Structure)) continue;
+      if (!(v instanceof Structure))
+        continue;
 
       if (dim1 != null && v.getRank() == 2 && v.getDimension(0).equals(dim0) && v.getDimension(1).equals(dim1))
         return (Structure) v;
 
       if (dim1 == null && v.getRank() == 1 && v.getDimension(0).equals(dim0))
-         return (Structure) v;
-      }
-  return null;
+        return (Structure) v;
+    }
+    return null;
   }
 
   /**
    * Find first nested structure
+   * 
    * @param s in this structure
    * @return first nested structure or null
    */
@@ -189,6 +196,7 @@ public abstract class Evaluator {
 
   /**
    * Does this dataset have a record structure? netcdf-3 specific
+   * 
    * @param ds in this dataset
    * @return true if record structure exists
    */
@@ -203,8 +211,8 @@ public abstract class Evaluator {
   /**
    * Translate key to value
    *
-   * @param ds     search in this dataset
-   * @param key    if starts with ":", search for global attribute
+   * @param ds search in this dataset
+   * @param key if starts with ":", search for global attribute
    * @param errlog error messages here
    * @return return global attribute value or the key itself
    */
@@ -222,8 +230,8 @@ public abstract class Evaluator {
   /**
    * Turn the key into a String and return the corresponding featureType, if any.
    *
-   * @param ds     look in this datset
-   * @param key    if starts with ":", replace with value of global attribute
+   * @param ds look in this datset
+   * @param key if starts with ":", replace with value of global attribute
    * @param errlog error messages here
    * @return featureType, or null
    */
@@ -241,8 +249,8 @@ public abstract class Evaluator {
   /**
    * Find the variable pointed to by key
    *
-   * @param ds     in this dataset
-   * @param key    may be variable name or ":gatt" where gatt is local attribute whose value is the variable name
+   * @param ds in this dataset
+   * @param key may be variable name or ":gatt" where gatt is local attribute whose value is the variable name
    * @param errlog error messages here
    * @return name of variable or null if not exist
    */
@@ -260,8 +268,8 @@ public abstract class Evaluator {
   /**
    * Find the dimension pointed to by key
    *
-   * @param ds     in this dataset
-   * @param key    may be dimension name or ":gatt" where gatt is local attribute whose value is the dimension name
+   * @param ds in this dataset
+   * @param key may be dimension name or ":gatt" where gatt is local attribute whose value is the dimension name
    * @param errlog error messages here
    * @return dimension or null if not exist
    */
@@ -279,8 +287,8 @@ public abstract class Evaluator {
   /**
    * Find the dimension pointed to by key
    *
-   * @param ds     in this dataset
-   * @param key    may be dimension name or ":gatt" where gatt is local attribute whose value is the dimension name
+   * @param ds in this dataset
+   * @param key may be dimension name or ":gatt" where gatt is local attribute whose value is the dimension name
    * @param errlog error messages here
    * @return name of dimension or null if not exist
    */
@@ -290,5 +298,5 @@ public abstract class Evaluator {
   }
 
 
-  private Evaluator() { }  // Private ctor to ensure non-instantiability.
+  private Evaluator() {} // Private ctor to ensure non-instantiability.
 }

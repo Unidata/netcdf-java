@@ -10,7 +10,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
 import ucar.ma2.*;
-
 import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.List;
@@ -42,7 +41,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
 
   @Override
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
-    // open a "typical"  nested dataset and copy it to newds
+    // open a "typical" nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(null);
     DatasetConstructor.transferDataset(typical, ncDataset, null);
@@ -90,15 +89,16 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
       if (isTiled(v)) {
         Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
         VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
-                v.getDimensionsString(), null, null);   // LOOK what about anon dimensions?
-        vagg.setProxyReader( this); // do the reading here
+            v.getDimensionsString(), null, null); // LOOK what about anon dimensions?
+        vagg.setProxyReader(this); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
         newGroup.removeVariable(v.getShortName());
         newGroup.addVariable(vagg);
         // aggVars.add(vagg);
       }
-      if (cancelTask != null && cancelTask.isCancel()) return;
+      if (cancelTask != null && cancelTask.isCancel())
+        return;
     }
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
@@ -131,7 +131,8 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK need fill
     Section wantSection = mainv.getShapeAsSection();
-    if (debug) System.out.println("wantSection: " + wantSection + " for var " + mainv.getFullName());
+    if (debug)
+      System.out.println("wantSection: " + wantSection + " for var " + mainv.getFullName());
 
     // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
@@ -140,7 +141,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
 
       // construct the "dataSection" by replacing the tiled dimensions
       Section tiledSection = dtiled.makeVarSection(mainv);
-      //System.out.println(" tiledSection: " + tiledSection);
+      // System.out.println(" tiledSection: " + tiledSection);
 
       // now use a TileLayout to figure out how to "distribute" it to the result array
       Array varData;
@@ -149,11 +150,12 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
         // read in the entire data from this nested dataset
         varData = dtiled.read(mainv, cancelTask);
         if (varData == null)
-          throw new IOException("cant read "+mainv.getFullName());
+          throw new IOException("cant read " + mainv.getFullName());
 
         index = new TileLayout(tiledSection, wantSection);
 
-        if (debug) System.out.println(" varData read: " + new Section(varData.getShape()));
+        if (debug)
+          System.out.println(" varData read: " + new Section(varData.getShape()));
       } catch (InvalidRangeException e) {
         throw new IllegalArgumentException(e.getMessage());
       }
@@ -170,7 +172,8 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
 
       // covers the case of coordinate variables for a 1 row or 1 col tiling.
       // doesnt eliminate duplicate reading in general
-      if (varData.getSize() == mainv.getSize()) break;
+      if (varData.getSize() == mainv.getSize())
+        break;
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -210,13 +213,15 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
         // read in the desired section of data from this nested dataset
         Section needToRead = tiledSection.intersect(wantSection); // the part we need to read
 
-        if (debug) System.out.println(" tiledSection: " + tiledSection + " from file " + dtiled.getLocation());
-        if (debug) System.out.println(" intersection: " + needToRead);
+        if (debug)
+          System.out.println(" tiledSection: " + tiledSection + " from file " + dtiled.getLocation());
+        if (debug)
+          System.out.println(" intersection: " + needToRead);
 
         Section localNeed = needToRead.shiftOrigin(tiledSection); // shifted to the tiled section
         varData = dtiled.read(mainv, cancelTask, localNeed.getRanges());
         if (varData == null)
-          throw new IOException("cant read "+mainv.getFullName());
+          throw new IOException("cant read " + mainv.getFullName());
 
         index = new TileLayout(needToRead, wantSection);
 
@@ -236,7 +241,8 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
 
       // covers the case of coordinate variables for a 1 row or 1 col tiling.
       // doesnt eliminate duplicate reading in general
-      if (varData.getSize() == mainv.getSize()) break;
+      if (varData.getSize() == mainv.getSize())
+        break;
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -246,7 +252,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
   }
 
   private class TileLayout {
-    //Section dataSection, resultSection;
+    // Section dataSection, resultSection;
     private int srcPos = 0, resultPos, nelems;
     private int total, startElem;
     Index index;
@@ -254,8 +260,10 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     TileLayout(Section localSection, Section wantSection) throws InvalidRangeException {
       Section dataSection = localSection.compact();
       Section resultSection = wantSection.compact();
-      if (debug) System.out.println(" resultSection: " + resultSection);
-      if (debug) System.out.println(" dataSection: " + dataSection);
+      if (debug)
+        System.out.println(" resultSection: " + resultSection);
+      if (debug)
+        System.out.println(" dataSection: " + dataSection);
 
       int rank = dataSection.getRank();
 
@@ -267,7 +275,8 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
       startElem = 0; // offset in want
       for (int ii = rank - 1; ii >= 0; ii--) {
         int d = dataSection.getOrigin(ii) - resultSection.getOrigin(ii);
-        if (d > 0) startElem += product * d;
+        if (d > 0)
+          startElem += product * d;
         product *= resultSection.getShape(ii);
       }
       resultPos = startElem;
@@ -310,8 +319,8 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
   }
 
   @Override
-  protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS, String sectionSpec,
-                                EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+  protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
+      String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
     return new DatasetTiled(cacheName, location, id, sectionSpec, enhance, reader);
   }
 
@@ -327,15 +336,15 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
      * With this constructor, the actual opening of the dataset is deferred, and done by the reader.
      * Used with explicit netcdf elements, and scanned files.
      *
-     * @param cacheName   a unique name to use for caching
-     * @param location    attribute "location" on the netcdf element
-     * @param id          attribute "id" on the netcdf element
+     * @param cacheName a unique name to use for caching
+     * @param location attribute "location" on the netcdf element
+     * @param id attribute "id" on the netcdf element
      * @param sectionSpec attribute "sectionSpec" on the netcdf element
-     * @param enhance     open dataset in enhance mode
-     * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
+     * @param enhance open dataset in enhance mode
+     * @param reader factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected DatasetTiled(String cacheName, String location, String id, String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance,
-                           ucar.nc2.util.cache.FileFactory reader) {
+    protected DatasetTiled(String cacheName, String location, String id, String sectionSpec,
+        EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
       super(cacheName, location, id, enhance, reader);
       this.sectionSpec = sectionSpec;
 

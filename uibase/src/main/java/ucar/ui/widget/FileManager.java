@@ -24,6 +24,7 @@ import ucar.util.prefs.PreferencesExt;
 /**
  * Cover for JFileChooser.
  * <p/>
+ * 
  * <pre>
  * <p/>
    javax.swing.filechooser.FileFilter[] filters = new javax.swing.filechooser.FileFilter[2];
@@ -39,7 +40,7 @@ import ucar.util.prefs.PreferencesExt;
      }
    };
    BAMutil.setActionProperties( fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
-   </pre>
+ * </pre>
  *
  * @author John Caron
  */
@@ -57,8 +58,8 @@ public class FileManager {
 
   // for override
   protected JPanel main;
-  //protected boolean selectedURL = false;
-  //protected ComboBox urlComboBox;
+  // protected boolean selectedURL = false;
+  // protected ComboBox urlComboBox;
 
   private boolean readOk = true, selectedFile = false;
   private static boolean debug = false;
@@ -72,7 +73,7 @@ public class FileManager {
   }
 
   public FileManager(JFrame parent, String defDir, String file_extension, String desc, PreferencesExt prefs) {
-    this(parent, defDir, new FileFilter[]{new ExtFilter(file_extension, desc)}, prefs);
+    this(parent, defDir, new FileFilter[] {new ExtFilter(file_extension, desc)}, prefs);
   }
 
   public FileManager(JFrame parent, String defDir, FileFilter[] filters, PreferencesExt prefs) {
@@ -87,12 +88,14 @@ public class FileManager {
       defaultDirs.add(dirName);
     }
 
-    /* funky windows workaround
-    String osName = System.getProperty("os.name");
-    //System.out.println("OS ==  "+ osName+" def ="+defDir);
-    boolean isWindose = (0 <= osName.indexOf("Windows"));
-    if (isWindose)
-      defaultDirs.add("C:/"); */
+    /*
+     * funky windows workaround
+     * String osName = System.getProperty("os.name");
+     * //System.out.println("OS ==  "+ osName+" def ="+defDir);
+     * boolean isWindose = (0 <= osName.indexOf("Windows"));
+     * if (isWindose)
+     * defaultDirs.add("C:/");
+     */
 
     File defaultDirectory = findDefaultDirectory(defaultDirs);
     try {
@@ -105,13 +108,14 @@ public class FileManager {
     }
 
     chooser.addActionListener(e -> {
-        if (debug) System.out.println("**** chooser event=" + e.getActionCommand() + "\n  " + e);
-        //if (debug) System.out.println("  curr directory="+chooser.getCurrentDirectory());
-        //if (debug) System.out.println("  selected file="+chooser.getSelectedFile());
+      if (debug)
+        System.out.println("**** chooser event=" + e.getActionCommand() + "\n  " + e);
+      // if (debug) System.out.println(" curr directory="+chooser.getCurrentDirectory());
+      // if (debug) System.out.println(" selected file="+chooser.getSelectedFile());
 
-        if (e.getActionCommand().equals("ApproveSelection"))
-          selectedFile = true;
-        w.setVisible(false);
+      if (e.getActionCommand().equals("ApproveSelection"))
+        selectedFile = true;
+      w.setVisible(false);
     });
 
     // set filters
@@ -136,7 +140,7 @@ public class FileManager {
     AbstractAction usedirAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         String item = (String) dirComboBox.getSelectedItem();
-        // System.out.println(" cb =  "+item);
+        // System.out.println(" cb = "+item);
         if (item != null)
           chooser.setCurrentDirectory(new File(item));
       }
@@ -146,7 +150,7 @@ public class FileManager {
     AbstractAction savedirAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         File currDir = chooser.getCurrentDirectory();
-        //System.out.println("  curr directory="+currDir);
+        // System.out.println(" curr directory="+currDir);
         if (currDir != null)
           dirComboBox.addItem(currDir.getPath());
       }
@@ -177,17 +181,19 @@ public class FileManager {
     main.add(dirPanel, BorderLayout.NORTH);
     main.add(chooser, BorderLayout.CENTER);
 
-    /* urlComboBox = new ComboBox(prefs);
-    urlComboBox.addActionListener(e -> {
-          selectedURL = true;
-    });
+    /*
+     * urlComboBox = new ComboBox(prefs);
+     * urlComboBox.addActionListener(e -> {
+     * selectedURL = true;
+     * });
+     * 
+     * JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+     * p.add( new JLabel("or a URL:"));
+     * p.add( urlComboBox);
+     * main.add(urlComboBox, BorderLayout.SOUTH);
+     */
 
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-    p.add( new JLabel("or a URL:"));
-    p.add( urlComboBox);
-    main.add(urlComboBox, BorderLayout.SOUTH); */
-
-    //w = new IndependentWindow("FileChooser", BAMutil.getImage("FileChooser"), main);
+    // w = new IndependentWindow("FileChooser", BAMutil.getImage("FileChooser"), main);
     w = new IndependentDialog(parent, true, "FileChooser", main);
     if (null != prefs) {
       Rectangle b = (Rectangle) prefs.getObject(BOUNDS);
@@ -197,7 +203,8 @@ public class FileManager {
   }
 
   public void save() {
-    if (prefs == null) return;
+    if (prefs == null)
+      return;
 
     File currDir = chooser.getCurrentDirectory();
     if (currDir != null)
@@ -217,18 +224,20 @@ public class FileManager {
     return chooser;
   }
 
-  /* public java.io.File chooseFile() {
-   if (!readOk) return null;
-   w.show();
-
-   if (chooser.showOpenDialog( parent) == JFileChooser.APPROVE_OPTION) {
-     File file = chooser.getSelectedFile();
-     if (debug) System.out.println("FileManager result "+file.getPath());
-     if (file != null)
-       return file;
-   }
-   return null;
- } */
+  /*
+   * public java.io.File chooseFile() {
+   * if (!readOk) return null;
+   * w.show();
+   * 
+   * if (chooser.showOpenDialog( parent) == JFileChooser.APPROVE_OPTION) {
+   * File file = chooser.getSelectedFile();
+   * if (debug) System.out.println("FileManager result "+file.getPath());
+   * if (file != null)
+   * return file;
+   * }
+   * return null;
+   * }
+   */
 
   public String chooseFilenameToSave(String defaultFilename) {
     chooser.setDialogType(JFileChooser.SAVE_DIALOG);
@@ -253,23 +262,27 @@ public class FileManager {
    */
   @Nullable
   public String chooseFilename() {
-    if (!readOk) return null;
+    if (!readOk)
+      return null;
     selectedFile = false;
-    //selectedURL = false;
+    // selectedURL = false;
     w.setVisible(true); // modal, so blocks; listener calls hide(), which unblocks.
 
     if (selectedFile) {
       File file = chooser.getSelectedFile();
-      if (file == null) return null;
+      if (file == null)
+        return null;
       try {
         return file.getCanonicalPath().replace('\\', '/');
       } catch (IOException ioe) {
       } // return null
     }
 
-    /* if (selectedURL) {
-      return (String) urlComboBox.getSelectedItem();
-    }  */
+    /*
+     * if (selectedURL) {
+     * return (String) urlComboBox.getSelectedItem();
+     * }
+     */
 
     return null;
   }
@@ -290,7 +303,7 @@ public class FileManager {
     chooser.setMultiSelectionEnabled(true);
     selectedFile = false;
     w.setVisible(true);
-    
+
     if (selectedFile)
       return chooser.getSelectedFiles();
 
@@ -310,16 +323,20 @@ public class FileManager {
     boolean readOK = true;
     for (String tryDefaultDirectory : tryDefaultDirectories) {
       try {
-        if (debug) System.out.print("FileManager try " + tryDefaultDirectory);
+        if (debug)
+          System.out.print("FileManager try " + tryDefaultDirectory);
         File dir = new File(tryDefaultDirectory);
         if (dir.exists()) {
-          if (debug) System.out.println(" = ok ");
+          if (debug)
+            System.out.println(" = ok ");
           return dir;
         } else {
-          if (debug) System.out.println(" = no ");
+          if (debug)
+            System.out.println(" = no ");
         }
       } catch (SecurityException se) {
-        if (debug) System.out.println("SecurityException in FileManager: " + se);
+        if (debug)
+          System.out.println("SecurityException in FileManager: " + se);
         readOK = false;
       }
     }

@@ -6,13 +6,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the University of Reading, nor the names of the
- *    authors or contributors may be used to endorse or promote products
- *    derived from this software without specific prior written permission.
+ * authors or contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -33,94 +33,108 @@ import org.joda.time.DateTimeField;
 import org.joda.time.DurationField;
 
 /**
- * <p>A {@link Chronology} in which each year has the same number of days but
- * the lengths of the months may be different.  May be useful for climate and
- * palaeoclimate calendars.</p>
- * <p>In this Chronology, a millisecond instant of zero corresponds with
- * 1970-01-01T00:00:00.000Z and a year has a fixed number of milliseconds.</p>
- * <p>There is no concept of an era in this calendar, so all durations and fields
- * relating to this concept are not supported.  Additionally, the concept of a
- * "weekyear" (the year that "owns" a given week) is not implemented.</p>
- * <p>Instances of this class can only be created in {@link "DateTimeZone#UTC"}.
- * (Support for time zones makes little sense in this chronology).</p>
- * <p>Instances of this class are immutable.</p>
+ * <p>
+ * A {@link Chronology} in which each year has the same number of days but
+ * the lengths of the months may be different. May be useful for climate and
+ * palaeoclimate calendars.
+ * </p>
+ * <p>
+ * In this Chronology, a millisecond instant of zero corresponds with
+ * 1970-01-01T00:00:00.000Z and a year has a fixed number of milliseconds.
+ * </p>
+ * <p>
+ * There is no concept of an era in this calendar, so all durations and fields
+ * relating to this concept are not supported. Additionally, the concept of a
+ * "weekyear" (the year that "owns" a given week) is not implemented.
+ * </p>
+ * <p>
+ * Instances of this class can only be created in {@link "DateTimeZone#UTC"}.
+ * (Support for time zones makes little sense in this chronology).
+ * </p>
+ * <p>
+ * Instances of this class are immutable.
+ * </p>
+ * 
  * @author Jon Blower
  * @see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html#calendar"
  * @author Jon
  */
 public class FixedYearVariableMonthChronology extends FixedYearLengthChronology {
-    
-    private final int[] monthLengths;
-    
-    private final DateTimeField dayOfMonth;
-    private final DateTimeField monthOfYear;
-    private final DurationField monthDuration;
-    
-    /**
-     * @param monthLengths The number of days in each month
-     * @throws NullPointerException if monthLengths is null
-     * @throws IllegalArgumentException if monthLengths is empty or contains
-     * zero or negative values.
-     */
-    public FixedYearVariableMonthChronology(int[] monthLengths) {
-        super(sumArray(monthLengths));
-        this.monthLengths = monthLengths.clone(); // defensive copy
-        this.dayOfMonth = new DayOfMonthOfFixedYearDateTimeField(this);
-        this.monthOfYear = new MonthOfFixedYearDateTimeField(this);
-        this.monthDuration = this.monthOfYear.getDurationField();
-    }
-    
-    /**
-     * Calculates the sum of the values in the given array.
-     * @throws NullPointerException if arr is null
-     * @throws IllegalArgumentException if arr is empty or contains
-     * zero or negative values.
-     */
-    private static int sumArray(int[] arr) {
-        if (arr == null) throw new NullPointerException("null array");
-        if (arr.length == 0) throw new IllegalArgumentException("Zero-length array");
-        int sum = 0;
-      for (int value : arr) {
-        if (value <= 0) {
-          throw new IllegalArgumentException("All array values must be > 0");
-        }
-        sum += value;
+
+  private final int[] monthLengths;
+
+  private final DateTimeField dayOfMonth;
+  private final DateTimeField monthOfYear;
+  private final DurationField monthDuration;
+
+  /**
+   * @param monthLengths The number of days in each month
+   * @throws NullPointerException if monthLengths is null
+   * @throws IllegalArgumentException if monthLengths is empty or contains
+   *         zero or negative values.
+   */
+  public FixedYearVariableMonthChronology(int[] monthLengths) {
+    super(sumArray(monthLengths));
+    this.monthLengths = monthLengths.clone(); // defensive copy
+    this.dayOfMonth = new DayOfMonthOfFixedYearDateTimeField(this);
+    this.monthOfYear = new MonthOfFixedYearDateTimeField(this);
+    this.monthDuration = this.monthOfYear.getDurationField();
+  }
+
+  /**
+   * Calculates the sum of the values in the given array.
+   * 
+   * @throws NullPointerException if arr is null
+   * @throws IllegalArgumentException if arr is empty or contains
+   *         zero or negative values.
+   */
+  private static int sumArray(int[] arr) {
+    if (arr == null)
+      throw new NullPointerException("null array");
+    if (arr.length == 0)
+      throw new IllegalArgumentException("Zero-length array");
+    int sum = 0;
+    for (int value : arr) {
+      if (value <= 0) {
+        throw new IllegalArgumentException("All array values must be > 0");
       }
-        return sum;
+      sum += value;
     }
+    return sum;
+  }
 
-    @Override
-    public final DateTimeField dayOfMonth() {
-        return this.dayOfMonth;
-    }
+  @Override
+  public final DateTimeField dayOfMonth() {
+    return this.dayOfMonth;
+  }
 
-    @Override
-    public final DateTimeField monthOfYear() {
-        return this.monthOfYear;
-    }
+  @Override
+  public final DateTimeField monthOfYear() {
+    return this.monthOfYear;
+  }
 
-    @Override
-    public final DurationField months() {
-        return this.monthDuration;
-    }
+  @Override
+  public final DurationField months() {
+    return this.monthDuration;
+  }
 
-    /**
-     * Gets the length of each month in days.  Returns a new array with each
-     * invocation to maintain integrity of internal data.
-     * TODO return an immutable List
-     */
-    public int[] getMonthLengths() {
-        return this.monthLengths.clone(); // Defensive copy
-    }
+  /**
+   * Gets the length of each month in days. Returns a new array with each
+   * invocation to maintain integrity of internal data.
+   * TODO return an immutable List
+   */
+  public int[] getMonthLengths() {
+    return this.monthLengths.clone(); // Defensive copy
+  }
 
-    /** Gets the average number of milliseconds in each month */
-    public long getAverageMillisInMonth() {
-        return this.years().getUnitMillis() / this.monthLengths.length;
-    }
+  /** Gets the average number of milliseconds in each month */
+  public long getAverageMillisInMonth() {
+    return this.years().getUnitMillis() / this.monthLengths.length;
+  }
 
-    @Override
-    public String toString() {
-        return "Custom calendar: fixed year length, variable month length";
-    }
+  @Override
+  public String toString() {
+    return "Custom calendar: fixed year length, variable month length";
+  }
 
 }

@@ -17,13 +17,15 @@ public interface MFile extends Comparable<MFile> {
 
   /**
    * Get time of last modification at the time the MFile object was created
+   * 
    * @return time of last modification in Unix time (msecs since reference), or -1 if unknown
    */
   long getLastModified();
 
   /**
    * Size of file in bytes
-   * @return  Size of file in bytes or -1 if unknown
+   * 
+   * @return Size of file in bytes or -1 if unknown
    */
   long getLength();
 
@@ -31,19 +33,22 @@ public interface MFile extends Comparable<MFile> {
 
   /**
    * Get full path name, replace \\ with /
+   * 
    * @return full path name
    */
   String getPath();
 
   /**
    * The name is the <em>farthest</em> element from the root in the directory hierarchy.
+   * 
    * @return the file name
    */
   String getName();
 
   /**
    * Get the parent of this
-   * @return  the parent or null
+   * 
+   * @return the parent or null
    */
   MFile getParent() throws IOException;
 
@@ -51,5 +56,6 @@ public interface MFile extends Comparable<MFile> {
 
   // does not survive serialization ??
   Object getAuxInfo();
+
   void setAuxInfo(Object info);
 }

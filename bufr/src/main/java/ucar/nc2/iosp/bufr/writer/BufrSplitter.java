@@ -12,7 +12,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,8 +26,7 @@ import java.util.Formatter;
  */
 public class BufrSplitter {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrSplitter.class);
-  private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io
-          .KMPMatch(new byte[]{'B', 'U', 'F', 'R'});
+  private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch(new byte[] {'B', 'U', 'F', 'R'});
 
   private File dirOut;
   private MessageDispatchDDS dispatcher;
@@ -37,11 +35,11 @@ public class BufrSplitter {
   private BufrSplitter(String dirName, Formatter out) throws IOException {
     this.out = out;
     dirOut = new File(dirName);
-    if (dirOut.exists() && !dirOut.isDirectory())  {
-      throw new IllegalArgumentException(dirOut+" must be a directory");
+    if (dirOut.exists() && !dirOut.isDirectory()) {
+      throw new IllegalArgumentException(dirOut + " must be a directory");
     } else if (!dirOut.exists()) {
       if (!dirOut.mkdirs())
-        throw new IllegalArgumentException(dirOut+" filed to create");
+        throw new IllegalArgumentException(dirOut + " filed to create");
     }
     dispatcher = new MessageDispatchDDS(null, dirOut);
   }
@@ -107,7 +105,7 @@ public class BufrSplitter {
       System.out.println("match at=" + matchPos + " len= " + messLen);
 
       // create a task for this message
-      //int headerLen = matchPos - start;
+      // int headerLen = matchPos - start;
       MessageTask task = new MessageTask(messLen);
       task.extractHeader(start, matchPos, b);
 
@@ -134,13 +132,14 @@ public class BufrSplitter {
       for (int i = task.len - 4; i < task.len; i++) {
         int bb = task.mess[i];
         if (bb != 55) {
-          //System.out.println("Missing End of BUFR message at pos=" + i + " " + bb);
+          // System.out.println("Missing End of BUFR message at pos=" + i + " " + bb);
           ok = false;
           bad_msgs++;
         }
       }
 
-      if (ok) processMessageTask(task);
+      if (ok)
+        processMessageTask(task);
       total_msgs++;
 
       start = matchPos + messLen + 1;
@@ -165,7 +164,8 @@ public class BufrSplitter {
 
     void extractHeader(int startScan, int messagePos, Buffer buff) {
       int sizeHeader = messagePos - startScan;
-      if (sizeHeader > 30) sizeHeader = 30;
+      if (sizeHeader > 30)
+        sizeHeader = 30;
       byte[] headerb = new byte[sizeHeader];
       int startHeader = messagePos - sizeHeader;
       System.arraycopy(buff.buff, startHeader, headerb, 0, sizeHeader);
@@ -193,7 +193,8 @@ public class BufrSplitter {
   private void processMessageTask(MessageTask mtask) {
     try {
       Message m = getMessage(new InMemoryRandomAccessFile("BUFR", mtask.mess));
-      if (null == m) return;
+      if (null == m)
+        return;
       m.setHeader(mtask.header);
       m.setRawBytes(mtask.mess);
 
@@ -254,7 +255,8 @@ public class BufrSplitter {
       done += got;
     }
 
-    if (showRead) System.out.println("Read buffer at " + bytesRead + " len=" + done);
+    if (showRead)
+      System.out.println("Read buffer at " + bytesRead + " len=" + done);
     bytesRead += done;
     return true;
   }
@@ -271,7 +273,8 @@ public class BufrSplitter {
       }
       b.have += got;
     }
-    if (showRead) System.out.println("Read buffer at " + bytesRead + " len=" + b.have);
+    if (showRead)
+      System.out.println("Read buffer at " + bytesRead + " len=" + b.have);
     bytesRead += b.have;
     return b;
   }
@@ -282,8 +285,8 @@ public class BufrSplitter {
 
     // copy remains of last buffer here
     int remain = prev.have - pos;
-    //if (remain > BUFFSIZE /2)
-    //  out.format(" remain = "+remain+" bytesRead="+bytesRead);
+    // if (remain > BUFFSIZE /2)
+    // out.format(" remain = "+remain+" bytesRead="+bytesRead);
 
     System.arraycopy(prev.buff, pos, b.buff, 0, remain);
     b.have = remain;
@@ -299,7 +302,8 @@ public class BufrSplitter {
       b.have += got;
     }
 
-    if (showRead) System.out.println("Read buffer at " + bytesRead + " len=" + b.have);
+    if (showRead)
+      System.out.println("Read buffer at " + bytesRead + " len=" + b.have);
     bytesRead += b.have;
     return b;
   }
@@ -319,8 +323,8 @@ public class BufrSplitter {
     private final JCommander jc;
 
     CommandLine(String progName, String[] args) throws ParameterException {
-      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
-      jc.setProgramName(progName);           // Displayed in the usage information.
+      this.jc = new JCommander(this, args); // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName); // Displayed in the usage information.
     }
 
     void printUsage() {

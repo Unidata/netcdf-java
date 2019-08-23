@@ -11,7 +11,6 @@ import ucar.nc2.Sequence;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
@@ -27,67 +26,73 @@ import java.util.ArrayList;
  */
 
 /*
-    Within one message there are n obs (datasets) and s fields in each dataset.
-    For compressed datasets, storage order is data(fld, obs) (obs varying fastest) :
-
-      Ro1, NBINC1, I11, I12, . . . I1n
-      Ro2, NBINC2, I21, I22, . . . I2n
-      ...
-      Ros, NBINCs, Is1, Is2, . . . Isn
-
-    where Ro1, Ro2, . . . Ros are local reference values (number of bits as Table B) for field i.
-    NBINC1 . . . NBINCs contain, as 6-bit quantities, the number of bits occupied by the increments that follow.
-     If NBINC1 = 0, all values of element I are equal to Ro1; in such cases, the increments shall be omitted.
-     For character data, NBINC shall contain the number of octets occupied by the character element.
-     However, if the character data in all subsets are identical NBINC=0.
-    Iij is the increment for the ith field and the jth obs.
-
-   A replicated field (structure) takes a group of fields and replicates them.
-   Let C be the entire compressed block for the ith field, as above.
-
-        Ci =  Roi, NBINCi, Ii1, Ii2, . . . Iin
-
-   data:
-        
-        C1, (C2, C3)*r, ... Cs
-
-   where r is set in the data descriptor, and is the same for all datasets.
-
-   A delayed replicated field (sequence) takes a group of fields and replicates them, with the number of replications
-   in the data :
-
-         C1, dr, 6bits, (C2, C3)*dr, ... Cs
-
-   where the width (nbits) of dr is set in the data descriptor. This dr must be the same for each dataset in the message.
-   For some reason there is an extra 6 bits after the dr. My guess its a programming mistake that is now needed.
-   There is no description of this case in the spec or the guide.
-
-
-   --------------------------
-
-   We use an ArrayStructureMA to hold the data, and fill it sequentially as we scan the message.
-   Each field is held in an Array stored in the member.getDataArray().
-   An iterator is stored in member.getDataObject() which keeps track of where we are.
-   For fixed length nested Structures, we need fld(dataset, inner) but we have fld(inner, dataset) se we transpose the dimensions
-     before we set the iterator.
-   For Sequences, inner.length is the same for all datasets in the message. However, it may vary across messages. However, we
-     only iterate over the inner sequence, never across all messages. So the implementation can be specific to the meassage.
-
-   */
+ * Within one message there are n obs (datasets) and s fields in each dataset.
+ * For compressed datasets, storage order is data(fld, obs) (obs varying fastest) :
+ * 
+ * Ro1, NBINC1, I11, I12, . . . I1n
+ * Ro2, NBINC2, I21, I22, . . . I2n
+ * ...
+ * Ros, NBINCs, Is1, Is2, . . . Isn
+ * 
+ * where Ro1, Ro2, . . . Ros are local reference values (number of bits as Table B) for field i.
+ * NBINC1 . . . NBINCs contain, as 6-bit quantities, the number of bits occupied by the increments that follow.
+ * If NBINC1 = 0, all values of element I are equal to Ro1; in such cases, the increments shall be omitted.
+ * For character data, NBINC shall contain the number of octets occupied by the character element.
+ * However, if the character data in all subsets are identical NBINC=0.
+ * Iij is the increment for the ith field and the jth obs.
+ * 
+ * A replicated field (structure) takes a group of fields and replicates them.
+ * Let C be the entire compressed block for the ith field, as above.
+ * 
+ * Ci = Roi, NBINCi, Ii1, Ii2, . . . Iin
+ * 
+ * data:
+ * 
+ * C1, (C2, C3)*r, ... Cs
+ * 
+ * where r is set in the data descriptor, and is the same for all datasets.
+ * 
+ * A delayed replicated field (sequence) takes a group of fields and replicates them, with the number of replications
+ * in the data :
+ * 
+ * C1, dr, 6bits, (C2, C3)*dr, ... Cs
+ * 
+ * where the width (nbits) of dr is set in the data descriptor. This dr must be the same for each dataset in the
+ * message.
+ * For some reason there is an extra 6 bits after the dr. My guess its a programming mistake that is now needed.
+ * There is no description of this case in the spec or the guide.
+ * 
+ * 
+ * --------------------------
+ * 
+ * We use an ArrayStructureMA to hold the data, and fill it sequentially as we scan the message.
+ * Each field is held in an Array stored in the member.getDataArray().
+ * An iterator is stored in member.getDataObject() which keeps track of where we are.
+ * For fixed length nested Structures, we need fld(dataset, inner) but we have fld(inner, dataset) se we transpose the
+ * dimensions
+ * before we set the iterator.
+ * For Sequences, inner.length is the same for all datasets in the message. However, it may vary across messages.
+ * However, we
+ * only iterate over the inner sequence, never across all messages. So the implementation can be specific to the
+ * meassage.
+ * 
+ */
 
 public class MessageCompressedDataReader {
 
   /**
    * Read all datasets from a single message
+   * 
    * @param s outer variables
    * @param proto prototype message, has been processed
-   * @param m   read this message
+   * @param m read this message
    * @param raf from this file
-   * @param f  output bit count debugging info (may be null)
-   * @return  ArrayStructure with all the data from the message in it.
+   * @param f output bit count debugging info (may be null)
+   * @return ArrayStructure with all the data from the message in it.
    * @throws IOException on read error
    */
-  public ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException {
+  public ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f)
+      throws IOException {
     // transfer info (refersTo, name) from the proto message
     DataDescriptor.transferInfo(proto.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
@@ -109,17 +114,17 @@ public class MessageCompressedDataReader {
    * Read some or all datasets from a single message
    *
    * @param ama place data into here in order (may be null). iterators must be already set.
-   * @param m   read this message
+   * @param m read this message
    * @param raf from this file
    * @param r which datasets, reletive to this message. null == all.
-   * @param f  output bit count debugging info (may be null)
+   * @param f output bit count debugging info (may be null)
    * @throws IOException on read error
    */
   public void readData(ArrayStructureMA ama, Message m, RandomAccessFile raf, Range r, Formatter f) throws IOException {
     // map dkey to Member recursively
     HashMap<DataDescriptor, StructureMembers.Member> map = null;
     if (ama != null) {
-      map = new HashMap<>(2*ama.getMembers().size());
+      map = new HashMap<>(2 * ama.getMembers().size());
       associateMessage2Members(ama.getStructureMembers(), m.getRootDataDescriptor(), map);
     }
 
@@ -141,25 +146,28 @@ public class MessageCompressedDataReader {
     }
 
     boolean wantRow(int row) {
-      if (ama == null) return false;
-      if (r == null) return true;
+      if (ama == null)
+        return false;
+      if (r == null)
+        return true;
       return r.contains(row);
     }
   }
 
   // An iterator is stored in member.getDataObject() which keeps track of where we are.
-  // For fixed length nested Structures, we need fld(dataset, inner1, inner2,  ...) but we have fld(inner1, inner2, ... , dataset)
-  //  so we permute the dimensions
-  //  before we set the iterator.
+  // For fixed length nested Structures, we need fld(dataset, inner1, inner2, ...) but we have fld(inner1, inner2, ... ,
+  // dataset)
+  // so we permute the dimensions
+  // before we set the iterator.
   public static void setIterators(ArrayStructureMA ama) {
     StructureMembers sms = ama.getStructureMembers();
     for (StructureMembers.Member sm : sms.getMembers()) {
-      //System.out.printf("doin %s%n", sm.getName());
-      //if (sm.getName().startsWith("first"))
-      //  System.out.println("HEY");
+      // System.out.printf("doin %s%n", sm.getName());
+      // if (sm.getName().startsWith("first"))
+      // System.out.println("HEY");
       Array data = sm.getDataArray();
       if (data instanceof ArrayStructureMA) {
-        setIterators( (ArrayStructureMA) data);
+        setIterators((ArrayStructureMA) data);
 
       } else {
         int[] shape = data.getShape();
@@ -169,8 +177,9 @@ public class MessageCompressedDataReader {
             datap = data.transpose(0, 1);
           else {
             int[] pdims = new int[shape.length]; // (0,1,2,3...) -> (1,2,3...,0)
-            for (int i=0; i< shape.length-1; i++) pdims[i] = i+1;
-            datap = data.permute( pdims);
+            for (int i = 0; i < shape.length - 1; i++)
+              pdims[i] = i + 1;
+            datap = data.permute(pdims);
           }
           sm.setDataObject(datap.getIndexIterator());
         } else {
@@ -180,15 +189,16 @@ public class MessageCompressedDataReader {
     }
   }
 
-  private void associateMessage2Members(StructureMembers members, DataDescriptor parent, HashMap<DataDescriptor, StructureMembers.Member> map) {
+  private void associateMessage2Members(StructureMembers members, DataDescriptor parent,
+      HashMap<DataDescriptor, StructureMembers.Member> map) {
     for (DataDescriptor dkey : parent.getSubKeys()) {
       if (dkey.name == null) {
-        //System.out.printf("ass skip %s%n", dkey);
+        // System.out.printf("ass skip %s%n", dkey);
         if (dkey.getSubKeys() != null)
-          associateMessage2Members(members, dkey, map);        
+          associateMessage2Members(members, dkey, map);
         continue;
       }
-      //System.out.printf("ass %s%n", dkey.name);
+      // System.out.printf("ass %s%n", dkey.name);
       StructureMembers.Member m = members.findMember(dkey.name);
       if (m != null) {
         map.put(dkey, m);
@@ -209,35 +219,38 @@ public class MessageCompressedDataReader {
 
   // read / count the bits in a compressed message
   private int readData(Message m, RandomAccessFile raf, Formatter f, Request req) throws IOException {
-    
+
     BitReader reader = new BitReader(raf, m.dataSection.getDataPos() + 4);
     DataDescriptor root = m.getRootDataDescriptor();
-    if (root.isBad) return 0;
+    if (root.isBad)
+      return 0;
 
     DebugOut out = (f == null) ? null : new DebugOut(f);
-    BitCounterCompressed[] counterFlds = new BitCounterCompressed[root.subKeys.size()]; // one for each field  LOOK why not m.counterFlds ?
+    BitCounterCompressed[] counterFlds = new BitCounterCompressed[root.subKeys.size()]; // one for each field LOOK why
+                                                                                        // not m.counterFlds ?
     readData(out, reader, counterFlds, root, 0, m.getNumberDatasets(), req);
 
     m.msg_nbits = 0;
     for (BitCounterCompressed counter : counterFlds)
-      if (counter != null) m.msg_nbits += counter.getTotalBits();
+      if (counter != null)
+        m.msg_nbits += counter.getTotalBits();
     return m.msg_nbits;
   }
 
   /**
    *
-   * @param out       debug info; may be null
-   * @param reader    raf wrapper for bit reading
+   * @param out debug info; may be null
+   * @param reader raf wrapper for bit reading
    * @param fldCounters one for each field
-   * @param parent    parent.subkeys() holds the fields
+   * @param parent parent.subkeys() holds the fields
    * @param bitOffset bit offset from beginning of data
    * @param ndatasets number of compressed datasets
-   * @param req       for writing into the ArrayStructure;
+   * @param req for writing into the ArrayStructure;
    * @return bitOffset
-   * @throws IOException  on read error
+   * @throws IOException on read error
    */
-  private int readData(DebugOut out, BitReader reader, BitCounterCompressed[] fldCounters, DataDescriptor parent, int bitOffset,
-                                  int ndatasets, Request req) throws IOException {
+  private int readData(DebugOut out, BitReader reader, BitCounterCompressed[] fldCounters, DataDescriptor parent,
+      int bitOffset, int ndatasets, Request req) throws IOException {
 
     List<DataDescriptor> flds = parent.getSubKeys();
     for (int fldidx = 0; fldidx < flds.size(); fldidx++) {
@@ -246,11 +259,12 @@ public class MessageCompressedDataReader {
 
         // the dpi nightmare
         if ((dkey.f == 2) && (dkey.x == 36)) {
-          req.dpiTracker = new DpiTracker( dkey.dpi, dkey.dpi.getNfields());
-          //System.out.printf("HEY gotta dpiTracker %n");
+          req.dpiTracker = new DpiTracker(dkey.dpi, dkey.dpi.getNfields());
+          // System.out.printf("HEY gotta dpiTracker %n");
         }
 
-        if (out != null) out.f.format("%s %d %s (%s) %n", out.indent(), out.fldno++, dkey.name, dkey.getFxyName());
+        if (out != null)
+          out.f.format("%s %d %s (%s) %n", out.indent(), out.fldno++, dkey.name, dkey.getFxyName());
         // System.out.printf("HEY skipping %s %n", dkey);
         continue;
       }
@@ -267,7 +281,8 @@ public class MessageCompressedDataReader {
         reader.bits2UInt(6);
         // System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
         if (null != out)
-          out.f.format("%s--sequence %s bitOffset=%d replication=%s %n", out.indent(), dkey.getFxyName(), bitOffset, count);
+          out.f.format("%s--sequence %s bitOffset=%d replication=%s %n", out.indent(), dkey.getFxyName(), bitOffset,
+              count);
         bitOffset += 6; // LOOK seems to be an extra 6 bits.
 
         counter.addNestedCounters(count);
@@ -281,7 +296,8 @@ public class MessageCompressedDataReader {
       // structure
       if (dkey.type == 3) {
         if (null != out)
-          out.f.format("%s--structure %s bitOffset=%d replication=%s %n", out.indent(), dkey.getFxyName(), bitOffset, dkey.replication);
+          out.f.format("%s--structure %s bitOffset=%d replication=%s %n", out.indent(), dkey.getFxyName(), bitOffset,
+              dkey.replication);
 
         // p 11 of "standard", doesnt really describe the case of replication AND compression
         counter.addNestedCounters(dkey.replication);
@@ -297,7 +313,7 @@ public class MessageCompressedDataReader {
             bitOffset = readData(null, reader, nested, dkey, bitOffset, ndatasets, req);
           }
         }
-        //if (null != out) out.f.format("--back %s %d %n", dkey.getFxyName(), bitOffset);
+        // if (null != out) out.f.format("--back %s %d %n", dkey.getFxyName(), bitOffset);
 
         continue;
       }
@@ -311,12 +327,12 @@ public class MessageCompressedDataReader {
         member = req.map.get(dkey);
         iter = (IndexIterator) member.getDataObject();
         if (iter == null) {
-          //System.out.printf("HEY missing iter %s%n", dkey);
+          // System.out.printf("HEY missing iter %s%n", dkey);
           dataDpi = (ArrayStructure) member.getDataArray();
         }
       }
 
-      reader.setBitOffset(bitOffset);  // ?? needed ??
+      reader.setBitOffset(bitOffset); // ?? needed ??
 
       // char data special case
       if (dkey.type == 1) {
@@ -325,13 +341,15 @@ public class MessageCompressedDataReader {
         for (int i = 0; i < nc; i++)
           minValue[i] = (byte) reader.bits2UInt(8);
         int dataWidth = (int) reader.bits2UInt(6); // incremental data width in bytes
-        counter.setDataWidth(8*dataWidth);
-        int totalWidth = dkey.bitWidth + 6 + 8*dataWidth * ndatasets; // total width in bits for this compressed set of values
+        counter.setDataWidth(8 * dataWidth);
+        int totalWidth = dkey.bitWidth + 6 + 8 * dataWidth * ndatasets; // total width in bits for this compressed set
+                                                                        // of values
         bitOffset += totalWidth; // bitOffset now points to the next field
- 
+
         if (null != out)
-          out.f.format("%s read %d %s (%s) bitWidth=%d defValue=%s dataWidth=%d n=%d bitOffset=%d %n",
-                  out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, CDM.utf8Charset), dataWidth, ndatasets, bitOffset);
+          out.f.format("%s read %d %s (%s) bitWidth=%d defValue=%s dataWidth=%d n=%d bitOffset=%d %n", out.indent(),
+              out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, CDM.utf8Charset),
+              dataWidth, ndatasets, bitOffset);
 
         if (iter != null) {
           for (int dataset = 0; dataset < ndatasets; dataset++) {
@@ -351,14 +369,17 @@ public class MessageCompressedDataReader {
               if (req.wantRow(dataset))
                 for (int i = 0; i < nc; i++) {
                   int cval = incValue[i];
-                  if (cval < 32 || cval > 126) cval = 0; // printable ascii KLUDGE!
+                  if (cval < 32 || cval > 126)
+                    cval = 0; // printable ascii KLUDGE!
                   iter.setCharNext((char) cval); // ??
                 }
-              if (out != null) out.f.format(" %s,", new String(incValue, CDM.utf8Charset));
+              if (out != null)
+                out.f.format(" %s,", new String(incValue, CDM.utf8Charset));
             }
           }
         }
-        if (out != null) out.f.format("%n");
+        if (out != null)
+          out.f.format("%n");
         continue;
       }
 
@@ -372,22 +393,24 @@ public class MessageCompressedDataReader {
         isDpiField = true;
         DataDescriptor dpiDD = req.dpiTracker.getDpiDD(req.outerRow);
         useBitWidth = dpiDD.bitWidth;
-        //System.out.printf("HEY gotta dpiField bitWidth=%d %n", useBitWidth);
+        // System.out.printf("HEY gotta dpiField bitWidth=%d %n", useBitWidth);
       }
 
       long dataMin = reader.bits2UInt(useBitWidth);
-      int dataWidth = (int) reader.bits2UInt(6);  // increment data width - always in 6 bits, so max is 2^6 = 64
+      int dataWidth = (int) reader.bits2UInt(6); // increment data width - always in 6 bits, so max is 2^6 = 64
       if (dataWidth > useBitWidth && (null != out))
         out.f.format(" BAD WIDTH ");
-      if (dkey.type == 1) dataWidth *= 8; // char data count is in bytes
+      if (dkey.type == 1)
+        dataWidth *= 8; // char data count is in bytes
       counter.setDataWidth(dataWidth);
 
       int totalWidth = useBitWidth + 6 + dataWidth * ndatasets; // total width in bits for this compressed set of values
       bitOffset += totalWidth; // bitOffset now points to the next field
 
       if (null != out)
-        out.f.format("%s read %d, %s (%s) bitWidth=%d dataMin=%d (%f) dataWidth=%d n=%d bitOffset=%d %n",
-                out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), useBitWidth, dataMin, dkey.convert(dataMin), dataWidth, ndatasets, bitOffset);
+        out.f.format("%s read %d, %s (%s) bitWidth=%d dataMin=%d (%f) dataWidth=%d n=%d bitOffset=%d %n", out.indent(),
+            out.fldno++, dkey.name, dkey.getFxyName(), useBitWidth, dataMin, dkey.convert(dataMin), dataWidth,
+            ndatasets, bitOffset);
 
       // numeric fields
 
@@ -397,7 +420,7 @@ public class MessageCompressedDataReader {
 
         if (dataWidth > 0) {
           long cv = reader.bits2UInt(dataWidth);
-          if ( BufrNumbers.isMissing(cv, dataWidth))
+          if (BufrNumbers.isMissing(cv, dataWidth))
             value = BufrNumbers.missingValue(useBitWidth); // set to missing value
           else // add to minimum
             value += cv;
@@ -407,7 +430,7 @@ public class MessageCompressedDataReader {
         if (dataWidth > useBitWidth) {
           long missingVal = BufrNumbers.missingValue(useBitWidth);
           if ((value & missingVal) != value) // overflow
-            value = missingVal;     // replace with missing value
+            value = missingVal; // replace with missing value
         }
 
         if (req.wantRow(dataset)) {
@@ -429,19 +452,22 @@ public class MessageCompressedDataReader {
         }
         // since dpi must be the same for all datasets, just keep the first one
         if (isDpi && (dataset == 0))
-          req.dpiTracker.setDpiValue(req.outerRow, value); // keep track of dpi values in the tracker - perhaps not expose
+          req.dpiTracker.setDpiValue(req.outerRow, value); // keep track of dpi values in the tracker - perhaps not
+                                                           // expose
 
-        if ((out != null) && (dataWidth > 0)) out.f.format(" %d (%f)", value, dkey.convert(value));
+        if ((out != null) && (dataWidth > 0))
+          out.f.format(" %d (%f)", value, dkey.convert(value));
       }
-      if (out != null) out.f.format("%n");
+      if (out != null)
+        out.f.format("%n");
     }
 
     return bitOffset;
   }
 
   // read in the data into an ArrayStructureMA, holding an ArrayObject() of ArraySequence
-  private int makeArraySequenceCompressed(DebugOut out, BitReader reader, BitCounterCompressed bitCounterNested, DataDescriptor seqdd,
-                         int bitOffset, int ndatasets, int count, Request req) throws IOException {
+  private int makeArraySequenceCompressed(DebugOut out, BitReader reader, BitCounterCompressed bitCounterNested,
+      DataDescriptor seqdd, int bitOffset, int ndatasets, int count, Request req) throws IOException {
 
     // construct ArrayStructureMA and associated map
     ArrayStructureMA ama = null;
@@ -449,24 +475,26 @@ public class MessageCompressedDataReader {
     HashMap<DataDescriptor, StructureMembers.Member> nmap = null;
     if (req.map != null) {
       Sequence seq = (Sequence) seqdd.refersTo;
-      int[] shape = new int[]{ndatasets, count};  // seems unlikely this can handle recursion
+      int[] shape = new int[] {ndatasets, count}; // seems unlikely this can handle recursion
       ama = ArrayStructureMA.factoryMA(seq, shape);
       setIterators(ama);
 
       members = ama.getStructureMembers();
-      nmap = new HashMap<>(2*members.getMembers().size());
+      nmap = new HashMap<>(2 * members.getMembers().size());
       associateMessage2Members(members, seqdd, nmap);
     }
     Request nreq = new Request(ama, nmap, req.r);
 
     // iterate over the number of replications, reading ndataset compressed values at each iteration
-    if (out != null) out.indent.incr();
+    if (out != null)
+      out.indent.incr();
     for (int i = 0; i < count; i++) {
       BitCounterCompressed[] nested = bitCounterNested.getNestedCounters(i);
       nreq.outerRow = i;
       bitOffset = readData(out, reader, nested, seqdd, bitOffset, ndatasets, nreq);
     }
-    if (out != null) out.indent.decr();
+    if (out != null)
+      out.indent.decr();
 
     // add ArraySequence to the ArrayObject in the outer structure
     if (req.map != null) {
@@ -502,9 +530,9 @@ public class MessageCompressedDataReader {
     DataDescriptor getDpiDD(int fldPresentIndex) {
       if (dpiDD == null) {
         dpiDD = new ArrayList<>();
-        for (int i=0; i<isPresent.length; i++) {
+        for (int i = 0; i < isPresent.length; i++) {
           if (isPresent[i])
-             dpiDD.add(dpi.linear.get(i));
+            dpiDD.add(dpi.linear.get(i));
         }
       }
       return dpiDD.get(fldPresentIndex);

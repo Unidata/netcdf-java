@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -26,10 +25,12 @@ public class TestStructureSubset extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   NetcdfFile ncfile;
+
   protected void setUp() throws Exception {
-    ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir+"ft/station/Surface_METAR_20080205_0000.nc");
+    ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
+
   protected void tearDown() throws Exception {
     ncfile.close();
   }
@@ -40,22 +41,22 @@ public class TestStructureSubset extends TestCase {
     assert record != null;
 
     List<String> vars = new ArrayList<String>();
-    vars.add( "wind_speed");
-    vars.add( "wind_gust");
-    vars.add( "report");
+    vars.add("wind_speed");
+    vars.add("wind_gust");
+    vars.add("report");
     Structure subset = record.select(vars);
 
     // read entire subset
     ArrayStructure dataAll = (ArrayStructure) subset.read();
 
     StructureMembers sm = dataAll.getStructureMembers();
-    for(StructureMembers.Member m : sm.getMembers()) {
+    for (StructureMembers.Member m : sm.getMembers()) {
       Variable v = subset.findVariable(m.getName());
       assert v != null;
       Array mdata = dataAll.extractMemberArray(m);
       assert mdata.getShape()[0] == dataAll.getShape()[0];
       assert mdata.getElementType() == m.getDataType().getPrimitiveClassType();
-      System.out.println(m.getName()+ " shape="+new Section(mdata.getShape()));
+      System.out.println(m.getName() + " shape=" + new Section(mdata.getShape()));
     }
     System.out.println("*** TestStructureSubset ok");
   }
@@ -74,14 +75,14 @@ public class TestStructureSubset extends TestCase {
     ArrayStructure dataAll = (ArrayStructure) subset.read(new Section("0:10"));
     assert dataAll.getSize() == 11;
 
-    StructureMembers sm =dataAll.getStructureMembers();
-    for(StructureMembers.Member m : sm.getMembers()) {
+    StructureMembers sm = dataAll.getStructureMembers();
+    for (StructureMembers.Member m : sm.getMembers()) {
       Variable v = subset.findVariable(m.getName());
       assert v != null;
       Array mdata = dataAll.extractMemberArray(m);
       assert mdata.getShape()[0] == dataAll.getShape()[0];
       assert mdata.getElementType() == m.getDataType().getPrimitiveClassType();
-      System.out.println(m.getName()+ " shape="+new Section(mdata.getShape()));
+      System.out.println(m.getName() + " shape=" + new Section(mdata.getShape()));
     }
     System.out.println("*** TestStructureSubset ok");
   }

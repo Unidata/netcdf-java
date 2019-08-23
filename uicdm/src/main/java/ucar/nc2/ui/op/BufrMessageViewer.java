@@ -26,9 +26,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import ucar.nc2.ui.StructureTable;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -66,28 +64,29 @@ public class BufrMessageViewer extends JPanel {
 
     AbstractButton tableButt = BAMutil.makeButtcon("Structure", "Data Table", false);
     tableButt.addActionListener(e -> {
-        try {
-          NetcdfFile ncd = makeBufrDataset() ;
-          Variable v = ncd.findVariable(BufrIosp2.obsRecord);
-          if (v instanceof Structure) {
-            if (dataTable == null) makeDataTable();
-            dataTable.setStructure((Structure) v);
-            dataWindow.show();
-          }
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
-          ex.printStackTrace();
+      try {
+        NetcdfFile ncd = makeBufrDataset();
+        Variable v = ncd.findVariable(BufrIosp2.obsRecord);
+        if (v instanceof Structure) {
+          if (dataTable == null)
+            makeDataTable();
+          dataTable.setStructure((Structure) v);
+          dataWindow.show();
         }
+      } catch (Exception ex) {
+        JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
+        ex.printStackTrace();
+      }
     });
     buttPanel.add(tableButt);
 
     AbstractButton showButt = BAMutil.makeButtcon("GetAll", "Read All Data", false);
     showButt.addActionListener(e -> {
-        Formatter f = new Formatter();
-        readData(f);
-        infoTA2.setText(f.toString());
-        infoTA2.gotoTop();
-        infoWindow2.show();
+      Formatter f = new Formatter();
+      readData(f);
+      infoTA2.setText(f.toString());
+      infoTA2.gotoTop();
+      infoWindow2.show();
     });
     buttPanel.add(showButt);
 
@@ -110,41 +109,42 @@ public class BufrMessageViewer extends JPanel {
 
     AbstractButton configButt = BAMutil.makeButtcon("Dump", "Make BufrConfig", false);
     configButt.addActionListener(e -> {
-        if (raf == null) return;
-        try {
-          BufrConfig config = BufrConfig.scanEntireFile(raf);
-          Formatter out = new Formatter();
-          config.show(out);
-          infoTA2.setText(out.toString());
+      if (raf == null)
+        return;
+      try {
+        BufrConfig config = BufrConfig.scanEntireFile(raf);
+        Formatter out = new Formatter();
+        config.show(out);
+        infoTA2.setText(out.toString());
 
-        } catch (Exception ex) {
-          ex.printStackTrace();
-          StringWriter sw = new StringWriter(10000);
-          ex.printStackTrace(new PrintWriter(sw));
-          infoTA2.setText(sw.toString());
-        }
-        infoTA2.gotoTop();
-        infoWindow2.show();
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        StringWriter sw = new StringWriter(10000);
+        ex.printStackTrace(new PrintWriter(sw));
+        infoTA2.setText(sw.toString());
+      }
+      infoTA2.gotoTop();
+      infoWindow2.show();
     });
     buttPanel.add(configButt);
 
     AbstractButton writeButton = BAMutil.makeButtcon("nj22/V3", "Write index", false);
     writeButton.addActionListener(e -> {
-        Formatter f = new Formatter();
-        try {
-          if (writeIndex(f)) {
-            f.format("Index written");
-            infoTA2.setText(f.toString());
-          }
-
-        } catch (Exception ex) {
-          ex.printStackTrace();
-          StringWriter sw = new StringWriter(10000);
-          ex.printStackTrace(new PrintWriter(sw));
-          infoTA2.setText(sw.toString());
+      Formatter f = new Formatter();
+      try {
+        if (writeIndex(f)) {
+          f.format("Index written");
+          infoTA2.setText(f.toString());
         }
-        infoTA2.gotoTop();
-        infoWindow2.show();
+
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        StringWriter sw = new StringWriter(10000);
+        ex.printStackTrace(new PrintWriter(sw));
+        infoTA2.setText(sw.toString());
+      }
+      infoTA2.gotoTop();
+      infoWindow2.show();
     });
     buttPanel.add(writeButton);
 
@@ -152,38 +152,45 @@ public class BufrMessageViewer extends JPanel {
 
     messageTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
     messageTable.addListSelectionListener(e -> {
-        ddsTable.setBeans(new ArrayList());
-        obsTable.setBeans(new ArrayList());
+      ddsTable.setBeans(new ArrayList());
+      obsTable.setBeans(new ArrayList());
 
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        if (mb == null) return;
-        List<DdsBean> beanList = new ArrayList<>();
-        try {
-          setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
-          setObs(mb.m);
-        } catch (Exception e1) {
-          JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
-          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        ddsTable.setBeans(beanList);
+      MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+      if (mb == null)
+        return;
+      List<DdsBean> beanList = new ArrayList<>();
+      try {
+        setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
+        setObs(mb.m);
+      } catch (Exception e1) {
+        JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
+        e1.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+      }
+      ddsTable.setBeans(beanList);
     });
 
     obsTable = new BeanTable(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
-    /* obsTable.addListSelectionListener(e -> {
-        obsTable.getSelectedBean();
-    }); */
+    /*
+     * obsTable.addListSelectionListener(e -> {
+     * obsTable.getSelectedBean();
+     * });
+     */
 
     ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
-    /* ddsTable.addListSelectionListener(e -> {
-        ddsTable.getSelectedBean();
-    });  */
+    /*
+     * ddsTable.addListSelectionListener(e -> {
+     * ddsTable.getSelectedBean();
+     * });
+     */
 
     PopupMenu varPopup = new PopupMenu(messageTable.getJTable(), "Options");
     varPopup.addAction("Show DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean vb = (MessageBean) messageTable.getSelectedBean();
-        if (vb == null) return;
-        if (!seperateWindow) infoTA.clear();
+        if (vb == null)
+          return;
+        if (!seperateWindow)
+          infoTA.clear();
         Formatter f = new Formatter();
         try {
           if (!vb.m.isTablesComplete()) {
@@ -195,7 +202,7 @@ public class BufrMessageViewer extends JPanel {
           vb.m.dump(f);
         } catch (IOException e1) {
           JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
-          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          e1.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
         if (seperateWindow) {
           TextHistoryPane ta = new TextHistoryPane();
@@ -216,12 +223,14 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Data Table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        if (mb == null) return;
+        if (mb == null)
+          return;
         try {
           NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
           Variable v = ncd.findVariable(BufrIosp2.obsRecord);
           if (v instanceof Structure) {
-            if (dataTable == null) makeDataTable();
+            if (dataTable == null)
+              makeDataTable();
             dataTable.setStructure((Structure) v);
             dataWindow.show();
             mb.setReadOk(true);
@@ -237,7 +246,8 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("BitCount", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        if (mb == null) return;
+        if (mb == null)
+          return;
         mb.checkBits();
       }
     });
@@ -245,7 +255,8 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Bit Count Details", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        if (mb == null) return;
+        if (mb == null)
+          return;
         Message m = mb.m;
 
         Formatter out = new Formatter();
@@ -260,9 +271,8 @@ public class BufrMessageViewer extends JPanel {
           }
           int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
           DataDescriptor root = m.getRootDataDescriptor();
-          out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
-                  m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
-                  m.getCountedDataBits(), nbitsGiven);
+          out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n", m.getNumberDatasets(),
+              m.dds.isCompressed(), root.isVarLength(), m.getCountedDataBits(), nbitsGiven);
           out.format(" countBits= %d givenBits=%d %n", m.getCountedDataBits(), nbitsGiven);
           out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
           out.format("%n");
@@ -283,7 +293,8 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Read", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        if (mb == null) return;
+        if (mb == null)
+          return;
         mb.read();
       }
     });
@@ -291,7 +302,8 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Write Message", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        if (mb == null) return;
+        if (mb == null)
+          return;
         try {
           String defloc;
           String header = mb.m.getHeader();
@@ -308,19 +320,18 @@ public class BufrMessageViewer extends JPanel {
 
           makeFileChooser();
           String filename = fileChooser.chooseFilenameToSave(defloc + ".bufr");
-          if (filename == null) return;
+          if (filename == null)
+            return;
 
           File file = new File(filename);
-          try (FileOutputStream fos = new FileOutputStream(file);
-            WritableByteChannel wbc = fos.getChannel()) {
+          try (FileOutputStream fos = new FileOutputStream(file); WritableByteChannel wbc = fos.getChannel()) {
             String headerS = mb.m.getHeader();
             if (headerS != null)
               wbc.write(ByteBuffer.wrap(headerS.getBytes(StandardCharsets.UTF_8)));
 
             byte[] raw = scan.getMessageBytes(mb.m);
             wbc.write(ByteBuffer.wrap(raw));
-            JOptionPane
-                .showMessageDialog(BufrMessageViewer.this, filename + " successfully written");
+            JOptionPane.showMessageDialog(BufrMessageViewer.this, filename + " successfully written");
           }
 
         } catch (Exception ex) {
@@ -333,7 +344,8 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Show XML", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        if (mb == null) return;
+        if (mb == null)
+          return;
         Message m = mb.m;
 
         ByteArrayOutputStream out = new ByteArrayOutputStream(1000 * 100);
@@ -360,15 +372,15 @@ public class BufrMessageViewer extends JPanel {
       }
     });
 
-      varPopup.addAction("Compare DDS", new AbstractAction() {
-         public void actionPerformed(ActionEvent e) {
-           List list = messageTable.getSelectedBeans();
-           for (Object beano : list) {
-             MessageBean bean = (MessageBean) beano;
-             showDDS(bean.m);
-           }
-         }
-       });
+    varPopup.addAction("Compare DDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = messageTable.getSelectedBeans();
+        for (Object beano : list) {
+          MessageBean bean = (MessageBean) beano;
+          showDDS(bean.m);
+        }
+      }
+    });
 
 
     // the info window
@@ -397,18 +409,21 @@ public class BufrMessageViewer extends JPanel {
   }
 
   public boolean writeIndex(Formatter f) throws IOException {
-    //MFileCollectionManager dcm = scanCollection(spec, f);
+    // MFileCollectionManager dcm = scanCollection(spec, f);
 
     File bufrFile = new File(raf.getLocation());
     String name = bufrFile.getName();
     int pos = name.lastIndexOf('/');
-    if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos + 1);
+    if (pos < 0)
+      pos = name.lastIndexOf('\\');
+    if (pos > 0)
+      name = name.substring(pos + 1);
     File def = new File(bufrFile.getParent(), name + BufrCdmIndex.NCX_IDX);
 
     makeFileChooser();
     String filename = fileChooser.chooseFilename(def);
-    if (filename == null) return false;
+    if (filename == null)
+      return false;
     if (!filename.endsWith(BufrCdmIndex.NCX_IDX))
       filename += BufrCdmIndex.NCX_IDX;
     File idxFile = new File(filename);
@@ -436,7 +451,8 @@ public class BufrMessageViewer extends JPanel {
     makeFileChooser();
     String defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
     String dirName = fileChooser.chooseDirectory(defloc);
-    if (dirName == null) return;
+    if (dirName == null)
+      return;
 
     try {
       int count = 0;
@@ -451,8 +467,7 @@ public class BufrMessageViewer extends JPanel {
         }
 
         File file = new File(dirName + "/" + header + ".bufr");
-        try (FileOutputStream fos = new FileOutputStream(file);
-             WritableByteChannel wbc = fos.getChannel()) {
+        try (FileOutputStream fos = new FileOutputStream(file); WritableByteChannel wbc = fos.getChannel()) {
           String headerS = m.getHeader();
           if (headerS != null)
             wbc.write(ByteBuffer.wrap(headerS.getBytes(StandardCharsets.UTF_8)));
@@ -480,9 +495,9 @@ public class BufrMessageViewer extends JPanel {
       f.format("Read %d messages", count);
 
     } catch (Exception e) {
-       StringWriter sw = new StringWriter(10000);
-       e.printStackTrace(new PrintWriter(sw));
-       f.format("%s", sw.toString());
+      StringWriter sw = new StringWriter(10000);
+      e.printStackTrace(new PrintWriter(sw));
+      f.format("%s", sw.toString());
     }
   }
 
@@ -501,7 +516,8 @@ public class BufrMessageViewer extends JPanel {
     if (pos > 0)
       defloc = defloc.substring(0, pos);
     String filename = fileChooser.chooseFilenameToSave(defloc + ".txt");
-    if (filename == null) return;
+    if (filename == null)
+      return;
 
     try (FileOutputStream out = new FileOutputStream(filename)) {
       OutputStreamWriter fout = new OutputStreamWriter(out, StandardCharsets.UTF_8);
@@ -523,19 +539,21 @@ public class BufrMessageViewer extends JPanel {
   }
 
 
- /*  private void compare(Message m1, Message m2, Formatter f) {
-    Formatter f1 = new Formatter();
-    Formatter f2 = new Formatter();
-    m1.dump(f1);
-    m1.dump(f2);
-
-    TextHistoryPane ta = new TextHistoryPane();
-    IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), ta);
-    info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
-    ta.appendLine(f.toString());
-    ta.gotoTop();
-    info.show();
-  }  */
+  /*
+   * private void compare(Message m1, Message m2, Formatter f) {
+   * Formatter f1 = new Formatter();
+   * Formatter f2 = new Formatter();
+   * m1.dump(f1);
+   * m1.dump(f2);
+   * 
+   * TextHistoryPane ta = new TextHistoryPane();
+   * IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), ta);
+   * info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+   * ta.appendLine(f.toString());
+   * ta.gotoTop();
+   * info.show();
+   * }
+   */
 
   private void showDDS(Message m1) {
     Formatter f1 = new Formatter();
@@ -548,28 +566,30 @@ public class BufrMessageViewer extends JPanel {
     info.show();
   }
 
-  /* private void compare2(Message m1, Message m2, Formatter f) {
-    Formatter f1 = new Formatter();
-    Formatter f2 = new Formatter();
-      m1.dump(f1);
-      m1.dump(f2);
-    GoogleDiff diff = new GoogleDiff();
-    List<GoogleDiff.Diff> result = diff.diff_main(f1.toString(), f2.toString());
-    for (GoogleDiff.Diff d : result)
-      f.format("%s%n", d);
-    //DataDescriptor root1 = m1.getRootDataDescriptor();
-    //DataDescriptor root2 = m1.getRootDataDescriptor();
-    //compare(root1.getSubKeys(), root2.getSubKeys(), f);
-  }
-
-  private void compare(List<DataDescriptor> dds1, List<DataDescriptor> dds2, Formatter f) throws IOException {
-
-    int count = 0;
-    for (DataDescriptor sub1 : dds1) {
-      DataDescriptor sub2 = dds2.get(count);
-
-    }
-  } */
+  /*
+   * private void compare2(Message m1, Message m2, Formatter f) {
+   * Formatter f1 = new Formatter();
+   * Formatter f2 = new Formatter();
+   * m1.dump(f1);
+   * m1.dump(f2);
+   * GoogleDiff diff = new GoogleDiff();
+   * List<GoogleDiff.Diff> result = diff.diff_main(f1.toString(), f2.toString());
+   * for (GoogleDiff.Diff d : result)
+   * f.format("%s%n", d);
+   * //DataDescriptor root1 = m1.getRootDataDescriptor();
+   * //DataDescriptor root2 = m1.getRootDataDescriptor();
+   * //compare(root1.getSubKeys(), root2.getSubKeys(), f);
+   * }
+   * 
+   * private void compare(List<DataDescriptor> dds1, List<DataDescriptor> dds2, Formatter f) throws IOException {
+   * 
+   * int count = 0;
+   * for (DataDescriptor sub1 : dds1) {
+   * DataDescriptor sub2 = dds2.get(count);
+   * 
+   * }
+   * }
+   */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -581,7 +601,8 @@ public class BufrMessageViewer extends JPanel {
     prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (fileChooser != null) fileChooser.save();
+    if (fileChooser != null)
+      fileChooser.save();
   }
 
   private RandomAccessFile raf;
@@ -596,8 +617,10 @@ public class BufrMessageViewer extends JPanel {
     scan = new MessageScanner(raf, 0, true);
     while (scan.hasNext()) {
       Message m = scan.next();
-      if (m == null) continue;
-      if (center == -1) center = m.ids.getCenterId();
+      if (m == null)
+        continue;
+      if (center == -1)
+        center = m.ids.getCenterId();
 
       beanList.add(new MessageBean(m));
     }
@@ -640,7 +663,8 @@ public class BufrMessageViewer extends JPanel {
       Variable v = ncd.findVariable(BufrIosp2.obsRecord);
       if (v instanceof Structure) {
         Structure obs = (Structure) v;
-        StandardFields.StandardFieldsFromStructure extract = new StandardFields.StandardFieldsFromStructure(center, obs);
+        StandardFields.StandardFieldsFromStructure extract =
+            new StandardFields.StandardFieldsFromStructure(center, obs);
         try (StructureDataIterator iter = obs.getStructureIterator()) {
           while (iter.hasNext()) {
             beanList.add(new ObsBean(extract, iter.next()));
@@ -661,8 +685,7 @@ public class BufrMessageViewer extends JPanel {
 
     // no-arg constructor
 
-    public MessageBean() {
-    }
+    public MessageBean() {}
 
     // create from a dataset
 
@@ -719,17 +742,23 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getBitsOk() {
-      if (bitsOk == 0) checkBits();
+      if (bitsOk == 0)
+        checkBits();
       switch (bitsOk) {
-        default : return "N/A";
-        case 1 : return "true";
-        case 2 : return "false";
-        case 3 : return "fail";
+        default:
+          return "N/A";
+        case 1:
+          return "true";
+        case 2:
+          return "false";
+        case 3:
+          return "fail";
       }
     }
 
     void checkBits() {
-      if (getNobs() == 0) return;
+      if (getNobs() == 0)
+        return;
       try {
         boolean ok = m.isBitCountOk();
         setBitsOk(ok);
@@ -748,9 +777,12 @@ public class BufrMessageViewer extends JPanel {
 
     public String getReadOk() {
       switch (readOk) {
-        default : return "N/A";
-        case 1 : return "true";
-        case 2 : return "false";
+        default:
+          return "N/A";
+        case 1:
+          return "true";
+        case 2:
+          return "false";
       }
     }
 
@@ -828,7 +860,8 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getLocal() {
-      if (dds.isLocalOverride()) return "override";
+      if (dds.isLocalOverride())
+        return "override";
       return dds.isLocal() ? "true" : "false";
     }
 
@@ -844,8 +877,7 @@ public class BufrMessageViewer extends JPanel {
 
     // no-arg constructor
 
-    public ObsBean() {
-    }
+    public ObsBean() {}
 
     // create from a dataset
 
@@ -881,10 +913,10 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public double getHeightOfStation() {
-       return heightOfStation;
-     }
+      return heightOfStation;
+    }
 
-     public int getYear() {
+    public int getYear() {
       return year;
     }
 

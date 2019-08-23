@@ -11,7 +11,6 @@ import ucar.nc2.ft.FeatureDatasetFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
-
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.io.IOException;
@@ -45,7 +44,8 @@ public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
     try {
       instance = c.newInstance();
     } catch (InstantiationException e) {
-      throw new IllegalArgumentException("FeatureDatasetFactoryManager Class " + c.getName() + " cannot instantiate, probably need default Constructor");
+      throw new IllegalArgumentException("FeatureDatasetFactoryManager Class " + c.getName()
+          + " cannot instantiate, probably need default Constructor");
     } catch (IllegalAccessException e) {
       throw new IllegalArgumentException("FeatureDatasetFactoryManager Class " + c.getName() + " is not accessible");
     }
@@ -68,13 +68,14 @@ public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
   }
 
 
-  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog)
+      throws IOException {
     FeatureDatasetFactory fac = (FeatureDatasetFactory) analysis;
     return fac.open(FeatureType.RADIAL, ncd, null, task, errlog);
   }
 
   public FeatureType[] getFeatureTypes() {
-    return new FeatureType[]{FeatureType.RADIAL};
+    return new FeatureType[] {FeatureType.RADIAL};
   }
 }
 

@@ -5,7 +5,6 @@
 package ucar.nc2.ft2.coverage.remote;
 
 import ucar.ma2.DataType;
-
 import java.nio.ByteOrder;
 import java.util.List;
 

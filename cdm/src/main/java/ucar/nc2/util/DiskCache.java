@@ -7,7 +7,6 @@ package ucar.nc2.util;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.*;
 import java.util.*;
 
@@ -16,49 +15,58 @@ import java.util.*;
  * uncompressing files. This class does not scour itself.
  * <p>
  * Note that when a file in the cache is accessed, its lastModified date is set, which is used for the LRU scouring.
- * <p> The cdm library sometimes needs to write files, eg
+ * <p>
+ * The cdm library sometimes needs to write files, eg
  * to uncompress them, or for grib index files, etc. The first choice is to write these files
  * in the same directory that the original file lives in. However, that directory may not be
  * writeable, so we need to find a place to write them to.
  * We also want to use the file if it already exists.
  * <p>
- * <p> A writeable cache "root directory" is set: <ol>
- * <li>  explicitly by setRootDirectory()
- * <li>  through the system property "nj22.cache" if it exists
- * <li>  by appending "/nj22/cache" to the system property "user.home" if it exists
- * <li>  by appending "/nj22/cache" to the system property "user.dir" if it exists
- * <li>  use "./nj22/cache" if none of the above
+ * <p>
+ * A writeable cache "root directory" is set:
+ * <ol>
+ * <li>explicitly by setRootDirectory()
+ * <li>through the system property "nj22.cache" if it exists
+ * <li>by appending "/nj22/cache" to the system property "user.home" if it exists
+ * <li>by appending "/nj22/cache" to the system property "user.dir" if it exists
+ * <li>use "./nj22/cache" if none of the above
  * </ol>
  * <p>
- * <p> Scenario 1: want to uncompress a file; check to see if already have done so,
+ * <p>
+ * Scenario 1: want to uncompress a file; check to see if already have done so,
  * otherwise get a File that can be written to.
+ * 
  * <pre>
  * // see if already uncompressed
- * File uncompressedFile = FileCache.getFile( uncompressedFilename, false);
+ * File uncompressedFile = FileCache.getFile(uncompressedFilename, false);
  * if (!uncompressedFile.exists()) {
  *   // nope, uncompress it
- *   UncompressInputStream.uncompress( uriString, uncompressedFile);
+ *   UncompressInputStream.uncompress(uriString, uncompressedFile);
  * }
- * doSomething( uncompressedFile);
+ * doSomething(uncompressedFile);
  * </pre>
  * <p>
- * <p> Scenario 2: want to write a derived file always in the cache.
+ * <p>
+ * Scenario 2: want to write a derived file always in the cache.
+ * 
  * <pre>
- * File derivedFile = FileCache.getCacheFile( derivedFilename);
+ * File derivedFile = FileCache.getCacheFile(derivedFilename);
  * if (!derivedFile.exists()) {
- *   createDerivedFile( derivedFile);
+ *   createDerivedFile(derivedFile);
  * }
- * doSomething( derivedFile);
+ * doSomething(derivedFile);
  * </pre>
  * <p>
- * <p> Scenario 3: same as scenario 1, but use the default Cache policy:
+ * <p>
+ * Scenario 3: same as scenario 1, but use the default Cache policy:
+ * 
  * <pre>
- * File wf = FileCache.getFileStandardPolicy( uncompressedFilename);
+ * File wf = FileCache.getFileStandardPolicy(uncompressedFilename);
  * if (!wf.exists()) {
- *   writeToFile( wf);
+ *   writeToFile(wf);
  *   wf.close();
  * }
- * doSomething( wf);
+ * doSomething(wf);
  * </pre>
  *
  * @author jcaron
@@ -114,7 +122,8 @@ public class DiskCache {
     File dir = new File(root);
     if (!dir.exists())
       if (!dir.mkdirs())
-        throw new IllegalStateException("DiskCache.setRootDirectory(): could not create root directory <" + root + ">.");
+        throw new IllegalStateException(
+            "DiskCache.setRootDirectory(): could not create root directory <" + root + ">.");
     checkExist = true;
   }
 
@@ -163,7 +172,7 @@ public class DiskCache {
    * then in the cache.
    * <p>
    *
-   * @param fileLocation  normal file location
+   * @param fileLocation normal file location
    * @param alwaysInCache true if you want to look only in the cache
    * @return a File that either exists or is writeable.
    */
@@ -224,7 +233,7 @@ public class DiskCache {
   static private String makeCachePath(String fileLocation) {
     Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
 
-    fileLocation = fileLocation.replace('\\', '/');  // LOOK - use better normalization code  eg Spring StringUtils
+    fileLocation = fileLocation.replace('\\', '/'); // LOOK - use better normalization code eg Spring StringUtils
     String cachePath = urlPathEscaper.escape(fileLocation);
 
     return root + cachePath;
@@ -235,7 +244,8 @@ public class DiskCache {
     pw.println("Size   LastModified       Filename");
     File dir = new File(root);
     File[] children = dir.listFiles();
-    if (children == null) return;
+    if (children == null)
+      return;
     for (File file : children) {
       String org = EscapeStrings.urlDecode(file.getName());
       pw.println(" " + file.length() + " " + new Date(file.lastModified()) + " " + org);
@@ -246,20 +256,23 @@ public class DiskCache {
    * Remove all files with date < cutoff.
    *
    * @param cutoff earliest date to allow
-   * @param sbuff  write results here, null is ok.
+   * @param sbuff write results here, null is ok.
    */
   static public void cleanCache(Date cutoff, StringBuilder sbuff) {
-    if (sbuff != null) sbuff.append("CleanCache files before ").append(cutoff).append("\n");
+    if (sbuff != null)
+      sbuff.append("CleanCache files before ").append(cutoff).append("\n");
     File dir = new File(root);
     File[] children = dir.listFiles();
-    if (children == null) return;
+    if (children == null)
+      return;
     for (File file : children) {
       Date lastMod = new Date(file.lastModified());
       if (lastMod.before(cutoff)) {
         boolean ret = file.delete();
         if (sbuff != null) {
           sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");
-          if (!ret) sbuff.append("Error deleting ").append(file).append("\n");
+          if (!ret)
+            sbuff.append("Error deleting ").append(file).append("\n");
         }
       }
     }
@@ -270,7 +283,7 @@ public class DiskCache {
    * This will remove oldest files first.
    *
    * @param maxBytes max number of bytes in cache.
-   * @param sbuff    write results here, null is ok.
+   * @param sbuff write results here, null is ok.
    */
   static public void cleanCache(long maxBytes, StringBuilder sbuff) {
     cleanCache(maxBytes, new FileAgeComparator(), sbuff);
@@ -281,13 +294,13 @@ public class DiskCache {
    * This will remove files in sort order defined by fileComparator.
    * The first files in the sort order are kept, until the max bytes is exceeded, then they are deleted.
    *
-   * @param maxBytes       max number of bytes in cache.
+   * @param maxBytes max number of bytes in cache.
    * @param fileComparator sort files first with this
-   * @param sbuff          write results here, null is ok.
+   * @param sbuff write results here, null is ok.
    */
   static public void cleanCache(long maxBytes, Comparator<File> fileComparator, StringBuilder sbuff) {
-    if (sbuff != null) sbuff.append("DiskCache clean maxBytes= ")
-            .append(maxBytes).append("on dir ").append(root).append("\n");
+    if (sbuff != null)
+      sbuff.append("DiskCache clean maxBytes= ").append(maxBytes).append("on dir ").append(root).append("\n");
 
     File dir = new File(root);
     long total = 0, total_delete = 0;
@@ -301,8 +314,7 @@ public class DiskCache {
         if (file.length() + total > maxBytes) {
           total_delete += file.length();
           if (sbuff != null)
-            sbuff.append(" delete ").append(file).append(" (")
-                    .append(file.length()).append(")\n");
+            sbuff.append(" delete ").append(file).append(" (").append(file.length()).append(")\n");
           if (!file.delete() && sbuff != null)
             sbuff.append("Error deleting ").append(file).append("\n");
         } else {
@@ -321,7 +333,7 @@ public class DiskCache {
     public int compare(File f1, File f2) {
       long f1Age = f1.lastModified();
       long f2Age = f2.lastModified();
-      return Long.compare(f2Age, f1Age);  // Steve Ansari 6/3/2010
+      return Long.compare(f2Age, f1Age); // Steve Ansari 6/3/2010
     }
   }
 

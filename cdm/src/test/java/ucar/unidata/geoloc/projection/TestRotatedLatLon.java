@@ -4,13 +4,11 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPointImpl;
-
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -57,7 +55,7 @@ public class TestRotatedLatLon {
     Assert.assertEquals("Unexpected longitude", 254 - 360, latlonResult.getLongitude(), TOLERANCE);
     Assert.assertEquals("Unexpected latitude", 54, latlonResult.getLatitude(), TOLERANCE);
   }
-  
+
   private static class Testing {
     RotatedLatLon rll;
     static PrintStream ps = System.out;
@@ -86,11 +84,9 @@ public class TestRotatedLatLon {
 
     double[] proj(double lon, double lat, boolean fwd) {
       double[] pos = {lon, lat};
-      double[] pos2 = fwd ?
-          rll.rotate(pos, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat()) :
-          rll.rotate(pos, -rll.getPolerotate(), -rll.getLonpole(), -rll.getSinDlat());
-      ps.println((fwd ? " fwd" : " inv")
-          + " [" + lon + ", " + lat + "] -> " + Arrays.toString(pos2));
+      double[] pos2 = fwd ? rll.rotate(pos, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat())
+          : rll.rotate(pos, -rll.getPolerotate(), -rll.getLonpole(), -rll.getSinDlat());
+      ps.println((fwd ? " fwd" : " inv") + " [" + lon + ", " + lat + "] -> " + Arrays.toString(pos2));
       return pos2;
     }
   }

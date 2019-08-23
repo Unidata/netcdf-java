@@ -1,18 +1,18 @@
 /*
-Copyright 2006 Jerry Huxtable
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ * Copyright 2006 Jerry Huxtable
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /*
  * This file was semi-automatically converted from the public-domain USGS PROJ source.
@@ -20,7 +20,6 @@ limitations under the License.
 package ucar.unidata.geoloc.projection.proj4;
 
 import java.util.Formatter;
-
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
@@ -34,12 +33,12 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   // projection parameters
   double projectionLatitude, projectionLongitude; // origin in radian
   double n; // Math.sin(projectionLatitude)
-  double scaleFactor, trueScaleLatitude;  // scale or trueScale in radian
+  double scaleFactor, trueScaleLatitude; // scale or trueScale in radian
   double falseEasting, falseNorthing; // km
 
   // earth shape
   private Earth earth;
-  private double e;   // earth.getEccentricity
+  private double e; // earth.getEccentricity
   private double totalScale; // scale to convert cartesian coords in km
 
   private final static int NORTH_POLE = 1;
@@ -52,21 +51,22 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   private double akm1, sinphi0, cosphi0;
   private int mode;
 
-  public StereographicAzimuthalProjection() {  // polar stereographic with true longitude at 60 deg
+  public StereographicAzimuthalProjection() { // polar stereographic with true longitude at 60 deg
     this(90.0, 0.0, 0.9330127018922193, 60., 0, 0, new Earth());
   }
 
   /**
    * Construct a Stereographic Projection.
    *
-   * @param latt         tangent point of projection, also origin of
-   *                     projection coord system, in degree
-   * @param lont         tangent point of projection, also origin of
-   *                     projection coord system, in degree
+   * @param latt tangent point of projection, also origin of
+   *        projection coord system, in degree
+   * @param lont tangent point of projection, also origin of
+   *        projection coord system, in degree
    * @param trueScaleLat latitude in degree where scale is scale
-   * @param scale        scale factor at tangent point, "normally 1.0 but may be reduced"
+   * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
    */
-  public StereographicAzimuthalProjection(double latt, double lont, double scale, double trueScaleLat, double false_easting, double false_northing, Earth earth) {
+  public StereographicAzimuthalProjection(double latt, double lont, double scale, double trueScaleLat,
+      double false_easting, double false_northing, Earth earth) {
     super("StereographicAzimuthalProjection", false);
 
     projectionLatitude = Math.toRadians(latt);
@@ -80,7 +80,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     // earth figure
     this.earth = earth;
     this.e = earth.getEccentricity();
-    this.totalScale = earth.getMajor() * 0.001; // scale factor for cartesion coords in km.     // issue if semimajor and semiminor axis defined in dataset?
+    this.totalScale = earth.getMajor() * 0.001; // scale factor for cartesion coords in km. // issue if semimajor and
+                                                // semiminor axis defined in dataset?
     initialize();
 
     // parameters
@@ -93,10 +94,12 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
       addParameter(CF.FALSE_NORTHING, false_northing);
       addParameter(CDM.UNITS, "km");
     }
-    addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor());         // seems correct for case where dataset has semimajor axis information, but where is semiminor?
-    addParameter(CF.INVERSE_FLATTENING, 1.0 / earth.getFlattening());     // this gets us the semiminor axis from the semimajor (semimajor - flattening*semimajor)
+    addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor()); // seems correct for case where dataset has semimajor axis
+                                                        // information, but where is semiminor?
+    addParameter(CF.INVERSE_FLATTENING, 1.0 / earth.getFlattening()); // this gets us the semiminor axis from the
+                                                                      // semimajor (semimajor - flattening*semimajor)
 
-    //System.err.println(paramsToString());
+    // System.err.println(paramsToString());
 
   }
 
@@ -118,9 +121,9 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
           break;
         case SOUTH_POLE:
         case NORTH_POLE:
-          akm1 = Math.abs(trueScaleLatitude - MapMath.HALFPI) >= MapMath.EPS10 ?
-                  Math.cos(trueScaleLatitude) / Math.tan(MapMath.QUARTERPI - .5 * trueScaleLatitude) :
-                  2. * scaleFactor;
+          akm1 = Math.abs(trueScaleLatitude - MapMath.HALFPI) >= MapMath.EPS10
+              ? Math.cos(trueScaleLatitude) / Math.tan(MapMath.QUARTERPI - .5 * trueScaleLatitude)
+              : 2. * scaleFactor;
           break;
       }
     } else { // ellipsoid
@@ -130,11 +133,9 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
         case NORTH_POLE:
         case SOUTH_POLE:
           if (Math.abs(trueScaleLatitude - MapMath.HALFPI) < MapMath.EPS10)
-            akm1 = 2. * scaleFactor /
-                    Math.sqrt(Math.pow(1 + e, 1 + e) * Math.pow(1 - e, 1 - e));
+            akm1 = 2. * scaleFactor / Math.sqrt(Math.pow(1 + e, 1 + e) * Math.pow(1 - e, 1 - e));
           else {
-            akm1 = Math.cos(trueScaleLatitude) /
-                    MapMath.tsfn(trueScaleLatitude, t = Math.sin(trueScaleLatitude), e);
+            akm1 = Math.cos(trueScaleLatitude) / MapMath.tsfn(trueScaleLatitude, t = Math.sin(trueScaleLatitude), e);
             t *= e;
             akm1 /= Math.sqrt(1. - t * t);
           }
@@ -182,7 +183,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
         case NORTH_POLE:
           coslam = -coslam;
           phi = -phi;
-        //coverity[missing_break]
+          // coverity[missing_break]
         case SOUTH_POLE:
           if (Math.abs(phi - MapMath.HALFPI) < TOL)
             throw new RuntimeException("I");
@@ -216,7 +217,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
           phi = -phi;
           coslam = -coslam;
           sinphi = -sinphi;
-        //coverity[missing_break]
+          // coverity[missing_break]
         case NORTH_POLE:
           x = akm1 * MapMath.tsfn(phi, sinphi, e);
           y = -x * coslam;
@@ -310,8 +311,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
 
   private double ssfn(double phit, double sinphi, double eccen) {
     sinphi *= eccen;
-    return Math.tan(.5 * (MapMath.HALFPI + phit)) *
-            Math.pow((1. - sinphi) / (1. + sinphi), .5 * eccen);
+    return Math.tan(.5 * (MapMath.HALFPI + phit)) * Math.pow((1. - sinphi) / (1. + sinphi), .5 * eccen);
   }
 
   @Override
@@ -321,7 +321,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
+    ProjectionImpl result =
+        new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
             scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
@@ -332,7 +333,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   public String paramsToString() {
     Formatter f = new Formatter();
     f.format("origin lat,lon=%f,%f scale,trueScaleLat=%f,%f earth=%s", Math.toDegrees(projectionLatitude),
-            Math.toDegrees(projectionLongitude), scaleFactor, Math.toDegrees(trueScaleLatitude), earth);
+        Math.toDegrees(projectionLongitude), scaleFactor, Math.toDegrees(trueScaleLatitude), earth);
     return f.toString();
   }
 
@@ -341,7 +342,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     double fromLat = Math.toRadians(latLon.getLatitude());
     double theta = computeTheta(latLon.getLongitude());
 
-    //System.err.println(Math.toDegrees(theta) + " " + Math.toDegrees(fromLat));
+    // System.err.println(Math.toDegrees(theta) + " " + Math.toDegrees(fromLat));
     ProjectionPoint res = project(theta, fromLat, new ProjectionPointImpl());
 
     destPoint.setLocation(totalScale * res.getX() + falseEasting, totalScale * res.getY() + falseNorthing);
@@ -370,7 +371,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // TODO: not sure what this is, HK
-    //       just taken from ucar.unidata.geoloc.projection.Stereographic
+    // just taken from ucar.unidata.geoloc.projection.Stereographic
     return false;
   }
 
@@ -382,26 +383,30 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     StereographicAzimuthalProjection oo = (StereographicAzimuthalProjection) proj;
     if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null))
       return false; // common case is that these are null
-    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
+    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea))
+      return false;
 
-    return ((this.projectionLatitude == oo.projectionLatitude)
-            && (this.projectionLongitude == oo.projectionLongitude)
-            && (this.scaleFactor == oo.scaleFactor)
-            && (this.trueScaleLatitude == oo.trueScaleLatitude)
-            && (this.falseEasting == oo.falseEasting)
-            && (this.falseNorthing == oo.falseNorthing)
-            && this.earth.equals(oo.earth));
+    return ((this.projectionLatitude == oo.projectionLatitude) && (this.projectionLongitude == oo.projectionLongitude)
+        && (this.scaleFactor == oo.scaleFactor) && (this.trueScaleLatitude == oo.trueScaleLatitude)
+        && (this.falseEasting == oo.falseEasting) && (this.falseNorthing == oo.falseNorthing)
+        && this.earth.equals(oo.earth));
   }
 
   @Override
   public int hashCode() {
     int hash = 3;
-    hash = 67 * hash + (int) (Double.doubleToLongBits(this.projectionLatitude) ^ (Double.doubleToLongBits(this.projectionLatitude) >>> 32));
-    hash = 67 * hash + (int) (Double.doubleToLongBits(this.projectionLongitude) ^ (Double.doubleToLongBits(this.projectionLongitude) >>> 32));
-    hash = 67 * hash + (int) (Double.doubleToLongBits(this.scaleFactor) ^ (Double.doubleToLongBits(this.scaleFactor) >>> 32));
-    hash = 67 * hash + (int) (Double.doubleToLongBits(this.trueScaleLatitude) ^ (Double.doubleToLongBits(this.trueScaleLatitude) >>> 32));
-    hash = 67 * hash + (int) (Double.doubleToLongBits(this.falseEasting) ^ (Double.doubleToLongBits(this.falseEasting) >>> 32));
-    hash = 67 * hash + (int) (Double.doubleToLongBits(this.falseNorthing) ^ (Double.doubleToLongBits(this.falseNorthing) >>> 32));
+    hash = 67 * hash + (int) (Double.doubleToLongBits(this.projectionLatitude)
+        ^ (Double.doubleToLongBits(this.projectionLatitude) >>> 32));
+    hash = 67 * hash + (int) (Double.doubleToLongBits(this.projectionLongitude)
+        ^ (Double.doubleToLongBits(this.projectionLongitude) >>> 32));
+    hash = 67 * hash
+        + (int) (Double.doubleToLongBits(this.scaleFactor) ^ (Double.doubleToLongBits(this.scaleFactor) >>> 32));
+    hash = 67 * hash + (int) (Double.doubleToLongBits(this.trueScaleLatitude)
+        ^ (Double.doubleToLongBits(this.trueScaleLatitude) >>> 32));
+    hash = 67 * hash
+        + (int) (Double.doubleToLongBits(this.falseEasting) ^ (Double.doubleToLongBits(this.falseEasting) >>> 32));
+    hash = 67 * hash
+        + (int) (Double.doubleToLongBits(this.falseNorthing) ^ (Double.doubleToLongBits(this.falseNorthing) >>> 32));
     hash = 67 * hash + (this.earth != null ? this.earth.hashCode() : 0);
     return hash;
   }

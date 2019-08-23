@@ -19,41 +19,49 @@ import ucar.unidata.geoloc.ProjectionRect;
  * Accepted for CF-1.7
  *
  * grid_mapping_name = geostationary
-   Map parameters:
-     latitude_of_projection_origin
-     longitude_of_projection_origin
-     perspective_point_height
-     semi_minor_axis
-     semi_major_axis
-     inverse_flattening
-     sweep_angle_axis
-     fixed_angle_axis
-
- Map coordinates:
-  The x (abscissa) and y (ordinate) rectangular coordinates are identified by the standard_name attribute value projection_x_coordinate and projection_y_coordinate
- respectively. In the case of this projection, the projection coordinates in this projection are directly related to the scanning angle of the satellite instrument,
- and their units are radians.
-
- Notes:
-
- The algorithm for computing the mapping may be found at http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=PDF_CGMS_03&RevisionSelectionMethod=LatestReleased.
- This document assumes the point of observation is directly over the equator, and that the sweep_angle_axis is y.
-
- Notes on using the PROJ.4 software packages for computing the mapping may be found at http://trac.osgeo.org/proj/wiki/proj%3Dgeos and
- http://remotesensing.org/geotiff/proj_list/geos.html .
-
- The "perspective_point_height" is the distance to the surface of the ellipsoid. Adding the earth major axis gives the distance from the centre of the earth.
-
- The "sweep_angle_axis" attribute indicates which axis the instrument sweeps. The value = "y" corresponds to the spin-stabilized Meteosat satellites,
- the value = "x" to the GOES-R satellite.
-
- The "fixed_angle_axis" attribute indicates which axis the instrument is fixed. The values are opposite to "sweep_angle_axis". Only one of those two attributes are
- mandatory.
-
- latitude_of_projection_origin will be taken as zero (at the Equator).
-
- inverse_flattening may be specified independent of the semi_minor/major axes (GRS80). If left unspecified it will be computed
- from semi_minor/major_axis values.
+ * Map parameters:
+ * latitude_of_projection_origin
+ * longitude_of_projection_origin
+ * perspective_point_height
+ * semi_minor_axis
+ * semi_major_axis
+ * inverse_flattening
+ * sweep_angle_axis
+ * fixed_angle_axis
+ * 
+ * Map coordinates:
+ * The x (abscissa) and y (ordinate) rectangular coordinates are identified by the standard_name attribute value
+ * projection_x_coordinate and projection_y_coordinate
+ * respectively. In the case of this projection, the projection coordinates in this projection are directly related to
+ * the scanning angle of the satellite instrument,
+ * and their units are radians.
+ * 
+ * Notes:
+ * 
+ * The algorithm for computing the mapping may be found at
+ * http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=PDF_CGMS_03&RevisionSelectionMethod=LatestReleased.
+ * This document assumes the point of observation is directly over the equator, and that the sweep_angle_axis is y.
+ * 
+ * Notes on using the PROJ.4 software packages for computing the mapping may be found at
+ * http://trac.osgeo.org/proj/wiki/proj%3Dgeos and
+ * http://remotesensing.org/geotiff/proj_list/geos.html .
+ * 
+ * The "perspective_point_height" is the distance to the surface of the ellipsoid. Adding the earth major axis gives the
+ * distance from the centre of the earth.
+ * 
+ * The "sweep_angle_axis" attribute indicates which axis the instrument sweeps. The value = "y" corresponds to the
+ * spin-stabilized Meteosat satellites,
+ * the value = "x" to the GOES-R satellite.
+ * 
+ * The "fixed_angle_axis" attribute indicates which axis the instrument is fixed. The values are opposite to
+ * "sweep_angle_axis". Only one of those two attributes are
+ * mandatory.
+ * 
+ * latitude_of_projection_origin will be taken as zero (at the Equator).
+ * 
+ * inverse_flattening may be specified independent of the semi_minor/major axes (GRS80). If left unspecified it will be
+ * computed
+ * from semi_minor/major_axis values.
  *
  * @author caron
  * @since 12/5/13
@@ -67,16 +75,14 @@ public class Geostationary extends ProjectionImpl {
   GEOSTransform navigation;
 
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
-                       double semi_major_axis, double inv_flattening, boolean isSweepX) {
+      double semi_major_axis, double inv_flattening, boolean isSweepX) {
 
     // scale factors (last two doubles in the sig) less than zero indicate no scaling of map x, y coordinates
-    this(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX,
-            -1.0);
+    this(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, -1.0);
   }
 
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
-            double semi_major_axis, double inv_flattening, boolean isSweepX,
-                       double geoCoordinateScaleFactor) {
+      double semi_major_axis, double inv_flattening, boolean isSweepX, double geoCoordinateScaleFactor) {
     super(NAME, false);
 
     String sweepAngleAxis = "y";
@@ -89,7 +95,8 @@ public class Geostationary extends ProjectionImpl {
     semi_minor_axis /= 1000.0;
     semi_major_axis /= 1000.0;
 
-    navigation = new GEOSTransform(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, sweepAngleAxis);
+    navigation = new GEOSTransform(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis,
+        inv_flattening, sweepAngleAxis);
     makePP();
 
     if (geoCoordinateScaleFactor > 0) {
@@ -186,7 +193,8 @@ public class Geostationary extends ProjectionImpl {
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
     double x = ppt.getX();
     double y = ppt.getY();
-    if (isGeoCoordinateScaled) x = x * geoCoordinateScaleFactor;
+    if (isGeoCoordinateScaled)
+      x = x * geoCoordinateScaleFactor;
     double[] lonlat = navigation.satToEarth(x, y);
     destPoint.setLongitude(lonlat[0]);
     destPoint.setLatitude(lonlat[1]);
@@ -213,12 +221,15 @@ public class Geostationary extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Geostationary that = (Geostationary) o;
 
-    if (!navigation.equals(that.navigation)) return false;
+    if (!navigation.equals(that.navigation))
+      return false;
 
     return geoCoordinateScaleFactor == that.geoCoordinateScaleFactor;
 
@@ -233,6 +244,7 @@ public class Geostationary extends ProjectionImpl {
    * Create a ProjectionRect from the given LatLonRect.
    * Handles lat/lon points that do not intersect the projection panel.
    * LOOK NEEDS OVERRIDDING
+   * 
    * @param rect the LatLonRect
    * @return ProjectionRect, or null if no part of the LatLonRect intersects the projection plane
    */

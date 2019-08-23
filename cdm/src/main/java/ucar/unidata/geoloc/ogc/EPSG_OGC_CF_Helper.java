@@ -19,29 +19,28 @@ import ucar.unidata.util.Parameter;
  * @since 4.0
  */
 public class EPSG_OGC_CF_Helper {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger(EPSG_OGC_CF_Helper.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EPSG_OGC_CF_Helper.class);
 
   public enum ProjectionStandardsInfo {
     Unknown(0, "Unknown", "unknown"),
     // From CF 1.0
-    Albers_Conic_Equal_Area(9822, "Albers Equal Area", "albers_conical_equal_area"),
-    Azimuthal_Equidistant(-1, "", "azimuthal_equidistant"), // 9832, "Modified Azimuthal Equidistant" [?]
-    Lambert_Azimuthal_Equal_Area(9820, "Lambert Azimuthal Equal Area", "lambert_azimuthal_equal_area"),
-    Lambert_Conformal_Conic_2SP(9802, "Lambert Conic Conformal (2SP)", "lambert_conformal_conic"),
-    Polar_Stereographic(9810, "Polar Stereographic (Variant A)", "polar_stereographic"),
-    Rotated_Pole(-2, "", "rotated_latitude_longitude"), // 9601 "Rotated Latitude" [?????]
+    Albers_Conic_Equal_Area(9822, "Albers Equal Area", "albers_conical_equal_area"), Azimuthal_Equidistant(-1, "",
+        "azimuthal_equidistant"), // 9832, "Modified Azimuthal Equidistant" [?]
+    Lambert_Azimuthal_Equal_Area(9820, "Lambert Azimuthal Equal Area",
+        "lambert_azimuthal_equal_area"), Lambert_Conformal_Conic_2SP(9802, "Lambert Conic Conformal (2SP)",
+            "lambert_conformal_conic"), Polar_Stereographic(9810, "Polar Stereographic (Variant A)",
+                "polar_stereographic"), Rotated_Pole(-2, "", "rotated_latitude_longitude"), // 9601 "Rotated Latitude"
+                                                                                            // [?????]
     Stereographic(-3, "", "stereographic"), // 9809, "Oblique Stereographic" [?]
     Transverse_Mercator(9807, "Transverse Mercator", "transverse_mercator"),
 
     // Added in CF 1.2
-    Latitude_Longitude(0, "", "latitude_longitude"),
-    Vertical_Perspective(9838, "Vertical Perspective", "vertical_perspective"),
+    Latitude_Longitude(0, "", "latitude_longitude"), Vertical_Perspective(9838, "Vertical Perspective",
+        "vertical_perspective"),
 
     // Added in CF 1.4
-    Lambert_Cylindrical_Equal_Area(9835, "Lambert Cylindrical Equal Area", "lambert_cylindrical_equal_area"),
-    Mercator(9805, "Mercator (2SP)", "mercator"),
-    Orthographic(9840, "Orthographic", "orthographic");
+    Lambert_Cylindrical_Equal_Area(9835, "Lambert Cylindrical Equal Area", "lambert_cylindrical_equal_area"), Mercator(
+        9805, "Mercator (2SP)", "mercator"), Orthographic(9840, "Orthographic", "orthographic");
 
     private final int epsgCode;
     private final String epsgName;
@@ -70,9 +69,8 @@ public class EPSG_OGC_CF_Helper {
     }
 
     public String toString() {
-      String buf = "[[OGC: " + this.name()
-          + "] [EPSG " + this.getEpsgCode() + ": " + this.getEpsgName()
-          + "] [CF: " + this.getCfName() + "]]";
+      String buf = "[[OGC: " + this.name() + "] [EPSG " + this.getEpsgCode() + ": " + this.getEpsgName() + "] [CF: "
+          + this.getCfName() + "]]";
       return buf;
     }
 
@@ -137,11 +135,10 @@ public class EPSG_OGC_CF_Helper {
   }
 
   private static String projToString(Projection proj) {
-    if (proj == null) return "null";
+    if (proj == null)
+      return "null";
     StringBuilder sb = new StringBuilder();
-    sb.append(proj.getName())
-            .append(" [").append(proj.getClassName())
-            .append("] - parameters=[");
+    sb.append(proj.getName()).append(" [").append(proj.getClassName()).append("] - parameters=[");
     for (Parameter curProjParam : proj.getProjectionParameters()) {
       sb.append("(").append(curProjParam.toString()).append(")");
     }
@@ -162,7 +159,8 @@ public class EPSG_OGC_CF_Helper {
       if (gridMapVar != null) {
         Attribute gridMappingNameAtt = gridMapVar.findAttributeIgnoreCase(CF.GRID_MAPPING_NAME);
         if (gridMappingNameAtt != null)
-          buf.append("EPSG:").append(ProjectionStandardsInfo.getProjectionByCfName(gridMappingNameAtt.getStringValue()));
+          buf.append("EPSG:")
+              .append(ProjectionStandardsInfo.getProjectionByCfName(gridMappingNameAtt.getStringValue()));
       }
     }
 

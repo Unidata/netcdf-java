@@ -15,10 +15,8 @@ import ucar.nc2.Attribute;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.ma2.*;
-
 import java.util.*;
 import java.io.IOException;
-
 import ucar.nc2.units.DateRange;
 
 /**
@@ -33,8 +31,10 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   static private final Logger logger = LoggerFactory.getLogger(CoordinateAxis1DTime.class);
 
-  static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
-    if (org instanceof CoordinateAxis1DTime) return (CoordinateAxis1DTime) org;
+  static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages)
+      throws IOException {
+    if (org instanceof CoordinateAxis1DTime)
+      return (CoordinateAxis1DTime) org;
 
     if (org.getDataType() == DataType.CHAR)
       return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimension(0).getShortName());
@@ -71,30 +71,32 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     List<CalendarDate> cdateSection = new ArrayList<>(cdates.size());
     for (int idx : r)
-      cdateSection.add(cdates.get( idx));
+      cdateSection.add(cdates.get(idx));
 
     s.cdates = cdateSection;
     return s;
   }
 
-   /**
+  /**
    * Get the the ith CalendarDate.
+   * 
    * @param idx index
    * @return the ith CalendarDate
    */
-   public CalendarDate getCalendarDate (int idx) {
-     List<CalendarDate> cdates = getCalendarDates();  // in case we want to lazily evaluate
-     return cdates.get(idx);
-   }
+  public CalendarDate getCalendarDate(int idx) {
+    List<CalendarDate> cdates = getCalendarDates(); // in case we want to lazily evaluate
+    return cdates.get(idx);
+  }
 
   /**
    * Get calendar date range
+   * 
    * @return calendar date range
    */
   public CalendarDateRange getCalendarDateRange() {
     List<CalendarDate> cd = getCalendarDates();
     int last = cd.size();
-    return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last-1)) : null;
+    return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last - 1)) : null;
   }
 
   @Override
@@ -124,9 +126,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * Can only call this is hasDate() is true.
    * This will return
    * <ul>
-   * <li> i, if time(i) <= d < time(i+1).
-   * <li> 0, if d < time(0)
-   * <li> n-1, if d > time(n-1),  where n is length of time coordinates
+   * <li>i, if time(i) <= d < time(i+1).
+   * <li>0, if d < time(0)
+   * <li>n-1, if d > time(n-1), where n is length of time coordinates
    * </ul>
    *
    * @param d date to look for
@@ -134,7 +136,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @throws UnsupportedOperationException is no time axis or isDate() false
    */
   public int findTimeIndexFromCalendarDate(CalendarDate d) {
-    List<CalendarDate> cdates = getCalendarDates();         // LOOK linear search, switch to binary
+    List<CalendarDate> cdates = getCalendarDates(); // LOOK linear search, switch to binary
     int index = 0;
     while (index < cdates.size()) {
       if (d.compareTo(cdates.get(index)) < 0)
@@ -152,7 +154,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    */
   public boolean hasCalendarDate(CalendarDate date) {
     List<CalendarDate> cdates = getCalendarDates();
-    for (CalendarDate cd : cdates) {   // LOOK linear search, switch to binary
+    for (CalendarDate cd : cdates) { // LOOK linear search, switch to binary
       if (date.equals(cd))
         return true;
     }
@@ -161,13 +163,14 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Get the list of datetimes in this coordinate as CalendarDate objects.
+   * 
    * @return list of CalendarDates.
    */
   public List<CalendarDate> getCalendarDates() {
-     return cdates;
+    return cdates;
   }
 
-  public CalendarDate[] getCoordBoundsDate( int i) {
+  public CalendarDate[] getCoordBoundsDate(int i) {
     double[] intv = getCoordBounds(i);
     CalendarDate[] e = new CalendarDate[2];
     e[0] = helper.makeCalendarDateFromOffset(intv[0]);
@@ -175,9 +178,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return e;
   }
 
-  public CalendarDate getCoordBoundsMidpointDate( int i) {
+  public CalendarDate getCoordBoundsMidpointDate(int i) {
     double[] intv = getCoordBounds(i);
-    double midpoint = (intv[0]+intv[1])/2;
+    double midpoint = (intv[0] + intv[1]) / 2;
     return helper.makeCalendarDateFromOffset(midpoint);
   }
 
@@ -187,19 +190,21 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * Constructor for CHAR or STRING variables.
    * Must be ISO dates.
    *
-   * @param ncd         the containing dataset
-   * @param org         the underlying Variable
+   * @param ncd the containing dataset
+   * @param org the underlying Variable
    * @param errMessages put error messages here; may be null
-   * @param dims        list of dimensions
-   * @throws IOException              on read error
+   * @param dims list of dimensions
+   * @throws IOException on read error
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
-  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims) throws IOException {
-    super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription());
+  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims)
+      throws IOException {
+    super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(),
+        org.getDescription());
 
-    //Gotta set the original var. Otherwise it would be unable to read the values
+    // Gotta set the original var. Otherwise it would be unable to read the values
     this.orgVar = org;
-    
+
     this.orgName = org.orgName;
     this.helper = new CoordinateAxisTimeHelper(getCalendarFromAttribute(), null);
 
@@ -230,13 +235,13 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       String coordValue = ii.next();
       CalendarDate cd = makeCalendarDateFromStringCoord(coordValue, org, errMessages);
       sdata.set(i, coordValue);
-      result.add( cd);
+      result.add(cd);
     }
     setCachedData(sdata, true);
     return result;
   }
 
-  private List<CalendarDate> makeTimesFromStrings( VariableDS org, Formatter errMessages) throws IOException {
+  private List<CalendarDate> makeTimesFromStrings(VariableDS org, Formatter errMessages) throws IOException {
 
     int ncoords = (int) org.getSize();
     List<CalendarDate> result = new ArrayList<>(ncoords);
@@ -245,7 +250,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     IndexIterator ii = data.getIndexIterator();
     for (int i = 0; i < ncoords; i++) {
       String coordValue = (String) ii.getObjectNext();
-      CalendarDate cd = makeCalendarDateFromStringCoord( coordValue, org, errMessages);
+      CalendarDate cd = makeCalendarDateFromStringCoord(coordValue, org, errMessages);
       result.add(cd);
     }
 
@@ -253,7 +258,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   private CalendarDate makeCalendarDateFromStringCoord(String coordValue, VariableDS org, Formatter errMessages) {
-    CalendarDate cd =  helper.makeCalendarDateFromOffset(coordValue);
+    CalendarDate cd = helper.makeCalendarDateFromOffset(coordValue);
     if (cd == null) {
       if (errMessages != null) {
         errMessages.format("String time coordinate must be ISO formatted= %s%n", coordValue);
@@ -267,13 +272,14 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Constructor for numeric values - must have units
-   * @param ncd         the containing dataset
-   * @param org         the underlying Variable
+   * 
+   * @param ncd the containing dataset
+   * @param org the underlying Variable
    * @throws IOException on read error
    */
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
     super(ncd, org);
-    this.helper= new CoordinateAxisTimeHelper(getCalendarFromAttribute(), getUnitsString());
+    this.helper = new CoordinateAxisTimeHelper(getCalendarFromAttribute(), getUnitsString());
 
     // make the coordinates
     int ncoords = (int) org.getSize();
@@ -285,8 +291,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     IndexIterator ii = data.getIndexIterator();
     for (int i = 0; i < ncoords; i++) {
       double val = ii.getDoubleNext();
-      if (Double.isNaN(val)) continue;  // WTF ??
-      result.add( helper.makeCalendarDateFromOffset(val));
+      if (Double.isNaN(val))
+        continue; // WTF ??
+      result.add(helper.makeCalendarDateFromOffset(val));
       count++;
     }
 
@@ -296,13 +303,14 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       setDimension(0, localDim);
 
       // set the shortened values
-      Array shortData = Array.factory(data.getDataType(), new int[]{count});
+      Array shortData = Array.factory(data.getDataType(), new int[] {count});
       Index ima = shortData.getIndex();
       int count2 = 0;
       ii = data.getIndexIterator();
       for (int i = 0; i < ncoords; i++) {
         double val = ii.getDoubleNext();
-        if (Double.isNaN(val)) continue;
+        if (Double.isNaN(val))
+          continue;
         shortData.setDouble(ima.set0(count2), val);
         count2++;
       }
@@ -312,13 +320,14 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       setCachedData(shortData, true);
     }
 
-    cdates =  result;
+    cdates = result;
   }
 
   ///////////////////////////////////////////////////////
 
   /**
    * Does not handle non-standard Calendars
+   * 
    * @deprecated use getCalendarDates() to correctly interpret calendars
    */
   public java.util.Date[] getTimeDates() {
@@ -332,14 +341,16 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Does not handle non-standard Calendars
-    * @deprecated use getCalendarDate()
-    */
-   public java.util.Date getTimeDate (int idx) {
-     return getCalendarDate(idx).toDate();
-   }
+   * 
+   * @deprecated use getCalendarDate()
+   */
+  public java.util.Date getTimeDate(int idx) {
+    return getCalendarDate(idx).toDate();
+  }
 
-   /**
-    * Does not handle non-standard Calendars
+  /**
+   * Does not handle non-standard Calendars
+   * 
    * @deprecated use getCalendarDateRange()
    */
   public DateRange getDateRange() {
@@ -349,15 +360,17 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Does not handle non-standard Calendars
+   * 
    * @deprecated use findTimeIndexFromCalendarDate
    */
   public int findTimeIndexFromDate(java.util.Date d) {
-    return findTimeIndexFromCalendarDate( CalendarDate.of(d));
+    return findTimeIndexFromCalendarDate(CalendarDate.of(d));
   }
 
   /**
    * Does not handle non-standard Calendars
-   * @deprecated  use hasCalendarDate
+   * 
+   * @deprecated use hasCalendarDate
    */
   public boolean hasTime(Date date) {
     List<CalendarDate> cdates = getCalendarDates();

@@ -21,7 +21,6 @@ import ucar.nc2.util.DiskCache2;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -37,16 +36,14 @@ import java.lang.invoke.MethodHandles;
 public class TestAggExistingCache {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  String ncml =
-          "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                  "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-                  "    <aggregation dimName='time' type='joinExisting' recheckEvery='15 min'>\n" +
-                  "      <variableAgg name='ATssta' />\n" +
-                  "      <scan dateFormatMark='AT#yyyyDDD_HHmmss' location='" + TestDir.cdmUnitTestDir + "ncml/nc/pfeg/' suffix='.nc' />\n" +
-                  "    </aggregation>\n" +
-                  "</netcdf>";
+  String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+      + "    <aggregation dimName='time' type='joinExisting' recheckEvery='15 min'>\n"
+      + "      <variableAgg name='ATssta' />\n" + "      <scan dateFormatMark='AT#yyyyDDD_HHmmss' location='"
+      + TestDir.cdmUnitTestDir + "ncml/nc/pfeg/' suffix='.nc' />\n" + "    </aggregation>\n" + "</netcdf>";
 
   @Test
   public void testCacheIsUsed() throws IOException, InvalidRangeException {
@@ -84,13 +81,11 @@ public class TestAggExistingCache {
     Assert.assertEquals(8, AggregationExisting.countCacheUse);
   }
 
-  String ncml2 =
-    "<?xml version='1.0' encoding='UTF-8'?>\n" +
-    "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-    "    <aggregation dimName='time' type='joinExisting' timeUnitsChange='true'>\n" +
-    "      <scan location='B:/CM2.1R' suffix='.nc' />\n" +
-    "    </aggregation>\n" +
-    "</netcdf>";
+  String ncml2 = "<?xml version='1.0' encoding='UTF-8'?>\n"
+      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+      + "    <aggregation dimName='time' type='joinExisting' timeUnitsChange='true'>\n"
+      + "      <scan location='B:/CM2.1R' suffix='.nc' />\n" + "    </aggregation>\n" + "</netcdf>";
+
   @Ignore("files not available")
   @Test
   public void testCacheTiming() throws IOException, InvalidRangeException {

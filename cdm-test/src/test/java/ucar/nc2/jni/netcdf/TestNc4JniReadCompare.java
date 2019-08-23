@@ -16,7 +16,6 @@ import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -44,10 +43,10 @@ public class TestNc4JniReadCompare {
     Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
   }
 
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
 
-    FileFilter ff = new NotFileFilter( new SuffixFileFilter(".cdl"));
+    FileFilter ff = new NotFileFilter(new SuffixFileFilter(".cdl"));
     List<Object[]> result = new ArrayList<Object[]>(500);
     try {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf3/", ff, result);
@@ -61,14 +60,21 @@ public class TestNc4JniReadCompare {
 
   private static class Hdf5FileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
-        /* java.io.IOException: -101: NetCDF: HDF error
-          at ucar.nc2.jni.netcdf.Nc4Iosp._open(Nc4Iosp.java:243)
-        	at ucar.nc2.jni.netcdf.Nc4Iosp.open(Nc4Iosp.java:227) */
-      if (pathname.getPath().endsWith("wrf_bdy_par.h5")) return false; // temporary
-      if (pathname.getPath().endsWith("wrf_input_par.h5")) return false; // temporary
-      if (pathname.getPath().endsWith("wrf_out_par.h5")) return false; // temporary
-      if (pathname.getPath().endsWith("time.h5")) return false; // temporary
-      if (pathname.getPath().contains("npoess")) return false; // temporary
+      /*
+       * java.io.IOException: -101: NetCDF: HDF error
+       * at ucar.nc2.jni.netcdf.Nc4Iosp._open(Nc4Iosp.java:243)
+       * at ucar.nc2.jni.netcdf.Nc4Iosp.open(Nc4Iosp.java:227)
+       */
+      if (pathname.getPath().endsWith("wrf_bdy_par.h5"))
+        return false; // temporary
+      if (pathname.getPath().endsWith("wrf_input_par.h5"))
+        return false; // temporary
+      if (pathname.getPath().endsWith("wrf_out_par.h5"))
+        return false; // temporary
+      if (pathname.getPath().endsWith("time.h5"))
+        return false; // temporary
+      if (pathname.getPath().contains("npoess"))
+        return false; // temporary
       // if (pathname.getName().endsWith(".xml")) return false;
       return true;
     }
@@ -93,8 +99,8 @@ public class TestNc4JniReadCompare {
       ncfile = NetcdfFile.open(filename);
       jni = openJni(filename);
       jni.setLocation(filename + " (jni)");
-      System.err.println("Test input: "+ncfile.getLocation());
-      System.err.println("Baseline: "+jni.getLocation());
+      System.err.println("Test input: " + ncfile.getLocation());
+      System.err.println("Baseline: " + jni.getLocation());
       System.err.flush();
 
       Formatter f = new Formatter();
@@ -110,8 +116,10 @@ public class TestNc4JniReadCompare {
       }
       Assert.assertTrue(filename, ok);
     } finally {
-      if (ncfile != null) ncfile.close();
-      if (jni != null) jni.close();
+      if (ncfile != null)
+        ncfile.close();
+      if (jni != null)
+        jni.close();
     }
   }
 

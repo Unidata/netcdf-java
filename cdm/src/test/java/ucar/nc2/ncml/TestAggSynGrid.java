@@ -14,7 +14,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.ma2.*;
 import ucar.unidata.util.test.Assert2;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Date;
@@ -28,14 +27,16 @@ public class TestAggSynGrid {
 
   @BeforeClass
   public static void setUp() throws IOException {
-    if (gds != null) return;
+    if (gds != null)
+      return;
     gds = ucar.nc2.dt.grid.GridDataset.open(filename);
     logger.debug("open {}", filename);
   }
 
   @AfterClass
   public static void tearDown() throws IOException {
-    if (gds != null) gds.close();
+    if (gds != null)
+      gds.close();
     gds = null;
   }
 
@@ -109,13 +110,13 @@ public class TestAggSynGrid {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = lat.read();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
     assert data.getElementType() == float.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
@@ -135,7 +136,7 @@ public class TestAggSynGrid {
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     int count = 0;
-    String[] want = new String[]{"2005-11-22 22:19:53Z", "2005-11-22 23:19:53Z", "2005-11-23 00:19:59Z"};
+    String[] want = new String[] {"2005-11-22 22:19:53Z", "2005-11-22 23:19:53Z", "2005-11-23 00:19:59Z"};
     Array data = time.read();
     assert (data instanceof ArrayObject);
     while (data.hasNext())
@@ -161,7 +162,7 @@ public class TestAggSynGrid {
     assert v.getDimension(0) == ncfile.findDimension("time");
     assert v.getDimension(1) == ncfile.findDimension("lat");
     assert v.getDimension(2) == ncfile.findDimension("lon");
-  
+
     Array data = v.read();
     assert data.getRank() == 3;
     assert data.getSize() == 36;
@@ -169,7 +170,7 @@ public class TestAggSynGrid {
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 4;
     assert data.getElementType() == double.class;
-  
+
     int[] shape = data.getShape();
     Index tIndex = data.getIndex();
     for (int i = 0; i < shape[0]; i++)
@@ -183,7 +184,7 @@ public class TestAggSynGrid {
   public void readSlice(int[] origin, int[] shape) throws IOException, InvalidRangeException {
     NetcdfFile ncfile = gds.getNetcdfFile();
     Variable v = ncfile.findVariable("T");
-  
+
     Array data = v.read(origin, shape);
     assert data.getRank() == 3;
     assert data.getSize() == shape[0] * shape[1] * shape[2];
@@ -191,7 +192,7 @@ public class TestAggSynGrid {
     assert data.getShape()[1] == shape[1];
     assert data.getShape()[2] == shape[2];
     assert data.getElementType() == double.class;
-  
+
     Index tIndex = data.getIndex();
     for (int i = 0; i < shape[0]; i++)
       for (int j = 0; j < shape[1]; j++)
@@ -203,9 +204,9 @@ public class TestAggSynGrid {
 
   @Test
   public void testReadSlice() throws IOException, InvalidRangeException {
-    readSlice(new int[]{0, 0, 0}, new int[]{3, 3, 4});
-    readSlice(new int[]{0, 0, 0}, new int[]{2, 3, 2});
-    readSlice(new int[]{2, 0, 0}, new int[]{1, 3, 4});
-    readSlice(new int[]{1, 0, 0}, new int[]{2, 2, 3});
+    readSlice(new int[] {0, 0, 0}, new int[] {3, 3, 4});
+    readSlice(new int[] {0, 0, 0}, new int[] {2, 3, 2});
+    readSlice(new int[] {2, 0, 0}, new int[] {1, 3, 4});
+    readSlice(new int[] {1, 0, 0}, new int[] {2, 2, 3});
   }
 }

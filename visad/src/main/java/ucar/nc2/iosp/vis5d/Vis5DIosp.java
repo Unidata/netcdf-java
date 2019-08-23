@@ -7,38 +7,27 @@
 package ucar.nc2.iosp.vis5d;
 
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
-
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-
 import ucar.nc2.iosp.grid.*;
-
 import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import visad.Set;
 import visad.VisADException;
-
 import visad.data.BadFormException;
 import visad.data.vis5d.Vis5DCoordinateSystem;
-
 import visad.data.vis5d.Vis5DVerticalSystem;
-
 import java.io.IOException;
-
 import java.util.Date;
-
 import java.util.Hashtable;
 
 
 /**
- * Vis5D grid file reader.  Only support Vis5D grids, not the TOPO files.
+ * Vis5D grid file reader. Only support Vis5D grids, not the TOPO files.
  *
  * @author dmurray
  */
@@ -146,7 +135,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     String got = raf.readString(V5D.length());
     if (got.equals(V5D)) {
       return true;
-    } else {  // more rigorous test
+    } else { // more rigorous test
       V5DStruct vv;
       try {
         vv = V5DStruct.v5dOpenFile(raf);
@@ -178,8 +167,8 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   /**
    * Open the service provider for reading.
    *
-   * @param raf        file to read from
-   * @param ncfile     netCDF file we are writing to (memory)
+   * @param raf file to read from
+   * @param ncfile netCDF file we are writing to (memory)
    * @param cancelTask task for cancelling
    * @throws IOException problem reading file
    */
@@ -196,8 +185,8 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   /**
    * Make the netcdf file
    *
-   * @param raf        the RandomAccessFile
-   * @param ncfile     the netCDF file handle
+   * @param raf the RandomAccessFile
+   * @param ncfile the netCDF file handle
    * @param cancelTask the cancel task
    * @throws IOException problem reading the file
    */
@@ -216,12 +205,10 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     float[] projargs = new float[MAXPROJARGS];
 
     try {
-      v5dstruct = V5DStruct.v5d_open(raf, sizes, n_levels, varnames,
-              varunits, map_proj, projargs,
-              vert_sys, vertargs, times);
+      v5dstruct =
+          V5DStruct.v5d_open(raf, sizes, n_levels, varnames, varunits, map_proj, projargs, vert_sys, vertargs, times);
     } catch (BadFormException bfe) {
-      throw new IOException("Vis5DIosp.makeFile: bad file "
-              + bfe.getMessage());
+      throw new IOException("Vis5DIosp.makeFile: bad file " + bfe.getMessage());
     }
 
     if (sizes[0] < 1) {
@@ -250,11 +237,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     Variable timeVar = new Variable(ncfile, null, null, TIME);
     timeVar.setDataType(DataType.DOUBLE);
     timeVar.setDimensions(TIME);
-    timeVar.addAttribute(
-            new Attribute(CDM.UNITS, "seconds since 1900-01-01 00:00:00"));
+    timeVar.addAttribute(new Attribute(CDM.UNITS, "seconds since 1900-01-01 00:00:00"));
     timeVar.addAttribute(new Attribute("long_name", TIME));
-    timeVar.addAttribute(new Attribute(_Coordinate.AxisType,
-            AxisType.Time.toString()));
+    timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     Array varArray = new ArrayDouble.D1(ntimes);
     for (int i = 0; i < ntimes; i++) {
       ((ArrayDouble.D1) varArray).set(i, times[i]);
@@ -295,11 +280,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     }
     int n_var_groups = var_table.size();
     if (n_var_groups > 2) {
-      throw new IOException(
-              "Vis5DIosp.makeFile: more than two variable groups by n_levels");
+      throw new IOException("Vis5DIosp.makeFile: more than two variable groups by n_levels");
     } else if (n_var_groups == 0) {
-      throw new IOException(
-              "Vis5DIosp.makeFile: number of variable groups == 0");
+      throw new IOException("Vis5DIosp.makeFile: number of variable groups == 0");
     }
     Variable vert = null;
     if (have3D) {
@@ -313,7 +296,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     varTable = new Hashtable<>();
     String dim3D = TIME + " " + LEVEL + " " + COLUMN + " " + ROW;
     String dim2D = TIME + " " + COLUMN + " " + ROW;
-    //String coords3D = TIME + " " + vert.getName() + " " + LAT + " " + LON;
+    // String coords3D = TIME + " " + vert.getName() + " " + LAT + " " + LON;
     String coords3D = "unknown";
     if (vert != null) {
       coords3D = TIME + " Height " + LAT + " " + LON;
@@ -331,7 +314,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       }
       v.setDataType(DataType.FLOAT);
       String units = varunits[i].trim();
-      if (units.equals("")) {  // see if its in the unitTable
+      if (units.equals("")) { // see if its in the unitTable
         String key = varnames[i].trim().toLowerCase();
         units = unitTable.get(key);
       }
@@ -345,9 +328,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         ncfile.addVariable(null, v);
       }
     }
-    double[][] proj_args = Set.floatToDouble(new float[][]{
-            projargs
-    });
+    double[][] proj_args = Set.floatToDouble(new float[][] {projargs});
     addLatLonVariables(map_proj[0], proj_args[0], nr, nc);
     // Vis5DGridDefRecord gridDef = new Vis5DGridDefRecord(map_proj[0], proj_args[0], nr, nc);
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
@@ -357,10 +338,10 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   /**
    * Read the data for the variable
    *
-   * @param v2      Variable to read
+   * @param v2 Variable to read
    * @param section section infomation
    * @return Array of data
-   * @throws IOException           problem reading from file
+   * @throws IOException problem reading from file
    * @throws InvalidRangeException invalid Range
    */
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
@@ -374,17 +355,13 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     int[] shape = v2.getShape();
     boolean haveZ = shape.length == 4;
     int nt = shape[count++];
-    int nz = haveZ
-            ? shape[count++]
-            : 1;
+    int nz = haveZ ? shape[count++] : 1;
     int ny = shape[count++];
     int nx = shape[count];
     count = 0;
 
     Range timeRange = section.getRange(count++);
-    Range zRange = haveZ
-            ? section.getRange(count++)
-            : null;
+    Range zRange = haveZ ? section.getRange(count++) : null;
     Range yRange = section.getRange(count++);
     Range xRange = section.getRange(count);
     int grid_size = nx * ny * nz;
@@ -400,15 +377,13 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       try {
         v5dstruct.v5d_read(timeIdx, varIdx, ranges, data);
       } catch (BadFormException bfe) {
-        throw new IOException("Vis5DIosp.readData: "
-                + bfe.getMessage());
+        throw new IOException("Vis5DIosp.readData: " + bfe.getMessage());
       }
 
       if ((ranges[0] >= 0.99E30) && (ranges[1] <= -0.99E30)) {
-        //range_sets[j] = new Linear1DSet(0.0, 1.0, 255);
+        // range_sets[j] = new Linear1DSet(0.0, 1.0, 255);
       } else if (ranges[0] > ranges[1]) {
-        throw new IOException("Vis5DIosp.readData: bad read "
-                + v2.getFullName());
+        throw new IOException("Vis5DIosp.readData: bad read " + v2.getFullName());
       }
 
       // invert the rows
@@ -458,7 +433,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   }
 
   /**
-   * Initialize the unit table.  This is used if there are no
+   * Initialize the unit table. This is used if there are no
    * units in the file.
    */
   private static void initUnitTable() {
@@ -482,18 +457,16 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   }
 
   /**
-   * Create a vertical dimension variable based on the info.  Based on
+   * Create a vertical dimension variable based on the info. Based on
    * visad.data.vis5d.Vis5DVerticalSystem.
    *
-   * @param vert_sys  the vertical system id
-   * @param n_levels  the number of levels
+   * @param vert_sys the vertical system id
+   * @param n_levels the number of levels
    * @param vert_args the vertical system arguments
    * @return the vertical dimesion variable
    * @throws IOException problem reading the file or creating the data
    */
-  private Variable makeVerticalVariable(int vert_sys, int n_levels,
-                                        float[] vert_args)
-          throws IOException {
+  private Variable makeVerticalVariable(int vert_sys, int n_levels, float[] vert_args) throws IOException {
 
     String vert_unit;
     String vert_type;
@@ -531,8 +504,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       vertVar.addAttribute(new Attribute(CDM.UNITS, vert_unit));
     }
     if (axisType != null) {
-      vertVar.addAttribute(new Attribute(_Coordinate.AxisType,
-              axisType.toString()));
+      vertVar.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
     }
 
     switch (vert_sys) {
@@ -544,22 +516,22 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         }
         break;
 
-      case (2):  // Altitude in km - non-linear
+      case (2): // Altitude in km - non-linear
         for (int i = 0; i < n_levels; i++) {
           data.set(i, vert_args[i]);
         }
         break;
 
-      case (3):  // heights of pressure surfaces in km - non-linear
+      case (3): // heights of pressure surfaces in km - non-linear
         try {
           Vis5DVerticalSystem.Vis5DVerticalCoordinateSystem vert_cs =
-                  new Vis5DVerticalSystem.Vis5DVerticalCoordinateSystem();
+              new Vis5DVerticalSystem.Vis5DVerticalCoordinateSystem();
           float[][] pressures = new float[1][n_levels];
           System.arraycopy(vert_args, 0, pressures[0], 0, n_levels);
           for (int i = 0; i < n_levels; i++) {
-            pressures[0][i] *= 1000;  // km->m
+            pressures[0][i] *= 1000; // km->m
           }
-          pressures = vert_cs.fromReference(pressures);  // convert to pressures
+          pressures = vert_cs.fromReference(pressures); // convert to pressures
           for (int i = 0; i < n_levels; i++) {
             data.set(i, pressures[0][i]);
           }
@@ -575,23 +547,20 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   /**
    * Add lat/lon variables to the file
    *
-   * @param map_proj  the map projection identifier
+   * @param map_proj the map projection identifier
    * @param proj_args the projection args
-   * @param nr        number of rows
-   * @param nc        number of columns
+   * @param nr number of rows
+   * @param nc number of columns
    * @throws IOException Problem making the projection
    */
-  private void addLatLonVariables(int map_proj, double[] proj_args, int nr,
-                                  int nc)
-          throws IOException {
-    //Vis5DGridDefRecord.printProjArgs(map_proj, proj_args);
+  private void addLatLonVariables(int map_proj, double[] proj_args, int nr, int nc) throws IOException {
+    // Vis5DGridDefRecord.printProjArgs(map_proj, proj_args);
     Vis5DGridDefRecord vgd = new Vis5DGridDefRecord(map_proj, proj_args, nr, nc);
     GridHorizCoordSys ghc = new GridHorizCoordSys(vgd, new Vis5DLookup(), null);
 
     Vis5DCoordinateSystem coord_sys;
     try {
-      coord_sys = new Vis5DCoordinateSystem(map_proj, proj_args, nr,
-              nc);
+      coord_sys = new Vis5DCoordinateSystem(map_proj, proj_args, nr, nc);
 
       Variable lat = new Variable(ncfile, null, null, LAT);
       lat.setDimensions(COLUMN + " " + ROW);
@@ -611,7 +580,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       ncfile.addVariable(null, lon);
 
-      int[] shape = new int[]{nc, nr};
+      int[] shape = new int[] {nc, nr};
       Array latArray = Array.factory(DataType.DOUBLE, shape);
       Array lonArray = Array.factory(DataType.DOUBLE, shape);
       double[][] rowcol = new double[2][nr * nc];
@@ -625,18 +594,18 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       double[][] latlon = coord_sys.toReference(rowcol);
       Index latIndex = latArray.getIndex();
       Index lonIndex = lonArray.getIndex();
-            /*
-            for (int y = 0; y < nr; y++) {
-                for (int x = 0; x < nc; x++) {
-                    int index = y * nc + x;
-            */
+      /*
+       * for (int y = 0; y < nr; y++) {
+       * for (int x = 0; x < nc; x++) {
+       * int index = y * nc + x;
+       */
       for (int x = 0; x < nc; x++) {
         for (int y = 0; y < nr; y++) {
           int index = x * nr + y;
-                    /*
-                    latArray.setDouble(latIndex.set(x, y), latlon[0][index]);
-                    lonArray.setDouble(lonIndex.set(x, y), latlon[1][index]);
-                    */
+          /*
+           * latArray.setDouble(latIndex.set(x, y), latlon[0][index]);
+           * lonArray.setDouble(lonIndex.set(x, y), latlon[1][index]);
+           */
           latArray.setDouble(index, latlon[0][index]);
           lonArray.setDouble(index, latlon[1][index]);
         }
@@ -657,8 +626,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     /**
      * Gets a representative grid for this lookup
      */
-    public Vis5DLookup() {
-    }
+    public Vis5DLookup() {}
 
     public String getShapeName(GridDefRecord gds) {
       return "Spherical";
@@ -739,10 +707,8 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
      * is this a LatLon grid.
      */
     public final boolean isLatLon(GridDefRecord gds) {
-      return getProjectionName(gds).equals("GENERIC")
-              || getProjectionName(gds).equals("LINEAR")
-              || getProjectionName(gds).equals("CYLINDRICAL")
-              || getProjectionName(gds).equals("SPHERICAL");
+      return getProjectionName(gds).equals("GENERIC") || getProjectionName(gds).equals("LINEAR")
+          || getProjectionName(gds).equals("CYLINDRICAL") || getProjectionName(gds).equals("SPHERICAL");
     }
 
     /**

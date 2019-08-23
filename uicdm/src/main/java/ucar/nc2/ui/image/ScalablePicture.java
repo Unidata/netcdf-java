@@ -1,22 +1,21 @@
 /*
-Copyright (C) 2002  Richard Eigenmann.
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or any later version. This program is distributed
-in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details. You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-The license is in gpl.txt.
-See http://www.gnu.org/copyleft/gpl.html for the details.
-*/
+ * Copyright (C) 2002 Richard Eigenmann.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version. This program is distributed
+ * in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details. You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * The license is in gpl.txt.
+ * See http://www.gnu.org/copyleft/gpl.html for the details.
+ */
 package ucar.nc2.ui.image;
 
 import org.imgscalr.Scalr;
-
 import javax.imageio.*;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageOutputStream;
@@ -33,22 +32,22 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /*
-ScalablePicture.java:  class that can load and save images
-
-Copyright (C) 2002  Richard Eigenmann.
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or any later version. This program is distributed 
-in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
-more details. You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-The license is in gpl.txt.
-See http://www.gnu.org/copyleft/gpl.html for the details.
-*/
+ * ScalablePicture.java: class that can load and save images
+ * 
+ * Copyright (C) 2002 Richard Eigenmann.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version. This program is distributed
+ * in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details. You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * The license is in gpl.txt.
+ * See http://www.gnu.org/copyleft/gpl.html for the details.
+ */
 
 
 /**
@@ -144,12 +143,14 @@ public class ScalablePicture implements SourcePictureListener {
   /**
    * Rendering Hints object for good quality.
    */
-  private static RenderingHints rh_quality = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+  private static RenderingHints rh_quality =
+      new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
   /**
    * Rendering Hints object for using the bicubic method.
    */
-  private static RenderingHints rh_bicubic = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+  private static RenderingHints rh_bicubic =
+      new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
 
   /**
@@ -183,26 +184,30 @@ public class ScalablePicture implements SourcePictureListener {
    * Else -> load it
    *
    * @param priority The Thread priority
-   * @param  imageUrl  The URL of the image you want to load
-   * @param  rotation  The rotation 0-360 that the image should be put through
-   * after loading.
+   * @param imageUrl The URL of the image you want to load
+   * @param rotation The rotation 0-360 that the image should be put through
+   *        after loading.
    */
   public void loadAndScalePictureInThread(URL imageUrl, int priority, double rotation) {
     this.imageUrl = imageUrl;
 
     boolean alreadyLoading = false;
-    Tools.log("ScalablePicture.loadAndScalePictureInThread: checking if picture " + imageUrl + " is already being loaded.");
+    Tools.log(
+        "ScalablePicture.loadAndScalePictureInThread: checking if picture " + imageUrl + " is already being loaded.");
     if ((sourcePicture != null) && (sourcePicture.getUrl().toString().equals(imageUrl.toString()))) {
-      Tools.log("ScalablePicture.loadAndScalePictureInThread: the SourcePicture is already loading the sourcePictureimage");
+      Tools.log(
+          "ScalablePicture.loadAndScalePictureInThread: the SourcePicture is already loading the sourcePictureimage");
       alreadyLoading = true;
     } else if (PictureCache.isInCache(imageUrl)) {
       // in case the old image has a listener connected remove it
-      //  fist time round the sourcePicture is still null therefore the if.
-      if (sourcePicture != null) sourcePicture.removeListener(this);
+      // fist time round the sourcePicture is still null therefore the if.
+      if (sourcePicture != null)
+        sourcePicture.removeListener(this);
 
       sourcePicture = PictureCache.getSourcePicture(imageUrl);
       String status = sourcePicture.getStatusMessage();
-      if (status == null) status = "";
+      if (status == null)
+        status = "";
       Tools.log("ScalablePicture.loadAndScalePictureInThread: Picture in cache! Status: " + status);
 
       if (sourcePicture.getRotation() == rotation) {
@@ -210,7 +215,8 @@ public class ScalablePicture implements SourcePictureListener {
         Tools.log("ScalablePicture.loadAndScalePictureInThread: Picture was even rotated to the correct angle!");
       } else {
         alreadyLoading = false;
-        Tools.log("ScalablePicture.loadAndScalePictureInThread: Picture was in cache but with wrong rotation. Forcing reload.");
+        Tools.log(
+            "ScalablePicture.loadAndScalePictureInThread: Picture was in cache but with wrong rotation. Forcing reload.");
       }
     }
 
@@ -244,8 +250,8 @@ public class ScalablePicture implements SourcePictureListener {
           createScaledPictureInThread(priority);
           break;
         default:
-          Tools.log("ScalablePicture.loadAndScalePictureInThread: Don't know what status this is:" + sourcePicture
-              .getStatusCode());
+          Tools.log("ScalablePicture.loadAndScalePictureInThread: Don't know what status this is:"
+              + sourcePicture.getStatusCode());
           break;
 
       }
@@ -253,7 +259,8 @@ public class ScalablePicture implements SourcePictureListener {
 
     // if the image is not already there then load it.
     if (!alreadyLoading) {
-      if (sourcePicture != null) sourcePicture.removeListener(this);
+      if (sourcePicture != null)
+        sourcePicture.removeListener(this);
       sourcePicture = new SourcePicture();
       sourcePicture.addListener(this);
       setStatus(LOADING, "Loading: " + imageUrl.toString());
@@ -274,7 +281,8 @@ public class ScalablePicture implements SourcePictureListener {
    */
   public void loadPictureImd(URL imageUrl, double rotation) {
     Tools.log("loadPictureImd invoked with URL: " + imageUrl.toString());
-    if (sourcePicture != null) sourcePicture.removeListener(this);
+    if (sourcePicture != null)
+      sourcePicture.removeListener(this);
     sourcePicture = new SourcePicture();
     sourcePicture.addListener(this);
     setStatus(LOADING, "Loading: " + imageUrl.toString());
@@ -307,7 +315,7 @@ public class ScalablePicture implements SourcePictureListener {
    */
 
   public void sourceStatusChange(int statusCode, String statusMessage, SourcePicture sp) {
-    //Tools.log("ScalablePicture.sourceStatusChange: status received from SourceImage: " + statusMessage);
+    // Tools.log("ScalablePicture.sourceStatusChange: status received from SourceImage: " + statusMessage);
 
     switch (statusCode) {
       case SourcePicture.UNINITIALISED:
@@ -349,8 +357,7 @@ public class ScalablePicture implements SourcePictureListener {
   public void sourceLoadProgressNotification(int statusCode, int percentage) {
     Enumeration e = scalablePictureStatusListeners.elements();
     while (e.hasMoreElements()) {
-      ((ScalablePictureListener) e.nextElement())
-          .sourceLoadProgressNotification(statusCode, percentage);
+      ((ScalablePictureListener) e.nextElement()).sourceLoadProgressNotification(statusCode, percentage);
     }
 
   }
@@ -379,16 +386,16 @@ public class ScalablePicture implements SourcePictureListener {
     int h = sourcePicture.getHeight();
 
     calcScale();
-    scaledPicture =
-      Scalr.resize(org, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC,
-              (int) (ScaleFactor * w), (int) (ScaleFactor * h), Scalr.OP_ANTIALIAS);
+    scaledPicture = Scalr.resize(org, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, (int) (ScaleFactor * w),
+        (int) (ScaleFactor * h), Scalr.OP_ANTIALIAS);
 
     // System.out.printf("scaled=%d,%d%n", scaledPicture.getWidth(), scaledPicture.getHeight());
     setStatus(READY, "Scaled Picture is ready.");
   }
 
   private void calcScale() {
-    if (TargetSize == null) return;
+    if (TargetSize == null)
+      return;
 
     int WindowWidth = TargetSize.width;
     int WindowHeight = TargetSize.height;
@@ -406,9 +413,9 @@ public class ScalablePicture implements SourcePictureListener {
       ScaleFactor = PictureWidth == 0 ? 0 : ((double) WindowWidth / PictureWidth);
     }
 
-    //System.out.printf("pix=%d,%d%n", sourcePicture.getWidth(), sourcePicture.getHeight());
-    //System.out.printf("target=%d,%d%n", TargetSize.width, TargetSize.height);
-    //System.out.printf("ScaleFactor=%f%n", ScaleFactor);
+    // System.out.printf("pix=%d,%d%n", sourcePicture.getWidth(), sourcePicture.getHeight());
+    // System.out.printf("target=%d,%d%n", TargetSize.width, TargetSize.height);
+    // System.out.printf("ScaleFactor=%f%n", ScaleFactor);
   }
 
 
@@ -416,9 +423,10 @@ public class ScalablePicture implements SourcePictureListener {
    * set the scale factor to the new desired value. The scale factor is a multiplier by which the original picture
    * needs to be multiplied to get the size of the picture on the screen. You must
    * call {@link #createScaledPictureInThread(int)} to
-   * make anything happen.<p>
+   * make anything happen.
+   * <p>
    * <p/>
-   * Example: Original is 3000 x 2000 --> Scale Factor 0.10  --> Target Picutre is 300 x 200
+   * Example: Original is 3000 x 2000 --> Scale Factor 0.10 --> Target Picutre is 300 x 200
    */
   public void setScaleFactor(double newFactor) {
     TargetSize = null;
@@ -478,9 +486,7 @@ public class ScalablePicture implements SourcePictureListener {
    */
   public String getScaledSizeString() {
     if (scaledPicture != null)
-      return scaledPicture.getWidth()
-          + " x "
-          + scaledPicture.getHeight();
+      return scaledPicture.getWidth() + " x " + scaledPicture.getHeight();
     else
       return "0 x 0";
   }
@@ -564,7 +570,7 @@ public class ScalablePicture implements SourcePictureListener {
    * This method allows the ScalablePicture's scaled BufferedImage to be written
    * to the desired file.
    *
-   * @param  writeFile  The File that shall receive the jpg data
+   * @param writeFile The File that shall receive the jpg data
    */
   public void writeScaledJpg(File writeFile) {
     writeJpg(writeFile, scaledPicture, jpgQuality);
@@ -575,9 +581,9 @@ public class ScalablePicture implements SourcePictureListener {
    * This static method writes the indicated renderedImage (BufferedImage)
    * to the indicated file.
    *
-   * @param  writeFile  The File that shall receive the jpg data
-   * @param  renderedImage  The RenderedImage (BufferedImage) to be written
-   * @param  jpgQuality  The quality with which to compress to jpg
+   * @param writeFile The File that shall receive the jpg data
+   * @param renderedImage The RenderedImage (BufferedImage) to be written
+   * @param jpgQuality The quality with which to compress to jpg
    */
   public static void writeJpg(File writeFile, RenderedImage renderedImage, float jpgQuality) {
     Iterator writers = ImageIO.getImageWritersByFormatName("jpg");
@@ -589,16 +595,17 @@ public class ScalablePicture implements SourcePictureListener {
     params.setDestinationType(new ImageTypeSpecifier(java.awt.image.IndexColorModel.getRGBdefault(),
         IndexColorModel.getRGBdefault().createCompatibleSampleModel(16, 16)));
 
-    try(ImageOutputStream ios = ImageIO.createImageOutputStream(new FileOutputStream(writeFile))) {
+    try (ImageOutputStream ios = ImageIO.createImageOutputStream(new FileOutputStream(writeFile))) {
       writer.setOutput(ios);
       writer.write(null, new IIOImage(renderedImage, null, null), params);
       ios.close();
     } catch (IOException e) {
-      //Tools.log("ScalablePicture.writeJpg caught IOException: " +  e.getMessage() + "\nwhile writing " + writeFile.toString());
+      // Tools.log("ScalablePicture.writeJpg caught IOException: " + e.getMessage() + "\nwhile writing " +
+      // writeFile.toString());
       e.printStackTrace();
     }
-    //writer = null;
-    writer.dispose(); //1.4.1 documentation says to do this.
+    // writer = null;
+    writer.dispose(); // 1.4.1 documentation says to do this.
   }
 
 
@@ -631,8 +638,7 @@ public class ScalablePicture implements SourcePictureListener {
 
     Enumeration e = scalablePictureStatusListeners.elements();
     while (e.hasMoreElements()) {
-      ((ScalablePictureListener) e.nextElement())
-          .scalableStatusChange(pictureStatusCode, pictureStatusMessage);
+      ((ScalablePictureListener) e.nextElement()).scalableStatusChange(pictureStatusCode, pictureStatusMessage);
     }
   }
 
@@ -657,9 +663,9 @@ public class ScalablePicture implements SourcePictureListener {
    * accessor method to set the quality that should be used on jpg write operations.
    */
   public void setJpgQuality(float quality) {
-    //Tools.log( "setJpgQuality requested with " + Float.toString( quality ) );
+    // Tools.log( "setJpgQuality requested with " + Float.toString( quality ) );
     if (quality >= 0f && quality <= 1f) {
-      //Tools.log( "Quality set." );
+      // Tools.log( "Quality set." );
       jpgQuality = quality;
     }
   }

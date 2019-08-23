@@ -13,7 +13,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.util.Parameter;
-
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Formatter;
@@ -26,11 +25,12 @@ import java.util.Formatter;
 public abstract class AbstractTransformBuilder {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractTransformBuilder.class);
 
-   /*
-   from CF: false_easting(false_northing):
-    The value added to all abscissa(ordinate) values in the rectangular coordinates for a map projection.
-    This value frequently is assigned to eliminate negative numbers.
-    Expressed in the unit of the coordinate variable identified by the standard name projection_x_coordinate (projection_y_coordinate).
+  /*
+   * from CF: false_easting(false_northing):
+   * The value added to all abscissa(ordinate) values in the rectangular coordinates for a map projection.
+   * This value frequently is assigned to eliminate negative numbers.
+   * Expressed in the unit of the coordinate variable identified by the standard name projection_x_coordinate
+   * (projection_y_coordinate).
    */
   static public double getFalseEastingScaleFactor(NetcdfDataset ds, AttributeContainer ctv) {
     String units = getGeoCoordinateUnits(ds, ctv);
@@ -103,14 +103,15 @@ public abstract class AbstractTransformBuilder {
   /**
    * Read a variable attribute as a double.
    *
-   * @param v        the variable
-   * @param attname  name of variable
+   * @param v the variable
+   * @param attname name of variable
    * @param defValue default value if attribute is not found
    * @return attribute value as a double, else NaN if not found
    */
   protected double readAttributeDouble(AttributeContainer v, String attname, double defValue) {
     Attribute att = v.findAttributeIgnoreCase(attname);
-    if (att == null) return defValue;
+    if (att == null)
+      return defValue;
     if (att.isString())
       return Double.parseDouble(att.getStringValue());
     else
@@ -124,7 +125,8 @@ public abstract class AbstractTransformBuilder {
    * @return attribute value as a double[2]
    */
   protected double[] readAttributeDouble2(Attribute att) {
-    if (att == null) return null;
+    if (att == null)
+      return null;
 
     double[] val = new double[2];
     if (att.isString()) {
@@ -143,9 +145,9 @@ public abstract class AbstractTransformBuilder {
    * Make sure that the variable exists. If readData is true, read the data and use it as the value of the
    * parameter, otherwise use the variable name as the value of the parameter.
    *
-   * @param rs             the CoordinateTransform
-   * @param paramName      the parameter name
-   * @param ds             dataset
+   * @param rs the CoordinateTransform
+   * @param paramName the parameter name
+   * @param ds dataset
    * @param varNameEscaped escaped variable name
    * @return true if success, false is failed
    */
@@ -164,21 +166,22 @@ public abstract class AbstractTransformBuilder {
     String formula = ctv.findAttValueIgnoreCase("formula_terms", null);
     if (null == formula) {
       if (null != errBuffer)
-        errBuffer.format("CoordTransBuilder %s: needs attribute 'formula_terms' on Variable %s%n", getTransformName(), ctv.getName());
+        errBuffer.format("CoordTransBuilder %s: needs attribute 'formula_terms' on Variable %s%n", getTransformName(),
+            ctv.getName());
       return null;
     }
     return formula;
   }
 
   public String[] parseFormula(String formula_terms, String termString) {
-    String[] formulaTerms = formula_terms.split("[\\s:]+");  // split on 1 or more whitespace or ':'
-    String[] terms = termString.split("[\\s]+");             // split on 1 or more whitespace 
+    String[] formulaTerms = formula_terms.split("[\\s:]+"); // split on 1 or more whitespace or ':'
+    String[] terms = termString.split("[\\s]+"); // split on 1 or more whitespace
     String[] values = new String[terms.length];
 
     for (int i = 0; i < terms.length; i++) {
-      for (int j = 0; j < formulaTerms.length; j += 2) {  // look at every other formula term
-        if (terms[i].equals(formulaTerms[j])) {     // if it matches
-          values[i] = formulaTerms[j + 1];            // next term is the value
+      for (int j = 0; j < formulaTerms.length; j += 2) { // look at every other formula term
+        if (terms[i].equals(formulaTerms[j])) { // if it matches
+          values[i] = formulaTerms[j + 1]; // next term is the value
           break;
         }
       }
@@ -188,7 +191,8 @@ public abstract class AbstractTransformBuilder {
     for (int i = 0; i < values.length; i++) {
       if (values[i] == null) {
         if (null != errBuffer)
-          errBuffer.format("Missing term=%s in the formula '%s' for the vertical transform= %s%n", terms[i], formula_terms, getTransformName());
+          errBuffer.format("Missing term=%s in the formula '%s' for the vertical transform= %s%n", terms[i],
+              formula_terms, getTransformName());
         ok = false;
       }
     }
@@ -206,39 +210,40 @@ public abstract class AbstractTransformBuilder {
    */
   protected double getEarthRadiusInKm(AttributeContainer ctv) {
     double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius());
-    if (earth_radius > 10000.0) earth_radius *= .001;
+    if (earth_radius > 10000.0)
+      earth_radius *= .001;
     return earth_radius;
   }
 
 
   //////////////////////////////////////////
   /*
-    //////////////////////////////////////////
-  static public double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
-    double factor = 1.0;
-    String units = ds.findAttValueIgnoreCase(ctv, CDM.UNITS, null);
-    if (units == null) {
-      List<CoordinateAxis> axes = ds.getCoordinateAxes();
-      for (CoordinateAxis axis : axes) {
-        if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
-          Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
-          units = v.getUnitsString();
-          break;
-        }
-      }
-    }
-
-    if (units != null) {
-      try {
-        SimpleUnit unit = SimpleUnit.factoryWithExceptions(units);
-        factor =  unit.convertTo(1.0, SimpleUnit.kmUnit);
-      } catch (Exception e) {
-        log.error(units + " not convertible to km");
-      }
-    }
-
-    return factor;
-  }
+   * //////////////////////////////////////////
+   * static public double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
+   * double factor = 1.0;
+   * String units = ds.findAttValueIgnoreCase(ctv, CDM.UNITS, null);
+   * if (units == null) {
+   * List<CoordinateAxis> axes = ds.getCoordinateAxes();
+   * for (CoordinateAxis axis : axes) {
+   * if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
+   * Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
+   * units = v.getUnitsString();
+   * break;
+   * }
+   * }
+   * }
+   * 
+   * if (units != null) {
+   * try {
+   * SimpleUnit unit = SimpleUnit.factoryWithExceptions(units);
+   * factor = unit.convertTo(1.0, SimpleUnit.kmUnit);
+   * } catch (Exception e) {
+   * log.error(units + " not convertible to km");
+   * }
+   * }
+   * 
+   * return factor;
+   * }
    */
 
 

@@ -12,6 +12,7 @@ public class Tools {
   private static boolean debug = false;
 
   static void log(String s) {
-    if (debug)System.out.println(s);
+    if (debug)
+      System.out.println(s);
   }
 }

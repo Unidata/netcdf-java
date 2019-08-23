@@ -13,6 +13,7 @@ public interface Grib2ParamTableInterface {
 
   /**
    * Find the Parameter in this table with the given number.
+   * 
    * @param number unsigned byte.
    */
   @Nullable

@@ -18,7 +18,6 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -50,17 +49,17 @@ public class TestGribCoverageRead {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       long size = cover.getSizeInBytes();
-      Assert.assertEquals(6*36*29*65*93*4, size);
+      Assert.assertEquals(6 * 36 * 29 * 65 * 93 * 4, size);
 
       // LOOK if we dont set the runtime, assume latest. driven by Cdmrf spec. could be different.
       SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTime(useDate);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       logger.debug("{}", Misc.showInts(data.getShape()));
-      Assert.assertArrayEquals(new int[] {1,1,1,65,93}, data.getShape());
+      Assert.assertArrayEquals(new int[] {1, 1, 1, 65, 93}, data.getShape());
 
       float first = data.getFloat(0);
-      float last = data.getFloat((int)data.getSize()-1);
+      float last = data.getFloat((int) data.getSize() - 1);
       logger.debug("data first = {} last = {}", first, last);
       Assert2.assertNearlyEquals(241.699997, first);
       Assert2.assertNearlyEquals(225.099991, last);
@@ -82,16 +81,16 @@ public class TestGribCoverageRead {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       long size = cover.getSizeInBytes();
-      Assert.assertEquals(41*29*65*93*4, size);
+      Assert.assertEquals(41 * 29 * 65 * 93 * 4, size);
 
       SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTime(useDate);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       logger.debug("{}", Misc.showInts(data.getShape()));
-      Assert.assertArrayEquals(new int[] {1,1,65,93}, data.getShape());
+      Assert.assertArrayEquals(new int[] {1, 1, 65, 93}, data.getShape());
 
       float first = data.getFloat(0);
-      float last = data.getFloat((int)data.getSize()-1);
+      float last = data.getFloat((int) data.getSize() - 1);
       logger.debug("data first = {} last = {}", first, last);
       Assert2.assertNearlyEquals(241.699997, first);
       Assert2.assertNearlyEquals(225.099991, last);
@@ -100,7 +99,8 @@ public class TestGribCoverageRead {
 
   @Test
   public void TestSRCRead() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141025/GFS_CONUS_80km_20141025_0000.grib1.ncx4";
+    String endpoint =
+        TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141025/GFS_CONUS_80km_20141025_0000.grib1.ncx4";
     logger.debug("open {}", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
@@ -119,10 +119,10 @@ public class TestGribCoverageRead {
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       logger.debug("{}", Misc.showInts(data.getShape()));
-      Assert.assertArrayEquals(new int[] {1,1,65,93}, data.getShape());
+      Assert.assertArrayEquals(new int[] {1, 1, 65, 93}, data.getShape());
 
       float first = data.getFloat(0);
-      float last = data.getFloat((int)data.getSize()-1);
+      float last = data.getFloat((int) data.getSize() - 1);
       logger.debug("data first = {} last = {}", first, last);
       Assert2.assertNearlyEquals(219.5f, first);
       Assert2.assertNearlyEquals(218.6f, last);
@@ -144,13 +144,13 @@ public class TestGribCoverageRead {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       long size = cover.getSizeInBytes();
-      Assert.assertEquals(4*5*1377*2145*4, size);
+      Assert.assertEquals(4 * 5 * 1377 * 2145 * 4, size);
 
       SubsetParams subset = new SubsetParams().setVertCoord(70000).setTimeOffset(2);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       logger.debug("{}", Misc.showInts(data.getShape()));
-      Assert.assertArrayEquals(new int[]{1, 1, 1377, 2145}, data.getShape());
+      Assert.assertArrayEquals(new int[] {1, 1, 1377, 2145}, data.getShape());
 
       float val = data.getFloat(40600);
       logger.debug("data val at {} = {}", 40600, val);
@@ -177,13 +177,13 @@ public class TestGribCoverageRead {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       long size = cover.getSizeInBytes();
-      Assert.assertEquals(2*181*360*4, size);
+      Assert.assertEquals(2 * 181 * 360 * 4, size);
 
       SubsetParams subset = new SubsetParams().setTimeOffset(6);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       logger.debug("{}", Misc.showInts(data.getShape()));
-      Assert.assertArrayEquals(new int[]{1, 1, 181, 360}, data.getShape());
+      Assert.assertArrayEquals(new int[] {1, 1, 181, 360}, data.getShape());
 
       float val = data.getFloat(3179);
       logger.debug("data val at {} = {}", 3179, val);
@@ -210,20 +210,20 @@ public class TestGribCoverageRead {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       long size = cover.getSizeInBytes();
-      Assert.assertEquals(6*35*9*65*93*4, size);
+      Assert.assertEquals(6 * 35 * 9 * 65 * 93 * 4, size);
 
-      SubsetParams subset = new SubsetParams().setRunTime(CalendarDate.parseISOformat(null,"2014-10-24T12:00:00Z"))
-              .setTimeOffset(42).setVertCoord(500);
+      SubsetParams subset = new SubsetParams().setRunTime(CalendarDate.parseISOformat(null, "2014-10-24T12:00:00Z"))
+          .setTimeOffset(42).setVertCoord(500);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       logger.debug("{}", Misc.showInts(data.getShape()));
-      Assert.assertArrayEquals(new int[]{1, 1, 1, 65, 93}, data.getShape());
+      Assert.assertArrayEquals(new int[] {1, 1, 1, 65, 93}, data.getShape());
 
       float val = data.getFloat(0);
       logger.debug("data val first = {}", val);
       Assert2.assertNearlyEquals(-0.10470009f, val);
 
-      val = data.getFloat( (int)data.getSize()-1);
+      val = data.getFloat((int) data.getSize() - 1);
       logger.debug("data val last = {}", val);
       Assert2.assertNearlyEquals(0.18079996f, val);
     }

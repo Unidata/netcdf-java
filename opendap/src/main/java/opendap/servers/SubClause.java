@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -47,7 +47,8 @@ import opendap.dap.BaseType;
  * can be evaluated to a BaseType value. For instance, the constraint
  * "var1>=function(var2,var3)" would have sub clauses "var1" and
  * "function(var2,var3)". The latter would in turn have the sub-clauses
- * "var2" and "var3".  <p>
+ * "var2" and "var3".
+ * <p>
  * <p/>
  * A given instance of SubClause may change the value it returns when
  * evaluated multiple times, but should not change the class of BaseType
@@ -57,8 +58,10 @@ import opendap.dap.BaseType;
  * The parser supports several kinds of sub-clause. These are described
  * in the ClauseFactory interface.
  * <p/>
- * <p>See <code>TopLevelClause</code> for more about the parsing of clauses.
- * <p> See <code>CEEValuator</code> for an explanation of how Clauses
+ * <p>
+ * See <code>TopLevelClause</code> for more about the parsing of clauses.
+ * <p>
+ * See <code>CEEValuator</code> for an explanation of how Clauses
  * are evaluated on data.
  *
  * @author joew
@@ -68,35 +71,35 @@ import opendap.dap.BaseType;
  */
 public interface SubClause extends Clause {
 
-    /**
-     * Returns the Clause which contains this subclause. The clause returned
-     * may be a TopLevelClause or another SubClause.
-     */
-    public Clause getParent();
+  /**
+   * Returns the Clause which contains this subclause. The clause returned
+   * may be a TopLevelClause or another SubClause.
+   */
+  public Clause getParent();
 
-    /**
-     * Returns a BaseType containing the current value of the sub-clause.
-     * Sub-clauses that are not constant have an undefined value until the
-     * evaluate() method has been called. However, in such circumstances
-     * this method is still useful, as it indicates which class of
-     * BaseType the sub-clause will evaluate to. Implementations of this
-     * method should never return null.
-     */
-    public BaseType getValue();
+  /**
+   * Returns a BaseType containing the current value of the sub-clause.
+   * Sub-clauses that are not constant have an undefined value until the
+   * evaluate() method has been called. However, in such circumstances
+   * this method is still useful, as it indicates which class of
+   * BaseType the sub-clause will evaluate to. Implementations of this
+   * method should never return null.
+   */
+  public BaseType getValue();
 
-    /**
-     * Evaluates the clause, first calling evaluate() on any sub-clauses it
-     * contains. Implementations of this method  should flag the clause as
-     * "defined" if the evaluation is successful.
-     *
-     * @throws DAP2ServerSideException Thrown if the evaluation fails for any reason.
-     */
-    public BaseType evaluate() throws DAP2ServerSideException;
+  /**
+   * Evaluates the clause, first calling evaluate() on any sub-clauses it
+   * contains. Implementations of this method should flag the clause as
+   * "defined" if the evaluation is successful.
+   *
+   * @throws DAP2ServerSideException Thrown if the evaluation fails for any reason.
+   */
+  public BaseType evaluate() throws DAP2ServerSideException;
 
-    /**
-     * Sets the parent of this subclause. Used during parsing.
-     */
-    public void setParent(Clause parent);
+  /**
+   * Sets the parent of this subclause. Used during parsing.
+   */
+  public void setParent(Clause parent);
 }
 
 

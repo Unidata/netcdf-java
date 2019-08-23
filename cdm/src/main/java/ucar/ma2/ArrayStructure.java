@@ -5,7 +5,6 @@
 package ucar.ma2;
 
 import ucar.nc2.util.Indent;
-
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -15,37 +14,60 @@ import java.util.List;
  * Superclass for implementations of Array of StructureData.
  * <p/>
  * The general way to access data in an ArrayStructure is to use
- * <pre> StructureData getStructureData(Index index).</pre>
+ * 
+ * <pre>
+ *  StructureData getStructureData(Index index).
+ * </pre>
  * <p/>
  * For 1D arrays (or by calculating your own recnum for nD arrays), you can also use:
- * <pre> StructureData getStructureData(int recnum).</pre>
+ * 
+ * <pre>
+ *  StructureData getStructureData(int recnum).
+ * </pre>
  * <p/>
  * Once you have a StructureData object, you can access data in a general way by using:
- * <pre> Array StructureData.getArray(Member m) </pre>
+ * 
+ * <pre>
+ *  Array StructureData.getArray(Member m)
+ * </pre>
  * <p/>
  * When dealing with large arrays of Structures, there can be significant overhead in using the generic interfaces.
  * A number of convenience routines may be able to avoid extra Object creation, and so are recommended for efficiency.
  * The following may avoid the overhead of creating the StructureData object:
- * <pre> Array getArray(int recno, StructureMembers.Member m) </pre>
+ * 
+ * <pre>
+ *  Array getArray(int recno, StructureMembers.Member m)
+ * </pre>
  * <p/>
  * The following can be convenient for accessing all the data in the ArrayStructure for one member, but its efficiency
  * depends on the implementation:
- * <pre> Array getMemberArray(StructureMembers.Member m) </pre>
+ * 
+ * <pre>
+ *  Array getMemberArray(StructureMembers.Member m)
+ * </pre>
  * <p/>
  * These require that you know the data types of the member data, but they are the most efficent:
+ * 
  * <pre>
  * getScalarXXX(int recnum, Member m)
- * getJavaArrayXXX(int recnum, Member m) </pre>
+ * getJavaArrayXXX(int recnum, Member m)
+ * </pre>
+ * 
  * where XXX is Byte, Char, Double, Float, Int, Long, Short, or String. For members that are themselves Structures,
  * the equivilent is:
+ * 
  * <pre>
  * StructureData getScalarStructure(int recnum, Member m)
- * ArrayStructure getArrayStructure(int recnum, Member m) </pre>
+ * ArrayStructure getArrayStructure(int recnum, Member m)
+ * </pre>
  *
  * These will return any compatible type as a double or float, but will have extra overhead when the types dont match:
+ * 
  * <pre>
  * convertScalarXXX(int recnum, Member m)
- * convertJavaArrayXXX(int recnum, Member m) </pre>
+ * convertJavaArrayXXX(int recnum, Member m)
+ * </pre>
+ * 
  * where XXX is Double or Float
  *
  * @author caron
@@ -54,11 +76,12 @@ import java.util.List;
  */
 public abstract class ArrayStructure extends Array implements Iterable<StructureData> {
 
-  /* Implementation notes
-     ArrayStructure contains the default implementation of storing the data in individual member arrays.
-     ArrayStructureMA uses all of these.
-     ArrayStructureW uses some of these.
-     ArrayStructureBB override all such methods.
+  /*
+   * Implementation notes
+   * ArrayStructure contains the default implementation of storing the data in individual member arrays.
+   * ArrayStructureMA uses all of these.
+   * ArrayStructureW uses some of these.
+   * ArrayStructureBB override all such methods.
    */
 
   protected StructureMembers members;
@@ -70,7 +93,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * dimensions.length determines the rank of the new Array.
    *
    * @param members a description of the structure members
-   * @param shape   the shape of the Array.
+   * @param shape the shape of the Array.
    */
   protected ArrayStructure(StructureMembers members, int[] shape) {
     super(DataType.STRUCTURE, shape);
@@ -158,7 +181,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
   /**
    * Set one of the StructureData of this ArrayStructure.
    *
-   * @param i     which one to set, specified by an Index.
+   * @param i which one to set, specified by an Index.
    * @param value must be type StructureData.
    */
   public void setObject(Index i, Object value) {
@@ -244,7 +267,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
     private int size = (int) getSize();
 
     @Override
-    public boolean hasNext()  {
+    public boolean hasNext() {
       return count < size;
     }
 
@@ -278,7 +301,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * getStructure(recno).getArray( Member m).
    *
    * @param recno get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m     get data from this StructureMembers.Member.
+   * @param m get data from this StructureMembers.Member.
    * @return Array values.
    */
   public Array getArray(int recno, StructureMembers.Member m) {
@@ -344,12 +367,12 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Set data for one member, over all structures.
    * This is used by VariableDS to do scale/offset.
    *
-   * @param m           set data for this StructureMembers.Member.
+   * @param m set data for this StructureMembers.Member.
    * @param memberArray Array values.
    */
   public void setMemberArray(StructureMembers.Member m, Array memberArray) {
     m.setDataArray(memberArray);
-    if (memberArray instanceof ArrayStructure) {  // LOOK
+    if (memberArray instanceof ArrayStructure) { // LOOK
       ArrayStructure as = (ArrayStructure) memberArray;
       m.setStructureMembers(as.getStructureMembers());
     }
@@ -367,20 +390,22 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
       return m.getDataArray();
     DataType dataType = m.getDataType();
 
-    /* special handling for sequences
-    if (dataType == DataType.SEQUENCE) {
-      List<StructureData> sdataList = new ArrayList<StructureData>();
-      for (int recno=0; recno<getSize(); recno++) {
-        ArraySequence2 seq = getArraySequence(recno, m);
-        StructureDataIterator iter = seq.getStructureDataIterator();
-        while (iter.hasNext())
-          sdataList.add( iter.next());
-      }
-      ArraySequence2 seq = getArraySequence(0, m);
-      int size = sdataList.size();
-      StructureData[] sdataArray = sdataList.toArray( new StructureData[size]);
-      return new ArrayStructureW( seq.getStructureMembers(), new int[] {size}, sdataArray);
-   } */
+    /*
+     * special handling for sequences
+     * if (dataType == DataType.SEQUENCE) {
+     * List<StructureData> sdataList = new ArrayList<StructureData>();
+     * for (int recno=0; recno<getSize(); recno++) {
+     * ArraySequence2 seq = getArraySequence(recno, m);
+     * StructureDataIterator iter = seq.getStructureDataIterator();
+     * while (iter.hasNext())
+     * sdataList.add( iter.next());
+     * }
+     * ArraySequence2 seq = getArraySequence(0, m);
+     * int size = sdataList.size();
+     * StructureData[] sdataArray = sdataList.toArray( new StructureData[size]);
+     * return new ArrayStructureW( seq.getStructureMembers(), new int[] {size}, sdataArray);
+     * }
+     */
 
     // combine the shapes
     int[] mshape = m.getShape();
@@ -515,7 +540,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data array of any type as an Object, eg, Float, Double, String, StructureData etc.
    *
    * @param recno get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m     get data from this StructureMembers.Member.
+   * @param m get data from this StructureMembers.Member.
    * @return value as Float, Double, etc..
    */
   public Object getScalarObject(int recno, StructureMembers.Member m) {
@@ -550,7 +575,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
 
     } else if (dataType == DataType.OPAQUE) {
       ArrayObject data = (ArrayObject) m.getDataArray();
-      return data.getObject(recno * m.getSize()); // LOOK ?? 
+      return data.getObject(recno * m.getSize()); // LOOK ??
     }
 
     throw new RuntimeException("Dont have implementation for " + dataType);
@@ -562,15 +587,18 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar value as a float, with conversion as needed. Underlying type must be convertible to float.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      member Variable.
+   * @param m member Variable.
    * @return scalar float value
    * @throws ForbiddenConversionException if not convertible to float.
    */
   public float convertScalarFloat(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() == DataType.FLOAT) return getScalarFloat(recnum, m);
-    if (m.getDataType() == DataType.DOUBLE) return (float) getScalarDouble(recnum, m);
+    if (m.getDataType() == DataType.FLOAT)
+      return getScalarFloat(recnum, m);
+    if (m.getDataType() == DataType.DOUBLE)
+      return (float) getScalarDouble(recnum, m);
     Object o = getScalarObject(recnum, m);
-    if (o instanceof Number) return ((Number) o).floatValue();
+    if (o instanceof Number)
+      return ((Number) o).floatValue();
     throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to float");
   }
 
@@ -578,15 +606,18 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar value as a double, with conversion as needed. Underlying type must be convertible to double.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      member Variable.
+   * @param m member Variable.
    * @return scalar double value
    * @throws ForbiddenConversionException if not convertible to double.
    */
   public double convertScalarDouble(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() == DataType.DOUBLE) return getScalarDouble(recnum, m);
-    if (m.getDataType() == DataType.FLOAT) return (double) getScalarFloat(recnum, m);
+    if (m.getDataType() == DataType.DOUBLE)
+      return getScalarDouble(recnum, m);
+    if (m.getDataType() == DataType.FLOAT)
+      return (double) getScalarFloat(recnum, m);
     Object o = getScalarObject(recnum, m);
-    if (o instanceof Number) return ((Number) o).doubleValue();
+    if (o instanceof Number)
+      return ((Number) o).doubleValue();
     throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to double");
   }
 
@@ -594,32 +625,47 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar value as an int, with conversion as needed. Underlying type must be convertible to int.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      member Variable.
+   * @param m member Variable.
    * @return scalar double value
    * @throws ForbiddenConversionException if not convertible to double.
    */
   public int convertScalarInt(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() == DataType.INT || m.getDataType() == DataType.UINT) return getScalarInt(recnum, m);
-    if (m.getDataType() == DataType.SHORT) return (int) getScalarShort(recnum, m);
-    if (m.getDataType() == DataType.USHORT) return DataType.unsignedShortToInt( getScalarShort(recnum, m));
-    if (m.getDataType() == DataType.BYTE) return (int) getScalarByte(recnum, m);
-    if (m.getDataType() == DataType.UBYTE) return (int) DataType.unsignedByteToShort( getScalarByte(recnum, m));
-    if (m.getDataType() == DataType.LONG || m.getDataType() == DataType.ULONG) return (int) getScalarLong(recnum, m);
+    if (m.getDataType() == DataType.INT || m.getDataType() == DataType.UINT)
+      return getScalarInt(recnum, m);
+    if (m.getDataType() == DataType.SHORT)
+      return (int) getScalarShort(recnum, m);
+    if (m.getDataType() == DataType.USHORT)
+      return DataType.unsignedShortToInt(getScalarShort(recnum, m));
+    if (m.getDataType() == DataType.BYTE)
+      return (int) getScalarByte(recnum, m);
+    if (m.getDataType() == DataType.UBYTE)
+      return (int) DataType.unsignedByteToShort(getScalarByte(recnum, m));
+    if (m.getDataType() == DataType.LONG || m.getDataType() == DataType.ULONG)
+      return (int) getScalarLong(recnum, m);
     Object o = getScalarObject(recnum, m);
-    if (o instanceof Number) return ((Number) o).intValue();
+    if (o instanceof Number)
+      return ((Number) o).intValue();
     throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to int");
   }
 
   public long convertScalarLong(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() == DataType.LONG || m.getDataType() == DataType.ULONG) return getScalarLong(recnum, m);
-    if (m.getDataType() == DataType.INT) return (long) getScalarInt(recnum, m);
-    if (m.getDataType() == DataType.UINT) return DataType.unsignedIntToLong( getScalarInt(recnum, m));
-    if (m.getDataType() == DataType.SHORT) return (long) getScalarShort(recnum, m);
-    if (m.getDataType() == DataType.USHORT) return (long) DataType.unsignedShortToInt(getScalarShort(recnum, m));
-    if (m.getDataType() == DataType.BYTE) return (long) getScalarByte(recnum, m);
-    if (m.getDataType() == DataType.UBYTE) return (long) DataType.unsignedByteToShort(getScalarByte(recnum, m));
+    if (m.getDataType() == DataType.LONG || m.getDataType() == DataType.ULONG)
+      return getScalarLong(recnum, m);
+    if (m.getDataType() == DataType.INT)
+      return (long) getScalarInt(recnum, m);
+    if (m.getDataType() == DataType.UINT)
+      return DataType.unsignedIntToLong(getScalarInt(recnum, m));
+    if (m.getDataType() == DataType.SHORT)
+      return (long) getScalarShort(recnum, m);
+    if (m.getDataType() == DataType.USHORT)
+      return (long) DataType.unsignedShortToInt(getScalarShort(recnum, m));
+    if (m.getDataType() == DataType.BYTE)
+      return (long) getScalarByte(recnum, m);
+    if (m.getDataType() == DataType.UBYTE)
+      return (long) DataType.unsignedByteToShort(getScalarByte(recnum, m));
     Object o = getScalarObject(recnum, m);
-    if (o instanceof Number) return ((Number) o).longValue();
+    if (o instanceof Number)
+      return ((Number) o).longValue();
     throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to int");
   }
 
@@ -629,7 +675,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar member data of type double.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type double.
+   * @param m get data from this StructureMembers.Member. Must be of type double.
    * @return scalar double value
    */
   public double getScalarDouble(int recnum, StructureMembers.Member m) {
@@ -643,7 +689,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type double as a 1D array. The member data may be any rank.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type double.
+   * @param m get data from this StructureMembers.Member. Must be of type double.
    * @return double[]
    */
   public double[] getJavaArrayDouble(int recnum, StructureMembers.Member m) {
@@ -661,7 +707,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar member data of type float.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type float.
+   * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return scalar double value
    */
   public float getScalarFloat(int recnum, StructureMembers.Member m) {
@@ -675,7 +721,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type float as a 1D array.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type float.
+   * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return float[]
    */
   public float[] getJavaArrayFloat(int recnum, StructureMembers.Member m) {
@@ -693,7 +739,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar member data of type byte.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type byte.
+   * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return scalar double value
    */
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
@@ -707,7 +753,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type byte as a 1D array.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type byte.
+   * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return byte[]
    */
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
@@ -725,7 +771,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar member data of type short.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type short.
+   * @param m get data from this StructureMembers.Member. Must be of type short.
    * @return scalar double value
    */
   public short getScalarShort(int recnum, StructureMembers.Member m) {
@@ -739,7 +785,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type short as a 1D array.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type float.
+   * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return short[]
    */
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
@@ -757,7 +803,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar member data of type int.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type int.
+   * @param m get data from this StructureMembers.Member. Must be of type int.
    * @return scalar double value
    */
   public int getScalarInt(int recnum, StructureMembers.Member m) {
@@ -771,7 +817,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type int as a 1D array.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type int.
+   * @param m get data from this StructureMembers.Member. Must be of type int.
    * @return int[]
    */
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
@@ -789,7 +835,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar member data of type long.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type long.
+   * @param m get data from this StructureMembers.Member. Must be of type long.
    * @return scalar double value
    */
   public long getScalarLong(int recnum, StructureMembers.Member m) {
@@ -803,7 +849,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type long as a 1D array.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type long.
+   * @param m get data from this StructureMembers.Member. Must be of type long.
    * @return long[]
    */
   public long[] getJavaArrayLong(int recnum, StructureMembers.Member m) {
@@ -821,7 +867,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get scalar member data of type char.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type char.
+   * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return scalar double value
    */
   public char getScalarChar(int recnum, StructureMembers.Member m) {
@@ -835,7 +881,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type char as a 1D array.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type char.
+   * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return char[]
    */
   public char[] getJavaArrayChar(int recnum, StructureMembers.Member m) {
@@ -853,7 +899,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type String or char.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type String or char.
+   * @param m get data from this StructureMembers.Member. Must be of type String or char.
    * @return scalar String value
    */
   public String getScalarString(int recnum, StructureMembers.Member m) {
@@ -874,7 +920,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type String as a 1D array.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type String.
+   * @param m get data from this StructureMembers.Member. Must be of type String.
    * @return String[]
    */
   public String[] getJavaArrayString(int recnum, StructureMembers.Member m) {
@@ -904,7 +950,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type Structure.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type Structure.
+   * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return scalar StructureData
    */
   public StructureData getScalarStructure(int recnum, StructureMembers.Member m) {
@@ -912,14 +958,14 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Structure");
 
     ArrayStructure data = (ArrayStructure) m.getDataArray();
-    return data.getStructureData(recnum * m.getSize());  // gets first in the array
+    return data.getStructureData(recnum * m.getSize()); // gets first in the array
   }
 
   /**
    * Get member data of type array of Structure.
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type Structure.
+   * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return nested ArrayStructure.
    */
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
@@ -944,7 +990,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type ArraySequence
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type Structure.
+   * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return nested ArrayStructure.
    */
   public ArraySequence getArraySequence(int recnum, StructureMembers.Member m) {
@@ -960,7 +1006,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * Get member data of type ArrayObject
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m      get data from this StructureMembers.Member. Must be of type Structure.
+   * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return ArrayObject.
    */
   public ArrayObject getArrayObject(int recnum, StructureMembers.Member m) {
@@ -968,16 +1014,18 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Sequence");
 
     ArrayObject array = (ArrayObject) m.getDataArray();
-    return (ArrayObject) array.getObject(recnum);     // LOOK ??
+    return (ArrayObject) array.getObject(recnum); // LOOK ??
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   public void showInternal(Formatter f, Indent indent) {
-    f.format("%sArrayStructure %s size=%d class=%s hash=0x%x%n", indent, members.getName(), getSize(), this.getClass().getName(), hashCode());
+    f.format("%sArrayStructure %s size=%d class=%s hash=0x%x%n", indent, members.getName(), getSize(),
+        this.getClass().getName(), hashCode());
   }
 
   public void showInternalMembers(Formatter f, Indent indent) {
-    f.format("%sArrayStructure %s class=%s hash=0x%x%n", indent, members.getName(), this.getClass().getName(), hashCode());
+    f.format("%sArrayStructure %s class=%s hash=0x%x%n", indent, members.getName(), this.getClass().getName(),
+        hashCode());
     indent.incr();
     for (StructureMembers.Member m : getMembers())
       m.showInternal(f, indent);
@@ -988,7 +1036,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
 
   @Override
   public Array createView(Index index) {
-    //    Section viewSection = index.getSection(); / LOOK if we could do this, we could make this work
+    // Section viewSection = index.getSection(); / LOOK if we could do this, we could make this work
 
     throw new UnsupportedOperationException();
   }

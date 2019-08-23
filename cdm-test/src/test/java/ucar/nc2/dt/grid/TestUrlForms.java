@@ -13,7 +13,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,21 +30,21 @@ public class TestUrlForms {
 
   private static String testfile = TestDir.cdmUnitTestDir + "conventions/avhrr/amsr-avhrr-v2.20040729.nc";
 
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{testfile});
-    result.add(new Object[]{"/"+testfile});
-    result.add(new Object[]{"file:"+testfile});
-    result.add(new Object[]{"file:/"+testfile});
+    result.add(new Object[] {testfile});
+    result.add(new Object[] {"/" + testfile});
+    result.add(new Object[] {"file:" + testfile});
+    result.add(new Object[] {"file:/" + testfile});
 
     return result;
   }
 
   String name;
 
-  public TestUrlForms( String name) {
+  public TestUrlForms(String name) {
     this.name = name;
     System.out.printf("%s%n", name);
   }

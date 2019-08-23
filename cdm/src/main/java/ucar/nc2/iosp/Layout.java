@@ -9,6 +9,7 @@ package ucar.nc2.iosp;
  * The iteration is monotonic in both src and dest positions.
  * <p/>
  * Example for Integers:
+ * 
  * <pre>
   int[] read( Layout index, int[] src) {
     int[] dest = new int[index.getTotalNelems()];
@@ -38,7 +39,7 @@ package ucar.nc2.iosp;
           raf.writeInt(src, chunk.getDestElem(), chunk.getNelems());
           raf.writeInt( ii.getByteNext());
       }
-
+ * 
  * </pre>
  *
  * @author caron
@@ -84,18 +85,22 @@ public interface Layout {
 
     /**
      * Get the position in source where to read or write: "file position"
+     * 
      * @return position as a byte count into the source, eg a file
      */
     long getSrcPos();
 
     /**
      * Get number of elements to transfer contiguously (Note: elements, not bytes)
+     * 
      * @return number of elements to transfer
      */
     int getNelems();
 
     /**
-     * Get starting element position as a 1D element index into the destination, eg the requested array with shape "wantSection".
+     * Get starting element position as a 1D element index into the destination, eg the requested array with shape
+     * "wantSection".
+     * 
      * @return starting element in the array (Note: elements, not bytes)
      */
     long getDestElem();

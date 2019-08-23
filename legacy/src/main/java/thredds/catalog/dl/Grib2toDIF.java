@@ -8,13 +8,13 @@
 package thredds.catalog.dl;
 
 import ucar.nc2.constants.CDM;
-
 import java.util.HashMap;
 import java.io.*;
 import java.util.Map;
 
 /**
  * read in GRIB-2 to DIF csv file
+ * 
  * @author john
  */
 public class Grib2toDIF implements VocabTranslator {
@@ -35,12 +35,12 @@ public class Grib2toDIF implements VocabTranslator {
     String resourceName = "/resources/thredds/dl/GRIB2-GCMD.csv";
     InputStream ios;
     if (null != dir) {
-      ios = new FileInputStream(dir+resourceName);
+      ios = new FileInputStream(dir + resourceName);
     } else {
       Class c = getClass();
       ios = c.getResourceAsStream(resourceName);
       if (ios == null)
-        throw new IOException("Cant find resource= "+resourceName);
+        throw new IOException("Cant find resource= " + resourceName);
     }
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
@@ -55,18 +55,20 @@ public class Grib2toDIF implements VocabTranslator {
     int countParam = 0;
     while (count < maxLines) {
       String line = dataIS.readLine();
-      if (line == null) break;
-      if (debug) System.out.println("line=  "+line);
+      if (line == null)
+        break;
+      if (debug)
+        System.out.println("line=  " + line);
 
       int countTokens = 0;
       int place = 0;
       while (countTokens < maxTokens) {
-        int pos = line.indexOf(',',place);
+        int pos = line.indexOf(',', place);
         if (pos >= 0)
-          tokens[countTokens++] = line.substring(place,pos);
+          tokens[countTokens++] = line.substring(place, pos);
         else
           tokens[countTokens++] = line.substring(place);
-        place=pos+1;
+        place = pos + 1;
       }
 
       if (tokens[0].length() > 0) {
@@ -87,11 +89,13 @@ public class Grib2toDIF implements VocabTranslator {
         countParam++;
       }
 
-      String difParam = "Earth Science > "+tokens[7];
+      String difParam = "Earth Science > " + tokens[7];
       if (!difParam.equalsIgnoreCase("n/a")) {
-        String gribId = "2,"+countDiscipline+","+countCategory+","+countParam;
-        hash.put( gribId, difParam);
-        if (debug) System.out.println(" adding "+discipline+":"+category+":"+param+" = "+gribId+" = "+difParam);
+        String gribId = "2," + countDiscipline + "," + countCategory + "," + countParam;
+        hash.put(gribId, difParam);
+        if (debug)
+          System.out
+              .println(" adding " + discipline + ":" + category + ":" + param + " = " + gribId + " = " + difParam);
       }
 
       count++;

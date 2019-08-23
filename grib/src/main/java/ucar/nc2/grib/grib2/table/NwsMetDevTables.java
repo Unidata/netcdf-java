@@ -13,10 +13,10 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
 /**
- Center        = (7) US National Weather Service, National Centres for Environmental Prediction (NCEP)
- SubCenter     = (14) NWS Meteorological Development Laboratory
- Master Table  = 1
- Local Table   = 0
+ * Center = (7) US National Weather Service, National Centres for Environmental Prediction (NCEP)
+ * SubCenter = (14) NWS Meteorological Development Laboratory
+ * Master Table = 1
+ * Local Table = 0
  *
  * @author caron
  * @since 1/28/2016.
@@ -31,7 +31,8 @@ public class NwsMetDevTables extends NcepLocalTables {
   @Nullable
   public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
-    if (!pds.isTimeInterval()) return null;
+    if (!pds.isTimeInterval())
+      return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
 
     // override here only if timeRangeUnit = 255

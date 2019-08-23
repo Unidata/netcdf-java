@@ -9,75 +9,75 @@ package thredds.cataloggen.config;
 import thredds.catalog.MetadataConverterIF;
 import thredds.catalog.InvDataset;
 import thredds.catalog.ServiceType;
-
 import org.jdom2.*;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.*;
 import org.jdom2.output.*;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.net.URI;
 import java.io.IOException;
 
 /**
- * <p>Title: Catalog Generator</p>
- * <p>Description: Tool for generating THREDDS catalogs.</p>
- * <p>Copyright: Copyright (c) 2001</p>
- * <p>Company: UCAR/Unidata</p>
+ * <p>
+ * Title: Catalog Generator
+ * </p>
+ * <p>
+ * Description: Tool for generating THREDDS catalogs.
+ * </p>
+ * <p>
+ * Copyright: Copyright (c) 2001
+ * </p>
+ * <p>
+ * Company: UCAR/Unidata
+ * </p>
+ * 
  * @author Ethan Davis
  * @version 1.0
  */
 
-public class CatGenConfigMetadataFactory
-        implements MetadataConverterIF
-{
-  //private static Log log = LogFactory.getLog( CatGenConfigMetadataFactory.class );
+public class CatGenConfigMetadataFactory implements MetadataConverterIF {
+  // private static Log log = LogFactory.getLog( CatGenConfigMetadataFactory.class );
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatGenConfigMetadataFactory.class);
 
   private static boolean showParsedXML = false, debug = false;
   private static final Namespace CATALOG_GEN_CONFIG_NAMESPACE_0_5 =
-          Namespace.getNamespace( CatalogGenConfig.CATALOG_GEN_CONFIG_NAMESPACE_URI_0_5 );
-  //private DOMBuilder builder = new DOMBuilder();
+      Namespace.getNamespace(CatalogGenConfig.CATALOG_GEN_CONFIG_NAMESPACE_URI_0_5);
+  // private DOMBuilder builder = new DOMBuilder();
 
-  public CatGenConfigMetadataFactory()
-  {
-    log.debug( "CatGenConfigMetadataFactory(): .");
+  public CatGenConfigMetadataFactory() {
+    log.debug("CatGenConfigMetadataFactory(): .");
   }
 
- /**
-  * Create an InvMetadata content object from an XML document at a named URL.
-  * The content object is an ArrayList of CatalogGenConfig instances.
-  *
-  * @param dataset - the containing dataset
-  * @param urlString - the URL where the XML doc is located.
-  * @return
-  * @throws java.net.MalformedURLException if given URL is malformed.
-  * @throws java.io.IOException if problems reading from given URL
-  */
-  private Object readMetadataContentFromURL( InvDataset dataset, String urlString)
-    throws java.net.MalformedURLException, java.io.IOException
-  {
+  /**
+   * Create an InvMetadata content object from an XML document at a named URL.
+   * The content object is an ArrayList of CatalogGenConfig instances.
+   *
+   * @param dataset - the containing dataset
+   * @param urlString - the URL where the XML doc is located.
+   * @return
+   * @throws java.net.MalformedURLException if given URL is malformed.
+   * @throws java.io.IOException if problems reading from given URL
+   */
+  private Object readMetadataContentFromURL(InvDataset dataset, String urlString)
+      throws java.net.MalformedURLException, java.io.IOException {
     // @todo This isn't used anywhere. Remove?
     Document doc;
-    try
-    {
-      SAXBuilder builder = new SAXBuilder( true);
-      doc = builder.build( urlString);
-    } catch ( JDOMException e)
-    {
-      log.error( "CatGenConfigMetadataFactory parsing error= \n" + e.getMessage());
-      throw new java.io.IOException( "CatGenConfigMetadataFactory parsing error= " + e.getMessage());
+    try {
+      SAXBuilder builder = new SAXBuilder(true);
+      doc = builder.build(urlString);
+    } catch (JDOMException e) {
+      log.error("CatGenConfigMetadataFactory parsing error= \n" + e.getMessage());
+      throw new java.io.IOException("CatGenConfigMetadataFactory parsing error= " + e.getMessage());
     }
 
-    if (showParsedXML)
-    {
-      XMLOutputter xmlOut = new XMLOutputter( Format.getPrettyFormat() );
-      System.out.println ("*** catalog/showParsedXML = \n"+xmlOut.outputString(doc)+"\n*******");
+    if (showParsedXML) {
+      XMLOutputter xmlOut = new XMLOutputter(Format.getPrettyFormat());
+      System.out.println("*** catalog/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
     }
 
-    return( readMetadataContentJdom( dataset, doc.getRootElement()));
+    return (readMetadataContentJdom(dataset, doc.getRootElement()));
   }
 
   /**
@@ -88,18 +88,16 @@ public class CatGenConfigMetadataFactory
    * @param mdataElement - the metadata element as an org.w3c.dom.Element
    * @return an object representing the metadata which is an ArrayList of CatalogGenConfig instances.
    */
-  public Object readMetadataContent( InvDataset dataset, org.jdom2.Element mdataElement )
-  {
-    log.debug( "readMetadataContent(): ." );
+  public Object readMetadataContent(InvDataset dataset, org.jdom2.Element mdataElement) {
+    log.debug("readMetadataContent(): .");
 
     // convert to JDOM element
-    //Element mdataElement = builder.build( mdataDomElement );
-    return readMetadataContentJdom( dataset, mdataElement );
+    // Element mdataElement = builder.build( mdataDomElement );
+    return readMetadataContentJdom(dataset, mdataElement);
   }
 
-  public Object readMetadataContentFromURL( InvDataset dataset, URI uri ) throws IOException
-  {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  public Object readMetadataContentFromURL(InvDataset dataset, URI uri) throws IOException {
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   /**
@@ -108,35 +106,32 @@ public class CatGenConfigMetadataFactory
    * @param mdataJdomElement - add content to this org.w3c.dom.Element
    * @param contentObject - the content model
    */
-  public void addMetadataContent( org.jdom2.Element mdataJdomElement, Object contentObject )
-  {
+  public void addMetadataContent(org.jdom2.Element mdataJdomElement, Object contentObject) {
     // convert to JDOM element
-    //Element mdataJdomElement = builder.build( mdataElement );
+    // Element mdataJdomElement = builder.build( mdataElement );
 
     ArrayList catGenConfigList = (ArrayList) contentObject;
     Iterator iter = catGenConfigList.iterator();
-    while ( iter.hasNext())
-    {
+    while (iter.hasNext()) {
       CatalogGenConfig cgc = (CatalogGenConfig) iter.next();
-      mdataJdomElement.addContent( createCatGenConfigElement( cgc));
+      mdataJdomElement.addContent(createCatGenConfigElement(cgc));
     }
   }
 
   /** Validate the content object. */
-  public boolean validateMetadataContent( Object contentObject, StringBuilder out)
-  {
+  public boolean validateMetadataContent(Object contentObject, StringBuilder out) {
     boolean ok = true;
     ArrayList catGenConfigList = (ArrayList) contentObject;
     Iterator iter = catGenConfigList.iterator();
-    while ( iter.hasNext()) {
+    while (iter.hasNext()) {
       CatalogGenConfig catGenConf = (CatalogGenConfig) iter.next();
-      ok &= catGenConf.validate( out);
+      ok &= catGenConf.validate(out);
     }
     return ok;
 
   }
 
-  //---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   // Private methods to support readMetadataContent( InvDataset, org.w3c.dom.Element).
 
   /**
@@ -146,387 +141,328 @@ public class CatGenConfigMetadataFactory
    * From the given metadata JDOM element, build (and return) an
    * ArrayList of CatalogGenConfig instances.
    */
-  private Object readMetadataContentJdom( InvDataset dataset, Element mdataElement )
-  {
+  private Object readMetadataContentJdom(InvDataset dataset, Element mdataElement) {
     Namespace catGenConfigNamespace = null;
     ArrayList catGenConfigList = new ArrayList();
     // Get the "catalogGenConfig" children elements with
     // CatalogGenConfig namespace first and then with THREDDS namespace.
-   Iterator iter = mdataElement.getChildren( "catalogGenConfig", CATALOG_GEN_CONFIG_NAMESPACE_0_5 ).iterator();
-    if ( ! iter.hasNext())
-      iter = mdataElement.getChildren( "catalogGenConfig", mdataElement.getNamespace() ).iterator();
+    Iterator iter = mdataElement.getChildren("catalogGenConfig", CATALOG_GEN_CONFIG_NAMESPACE_0_5).iterator();
+    if (!iter.hasNext())
+      iter = mdataElement.getChildren("catalogGenConfig", mdataElement.getNamespace()).iterator();
 
-    while ( iter.hasNext() )
-    {
+    while (iter.hasNext()) {
       Element catGenConfigElement = (Element) iter.next();
-      if ( debug )
-      {
-        log.debug( "readMetadataContent=" + catGenConfigElement);
+      if (debug) {
+        log.debug("readMetadataContent=" + catGenConfigElement);
       }
-      catGenConfigList.add( readCatGenConfigElement( dataset, catGenConfigElement ) );
+      catGenConfigList.add(readCatGenConfigElement(dataset, catGenConfigElement));
     }
-    return ( catGenConfigList );
+    return (catGenConfigList);
   }
 
   /** Return a CatalogGenConfig when given a 'catalogGenConfig' JDOM element. */
-  private CatalogGenConfig readCatGenConfigElement(
-    InvDataset parentDataset, Element catGenConfElement)
-  {
+  private CatalogGenConfig readCatGenConfigElement(InvDataset parentDataset, Element catGenConfElement) {
 
     String type = catGenConfElement.getAttributeValue("type");
 
-    CatalogGenConfig catGenConf = new CatalogGenConfig( parentDataset, type);
+    CatalogGenConfig catGenConf = new CatalogGenConfig(parentDataset, type);
 
     // get any datasetSource elements
-    java.util.List list = catGenConfElement.getChildren( "datasetSource", catGenConfElement.getNamespace() );
-    for (int i=0; i< list.size(); i++)
-    {
+    java.util.List list = catGenConfElement.getChildren("datasetSource", catGenConfElement.getNamespace());
+    for (int i = 0; i < list.size(); i++) {
       Element dsSourceElement = (Element) list.get(i);
 
-      catGenConf.setDatasetSource( readDatasetSourceElement( parentDataset,
-                                                             dsSourceElement));
+      catGenConf.setDatasetSource(readDatasetSourceElement(parentDataset, dsSourceElement));
     }
 
     // @todo Start only allowing datasetSource elements in catalogGenConfig elements.
-//    // get any datasetNamer elements
-//    list = catGenConfElement.getChildren( "datasetNamer", catGenConfElement.getNamespace() );
-//    for (int i=0; i< list.size(); i++)
-//    {
-//      Element dsNamerElement = (Element) list.get(i);
-//
-//      catGenConf.addDatasetNamer( readDatasetNamerElement( parentDataset,
-//                                                           dsNamerElement));
-//    }
+    // // get any datasetNamer elements
+    // list = catGenConfElement.getChildren( "datasetNamer", catGenConfElement.getNamespace() );
+    // for (int i=0; i< list.size(); i++)
+    // {
+    // Element dsNamerElement = (Element) list.get(i);
+    //
+    // catGenConf.addDatasetNamer( readDatasetNamerElement( parentDataset,
+    // dsNamerElement));
+    // }
 
-    return( catGenConf);
+    return (catGenConf);
   }
 
   /** Return a DatasetSource when given a 'datasetSource' JDOM element. */
-  private DatasetSource readDatasetSourceElement( InvDataset parentDataset,
-                                                  Element dsSourceElement)
-  {
-    String name = dsSourceElement.getAttributeValue( "name");
-    String type = dsSourceElement.getAttributeValue( "type");
-    String structure = dsSourceElement.getAttributeValue( "structure");
-    String accessPoint = dsSourceElement.getAttributeValue( "accessPoint");
-    String createCatalogRefs = dsSourceElement.getAttributeValue( "createCatalogRefs");
+  private DatasetSource readDatasetSourceElement(InvDataset parentDataset, Element dsSourceElement) {
+    String name = dsSourceElement.getAttributeValue("name");
+    String type = dsSourceElement.getAttributeValue("type");
+    String structure = dsSourceElement.getAttributeValue("structure");
+    String accessPoint = dsSourceElement.getAttributeValue("accessPoint");
+    String createCatalogRefs = dsSourceElement.getAttributeValue("createCatalogRefs");
 
     // get the resultService element
-    Element resultServiceElement = dsSourceElement.getChild( "resultService", dsSourceElement.getNamespace() );
-    ResultService resultService = readResultServiceElement( parentDataset,
-                                                         resultServiceElement);
+    Element resultServiceElement = dsSourceElement.getChild("resultService", dsSourceElement.getNamespace());
+    ResultService resultService = readResultServiceElement(parentDataset, resultServiceElement);
 
-    DatasetSource dsSource = DatasetSource.newDatasetSource( name,
-                                                    DatasetSourceType.getType( type),
-                                                    DatasetSourceStructure.getStructure( structure),
-                                                    accessPoint, resultService);
-    if ( createCatalogRefs != null)
-    {
-      dsSource.setCreateCatalogRefs( Boolean.valueOf( createCatalogRefs).booleanValue());
+    DatasetSource dsSource = DatasetSource.newDatasetSource(name, DatasetSourceType.getType(type),
+        DatasetSourceStructure.getStructure(structure), accessPoint, resultService);
+    if (createCatalogRefs != null) {
+      dsSource.setCreateCatalogRefs(Boolean.valueOf(createCatalogRefs).booleanValue());
     }
 
     // get any datasetNamer elements
-    java.util.List list = dsSourceElement.getChildren( "datasetNamer", dsSourceElement.getNamespace() );
-    for (int i=0; i< list.size(); i++)
-    {
+    java.util.List list = dsSourceElement.getChildren("datasetNamer", dsSourceElement.getNamespace());
+    for (int i = 0; i < list.size(); i++) {
       Element dsNamerElement = (Element) list.get(i);
 
-      dsSource.addDatasetNamer( readDatasetNamerElement( parentDataset,
-                                                         dsNamerElement));
+      dsSource.addDatasetNamer(readDatasetNamerElement(parentDataset, dsNamerElement));
     }
 
     // get any datasetFilter elements
-    list = dsSourceElement.getChildren( "datasetFilter", dsSourceElement.getNamespace() );
-    for (int i=0; i< list.size(); i++)
-    {
+    list = dsSourceElement.getChildren("datasetFilter", dsSourceElement.getNamespace());
+    for (int i = 0; i < list.size(); i++) {
       Element dsFilterElement = (Element) list.get(i);
 
-      dsSource.addDatasetFilter( readDatasetFilterElement( dsSource,
-                                                           dsFilterElement));
+      dsSource.addDatasetFilter(readDatasetFilterElement(dsSource, dsFilterElement));
     }
 
-    return( dsSource);
+    return (dsSource);
   }
 
   /** Return a DatasetNamer when given a 'datasetNamer' JDOM element. */
-  private DatasetNamer readDatasetNamerElement( InvDataset parentDataset,
-                                                 Element dsNamerElement)
-  {
-    String name = dsNamerElement.getAttributeValue( "name");
-    String addLevel = dsNamerElement.getAttributeValue( "addLevel");
-    String type = dsNamerElement.getAttributeValue( "type");
-    String matchPattern = dsNamerElement.getAttributeValue( "matchPattern");
-    String substitutePattern = dsNamerElement.getAttributeValue( "substitutePattern");
-    String attribContainer = dsNamerElement.getAttributeValue( "attribContainer");
-    String attribName = dsNamerElement.getAttributeValue( "attribName");
+  private DatasetNamer readDatasetNamerElement(InvDataset parentDataset, Element dsNamerElement) {
+    String name = dsNamerElement.getAttributeValue("name");
+    String addLevel = dsNamerElement.getAttributeValue("addLevel");
+    String type = dsNamerElement.getAttributeValue("type");
+    String matchPattern = dsNamerElement.getAttributeValue("matchPattern");
+    String substitutePattern = dsNamerElement.getAttributeValue("substitutePattern");
+    String attribContainer = dsNamerElement.getAttributeValue("attribContainer");
+    String attribName = dsNamerElement.getAttributeValue("attribName");
 
-    DatasetNamer dsNamer = new DatasetNamer( parentDataset,
-                                             name, addLevel, type,
-                                             matchPattern, substitutePattern,
-                                             attribContainer, attribName);
+    DatasetNamer dsNamer = new DatasetNamer(parentDataset, name, addLevel, type, matchPattern, substitutePattern,
+        attribContainer, attribName);
 
-    return( dsNamer);
+    return (dsNamer);
   }
 
   /** Return a DatasetFilter when given a 'datasetFilter' JDOM element. */
-  private DatasetFilter readDatasetFilterElement( DatasetSource parentDatasetSource,
-                                                  Element dsFilterElement)
-  {
-    String name = dsFilterElement.getAttributeValue( "name");
-    String type = dsFilterElement.getAttributeValue( "type");
-    String matchPattern = dsFilterElement.getAttributeValue( "matchPattern");
+  private DatasetFilter readDatasetFilterElement(DatasetSource parentDatasetSource, Element dsFilterElement) {
+    String name = dsFilterElement.getAttributeValue("name");
+    String type = dsFilterElement.getAttributeValue("type");
+    String matchPattern = dsFilterElement.getAttributeValue("matchPattern");
 
-    DatasetFilter dsFilter = new DatasetFilter( parentDatasetSource,
-                                                name, DatasetFilter.Type.getType( type), matchPattern);
-    String matchPatternTarget = dsFilterElement.getAttributeValue( "matchPatternTarget");
-    dsFilter.setMatchPatternTarget( matchPatternTarget);
+    DatasetFilter dsFilter =
+        new DatasetFilter(parentDatasetSource, name, DatasetFilter.Type.getType(type), matchPattern);
+    String matchPatternTarget = dsFilterElement.getAttributeValue("matchPatternTarget");
+    dsFilter.setMatchPatternTarget(matchPatternTarget);
 
-    if ( dsFilterElement.getAttributeValue( "applyToCollectionDatasets") != null)
-    {
-      boolean applyToCollectionDatasets = Boolean.valueOf( dsFilterElement.getAttributeValue( "applyToCollectionDatasets")).booleanValue();
-      dsFilter.setApplyToCollectionDatasets( applyToCollectionDatasets);
+    if (dsFilterElement.getAttributeValue("applyToCollectionDatasets") != null) {
+      boolean applyToCollectionDatasets =
+          Boolean.valueOf(dsFilterElement.getAttributeValue("applyToCollectionDatasets")).booleanValue();
+      dsFilter.setApplyToCollectionDatasets(applyToCollectionDatasets);
     }
-    if ( dsFilterElement.getAttributeValue( "applyToAtomicDatasets") != null)
-    {
-      boolean applyToAtomicDatasets = Boolean.valueOf( dsFilterElement.getAttributeValue( "applyToAtomicDatasets")).booleanValue();
-      dsFilter.setApplyToAtomicDatasets( applyToAtomicDatasets);
+    if (dsFilterElement.getAttributeValue("applyToAtomicDatasets") != null) {
+      boolean applyToAtomicDatasets =
+          Boolean.valueOf(dsFilterElement.getAttributeValue("applyToAtomicDatasets")).booleanValue();
+      dsFilter.setApplyToAtomicDatasets(applyToAtomicDatasets);
     }
-    if ( dsFilterElement.getAttributeValue( "rejectMatchingDatasets") != null)
-    {
-      boolean rejectMatchingDatasets = Boolean.valueOf( dsFilterElement.getAttributeValue( "rejectMatchingDatasets")).booleanValue();
-      dsFilter.setRejectMatchingDatasets( rejectMatchingDatasets);
+    if (dsFilterElement.getAttributeValue("rejectMatchingDatasets") != null) {
+      boolean rejectMatchingDatasets =
+          Boolean.valueOf(dsFilterElement.getAttributeValue("rejectMatchingDatasets")).booleanValue();
+      dsFilter.setRejectMatchingDatasets(rejectMatchingDatasets);
     }
 
-    return( dsFilter);
+    return (dsFilter);
   }
 
   /** Return a ResultService when given a 'resultService' JDOM element. */
-  private ResultService readResultServiceElement( InvDataset parentDataset,
-                                                  Element resultServiceElement)
-  {
-    String name = resultServiceElement.getAttributeValue( "name");
-    String serviceType = resultServiceElement.getAttributeValue( "serviceType");
-    String base = resultServiceElement.getAttributeValue( "base");
-    String suffix = resultServiceElement.getAttributeValue( "suffix");
-    String accessPointHeader =
-      resultServiceElement.getAttributeValue( "accessPointHeader");
+  private ResultService readResultServiceElement(InvDataset parentDataset, Element resultServiceElement) {
+    String name = resultServiceElement.getAttributeValue("name");
+    String serviceType = resultServiceElement.getAttributeValue("serviceType");
+    String base = resultServiceElement.getAttributeValue("base");
+    String suffix = resultServiceElement.getAttributeValue("suffix");
+    String accessPointHeader = resultServiceElement.getAttributeValue("accessPointHeader");
 
-    return( new ResultService( name, ServiceType.getType( serviceType), base, suffix,
-                               accessPointHeader));
+    return (new ResultService(name, ServiceType.getType(serviceType), base, suffix, accessPointHeader));
   }
 
-  //---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   // Private methods to support addMetadataContent()
 
   /** Create a 'catalogGenConfig' JDOM element */
-  private org.jdom2.Element createCatGenConfigElement( CatalogGenConfig cgc)
-  {
+  private org.jdom2.Element createCatGenConfigElement(CatalogGenConfig cgc) {
     // @todo Need to deal with the 0.6 and 1.0 namespaces.
     Element cgcElem = new Element("catalogGenConfig", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
-    if ( cgc != null)
-    {
-      if ( cgc.getType() != null)
-      {
-        cgcElem.setAttribute( "type", cgc.getType().toString());
+    if (cgc != null) {
+      if (cgc.getType() != null) {
+        cgcElem.setAttribute("type", cgc.getType().toString());
       }
 
       // Add 'datasetSource' element
       DatasetSource dsSource = cgc.getDatasetSource();
-      cgcElem.addContent( createDatasetSourceElement( dsSource));
+      cgcElem.addContent(createDatasetSourceElement(dsSource));
 
     }
 
-    return( cgcElem);
+    return (cgcElem);
   }
 
   /** Create a 'DatasetSource' JDOM element */
-  private org.jdom2.Element createDatasetSourceElement( DatasetSource dsSource)
-  {
+  private org.jdom2.Element createDatasetSourceElement(DatasetSource dsSource) {
     Element dssElem = new Element("datasetSource", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
-    if ( dsSource != null)
-    {
+    if (dsSource != null) {
       // Add 'name' attribute.
-      if ( dsSource.getName() != null)
-      {
-        dssElem.setAttribute( "name", dsSource.getName());
+      if (dsSource.getName() != null) {
+        dssElem.setAttribute("name", dsSource.getName());
       }
 
       // Add 'type' attribute.
-      if ( dsSource.getType() != null)
-      {
-        dssElem.setAttribute( "type", dsSource.getType().toString());
+      if (dsSource.getType() != null) {
+        dssElem.setAttribute("type", dsSource.getType().toString());
       }
 
       // Add 'structure' attribute.
-      if ( dsSource.getStructure() != null)
-      {
-        dssElem.setAttribute( "structure", dsSource.getStructure().toString());
+      if (dsSource.getStructure() != null) {
+        dssElem.setAttribute("structure", dsSource.getStructure().toString());
       }
 
       // Add 'accessPoint' attribute.
-      if ( dsSource.getAccessPoint() != null)
-      {
-        dssElem.setAttribute( "accessPoint", dsSource.getAccessPoint());
+      if (dsSource.getAccessPoint() != null) {
+        dssElem.setAttribute("accessPoint", dsSource.getAccessPoint());
       }
 
       // Add 'createCatalogRefs' attribute.
-      dssElem.setAttribute( "createCatalogRefs", Boolean.toString(  dsSource.isCreateCatalogRefs()));
+      dssElem.setAttribute("createCatalogRefs", Boolean.toString(dsSource.isCreateCatalogRefs()));
 
       // Add 'resultService' element
       ResultService rs = dsSource.getResultService();
-      dssElem.addContent( createResultServiceElement( rs));
+      dssElem.addContent(createResultServiceElement(rs));
 
       // Add 'datasetNamer' elements
       java.util.List list = dsSource.getDatasetNamerList();
-      for ( int j=0; j < list.size(); j++)
-      {
+      for (int j = 0; j < list.size(); j++) {
         DatasetNamer dsNamer = (DatasetNamer) list.get(j);
-        dssElem.addContent( createDatasetNamerElement( dsNamer));
+        dssElem.addContent(createDatasetNamerElement(dsNamer));
       }
 
       // Add 'datasetFilter' elements
       list = dsSource.getDatasetFilterList();
-      for ( int j=0; j < list.size(); j++)
-      {
+      for (int j = 0; j < list.size(); j++) {
         DatasetFilter dsFilter = (DatasetFilter) list.get(j);
-        dssElem.addContent( createDatasetFilterElement( dsFilter));
+        dssElem.addContent(createDatasetFilterElement(dsFilter));
       }
     }
 
-    return( dssElem);
+    return (dssElem);
   }
 
   /** Create a 'DatasetNamer' JDOM element */
-  private org.jdom2.Element createDatasetNamerElement( DatasetNamer dsNamer)
-  {
+  private org.jdom2.Element createDatasetNamerElement(DatasetNamer dsNamer) {
     Element dsnElem = new Element("datasetNamer", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
-    if ( dsNamer != null)
-    {
+    if (dsNamer != null) {
       // Add 'name' attribute.
-      if ( dsNamer.getName() != null)
-      {
-        dsnElem.setAttribute( "name", dsNamer.getName());
+      if (dsNamer.getName() != null) {
+        dsnElem.setAttribute("name", dsNamer.getName());
       }
 
       // Add 'addLevel' attribute.
-      dsnElem.setAttribute( "addLevel", Boolean.toString( dsNamer.getAddLevel()));
+      dsnElem.setAttribute("addLevel", Boolean.toString(dsNamer.getAddLevel()));
 
       // Add 'type' attribute.
-      if ( dsNamer.getType() != null)
-      {
-        dsnElem.setAttribute( "type", dsNamer.getType().toString());
+      if (dsNamer.getType() != null) {
+        dsnElem.setAttribute("type", dsNamer.getType().toString());
       }
 
       // Add 'matchPattern' attribute.
-      if ( dsNamer.getMatchPattern() != null)
-      {
-        dsnElem.setAttribute( "matchPattern", dsNamer.getMatchPattern());
+      if (dsNamer.getMatchPattern() != null) {
+        dsnElem.setAttribute("matchPattern", dsNamer.getMatchPattern());
       }
 
       // Add 'subsitutePattern' attribute.
-      if ( dsNamer.getSubstitutePattern() != null)
-      {
-        dsnElem.setAttribute( "substitutePattern", dsNamer.getSubstitutePattern());
+      if (dsNamer.getSubstitutePattern() != null) {
+        dsnElem.setAttribute("substitutePattern", dsNamer.getSubstitutePattern());
       }
 
       // Add 'attribContainer' attribute.
-      if ( dsNamer.getAttribContainer() != null)
-      {
-        dsnElem.setAttribute( "attribContainer", dsNamer.getAttribContainer());
+      if (dsNamer.getAttribContainer() != null) {
+        dsnElem.setAttribute("attribContainer", dsNamer.getAttribContainer());
       }
 
       // Add 'attribName' attribute.
-      if ( dsNamer.getAttribName() != null)
-      {
-        dsnElem.setAttribute( "attribName", dsNamer.getAttribName());
+      if (dsNamer.getAttribName() != null) {
+        dsnElem.setAttribute("attribName", dsNamer.getAttribName());
       }
 
     }
 
-    return( dsnElem);
+    return (dsnElem);
   }
 
   /** Create a 'DatasetFilter' JDOM element */
-  private org.jdom2.Element createDatasetFilterElement( DatasetFilter dsFilter)
-  {
+  private org.jdom2.Element createDatasetFilterElement(DatasetFilter dsFilter) {
     Element dsfElem = new Element("datasetFilter", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
-    if ( dsFilter != null)
-    {
+    if (dsFilter != null) {
       // Add 'name' attribute.
-      if ( dsFilter.getName() != null)
-      {
-        dsfElem.setAttribute( "name", dsFilter.getName());
+      if (dsFilter.getName() != null) {
+        dsfElem.setAttribute("name", dsFilter.getName());
       }
 
       // Add 'type' attribute.
-      if ( dsFilter.getType() != null)
-      {
-        dsfElem.setAttribute( "type", dsFilter.getType().toString());
+      if (dsFilter.getType() != null) {
+        dsfElem.setAttribute("type", dsFilter.getType().toString());
       }
 
       // Add 'matchPattern' attribute.
-      if ( dsFilter.getMatchPattern() != null)
-      {
-        dsfElem.setAttribute( "matchPattern", dsFilter.getMatchPattern());
+      if (dsFilter.getMatchPattern() != null) {
+        dsfElem.setAttribute("matchPattern", dsFilter.getMatchPattern());
       }
 
       // Add 'matchPatternTarget' attribute.
-      if ( dsFilter.getMatchPatternTarget() != null)
-      {
-        dsfElem.setAttribute( "matchPatternTarget", dsFilter.getMatchPatternTarget());
+      if (dsFilter.getMatchPatternTarget() != null) {
+        dsfElem.setAttribute("matchPatternTarget", dsFilter.getMatchPatternTarget());
       }
 
       // Add 'applyToCollectionDatasets' attribute.
-      dsfElem.setAttribute( "applyToCollectionDatasets", String.valueOf( dsFilter.isApplyToCollectionDatasets()));
+      dsfElem.setAttribute("applyToCollectionDatasets", String.valueOf(dsFilter.isApplyToCollectionDatasets()));
 
       // Add 'applyToAtomicDatasets' attribute.
-      dsfElem.setAttribute( "applyToAtomicDatasets", String.valueOf( dsFilter.isApplyToAtomicDatasets()));
+      dsfElem.setAttribute("applyToAtomicDatasets", String.valueOf(dsFilter.isApplyToAtomicDatasets()));
 
       // Add 'rejectMatchingDatasets' attribute.
-      dsfElem.setAttribute( "rejectMatchingDatasets", String.valueOf( dsFilter.isRejectMatchingDatasets()));
+      dsfElem.setAttribute("rejectMatchingDatasets", String.valueOf(dsFilter.isRejectMatchingDatasets()));
 
     }
 
-    return( dsfElem);
+    return (dsfElem);
   }
 
   /** Create a 'ResultService' JDOM element */
-  private org.jdom2.Element createResultServiceElement( ResultService resultService)
-  {
+  private org.jdom2.Element createResultServiceElement(ResultService resultService) {
     Element rsElem = new Element("resultService", CATALOG_GEN_CONFIG_NAMESPACE_0_5);
-    if ( resultService != null)
-    {
+    if (resultService != null) {
       // Add 'name' attribute.
-      if ( resultService.getName() != null)
-      {
-        rsElem.setAttribute( "name", resultService.getName());
+      if (resultService.getName() != null) {
+        rsElem.setAttribute("name", resultService.getName());
       }
 
       // Add 'serviceType' attribute.
-      if ( resultService.getServiceType() != null)
-      {
-        rsElem.setAttribute( "serviceType", resultService.getServiceType().toString());
+      if (resultService.getServiceType() != null) {
+        rsElem.setAttribute("serviceType", resultService.getServiceType().toString());
       }
 
       // Add 'base' attribute.
-      if ( resultService.getBase() != null)
-      {
-        rsElem.setAttribute( "base", resultService.getBase());
+      if (resultService.getBase() != null) {
+        rsElem.setAttribute("base", resultService.getBase());
       }
 
       // Add 'suffix' attribute.
-      if ( resultService.getSuffix() != null)
-      {
-        rsElem.setAttribute( "suffix", resultService.getSuffix());
+      if (resultService.getSuffix() != null) {
+        rsElem.setAttribute("suffix", resultService.getSuffix());
       }
 
       // Add 'accessPointHeader' attribute.
-      if ( resultService.getAccessPointHeader() != null)
-      {
-        rsElem.setAttribute( "accessPointHeader", resultService.getAccessPointHeader());
+      if (resultService.getAccessPointHeader() != null) {
+        rsElem.setAttribute("accessPointHeader", resultService.getAccessPointHeader());
       }
     }
 
-    return( rsElem);
+    return (rsElem);
   }
 }

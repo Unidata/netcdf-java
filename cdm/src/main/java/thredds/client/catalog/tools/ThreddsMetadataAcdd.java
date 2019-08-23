@@ -12,11 +12,11 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
-
 import java.util.Map;
 
 /**
- * This uses global attributes (presumably from an netcdf File) and extracts ACDD metadata to add to a dataset's metadata.
+ * This uses global attributes (presumably from an netcdf File) and extracts ACDD metadata to add to a dataset's
+ * metadata.
  * Will not ovveride metaddata already in the dataset
  *
  * @author caron
@@ -24,11 +24,11 @@ import java.util.Map;
  */
 public class ThreddsMetadataAcdd {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ThreddsMetadataAcdd.class);
-  private Map<String,Attribute> ncfile;  // global attributes of the file
-  private Dataset ds;             // info from the catalog
-  private ThreddsMetadata tmi;           // extract info to here
+  private Map<String, Attribute> ncfile; // global attributes of the file
+  private Dataset ds; // info from the catalog
+  private ThreddsMetadata tmi; // extract info to here
 
-  public ThreddsMetadataAcdd(Map<String,Attribute> ncfile, DatasetBuilder dsb) {
+  public ThreddsMetadataAcdd(Map<String, Attribute> ncfile, DatasetBuilder dsb) {
     this.ncfile = ncfile;
     this.ds = dsb.copyDataset(null);
     this.tmi = dsb.getInheritableMetadata();
@@ -49,7 +49,7 @@ public class ThreddsMetadataAcdd {
       addKeywords(keywordList, keywords_vocabulary);
     }
 
-    if (ds.getAuthority() == null) {  // thredds metadata takes precedence
+    if (ds.getAuthority() == null) { // thredds metadata takes precedence
       att = ncfile.get(ACDD.naming_authority);
       if (att != null) {
         tmi.set(Dataset.Authority, att.getStringValue());
@@ -63,10 +63,13 @@ public class ThreddsMetadataAcdd {
         FeatureType ft = FeatureType.getType(val);
         if (ft == null) {
           CF.FeatureType cf = CF.FeatureType.getFeatureType(val);
-          if (cf != null) ft = CF.FeatureType.convert(cf);
+          if (cf != null)
+            ft = CF.FeatureType.convert(cf);
         }
-        if (ft != null) tmi.set(Dataset.FeatureType, ft.name());
-        else tmi.set(Dataset.FeatureType, val);
+        if (ft != null)
+          tmi.set(Dataset.FeatureType, ft.name());
+        else
+          tmi.set(Dataset.FeatureType, val);
       }
     }
 
@@ -90,7 +93,8 @@ public class ThreddsMetadataAcdd {
     Attribute endTimeAtt = ncfile.get(ACDD.TIME_END);
     Attribute durationAtt = ncfile.get(ACDD.TIME_DURATION);
     Attribute resAtt = ncfile.get(ACDD.TIME_RESOLUTION);
-    if (startTimeAtt == null && endTimeAtt == null && durationAtt == null) return;
+    if (startTimeAtt == null && endTimeAtt == null && durationAtt == null)
+      return;
 
     String dateValue = null;
     DateType start = null;
@@ -99,7 +103,8 @@ public class ThreddsMetadataAcdd {
         dateValue = startTimeAtt.getStringValue();
         start = new DateType(dateValue, null, null);
       } catch (Exception e) {
-        log.warn("MetadataExtractorAcdd Cant Parse start date '{}' for {} message= {}", dateValue, ds.getName(), e.getMessage());
+        log.warn("MetadataExtractorAcdd Cant Parse start date '{}' for {} message= {}", dateValue, ds.getName(),
+            e.getMessage());
       }
     }
 
@@ -109,29 +114,32 @@ public class ThreddsMetadataAcdd {
         dateValue = endTimeAtt.getStringValue();
         end = new DateType(dateValue, null, null);
       } catch (Exception e) {
-        log.warn("MetadataExtractorAcdd Cant Parse end date '{}' for {} message= {}", dateValue, ds.getName(), e.getMessage());
+        log.warn("MetadataExtractorAcdd Cant Parse end date '{}' for {} message= {}", dateValue, ds.getName(),
+            e.getMessage());
       }
     }
 
     TimeDuration duration = null;
-     if (durationAtt != null) {
-       try {
-         dateValue = durationAtt.getStringValue();
-         duration = new TimeDuration(dateValue);
-       } catch (Exception e) {
-         log.warn("MetadataExtractorAcdd Cant Parse duration '{}' for {} message= {}", dateValue, ds.getName(), e.getMessage());
-       }
-     }
+    if (durationAtt != null) {
+      try {
+        dateValue = durationAtt.getStringValue();
+        duration = new TimeDuration(dateValue);
+      } catch (Exception e) {
+        log.warn("MetadataExtractorAcdd Cant Parse duration '{}' for {} message= {}", dateValue, ds.getName(),
+            e.getMessage());
+      }
+    }
 
     TimeDuration resolution = null;
-     if (resAtt != null) {
-       try {
-         dateValue = resAtt.getStringValue();
-         resolution = new TimeDuration(dateValue);
-       } catch (Exception e) {
-         log.warn("MetadataExtractorAcdd Cant Parse resolution '{}' for {} message= {}", dateValue, ds.getName(), e.getMessage());
-       }
-     }
+    if (resAtt != null) {
+      try {
+        dateValue = resAtt.getStringValue();
+        resolution = new TimeDuration(dateValue);
+      } catch (Exception e) {
+        log.warn("MetadataExtractorAcdd Cant Parse resolution '{}' for {} message= {}", dateValue, ds.getName(),
+            e.getMessage());
+      }
+    }
 
     try {
       DateRange tc = new DateRange(start, end, duration, resolution);
@@ -144,27 +152,35 @@ public class ThreddsMetadataAcdd {
   }
 
   public ThreddsMetadata.GeospatialCoverage extractGeospatialCoverage() {
-    ThreddsMetadata.GeospatialRange latRange = makeRange( false, ACDD.LAT_MIN, ACDD.LAT_MAX, ACDD.LAT_RESOLUTION, ACDD.LAT_UNITS);
-    if (latRange == null) return null;
+    ThreddsMetadata.GeospatialRange latRange =
+        makeRange(false, ACDD.LAT_MIN, ACDD.LAT_MAX, ACDD.LAT_RESOLUTION, ACDD.LAT_UNITS);
+    if (latRange == null)
+      return null;
 
-    ThreddsMetadata.GeospatialRange lonRange = makeRange( true, ACDD.LON_MIN, ACDD.LON_MAX, ACDD.LON_RESOLUTION, ACDD.LON_UNITS);
-    if (lonRange == null) return null;
+    ThreddsMetadata.GeospatialRange lonRange =
+        makeRange(true, ACDD.LON_MIN, ACDD.LON_MAX, ACDD.LON_RESOLUTION, ACDD.LON_UNITS);
+    if (lonRange == null)
+      return null;
 
-    ThreddsMetadata.GeospatialRange altRange = makeRange( false, ACDD.VERT_MIN, ACDD.VERT_MAX, ACDD.VERT_RESOLUTION, ACDD.VERT_UNITS);
+    ThreddsMetadata.GeospatialRange altRange =
+        makeRange(false, ACDD.VERT_MIN, ACDD.VERT_MAX, ACDD.VERT_RESOLUTION, ACDD.VERT_UNITS);
     Attribute zposAtt = ncfile.get(ACDD.VERT_IS_POSITIVE);
     String zIsPositive = (zposAtt == null) ? null : zposAtt.getStringValue();
 
     return new ThreddsMetadata.GeospatialCoverage(lonRange, latRange, altRange, null, zIsPositive);
   }
 
-  private ThreddsMetadata.GeospatialRange makeRange(boolean isLon, String minName, String maxName, String resName, String unitsName) {
+  private ThreddsMetadata.GeospatialRange makeRange(boolean isLon, String minName, String maxName, String resName,
+      String unitsName) {
     Attribute minAtt = ncfile.get(minName);
     Attribute maxAtt = ncfile.get(maxName);
-    if (minAtt == null || maxAtt == null) return null;
+    if (minAtt == null || maxAtt == null)
+      return null;
 
     Number minN = minAtt.getNumericValue();
     Number maxN = maxAtt.getNumericValue();
-    if (minN == null || maxN == null) return null;
+    if (minN == null || maxN == null)
+      return null;
 
     double min = minN.doubleValue();
     double max = maxN.doubleValue();
@@ -177,7 +193,8 @@ public class ThreddsMetadataAcdd {
     Attribute resAtt = ncfile.get(resName);
     if (resAtt != null) {
       Number result = resAtt.getNumericValue();
-      if (result != null) res = result.doubleValue();
+      if (result != null)
+        res = result.doubleValue();
     }
 
     Attribute unitAtt = ncfile.get(unitsName);
@@ -190,7 +207,7 @@ public class ThreddsMetadataAcdd {
     Attribute att = ncfile.get(docType);
     if (att != null) {
       String docValue = att.getStringValue();
-      String dsValue = ds.getDocumentation(docType);    // metadata/documentation[@type="docType"]
+      String dsValue = ds.getDocumentation(docType); // metadata/documentation[@type="docType"]
       if (dsValue == null || !dsValue.equals(docValue))
         tmi.addToList(Dataset.Documentation, new Documentation(null, null, null, docType, docValue));
     }
@@ -200,13 +217,13 @@ public class ThreddsMetadataAcdd {
     Attribute att = ncfile.get(attName);
     if (att != null) {
       String docValue = att.getStringValue();
-      String dsValue = ds.getDocumentation(docType);        // metadata/documentation[@type="docType"]
+      String dsValue = ds.getDocumentation(docType); // metadata/documentation[@type="docType"]
       if (dsValue == null || !dsValue.equals(docValue))
         tmi.addToList(Dataset.Documentation, new Documentation(null, null, null, docType, docValue));
     }
   }
 
-  private void addKeywords(String keywordList, String vocabulary)  {
+  private void addKeywords(String keywordList, String vocabulary) {
     String[] keywords = keywordList.split(",");
 
     for (String kw : keywords)
@@ -221,7 +238,8 @@ public class ThreddsMetadataAcdd {
       try {
         tmi.addToList(Dataset.Dates, new DateType(dateValue, null, dateType));
       } catch (Exception e) {
-        log.warn("MetadataExtractorAcdd Cant Parse {} date '{}' for {} message= {}", dateType, dateValue, ds.getName(), e.getMessage());
+        log.warn("MetadataExtractorAcdd Cant Parse {} date '{}' for {} message= {}", dateType, dateValue, ds.getName(),
+            e.getMessage());
       }
     }
   }

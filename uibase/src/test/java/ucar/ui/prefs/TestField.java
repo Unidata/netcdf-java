@@ -16,22 +16,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
-
 import java.beans.*;
 import java.lang.invoke.MethodHandles;
 
 @RunWith(JUnit4.class)
 public class TestField {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   static {
-    System
-        .setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
 
   private static XMLStore xstore;
@@ -61,17 +58,16 @@ public class TestField {
       tf.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
           gotEvent1++;
-          System.out.println("testField: (tf) PropertyChangeListener old val= <" + evt.getOldValue()
-              + "> new val= <" + evt.getNewValue() + "> " + gotEvent1);
+          System.out.println("testField: (tf) PropertyChangeListener old val= <" + evt.getOldValue() + "> new val= <"
+              + evt.getNewValue() + "> " + gotEvent1);
         }
       });
 
       intf.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
           gotEvent2++;
-          System.out.println(
-              "testField: (intf) PropertyChangeListener old val= <" + evt.getOldValue()
-                  + "> new val= <" + evt.getNewValue() + ">");
+          System.out.println("testField: (intf) PropertyChangeListener old val= <" + evt.getOldValue() + "> new val= <"
+              + evt.getNewValue() + ">");
           System.out.println("   getInt = " + intf.getInt());
         }
       });
@@ -89,8 +85,7 @@ public class TestField {
       assert gotEvent2 == 0;
       intf.setInt(666);
       assert gotEvent2 == 0 : gotEvent2;
-    } catch (
-        HeadlessException e) {
+    } catch (HeadlessException e) {
       // ok to fail if there is no display
     }
   }
@@ -100,8 +95,7 @@ public class TestField {
     try {
       PreferencesExt node = (PreferencesExt) store.node("testCombo");
       PrefPanel pp = new PrefPanel("testCombo", node);
-      Field.TextCombo fcb = pp
-          .addTextComboField("datatypes", "Datatypes", DataType.getTypeNames(), 20, false);
+      Field.TextCombo fcb = pp.addTextComboField("datatypes", "Datatypes", DataType.getTypeNames(), 20, false);
       pp.finish();
 
       fcb.setText("newbie");
@@ -125,8 +119,7 @@ public class TestField {
     try {
       PreferencesExt node = (PreferencesExt) store.node("testComboObjects");
       PrefPanel pp = new PrefPanel("testCombo", node);
-      Field.TextCombo fcb = pp
-          .addTextComboField("datatypes", "Datatypes", DataType.getTypes(), 20, false);
+      Field.TextCombo fcb = pp.addTextComboField("datatypes", "Datatypes", DataType.getTypes(), 20, false);
       pp.finish();
 
       fcb.setText("newbie");
@@ -149,8 +142,7 @@ public class TestField {
     try {
       PreferencesExt node = (PreferencesExt) store.node("testComboObjects");
       PrefPanel pp = new PrefPanel("testCombo", node);
-      Field.EnumCombo fcb = pp
-          .addEnumComboField("datatypes", "Datatypes", DataType.getTypes(), false);
+      Field.EnumCombo fcb = pp.addEnumComboField("datatypes", "Datatypes", DataType.getTypes(), false);
       pp.finish();
 
       DataType t = DataType.FLOAT;

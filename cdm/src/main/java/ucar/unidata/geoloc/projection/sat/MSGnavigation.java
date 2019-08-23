@@ -9,7 +9,8 @@ import ucar.unidata.geoloc.*;
 
 /**
  * Port Eumetsat MSG_navigation.c to java.
- * from http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=zip_tools_msg_nav_c&RevisionSelectionMethod=LatestReleased
+ * from
+ * http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=zip_tools_msg_nav_c&RevisionSelectionMethod=LatestReleased
  *
  * @author caron
  * @see "http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=PDF_CGMS_03&RevisionSelectionMethod=LatestReleased"
@@ -79,11 +80,11 @@ public class MSGnavigation extends ProjectionImpl {
    * CFAC = LFAC = 2^16 / delta
    * with delta = 83.84333 micro Radian (size of one VIS/IR MSG pixel)
    * <p/>
-   * CFAC     = LFAC     =  781648343.404  rad^-1 for VIS/IR
+   * CFAC = LFAC = 781648343.404 rad^-1 for VIS/IR
    * <p/>
    * which should be rounded to the nearest integer as stated in Ref [1].
    * <p/>
-   * CFAC     = LFAC     =  781648343  rad^-1 for VIS/IR
+   * CFAC = LFAC = 781648343 rad^-1 for VIS/IR
    * <p/>
    * the sign of CFAC/LFAC gives the orientation of the image.
    * Negative sign give data scanned from south to north as in the
@@ -120,11 +121,15 @@ public class MSGnavigation extends ProjectionImpl {
    * As explained in notes 4 and 6 to the GRIB definition (and evidenced by drawing a sketch of the Earth and satellite
    * in the equatorial plane and looking down from above), we have the following from GRIB:
    * <p/>
-   * # The distance from the Earth's centre to the satellite is Nr (in units of Earth equatorial radius and multiplied by 10^6.
+   * # The distance from the Earth's centre to the satellite is Nr (in units of Earth equatorial radius and multiplied
+   * by 10^6.
    * # The distance from the Earth's centre to the tangent point on the equator is the Earths equatorial radius
-   * # The sine of the angle subtended by the Earths centre and the tangent point on the equator as seen from the spacecraft = Re / (( Nr * Re) / 10^6) = 10^6 / Nr
-   * # The angle subtended by the Earth equator as seen by the spacecraft is, by symmetry twice the inverse sine above, 2 * arcsine (10^6 / Nr)
-   * # As the number of pixels occupied by the Earth's equatorial radius is dx, the number of radians scanned by the spacecraft per pixel, Rx, is simply [2 * arcsine (10^6 / Nr)] / dx
+   * # The sine of the angle subtended by the Earths centre and the tangent point on the equator as seen from the
+   * spacecraft = Re / (( Nr * Re) / 10^6) = 10^6 / Nr
+   * # The angle subtended by the Earth equator as seen by the spacecraft is, by symmetry twice the inverse sine above,
+   * 2 * arcsine (10^6 / Nr)
+   * # As the number of pixels occupied by the Earth's equatorial radius is dx, the number of radians scanned by the
+   * spacecraft per pixel, Rx, is simply [2 * arcsine (10^6 / Nr)] / dx
    * <p/>
    * To calculate CFAC, one needs to know delta, the number radians per pixel which is Rx above.
    * <p/>
@@ -142,10 +147,10 @@ public class MSGnavigation extends ProjectionImpl {
   public static final String SCALE_Y = "scale_y";
 
   // parameters used in the routines as given in Ref. [1]
-  private static final double SAT_HEIGHT = 42164.0;     // distance from Earth centre to satellite
-  private static final double R_EQ = 6378.169;   // radius from Earth centre to equator
-  private static final double R_POL = 6356.5838;  // radius from Earth centre to pol
-  private static final double SUB_LON = 0.0;     // longitude of sub-satellite point in radiant
+  private static final double SAT_HEIGHT = 42164.0; // distance from Earth centre to satellite
+  private static final double R_EQ = 6378.169; // radius from Earth centre to equator
+  private static final double R_POL = 6356.5838; // radius from Earth centre to pol
+  private static final double SUB_LON = 0.0; // longitude of sub-satellite point in radiant
 
 
   private double lat0 = 0.0; // always 0
@@ -163,15 +168,18 @@ public class MSGnavigation extends ProjectionImpl {
 
   /**
    * Constructor
+   * 
    * @param lat0 in degrees; geosynch satelite is over this point
    * @param lon0 in degrees; geosynch satelite is over this point
    * @param major_axis in meters
    * @param minor_axis in meters
    * @param sat_height in meters
-   * @param scale_x  convert between aperature size in radians and distance in km (xrad = xkm / scale_x)
-   * @param scale_y  scale_factor = (nr - 1) * major_axis, nr = altitude of the camera from the Earths centre, measured in units of the Earth (equatorial) radius
+   * @param scale_x convert between aperature size in radians and distance in km (xrad = xkm / scale_x)
+   * @param scale_y scale_factor = (nr - 1) * major_axis, nr = altitude of the camera from the Earths centre, measured
+   *        in units of the Earth (equatorial) radius
    */
-  public MSGnavigation(double lat0, double lon0, double major_axis, double minor_axis, double sat_height, double scale_x, double scale_y) {
+  public MSGnavigation(double lat0, double lon0, double major_axis, double minor_axis, double sat_height,
+      double scale_x, double scale_y) {
     super("MSGnavigation", false);
 
     this.lon0 = Math.toRadians(lon0);
@@ -181,8 +189,9 @@ public class MSGnavigation extends ProjectionImpl {
     this.scale_x = scale_x;
     this.scale_y = scale_y;
     const1 = major_axis / minor_axis;
-    const1 *= const1; //  (req * rpol)**2
-    const2 = 1.0 - (minor_axis * minor_axis) / (major_axis * major_axis); //  (req**2 - rpol**2) / req**2 = 1 - rpol**2 / req**2
+    const1 *= const1; // (req * rpol)**2
+    const2 = 1.0 - (minor_axis * minor_axis) / (major_axis * major_axis); // (req**2 - rpol**2) / req**2 = 1 - rpol**2 /
+                                                                          // req**2
     const3 = this.sat_height * this.sat_height - this.major_axis * this.major_axis;
 
     // "map limit" circle of this radius from the origin, p 173 (Vertical Perspective Projection)
@@ -198,28 +207,21 @@ public class MSGnavigation extends ProjectionImpl {
     addParameter(SCALE_X, scale_x);
     addParameter(SCALE_Y, scale_y);
 
-    //System.out.printf("%s %n", this);
+    // System.out.printf("%s %n", this);
   }
 
   @Override
   public String toString() {
-    return "MSGnavigation{" +
-            "lat0=" + lat0 +
-            ", lon0=" + lon0 +
-            ", major_axis=" + major_axis +
-            ", minor_axis=" + minor_axis +
-            ", sat_height=" + sat_height +
-            ", scale_x=" + scale_x +
-            ", scale_y=" + scale_y +
-            '}';
+    return "MSGnavigation{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", major_axis=" + major_axis + ", minor_axis="
+        + minor_axis + ", sat_height=" + sat_height + ", scale_x=" + scale_x + ", scale_y=" + scale_y + '}';
   }
 
   private int pixcoord2geocoord(double xkm, double ykm, LatLonPointImpl result) {
 
-    /*  calculate viewing angle of the satellite by use of the equation  */
-    /*  on page 28, Ref [1]. */
-    //double x = (column - x_off) / cfac;
-    //double y = (row - y_off) / lfac;
+    /* calculate viewing angle of the satellite by use of the equation */
+    /* on page 28, Ref [1]. */
+    // double x = (column - x_off) / cfac;
+    // double y = (row - y_off) / lfac;
 
     // convert to radians
     double xrad = xkm / scale_x;
@@ -229,13 +231,13 @@ public class MSGnavigation extends ProjectionImpl {
     double cosy = Math.cos(yrad);
     double siny = Math.sin(yrad);
 
-    /*  now calculate the inverse projection */
-    /* first check for visibility, whether the pixel is located on the Earth   */
-    /* surface or in space. 						     */
+    /* now calculate the inverse projection */
+    /* first check for visibility, whether the pixel is located on the Earth */
+    /* surface or in space. */
     /* To do this calculate the argument to sqrt of "sd", which is named "sa". */
-    /* If it is negative then the sqrt will return NaN and the pixel will be   */
+    /* If it is negative then the sqrt will return NaN and the pixel will be */
     /* located in space, otherwise all is fine and the pixel is located on the */
-    /* Earth surface.                                                          */
+    /* Earth surface. */
     double sa = Math.pow(sat_height * cosx * cosy, 2) - (cosy * cosy + const1 * siny * siny) * const3;
 
     /* produce error values */
@@ -245,7 +247,7 @@ public class MSGnavigation extends ProjectionImpl {
     }
 
     /* now calculate the rest of the formulas using equations on */
-    /* page 25, Ref. [1]  */
+    /* page 25, Ref. [1] */
 
     double sd = Math.sqrt(sa);
     double sn = (sat_height * cosx * cosy - sd) / (cosy * cosy + const1 * siny * siny);
@@ -256,9 +258,9 @@ public class MSGnavigation extends ProjectionImpl {
 
     double sxy = Math.sqrt(s1 * s1 + s2 * s2);
 
-    /* using the previous calculations the inverse projection can be  */
-    /* calculated now, which means calculating the lat./long. from    */
-    /* the pixel row and column by equations on page 25, Ref [1].     */
+    /* using the previous calculations the inverse projection can be */
+    /* calculated now, which means calculating the lat./long. from */
+    /* the pixel row and column by equations on page 25, Ref [1]. */
 
     double longi = Math.atan(s2 / s1) + lon0;
     double lati = Math.atan(const1 * s3 / sxy);
@@ -284,20 +286,20 @@ public class MSGnavigation extends ProjectionImpl {
     double lon = Math.toRadians(longitude) - lon0;
     double cosLon = Math.cos(lon);
 
-    /* calculate the geocentric latitude from the          */
+    /* calculate the geocentric latitude from the */
     /* geographic one using equations on page 24, Ref. [1] */
 
     double c_lat = Math.atan(Math.tan(lat) / const1);
 
     /* using c_lat calculate the length from the Earth */
-    /* centre to the surface of the Earth ellipsoid    */
-    /* equations on page 23, Ref. [1]                  */
+    /* centre to the surface of the Earth ellipsoid */
+    /* equations on page 23, Ref. [1] */
 
     double coscLat = Math.cos(c_lat);
     double re = minor_axis / Math.sqrt(1.0 - const2 * coscLat * coscLat);
 
     /* calculate the forward projection using equations on */
-    /* page 24, Ref. [1]                                        */
+    /* page 24, Ref. [1] */
 
     double r1 = sat_height - re * coscLat * cosLon;
     double r2 = -re * coscLat * Math.sin(lon);
@@ -306,15 +308,15 @@ public class MSGnavigation extends ProjectionImpl {
 
     /* check for visibility, whether the point on the Earth given by the */
     /* latitude/longitude pair is visible from the satellte or not. This */
-    /* is given by the dot product between the vectors of:               */
-    /* 1) the point to the spacecraft,			               */
-    /* 2) the point to the centre of the Earth.			       */
-    /* If the dot product is positive the point is visible otherwise it  */
-    /* is invisible.						       */
+    /* is given by the dot product between the vectors of: */
+    /* 1) the point to the spacecraft, */
+    /* 2) the point to the centre of the Earth. */
+    /* If the dot product is positive the point is visible otherwise it */
+    /* is invisible. */
 
     double dotprod = r1 * (re * coscLat * cosLon) - r2 * r2 - r3 * r3 * const1;
     if (dotprod <= 0) {
-      //System.out.printf("lat,lon=%f,%f NaN%n",latitude,longitude);
+      // System.out.printf("lat,lon=%f,%f NaN%n",latitude,longitude);
       result.setLocation(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
       return (-1);
     }
@@ -323,18 +325,18 @@ public class MSGnavigation extends ProjectionImpl {
     double yy = Math.asin(-r3 / rn);
 
     // convert to pixel column and row using the scaling functions on page 28, Ref. [1].
-    //double cc = x_off + xx * cfac;
-    //double ll = y_off + yy * lfac;
+    // double cc = x_off + xx * cfac;
+    // double ll = y_off + yy * lfac;
 
-    //System.out.printf("lat,lon=%f,%f x,y=%f,%f i,j=%f,%f%n",latitude,longitude,xx, yy, cc, ll);
+    // System.out.printf("lat,lon=%f,%f x,y=%f,%f i,j=%f,%f%n",latitude,longitude,xx, yy, cc, ll);
     result.setLocation(scale_x * xx, scale_y * yy);
     return (0);
   }
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result =  new MSGnavigation(
-            lat0, Math.toDegrees(lon0), 1000 * major_axis, 1000 * minor_axis, 1000 * sat_height, scale_x, scale_y);
+    ProjectionImpl result = new MSGnavigation(lat0, Math.toDegrees(lon0), 1000 * major_axis, 1000 * minor_axis,
+        1000 * sat_height, scale_x, scale_y);
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -369,17 +371,25 @@ public class MSGnavigation extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     MSGnavigation that = (MSGnavigation) o;
 
-    if (Double.compare(that.lat0, lat0) != 0) return false;
-    if (Double.compare(that.lon0, lon0) != 0) return false;
-    if (Double.compare(that.major_axis, major_axis) != 0) return false;
-    if (Double.compare(that.minor_axis, minor_axis) != 0) return false;
-    if (Double.compare(that.sat_height, sat_height) != 0) return false;
-    if (Double.compare(that.scale_x, scale_x) != 0) return false;
+    if (Double.compare(that.lat0, lat0) != 0)
+      return false;
+    if (Double.compare(that.lon0, lon0) != 0)
+      return false;
+    if (Double.compare(that.major_axis, major_axis) != 0)
+      return false;
+    if (Double.compare(that.minor_axis, minor_axis) != 0)
+      return false;
+    if (Double.compare(that.sat_height, sat_height) != 0)
+      return false;
+    if (Double.compare(that.scale_x, scale_x) != 0)
+      return false;
     return Double.compare(that.scale_y, scale_y) == 0;
   }
 
@@ -404,18 +414,20 @@ public class MSGnavigation extends ProjectionImpl {
     return result;
   }
 
-  /* public boolean equals2(Object proj) {
-      if (this == proj) return true;
-      if (proj == null || getClass() != proj.getClass()) return false;
-
-      MSGnavigation that = (MSGnavigation) proj;
-      if (Double.compare(that.lat0, lat0) != 0) return false;
-      if (Double.compare(that.lon0, lon0) != 0) return false;
-      if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
-      if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
-
-      return proj instanceof MSGnavigation;
-  }  */
+  /*
+   * public boolean equals2(Object proj) {
+   * if (this == proj) return true;
+   * if (proj == null || getClass() != proj.getClass()) return false;
+   * 
+   * MSGnavigation that = (MSGnavigation) proj;
+   * if (Double.compare(that.lat0, lat0) != 0) return false;
+   * if (Double.compare(that.lon0, lon0) != 0) return false;
+   * if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+   * if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+   * 
+   * return proj instanceof MSGnavigation;
+   * }
+   */
 
   /**
    * Create a ProjectionRect from the given LatLonRect.
@@ -431,7 +443,7 @@ public class MSGnavigation extends ProjectionImpl {
   }
 
   public double getLon0() {
-    return lon0;  // Exposed for testing in MSGnavigationTest.
+    return lon0; // Exposed for testing in MSGnavigationTest.
   }
 
 }

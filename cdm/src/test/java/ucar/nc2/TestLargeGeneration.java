@@ -13,25 +13,25 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NotTravis;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /*
-On Travis, this class was causing:
-ucar.nc2.TestLargeGeneration > generateLargeFile STANDARD_ERROR
-    java.io.IOException: No space left on device
-Apparently, writing a 13.4GB file to disk on Travis is a no-no.
-
-In the future, potentially use the more general "Slow" category, because there's likely more places than just
-Travis where we don't want to run this.
+ * On Travis, this class was causing:
+ * ucar.nc2.TestLargeGeneration > generateLargeFile STANDARD_ERROR
+ * java.io.IOException: No space left on device
+ * Apparently, writing a 13.4GB file to disk on Travis is a no-no.
+ * 
+ * In the future, potentially use the more general "Slow" category, because there's likely more places than just
+ * Travis where we don't want to run this.
  */
 @Category(NotTravis.class)
 public class TestLargeGeneration {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
   String latVarName = "lat";
   String lonVarName = "lon";
@@ -65,15 +65,15 @@ public class TestLargeGeneration {
       // ArrayObject.D2(class(java.lang.String), latDim.getLength(),
       // lonDim.getLength());
       // An array to record the latitude ordinate
-      ucar.ma2.Array latData = ucar.ma2.Array.factory(DataType.FLOAT, new int[]{1});
+      ucar.ma2.Array latData = ucar.ma2.Array.factory(DataType.FLOAT, new int[] {1});
 
       // The origin to use to write the runoff record
-      int[] origin = new int[]{0, 0, 0}; // lat, lon, time
+      int[] origin = new int[] {0, 0, 0}; // lat, lon, time
       // The origin to use to write the latitude for each record
-      int[] lat_origin = new int[]{0};
+      int[] lat_origin = new int[] {0};
 
-//			for (int lat = 0; lat < 177; lat++)
-//				latData.setFloat(latData.getIndex(), (float) (lat / 10.0));
+      // for (int lat = 0; lat < 177; lat++)
+      // latData.setFloat(latData.getIndex(), (float) (lat / 10.0));
       long start = System.nanoTime();
       for (int lat = 0; lat < LAT_LEN; lat++) {
         latData.setFloat(latData.getIndex(), (float) (lat / 10.0));
@@ -85,23 +85,23 @@ public class TestLargeGeneration {
         // write the data out for this record
         origin[0] = lat;
         lat_origin[0] = lat;
-        writer.write( writer.findVariable(variableName), origin, variableData);
-        writer.write( writer.findVariable(latVarName), lat_origin, latData);
+        writer.write(writer.findVariable(variableName), origin, variableData);
+        writer.write(writer.findVariable(latVarName), lat_origin, latData);
         writer.flush();
 
         if (lat % 10 == 0) {
           long end = System.nanoTime();
-          System.out.printf("write lat= %d time=%f msecs %n", lat, (end-start) / 1000 / 1000.0);
+          System.out.printf("write lat= %d time=%f msecs %n", lat, (end - start) / 1000 / 1000.0);
           start = System.nanoTime();
         }
       }
-      
+
     } catch (Throwable t) {
       t.printStackTrace();
     }
 
     long endAll = System.nanoTime();
-    System.out.printf("total time=%f secs %n", (endAll-startAll) / 1000 / 1000.0/ 1000);
+    System.out.printf("total time=%f secs %n", (endAll - startAll) / 1000 / 1000.0 / 1000);
 
   }
 
@@ -109,7 +109,7 @@ public class TestLargeGeneration {
     NetcdfFileWriter writeableFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
     writeableFile.setLargeFile(true);
     writeableFile.setFill(false);
-    //writeableFile.setLength((long) 16 * 1000 * 1000 * 1000); // 16 gigs - prealloate
+    // writeableFile.setLength((long) 16 * 1000 * 1000 * 1000); // 16 gigs - prealloate
 
     // define dimensions
     Dimension timeDim = writeableFile.addDimension(null, timeVarName, TIME_LEN);
@@ -138,7 +138,7 @@ public class TestLargeGeneration {
 
   private void defineHeader(NetcdfFileWriter writeableFile, String timeDim, String latDim, String lonDim) {
     Variable latVar = writeableFile.addVariable(latVarName, DataType.FLOAT, latDim);
-    writeableFile.addVariableAttribute(latVar, new Attribute( unitsAttName, "degrees_north"));
+    writeableFile.addVariableAttribute(latVar, new Attribute(unitsAttName, "degrees_north"));
     writeableFile.addVariableAttribute(latVar, new Attribute(axisAttName, "Y"));
     writeableFile.addVariableAttribute(latVar, new Attribute(standardNameAttName, "latitude"));
     // could add bounds, but not familiar how it works
@@ -149,13 +149,13 @@ public class TestLargeGeneration {
     writeableFile.addVariableAttribute(lonVar, new Attribute(standardNameAttName, "longitude"));
     // could add bounds, but not familiar how it works
 
-    Variable var = writeableFile.addVariable(variableName, DataType.FLOAT, latDim+" "+lonDim+" "+timeDim);
+    Variable var = writeableFile.addVariable(variableName, DataType.FLOAT, latDim + " " + lonDim + " " + timeDim);
     writeableFile.addVariableAttribute(var, new Attribute(longNameAttName, variableName));
     writeableFile.addVariableAttribute(var, new Attribute(unitsAttName, units));
     writeableFile.addVariableAttribute(var, new Attribute(missingValueAttName, fillValue));
     writeableFile.addVariableAttribute(var, new Attribute(fillValueAttName, fillValue));
 
-    Variable cellVar = writeableFile.addVariable("cellId", DataType.INT, latDim+" "+lonDim);
+    Variable cellVar = writeableFile.addVariable("cellId", DataType.INT, latDim + " " + lonDim);
     writeableFile.addVariableAttribute(cellVar, new Attribute(longNameAttName, "Cell ID"));
 
     Variable timeVar = writeableFile.addVariable(timeVarName, DataType.INT, timeDim);

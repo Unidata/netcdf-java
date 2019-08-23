@@ -69,8 +69,10 @@ public class CodeFlagTablesTest {
       int count = 0;
       while (true) {
         String line = dataIS.readLine();
-        if (line == null) break;
-        if (line.startsWith("#")) continue;
+        if (line == null)
+          break;
+        if (line.startsWith("#"))
+          continue;
         count++;
 
         if (count == 1) { // skip first line - its the header
@@ -83,13 +85,15 @@ public class CodeFlagTablesTest {
           int pos2 = line.indexOf('"', pos1 + 1);
           StringBuilder sb = new StringBuilder(line);
           for (int i = pos1; i < pos2; i++)
-            if (sb.charAt(i) == ',') sb.setCharAt(i, ' ');
+            if (sb.charAt(i) == ',')
+              sb.setCharAt(i, ' ');
           line = sb.toString();
         }
 
         String[] flds = line.split(",");
         if (flds.length < 4) {
-          if (showReadErrs) System.out.printf("%d BAD split == %s%n", count, line);
+          if (showReadErrs)
+            System.out.printf("%d BAD split == %s%n", count, line);
           continue;
         }
 
@@ -101,13 +105,16 @@ public class CodeFlagTablesTest {
           try {
             no = Integer.parseInt(flds[fldidx++].trim());
           } catch (NumberFormatException e) {
-            if (showReadErrs) System.out.printf("%d skip == %s%n", count, line);
+            if (showReadErrs)
+              System.out.printf("%d skip == %s%n", count, line);
             continue;
           }
           String name = StringUtil2.remove(flds[fldidx], '"');
           String nameLow = name.toLowerCase();
-          if (nameLow.startsWith("reserved")) continue;
-          if (nameLow.startsWith("not used")) continue;
+          if (nameLow.startsWith("reserved"))
+            continue;
+          if (nameLow.startsWith("not used"))
+            continue;
 
           int x = xy / 1000;
           int y = xy % 1000;
@@ -117,12 +124,13 @@ public class CodeFlagTablesTest {
           if (ct == null) {
             ct = new CodeFlagTables((short) fxy, null);
             table.put((short) fxy, ct);
-            //System.out.printf(" added in 2: %s (%d)%n", ct.fxy(), ct.fxy);
+            // System.out.printf(" added in 2: %s (%d)%n", ct.fxy(), ct.fxy);
           }
           ct.addValue((short) no, name);
 
         } catch (NumberFormatException e) {
-          if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
+          if (showReadErrs)
+            System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
         }
       }
     }

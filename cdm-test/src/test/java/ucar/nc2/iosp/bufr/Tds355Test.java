@@ -9,7 +9,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -29,7 +28,7 @@ public class Tds355Test {
     try (NetcdfDataset dataset = NetcdfDataset.openDataset(example.getAbsolutePath())) {
       Variable obs = dataset.findVariable("obs");
 
-      obs.read();  // Throws an NPE after about 50 seconds on my machine.
+      obs.read(); // Throws an NPE after about 50 seconds on my machine.
     }
   }
 }

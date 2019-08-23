@@ -12,7 +12,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -27,72 +26,78 @@ import java.util.*;
  * @author edavis
  * @since 2006-11-17T17:26:14-0700
  */
-public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset  implements TypedDatasetFactoryIF
-{
+public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset implements TypedDatasetFactoryIF {
   private String timeDimName;
   private String timeVarName;
   private String latVarName;
   private String lonVarName;
   private String elevVarName;
 
-  static public boolean isValidFile( NetcdfFile ds)
-  {
-    Attribute cdmDtAtt = ds.findGlobalAttributeIgnoreCase( "cdm_data_type");
-    if ( cdmDtAtt == null )
-      cdmDtAtt = ds.findGlobalAttributeIgnoreCase( "cdm_datatype");
-    if ( cdmDtAtt == null ) return false;
-    if ( ! cdmDtAtt.isString() ) return false;
-
-    String cdmDtString = cdmDtAtt.getStringValue();
-    if ( cdmDtString == null ) return false;
-    if ( ! cdmDtString.equalsIgnoreCase( FeatureType.TRAJECTORY.toString() ))
+  static public boolean isValidFile(NetcdfFile ds) {
+    Attribute cdmDtAtt = ds.findGlobalAttributeIgnoreCase("cdm_data_type");
+    if (cdmDtAtt == null)
+      cdmDtAtt = ds.findGlobalAttributeIgnoreCase("cdm_datatype");
+    if (cdmDtAtt == null)
+      return false;
+    if (!cdmDtAtt.isString())
       return false;
 
-    Attribute conventionsAtt = ds.findGlobalAttributeIgnoreCase( "Conventions");
-    if ( conventionsAtt == null) return( false);
-    if ( ! conventionsAtt.isString()) return( false);
+    String cdmDtString = cdmDtAtt.getStringValue();
+    if (cdmDtString == null)
+      return false;
+    if (!cdmDtString.equalsIgnoreCase(FeatureType.TRAJECTORY.toString()))
+      return false;
+
+    Attribute conventionsAtt = ds.findGlobalAttributeIgnoreCase("Conventions");
+    if (conventionsAtt == null)
+      return (false);
+    if (!conventionsAtt.isString())
+      return (false);
     String convString = conventionsAtt.getStringValue();
 
-    StringTokenizer stoke = new StringTokenizer( convString, "," );
-    while ( stoke.hasMoreTokens() )
-    {
+    StringTokenizer stoke = new StringTokenizer(convString, ",");
+    while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken().trim();
-      if ( toke.equalsIgnoreCase( "Unidata Observation Dataset v1.0" ) )
+      if (toke.equalsIgnoreCase("Unidata Observation Dataset v1.0"))
         return true;
     }
 
     return false;
   }
 
-    /////////////////////////////////////////////////
+  /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
-  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
-  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException
-  {
-    return new UnidataTrajectoryObsDataset( ncd);
+  public boolean isMine(NetcdfDataset ds) {
+    return isValidFile(ds);
   }
-  public FeatureType getScientificDataType() { return FeatureType.TRAJECTORY; }
+
+  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+    return new UnidataTrajectoryObsDataset(ncd);
+  }
+
+  public FeatureType getScientificDataType() {
+    return FeatureType.TRAJECTORY;
+  }
 
   public UnidataTrajectoryObsDataset() {}
 
-  public UnidataTrajectoryObsDataset( NetcdfDataset ncd) throws IOException
-  {
-    super( ncd );
+  public UnidataTrajectoryObsDataset(NetcdfDataset ncd) throws IOException {
+    super(ncd);
 
     // coordinate variables
-    latVar = UnidataObsDatasetHelper.getCoordinate( ncd, AxisType.Lat );
-    lonVar = UnidataObsDatasetHelper.getCoordinate( ncd, AxisType.Lon );
-    timeVar = UnidataObsDatasetHelper.getCoordinate( ncd, AxisType.Time );
-    elevVar = UnidataObsDatasetHelper.getCoordinate( ncd, AxisType.Height );
+    latVar = UnidataObsDatasetHelper.getCoordinate(ncd, AxisType.Lat);
+    lonVar = UnidataObsDatasetHelper.getCoordinate(ncd, AxisType.Lon);
+    timeVar = UnidataObsDatasetHelper.getCoordinate(ncd, AxisType.Time);
+    elevVar = UnidataObsDatasetHelper.getCoordinate(ncd, AxisType.Height);
 
-    if ( latVar == null )
-      throw new IllegalStateException( "Missing latitude variable" );
-    if ( lonVar == null )
-      throw new IllegalStateException( "Missing longitude coordinate variable" );
-    if ( timeVar == null )
-      throw new IllegalStateException( "Missing time coordinate variable" );
-    if ( elevVar == null )
-      throw new IllegalStateException( "Missing height coordinate variable" );
+    if (latVar == null)
+      throw new IllegalStateException("Missing latitude variable");
+    if (lonVar == null)
+      throw new IllegalStateException("Missing longitude coordinate variable");
+    if (timeVar == null)
+      throw new IllegalStateException("Missing time coordinate variable");
+    if (elevVar == null)
+      throw new IllegalStateException("Missing height coordinate variable");
 
     timeDimName = timeVar.getDimension(0).getShortName();
     timeVarName = timeVar.getShortName();
@@ -101,13 +106,10 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset  imp
     elevVarName = elevVar.getShortName();
 
 
-    Config trajConfig = new Config( "1Hz data",
-                                    ncd.getRootGroup().findDimension( timeDimName ),
-                                    ncd.getRootGroup().findVariable( timeVarName ),
-                                    ncd.getRootGroup().findVariable( latVarName ),
-                                    ncd.getRootGroup().findVariable( lonVarName ),
-                                    ncd.getRootGroup().findVariable( elevVarName ));
-    this.setTrajectoryInfo( trajConfig );
+    Config trajConfig = new Config("1Hz data", ncd.getRootGroup().findDimension(timeDimName),
+        ncd.getRootGroup().findVariable(timeVarName), ncd.getRootGroup().findVariable(latVarName),
+        ncd.getRootGroup().findVariable(lonVarName), ncd.getRootGroup().findVariable(elevVarName));
+    this.setTrajectoryInfo(trajConfig);
 
   }
 }

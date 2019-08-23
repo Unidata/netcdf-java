@@ -18,11 +18,9 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.*;
-
 import java.io.*;
 import java.util.List;
 import java.util.Formatter;
-
 import thredds.catalog.*;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.Parameter;
@@ -46,6 +44,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
   /**
    * Constuctor
+   * 
    * @param verbose output status messages
    */
   public CatalogExtractor(boolean verbose) {
@@ -67,9 +66,13 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
       public void getDataset(InvDataset dd, Object context) {
         InvAccess access = tdataFactory.chooseDatasetAccess(dd.getAccess());
-        if (null != access) transfer(access.getStandardUrlName(), copyDir);
+        if (null != access)
+          transfer(access.getStandardUrlName(), copyDir);
       }
-      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
+
+      public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+        return true;
+      }
     });
 
     long start = System.currentTimeMillis();
@@ -78,14 +81,16 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     } finally {
       int took = (int) (System.currentTimeMillis() - start) / 1000;
 
-      out.println("***Done " + catUrl + " took = " + took + " secs\n" +
-              "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
-      if (verbose) System.out.println("***Done " + catUrl + " took = " + took + " secs\n" +
-              "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
+      out.println("***Done " + catUrl + " took = " + took + " secs\n" + "   datasets=" + countDatasets + " no access="
+          + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
+      if (verbose)
+        System.out.println("***Done " + catUrl + " took = " + took + " secs\n" + "   datasets=" + countDatasets
+            + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
     }
   }
 
-  public void extractLoop(PrintWriter out, String catUrl, int type, boolean skipDatasetScan, CancelTask task) throws IOException {
+  public void extractLoop(PrintWriter out, String catUrl, int type, boolean skipDatasetScan, CancelTask task)
+      throws IOException {
     while (true) {
       extract(out, catUrl, type, skipDatasetScan, task);
       if ((task != null) && task.isCancel())
@@ -93,7 +98,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     }
   }
 
-  public void extract(PrintWriter out, String catUrl, int type, boolean skipDatasetScan, CancelTask task) throws IOException {
+  public void extract(PrintWriter out, String catUrl, int type, boolean skipDatasetScan, CancelTask task)
+      throws IOException {
     this.out = out;
 
     out.println("***read " + catUrl);
@@ -120,12 +126,12 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     } finally {
       int took = (int) (System.currentTimeMillis() - start) / 1000;
 
-      out.println("***Done " + catUrl + " took = " + took + " secs\n" +
-              "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
+      out.println("***Done " + catUrl + " took = " + took + " secs\n" + "   datasets=" + countDatasets + " no access="
+          + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
 
       if (verbose) {
-        System.out.println("***Done " + catUrl + " took = " + took + " secs\n" +
-                "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
+        System.out.println("***Done " + catUrl + " took = " + took + " secs\n" + "   datasets=" + countDatasets
+            + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
       }
     }
   }
@@ -133,11 +139,13 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   public void getDataset(InvDataset ds, Object context) {
     countDatasets++;
     openDataset(out, ds);
-    //return extractTypedDatasetInfo( out, ds);
+    // return extractTypedDatasetInfo( out, ds);
   }
 
-  public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
-  
+  public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+    return true;
+  }
+
 
   public boolean openDataset(PrintWriter out, InvDataset ds) {
     InvAccess access = tdataFactory.chooseDatasetAccess(ds.getAccess());
@@ -165,9 +173,11 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
       int took = (int) (System.currentTimeMillis() - start);
       boolean ok = true; // ucar.nc2.iosp.nexrad2.TestNexrad2.testCoordSystem( ncd);
-      out.println("  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs");
+      out.println(
+          "  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs");
       if (verbose)
-        System.out.println("  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs");
+        System.out.println(
+            "  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs");
 
     } catch (Throwable e) {
       countNoOpen++;
@@ -178,12 +188,13 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
     } finally {
 
-      if (ncd != null) try {
-        ncd.close();
-        out.println("   Close " + ncd.getLocation());
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      if (ncd != null)
+        try {
+          ncd.close();
+          out.println("   Close " + ncd.getLocation());
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
     }
 
     return true;
@@ -207,8 +218,10 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
       result = tdataFactory.openFeatureDataset(ds, null);
       int took = (int) (System.currentTimeMillis() - start);
       if (verbose)
-        System.out.println("  **Open " + result.featureType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
-      out.println("  **Open " + result.featureType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
+        System.out.println(
+            "  **Open " + result.featureType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
+      out.println(
+          "  **Open " + result.featureType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
 
       if (result.location == null)
         ok = false;
@@ -223,12 +236,13 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
     } finally {
 
-      if ((result != null) && (result.featureDataset != null))  try {
-        result.featureDataset.close();
-        out.println("   Close " + result.featureType + " " + result.location);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      if ((result != null) && (result.featureDataset != null))
+        try {
+          result.featureDataset.close();
+          out.println("   Close " + result.featureType + " " + result.location);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
     }
 
     return ok;
@@ -241,7 +255,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
       out.println("    ngrids = " + gridDs.getGrids().size());
       return;
     }
-    if (gridDs == null) return;
+    if (gridDs == null)
+      return;
 
     out.println("Global Attributes");
     NetcdfDataset ds = (NetcdfDataset) gridDs.getNetcdfFile();
@@ -267,8 +282,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
         ny = ny2;
         double dx = xaxis.getIncrement();
         double dy = yaxis.getIncrement();
-        out.println("  horizontal = " + nx + " by " + ny + " points, resolution " + Format.d(dx, 4) + " " + Format.d(dy, 4)
-            + " " + xaxis.getUnitsString());
+        out.println("  horizontal = " + nx + " by " + ny + " points, resolution " + Format.d(dx, 4) + " "
+            + Format.d(dy, 4) + " " + xaxis.getUnitsString());
       }
 
       ProjectionImpl proj = gcs.getProjection();
@@ -306,7 +321,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
           buff.append(" ");
           buff.append(Double.toString(ur.getLatitude()));
           buff.append(" ");
-          out.println("  BoundingBox == " + buff + " width= " + llbb.getWidth() + " " + (llbb.getWidth() >= 360.0 ? "global" : ""));
+          out.println("  BoundingBox == " + buff + " width= " + llbb.getWidth() + " "
+              + (llbb.getWidth() >= 360.0 ? "global" : ""));
         }
 
       }
@@ -319,7 +335,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
         try {
           TimeUnit tUnit = taxis.getTimeResolution();
           if (dateRange != null)
-            out.printf("  DateRange == %s duration = %d secs; ntimes = %d  data resolution = %s%n", dateRange, dateRange.getDurationInSecs(), ntimes, tUnit);
+            out.printf("  DateRange == %s duration = %d secs; ntimes = %d  data resolution = %s%n", dateRange,
+                dateRange.getDurationInSecs(), ntimes, tUnit);
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -344,23 +361,27 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
     }
 
-    /* ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
-gc.setBoundingBox(llbbMax);
-if (gcsMax != null) {
- gc.setVertical(gcsMax.getVerticalAxis());
- gc.setZPositiveUp(gcsMax.isZPositive());
-}
+    /*
+     * ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
+     * gc.setBoundingBox(llbbMax);
+     * if (gcsMax != null) {
+     * gc.setVertical(gcsMax.getVerticalAxis());
+     * gc.setZPositiveUp(gcsMax.isZPositive());
+     * }
+     * 
+     * try {
+     * gc.toXML(out);
+     * } catch (IOException e) {
+     * e.printStackTrace();
+     * }
+     */
 
-try {
- gc.toXML(out);
-} catch (IOException e) {
- e.printStackTrace();
-}     */
-
-    /* java.util.List grids = gridDs.getGrids();
-String fileFormat = ds.findAttValueIgnoreCase(null, "FileFormat", "");
-if (fileFormat.equals("GRIB-1"))
-makeGrib1Vocabulary(grids, out);   */
+    /*
+     * java.util.List grids = gridDs.getGrids();
+     * String fileFormat = ds.findAttValueIgnoreCase(null, "FileFormat", "");
+     * if (fileFormat.equals("GRIB-1"))
+     * makeGrib1Vocabulary(grids, out);
+     */
 
 
   }
@@ -388,40 +409,42 @@ makeGrib1Vocabulary(grids, out);   */
     out.println("</variables>");
   }
 
-  /* private void showDatasetInfo(InvDataset ds) {
-    if (ds == null) return;
-
-    String bbString = ds.findProperty("BoundingBox");
-    if (bbString == null) {
-      displayMap.drawBoundingBox( null);
-      return;
-    }
-    if (Debug.isSet("extract/boundingBox")) System.out.println("showDatasetInfo BoundingBox attribute= "+bbString);
-
-    ProjectionRect bb = null;
-    if (bbString.equals("global")) {
-      LatLonProjection displayProj = (LatLonProjection) displayMap.getProjectionImpl();
-      double centerLon = displayProj.getCenterLon();
-      bb = new ProjectionRect(centerLon-180.0, -90.0, centerLon+180.0, 90.0);
-
-    } else {
-
-      double[] dval = new double[4];
-      int count = 0;
-      StringTokenizer stoke = new StringTokenizer(bbString);
-      while (stoke.hasMoreTokens() && (count < 4)) {
-        String token = stoke.nextToken();
-        try{
-          dval[count] = Double.parseDouble(token);
-          count++;
-        } catch (NumberFormatException e) {}
-      }
-
-      bb = new ProjectionRect(dval[0], dval[1], dval[2], dval[3]);
-    }
-
-    displayMap.drawBoundingBox( bb);
-  } */
+  /*
+   * private void showDatasetInfo(InvDataset ds) {
+   * if (ds == null) return;
+   * 
+   * String bbString = ds.findProperty("BoundingBox");
+   * if (bbString == null) {
+   * displayMap.drawBoundingBox( null);
+   * return;
+   * }
+   * if (Debug.isSet("extract/boundingBox")) System.out.println("showDatasetInfo BoundingBox attribute= "+bbString);
+   * 
+   * ProjectionRect bb = null;
+   * if (bbString.equals("global")) {
+   * LatLonProjection displayProj = (LatLonProjection) displayMap.getProjectionImpl();
+   * double centerLon = displayProj.getCenterLon();
+   * bb = new ProjectionRect(centerLon-180.0, -90.0, centerLon+180.0, 90.0);
+   * 
+   * } else {
+   * 
+   * double[] dval = new double[4];
+   * int count = 0;
+   * StringTokenizer stoke = new StringTokenizer(bbString);
+   * while (stoke.hasMoreTokens() && (count < 4)) {
+   * String token = stoke.nextToken();
+   * try{
+   * dval[count] = Double.parseDouble(token);
+   * count++;
+   * } catch (NumberFormatException e) {}
+   * }
+   * 
+   * bb = new ProjectionRect(dval[0], dval[1], dval[2], dval[3]);
+   * }
+   * 
+   * displayMap.drawBoundingBox( bb);
+   * }
+   */
 
 
 }

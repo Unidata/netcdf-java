@@ -19,13 +19,13 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.StationImpl;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 import java.util.*;
 
 /**
  * Configuration for converting BUFR files to CDM
  * DataDescriptor tree becomes FieldConverter tree with annotations.
+ * 
  * @author caron
  * @since 8/8/13
  */
@@ -33,11 +33,11 @@ public class BufrConfig {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrConfig.class);
 
   static public BufrConfig scanEntireFile(RandomAccessFile raf) throws IOException {
-    return new BufrConfig( raf);
+    return new BufrConfig(raf);
   }
 
   static public BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) throws IOException {
-    BufrConfig config = new BufrConfig( raf, m);
+    BufrConfig config = new BufrConfig(raf, m);
     if (iospParam != null)
       config.merge(iospParam);
     return config;
@@ -59,20 +59,22 @@ public class BufrConfig {
    * Examine length of sequences, annotate
    *
    * @param bufrFilename open this file
+   * 
    * @throws java.io.IOException on IO error
    *
-  private BufrConfig(String bufrFilename, boolean read) throws IOException {
-    this.filename =  bufrFilename;
-    try {
-      scanBufrFile(new RandomAccessFile(bufrFilename, "r"), read);
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeException(e.getMessage());
-    }
-  } */
+   * private BufrConfig(String bufrFilename, boolean read) throws IOException {
+   * this.filename = bufrFilename;
+   * try {
+   * scanBufrFile(new RandomAccessFile(bufrFilename, "r"), read);
+   * } catch (Exception e) {
+   * e.printStackTrace();
+   * throw new RuntimeException(e.getMessage());
+   * }
+   * }
+   */
 
   private BufrConfig(RandomAccessFile raf) {
-    this.filename =  raf.getLocation();
+    this.filename = raf.getLocation();
     try {
       scanBufrFile(raf);
     } catch (Exception e) {
@@ -82,7 +84,7 @@ public class BufrConfig {
   }
 
   private BufrConfig(RandomAccessFile raf, Message m) throws IOException {
-    this.filename =  raf.getLocation();
+    this.filename = raf.getLocation();
     this.messHash = m.hashCode();
     this.rootConverter = new FieldConverter(m.ids.getCenterId(), m.getRootDataDescriptor());
     standardFields = StandardFields.extract(m);
@@ -96,7 +98,7 @@ public class BufrConfig {
     return rootConverter;
   }
 
-  public Map<String,BufrStation> getStationMap() {
+  public Map<String, BufrStation> getStationMap() {
     return map;
   }
 
@@ -110,7 +112,8 @@ public class BufrConfig {
 
   public FieldConverter getStandardField(BufrCdmIndexProto.FldType want) {
     for (FieldConverter fld : rootConverter.flds)
-      if (fld.type == want) return fld;
+      if (fld.type == want)
+        return fld;
     return null;
   }
 
@@ -131,13 +134,15 @@ public class BufrConfig {
   private void merge(Element iospParam) {
     assert iospParam.getName().equals("iospParam");
     Element bufr2nc = iospParam.getChild("bufr2nc", Catalog.ncmlNS);
-    if (bufr2nc == null) return;
+    if (bufr2nc == null)
+      return;
     for (Element child : bufr2nc.getChildren("fld", Catalog.ncmlNS))
       merge(child, rootConverter);
   }
 
   private void merge(Element jdom, FieldConverter parent) {
-    if (jdom == null || parent == null) return;
+    if (jdom == null || parent == null)
+      return;
 
     FieldConverter fld = null;
 
@@ -193,6 +198,7 @@ public class BufrConfig {
   private boolean hasStations = false;
   private boolean hasDate = false;
   private int countObs = 0;
+
   private void scanBufrFile(RandomAccessFile raf) throws Exception {
     NetcdfFile ncd = null;
     countObs = 0;
@@ -200,20 +206,22 @@ public class BufrConfig {
     try {
       MessageScanner scanner = new MessageScanner(raf);
       Message protoMessage = scanner.getFirstDataMessage();
-      if (protoMessage == null) throw new IOException("No message found!");
+      if (protoMessage == null)
+        throw new IOException("No message found!");
 
       messHash = protoMessage.hashCode();
       standardFields = StandardFields.extract(protoMessage);
       rootConverter = new FieldConverter(protoMessage.ids.getCenterId(), protoMessage.getRootDataDescriptor());
 
-       if (standardFields.hasStation()) {
-         hasStations = true;
-         map = new HashMap<>(1000);
-       }
+      if (standardFields.hasStation()) {
+        hasStations = true;
+        map = new HashMap<>(1000);
+      }
       featureType = guessFeatureType(standardFields);
       hasDate = standardFields.hasTime();
 
-      //ncd = NetcdfDataset.openDataset(raf.getLocation(), BufrIosp2.enhance, -1, null, null); // LOOK opening another raf
+      // ncd = NetcdfDataset.openDataset(raf.getLocation(), BufrIosp2.enhance, -1, null, null); // LOOK opening another
+      // raf
       ncd = NetcdfFile.open(raf.getLocation()); // LOOK opening another raf
       Attribute centerAtt = ncd.findGlobalAttribute(BufrIosp2.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
@@ -222,25 +230,29 @@ public class BufrConfig {
       extract = new StandardFields.StandardFieldsFromStructure(center, seq);
 
       StructureDataIterator iter = seq.getStructureIterator();
-      processSeq( iter, rootConverter, true);
+      processSeq(iter, rootConverter, true);
 
       setStandardActions(rootConverter);
 
     } finally {
-      if (ncd != null) ncd.close();
+      if (ncd != null)
+        ncd.close();
     }
     System.out.printf("nobs = %d%n", countObs);
   }
 
   private FeatureType guessFeatureType(StandardFields.StandardFieldsFromMessage standardFields) {
-    if (standardFields.hasStation()) return FeatureType.STATION;
-    if (standardFields.hasTime()) return FeatureType.POINT;
+    if (standardFields.hasStation())
+      return FeatureType.STATION;
+    if (standardFields.hasTime())
+      return FeatureType.POINT;
     return FeatureType.ANY;
   }
 
   private void setStandardActions(FieldConverter fld) {
     fld.setAction(fld.makeAction());
-    if (fld.flds == null) return;
+    if (fld.flds == null)
+      return;
     for (FieldConverter child : fld.flds)
       setStandardActions(child);
   }
@@ -248,69 +260,72 @@ public class BufrConfig {
   /////////////////////////////////////////////////////////////////////////////////////
 
   private CalendarDate today = CalendarDate.present();
+
   private void processSeq(StructureDataIterator sdataIter, FieldConverter parent, boolean isTop) throws IOException {
-     try {
-       while (sdataIter.hasNext()) {
-         StructureData sdata = sdataIter.next();
+    try {
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
 
-         if (isTop) {
-           countObs++;
-           if (debug && countObs % 100 == 0) System.out.printf("%d ", countObs);
+        if (isTop) {
+          countObs++;
+          if (debug && countObs % 100 == 0)
+            System.out.printf("%d ", countObs);
 
-           if (hasStations) processStations(parent, sdata);
-           if (hasDate) {
-             extract.extract(sdata);
-             CalendarDate date = extract.makeCalendarDate();
-             if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
-               extract.makeCalendarDate();
-             }
-             long msecs = date.getMillis();
-             if (this.start > msecs) {
-               this.start = msecs;
-               //System.out.printf("new start %s%n", date);
-             }
-             if (this.end < msecs) {
-               this.end = msecs;
-               //System.out.printf("new end %s%n", date);
-             }
-           }
-         }
+          if (hasStations)
+            processStations(parent, sdata);
+          if (hasDate) {
+            extract.extract(sdata);
+            CalendarDate date = extract.makeCalendarDate();
+            if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
+              extract.makeCalendarDate();
+            }
+            long msecs = date.getMillis();
+            if (this.start > msecs) {
+              this.start = msecs;
+              // System.out.printf("new start %s%n", date);
+            }
+            if (this.end < msecs) {
+              this.end = msecs;
+              // System.out.printf("new end %s%n", date);
+            }
+          }
+        }
 
-         int count = 0;
-         for (StructureMembers.Member m : sdata.getMembers()) {
-           if (m.getDataType() == DataType.SEQUENCE) {
-             FieldConverter fld = parent.getChild(count);
-             ArraySequence data = (ArraySequence) sdata.getArray(m);
-             int n = data.getStructureDataCount();
-             fld.trackSeqCounts(n);
-             processSeq(data.getStructureDataIterator(), fld, false);
-           }
-           count++;
-         }
-       }
-     } finally {
-       sdataIter.close();
-     }
-   }
+        int count = 0;
+        for (StructureMembers.Member m : sdata.getMembers()) {
+          if (m.getDataType() == DataType.SEQUENCE) {
+            FieldConverter fld = parent.getChild(count);
+            ArraySequence data = (ArraySequence) sdata.getArray(m);
+            int n = data.getStructureDataCount();
+            fld.trackSeqCounts(n);
+            processSeq(data.getStructureDataIterator(), fld, false);
+          }
+          count++;
+        }
+      }
+    } finally {
+      sdataIter.close();
+    }
+  }
 
-   private void processStations(FieldConverter parent, StructureData sdata) {
-     BufrStation station = new BufrStation();
-     station.read(parent, sdata);
+  private void processStations(FieldConverter parent, StructureData sdata) {
+    BufrStation station = new BufrStation();
+    station.read(parent, sdata);
 
-     if (station.getName() == null) {
-       log.warn("bad station name: "+station);
-       return;
-     }
+    if (station.getName() == null) {
+      log.warn("bad station name: " + station);
+      return;
+    }
 
-     BufrStation check = map.get(station.getName());
-     if (check == null)
-       map.put(station.getName(), station);
-     else {
-       check.count++;
-       if (!station.equals(check))
-         log.warn("bad station doesnt equal "+station+" != "+check);
-     }
-   }
+    BufrStation check = map.get(station.getName());
+    if (check == null)
+      map.put(station.getName(), station);
+    else {
+      check.count++;
+      if (!station.equals(check))
+        log.warn("bad station doesnt equal " + station + " != " + check);
+    }
+  }
 
   public class BufrStation extends StationImpl {
     public int count = 1;
@@ -318,72 +333,81 @@ public class BufrConfig {
     void read(FieldConverter parent, StructureData sdata) {
       extract.extract(sdata);
 
-      setName( extract.getStationId());
-      setLatitude( extract.getFieldValueD( BufrCdmIndexProto.FldType.lat));
-      setLongitude( extract.getFieldValueD( BufrCdmIndexProto.FldType.lon));
+      setName(extract.getStationId());
+      setLatitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.lat));
+      setLongitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.lon));
       if (extract.hasField(BufrCdmIndexProto.FldType.stationDesc))
-        setDescription( extract.getFieldValueS( BufrCdmIndexProto.FldType.stationDesc));
+        setDescription(extract.getFieldValueS(BufrCdmIndexProto.FldType.stationDesc));
       if (extract.hasField(BufrCdmIndexProto.FldType.wmoId))
-        setWmoId( extract.getFieldValueS( BufrCdmIndexProto.FldType.wmoId));
+        setWmoId(extract.getFieldValueS(BufrCdmIndexProto.FldType.wmoId));
       if (extract.hasField(BufrCdmIndexProto.FldType.heightOfStation))
-        setAltitude( extract.getFieldValueD( BufrCdmIndexProto.FldType.heightOfStation));
+        setAltitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.heightOfStation));
     }
 
-    /* void read(FieldConverter parent, StructureData sdata) {
-      int count = 0;
-      List<FieldConverter> flds = parent.getChildren(); // asssume these track exactly the members
-      for (StructureMembers.Member m : sdata.getMembers()) {
-        FieldConverter fld = flds.get(count++);
-        if (fld.getType() == null) continue;
-
-        switch (fld.getType()) {
-          case stationId:
-            setName( readString(sdata, m));
-            break;
-          case stationDesc:
-            setDescription(sdata.getScalarString(m));
-            break;
-          case wmoId:
-            setWmoId(readString(sdata, m));
-            break;
-          case lat:
-            setLatitude(sdata.convertScalarDouble(m));
-            break;
-          case lon:
-            setLongitude(sdata.convertScalarDouble(m));
-            break;
-          case height:
-            setAltitude(sdata.convertScalarDouble(m));
-            break;
-          case heightOfStation:
-            setAltitude(sdata.convertScalarDouble(m));
-            break;
-        }
-      }
-    }
-
-    String readString(StructureData sdata, StructureMembers.Member m) {
-      if (m.getDataType().isString())
-        return sdata.getScalarString(m);
-      else if (m.getDataType().isIntegral())
-        return Integer.toString(sdata.convertScalarInt(m));
-      else if (m.getDataType().isNumeric())
-        return Double.toString(sdata.convertScalarDouble(m));
-      else return "type "+ m.getDataType();
-    }  */
+    /*
+     * void read(FieldConverter parent, StructureData sdata) {
+     * int count = 0;
+     * List<FieldConverter> flds = parent.getChildren(); // asssume these track exactly the members
+     * for (StructureMembers.Member m : sdata.getMembers()) {
+     * FieldConverter fld = flds.get(count++);
+     * if (fld.getType() == null) continue;
+     * 
+     * switch (fld.getType()) {
+     * case stationId:
+     * setName( readString(sdata, m));
+     * break;
+     * case stationDesc:
+     * setDescription(sdata.getScalarString(m));
+     * break;
+     * case wmoId:
+     * setWmoId(readString(sdata, m));
+     * break;
+     * case lat:
+     * setLatitude(sdata.convertScalarDouble(m));
+     * break;
+     * case lon:
+     * setLongitude(sdata.convertScalarDouble(m));
+     * break;
+     * case height:
+     * setAltitude(sdata.convertScalarDouble(m));
+     * break;
+     * case heightOfStation:
+     * setAltitude(sdata.convertScalarDouble(m));
+     * break;
+     * }
+     * }
+     * }
+     * 
+     * String readString(StructureData sdata, StructureMembers.Member m) {
+     * if (m.getDataType().isString())
+     * return sdata.getScalarString(m);
+     * else if (m.getDataType().isIntegral())
+     * return Integer.toString(sdata.convertScalarInt(m));
+     * else if (m.getDataType().isNumeric())
+     * return Double.toString(sdata.convertScalarDouble(m));
+     * else return "type "+ m.getDataType();
+     * }
+     */
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       BufrStation that = (BufrStation) o;
 
-      if (Double.compare(that.alt, alt) != 0) return false;
-      if (Double.compare(that.lat, lat) != 0) return false;
-      if (Double.compare(that.lon, lon) != 0) return false;
-      if (!Objects.equals(desc, that.desc)) return false;
-      if (!name.equals(that.name)) return false;
+      if (Double.compare(that.alt, alt) != 0)
+        return false;
+      if (Double.compare(that.lat, lat) != 0)
+        return false;
+      if (Double.compare(that.lon, lon) != 0)
+        return false;
+      if (!Objects.equals(desc, that.desc))
+        return false;
+      if (!name.equals(that.name))
+        return false;
       return Objects.equals(wmoId, that.wmoId);
 
     }
@@ -522,22 +546,32 @@ public class BufrConfig {
 
     void trackSeqCounts(int n) {
       isSeq = true;
-      if (n > max) max = n;
-      if (n < min) min = n;
+      if (n > max)
+        max = n;
+      if (n < min)
+        min = n;
     }
 
     void showRange(Formatter f) {
-      if (!isSeq) return;
-      if (max == min) f.format(" isConstant='%d'", max);
-      else if (max < 2) f.format(" isBinary='true'");
-      else f.format(" range='[%d,%d]'", min, max);
+      if (!isSeq)
+        return;
+      if (max == min)
+        f.format(" isConstant='%d'", max);
+      else if (max < 2)
+        f.format(" isBinary='true'");
+      else
+        f.format(" range='[%d,%d]'", min, max);
     }
 
     BufrCdmIndexProto.FldAction makeAction() {
-      if (!isSeq) return null;
-      if (max == 0) return BufrCdmIndexProto.FldAction.remove;
-      if (max < 2) return BufrCdmIndexProto.FldAction.asMissing;
-      else return BufrCdmIndexProto.FldAction.asArray;
+      if (!isSeq)
+        return null;
+      if (max == 0)
+        return BufrCdmIndexProto.FldAction.remove;
+      if (max < 2)
+        return BufrCdmIndexProto.FldAction.asMissing;
+      else
+        return BufrCdmIndexProto.FldAction.asArray;
     }
 
     void show(Formatter f, Indent indent, int index) {
@@ -545,20 +579,23 @@ public class BufrConfig {
       if (isSeq)
         f.format("%s<fld idx='%d' name='%s'", indent, index, dds.getName());
       else
-        f.format("%s<fld idx='%d' fxy='%s' name='%s' desc='%s' units='%s' bits='%d'", indent, index,
-                dds.getFxyName(), dds.getName(), dds.getDesc(), dds.getUnits(), dds.getBitWidth());
+        f.format("%s<fld idx='%d' fxy='%s' name='%s' desc='%s' units='%s' bits='%d'", indent, index, dds.getFxyName(),
+            dds.getName(), dds.getDesc(), dds.getUnits(), dds.getBitWidth());
 
-      if (type != null) f.format(" type='%s'", type);
+      if (type != null)
+        f.format(" type='%s'", type);
       showRange(f);
       f.format(" action='%s'", makeAction());
 
-      /* if (type != null) {
-        f.format(">%n");
-        indent.incr();
-        f.format("%s<type>%s</type>%n", indent, type);
-        indent.decr();
-        hasContent = true;
-      } */
+      /*
+       * if (type != null) {
+       * f.format(">%n");
+       * indent.incr();
+       * f.format("%s<type>%s</type>%n", indent, type);
+       * indent.decr();
+       * hasContent = true;
+       * }
+       */
 
       if (flds != null) {
         f.format(">%n");
@@ -587,7 +624,8 @@ public class BufrConfig {
       out.format("Standard Fields%n%s%n%n", standardFields);
 
     Indent indent = new Indent(2);
-    out.format("<bufr2nc location='%s' hash='%s' featureType='%s'>%n", filename, Integer.toHexString(messHash), featureType);
+    out.format("<bufr2nc location='%s' hash='%s' featureType='%s'>%n", filename, Integer.toHexString(messHash),
+        featureType);
     indent.incr();
     int index = 0;
     for (FieldConverter fld : rootConverter.flds) {

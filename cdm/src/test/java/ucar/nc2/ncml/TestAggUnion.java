@@ -5,14 +5,12 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.util.test.Assert2;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -22,94 +20,94 @@ import java.lang.invoke.MethodHandles;
  */
 
 /*
-<?xml version="1.0" encoding="UTF-8"?>
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-
-  <attribute name="title" type="string" value="Example Data"/>
-
-  <aggregation type="union">
-    <netcdf location="file:src/test/data/ncml/nc/example2.nc">
-      <explicit/>
-
-      <dimension name="time" length="2" isUnlimited="true"/>
-      <dimension name="lat" length="3"/>
-      <dimension name="lon" length="4"/>
-
-      <variable name="lat" type="float" shape="lat">
-        <attribute name="units" type="string" value="degrees_north"/>
-      </variable>
-      <variable name="lon" type="float" shape="lon">
-        <attribute name="units" type="string" value="degrees_east"/>
-      </variable>
-      <variable name="time" type="int" shape="time">
-        <attribute name="units" type="string" value="hours"/>
-      </variable>
-
-      <variable name="ReletiveHumidity" type="int" shape="time lat lon" orgName="rh">
-        <attribute name=CDM.LONG_NAME type="string" value="relative humidity"/>
-        <attribute name="units" type="string" value="percent"/>
-      </variable>
-    </netcdf>
-
-    <netcdf location="file:src/test/data/ncml/nc/example1.nc">
-      <explicit/>
-
-      <dimension name="time" length="2" isUnlimited="true"/>
-      <dimension name="lat" length="3"/>
-      <dimension name="lon" length="4"/>
-
-      <variable name="Temperature" type="double" shape="time lat lon" orgName="T">
-        <attribute name=CDM.LONG_NAME type="string" value="surface temperature"/>
-        <attribute name="units" type="string" value="degC"/>
-      </variable>
-    </netcdf>
-
-  </aggregation>
-</netcdf>
-
-netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/example1.nc {
- dimensions:
-   time = UNLIMITED;   // (2 currently)
-   lat = 3;
-   lon = 4;
- variables:
-   int rh(time=2, lat=3, lon=4);
-     :long_name = "relative humidity";
-     :units = "percent";
-   double T(time=2, lat=3, lon=4);
-     :long_name = "surface temperature";
-     :units = "degC";
-   float lat(lat=3);
-     :units = "degrees_north";
-   float lon(lon=4);
-     :units = "degrees_east";
-   int time(time=2);
-     :units = "hours";
-
- :title = "Example Data";
-}
-
-netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/example2.nc {
- dimensions:
-   time = UNLIMITED;   // (2 currently)
-   lat = 3;
-   lon = 4;
- variables:
-   int rh(time=2, lat=3, lon=4);
-     :long_name = "relative humidity";
-     :units = "percent";
-   double T(time=2, lat=3, lon=4);
-     :long_name = "surface temperature";
-     :units = "degC";
-   float lat(lat=3);
-     :units = "degrees_north";
-   float lon(lon=4);
-     :units = "degrees_east";
-   int time(time=2);
-     :units = "hours";
-
- :title = "Example Data";
-}
+ * <?xml version="1.0" encoding="UTF-8"?>
+ * <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+ * 
+ * <attribute name="title" type="string" value="Example Data"/>
+ * 
+ * <aggregation type="union">
+ * <netcdf location="file:src/test/data/ncml/nc/example2.nc">
+ * <explicit/>
+ * 
+ * <dimension name="time" length="2" isUnlimited="true"/>
+ * <dimension name="lat" length="3"/>
+ * <dimension name="lon" length="4"/>
+ * 
+ * <variable name="lat" type="float" shape="lat">
+ * <attribute name="units" type="string" value="degrees_north"/>
+ * </variable>
+ * <variable name="lon" type="float" shape="lon">
+ * <attribute name="units" type="string" value="degrees_east"/>
+ * </variable>
+ * <variable name="time" type="int" shape="time">
+ * <attribute name="units" type="string" value="hours"/>
+ * </variable>
+ * 
+ * <variable name="ReletiveHumidity" type="int" shape="time lat lon" orgName="rh">
+ * <attribute name=CDM.LONG_NAME type="string" value="relative humidity"/>
+ * <attribute name="units" type="string" value="percent"/>
+ * </variable>
+ * </netcdf>
+ * 
+ * <netcdf location="file:src/test/data/ncml/nc/example1.nc">
+ * <explicit/>
+ * 
+ * <dimension name="time" length="2" isUnlimited="true"/>
+ * <dimension name="lat" length="3"/>
+ * <dimension name="lon" length="4"/>
+ * 
+ * <variable name="Temperature" type="double" shape="time lat lon" orgName="T">
+ * <attribute name=CDM.LONG_NAME type="string" value="surface temperature"/>
+ * <attribute name="units" type="string" value="degC"/>
+ * </variable>
+ * </netcdf>
+ * 
+ * </aggregation>
+ * </netcdf>
+ * 
+ * netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/example1.nc {
+ * dimensions:
+ * time = UNLIMITED; // (2 currently)
+ * lat = 3;
+ * lon = 4;
+ * variables:
+ * int rh(time=2, lat=3, lon=4);
+ * :long_name = "relative humidity";
+ * :units = "percent";
+ * double T(time=2, lat=3, lon=4);
+ * :long_name = "surface temperature";
+ * :units = "degC";
+ * float lat(lat=3);
+ * :units = "degrees_north";
+ * float lon(lon=4);
+ * :units = "degrees_east";
+ * int time(time=2);
+ * :units = "hours";
+ * 
+ * :title = "Example Data";
+ * }
+ * 
+ * netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/example2.nc {
+ * dimensions:
+ * time = UNLIMITED; // (2 currently)
+ * lat = 3;
+ * lon = 4;
+ * variables:
+ * int rh(time=2, lat=3, lon=4);
+ * :long_name = "relative humidity";
+ * :units = "percent";
+ * double T(time=2, lat=3, lon=4);
+ * :long_name = "surface temperature";
+ * :units = "degC";
+ * float lat(lat=3);
+ * :units = "degrees_north";
+ * float lon(lon=4);
+ * :units = "degrees_east";
+ * int time(time=2);
+ * :units = "hours";
+ * 
+ * :title = "Example Data";
+ * }
  */
 
 public class TestAggUnion extends TestCase {
@@ -122,13 +120,15 @@ public class TestAggUnion extends TestCase {
   static NetcdfFile ncfile = null;
 
   public void setUp() throws IOException {
-    if (ncfile != null) return;
+    if (ncfile != null)
+      return;
     String filename = "file:./" + TestNcML.topDir + "aggUnion.xml";
     ncfile = NcMLReader.readNcML(filename, null);
   }
 
   public void tearDown() throws IOException {
-    if (ncfile != null) ncfile.close();
+    if (ncfile != null)
+      ncfile.close();
     ncfile = null;
   }
 
@@ -202,13 +202,13 @@ public class TestAggUnion extends TestCase {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = lat.read();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
     assert data.getElementType() == float.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
@@ -241,7 +241,7 @@ public class TestAggUnion extends TestCase {
     assert att.getStringValue().equals("percent");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = v.read();
     assert data.getRank() == 3;
     assert data.getSize() == 24 : data.getSize();
@@ -249,7 +249,7 @@ public class TestAggUnion extends TestCase {
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 4;
     assert data.getElementType() == int.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     assert dataI.getIntNext() == 1;
     assert dataI.getIntNext() == 2;
@@ -262,7 +262,7 @@ public class TestAggUnion extends TestCase {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
-  
+
     Array data = v.read(origin, shape);
     assert data.getRank() == 3;
     assert data.getSize() == 6;
@@ -270,7 +270,7 @@ public class TestAggUnion extends TestCase {
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 1;
     assert data.getElementType() == int.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     assert dataI.getIntNext() == 1;
     assert dataI.getIntNext() == 5;
@@ -284,14 +284,14 @@ public class TestAggUnion extends TestCase {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
-  
+
     Array data = v.read(origin, shape).reduce();
     assert data.getRank() == 2;
     assert data.getSize() == 6;
     assert data.getShape()[0] == 2;
     assert data.getShape()[1] == 3;
     assert data.getElementType() == int.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     assert dataI.getIntNext() == 1;
     assert dataI.getIntNext() == 2;
@@ -331,7 +331,7 @@ public class TestAggUnion extends TestCase {
     assert att.getStringValue().equals("degC");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = v.read();
     assert data.getRank() == 3;
     assert data.getSize() == 24;
@@ -339,7 +339,7 @@ public class TestAggUnion extends TestCase {
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 4;
     assert data.getElementType() == double.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 1.0);
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);

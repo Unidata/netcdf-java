@@ -28,10 +28,10 @@ public class VerticalCT extends CoordinateTransform {
   /**
    * Create a Vertical Coordinate Transform.
    *
-   * @param name      name of transform, must be unique within the dataset.
+   * @param name name of transform, must be unique within the dataset.
    * @param authority naming authority.
-   * @param type      type of vertical transform
-   * @param builder   creates the VerticalTransform
+   * @param type type of vertical transform
+   * @param builder creates the VerticalTransform
    */
   public VerticalCT(String name, String authority, VerticalCT.Type type, VertTransformBuilderIF builder) {
     super(name, authority, TransformType.Vertical);
@@ -62,7 +62,7 @@ public class VerticalCT extends CoordinateTransform {
   /**
    * Use the builder to make the Vertical Transform function
    *
-   * @param ds      containing dataset
+   * @param ds containing dataset
    * @param timeDim time Dimension
    * @return VerticalTransform
    * @see VertTransformBuilderIF#makeMathTransform
@@ -82,10 +82,7 @@ public class VerticalCT extends CoordinateTransform {
 
   @Override
   public String toString() {
-    return "VerticalCT {" +
-            "type=" + type +
-            ", builder=" + builder.getTransformName() +
-            '}';
+    return "VerticalCT {" + "type=" + type + ", builder=" + builder.getTransformName() + '}';
   }
 
 
@@ -98,21 +95,16 @@ public class VerticalCT extends CoordinateTransform {
    */
   public enum Type {
     // These are from CF-1.0: not all are implemented because we dont have an example to test
-    HybridSigmaPressure(CF.atmosphere_hybrid_sigma_pressure_coordinate),
-    HybridHeight(CF.atmosphere_hybrid_height_coordinate),
-    LnPressure(CF.atmosphere_ln_pressure_coordinate),
-    OceanSigma(CF.ocean_sigma_coordinate),
-    OceanS(CF.ocean_s_coordinate),
-    Sleve(CF.atmosphere_sleve_coordinate),
-    Sigma(CF.atmosphere_sigma_coordinate),
+    HybridSigmaPressure(CF.atmosphere_hybrid_sigma_pressure_coordinate), HybridHeight(
+        CF.atmosphere_hybrid_height_coordinate), LnPressure(CF.atmosphere_ln_pressure_coordinate), OceanSigma(
+            CF.ocean_sigma_coordinate), OceanS(
+                CF.ocean_s_coordinate), Sleve(CF.atmosphere_sleve_coordinate), Sigma(CF.atmosphere_sigma_coordinate),
 
-    //-Sachin 03/25/09
-    OceanSG1("ocean_s_g1"),
-    OceanSG2("ocean_s_g2"),
+    // -Sachin 03/25/09
+    OceanSG1("ocean_s_g1"), OceanSG2("ocean_s_g2"),
 
     // others
-    Existing3DField("atmosphere_sigma"),
-    WRFEta("WRFEta");
+    Existing3DField("atmosphere_sigma"), WRFEta("WRFEta");
 
     private final String name;
 
@@ -133,7 +125,8 @@ public class VerticalCT extends CoordinateTransform {
      */
     public static Type getType(String name) {
       for (Type t : Type.values()) {
-        if (t.name.equalsIgnoreCase(name)) return t;
+        if (t.name.equalsIgnoreCase(name))
+          return t;
       }
       return null;
     }

@@ -15,6 +15,7 @@ import ucar.unidata.geoloc.Earth;
 
 /**
  * Polyconic Projection.
+ * 
  * @author ghansham@sac.isro.gov.in 1/8/2012
  */
 public class PolyconicProjection extends AbstractTransformBuilder implements HorizTransformBuilderIF {

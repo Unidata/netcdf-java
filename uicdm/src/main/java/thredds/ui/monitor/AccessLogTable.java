@@ -5,8 +5,8 @@
 
 package thredds.ui.monitor;
 
-//import net.sf.ehcache.Cache;
-//import net.sf.ehcache.Element;
+// import net.sf.ehcache.Cache;
+// import net.sf.ehcache.Element;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import thredds.logs.AccessLogParser;
@@ -19,7 +19,6 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.units.TimeDuration;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -61,7 +60,7 @@ public class AccessLogTable extends JPanel {
   private JTextArea startDateField, endDateField;
 
   public AccessLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, DnsLookup dnsLookup) {
-      this.startDateField = startDateField;
+    this.startDateField = startDateField;
     this.endDateField = endDateField;
     this.prefs = prefs;
     this.dnsLookup = dnsLookup;
@@ -71,7 +70,8 @@ public class AccessLogTable extends JPanel {
     logTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
-        if (log == null) return;
+        if (log == null)
+          return;
         infoTA.setText(log.toString());
         infoWindow.show();
       }
@@ -80,7 +80,8 @@ public class AccessLogTable extends JPanel {
     varPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
-        if (log == null) return;
+        if (log == null)
+          return;
         Formatter f = new Formatter();
         log.toString(f);
         infoTA.setText(f.toString());
@@ -90,7 +91,8 @@ public class AccessLogTable extends JPanel {
     varPopup.addAction("DNS Lookup", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
-        if (log == null) return;
+        if (log == null)
+          return;
         try {
           infoTA.setText(log.getIp() + " = " + dnsLookup.reverseDNS(log.getIp()));
         } catch (Exception ee) {
@@ -102,7 +104,8 @@ public class AccessLogTable extends JPanel {
     varPopup.addAction("Resend URL", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
-        if (log == null) return;
+        if (log == null)
+          return;
         String urlString = log.getPath();
         AccessLogTable.this.firePropertyChange("UrlDump", null, "http://" + manager.getServer() + urlString);
       }
@@ -120,7 +123,8 @@ public class AccessLogTable extends JPanel {
     userTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         User accum = (User) userTable.getSelectedBean();
-        if (accum == null) return;
+        if (accum == null)
+          return;
         accum.run();
       }
     });
@@ -128,7 +132,8 @@ public class AccessLogTable extends JPanel {
     varPopupU.addAction("User requests", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Accum accum = (Accum) userTable.getSelectedBean();
-        if (accum == null) return;
+        if (accum == null)
+          return;
         logTable.setBeans(accum.logs);
         tabbedPanel.setSelectedIndex(0);
       }
@@ -138,14 +143,16 @@ public class AccessLogTable extends JPanel {
     datarootTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Dataroot accum = (Dataroot) datarootTable.getSelectedBean();
-        if (accum == null) return;
+        if (accum == null)
+          return;
       }
     });
     PopupMenu varPopupR = new PopupMenu(datarootTable.getJTable(), "Options");
     varPopupR.addAction("User requests", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Accum accum = (Accum) datarootTable.getSelectedBean();
-        if (accum == null) return;
+        if (accum == null)
+          return;
         logTable.setBeans(accum.logs);
         tabbedPanel.setSelectedIndex(0);
       }
@@ -155,14 +162,16 @@ public class AccessLogTable extends JPanel {
     serviceTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Service accum = (Service) serviceTable.getSelectedBean();
-        if (accum == null) return;
+        if (accum == null)
+          return;
       }
     });
     ucar.ui.widget.PopupMenu varPopupS = new PopupMenu(serviceTable.getJTable(), "Options");
     varPopupS.addAction("User requests", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Accum accum = (Accum) serviceTable.getSelectedBean();
-        if (accum == null) return;
+        if (accum == null)
+          return;
         logTable.setBeans(accum.logs);
         tabbedPanel.setSelectedIndex(0);
       }
@@ -172,21 +181,23 @@ public class AccessLogTable extends JPanel {
     clientTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Client accum = (Client) clientTable.getSelectedBean();
-        if (accum == null) return;
+        if (accum == null)
+          return;
       }
     });
     ucar.ui.widget.PopupMenu varPopupC = new PopupMenu(clientTable.getJTable(), "Options");
     varPopupC.addAction("User requests", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Accum accum = (Accum) clientTable.getSelectedBean();
-        if (accum == null) return;
+        if (accum == null)
+          return;
         logTable.setBeans(accum.logs);
         tabbedPanel.setSelectedIndex(0);
       }
     });
 
     timeSeriesPanel = new JPanel();
-    //timeSeriesPanel.setLayout(new GridLayout(2, 2));
+    // timeSeriesPanel.setLayout(new GridLayout(2, 2));
     timeSeriesPanel.setLayout(new BorderLayout());
 
     // the info window
@@ -205,24 +216,24 @@ public class AccessLogTable extends JPanel {
     tabbedPanel.setSelectedIndex(0);
 
     tabbedPanel.addChangeListener(e -> {
-        java.util.ArrayList<LogReader.Log> useBeans = (java.util.ArrayList<LogReader.Log>) logTable.getBeans();
+      java.util.ArrayList<LogReader.Log> useBeans = (java.util.ArrayList<LogReader.Log>) logTable.getBeans();
 
-        int idx = tabbedPanel.getSelectedIndex();
-        String title = tabbedPanel.getTitleAt(idx);
-        if (title.equals("User"))
-          initUserLogs(useBeans);
-        if (title.equals("DataRoot"))
-          initDatarootLogs(useBeans);
-        if (title.equals("Service"))
-          initServiceLogs(useBeans);
-        if (title.equals("Client"))
-          initClientLogs(useBeans);
-        if (title.equals("TimeSeries"))
-          showTimeSeriesAll(useBeans);
+      int idx = tabbedPanel.getSelectedIndex();
+      String title = tabbedPanel.getTitleAt(idx);
+      if (title.equals("User"))
+        initUserLogs(useBeans);
+      if (title.equals("DataRoot"))
+        initDatarootLogs(useBeans);
+      if (title.equals("Service"))
+        initServiceLogs(useBeans);
+      if (title.equals("Client"))
+        initClientLogs(useBeans);
+      if (title.equals("TimeSeries"))
+        showTimeSeriesAll(useBeans);
     });
 
     setLayout(new BorderLayout());
-    //add(topPanel, BorderLayout.NORTH);
+    // add(topPanel, BorderLayout.NORTH);
     add(tabbedPanel, BorderLayout.CENTER);
   }
 
@@ -312,10 +323,10 @@ public class AccessLogTable extends JPanel {
       f.format("%nRestricted logs n=%d%n", restrict.size());
     }
     if (accessLogFiles != null) {
-        f.format("%nFiles used%n");
-        for (LogLocalManager.FileDateRange fdr : accessLogFiles) {
-            f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
-        }
+      f.format("%nFiles used%n");
+      for (LogLocalManager.FileDateRange fdr : accessLogFiles) {
+        f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
+      }
     }
   }
 
@@ -331,11 +342,13 @@ public class AccessLogTable extends JPanel {
     calcClient = true;
     restrictLogs = completeLogs;
 
-    /* int n = completeLogs.size();
-    if (n > 0) {
-      startDateField.setText(completeLogs.get(0).getDate());
-      endDateField.setText(completeLogs.get(n-1).getDate());
-    } */
+    /*
+     * int n = completeLogs.size();
+     * if (n > 0) {
+     * startDateField.setText(completeLogs.get(0).getDate());
+     * endDateField.setText(completeLogs.get(n-1).getDate());
+     * }
+     */
   }
 
   void restrictLogs(String restrict) {
@@ -343,7 +356,8 @@ public class AccessLogTable extends JPanel {
     restrictLogs = new ArrayList<>(1000);
     for (LogReader.Log log : completeLogs) {
       String ip = log.getIp();
-      if (ip.startsWith(restrict)) continue;
+      if (ip.startsWith(restrict))
+        continue;
       restrictLogs.add(log);
     }
 
@@ -401,8 +415,7 @@ public class AccessLogTable extends JPanel {
     long bytes;
     int count;
 
-    public Accum() {
-    }
+    public Accum() {}
 
     Accum(String name) {
       this.name = name;
@@ -430,7 +443,8 @@ public class AccessLogTable extends JPanel {
         String[] p = name.split("\\.");
         for (int i = p.length - 1; i >= 0; i--) {
           sbuff.append(p[i]);
-          if (i != 0) sbuff.append('.');
+          if (i != 0)
+            sbuff.append('.');
         }
         namer = sbuff.toString();
       }
@@ -446,12 +460,14 @@ public class AccessLogTable extends JPanel {
     }
 
     public void run() {
-      if (name != null) return;
+      if (name != null)
+        return;
       try {
         long startElapsed = System.nanoTime();
         name = dnsLookup.reverseDNS(ip);
         long elapsedTime = System.nanoTime() - startElapsed;
-        if (showDNStime) System.out.printf(" reverseDNS took=%f msecs %n", elapsedTime / (1000 * 1000.0));
+        if (showDNStime)
+          System.out.printf(" reverseDNS took=%f msecs %n", elapsedTime / (1000 * 1000.0));
       } catch (Throwable e) {
         name = e.getMessage();
       }
@@ -471,14 +487,17 @@ public class AccessLogTable extends JPanel {
   }
 
   void initClientLogs(ArrayList<LogReader.Log> logs) {
-    if (!calcClient) return;
-    if (logs == null) return;
+    if (!calcClient)
+      return;
+    if (logs == null)
+      return;
 
     HashMap<String, Client> map = new HashMap<>();
 
     for (LogReader.Log log : logs) {
       String clientName = log.getClient();
-      if (clientName == null)  clientName = "";
+      if (clientName == null)
+        clientName = "";
       Client accum = map.get(clientName);
       if (accum == null) {
         accum = new Client(clientName);
@@ -494,8 +513,10 @@ public class AccessLogTable extends JPanel {
   private boolean showDNStime = false;
 
   void initUserLogs(ArrayList<LogReader.Log> logs) {
-    if (!calcUser) return;
-    if (logs == null) return;
+    if (!calcUser)
+      return;
+    if (logs == null)
+      return;
 
     HashMap<String, User> map = new HashMap<>();
 
@@ -516,20 +537,23 @@ public class AccessLogTable extends JPanel {
 
   void showDNS() {
 
-    if (null == executor) executor = Executors.newFixedThreadPool(3); // number of threads
+    if (null == executor)
+      executor = Executors.newFixedThreadPool(3); // number of threads
     ArrayList<User> accums = (ArrayList<User>) userTable.getBeans();
     for (User a : accums) {
       executor.execute(a);
     }
 
-    /* boolean ok = false;
-    try {
-      ok = executor.awaitTermination(3, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-    long elapsedTime = System.nanoTime() - startElapsed;
-    System.out.printf(" reverseDNS took=%f msecs ok=%s %n", elapsedTime / (1000 * 1000.0), ok);  */
+    /*
+     * boolean ok = false;
+     * try {
+     * ok = executor.awaitTermination(3, TimeUnit.SECONDS);
+     * } catch (InterruptedException e) {
+     * e.printStackTrace(); //To change body of catch statement use File | Settings | File Templates.
+     * }
+     * long elapsedTime = System.nanoTime() - startElapsed;
+     * System.out.printf(" reverseDNS took=%f msecs ok=%s %n", elapsedTime / (1000 * 1000.0), ok);
+     */
   }
 
   ////////////////////////////////////////////////
@@ -546,14 +570,17 @@ public class AccessLogTable extends JPanel {
   }
 
   void initDatarootLogs(ArrayList<LogReader.Log> logs) {
-    if (!calcRoot) return;
-    if (logs == null) return;
+    if (!calcRoot)
+      return;
+    if (logs == null)
+      return;
 
     HashMap<String, Dataroot> map = new HashMap<>();
 
     for (LogReader.Log log : logs) {
       String path = log.getPath();
-      if (path == null) continue;
+      if (path == null)
+        continue;
       String dataRoot = LogCategorizer.getDataroot(path, log.getStatus());
       Dataroot accum = map.get(dataRoot);
       if (accum == null) {
@@ -581,8 +608,10 @@ public class AccessLogTable extends JPanel {
   }
 
   void initServiceLogs(ArrayList<LogReader.Log> logs) {
-    if (!calcService) return;
-    if (logs == null) return;
+    if (!calcService)
+      return;
+    if (logs == null)
+      return;
 
     HashMap<String, Service> map = new HashMap<>();
 
@@ -646,7 +675,7 @@ public class AccessLogTable extends JPanel {
       count++;
     }
     if (count > 0)
-        addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
+      addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
     total_count += count;
     System.out.printf("showTimeSeriesAll: total_count = %d logs = %d%n", total_count, logs.size());
 
@@ -655,20 +684,20 @@ public class AccessLogTable extends JPanel {
     mc.addSeries("Average Latency (secs)", timeTookData);
     mc.finish(new java.awt.Dimension(1000, 1000));
 
-    //MultipleAxisChart mc = new MultipleAxisChart("Bytes Sent", "5 min average", "Mbytes/sec", bytesSentData);
-    //Chart c2 = new Chart("Average Latency", "5 min average", "Millisecs", timeTookData);
-    //Chart c3 = new Chart("Number of Requests/sec", "5 min average", "", nreqData);
+    // MultipleAxisChart mc = new MultipleAxisChart("Bytes Sent", "5 min average", "Mbytes/sec", bytesSentData);
+    // Chart c2 = new Chart("Average Latency", "5 min average", "Millisecs", timeTookData);
+    // Chart c3 = new Chart("Number of Requests/sec", "5 min average", "", nreqData);
 
     timeSeriesPanel.removeAll();
     timeSeriesPanel.add(mc);
   }
 
-  void addPoint(TimeSeries bytesSentData, TimeSeries timeTookData, TimeSeries nreqData,
-                Date date, long bytes, long count, long timeTook) {
+  void addPoint(TimeSeries bytesSentData, TimeSeries timeTookData, TimeSeries nreqData, Date date, long bytes,
+      long count, long timeTook) {
 
     bytesSentData.add(new Minute(date), bytes / 1000. / 1000.);
     double latency = (double) timeTook / count / 1000.;
-    //timeTookData.add(new Minute(date), (latency > 10*1000) ? 0 : latency); // note latency limited to 10 secs.
+    // timeTookData.add(new Minute(date), (latency > 10*1000) ? 0 : latency); // note latency limited to 10 secs.
     timeTookData.add(new Minute(date), latency);
     nreqData.add(new Minute(date), (double) count);
   }

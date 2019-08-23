@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
-
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URL;
@@ -25,7 +24,7 @@ import java.io.File;
  */
 public class TestDatasetURL extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
- 
+
   public TestDatasetURL(String name) {
     super(name);
   }
@@ -40,8 +39,10 @@ public class TestDatasetURL extends TestCase {
     test("file://test/dir");
     test("file:///test/dir");
 
-    //test("file:C:/Program Files (x86)/Apache Software Foundation/Tomcat 5.0/content/thredds/cache");  // fail on blank char
-    //test("file:C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 5.0\\content\\thredds\\cache"); // fail on blank char
+    // test("file:C:/Program Files (x86)/Apache Software Foundation/Tomcat 5.0/content/thredds/cache"); // fail on blank
+    // char
+    // test("file:C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 5.0\\content\\thredds\\cache"); // fail on
+    // blank char
     test("http://localhost:8080/thredds/catalog.html?hi=lo");
   }
 
@@ -49,7 +50,7 @@ public class TestDatasetURL extends TestCase {
     testResolve("http://test/me/", "wanna", "http://test/me/wanna");
     testResolve("http://test/me/", "/wanna", "http://test/wanna");
     testResolve("file:/test/me/", "wanna", "file:/test/me/wanna");
-    testResolve("file:/test/me/", "/wanna", "/wanna");  // LOOK doesnt work for URI.resolve() directly.
+    testResolve("file:/test/me/", "/wanna", "/wanna"); // LOOK doesnt work for URI.resolve() directly.
 
     testResolve("file://test/me/", "http:/wanna", "http:/wanna");
     testResolve("file://test/me/", "file:/wanna", "file:/wanna");
@@ -72,15 +73,15 @@ public class TestDatasetURL extends TestCase {
   }
 
   public void testDods() throws URISyntaxException {
-    String uriString = "http://"+ TestDir.dap2TestServer+"/dts/test.53.dods?types[0:1:9]";
+    String uriString = "http://" + TestDir.dap2TestServer + "/dts/test.53.dods?types[0:1:9]";
     new URI(uriString);
   }
 
 
   private void test(String uriS) {
     System.out.println(uriS);
-    //uriS = URLEncoder.encode(uriS, "UTF-8");
-    //System.out.println(uriS);
+    // uriS = URLEncoder.encode(uriS, "UTF-8");
+    // System.out.println(uriS);
 
     try {
       URI uri = URI.create(uriS);

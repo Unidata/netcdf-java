@@ -6,7 +6,6 @@ package ucar.nc2.grib.coord;
 
 import ucar.ma2.Section;
 import ucar.nc2.util.Indent;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
@@ -20,7 +19,7 @@ import java.util.*;
 public class CoordinateND<T> {
 
   private final List<Coordinate> coordinates; // result is orthogonal coordinates
-  private final SparseArray<T> sa;            // indexes refer to coordinates
+  private final SparseArray<T> sa; // indexes refer to coordinates
 
   CoordinateND(List<Coordinate> coordinates, SparseArray<T> sa) {
     assert coordinates.size() == sa.getRank();
@@ -42,7 +41,7 @@ public class CoordinateND<T> {
 
   public void showInfo(Formatter info, GribRecordStats all) {
     for (Coordinate coord : coordinates)
-       coord.showInfo(info, new Indent(2));
+      coord.showInfo(info, new Indent(2));
 
     sa.showInfo(info, all);
   }
@@ -104,7 +103,7 @@ public class CoordinateND<T> {
         int count = 0;
         for (CoordinateBuilder<T> builder : builders) {
           if (builder instanceof CoordinateBuilder.TwoD) {
-            CoordinateBuilder.TwoD<T> builder2D  = (CoordinateBuilder.TwoD) builder;
+            CoordinateBuilder.TwoD<T> builder2D = (CoordinateBuilder.TwoD) builder;
             int[] coordsIdx = builder2D.getCoordIndices(gr);
             index[count++] = coordsIdx[0];
             index[count++] = coordsIdx[1];
@@ -128,7 +127,7 @@ public class CoordinateND<T> {
      * @param newCoords must have same list of Coordinates as prev, with possibly additional values.
      */
     CoordinateND<T> reindex(List<Coordinate> newCoords, CoordinateND<T> prev) {
-      assert  newCoords.size() == prev.getNCoordinates();
+      assert newCoords.size() == prev.getNCoordinates();
 
       boolean has2Dcoord = false;
       for (Coordinate coord : newCoords) {
@@ -168,7 +167,8 @@ public class CoordinateND<T> {
       while (iter.hasNext()) {
         int oldTrackIdx = iter.next(prevIndex); // gets both the oldTrackIdx (1D) and prevIndex (nD)
         int oldTrackValue = prevSA.getTrack(oldTrackIdx);
-        if (oldTrackValue == 0) continue; // skip missing values
+        if (oldTrackValue == 0)
+          continue; // skip missing values
 
         // calculate position in the current track array, and store the value there
         int coordIdx = 0;
@@ -181,8 +181,11 @@ public class CoordinateND<T> {
       }
 
       // now that we have the track, make the real SA
-      SparseArray<T> newSA = new SparseArray<>(sizeArray, track, prevSA.getContent(), prevSA.getNdups());  // content (list of records) is the same
-      return new CoordinateND<>(newCoords, newSA);                                      // reindexed result
+      SparseArray<T> newSA = new SparseArray<>(sizeArray, track, prevSA.getContent(), prevSA.getNdups()); // content
+                                                                                                          // (list of
+                                                                                                          // records) is
+                                                                                                          // the same
+      return new CoordinateND<>(newCoords, newSA); // reindexed result
     }
 
     // every coord in prev must be in curr
@@ -192,15 +195,17 @@ public class CoordinateND<T> {
 
       IndexMap(Coordinate curr, Coordinate prev) {
         identity = curr.equals(prev);
-        if (identity) return;
+        if (identity)
+          return;
 
-        assert curr.getType() == prev.getType() : curr.getType()+" != "+prev.getType();
+        assert curr.getType() == prev.getType() : curr.getType() + " != " + prev.getType();
 
         int count = 0;
         Map<Object, Integer> currValMap = new HashMap<>();
         if (curr.getValues() == null)
           throw new IllegalStateException();
-        for (Object val : curr.getValues()) currValMap.put(val, count++);
+        for (Object val : curr.getValues())
+          currValMap.put(val, count++);
 
         count = 0;
         indexMap = new int[prev.getSize()];
@@ -210,7 +215,8 @@ public class CoordinateND<T> {
       }
 
       public int map(int oldIndex) {
-        if (identity) return oldIndex;
+        if (identity)
+          return oldIndex;
         return indexMap[oldIndex];
       }
     }
@@ -254,7 +260,8 @@ public class CoordinateND<T> {
       while (iter.hasNext()) {
         int oldTrackIdx = iter.next(prevIndex); // gets both the oldTrackIdx (1D) and prevIndex (nD)
         int oldTrackValue = prevSA.getTrack(oldTrackIdx);
-        if (oldTrackValue == 0) continue; // skip missing values
+        if (oldTrackValue == 0)
+          continue; // skip missing values
 
         for (int i = 0; i < ncoords; i++) {
           Coordinate coord = newCoords.get(i);
@@ -270,8 +277,11 @@ public class CoordinateND<T> {
       }
 
       // now that we have the track, make the real SA
-      SparseArray<T> newSA = new SparseArray<>(sizeArray, track, prevSA.getContent(), prevSA.getNdups());  // content (list of records) is the same
-      return new CoordinateND<>(newCoords, newSA);                                      // reindexed result
+      SparseArray<T> newSA = new SparseArray<>(sizeArray, track, prevSA.getContent(), prevSA.getNdups()); // content
+                                                                                                          // (list of
+                                                                                                          // records) is
+                                                                                                          // the same
+      return new CoordinateND<>(newCoords, newSA); // reindexed result
     }
 
     private static class Time2DIndexMap {
@@ -279,8 +289,8 @@ public class CoordinateND<T> {
 
       // every coord in prev must be in curr
       Time2DIndexMap(CoordinateTime2D curr, CoordinateTime2D prev) {
-        assert curr.getType() == prev.getType() : curr.getType()+" != "+prev.getType();
-        currValMap = new HashMap<>(2*curr.getValues().size());
+        assert curr.getType() == prev.getType() : curr.getType() + " != " + prev.getType();
+        currValMap = new HashMap<>(2 * curr.getValues().size());
 
         int[] index2D = new int[2];
         for (Object val : prev.getValues()) {
@@ -293,7 +303,7 @@ public class CoordinateND<T> {
       public int map(CoordinateTime2D.Time2D prevCoord) {
         Integer val = currValMap.get(prevCoord);
         if (val == null)
-          throw new IllegalStateException("reindex does not have coordinate Time2D "+prevCoord);
+          throw new IllegalStateException("reindex does not have coordinate Time2D " + prevCoord);
         return val;
       }
 

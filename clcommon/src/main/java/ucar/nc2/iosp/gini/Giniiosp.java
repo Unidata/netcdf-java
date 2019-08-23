@@ -8,7 +8,6 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-
 import java.io.*;
 import java.awt.image.*;
 import java.util.List;
@@ -31,7 +30,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
   // reading
 
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-                   ucar.nc2.util.CancelTask cancelTask) throws IOException {
+      ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
     super.open(raf, ncfile, cancelTask);
 
@@ -57,7 +56,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
       return null;
   }
 
-  private float[] handleLevels(byte[] data,  int[] levels) {
+  private float[] handleLevels(byte[] data, int[] levels) {
     int level = levels[0];
     float[] a = new float[level];
     float[] b = new float[level];
@@ -90,8 +89,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     return fdata;
   }
 
-  private Array makeArray(byte[] data, int[] levels, int[] shape)
-  {
+  private Array makeArray(byte[] data, int[] levels, int[] shape) {
     // Default (if no level data) is to just return an array from the bytes.
     Object store = data;
     DataType dt = DataType.BYTE;
@@ -107,8 +105,8 @@ public class Giniiosp extends AbstractIOServiceProvider {
   }
 
   // all the work is here, so can be called recursively
-  private Array readData(ucar.nc2.Variable v2, long dataPos, List<Range> ranges,
-                         int[] levels) throws IOException, InvalidRangeException {
+  private Array readData(ucar.nc2.Variable v2, long dataPos, List<Range> ranges, int[] levels)
+      throws IOException, InvalidRangeException {
     // Get to the proper offset and read in the data
     raf.seek(dataPos);
     int data_size = (int) (raf.length() - dataPos);
@@ -121,8 +119,8 @@ public class Giniiosp extends AbstractIOServiceProvider {
   }
 
   // for the compressed data read all out into a array and then parse into requested
-  private Array readCompressedData(ucar.nc2.Variable v2, long dataPos, List<Range> ranges,
-                                   int[] levels) throws IOException, InvalidRangeException {
+  private Array readCompressedData(ucar.nc2.Variable v2, long dataPos, List<Range> ranges, int[] levels)
+      throws IOException, InvalidRangeException {
     // Get to the proper offset and read in the rest of the compressed data
     raf.seek(dataPos);
     int data_size = (int) (raf.length() - dataPos);
@@ -146,11 +144,11 @@ public class Giniiosp extends AbstractIOServiceProvider {
     return null;
   }
 
-  private Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny,
-                                   List<Range> ranges, int[] levels) throws IOException, InvalidRangeException {
+  private Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, List<Range> ranges, int[] levels)
+      throws IOException, InvalidRangeException {
     // Get to the proper offset and read in the rest of the compressed data
     raf.seek(dataPos);
-    int data_size = (int) (raf.length() - dataPos);     //  or 5120 as read buffer size
+    int data_size = (int) (raf.length() - dataPos); // or 5120 as read buffer size
     byte[] data = new byte[data_size];
     raf.readFully(data);
 

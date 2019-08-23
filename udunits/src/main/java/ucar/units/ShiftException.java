@@ -12,29 +12,29 @@ import java.util.Date;
  * @author Steven R. Emmerson
  */
 public final class ShiftException extends OperationException {
-	private static final long	serialVersionUID	= 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs from the unit and the origin.
-	 * 
-	 * @param unit
-	 *            The unit.
-	 * @param origin
-	 *            The desired origin.
-	 */
-	public ShiftException(final Unit unit, final double origin) {
-		super("Can't shift origin of unit \"" + unit + "\" to " + origin);
-	}
+  /**
+   * Constructs from the unit and the origin.
+   * 
+   * @param unit
+   *        The unit.
+   * @param origin
+   *        The desired origin.
+   */
+  public ShiftException(final Unit unit, final double origin) {
+    super("Can't shift origin of unit \"" + unit + "\" to " + origin);
+  }
 
-	/**
-	 * Constructs from the unit and the origin.
-	 * 
-	 * @param unit
-	 *            The unit.
-	 * @param origin
-	 *            The desired origin.
-	 */
-	public ShiftException(final Unit unit, final Date origin) {
-		super("Can't shift origin of unit \"" + unit + "\" to " + origin);
-	}
+  /**
+   * Constructs from the unit and the origin.
+   * 
+   * @param unit
+   *        The unit.
+   * @param origin
+   *        The desired origin.
+   */
+  public ShiftException(final Unit unit, final Date origin) {
+    super("Can't shift origin of unit \"" + unit + "\" to " + origin);
+  }
 }

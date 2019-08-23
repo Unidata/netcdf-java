@@ -14,7 +14,6 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.Formatter;
@@ -35,7 +34,7 @@ public final class Grib1SectionProductDefinition {
    * Read Product Definition section from raf.
    *
    * @param raf RandomAccessFile, with pointer at start of section
-   * @throws java.io.IOException      on I/O error
+   * @throws java.io.IOException on I/O error
    * @throws IllegalArgumentException if not a GRIB-2 record
    */
   public Grib1SectionProductDefinition(RandomAccessFile raf) throws IOException {
@@ -97,7 +96,8 @@ public final class Grib1SectionProductDefinition {
   /**
    * Grid Definition (octet 7).
    * "Number of grid used – from catalogue defined by originating centre". So this is center dependent.
-   * "Where octet 7 defines a catalogued grid, that grid should also be defined in Section 2, provided the flag in octet 8
+   * "Where octet 7 defines a catalogued grid, that grid should also be defined in Section 2, provided the flag in octet
+   * 8
    * indicates inclusion of Section 2.
    * Octet 7 must be set to 255 to indicate a non-catalogued grid, in which case the grid will be defined in Section 2."
    *
@@ -160,7 +160,8 @@ public final class Grib1SectionProductDefinition {
    */
   public final CalendarDate getReferenceDate() {
     int century = getReferenceCentury() - 1;
-    if (century == -1) century = 20;
+    if (century == -1)
+      century = 20;
 
     int year = getOctet(13);
     int month = getOctet(14);
@@ -286,7 +287,8 @@ public final class Grib1SectionProductDefinition {
    * @return rawData[index-1] & 0xff
    */
   private int getOctet(int index) {
-    if (index > rawData.length) return GribNumbers.UNDEFINED;
+    if (index > rawData.length)
+      return GribNumbers.UNDEFINED;
     return rawData[index - 1] & 0xff;
   }
 
@@ -309,7 +311,8 @@ public final class Grib1SectionProductDefinition {
     Grib1Parameter parameter = cust.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
     if (parameter != null) {
       Grib1ParamTableReader ptable = parameter.getTable();
-      f.format("               Parameter Table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(), (ptable == null) ? "MISSING" : ptable.getPath());
+      f.format("               Parameter Table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(),
+          (ptable == null) ? "MISSING" : ptable.getPath());
       f.format("                Parameter Name : (%d) %s%n", getParameterNumber(), parameter.getName());
       f.format("                Parameter Desc : %s%n", parameter.getDescription());
       f.format("               Parameter Units : %s%n", parameter.getUnit());
@@ -317,7 +320,8 @@ public final class Grib1SectionProductDefinition {
       f.format("               Parameter %d not found%n", getParameterNumber());
     }
 
-    f.format("6      Generating Process Type : (%d) %s%n", getGenProcess(), cust.getGeneratingProcessName(getGenProcess()));
+    f.format("6      Generating Process Type : (%d) %s%n", getGenProcess(),
+        cust.getGeneratingProcessName(getGenProcess()));
     f.format("7              Grid Definition : (%d) %n", getGridDefinition());
     f.format("8                         Flag : (%d) %n", getFlag());
 
@@ -360,24 +364,27 @@ public final class Grib1SectionProductDefinition {
   ////////////////////////////////////////////////////////
   // Ensembles
 
-/* http://www.ecmwf.int/publications/manuals/d/gribapi/fm92/grib1/show/local/
-   1)
-   see " local definition # 1"
-   from Ernst de Vreede via Jitka 01/31/2012
-  ECMWF operational Ensemble Prediction System (EPS) have extra information in the PDS:
-    Octet 41 = 1: ECMWF local GRIB extension: 1 = Mars labelling or ensemble forecast data&
-    Octet 42 = 1: ECMWF GRIB class, 1=operational data
-    Octet 43 = 10/11: ECMWF GRIB type: 10=Control forecast, 11=Perturbed forecast
-    Octet 44,45 = 1035, ECMWF GRIB stream 1035 = Ensemble Prediction System
-    Octet 50 = perturbationNumber (0 for control, 1-50 for perturbed forecasts)
-    Octet 51 = numberOfForecastsInEnsemble (0 if not ensemble, 1-50 for perturbed forecasts)
-
-  The really distinguishing octets are: octet 41 =1, octet 42=1, octet 43=10 or 11, octet 51>0 with octet 50 giving the perturbation number.
-  The other parameters octets 42 (operational stream) and octet 44/45 might be too specific, might narrow down too much.
-
-  2)
-  http://www.ecmwf.int/publications/manuals/d/gribapi/fm92/grib1/detail/local/30/
-*/
+  /*
+   * http://www.ecmwf.int/publications/manuals/d/gribapi/fm92/grib1/show/local/
+   * 1)
+   * see " local definition # 1"
+   * from Ernst de Vreede via Jitka 01/31/2012
+   * ECMWF operational Ensemble Prediction System (EPS) have extra information in the PDS:
+   * Octet 41 = 1: ECMWF local GRIB extension: 1 = Mars labelling or ensemble forecast data&
+   * Octet 42 = 1: ECMWF GRIB class, 1=operational data
+   * Octet 43 = 10/11: ECMWF GRIB type: 10=Control forecast, 11=Perturbed forecast
+   * Octet 44,45 = 1035, ECMWF GRIB stream 1035 = Ensemble Prediction System
+   * Octet 50 = perturbationNumber (0 for control, 1-50 for perturbed forecasts)
+   * Octet 51 = numberOfForecastsInEnsemble (0 if not ensemble, 1-50 for perturbed forecasts)
+   * 
+   * The really distinguishing octets are: octet 41 =1, octet 42=1, octet 43=10 or 11, octet 51>0 with octet 50 giving
+   * the perturbation number.
+   * The other parameters octets 42 (operational stream) and octet 44/45 might be too specific, might narrow down too
+   * much.
+   * 
+   * 2)
+   * http://www.ecmwf.int/publications/manuals/d/gribapi/fm92/grib1/detail/local/30/
+   */
 
   /*
    * NCEP Appendix C Manual 388
@@ -392,15 +399,15 @@ public final class Grib1SectionProductDefinition {
         return ((rawData.length >= 43) && (getOctet(41) == 1));
 
       case 98:
-        return ((rawData.length >= 51) &&
-                (getOctet(41) == 1 || getOctet(41) == 30) &&
-                (getOctet(43) == 10 || getOctet(43) == 11));
+        return ((rawData.length >= 51) && (getOctet(41) == 1 || getOctet(41) == 30)
+            && (getOctet(43) == 10 || getOctet(43) == 11));
     }
     return false;
   }
 
   public final int getPerturbationType() {
-    if (!isEnsemble()) return GribNumbers.UNDEFINED;
+    if (!isEnsemble())
+      return GribNumbers.UNDEFINED;
     switch (getCenter()) {
       case 7:
         return getOctet(42);
@@ -411,15 +418,19 @@ public final class Grib1SectionProductDefinition {
   }
 
   public final int getPerturbationNumber() {
-    if (!isEnsemble()) return GribNumbers.UNDEFINED;
+    if (!isEnsemble())
+      return GribNumbers.UNDEFINED;
 
     switch (getCenter()) {
       case 7: {
         int type = getOctet(42);
         int id = getOctet(43);
-        if (type == 1) return 0;
-        if (type == 2) return id;
-        if (type == 3) return 5 + id;
+        if (type == 1)
+          return 0;
+        if (type == 2)
+          return id;
+        if (type == 3)
+          return 5 + id;
       }
       case 98:
         return getOctet(50);

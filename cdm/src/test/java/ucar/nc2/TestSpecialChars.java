@@ -8,7 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.jdom2.Element;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -17,7 +16,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

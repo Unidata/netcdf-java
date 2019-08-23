@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -53,7 +53,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -87,18 +86,18 @@ public class Grib1CollectionPanel extends JPanel {
 
     AbstractButton xmlButt = BAMutil.makeButtcon("Information", "generate gds xml", false);
     xmlButt.addActionListener(e -> {
-        Formatter f = new Formatter();
-        generateGdsXml(f);
-        infoPopup2.setText(f.toString());
-        infoPopup2.gotoTop();
-        infoWindow2.show();
+      Formatter f = new Formatter();
+      generateGdsXml(f);
+      infoPopup2.setText(f.toString());
+      infoPopup2.gotoTop();
+      infoWindow2.show();
     });
     buttPanel.add(xmlButt);
 
     PopupMenu varPopup;
 
     param1BeanTable = new BeanTable(ParameterBean.class, (PreferencesExt) prefs.node("Param1Bean"), false,
-            "Grib1PDSVariables", "from Grib1Input.getRecords()", null);
+        "Grib1PDSVariables", "from Grib1Input.getRecords()", null);
     param1BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ParameterBean pb = (ParameterBean) param1BeanTable.getSelectedBean();
@@ -133,8 +132,8 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
-    record1BeanTable = new BeanTable(RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false,
-            "Grib1Record", "from Grib1Input.getRecords()", null);
+    record1BeanTable = new BeanTable(RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false, "Grib1Record",
+        "from Grib1Input.getRecords()", null);
     varPopup = new PopupMenu(record1BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Show Complete Grib1 Record(s)", new AbstractAction() {
@@ -211,7 +210,7 @@ public class Grib1CollectionPanel extends JPanel {
     });
 
     gds1Table = new BeanTable(Gds1Bean.class, (PreferencesExt) prefs.node("Gds1Bean"), false,
-            "Grib1GridDefinitionSection", "unique from Grib1Records", null);
+        "Grib1GridDefinitionSection", "unique from Grib1Records", null);
 
     varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
     varPopup.addAction("Show raw GDS", new AbstractAction() {
@@ -294,15 +293,19 @@ public class Grib1CollectionPanel extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split != null)
+      prefs.putInt("splitPos", split.getDividerLocation());
+    if (split2 != null)
+      prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
   public void showCollection(Formatter f) {
     if (dcm == null) {
-      if (spec == null) return;
+      if (spec == null)
+        return;
       dcm = scanCollection(spec, f);
-      if (dcm == null) return;
+      if (dcm == null)
+        return;
     }
 
     // just a list of the files
@@ -312,7 +315,7 @@ public class Grib1CollectionPanel extends JPanel {
         f.format("  %s%n", mfile.getPath());
       }
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
     }
 
     // divided by group
@@ -328,7 +331,8 @@ public class Grib1CollectionPanel extends JPanel {
       Gds1Bean gds = (Gds1Bean) o;
       Set<Integer> group = groups.get(gds.getHash());
       f.format("%nGroup %s %n", gds.getGridName());
-      if (group == null) continue;
+      if (group == null)
+        continue;
       for (Integer fileno : group) {
         f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
       }
@@ -337,11 +341,12 @@ public class Grib1CollectionPanel extends JPanel {
   }
 
   /*
-  <gribConfig datasetTypes="Collection Files" >
-2)   <gdsHash from="-2121584860" to="28944332"/>
-3)   <gdsHash to="28944332" groupName="KTAL"/>
-4)   <intervalMerge/>
-   </gribConfig> */
+   * <gribConfig datasetTypes="Collection Files" >
+   * 2) <gdsHash from="-2121584860" to="28944332"/>
+   * 3) <gdsHash to="28944332" groupName="KTAL"/>
+   * 4) <intervalMerge/>
+   * </gribConfig>
+   */
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
     List<Object> gdss = gds1Table.getBeans();
@@ -354,7 +359,7 @@ public class Grib1CollectionPanel extends JPanel {
     });
 
     for (Object bean : gdss) {
-      Gds1Bean gbean = (Gds1Bean)bean;
+      Gds1Bean gbean = (Gds1Bean) bean;
       f.format("  <gdsName hash='%d' groupName='%s'/>%n", gbean.gds.hashCode(), gbean.getGridName());
     }
     f.format("</gribConfig>%n");
@@ -363,31 +368,33 @@ public class Grib1CollectionPanel extends JPanel {
   public boolean writeIndex(Formatter f) throws IOException {
     return false;
     /*
-    MCollection dcm = scanCollection(spec, f);
-
-    if (fileChooser == null)
-      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-
-    String name = dcm.getCollectionName();
-    int pos = name.lastIndexOf('/');
-    if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + CollectionAbstract.NCX_SUFFIX);
-    String filename = fileChooser.chooseFilename(def);
-    if (filename == null) return false;
-    if (!filename.endsWith(CollectionAbstract.NCX_SUFFIX))
-      filename += CollectionAbstract.NCX_SUFFIX;
-    File idxFile = new File(filename);
-
-    GribCdmIndex2.updateGribCollection(true, idxFile, (CollectionManager) dcm, logger);
-    return true;  */
+     * MCollection dcm = scanCollection(spec, f);
+     * 
+     * if (fileChooser == null)
+     * fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+     * 
+     * String name = dcm.getCollectionName();
+     * int pos = name.lastIndexOf('/');
+     * if (pos < 0) pos = name.lastIndexOf('\\');
+     * if (pos > 0) name = name.substring(pos + 1);
+     * File def = new File(dcm.getRoot(), name + CollectionAbstract.NCX_SUFFIX);
+     * String filename = fileChooser.chooseFilename(def);
+     * if (filename == null) return false;
+     * if (!filename.endsWith(CollectionAbstract.NCX_SUFFIX))
+     * filename += CollectionAbstract.NCX_SUFFIX;
+     * File idxFile = new File(filename);
+     * 
+     * GribCdmIndex2.updateGribCollection(true, idxFile, (CollectionManager) dcm, logger);
+     * return true;
+     */
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////
 
 
   private static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
-    return Grib1Variable.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
+    return Grib1Variable.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef,
+        FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
   }
 
   private void compare(RecordBean bean1, RecordBean bean2, Formatter f) {
@@ -512,15 +519,14 @@ public class Grib1CollectionPanel extends JPanel {
       StringWriter sw = new StringWriter(10000);
       e.printStackTrace(new PrintWriter(sw));
       f.format("%s", sw.toString());
-      if (dc != null) dc.close();
+      if (dc != null)
+        dc.close();
       return null;
     }
   }
 
-  private void processGribFile(MFile mfile, int fileno,
-                               Map<Grib1Variable, ParameterBean> pdsSet,
-                               Map<Integer, Grib1SectionGridDefinition> gdsSet,
-                               List<ParameterBean> params, Formatter f) throws IOException {
+  private void processGribFile(MFile mfile, int fileno, Map<Grib1Variable, ParameterBean> pdsSet,
+      Map<Integer, Grib1SectionGridDefinition> gdsSet, List<ParameterBean> params, Formatter f) throws IOException {
 
     Grib1Index index = new Grib1Index();
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
@@ -539,7 +545,8 @@ public class Grib1CollectionPanel extends JPanel {
         cust = Grib1Customizer.factory(gr, null);
       }
 
-      Grib1Variable id = new Grib1Variable(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
+      Grib1Variable id = new Grib1Variable(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef,
+          FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
       ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new ParameterBean(gr);
@@ -573,7 +580,8 @@ public class Grib1CollectionPanel extends JPanel {
     Grib1RecordScanner reader = new Grib1RecordScanner(raf);
     while (reader.hasNext()) {
       ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-      if (gr == null) break;
+      if (gr == null)
+        break;
 
       if (cust == null) { // first record
         cust = Grib1Customizer.factory(gr, null);
@@ -609,8 +617,8 @@ public class Grib1CollectionPanel extends JPanel {
     int result = 17;
     result += result * 37 + pds.getParameterNumber();
     result *= result * 37 + pds.getLevelType();
-    //if (pds.isEnsemble())
-    //  result *= result * 37 + 1;
+    // if (pds.isEnsemble())
+    // result *= result * 37 + 1;
     return result;
   }
 
@@ -662,7 +670,8 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("Grib1GDS hash = %s%n", gds.hashCode());
     f.format("Grib1GDS = %s", gds);
     GdsHorizCoordSys gdsHc = gds.makeHorizCoordSys();
-    if (gdsHc == null) return;
+    if (gdsHc == null)
+      return;
     f.format("%n%n%s", gdsHc);
     ProjectionImpl proj = gdsHc.proj;
     f.format("%n%nProjection %s%n", proj.getName());
@@ -682,8 +691,7 @@ public class Grib1CollectionPanel extends JPanel {
     Grib1ParamTime ptime;
 
     // no-arg constructor
-    public ParameterBean() {
-    }
+    public ParameterBean() {}
 
     public ParameterBean(Grib1Record r) {
       pds = r.getPDSsection();
@@ -693,7 +701,8 @@ public class Grib1CollectionPanel extends JPanel {
       records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = r.getGDSsection().getGDS().hashCode();
-      cdmHash =  Grib1Variable.cdmVariableHash(cust, r, gdsHash, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
+      cdmHash = Grib1Variable.cdmVariableHash(cust, r, gdsHash, FeatureCollectionConfig.useTableVersionDef,
+          FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
     }
 
     void addRecord(Grib1Record r) {
@@ -725,7 +734,8 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getName() {
-      if (param == null) return null;
+      if (param == null)
+        return null;
       return Grib1Iosp.makeVariableName(cust, config.gribConfig, pds);
     }
 
@@ -745,9 +755,11 @@ public class Grib1CollectionPanel extends JPanel {
       return pds.getGenProcess();
     }
 
-    /* public String getSubcenter() {
-      return cust.getSubCenterName(pds.getSubCenter());
-    } */
+    /*
+     * public String getSubcenter() {
+     * return cust.getSubCenterName(pds.getSubCenter());
+     * }
+     */
 
     public final String getLevelName() {
       Grib1ParamLevel plevel = cust.getParamLevel(pds);
@@ -774,8 +786,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     // no-arg constructor
 
-    public RecordBean() {
-    }
+    public RecordBean() {}
 
     public RecordBean(Grib1Record m) {
       this.gr = m;
@@ -794,7 +805,7 @@ public class Grib1CollectionPanel extends JPanel {
       try {
         return GribUtils.getCalendarPeriod(pds.getTimeUnit()).toString();
       } catch (UnsupportedOperationException e) {
-        return "Unknown Time Unit = "+ pds.getTimeUnit();
+        return "Unknown Time Unit = " + pds.getTimeUnit();
       }
     }
 
@@ -816,7 +827,7 @@ public class Grib1CollectionPanel extends JPanel {
       } else {
         timeCoord = ptime.getForecastTime();
       }
-      return unit.makeCalendarDate( period.getValue() * timeCoord);
+      return unit.makeCalendarDate(period.getValue() * timeCoord);
     }
 
     public int getTimeValue1() {
@@ -834,13 +845,13 @@ public class Grib1CollectionPanel extends JPanel {
     public String getTimeCoord() {
       if (ptime.isInterval()) {
         int[] intv = ptime.getInterval();
-        return intv[0] + "-" + intv[1] + "("+ptime.getIntervalSize()+")";
+        return intv[0] + "-" + intv[1] + "(" + ptime.getIntervalSize() + ")";
       }
       return Integer.toString(ptime.getForecastTime());
     }
 
     public String getNIncludeMiss() {
-      return pds.getNincluded()+" / "+pds.getNmissing();
+      return pds.getNincluded() + " / " + pds.getNmissing();
     }
 
     public int getPertNum() {
@@ -886,8 +897,7 @@ public class Grib1CollectionPanel extends JPanel {
     Grib1Gds gds;
     // no-arg constructor
 
-    public Gds1Bean() {
-    }
+    public Gds1Bean() {}
 
     public Gds1Bean(Grib1SectionGridDefinition m) {
       this.gdss = m;

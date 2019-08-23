@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
- package ucar.unidata.geoloc.projection.sat;
+package ucar.unidata.geoloc.projection.sat;
 
 import java.lang.*;
 
@@ -24,18 +24,18 @@ public class GEOSTransform {
   private static final double DEG_TO_RAD = Math.PI / 180.0;
   private static final double RAD_TO_DEG = 180.0 / Math.PI;
 
-  private static final  double h_msg = 42164.0;
-  private static final  double h_goesr = 42164.16;
+  private static final double h_msg = 42164.0;
+  private static final double h_goesr = 42164.16;
 
   //////////////////////////////////////
 
-    //-  GRS80 parameters (GOES-R) default, can be changed via the ctrs ---------
-  double r_pol = 6356.7523;      // semi-minor axis (polar radius km)
-  double r_eq = 6378.1370;      // semi-major axis (equatorial radius km)
+  // - GRS80 parameters (GOES-R) default, can be changed via the ctrs ---------
+  double r_pol = 6356.7523; // semi-minor axis (polar radius km)
+  double r_eq = 6378.1370; // semi-major axis (equatorial radius km)
 
-  private  double f = 1.0 / 298.257222101;  // flattening
-  private  double fp = 1.0 / ((1.0 - f) * (1.0 - f));
-  private  double h = h_goesr; // Geostationary Orbit Radius (spacecraft to barycenter distance) (km)
+  private double f = 1.0 / 298.257222101; // flattening
+  private double fp = 1.0 / ((1.0 - f) * (1.0 - f));
+  private double h = h_goesr; // Geostationary Orbit Radius (spacecraft to barycenter distance) (km)
 
   double d;
 
@@ -73,18 +73,14 @@ public class GEOSTransform {
     }
 
     if (geoid == null) {
-      throw new IllegalArgumentException("GEOSTransform unrecognized scan_geom="+scan_geom+" geoidID="+geoidID);
+      throw new IllegalArgumentException("GEOSTransform unrecognized scan_geom=" + scan_geom + " geoidID=" + geoidID);
     }
 
     init(subLonDegrees, scan_geom, geoid);
   }
 
-  public GEOSTransform(double subLonDegrees,
-                       double perspective_point_height,
-                       double semi_minor_axis,
-                       double semi_major_axis,
-                       double inverse_flattening,
-                       String sweep_angle_axis) {
+  public GEOSTransform(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
+      double semi_major_axis, double inverse_flattening, String sweep_angle_axis) {
 
     Geoid geoid;
     if (Double.isNaN(inverse_flattening)) {
@@ -98,11 +94,8 @@ public class GEOSTransform {
     init(subLonDegrees, scan_geom, geoid, perspective_point_height);
   }
 
-  public GEOSTransform(double subLonDegrees,
-                       double perspective_point_height,
-                       double semi_minor_axis,
-                       double semi_major_axis,
-                       String sweep_angle_axis) {
+  public GEOSTransform(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
+      double semi_major_axis, String sweep_angle_axis) {
     Geoid geoid = new Geoid(semi_minor_axis, semi_major_axis);
 
     scan_geom = sweepAngleAxisToScanGeom(sweep_angle_axis);
@@ -162,20 +155,21 @@ public class GEOSTransform {
 
     double geocentric_lat = Math.atan(((r_pol * r_pol) / (r_eq * r_eq)) * Math.tan(geographic_lat));
 
-    double r_earth = r_pol / Math.sqrt(1.0 - ((r_eq * r_eq - r_pol * r_pol) / (r_eq * r_eq)) * Math.cos(geocentric_lat) * Math.cos(geocentric_lat));
+    double r_earth = r_pol / Math.sqrt(
+        1.0 - ((r_eq * r_eq - r_pol * r_pol) / (r_eq * r_eq)) * Math.cos(geocentric_lat) * Math.cos(geocentric_lat));
 
     double r_1 = h - r_earth * Math.cos(geocentric_lat) * Math.cos(geographic_lon - sub_lon);
     double r_2 = -r_earth * Math.cos(geocentric_lat) * Math.sin(geographic_lon - sub_lon);
     double r_3 = r_earth * Math.sin(geocentric_lat);
 
     if (r_1 > h) { // often two geoid intersect points, use the closer one.
-      return new double[]{Double.NaN, Double.NaN};
+      return new double[] {Double.NaN, Double.NaN};
     }
 
     double lamda_sat = Double.NaN;
     double theta_sat = Double.NaN;
 
-    if (scan_geom.equals(GEOS)) { // GEOS (eg. SEVIRI, MSG)  CGMS 03, 4.4.3.2, Normalized Geostationary Projection
+    if (scan_geom.equals(GEOS)) { // GEOS (eg. SEVIRI, MSG) CGMS 03, 4.4.3.2, Normalized Geostationary Projection
       lamda_sat = Math.atan(-r_2 / r_1);
       theta_sat = Math.asin(r_3 / Math.sqrt(r_1 * r_1 + r_2 * r_2 + r_3 * r_3));
     } else if (scan_geom.equals(GOES)) { // GOES (eg. GOES-R ABI)
@@ -183,7 +177,7 @@ public class GEOSTransform {
       theta_sat = Math.atan(r_3 / r_1);
     }
 
-    return new double[]{lamda_sat, theta_sat};
+    return new double[] {lamda_sat, theta_sat};
   }
 
   /**
@@ -206,7 +200,7 @@ public class GEOSTransform {
     double c2 = (Math.cos(y) * Math.cos(y) + fp * Math.sin(y) * Math.sin(y)) * d;
 
     if (c1 < c2) {
-      return new double[]{Double.NaN, Double.NaN};
+      return new double[] {Double.NaN, Double.NaN};
     }
 
     double s_d = Math.sqrt(c1 - c2);
@@ -226,10 +220,12 @@ public class GEOSTransform {
     double latDegrees = RAD_TO_DEG * geographic_lat;
 
     // force output longitude to -180 to 180 range
-    if (lonDegrees < -180.0) lonDegrees += 360.0;
-    if (lonDegrees > 180.0) lonDegrees -= 360.0;
+    if (lonDegrees < -180.0)
+      lonDegrees += 360.0;
+    if (lonDegrees > 180.0)
+      lonDegrees -= 360.0;
 
-    return new double[]{lonDegrees, latDegrees};
+    return new double[] {lonDegrees, latDegrees};
   }
 
   /**
@@ -240,22 +236,23 @@ public class GEOSTransform {
     double theta_geos = Math.asin(Math.sin(theta_goes) * Math.cos(lamda_goes));
     double lamda_geos = Math.atan(Math.tan(lamda_goes) / Math.cos(theta_goes));
 
-    return new double[]{lamda_geos, theta_geos};
+    return new double[] {lamda_geos, theta_geos};
   }
 
 
   /**
    * Transform fractional FGF coordinates to (longitude, latitude).
    *
-   * @param fgf_x    fractional FGF coordinate, zero-based
-   * @param fgf_y    fractional FGF coordinate, zero-based
-   * @param scale_x  scaleFactor from the x coordinate variable
+   * @param fgf_x fractional FGF coordinate, zero-based
+   * @param fgf_y fractional FGF coordinate, zero-based
+   * @param scale_x scaleFactor from the x coordinate variable
    * @param offset_x addOffset from the x coordinate variable
-   * @param scale_y  scaleFactor from the y coordinate variable
+   * @param scale_y scaleFactor from the y coordinate variable
    * @param offset_y addOffset from the y coordinate variable
    * @return (Longitude, Latitude), units: degrees
    */
-  public double[] FGFtoEarth(double fgf_x, double fgf_y, double scale_x, double offset_x, double scale_y, double offset_y) {
+  public double[] FGFtoEarth(double fgf_x, double fgf_y, double scale_x, double offset_x, double scale_y,
+      double offset_y) {
     double[] xy = FGFtoSat(fgf_x, fgf_y, scale_x, offset_x, scale_y, offset_y);
     return satToEarth(xy[0], xy[1]);
   }
@@ -263,32 +260,34 @@ public class GEOSTransform {
   /**
    * Transform fractional FGF coordinates to (lamda, theta) radians.
    *
-   * @param fgf_x    fractional FGF coordinate, zero-based
-   * @param fgf_y    fractional FGF coordinate, zero-based
-   * @param scale_x  scaleFactor from the x coordinate variable
+   * @param fgf_x fractional FGF coordinate, zero-based
+   * @param fgf_y fractional FGF coordinate, zero-based
+   * @param scale_x scaleFactor from the x coordinate variable
    * @param offset_x addOffset from the x coordinate variable
-   * @param scale_y  scaleFactor from the y coordinate variable
+   * @param scale_y scaleFactor from the y coordinate variable
    * @param offset_y addOffset from the y coordinate variable
    * @return (lamda, theta), units: radians
    */
-  public double[] FGFtoSat(double fgf_x, double fgf_y, double scale_x, double offset_x, double scale_y, double offset_y) {
+  public double[] FGFtoSat(double fgf_x, double fgf_y, double scale_x, double offset_x, double scale_y,
+      double offset_y) {
     double x = fgf_x * scale_x + offset_x;
     double y = fgf_y * scale_y + offset_y;
 
-    return new double[]{x, y};
+    return new double[] {x, y};
   }
 
   /**
    * Transform integer FGF coordinates to (longitude, latitude) of pixel center
    * The (i,j) pixel, zero-based, refers to the pixel center.
    *
-   * @param scale_x  scaleFactor from the x coordinate variable
+   * @param scale_x scaleFactor from the x coordinate variable
    * @param offset_x addOffset from the x coordinate variable
-   * @param scale_y  scaleFactor from the y coordinate variable
+   * @param scale_y scaleFactor from the y coordinate variable
    * @param offset_y addOffset from the y coordinate variable
    * @return (Longitude, Latitude), units: degrees, of FGF (i,j) pixel center
    */
-  public double[] elemLineToEarth(int elem, int line, double scale_x, double offset_x, double scale_y, double offset_y) {
+  public double[] elemLineToEarth(int elem, int line, double scale_x, double offset_x, double scale_y,
+      double offset_y) {
     return FGFtoEarth((double) elem, (double) line, scale_x, offset_x, scale_y, offset_y);
   }
 
@@ -297,13 +296,14 @@ public class GEOSTransform {
    *
    * @param geographic_lon Longitude, units: degrees
    * @param geographic_lat Latitude, units: degrees
-   * @param scale_x        scaleFactor from the x coordinate variable
-   * @param offset_x       addOffset from the x coordinate variable
-   * @param scale_y        scaleFactor from the y coordinate variable
-   * @param offset_y       addOffset from the y coordinate variable
+   * @param scale_x scaleFactor from the x coordinate variable
+   * @param offset_x addOffset from the x coordinate variable
+   * @param scale_y scaleFactor from the y coordinate variable
+   * @param offset_y addOffset from the y coordinate variable
    * @return fractional fgf coordinates
    */
-  public double[] earthToFGF(double geographic_lon, double geographic_lat, double scale_x, double offset_x, double scale_y, double offset_y) {
+  public double[] earthToFGF(double geographic_lon, double geographic_lat, double scale_x, double offset_x,
+      double scale_y, double offset_y) {
     double[] xy = earthToSat(geographic_lon, geographic_lat);
     return SatToFGF(xy[0], xy[1], scale_x, offset_x, scale_y, offset_y);
   }
@@ -311,30 +311,32 @@ public class GEOSTransform {
   /**
    * Transform pixel center Earth coordinates (lon,lat) to integer FGF coordinates.
    *
-   * @param scale_x  scaleFactor from the x coordinate variable
+   * @param scale_x scaleFactor from the x coordinate variable
    * @param offset_x addOffset from the x coordinate variable
-   * @param scale_y  scaleFactor from the y coordinate variable
+   * @param scale_y scaleFactor from the y coordinate variable
    * @param offset_y addOffset from the y coordinate variable
    */
-  public int[] earthToElemLine(double geographic_lon, double geographic_lat, double scale_x, double offset_x, double scale_y, double offset_y) {
+  public int[] earthToElemLine(double geographic_lon, double geographic_lat, double scale_x, double offset_x,
+      double scale_y, double offset_y) {
     double[] fgf = earthToFGF(geographic_lon, geographic_lat, scale_x, offset_x, scale_y, offset_y);
     int elem = (int) Math.floor(fgf[0] + 0.5);
     int line = (int) Math.floor(fgf[1] + 0.5);
-    return new int[]{elem, line};
+    return new int[] {elem, line};
   }
 
   /**
    * Transform (lamda, theta) in radians to fractional FGF coordinates.
    *
-   * @param scale_x  scaleFactor from the x coordinate variable
+   * @param scale_x scaleFactor from the x coordinate variable
    * @param offset_x addOffset from the x coordinate variable
-   * @param scale_y  scaleFactor from the y coordinate variable
+   * @param scale_y scaleFactor from the y coordinate variable
    * @param offset_y addOffset from the y coordinate variable
    */
-  public double[] SatToFGF(double lamda, double theta, double scale_x, double offset_x, double scale_y, double offset_y) {
+  public double[] SatToFGF(double lamda, double theta, double scale_x, double offset_x, double scale_y,
+      double offset_y) {
     double fgf_x = (lamda - offset_x) / scale_x;
     double fgf_y = (theta - offset_y) / scale_y;
-    return new double[]{fgf_x, fgf_y};
+    return new double[] {fgf_x, fgf_y};
   }
 
   /**
@@ -371,12 +373,15 @@ public class GEOSTransform {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     GEOSTransform that = (GEOSTransform) o;
 
-    if (Double.compare(that.sub_lon, sub_lon) != 0) return false;
+    if (Double.compare(that.sub_lon, sub_lon) != 0)
+      return false;
 
     return scan_geom.equals(that.scan_geom);
   }
@@ -393,18 +398,17 @@ public class GEOSTransform {
 
   /**
    * Earth Geoid definitions
-   * Note:  CGMS Doc No CGMS 03, Issue 2.6 states the following geoid parameters:
+   * Note: CGMS Doc No CGMS 03, Issue 2.6 states the following geoid parameters:
    * r_pol = 6356.5838 km
-   * r_eq  = 6378.1690 km
+   * r_eq = 6378.1690 km
    */
 
   class Geoid {
-    double r_pol;  // semi-minor axis (polar radius km)
-    double r_eq;   // semi-major axis (equatorial radius km)
-    double f;      // flattening
+    double r_pol; // semi-minor axis (polar radius km)
+    double r_eq; // semi-major axis (equatorial radius km)
+    double f; // flattening
 
-    public Geoid() {
-    }
+    public Geoid() {}
 
     public Geoid(double r_pol, double r_eq, double invf) {
       this.r_pol = r_pol;
@@ -421,18 +425,18 @@ public class GEOSTransform {
   }
 
   class GeoidWGS84 extends Geoid {
-    //-  WGS84 parameters  ------------------------------------------
+    // - WGS84 parameters ------------------------------------------
     public GeoidWGS84() {
-      r_pol = 6356.7523;  // kilometers
+      r_pol = 6356.7523; // kilometers
       r_eq = 6378.1370;
       f = 1.0 / 298.257223563;
     }
   }
 
   class GeoidGRS80 extends Geoid {
-    //-  GRS80 parameters (GOES-R) --------------------------------------
+    // - GRS80 parameters (GOES-R) --------------------------------------
     public GeoidGRS80() {
-      r_pol = 6356.7523;  // kilometers
+      r_pol = 6356.7523; // kilometers
       r_eq = 6378.1370;
       f = 1.0 / 298.257222101;
     }

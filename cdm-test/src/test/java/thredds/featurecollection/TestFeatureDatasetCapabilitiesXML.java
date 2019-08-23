@@ -26,7 +26,6 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,15 +46,15 @@ import java.util.List;
 public class TestFeatureDatasetCapabilitiesXML {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir+"ft/point/ship/nc/Surface_Buoy_20090920_0000.nc",
-            "http://thredds.ucar.edu/thredds/cdmremote/idd/buoy/collection", false}
-    );
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ship/nc/Surface_Buoy_20090920_0000.nc",
+        "http://thredds.ucar.edu/thredds/cdmremote/idd/buoy/collection", false});
 
     return result;
   }
@@ -75,8 +74,8 @@ public class TestFeatureDatasetCapabilitiesXML {
     FeatureDatasetCapabilitiesWriter capWriter;
 
     try (Formatter formatter = new Formatter()) {
-      FeatureDatasetPoint fdp = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-              FeatureType.ANY_POINT, location, null, formatter);
+      FeatureDatasetPoint fdp =
+          (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null, formatter);
       // Calculates lat/lon bounding box and date range. If we skip this step, FeatureDatasetCapabilitiesWriter
       // will not include "TimeSpan" and "LatLonBox" in the document.
       fdp.calcBounds(formatter);
@@ -92,7 +91,7 @@ public class TestFeatureDatasetCapabilitiesXML {
     logger.debug("{} written", f.getPath());
 
     // round trip
-    Document doc = capWriter.readCapabilitiesDocument( new FileInputStream(f));
+    Document doc = capWriter.readCapabilitiesDocument(new FileInputStream(f));
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     String xml = fmt.outputString(doc);
     logger.debug(xml);
@@ -107,11 +106,11 @@ public class TestFeatureDatasetCapabilitiesXML {
     logger.debug("CalendarDateUnit= {}", cdu);
     logger.debug("Calendar= {}", cdu.getCalendar());
 
-    CalendarDateRange cd = FeatureDatasetCapabilitiesWriter.getTimeSpan(doc);  // Looks for "TimeSpan" in doc.
+    CalendarDateRange cd = FeatureDatasetCapabilitiesWriter.getTimeSpan(doc); // Looks for "TimeSpan" in doc.
     Assert.assertNotNull("CalendarDateRange", cd);
     logger.debug("CalendarDateRange= {}", cd);
 
-    LatLonRect bbox = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc);  // Looks for "LatLonBox" in doc.
+    LatLonRect bbox = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc); // Looks for "LatLonBox" in doc.
     Assert.assertNotNull("bbox", bbox);
     logger.debug("LatLonRect= {}", bbox);
   }

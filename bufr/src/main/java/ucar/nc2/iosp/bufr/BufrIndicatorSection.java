@@ -5,7 +5,6 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 

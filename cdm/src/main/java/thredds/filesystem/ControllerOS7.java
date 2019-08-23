@@ -8,7 +8,6 @@ package thredds.filesystem;
 import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.nio.file.*;
@@ -27,8 +26,7 @@ public class ControllerOS7 implements MController {
 
   ////////////////////////////////////////
 
-  public ControllerOS7() {
-  }
+  public ControllerOS7() {}
 
   @Override
   public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
@@ -43,8 +41,9 @@ public class ControllerOS7 implements MController {
     }
 
     Path cd = Paths.get(path);
-    if (!Files.exists(cd)) return null;
-    return new MFileIterator(cd, new CollectionFilter(mc));  // removes subdirs
+    if (!Files.exists(cd))
+      return null;
+    return new MFileIterator(cd, new CollectionFilter(mc)); // removes subdirs
   }
 
   public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
@@ -52,8 +51,7 @@ public class ControllerOS7 implements MController {
   }
 
 
-  public void close() {
-  } // NOOP
+  public void close() {} // NOOP
 
 
   ////////////////////////////////////////////////////////////
@@ -90,7 +88,7 @@ public class ControllerOS7 implements MController {
       try {
         return new MFileOS7(dirStream.next());
       } catch (IOException e) {
-        e.printStackTrace();  // LOOK we should pass this exception up
+        e.printStackTrace(); // LOOK we should pass this exception up
         throw new RuntimeException(e);
       }
     }
@@ -145,11 +143,8 @@ public class ControllerOS7 implements MController {
 
     @Override
     public String toString() {
-      String sb = "PrintFiles{" + "countFiles=" + countFiles
-          + ", countDirs=" + countDirs
-          + ", countOther=" + countOther
-          + ", countSyms=" + countSyms
-          + '}';
+      String sb = "PrintFiles{" + "countFiles=" + countFiles + ", countDirs=" + countDirs + ", countOther=" + countOther
+          + ", countSyms=" + countSyms + '}';
       return sb;
     }
   }

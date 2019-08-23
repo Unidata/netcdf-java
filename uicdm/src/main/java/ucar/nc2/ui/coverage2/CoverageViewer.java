@@ -20,7 +20,6 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.Debug;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Color;
@@ -60,7 +59,7 @@ public class CoverageViewer extends JPanel {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageViewer.class);
 
   // constants
-  private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec
+  private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250; // quarter sec
   private static final String LastMapAreaName = "LastMapArea";
   private static final String LastProjectionName = "LastProjection";
   private static final String LastDatasetName = "LastDataset";
@@ -75,7 +74,7 @@ public class CoverageViewer extends JPanel {
   // UI components
   private ColorScale colorScale;
   private ColorScale.Panel colorScalePanel;
-  //private VertPanel vertPanel;
+  // private VertPanel vertPanel;
   private List<Chooser> choosers;
   private SuperComboBox fieldChooser, levelChooser, timeChooser, ensembleChooser, runtimeChooser;
   private JLabel dataValueLabel, positionLabel;
@@ -84,12 +83,12 @@ public class CoverageViewer extends JPanel {
 
   // the main components
   // private GridController controller;
-  //private GeoGridTable dsTable;
+  // private GeoGridTable dsTable;
 
   // UI components that need global scope
   private TextHistoryPane datasetInfoTA, ncmlTA;
   private JPanel drawingPanel;
-  //private JSplitPane splitDraw;
+  // private JSplitPane splitDraw;
   private JComboBox csDataMinMax;
   private PopupMenu mapBeanMenu;
   private JSpinner strideSpinner;
@@ -100,7 +99,7 @@ public class CoverageViewer extends JPanel {
 
   // the various managers and dialog boxes
   private ProjectionManager projManager;
-  //private ColorScaleManager csManager;
+  // private ColorScaleManager csManager;
   private IndependentWindow infoWindow = null;
   private IndependentWindow ncmlWindow = null;
   private IndependentWindow gtWindow = null;
@@ -115,15 +114,16 @@ public class CoverageViewer extends JPanel {
   // actions
   private AbstractAction redrawAction;
   private AbstractAction showDatasetInfoAction;
-  //private AbstractAction showNcMLAction;
-  //private AbstractAction showGridTableAction;
-  //private AbstractAction showGridDatasetInfoAction;
-  //private AbstractAction showNetcdfDatasetAction;
+  // private AbstractAction showNcMLAction;
+  // private AbstractAction showGridTableAction;
+  // private AbstractAction showGridDatasetInfoAction;
+  // private AbstractAction showNetcdfDatasetAction;
   private AbstractAction minmaxHorizAction, minmaxLogAction, minmaxHoldAction;
   private AbstractAction fieldLoopAction, levelLoopAction, timeLoopAction, runtimeLoopAction;
   private AbstractAction chooseProjectionAction, saveCurrentProjectionAction;
 
-  private AbstractAction dataProjectionAction, drawBBAction, helpAction, showGridAction, showContoursAction, showContourLabelsAction, showWindsAction;
+  private AbstractAction dataProjectionAction, drawBBAction, helpAction, showGridAction, showContoursAction,
+      showContourLabelsAction, showWindsAction;
   private AbstractAction drawHorizAction, drawVertAction;
 
   // data components
@@ -148,10 +148,10 @@ public class CoverageViewer extends JPanel {
   private int mapBeanCount = 0;
 
   // rendering
-  private AffineTransform atI = new AffineTransform();  // identity transform
+  private AffineTransform atI = new AffineTransform(); // identity transform
   private ucar.nc2.ui.util.Renderer mapRenderer = null;
   private CoverageRenderer coverageRenderer;
-  //private WindRenderer renderWind;
+  // private WindRenderer renderWind;
   private javax.swing.Timer redrawTimer;
 
   // debugging
@@ -177,15 +177,15 @@ public class CoverageViewer extends JPanel {
       choosers.add(new Chooser("runtime", runtimeChooser, false));
 
       // gridTable
-      //gridTable = new GridTable("field");
-      //gtWindow = new IndependentWindow("Grid Table Information", BAMutil.getImage( "GDVs"), gridTable.getPanel());
+      // gridTable = new GridTable("field");
+      // gtWindow = new IndependentWindow("Grid Table Information", BAMutil.getImage( "GDVs"), gridTable.getPanel());
 
-      //PreferencesExt dsNode = (PreferencesExt) pstore.node("DatasetTable");
+      // PreferencesExt dsNode = (PreferencesExt) pstore.node("DatasetTable");
       // dsTable = new GeoGridTable(dsNode, true);
-      //dsDialog = dsTable.makeDialog(root, "NetcdfDataset Info", false);
-      //dsDialog.setIconImage( BAMutil.getImage( "GDVs"));
-      //Rectangle bounds = (Rectangle) dsNode.getBean("DialogBounds", new Rectangle(50, 50, 800, 450));
-      //dsDialog.setBounds( bounds);
+      // dsDialog = dsTable.makeDialog(root, "NetcdfDataset Info", false);
+      // dsDialog.setIconImage( BAMutil.getImage( "GDVs"));
+      // Rectangle bounds = (Rectangle) dsNode.getBean("DialogBounds", new Rectangle(50, 50, 800, 450));
+      // dsDialog.setBounds( bounds);
 
       // colorscale
       Object bean = store.getBean(ColorScaleName, null);
@@ -198,8 +198,8 @@ public class CoverageViewer extends JPanel {
       csDataMinMax = new JComboBox(ColorScale.MinMaxType.values());
       csDataMinMax.setToolTipText("ColorScale Min/Max setting");
       csDataMinMax.addActionListener(e -> {
-          coverageRenderer.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
-          redrawLater();
+        coverageRenderer.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
+        redrawLater();
       });
 
       // renderer
@@ -209,8 +209,8 @@ public class CoverageViewer extends JPanel {
 
       strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
       strideSpinner.addChangeListener(e -> {
-          Integer val = (Integer) strideSpinner.getValue();
-          coverageRenderer.setHorizStride(val);
+        Integer val = (Integer) strideSpinner.getValue();
+        coverageRenderer.setHorizStride(val);
       });
 
       makeActionsDataset();
@@ -255,7 +255,7 @@ public class CoverageViewer extends JPanel {
       navPanel.setLayout(new FlowLayout());
       ProjectionRect ma = (ProjectionRect) store.getBean(LastMapAreaName, null);
       if (ma != null)
-        navPanel.setMapArea( ma);
+        navPanel.setMapArea(ma);
 
       navToolbar = navPanel.getNavToolBar();
       moveToolbar = navPanel.getMoveToolBar();
@@ -273,11 +273,11 @@ public class CoverageViewer extends JPanel {
       // BAMutil.addActionToContainer(toolPanel, showContourLabelsAction);
       BAMutil.addActionToContainer(toolPanel, redrawAction);
 
-      //  vertical split
-      //vertPanel = new VertPanel();
-      //splitDraw = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panz, vertPanel);
-      //int divLoc = store.getInt( "vertSplit", 2*defaultHeight/3);
-      //splitDraw.setDividerLocation(divLoc);
+      // vertical split
+      // vertPanel = new VertPanel();
+      // splitDraw = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panz, vertPanel);
+      // int divLoc = store.getInt( "vertSplit", 2*defaultHeight/3);
+      // splitDraw.setDividerLocation(divLoc);
       drawingPanel = new JPanel(new BorderLayout()); // filled later
 
       // status panel
@@ -297,7 +297,7 @@ public class CoverageViewer extends JPanel {
       westPanel.add(csDataMinMax, BorderLayout.NORTH);
 
       JPanel northPanel = new JPanel();
-      //northPanel.setLayout( new BoxLayout(northPanel, BoxLayout.Y_AXIS));
+      // northPanel.setLayout( new BoxLayout(northPanel, BoxLayout.Y_AXIS));
       northPanel.setLayout(new BorderLayout());
       northPanel.add(datasetNameLabel, BorderLayout.NORTH);
       northPanel.add(toolPanel, BorderLayout.SOUTH);
@@ -315,25 +315,28 @@ public class CoverageViewer extends JPanel {
       if (project != null)
         setProjection(project);
 
-            // other components
-      //geotiffFileChooser = new FileManager( parent);
-      //geotiffFileChooser.setCurrentDirectory( store.get(GEOTIFF_FILECHOOSER_DEFAULTDIR, "."));
+      // other components
+      // geotiffFileChooser = new FileManager( parent);
+      // geotiffFileChooser.setCurrentDirectory( store.get(GEOTIFF_FILECHOOSER_DEFAULTDIR, "."));
 
-     /* gridPP = new PrefPanel("GridView", (PreferencesExt) store.node("GridViewPrefs"));
-     gridUrlIF = gridPP.addTextComboField("url", "Gridded Data URL", null, 10, false);
-     gridPP.addButton( BAMutil.makeButtconFromAction( chooseLocalDatasetAction ));
-     gridPP.finish(true, BorderLayout.EAST);
-     gridPP.addActionListener(new ActionListener() {
-       public void actionPerformed(ActionEvent e) {
-         InvDatasetImpl ds = new InvDatasetImpl( gridUrlIF.getText(), thredds.catalog.DataType.GRID, ServiceType.NETCDF);
-         setDataset( ds);
-       }
-     }); */
+      /*
+       * gridPP = new PrefPanel("GridView", (PreferencesExt) store.node("GridViewPrefs"));
+       * gridUrlIF = gridPP.addTextComboField("url", "Gridded Data URL", null, 10, false);
+       * gridPP.addButton( BAMutil.makeButtconFromAction( chooseLocalDatasetAction ));
+       * gridPP.finish(true, BorderLayout.EAST);
+       * gridPP.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent e) {
+       * InvDatasetImpl ds = new InvDatasetImpl( gridUrlIF.getText(), thredds.catalog.DataType.GRID,
+       * ServiceType.NETCDF);
+       * setDataset( ds);
+       * }
+       * });
+       */
 
       // redraw timer
       redrawTimer = new javax.swing.Timer(0, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          SwingUtilities.invokeLater(new Runnable() {  // invoke in event thread
+          SwingUtilities.invokeLater(new Runnable() { // invoke in event thread
             public void run() {
               draw(false);
             }
@@ -355,39 +358,41 @@ public class CoverageViewer extends JPanel {
   // actions that control the dataset
   private void makeActionsDataset() {
 
-    /*  choose local dataset
-    AbstractAction chooseLocalDatasetAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        String filename = fileChooser.chooseFilename();
-        if (filename == null) return;
-
-        Dataset invDs;
-        try {     // DatasetNode parent, String name, Map<String, Object> flds, List< AccessBuilder > accessBuilders, List< DatasetBuilder > datasetBuilders
-          Map<String, Object> flds = new HashMap<>();
-          flds.put(Dataset.FeatureType, FeatureType.GRID.toString());
-          flds.put(Dataset.ServiceName, ServiceType.File.toString());  // bogus
-          invDs = new Dataset(null, filename, flds, null, null);
-          setDataset(invDs);
-
-        } catch (Exception ue) {
-          JOptionPane.showMessageDialog(CoverageDisplay.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
-          ue.printStackTrace();
-        }
-      }
-    };
-    BAMutil.setActionProperties(chooseLocalDatasetAction, "FileChooser", "open Local dataset...", false, 'L', -1);
-
-    /* saveDatasetAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        String fname = controller.getDatasetName();
-        if (fname != null) {
-          savedDatasetList.add( fname);
-          BAMutil.addActionToMenu( savedDatasetMenu, new DatasetAction( fname), 0);
-        }
-      }
-    };
-    BAMutil.setActionProperties( saveDatasetAction, null, "save dataset", false, 'S', 0);
-    */
+    /*
+     * choose local dataset
+     * AbstractAction chooseLocalDatasetAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * String filename = fileChooser.chooseFilename();
+     * if (filename == null) return;
+     * 
+     * Dataset invDs;
+     * try { // DatasetNode parent, String name, Map<String, Object> flds, List< AccessBuilder > accessBuilders, List<
+     * DatasetBuilder > datasetBuilders
+     * Map<String, Object> flds = new HashMap<>();
+     * flds.put(Dataset.FeatureType, FeatureType.GRID.toString());
+     * flds.put(Dataset.ServiceName, ServiceType.File.toString()); // bogus
+     * invDs = new Dataset(null, filename, flds, null, null);
+     * setDataset(invDs);
+     * 
+     * } catch (Exception ue) {
+     * JOptionPane.showMessageDialog(CoverageDisplay.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
+     * ue.printStackTrace();
+     * }
+     * }
+     * };
+     * BAMutil.setActionProperties(chooseLocalDatasetAction, "FileChooser", "open Local dataset...", false, 'L', -1);
+     * 
+     * /* saveDatasetAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * String fname = controller.getDatasetName();
+     * if (fname != null) {
+     * savedDatasetList.add( fname);
+     * BAMutil.addActionToMenu( savedDatasetMenu, new DatasetAction( fname), 0);
+     * }
+     * }
+     * };
+     * BAMutil.setActionProperties( saveDatasetAction, null, "save dataset", false, 'S', 0);
+     */
 
     // Configure
     chooseProjectionAction = new AbstractAction() {
@@ -403,24 +408,25 @@ public class CoverageViewer extends JPanel {
         // set the bounding box
         ProjectionImpl proj = navPanel.getProjectionImpl().constructCopy();
         proj.setDefaultMapArea(navPanel.getMapArea());
-        //if (debug) System.out.println(" GV save projection "+ proj);
+        // if (debug) System.out.println(" GV save projection "+ proj);
 
-        // projManage.setMap(renderAll.get("Map"));   LOOK!
-        //projManager.saveProjection( proj);
+        // projManage.setMap(renderAll.get("Map")); LOOK!
+        // projManager.saveProjection( proj);
       }
     };
     BAMutil.setActionProperties(saveCurrentProjectionAction, null, "save Current Projection", false, 'S', 0);
 
-    /* chooseColorScaleAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if (null == csManager) // lazy instantiation
-          makeColorScaleManager();
-        csManager.show();
-      }
-    };
-    BAMutil.setActionProperties( chooseColorScaleAction, null, "ColorScale Manager...", false, 'C', 0);
-
-    */
+    /*
+     * chooseColorScaleAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * if (null == csManager) // lazy instantiation
+     * makeColorScaleManager();
+     * csManager.show();
+     * }
+     * };
+     * BAMutil.setActionProperties( chooseColorScaleAction, null, "ColorScale Manager...", false, 'C', 0);
+     * 
+     */
     // redraw
     redrawAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -454,58 +460,62 @@ public class CoverageViewer extends JPanel {
     };
     BAMutil.setActionProperties(showDatasetInfoAction, "Information", "Show info...", false, 'S', -1);
 
-    /*showNcMLAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if (ncmlWindow == null) {
-          ncmlTA = new TextHistoryPane();
-          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
-          ncmlWindow.setSize(700,700);
-          ncmlWindow.setLocation(200, 70);
-        }
+    /*
+     * showNcMLAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * if (ncmlWindow == null) {
+     * ncmlTA = new TextHistoryPane();
+     * ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
+     * ncmlWindow.setSize(700,700);
+     * ncmlWindow.setLocation(200, 70);
+     * }
+     * 
+     * ncmlTA.clear();
+     * //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
+     * ncmlTA.appendLine( controller.getNcML());
+     * ncmlTA.gotoTop();
+     * ncmlWindow.show();
+     * }
+     * };
+     * BAMutil.setActionProperties( showNcMLAction, null, "Show NcML...", false, 'X', -1);
+     */
 
-        ncmlTA.clear();
-        //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
-        ncmlTA.appendLine( controller.getNcML());
-        ncmlTA.gotoTop();
-        ncmlWindow.show();
-      }
-    };
-    BAMutil.setActionProperties( showNcMLAction, null, "Show NcML...", false, 'X', -1);  */
-
-    /* showGridDatasetInfoAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if (ncmlWindow == null) {
-          ncmlTA = new TextHistoryPane();
-          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
-          ncmlWindow.setSize(700,700);
-          ncmlWindow.setLocation(200, 70);
-        }
-
-        ncmlTA.clear();
-        //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
-        ncmlTA.appendLine( controller.getDatasetXML());
-        ncmlTA.gotoTop();
-        ncmlWindow.show();
-      }
-    };
-    BAMutil.setActionProperties( showGridDatasetInfoAction, null, "Show GridDataset Info XML...", false, 'X', -1);
-
-      // show netcdf dataset Table
-    /* showNetcdfDatasetAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        NetcdfDataset netcdfDataset = controller.getNetcdfDataset();
-        if (null != netcdfDataset) {
-          try {
-            dsTable.setDataset(netcdfDataset, null);
-          } catch (IOException e1) {
-            e1.printStackTrace();
-            return;
-          }
-          dsDialog.show();
-        }
-      }
-    };
-    BAMutil.setActionProperties( showNetcdfDatasetAction, "netcdf", "NetcdfDataset Table Info...", false, 'D', -1);  */
+    /*
+     * showGridDatasetInfoAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * if (ncmlWindow == null) {
+     * ncmlTA = new TextHistoryPane();
+     * ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
+     * ncmlWindow.setSize(700,700);
+     * ncmlWindow.setLocation(200, 70);
+     * }
+     * 
+     * ncmlTA.clear();
+     * //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
+     * ncmlTA.appendLine( controller.getDatasetXML());
+     * ncmlTA.gotoTop();
+     * ncmlWindow.show();
+     * }
+     * };
+     * BAMutil.setActionProperties( showGridDatasetInfoAction, null, "Show GridDataset Info XML...", false, 'X', -1);
+     * 
+     * // show netcdf dataset Table
+     * /* showNetcdfDatasetAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * NetcdfDataset netcdfDataset = controller.getNetcdfDataset();
+     * if (null != netcdfDataset) {
+     * try {
+     * dsTable.setDataset(netcdfDataset, null);
+     * } catch (IOException e1) {
+     * e1.printStackTrace();
+     * return;
+     * }
+     * dsDialog.show();
+     * }
+     * }
+     * };
+     * BAMutil.setActionProperties( showNetcdfDatasetAction, "netcdf", "NetcdfDataset Table Info...", false, 'D', -1);
+     */
 
     minmaxHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -523,13 +533,15 @@ public class CoverageViewer extends JPanel {
     };
     BAMutil.setActionProperties(minmaxLogAction, null, "log horiz plane", false, 'V', 0);
 
-    /* minmaxVolAction =  new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        csDataMinMax.setSelectedIndex(GridRenderer.VOL_MinMaxType);
-        controller.setDataMinMaxType(GridRenderer.MinMaxType.vert;
-      }
-    };
-    BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0); */
+    /*
+     * minmaxVolAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * csDataMinMax.setSelectedIndex(GridRenderer.VOL_MinMaxType);
+     * controller.setDataMinMaxType(GridRenderer.MinMaxType.vert;
+     * }
+     * };
+     * BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0);
+     */
 
     minmaxHoldAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -672,21 +684,21 @@ public class CoverageViewer extends JPanel {
   }
 
   private void makeEventManagement() {
-   // LOOK what prevents these ActionCoordinator from getting GC ?
+    // LOOK what prevents these ActionCoordinator from getting GC ?
     //// manage field selection events
     String actionName = "field";
     ActionCoordinator fieldCoordinator = new ActionCoordinator(actionName);
     // connect to the fieldChooser
     fieldCoordinator.addActionSourceListener(fieldChooser.getActionSourceListener());
     // connect to the gridTable
-    //fieldCoordinator.addActionSourceListener(gridTable.getActionSourceListener());
+    // fieldCoordinator.addActionSourceListener(gridTable.getActionSourceListener());
     // heres what to do when the currentField changes
     ActionSourceListener fieldSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
         if (setField(e.getValue())) {
           if (e.getActionCommand().equals("redrawImmediate")) {
             draw(true);
-            //colorScalePanel.paintImmediately(colorScalePanel.getBounds());   // kludgerino
+            // colorScalePanel.paintImmediately(colorScalePanel.getBounds()); // kludgerino
           } else
             redrawLater();
         }
@@ -699,21 +711,23 @@ public class CoverageViewer extends JPanel {
     ActionCoordinator levelCoordinator = new ActionCoordinator(actionName);
     levelCoordinator.addActionSourceListener(levelChooser.getActionSourceListener());
     // connect to the vertPanel
-    /* levelCoordinator.addActionSourceListener(vertPanel.getActionSourceListener());
-      // also manage Pick events from the vertPanel
-    vertPanel.getDrawArea().addPickEventListener( new PickEventListener() {
-      public void actionPerformed(PickEvent e) {
-        int level = renderGrid.findLevelCoordElement(e.getLocation().getY());
-         if ((level != -1) && (level != currentLevel)) {
-          currentLevel = level;
-          redrawLater();
-          String selectedName = levelNames.get(currentLevel).getName();
-          if (Debug.isSet("pick/event"))
-            System.out.println("pick.event Vert: "+selectedName);
-          levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
-        }
-      }
-    }); */
+    /*
+     * levelCoordinator.addActionSourceListener(vertPanel.getActionSourceListener());
+     * // also manage Pick events from the vertPanel
+     * vertPanel.getDrawArea().addPickEventListener( new PickEventListener() {
+     * public void actionPerformed(PickEvent e) {
+     * int level = renderGrid.findLevelCoordElement(e.getLocation().getY());
+     * if ((level != -1) && (level != currentLevel)) {
+     * currentLevel = level;
+     * redrawLater();
+     * String selectedName = levelNames.get(currentLevel).getName();
+     * if (Debug.isSet("pick/event"))
+     * System.out.println("pick.event Vert: "+selectedName);
+     * levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
+     * }
+     * }
+     * });
+     */
     // heres what to do when a level changes
     ActionSourceListener levelSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
@@ -741,7 +755,7 @@ public class CoverageViewer extends JPanel {
           currentTime = time;
           if (e.getActionCommand().equals("redrawImmediate")) {
             draw(true);
-            //colorScalePanel.paintImmediately(colorScalePanel.getBounds());   // kludgerino
+            // colorScalePanel.paintImmediately(colorScalePanel.getBounds()); // kludgerino
           } else
             redrawLater();
         }
@@ -753,11 +767,11 @@ public class CoverageViewer extends JPanel {
     actionName = "runtime";
     ActionCoordinator runtimeCoordinator = new ActionCoordinator(actionName);
     runtimeCoordinator.addActionSourceListener(runtimeChooser.getActionSourceListener());
-      // heres what to do when the runtime changes
+    // heres what to do when the runtime changes
     ActionSourceListener runtimeSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
         // Object dataValue = e.getValue();
-        int runtime = findIndexFromName( runtimeNames, e.getValue().toString());
+        int runtime = findIndexFromName(runtimeNames, e.getValue().toString());
         if ((runtime != -1) && (runtime != currentRunTime)) {
           currentRunTime = runtime;
 
@@ -768,7 +782,7 @@ public class CoverageViewer extends JPanel {
             timeChooser.setCollection(timeNames.iterator());
             if (currentTime >= timeNames.size())
               currentTime = 0;
-            timeChooser.setSelectedByIndex( currentTime);
+            timeChooser.setSelectedByIndex(currentTime);
           }
 
           if (e.getActionCommand().equals("redrawImmediate")) {
@@ -824,20 +838,22 @@ public class CoverageViewer extends JPanel {
       }
     });
 
-    /* get Pick events from the navigated panel
-    navPanel.addPickEventListener(new PickEventListener() {
-      public void actionPerformed(PickEvent e) {
-        projPoint.setLocation(e.getLocation());
-        int slice = renderGrid.findSliceFromPoint(projPoint);
-        if (Debug.isSet("pick/event"))
-          System.out.println("pick.event: " + projPoint + " " + slice);
-        if ((slice >= 0) && (slice != currentSlice)) {
-          currentSlice = slice;
-          vertPanel.setSlice(currentSlice);
-          redrawLater();
-        }
-      }
-    }); */
+    /*
+     * get Pick events from the navigated panel
+     * navPanel.addPickEventListener(new PickEventListener() {
+     * public void actionPerformed(PickEvent e) {
+     * projPoint.setLocation(e.getLocation());
+     * int slice = renderGrid.findSliceFromPoint(projPoint);
+     * if (Debug.isSet("pick/event"))
+     * System.out.println("pick.event: " + projPoint + " " + slice);
+     * if ((slice >= 0) && (slice != currentSlice)) {
+     * currentSlice = slice;
+     * vertPanel.setSlice(currentSlice);
+     * redrawLater();
+     * }
+     * }
+     * });
+     */
 
     // get Move events from the navigated panel
     navPanel.addCursorMoveEventListener(new CursorMoveEventListener() {
@@ -866,57 +882,60 @@ public class CoverageViewer extends JPanel {
    * save all data in the PersistentStore
    */
   public void save() {
-    //store.putInt( "vertSplit", splitDraw.getDividerLocation());
+    // store.putInt( "vertSplit", splitDraw.getDividerLocation());
 
     store.putBoolean("navToolbarAction", (Boolean) navToolbarAction.getValue(BAMutil.STATE));
     store.putBoolean("moveToolbarAction", (Boolean) moveToolbarAction.getValue(BAMutil.STATE));
 
     if (projManager != null)
       projManager.storePersistentData();
-    /* if (csManager != null)
-      csManager.storePersistentData();
-    if (sysConfigDialog != null)
-      sysConfigDialog.storePersistentData(); */
+    /*
+     * if (csManager != null)
+     * csManager.storePersistentData();
+     * if (sysConfigDialog != null)
+     * sysConfigDialog.storePersistentData();
+     */
 
-    //dsTable.save();
-    //dsTable.getPrefs().putBeanObject("DialogBounds", dsDialog.getBounds());
+    // dsTable.save();
+    // dsTable.getPrefs().putBeanObject("DialogBounds", dsDialog.getBounds());
 
     store.put(GEOTIFF_FILECHOOSER_DEFAULTDIR, geotiffFileChooser.getCurrentDirectory());
 
     store.putBeanObject(LastMapAreaName, navPanel.getMapArea());
     store.putBeanObject(LastProjectionName, navPanel.getProjectionImpl());
-    //if (gridDataset != null)
-    //  store.put(LastDatasetName, gridDataset.getTitle());
+    // if (gridDataset != null)
+    // store.put(LastDatasetName, gridDataset.getTitle());
     store.putBeanObject(ColorScaleName, colorScale);
 
     store.putBoolean("showGridAction", (Boolean) showGridAction.getValue(BAMutil.STATE));
     store.putBoolean("showContoursAction", (Boolean) showContoursAction.getValue(BAMutil.STATE));
-    store.putBoolean("showContourLabelsAction",
-        (Boolean) showContourLabelsAction.getValue(BAMutil.STATE));
+    store.putBoolean("showContourLabelsAction", (Boolean) showContourLabelsAction.getValue(BAMutil.STATE));
 
   }
 
-  /* private boolean chooseDataset(String url) {
-   InvDataset invDs = new InvDatasetImpl( fname, ServerType.NETCDF);
-   return chooseDataset( invDs);
- } */
+  /*
+   * private boolean chooseDataset(String url) {
+   * InvDataset invDs = new InvDatasetImpl( fname, ServerType.NETCDF);
+   * return chooseDataset( invDs);
+   * }
+   */
 
   private void setSelected(boolean b) {
     selected = b;
 
-    //showGridTableAction.setEnabled(b);
-    //showNcMLAction.setEnabled(b);
-    //showNcMLAction.setEnabled(b);
-    //showNetcdfDatasetAction.setEnabled(b);
-    //showGridDatasetInfoAction.setEnabled(b);
-    //showNetcdfXMLAction.setEnabled( b);
+    // showGridTableAction.setEnabled(b);
+    // showNcMLAction.setEnabled(b);
+    // showNcMLAction.setEnabled(b);
+    // showNetcdfDatasetAction.setEnabled(b);
+    // showGridDatasetInfoAction.setEnabled(b);
+    // showNetcdfXMLAction.setEnabled( b);
 
     navToolbarAction.setEnabled(b);
     moveToolbarAction.setEnabled(b);
 
-    //controller.showGridAction.setEnabled( b);
-    //controller.showContoursAction.setEnabled( b);
-    //controller.showContourLabelsAction.setEnabled( b);
+    // controller.showGridAction.setEnabled( b);
+    // controller.showContoursAction.setEnabled( b);
+    // controller.showContourLabelsAction.setEnabled( b);
     redrawAction.setEnabled(b);
 
     minmaxHorizAction.setEnabled(b);
@@ -957,24 +976,26 @@ public class CoverageViewer extends JPanel {
     redrawLater();
   }
 
-  /* public void setDataset(Dataset ds) throws IOException {
-    if (ds == null) return;
-
-    OpenDatasetTask openTask = new OpenDatasetTask(ds);
-    ucar.ui.widget.ProgressMonitor pm = new ucar.ui.widget.ProgressMonitor(openTask);
-    pm.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("success")) {
-          showDataset();
-          //gridTable.setDataset(controller.getFields());
-          datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
-          setSelected(true);
-          gtWindow.setVisible(false);
-        }
-      }
-    });
-    pm.start(this, "Open Dataset " + ds.getName(), 100);
-  } */
+  /*
+   * public void setDataset(Dataset ds) throws IOException {
+   * if (ds == null) return;
+   * 
+   * OpenDatasetTask openTask = new OpenDatasetTask(ds);
+   * ucar.ui.widget.ProgressMonitor pm = new ucar.ui.widget.ProgressMonitor(openTask);
+   * pm.addActionListener(new ActionListener() {
+   * public void actionPerformed(ActionEvent e) {
+   * if (e.getActionCommand().equals("success")) {
+   * showDataset();
+   * //gridTable.setDataset(controller.getFields());
+   * datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
+   * setSelected(true);
+   * gtWindow.setVisible(false);
+   * }
+   * }
+   * });
+   * pm.start(this, "Open Dataset " + ds.getName(), 100);
+   * }
+   */
 
   // assume that its done in the event thread
   boolean showDataset() {
@@ -982,7 +1003,7 @@ public class CoverageViewer extends JPanel {
     // temp kludge for initialization
     Iterable<Coverage> grids = coverageDataset.getCoverages();
 
-    currentField = grids.iterator().next();   // first
+    currentField = grids.iterator().next(); // first
     currentSlice = 0;
     currentLevel = 0;
     currentTime = 0;
@@ -1001,7 +1022,7 @@ public class CoverageViewer extends JPanel {
       setProjection(dataProjection);
 
     // ready to draw
-    //draw(true);
+    // draw(true);
 
     // events now ok
     eventsOK = true;
@@ -1022,7 +1043,7 @@ public class CoverageViewer extends JPanel {
     startOK = false; // wait till redraw is hit before drawing
     showDataset();
     datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
-    //gridTable.setDataset(controller.getFields());
+    // gridTable.setDataset(controller.getFields());
   }
 
   public void setDataset(CoverageCollection gcd) {
@@ -1032,7 +1053,7 @@ public class CoverageViewer extends JPanel {
     startOK = false; // wait till redraw is hit before drawing
     showDataset();
     datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
-    //gridTable.setDataset(controller.getFields());
+    // gridTable.setDataset(controller.getFields());
   }
 
   void setFieldsFromBeans(List<CoverageTable.CoverageBean> fields) {
@@ -1072,7 +1093,7 @@ public class CoverageViewer extends JPanel {
 
       if (this.dataState.taxis2D != null) {
         // CalendarDate runtime = (CalendarDate) runtimeNames.get(currentRunTime).getValue();
-        this.dataState.taxis =  this.dataState.taxis2D.getTimeAxisForRun(currentRunTime);
+        this.dataState.taxis = this.dataState.taxis2D.getTimeAxisForRun(currentRunTime);
       }
 
     } else {
@@ -1117,12 +1138,12 @@ public class CoverageViewer extends JPanel {
       coverageRenderer.setEnsemble(-1);
     }
 
-        // set levels
+    // set levels
     if (this.dataState.zaxis != null) {
       levelNames = this.dataState.zaxis.getCoordValueNames();
       if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
         currentLevel = 0;
-      //vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
+      // vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
 
       setChooserWanted("level", true);
       levelChooser.setCollection(levelNames.iterator(), true);
@@ -1146,7 +1167,7 @@ public class CoverageViewer extends JPanel {
     drawingPanel.removeAll();
     if (drawHoriz && drawVert) {
       // splitDraw.setTopComponent(panz);
-      //splitDraw.setBottomComponent(vertPanel);
+      // splitDraw.setBottomComponent(vertPanel);
       drawingPanel.add(navPanel, BorderLayout.CENTER);
     } else if (drawHoriz) {
       drawingPanel.add(navPanel, BorderLayout.CENTER);
@@ -1172,26 +1193,29 @@ public class CoverageViewer extends JPanel {
   }
 
   synchronized void draw(boolean immediate) {
-    if (!startOK) return;
+    if (!startOK)
+      return;
 
     coverageRenderer.setLevel(currentLevel);
     coverageRenderer.setTime(currentTime);
-    //renderGrid.setSlice(currentSlice);
+    // renderGrid.setSlice(currentSlice);
     coverageRenderer.setEnsemble(currentEnsemble);
     coverageRenderer.setRunTime(currentRunTime);
 
     if (drawHorizOn)
       drawH(immediate);
-    //if (drawVertOn)
-    //  drawV(immediate);
+    // if (drawVertOn)
+    // drawV(immediate);
   }
 
   private void drawH(boolean immediate) {
-    if (!startOK) return;
+    if (!startOK)
+      return;
 
     // cancel any redrawLater
     boolean already = redrawTimer.isRunning();
-    if (debugThread && already) System.out.println("redrawLater canceled ");
+    if (debugThread && already)
+      System.out.println("redrawLater canceled ");
     if (already)
       redrawTimer.stop();
 
@@ -1216,7 +1240,7 @@ public class CoverageViewer extends JPanel {
       System.out.println("timing.GridDraw: " + tookTime * .001 + " seconds");
     }
 
-    //draw Map
+    // draw Map
     if (mapRenderer != null) {
       startTime = System.currentTimeMillis();
       mapRenderer.draw(gNP, atI);
@@ -1226,15 +1250,17 @@ public class CoverageViewer extends JPanel {
       }
     }
 
-    /* draw Winds
-    if (drawWinds) {
-      startTime = System.currentTimeMillis();
-      renderWind.draw(gNP, currentLevel, currentTime);
-      if (Debug.isSet("timing/WindsDraw")) {
-        tookTime = System.currentTimeMillis() - startTime;
-        System.out.println("timing.WindsDraw: " + tookTime*.001 + " seconds");
-      }
-    } */
+    /*
+     * draw Winds
+     * if (drawWinds) {
+     * startTime = System.currentTimeMillis();
+     * renderWind.draw(gNP, currentLevel, currentTime);
+     * if (Debug.isSet("timing/WindsDraw")) {
+     * tookTime = System.currentTimeMillis() - startTime;
+     * System.out.println("timing.WindsDraw: " + tookTime*.001 + " seconds");
+     * }
+     * }
+     */
 
     // copy buffer to the screen
     if (immediate)
@@ -1251,36 +1277,39 @@ public class CoverageViewer extends JPanel {
     }
   }
 
-  /* private void drawV(boolean immediate) {
-    if (!startOK) return;
-    ScaledPanel drawArea = vertPanel.getDrawArea();
-    Graphics2D gV = drawArea.getBufferedImageGraphics();
-    if (gV == null)
-      return;
-
-    long startTime = System.currentTimeMillis();
-
-    gV.setBackground(Color.white);
-    gV.fill(gV.getClipBounds());
-    renderGrid.renderVertView(gV, atI);
-
-    if (Debug.isSet("timing/GridDrawVert")) {
-      long tookTime = System.currentTimeMillis() - startTime;
-      System.out.println("timing.GridDrawVert: " + tookTime*.001 + " seconds");
-    }
-    gV.dispose();
-
-    // copy buffer to the screen
-     if (immediate)
-      drawArea.drawNow();
-    else
-      drawArea.repaint();
-  } */
+  /*
+   * private void drawV(boolean immediate) {
+   * if (!startOK) return;
+   * ScaledPanel drawArea = vertPanel.getDrawArea();
+   * Graphics2D gV = drawArea.getBufferedImageGraphics();
+   * if (gV == null)
+   * return;
+   * 
+   * long startTime = System.currentTimeMillis();
+   * 
+   * gV.setBackground(Color.white);
+   * gV.fill(gV.getClipBounds());
+   * renderGrid.renderVertView(gV, atI);
+   * 
+   * if (Debug.isSet("timing/GridDrawVert")) {
+   * long tookTime = System.currentTimeMillis() - startTime;
+   * System.out.println("timing.GridDrawVert: " + tookTime*.001 + " seconds");
+   * }
+   * gV.dispose();
+   * 
+   * // copy buffer to the screen
+   * if (immediate)
+   * drawArea.drawNow();
+   * else
+   * drawArea.repaint();
+   * }
+   */
 
   private synchronized void redrawLater() {
-    //redrawComplete |= complete;
+    // redrawComplete |= complete;
     boolean already = redrawTimer.isRunning();
-    if (debugThread) System.out.println("redrawLater isRunning= " + already);
+    if (debugThread)
+      System.out.println("redrawLater isRunning= " + already);
     if (already)
       redrawTimer.restart();
     else
@@ -1297,7 +1326,7 @@ public class CoverageViewer extends JPanel {
         if (e.getPropertyName().equals("ProjectionImpl")) {
           ProjectionImpl p = (ProjectionImpl) e.getNewValue();
           p = p.constructCopy();
-          //System.out.println("UI: new Projection "+p);
+          // System.out.println("UI: new Projection "+p);
           setProjection(p);
         }
       }
@@ -1328,7 +1357,8 @@ public class CoverageViewer extends JPanel {
 
   private void setChooserWanted(String name, boolean want) {
     for (Chooser chooser : choosers) {
-      if (chooser.name.equals(name)) chooser.isWanted = want;
+      if (chooser.name.equals(name))
+        chooser.isWanted = want;
     }
   }
 
@@ -1340,13 +1370,13 @@ public class CoverageViewer extends JPanel {
 
   private void addActionsToMenus(JMenu datasetMenu, JMenu configMenu, JMenu toolMenu) {
     // Info
-    //BAMutil.addActionToMenu(datasetMenu, showGridTableAction);
+    // BAMutil.addActionToMenu(datasetMenu, showGridTableAction);
     BAMutil.addActionToMenu(datasetMenu, showDatasetInfoAction);
-    //BAMutil.addActionToMenu(datasetMenu, showNcMLAction);
-    //BAMutil.addActionToMenu(datasetMenu, showGridDatasetInfoAction);
-    //BAMutil.addActionToMenu(datasetMenu, showNetcdfDatasetAction);
+    // BAMutil.addActionToMenu(datasetMenu, showNcMLAction);
+    // BAMutil.addActionToMenu(datasetMenu, showGridDatasetInfoAction);
+    // BAMutil.addActionToMenu(datasetMenu, showNetcdfDatasetAction);
     // BAMutil.addActionToMenu( datasetMenu, geotiffAction);
-    //BAMutil.addActionToMenu( infoMenu, showNetcdfXMLAction);
+    // BAMutil.addActionToMenu( infoMenu, showNetcdfXMLAction);
 
     /// Configure
     JMenu toolbarMenu = new JMenu("Toolbars");
@@ -1358,9 +1388,10 @@ public class CoverageViewer extends JPanel {
     BAMutil.addActionToMenu(configMenu, chooseProjectionAction);
     BAMutil.addActionToMenu(configMenu, saveCurrentProjectionAction);
 
-    /* BAMutil.addActionToMenu( configMenu, chooseColorScaleAction);
-    BAMutil.addActionToMenu( configMenu, controller.dataProjectionAction);
-    */
+    /*
+     * BAMutil.addActionToMenu( configMenu, chooseColorScaleAction);
+     * BAMutil.addActionToMenu( configMenu, controller.dataProjectionAction);
+     */
 
     //// tools menu
     JMenu displayMenu = new JMenu("Display control");
@@ -1411,32 +1442,34 @@ public class CoverageViewer extends JPanel {
     }
   }
 
-  /* open remote dataset in cancellable task
-  private class OpenDatasetTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
-    URI endpoint = null;
-
-    OpenDatasetTask(Dataset ds) throws FileNotFoundException {
-      for (Access a : ds.getAccess()) {
-        if (a.getService().getType() == ServiceType.CdmrFeature)
-          endpoint = a.getStandardUri();
-      }
-      if (endpoint == null)
-        throw new FileNotFoundException("No CdmrFeature access");
-    }
-
-    public void run() {
-      CoverageDataset gcd = null;
-      try {
-        gcd = CoverageDatasetFactory.openCoverage(endpoint.toString());
-      } catch (IOException e) {
-        setError("Failed to open datset: "+e.getMessage());
-      }
-
-      success = !cancel && (gcd != null);
-      if (success) setDataset(gcd);
-      done = true;
-    }
-  } */
+  /*
+   * open remote dataset in cancellable task
+   * private class OpenDatasetTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
+   * URI endpoint = null;
+   * 
+   * OpenDatasetTask(Dataset ds) throws FileNotFoundException {
+   * for (Access a : ds.getAccess()) {
+   * if (a.getService().getType() == ServiceType.CdmrFeature)
+   * endpoint = a.getStandardUri();
+   * }
+   * if (endpoint == null)
+   * throw new FileNotFoundException("No CdmrFeature access");
+   * }
+   * 
+   * public void run() {
+   * CoverageDataset gcd = null;
+   * try {
+   * gcd = CoverageDatasetFactory.openCoverage(endpoint.toString());
+   * } catch (IOException e) {
+   * setError("Failed to open datset: "+e.getMessage());
+   * }
+   * 
+   * success = !cancel && (gcd != null);
+   * if (success) setDataset(gcd);
+   * done = true;
+   * }
+   * }
+   */
 
 }
 

@@ -13,7 +13,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -28,7 +27,7 @@ public class TestH5eos {
 
   @org.junit.Test
   public void testStructMetadata() throws IOException {
-    //NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
+    // NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
     try (NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5")) {
 
       Group root = ncfile.getRootGroup();

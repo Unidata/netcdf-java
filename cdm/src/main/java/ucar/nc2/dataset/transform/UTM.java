@@ -12,7 +12,8 @@ import ucar.unidata.geoloc.projection.UtmProjection;
 
 /**
  * Create a UTM Projection from the information in the Coordinate Transform Variable.
- *  *
+ * *
+ * 
  * @author caron
  */
 public class UTM extends AbstractTransformBuilder implements HorizTransformBuilderIF {
@@ -22,11 +23,11 @@ public class UTM extends AbstractTransformBuilder implements HorizTransformBuild
   }
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double zoned = readAttributeDouble( ctv, UtmProjection.UTM_ZONE1, Double.NaN);
+    double zoned = readAttributeDouble(ctv, UtmProjection.UTM_ZONE1, Double.NaN);
     if (Double.isNaN(zoned))
-      zoned = readAttributeDouble( ctv, UtmProjection.UTM_ZONE2, Double.NaN);
+      zoned = readAttributeDouble(ctv, UtmProjection.UTM_ZONE2, Double.NaN);
     if (Double.isNaN(zoned))
-      throw new IllegalArgumentException("No zone was specified") ;
+      throw new IllegalArgumentException("No zone was specified");
 
     int zone = (int) zoned;
     boolean isNorth = zone > 0;
@@ -34,9 +35,9 @@ public class UTM extends AbstractTransformBuilder implements HorizTransformBuild
 
     Attribute a;
     double axis = 0.0, f = 0.0;
-    if (null != (a = ctv.findAttribute( "semimajor_axis")))
+    if (null != (a = ctv.findAttribute("semimajor_axis")))
       axis = a.getNumericValue().doubleValue();
-    if (null != (a = ctv.findAttribute( "inverse_flattening")))
+    if (null != (a = ctv.findAttribute("inverse_flattening")))
       f = a.getNumericValue().doubleValue();
 
     // double a, double f, int zone, boolean isNorth

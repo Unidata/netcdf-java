@@ -16,7 +16,6 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
@@ -24,19 +23,19 @@ import java.util.Date;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcNonuniform extends TestCase {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestOffAggFmrcNonuniform( String name) {
+  public TestOffAggFmrcNonuniform(String name) {
     super(name);
   }
 
   public void testGribNonuniform() throws Exception {
-    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-      "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true'>\n" +
-      "    <scan location='" + TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/' suffix='.grib1' enhance='true' dateFormatMark='RUC_CONUS_40km_#yyyyMMdd_HHmm'/>\n" +
-      "  </aggregation>\n" +
-      "</netcdf>";
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true'>\n"
+        + "    <scan location='" + TestDir.cdmUnitTestDir
+        + "ncml/nc/ruc_conus40/' suffix='.grib1' enhance='true' dateFormatMark='RUC_CONUS_40km_#yyyyMMdd_HHmm'/>\n"
+        + "  </aggregation>\n" + "</netcdf>";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcNonuniform", null);
 
     testDimensions(ncfile, 3, 113, 151);
@@ -66,7 +65,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     assert runDim.getLength() == nagg : runDim.getLength();
   }
 
- private void testCoordVar(NetcdfFile ncfile, int n) {
+  private void testCoordVar(NetcdfFile ncfile, int n) {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
@@ -93,7 +92,8 @@ public class TestOffAggFmrcNonuniform extends TestCase {
       assert data.getRank() == 1;
       assert data.getSize() == n;
       assert data.getShape()[0] == n;
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
 
   }
 
@@ -136,13 +136,13 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     assert null != time;
     assert time.getShortName().equals(varName);
     assert time.getRank() == 2;
-    assert time.getSize() == nagg * ntimes : time.getSize() +" != "+  nagg * ntimes;
+    assert time.getSize() == nagg * ntimes : time.getSize() + " != " + nagg * ntimes;
     assert time.getShape()[0] == nagg;
     assert time.getShape()[1] == ntimes;
     assert time.getDataType() == DataType.DOUBLE;
 
     String units = time.getUnitsString();
-    DateUnit du = new DateUnit( units);
+    DateUnit du = new DateUnit(units);
 
     DateFormatter formatter = new DateFormatter();
     try {
@@ -157,7 +157,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
         double val = dataI.getDoubleNext();
         Date date = du.makeDate(val);
         if (date != null)
-          System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
+          System.out.println(" date= " + formatter.toDateTimeStringISO(date));
       }
 
     } catch (IOException io) {

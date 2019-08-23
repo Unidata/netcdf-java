@@ -14,7 +14,6 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.tables.NcepTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +42,8 @@ class NcepLocalTables extends LocalTables {
 
   @Override
   public String getParamTablePathUsedFor(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) return super.getParamTablePathUsedFor(discipline, category, number);
+    if ((category <= 191) && (number <= 191))
+      return super.getParamTablePathUsedFor(discipline, category, number);
     return ncepLocalParams.getTablePath(discipline, category);
   }
 
@@ -55,27 +55,27 @@ class NcepLocalTables extends LocalTables {
     }
 
     if (dirURL == null) {
-      //In case of a jar file, we can't actually find a directory.
-      //Have to assume the same jar as clazz.
+      // In case of a jar file, we can't actually find a directory.
+      // Have to assume the same jar as clazz.
       String me = clazz.getName().replace(".", "/") + ".class";
       dirURL = clazz.getClassLoader().getResource(me);
     }
     if (dirURL == null) {
-      throw new UnsupportedOperationException("Cannot list files for path "+path);
+      throw new UnsupportedOperationException("Cannot list files for path " + path);
     }
 
     if (dirURL.getProtocol().equals("jar")) {
-            /* A JAR path */
-      String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
+      /* A JAR path */
+      String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); // strip out only the JAR file
       Enumeration<JarEntry> entries;
       try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
-        //gives ALL entries in jar
+        // gives ALL entries in jar
         entries = jar.entries();
       }
-      Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
+      Set<String> result = new HashSet<>(); // avoid duplicates in case it is a subdirectory
       while (entries.hasMoreElements()) {
         String name = entries.nextElement().getName();
-        if (name.startsWith(path)) { //filter according to the path
+        if (name.startsWith(path)) { // filter according to the path
           String entry = name.substring(path.length());
           int checkSubdir = entry.indexOf("/");
           if (checkSubdir >= 0) {
@@ -96,12 +96,16 @@ class NcepLocalTables extends LocalTables {
     ImmutableList.Builder<GribTables.Parameter> allParams = ImmutableList.builder();
     try {
       String[] fileNames = getResourceListing(config.getPath());
-      if (fileNames == null) return ImmutableList.of();
+      if (fileNames == null)
+        return ImmutableList.of();
       for (String fileName : fileNames) {
         File f = new File(fileName);
-        if (f.isDirectory()) continue;
-        if (!f.getName().contains("Table4.2.")) continue;
-        if (!f.getName().endsWith(".xml")) continue;
+        if (f.isDirectory())
+          continue;
+        if (!f.getName().contains("Table4.2."))
+          continue;
+        if (!f.getName().endsWith(".xml"))
+          continue;
         try {
           List<GribTables.Parameter> params = ncepLocalParams.getParameters(config.getPath() + f.getPath());
           if (params != null)
@@ -130,24 +134,31 @@ class NcepLocalTables extends LocalTables {
 
   @Override
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
-    /* email from boi.vuong@noaa.gov 1/19/2012
-     "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
-      The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."  */
-    //if (makeHash(discipline, category, number) == makeHash(2,4,3))
-    //  return getParameter(2,4,2);
+    /*
+     * email from boi.vuong@noaa.gov 1/19/2012
+     * "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
+     * The NAM fire weather nested will take change in next implementation of cnvgrib (NCEP conversion program)."
+     */
+    // if (makeHash(discipline, category, number) == makeHash(2,4,3))
+    // return getParameter(2,4,2);
 
-    /* email from boi.vuong@noaa.gov 1/26/2012
-     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
-     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
-     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242  */
+    /*
+     * email from boi.vuong@noaa.gov 1/26/2012
+     * The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water) was in
+     * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
+     * It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of
+     * cnvgrib in June or July, 2012.
+     * RHPW in grib1 in table 129 parameter 230 and in grib2 in 0-1-242
+     */
     // if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
-    //   return getParameter(0, 1, 242);
+    // return getParameter(0, 1, 242);
 
     Grib2Parameter plocal = ncepLocalParams.getParameter(discipline, category, number);
 
     if ((category <= 191) && (number <= 191)) {
       GribTables.Parameter pwmo = WmoParamTable.getParameter(discipline, category, number);
-      if (plocal == null) return pwmo;
+      if (plocal == null)
+        return pwmo;
 
       // allow local table to override all but name, units
       if (pwmo != null) {
@@ -160,7 +171,7 @@ class NcepLocalTables extends LocalTables {
 
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-     return ncepLocalParams.getParameter(discipline, category, number);
+    return ncepLocalParams.getParameter(discipline, category, number);
   }
 
   @Override
@@ -190,7 +201,7 @@ class NcepLocalTables extends LocalTables {
         return new VertCoordType(code, "m", null, true);
 
       case 241:
-        return new VertCoordType(code, "count", null, true);   // eg see NCEP World Watch datasets
+        return new VertCoordType(code, "count", null, true); // eg see NCEP World Watch datasets
 
       default:
         return super.getVertUnit(code);
@@ -295,13 +306,15 @@ class NcepLocalTables extends LocalTables {
       case 194:
         return "AverageNanalysis";
       case 195:
-        // Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period. Reference time is the start time of the
+        // Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
+        // Reference time is the start time of the
         // first forecast, other forecasts at 24-hour intervals. Number in Ave = number of forecasts used.
         return "AverageAccum-24hourIntv";
       case 196:
         return "AverageForecastSuccessiveAccumulations";
       case 197:
-        // Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is the start time of the first forecast,
+        // Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is
+        // the start time of the first forecast,
         // other forecasts at 24-hour intervals. Number in Ave = number of forecast used
         return "AverageAvg-24hourIntv";
       case 198:
@@ -319,7 +332,8 @@ class NcepLocalTables extends LocalTables {
       case 204:
         return "AverageForecastAccumulations-204";
       case 205:
-        // Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is the start time of the
+        // Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is
+        // the start time of the
         // first forecast, other forecasts at 6-hour intervals. Number in Ave = number of forecast used
         return "AverageAvg-6hourIntv";
       case 206:
@@ -336,8 +350,9 @@ class NcepLocalTables extends LocalTables {
   @Override
   @Nullable
   public GribStatType getStatType(int id) {
-    if (id < 192) return super.getStatType(id);
-    switch (id) {  // LOOK not correct
+    if (id < 192)
+      return super.getStatType(id);
+    switch (id) { // LOOK not correct
       case 192:
       case 193:
       case 194:
@@ -362,14 +377,17 @@ class NcepLocalTables extends LocalTables {
     return null;
   }
 
-  private static Map<Integer, String> statName;  // shared by all instances
+  private static Map<Integer, String> statName; // shared by all instances
 
   @Override
   @Nullable
   public String getStatisticName(int id) {
-    if (id < 192) return super.getStatisticName(id);
-    if (statName == null) statName = initTable410();
-    if (statName == null) return null;
+    if (id < 192)
+      return super.getStatisticName(id);
+    if (statName == null)
+      statName = initTable410();
+    if (statName == null)
+      return null;
     return statName.get(id);
   }
 
@@ -388,7 +406,7 @@ class NcepLocalTables extends LocalTables {
         String desc = elem1.getChildText("description");
         result.put(code, desc);
       }
-      return result;  // all at once - thread safe
+      return result; // all at once - thread safe
 
     } catch (IOException | JDOMException ioe) {
       logger.error("Cant read  " + path, ioe);
@@ -399,13 +417,15 @@ class NcepLocalTables extends LocalTables {
   /////////////////////////////////////////////////////////////////
   // generating process ids for NCEP
   // GRIB1 TableA - can share (?)
-  private static Map<Integer, String> genProcessMap;  // shared by all instances
+  private static Map<Integer, String> genProcessMap; // shared by all instances
 
   @Override
   @Nullable
   public String getGeneratingProcessName(int genProcess) {
-    if (genProcessMap == null) genProcessMap = NcepTables.getNcepGenProcess();
-    if (genProcessMap == null) return null;
+    if (genProcessMap == null)
+      genProcessMap = NcepTables.getNcepGenProcess();
+    if (genProcessMap == null)
+      return null;
     return genProcessMap.get(genProcess);
   }
 
@@ -413,7 +433,8 @@ class NcepLocalTables extends LocalTables {
   @Nullable
   public String getCategory(int discipline, int category) {
     String catName = ncepLocalParams.getCategory(discipline, category);
-    if (catName != null) return catName;
+    if (catName != null)
+      return catName;
     return super.getCategory(discipline, category);
   }
 
@@ -421,20 +442,21 @@ class NcepLocalTables extends LocalTables {
   // NCEP local tables taken from degrib code
   // validated against /resources/grib2/tablesOld/grib2StdQuantities.xml
 
-    /* from degrib:
-Updated this table last on 12/29/2005
-Based on:
-http://www.nco.ncep.noaa.gov/pmb/docs/grib2/GRIB2_parmeter_conversion_table.html
-Better source is:
-http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-1.shtml
-http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2.shtml
-For abreviations see:
-http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html
-
-Updated again on 2/14/2006
-Updated again on 3/15/2006
-Updated again on 3/26/2008
-*/
+  /*
+   * from degrib:
+   * Updated this table last on 12/29/2005
+   * Based on:
+   * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/GRIB2_parmeter_conversion_table.html
+   * Better source is:
+   * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-1.shtml
+   * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2.shtml
+   * For abreviations see:
+   * http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html
+   * 
+   * Updated again on 2/14/2006
+   * Updated again on 3/15/2006
+   * Updated again on 3/26/2008
+   */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Code table overrides.
@@ -502,9 +524,12 @@ Updated again on 3/26/2008
     codeMap.put("4.10.198", "Average of successive forecast averages");
     codeMap.put("4.10.199", "Climatological Average of N analyses, each a year apart");
     codeMap.put("4.10.200", "Climatological Average of N forecasts, each a year apart");
-    codeMap.put("4.10.201", "Climatological Root Mean Square difference between N forecasts and their verifying analyses, each a year apart");
-    codeMap.put("4.10.202", "Climatological Standard Deviation of N forecasts from the mean of the same N forecasts, for forecasts one year apart");
-    codeMap.put("4.10.203", "Climatological Standard Deviation of N analyses from the mean of the same N analyses, for analyses one year apart");
+    codeMap.put("4.10.201",
+        "Climatological Root Mean Square difference between N forecasts and their verifying analyses, each a year apart");
+    codeMap.put("4.10.202",
+        "Climatological Standard Deviation of N forecasts from the mean of the same N forecasts, for forecasts one year apart");
+    codeMap.put("4.10.203",
+        "Climatological Standard Deviation of N analyses from the mean of the same N analyses, for analyses one year apart");
     codeMap.put("4.10.204", "Average of forecast accumulations");
     codeMap.put("4.10.205", "Average of forecast averages");
     codeMap.put("4.10.206", "Average of forecast accumulations");

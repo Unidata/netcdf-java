@@ -5,7 +5,6 @@
 
 
 
-
 package ucar.unidata.io.bzip2;
 
 
@@ -17,21 +16,21 @@ package ucar.unidata.io.bzip2;
  */
 public class BZip2ReadException extends RuntimeException {
 
-    /**
-     * Create a new BZip2ReadException with no message
-     */
-    public BZip2ReadException() {
-        super();
-    }
+  /**
+   * Create a new BZip2ReadException with no message
+   */
+  public BZip2ReadException() {
+    super();
+  }
 
-    /**
-     * Create a new BZip2ReadException with the message
-     *
-     * @param message   detailed message associated with this exception
-     */
-    public BZip2ReadException(String message) {
-        super(message);
-    }
+  /**
+   * Create a new BZip2ReadException with the message
+   *
+   * @param message detailed message associated with this exception
+   */
+  public BZip2ReadException(String message) {
+    super(message);
+  }
 
 }
 

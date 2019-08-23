@@ -7,5 +7,5 @@ package ucar.unidata.util.test.category;
  * @author cwardgar
  * @since 2015/03/19
  */
-public interface NotJenkins{
+public interface NotJenkins {
 }

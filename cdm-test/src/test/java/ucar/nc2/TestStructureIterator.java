@@ -14,7 +14,6 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 

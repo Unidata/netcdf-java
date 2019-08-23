@@ -8,7 +8,6 @@ package ucar.nc2.ft.point.standard;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.annotation.Nonnull;
-
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.ft.PointFeature;
@@ -87,11 +86,13 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
         if (!sdataIter.hasNext()) {
           close();
-          if (calcInfo != null) calcInfo.setComplete();
+          if (calcInfo != null)
+            calcInfo.setComplete();
           return false;
         }
         sectionData = sdataIter.next();
-        if (!ft.isFeatureMissing(sectionData)) break;
+        if (!ft.isFeatureMissing(sectionData))
+          break;
       }
       return true;
     }
@@ -121,7 +122,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     StructureData sectionData;
 
     StandardSectionFeature(Cursor cursor, StructureData sectionData) {
-      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits());
+      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(),
+          StandardSectionCollectionImpl.this.getAltUnits());
       this.cursor = cursor;
       this.sectionData = sectionData;
     }
@@ -166,7 +168,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       boolean more = sdataIter.hasNext();
       if (!more) {
         sdataIter.close();
-        if (calcInfo != null) calcInfo.setComplete();
+        if (calcInfo != null)
+          calcInfo.setComplete();
       }
       return more;
     }
@@ -198,8 +201,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     StructureData profileData;
 
     StandardSectionProfileFeature(Cursor cursor, double time, StructureData profileData) {
-      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits(),
-              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(),
+          StandardSectionCollectionImpl.this.getAltUnits(), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
 
       this.cursor = cursor;
       this.profileData = profileData;
@@ -247,7 +250,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
       @Override
       protected boolean isMissing() throws IOException {
-        if (super.isMissing()) return true;
+        if (super.isMissing())
+          return true;
         // must also check for missing z values
         return ft.isAltMissing(this.cursor);
       }

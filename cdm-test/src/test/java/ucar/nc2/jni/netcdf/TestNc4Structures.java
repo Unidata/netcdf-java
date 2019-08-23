@@ -15,7 +15,6 @@ import ucar.nc2.*;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -30,7 +29,8 @@ import java.lang.invoke.MethodHandles;
 public class TestNc4Structures {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Before
   public void setLibrary() {
@@ -42,15 +42,15 @@ public class TestNc4Structures {
 
   @Test
   public void writeStructureFromNids() throws IOException, InvalidRangeException {
-    //String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
-    String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/NVW_20041117_1657";
+    // String datasetIn = TestDir.cdmUnitTestDir + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
+    String datasetIn = TestDir.cdmUnitTestDir + "formats/nexrad/level3/NVW_20041117_1657";
     String datasetOut = tempFolder.newFile().getAbsolutePath();
     writeStructure(datasetIn, datasetOut);
   }
 
   @Test
   public void writeStructure() throws IOException, InvalidRangeException {
-    String datasetIn = TestDir.cdmUnitTestDir  + "formats/netcdf4/compound/tst_compounds.nc4";
+    String datasetIn = TestDir.cdmUnitTestDir + "formats/netcdf4/compound/tst_compounds.nc4";
     String datasetOut = tempFolder.newFile().getAbsolutePath();
     writeStructure(datasetIn, datasetOut);
   }
@@ -62,7 +62,8 @@ public class TestNc4Structures {
 
     FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, NetcdfFileWriter.Version.netcdf4, null);
     NetcdfFile ncfileOut = writer.write(cancel);
-    if (ncfileOut != null) ncfileOut.close();
+    if (ncfileOut != null)
+      ncfileOut.close();
     ncfileIn.close();
     cancel.setDone(true);
     System.out.printf("%s%n", cancel);
@@ -75,8 +76,8 @@ public class TestNc4Structures {
   public void writeStringMember() throws IOException, InvalidRangeException {
     File outFile = File.createTempFile("writeStringMember", ".nc4");
     try {
-      try (NetcdfFileWriter ncFileWriter = NetcdfFileWriter.createNew(
-              NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
+      try (NetcdfFileWriter ncFileWriter =
+          NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
         Structure struct = (Structure) ncFileWriter.addVariable(null, "struct", DataType.STRUCTURE, "");
         ncFileWriter.addStructureMember(struct, "foo", DataType.STRING, null);
 
@@ -111,8 +112,8 @@ public class TestNc4Structures {
   public void writeNestedStructure() throws IOException, InvalidRangeException {
     File outFile = File.createTempFile("writeNestedStructure", ".nc4");
     try {
-      try (NetcdfFileWriter ncFileWriter = NetcdfFileWriter.createNew(
-              NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
+      try (NetcdfFileWriter ncFileWriter =
+          NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
         Structure outer = (Structure) ncFileWriter.addVariable(null, "outer", DataType.STRUCTURE, "");
         Structure inner = (Structure) ncFileWriter.addStructureMember(outer, "inner", DataType.STRUCTURE, "");
         ncFileWriter.addStructureMember(inner, "foo", DataType.INT, null);
@@ -155,10 +156,10 @@ public class TestNc4Structures {
   public void writeUnlimitedLengthStructure() throws IOException, InvalidRangeException {
     File outFile = File.createTempFile("writeUnlimitedLengthStructure", ".nc4");
     try {
-      try (NetcdfFileWriter ncFileWriter = NetcdfFileWriter.createNew(
-              NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
+      try (NetcdfFileWriter ncFileWriter =
+          NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
         // Test passes if we do "isUnlimited == false".
-        Dimension dim = ncFileWriter.addDimension(null, "dim", 5, true /*false*/, false);
+        Dimension dim = ncFileWriter.addDimension(null, "dim", 5, true /* false */, false);
 
         Structure struct = (Structure) ncFileWriter.addVariable(null, "struct", DataType.STRUCTURE, "dim");
         ncFileWriter.addStructureMember(struct, "foo", DataType.INT, null);
@@ -183,7 +184,7 @@ public class TestNc4Structures {
       try (NetcdfFile ncFileIn = NetcdfFile.open(outFile.getAbsolutePath())) {
         Array fooArray = ncFileIn.readSection("struct.foo");
 
-        int[] expecteds = new int[] { 2, 3, 5, 7, 11 };
+        int[] expecteds = new int[] {2, 3, 5, 7, 11};
         int[] actuals = (int[]) fooArray.copyToNDJavaArray();
         Assert.assertArrayEquals(expecteds, actuals);
       }

@@ -10,27 +10,29 @@ import java.io.IOException;
 
 /**
  * make an Iterator into a DataIterator
+ * 
  * @deprecated use ucar.nc2.ft.*
  */
 public class DataIteratorAdapter implements DataIterator {
-    private Iterator iter;
-    public DataIteratorAdapter(Iterator iter) {
-      this.iter = iter;
-    }
+  private Iterator iter;
 
-    public boolean hasNext() {
-      return iter.hasNext();
-    }
+  public DataIteratorAdapter(Iterator iter) {
+    this.iter = iter;
+  }
 
-    public Object nextData() throws IOException {
-      return iter.next();
-    }
+  public boolean hasNext() {
+    return iter.hasNext();
+  }
 
-    public Object next() {
-      return iter.next();
-    }
+  public Object nextData() throws IOException {
+    return iter.next();
+  }
 
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
+  public Object next() {
+    return iter.next();
+  }
+
+  public void remove() {
+    throw new UnsupportedOperationException();
+  }
 }

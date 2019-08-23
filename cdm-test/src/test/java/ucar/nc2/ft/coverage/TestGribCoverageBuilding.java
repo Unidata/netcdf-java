@@ -7,7 +7,6 @@ package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -60,41 +59,42 @@ public class TestGribCoverageBuilding {
   }
 
   @Test
-    public void test2DTimeCoordinates() throws IOException {
-      String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
-      String gridName = "Pressure_surface";
+  public void test2DTimeCoordinates() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
+    String gridName = "Pressure_surface";
 
-      try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
-        Assert.assertNotNull(filename, cc);
-        Assert.assertEquals(2, cc.getCoverageCollections().size());
-        CoverageCollection cd = cc.findCoverageDataset(FeatureType.FMRC);
-        Assert.assertNotNull(FeatureType.FMRC.toString(), cd);
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
+      Assert.assertNotNull(filename, cc);
+      Assert.assertEquals(2, cc.getCoverageCollections().size());
+      CoverageCollection cd = cc.findCoverageDataset(FeatureType.FMRC);
+      Assert.assertNotNull(FeatureType.FMRC.toString(), cd);
 
-        Coverage cov = cd.findCoverage(gridName);
-        Assert.assertNotNull(gridName, cov);
-        CoverageCoordSys csys = cov.getCoordSys();
-        Assert.assertNotNull("CoverageCoordSys", csys);
+      Coverage cov = cd.findCoverage(gridName);
+      Assert.assertNotNull(gridName, cov);
+      CoverageCoordSys csys = cov.getCoordSys();
+      Assert.assertNotNull("CoverageCoordSys", csys);
 
-        CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
-        Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
-        Assert.assertTrue(runtime.getClass().getName(), runtime instanceof CoverageCoordAxis1D);
-        Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, runtime.getSpacing());
-        Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, runtime.getDependenceType());
-        Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(0));
-        Assert2.assertNearlyEquals(6.0, runtime.getResolution());
+      CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
+      Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
+      Assert.assertTrue(runtime.getClass().getName(), runtime instanceof CoverageCoordAxis1D);
+      Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, runtime.getSpacing());
+      Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, runtime.getDependenceType());
+      Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(0));
+      Assert2.assertNearlyEquals(6.0, runtime.getResolution());
 
-        CoverageCoordAxis time = csys.getAxis(AxisType.TimeOffset);
-        Assert.assertNotNull(AxisType.TimeOffset.toString(), time);
-        Assert.assertTrue(time.getClass().getName(), time instanceof TimeOffsetAxis);
-        Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, time.getSpacing());
-        Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
-        Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), time.makeDate(0));
-        Assert2.assertNearlyEquals(6.0, time.getResolution());
-        Assert.assertEquals(true, csys.isTime2D(time));
-      }
+      CoverageCoordAxis time = csys.getAxis(AxisType.TimeOffset);
+      Assert.assertNotNull(AxisType.TimeOffset.toString(), time);
+      Assert.assertTrue(time.getClass().getName(), time instanceof TimeOffsetAxis);
+      Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, time.getSpacing());
+      Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
+      Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), time.makeDate(0));
+      Assert2.assertNearlyEquals(6.0, time.getResolution());
+      Assert.assertEquals(true, csys.isTime2D(time));
     }
+  }
 
-  @Test public void testBestTimeCoordinates() throws IOException {
+  @Test
+  public void testBestTimeCoordinates() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
     String gridName = "Pressure_surface";
 
@@ -166,7 +166,7 @@ public class TestGribCoverageBuilding {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/cfs.wmo";
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      String gridName =  "Albedo_surface_Average";
+      String gridName = "Albedo_surface_Average";
 
       Assert.assertEquals(1, cc.getCoverageCollections().size());
       CoverageCollection cd = cc.getCoverageCollections().get(0);

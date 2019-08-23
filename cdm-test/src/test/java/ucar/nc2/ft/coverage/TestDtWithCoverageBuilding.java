@@ -3,7 +3,6 @@ package ucar.nc2.ft.coverage;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -43,7 +42,7 @@ public class TestDtWithCoverageBuilding {
     try (DtCoverageDataset gds = DtCoverageDataset.open(filename)) {
       Assert.assertNotNull(filename, gds);
 
-      String gridName =  "Pressure_surface";
+      String gridName = "Pressure_surface";
       DtCoverage grid = gds.findGridByShortName(gridName);
       Assert.assertNotNull(gridName, grid);
 
@@ -74,8 +73,8 @@ public class TestDtWithCoverageBuilding {
   public void test2DRuntimeCoordinate() throws IOException {
 
     String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
-    String gridName =  "TwoD/Pressure_surface";
-    String covName =  "Pressure_surface";
+    String gridName = "TwoD/Pressure_surface";
+    String covName = "Pressure_surface";
 
     try (DtCoverageDataset gds = DtCoverageDataset.open(filename)) {
       Assert.assertNotNull(filename, gds);
@@ -100,7 +99,7 @@ public class TestDtWithCoverageBuilding {
       Formatter errlog = new Formatter();
       try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog)) {
         Assert.assertNotNull(filename, cc);
-        Assert.assertEquals(1, cc.getCoverageCollections().size());   // LOOK only get 2D
+        Assert.assertEquals(1, cc.getCoverageCollections().size()); // LOOK only get 2D
         CoverageCollection cd = cc.findCoverageDataset(FeatureType.FMRC);
         Assert.assertNotNull(FeatureType.FMRC.toString(), cd);
 
@@ -163,7 +162,7 @@ public class TestDtWithCoverageBuilding {
         assert !time.isScalar();
         Assert.assertEquals(10, time.getNcoords());
         double[] timeValuesGrib = time.getValues();
-        for (int i=0; i<time.getNcoords(); i++)
+        for (int i = 0; i < time.getNcoords(); i++)
           Assert2.assertNearlyEquals(timeValuesDt[i], timeValuesGrib[i]);
 
         CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
@@ -171,7 +170,7 @@ public class TestDtWithCoverageBuilding {
         assert !runtime.isScalar();
         Assert.assertEquals(10, runtime.getNcoords());
         double[] runValuesGrib = runtime.getValues();
-        for (int i=0; i<runtime.getNcoords(); i++)
+        for (int i = 0; i < runtime.getNcoords(); i++)
           Assert2.assertNearlyEquals(runValuesDt[i], runValuesGrib[i]);
       }
     }
@@ -184,13 +183,13 @@ public class TestDtWithCoverageBuilding {
 
     try (DtCoverageDataset gds = DtCoverageDataset.open(filename)) {
       Assert.assertNotNull(filename, gds);
-      String gridName =  "Albedo_surface_1_Month_Average";
+      String gridName = "Albedo_surface_1_Month_Average";
 
       DtCoverage grid = gds.findGridByShortName(gridName);
       Assert.assertNotNull(gridName, grid);
 
       DtCoverageCS gcs = grid.getCoordinateSystem();
-      Assert.assertNotNull(gridName+" cs", gcs);
+      Assert.assertNotNull(gridName + " cs", gcs);
       Assert.assertEquals("ucar.nc2.ft2.coverage.adapter.GridCS", gcs.getClass().getName());
       GridCS gridCS = (GridCS) gcs;
 

@@ -15,6 +15,7 @@ public interface FeatureDatasetPoint extends FeatureDataset {
   /**
    * Get a list of DsgFeatureCollection contained in this dataset.
    * These will all be of type PointFeatureCollection, PointFeatureCC, or PointFeatureCCC.
+   * 
    * @return list of DsgFeatureCollection contained in this dataset
    */
   List<DsgFeatureCollection> getPointFeatureCollectionList();

@@ -61,8 +61,8 @@ public class Grib1GdsPredefined {
   private static class NcepLatLon extends Grib1Gds.LatLon {
     final int gridNumber;
 
-    NcepLatLon(int gridNumber, int nx, int ny, float la1, float lo1, float la2, float lo2, float deltaLon, float deltaLat,
-               byte resolution, byte scan) {
+    NcepLatLon(int gridNumber, int nx, int ny, float la1, float lo1, float la2, float lo2, float deltaLon,
+        float deltaLat, byte resolution, byte scan) {
       super(1000 * gridNumber);
       this.gridNumber = gridNumber;
       this.nx = nx;
@@ -79,9 +79,12 @@ public class Grib1GdsPredefined {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      if (!super.equals(o))
+        return false;
 
       NcepLatLon that = (NcepLatLon) o;
       return gridNumber == that.gridNumber;
@@ -96,8 +99,8 @@ public class Grib1GdsPredefined {
   private static class NcepPS extends Grib1Gds.PolarStereographic {
     final int gridNumber;
 
-    NcepPS(int gridNumber, int nx, int ny, float la1, float lo1, float lov, float dX, float dY,
-           byte resolution, byte scan) {
+    NcepPS(int gridNumber, int nx, int ny, float la1, float lo1, float lov, float dX, float dY, byte resolution,
+        byte scan) {
       super(1000 * gridNumber);
       this.gridNumber = gridNumber;
       this.nx = nx;
@@ -113,9 +116,12 @@ public class Grib1GdsPredefined {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      if (!super.equals(o))
+        return false;
 
       NcepPS that = (NcepPS) o;
       return gridNumber == that.gridNumber;

@@ -7,7 +7,6 @@ package ucar.nc2.writer;
 
 import java.io.Closeable;
 import java.io.IOException;
-
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
@@ -40,7 +39,7 @@ public class GribToNetcdfWriter implements Closeable {
       while (scanner.hasNext()) {
         Grib2Record gr = scanner.next();
         float[] data = gr.readData(raf);
-        for (int i=0; i<data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
           data[i] = bitShave(data[i], mask11);
         }
       }
@@ -48,8 +47,9 @@ public class GribToNetcdfWriter implements Closeable {
   }
 
   public static int getBitMask(int bitN) {
-    if (bitN >= 23) return allOnes;
-    return allOnes << 23-bitN;
+    if (bitN >= 23)
+      return allOnes;
+    return allOnes << 23 - bitN;
   }
 
   private static final int allOnes = 0xffffffff;
@@ -65,12 +65,14 @@ public class GribToNetcdfWriter implements Closeable {
 
   /**
    * Shave n bits off the float
-   * @param value    original floating point
-   * @param bitMask  bitMask from getBitMask()
+   * 
+   * @param value original floating point
+   * @param bitMask bitMask from getBitMask()
    * @return modified float
    */
   public static float bitShave(float value, int bitMask) {
-    if (Float.isNaN(value)) return value;   // ??
+    if (Float.isNaN(value))
+      return value; // ??
 
     int bits = Float.floatToRawIntBits(value);
     int shave = bits & bitMask;

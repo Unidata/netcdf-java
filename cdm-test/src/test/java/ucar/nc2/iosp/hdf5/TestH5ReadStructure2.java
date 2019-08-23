@@ -12,7 +12,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -23,27 +22,26 @@ public class TestH5ReadStructure2 {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /*
-     Structure {
-     int a_name;
-     String b_name(4);
-     char c_name(6);
-     short d_name(5, 4);
-     float e_name;
-     double f_name(10);
-     byte g_name;
-   } CompoundComplex(6);
-    type = Layout(8);  type= 1 (contiguous) storageSize = (6,224) dataSize=0 dataAddress=2048
- */
+   * Structure {
+   * int a_name;
+   * String b_name(4);
+   * char c_name(6);
+   * short d_name(5, 4);
+   * float e_name;
+   * double f_name(10);
+   * byte g_name;
+   * } CompoundComplex(6);
+   * type = Layout(8); type= 1 (contiguous) storageSize = (6,224) dataSize=0 dataAddress=2048
+   */
   @Test
   public void testReadH5Structure() throws java.io.IOException {
     int a_name = 0;
-    String[] b_name = new String[]{"A fight is a contract that takes two people to honor.",
-        "A combative stance means that you've accepted the contract.",
-        "In which case, you deserve what you get.",
+    String[] b_name = new String[] {"A fight is a contract that takes two people to honor.",
+        "A combative stance means that you've accepted the contract.", "In which case, you deserve what you get.",
         "  --  Professor Cheng Man-ch'ing"};
     String c_name = "Hello!";
 
-    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("complex/compound_complex.h5")) {
 
       Variable dset = ncfile.findVariable("CompoundComplex");
@@ -83,13 +81,12 @@ public class TestH5ReadStructure2 {
   @Test
   public void testH5StructureDS() throws java.io.IOException {
     int a_name = 0;
-    String[] b_name = new String[]{"A fight is a contract that takes two people to honor.",
-        "A combative stance means that you've accepted the contract.",
-        "In which case, you deserve what you get.",
+    String[] b_name = new String[] {"A fight is a contract that takes two people to honor.",
+        "A combative stance means that you've accepted the contract.", "In which case, you deserve what you get.",
         "  --  Professor Cheng Man-ch'ing"};
     String c_name = "Hello!";
 
-    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfDataset ncfile = NetcdfDataset.openDataset(TestH5.testDir + "complex/compound_complex.h5")) {
 
       Variable dset = ncfile.findVariable("CompoundComplex");
@@ -128,21 +125,21 @@ public class TestH5ReadStructure2 {
   }
 
   /*
-    Structure {
-     int a_name;
-     byte b_name(3);
-     byte c_name(3);
-     short d_name(3);
-     int e_name(3);
-     long f_name(3);
-     int g_name(3);
-     short h_name(3);
-     int i_name(3);
-     long j_name(3);
-     float k_name(3);
-     double l_name(3);
-   } CompoundNative(15);
-       type = Layout(8);  type= 1 (contiguous) storageSize = (15,144) dataSize=0 dataAddress=2048   
+   * Structure {
+   * int a_name;
+   * byte b_name(3);
+   * byte c_name(3);
+   * short d_name(3);
+   * int e_name(3);
+   * long f_name(3);
+   * int g_name(3);
+   * short h_name(3);
+   * int i_name(3);
+   * long j_name(3);
+   * float k_name(3);
+   * double l_name(3);
+   * } CompoundNative(15);
+   * type = Layout(8); type= 1 (contiguous) storageSize = (15,144) dataSize=0 dataAddress=2048
    */
   @Test
   public void testReadH5StructureArrayMembers() throws java.io.IOException {
@@ -174,12 +171,13 @@ public class TestH5ReadStructure2 {
     System.out.println("*** testReadH5StructureArrayMembers ok");
   }
 
-  /* Structure {
-       int LAT[0];
-       ...
-       int LAT[149];
-   } IMAGE_LAT_ARRAY(3600);
-      type = Layout(8);  type= 2 (chunked) storageSize = (1,600) dataSize=0 dataAddress=2548046
+  /*
+   * Structure {
+   * int LAT[0];
+   * ...
+   * int LAT[149];
+   * } IMAGE_LAT_ARRAY(3600);
+   * type = Layout(8); type= 2 (chunked) storageSize = (1,600) dataSize=0 dataAddress=2548046
    */
   @Test
   public void testReadOneAtATime() throws java.io.IOException, InvalidRangeException {
@@ -211,13 +209,14 @@ public class TestH5ReadStructure2 {
     System.out.println("*** testReadIASI ok");
   }
 
-  /*  Structure {
-     char EntryName(64);
-     char Definition(1024);
-     char Unit(1024);
-     char Scale Factor(1024);
-   } TIME_DESCR(60);
-      type = Layout(8);  type= 2 (chunked) storageSize = (1,3136) dataSize=0 dataAddress=684294
+  /*
+   * Structure {
+   * char EntryName(64);
+   * char Definition(1024);
+   * char Unit(1024);
+   * char Scale Factor(1024);
+   * } TIME_DESCR(60);
+   * type = Layout(8); type= 2 (chunked) storageSize = (1,3136) dataSize=0 dataAddress=684294
    */
   @Test
   public void testReadManyAtATime() throws java.io.IOException, InvalidRangeException {

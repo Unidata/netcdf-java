@@ -13,7 +13,6 @@ import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import ucar.ma2.Range;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
@@ -42,29 +41,30 @@ import ucar.unidata.io.RandomAccessFile;
  * The SIGMET-IRIS data format are described in "IRIS Programmer's Manual" ch.3
  * The SIGMET-IRIS file consists of records with fixed length=6144 bytes. Data is written in
  * little-endian format. The organization of raw product SIGMET-IRIS file is:
- * Record #1   { <product_hdr> 0,0,0,...}
- * Record #2   { <ingest_header> 0,0,0,... }
+ * Record #1 { <product_hdr> 0,0,0,...}
+ * Record #2 { <ingest_header> 0,0,0,... }
  * ---if there are several sweeps (usually 24) and one type of data:
- * Record #3   { <raw_prod_bhdr><ingest_data_header>...Data for sweep 1.. }
- * Record #4   { <raw_prod_bhdr>...Data for sweep 1...  }
+ * Record #3 { <raw_prod_bhdr><ingest_data_header>...Data for sweep 1.. }
+ * Record #4 { <raw_prod_bhdr>...Data for sweep 1... }
  * .............................................
- * Record #n   { <raw_prod_bhdr>...Data for sweep 1... 0.... }
+ * Record #n { <raw_prod_bhdr>...Data for sweep 1... 0.... }
  * Record #n+1 { <raw_prod_bhdr><ingest_data_header>...Data for sweep 2.. }
- * Record #n+2 { <raw_prod_bhdr>...Data for sweep 2...  }
+ * Record #n+2 { <raw_prod_bhdr>...Data for sweep 2... }
  * .............................................
- * Record #m   { <raw_prod_bhdr>...Data for sweep 2... 0...  }
+ * Record #m { <raw_prod_bhdr>...Data for sweep 2... 0... }
  * Record #m+1 { <raw_prod_bhdr><ingest_data_header>...Data for sweep 3.. }
  * .............................................
- * Structure of "Data for sweep" is:  <ray_header><ray_data>...<ray_header><ray_data>...
+ * Structure of "Data for sweep" is: <ray_header><ray_data>...<ray_header><ray_data>...
  * <ray_header> and <ray_data> are encoded with the compression algorithm
  * ("IRIS Programmer's Manual" 3.5.4.1)
  * ---if there are "n" types of data (usually 4 or 5) and one sweep:
- * Record #3   { <raw_prod_bhdr><ingest_data_header(data_type_1)><ingest_data_header(data_type_2)>...
+ * Record #3 { <raw_prod_bhdr><ingest_data_header(data_type_1)><ingest_data_header(data_type_2)>...
  * <ingest_data_header(data_type_n)>...Data...}
- * Record #4   { <raw_prod_bhdr>...Data...  }
+ * Record #4 { <raw_prod_bhdr>...Data... }
  * .............................................
- * Record #n   { <raw_prod_bhdr>...Data...  }
- * Structure of "Data" is:  <ray_header(data_type_1)><ray_data(data_type_1)><ray_header(data_type_2)><ray_data(data_type_2)>...
+ * Record #n { <raw_prod_bhdr>...Data... }
+ * Structure of "Data" is:
+ * <ray_header(data_type_1)><ray_data(data_type_1)><ray_header(data_type_2)><ray_data(data_type_2)>...
  * <ray_header(data_type_n)><ray_data(data_type_n)><ray_header(data_type_1)><ray_data(data_type_1)>
  * <ray_header(data_type_2)><ray_data(data_type_2)>... <ray_header(data_type_n)><ray_data(data_type_n)>...
  * <ray_header> and <ray_data> are encoded with the compression algorithm
@@ -111,9 +111,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       raf.seek(0);
       short[] data = new short[13];
       raf.readShort(data, 0, 13);
-      return (data[0] == (short) 27 &&
-              data[6] == (short) 26 &&
-              data[12] ==(short) 15);
+      return (data[0] == (short) 27 && data[6] == (short) 26 && data[12] == (short) 15);
     } catch (IOException ioe) {
       System.out.println("In isValidFile(): " + ioe.toString());
       return false;
@@ -124,9 +122,9 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * Open existing file, and populate ncfile with it.
    */
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-                   ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
+      ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
     super.open(raf, ncfile, cancelTask);
-    //java.util.Map<String, Number> recHdr=new java.util.HashMap<String, Number>();
+    // java.util.Map<String, Number> recHdr=new java.util.HashMap<String, Number>();
     java.util.Map<String, String> hdrNames = new java.util.HashMap<>();
     volScan = new SigmetVolumeScan(raf, ncfile, varList);
     this.varList = init(raf, ncfile, hdrNames);
@@ -144,8 +142,8 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     java.util.Map<String, Number> recHdr1 = new java.util.HashMap<>();
     try {
       int nparams = 0;
-      //      -- Read from <product_end> of the 1st record -- 12+320+120
-      //      -- Calculate Nyquist velocity --------------------
+      // -- Read from <product_end> of the 1st record -- 12+320+120
+      // -- Calculate Nyquist velocity --------------------
       raf.seek(452);
       int prf = raf.readInt();
       raf.seek(480);
@@ -153,16 +151,16 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       float vNyq = calcNyquist(prf, wave);
       recHdr1.put("vNyq", vNyq);
 
-      //      -- Read from the 2nd record----------- 6144+12(strucr_hdr)+168(from ingest_config)
+      // -- Read from the 2nd record----------- 6144+12(strucr_hdr)+168(from ingest_config)
       raf.seek(6324);
       int radar_lat = raf.readInt();
-      int radar_lon = raf.readInt();           //6328
-      short ground_height = raf.readShort();  //6332
-      short radar_height = raf.readShort();   //6334
+      int radar_lon = raf.readInt(); // 6328
+      short ground_height = raf.readShort(); // 6332
+      short radar_height = raf.readShort(); // 6334
       raf.skipBytes(4);
-      short num_rays = raf.readShort();      // 6340
+      short num_rays = raf.readShort(); // 6340
       raf.skipBytes(2);
-      int radar_alt = raf.readInt();          //6344
+      int radar_alt = raf.readInt(); // 6344
       raf.seek(6648);
       int time_beg = raf.readInt();
       raf.seek(6652);
@@ -175,17 +173,18 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       raf.seek(6912);
       short multiprf = raf.readShort();
       raf.seek(7408);
-      int range_first = raf.readInt();   //  cm    7408
-      int range_last = raf.readInt();    //  cm  7412
+      int range_first = raf.readInt(); // cm 7408
+      int range_last = raf.readInt(); // cm 7412
       raf.skipBytes(2);
-      short bins = raf.readShort();             //7418
-      if (bins % 2 != 0) bins = (short) (bins + 1);
+      short bins = raf.readShort(); // 7418
+      if (bins % 2 != 0)
+        bins = (short) (bins + 1);
       raf.skipBytes(4);
-      int step = raf.readInt();          //  cm    7424
+      int step = raf.readInt(); // cm 7424
       raf.seek(7574);
-      short number_sweeps = raf.readShort();    // 7574
+      short number_sweeps = raf.readShort(); // 7574
       raf.seek(12312);
-      int base_time = raf.readInt();        //<ingest_data_header> 3d rec
+      int base_time = raf.readInt(); // <ingest_data_header> 3d rec
       raf.skipBytes(2);
       short year = raf.readShort();
       short month = raf.readShort();
@@ -198,11 +197,11 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       recHdr1.put("radar_height", radar_height);
       recHdr1.put("radar_alt", radar_alt);
       recHdr1.put("step", step);
-      recHdr1.put("bins", bins);    //System.out.println("  bins="+bins);
-      recHdr1.put("num_rays", num_rays); //System.out.println("  rays="+num_rays);
-      recHdr1.put("nparams", nparams);//System.out.println("  nparams="+nparams);
+      recHdr1.put("bins", bins); // System.out.println(" bins="+bins);
+      recHdr1.put("num_rays", num_rays); // System.out.println(" rays="+num_rays);
+      recHdr1.put("nparams", nparams);// System.out.println(" nparams="+nparams);
       recHdr1.put("multiprf", multiprf);
-      recHdr1.put("number_sweeps", number_sweeps);   //System.out.println("IN HDR:  number_sweeps="+number_sweeps);
+      recHdr1.put("number_sweeps", number_sweeps); // System.out.println("IN HDR: number_sweeps="+number_sweeps);
       recHdr1.put("year", year);
       recHdr1.put("month", month);
       recHdr1.put("day", day);
@@ -221,7 +220,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     java.util.Map<String, String> hdrNames = new java.util.HashMap<>();
     try {
       raf.seek(6288);
-      String stnName = raf.readString(16);  //System.out.println(" stnName="+stnName.trim());
+      String stnName = raf.readString(16); // System.out.println(" stnName="+stnName.trim());
       raf.seek(6306);
       String stnName_util = raf.readString(16);
       hdrNames.put("StationName", stnName.trim());
@@ -236,16 +235,15 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   /**
    * Define Dimensions, Variables, Attributes in ncfile
    *
-   * @param raf      ucar.unidata.io.RandomAccessFile corresponds of SIGMET datafile.
-   * @param ncfile   an empty NetcdfFile object which will be filled.
+   * @param raf ucar.unidata.io.RandomAccessFile corresponds of SIGMET datafile.
+   * @param ncfile an empty NetcdfFile object which will be filled.
    * @param hdrNames java.util.Map with values for "StationName.." Attributes
    * @return ArrayList of Variables of ncfile
    */
   public ArrayList<Variable> init(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-                                  java.util.Map<String, String> hdrNames) {
+      java.util.Map<String, String> hdrNames) {
     // prepare attribute values
-    String[] data_name = {" ", "TotalPower", "Reflectivity", "Velocity",
-            "Width", "Differential_Reflectivity"};
+    String[] data_name = {" ", "TotalPower", "Reflectivity", "Velocity", "Width", "Differential_Reflectivity"};
     String[] unit = {" ", "dbZ", "dbZ", "m/sec", "m/sec", "dB"};
     int[] type = {1, 2, 3, 4, 5};
     String def_datafile = "SIGMET-IRIS";
@@ -257,19 +255,19 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
     String stnName = hdrNames.get("StationName");
     String stnName_util = hdrNames.get("StationName_SetupUtility");
-    float radar_lat = recHdr.get("radar_lat").floatValue(); //System.out.println("rad_lat="+radar_lat);
-    float radar_lon = recHdr.get("radar_lon").floatValue(); //System.out.println("rad_lon="+radar_lon);
-    short ground_height = recHdr.get("ground_height").shortValue(); //System.out.println("ground_H="+ground_height);
-    short radar_height = recHdr.get("radar_height").shortValue(); //System.out.println("radar_H="+radar_height);
-    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100; //System.out.println("rad_alt="+radar_alt);
-    short num_rays = recHdr.get("num_rays").shortValue(); //System.out.println("num_rays="+num_rays);
-    short bins = recHdr.get("bins").shortValue(); //System.out.println("bins="+bins);
-    float range_first = (recHdr.get("range_first").intValue()) * 0.01f; //System.out.println("range_1st="+range_first);
-    float range_last = (recHdr.get("range_last").intValue()) * 0.01f; //System.out.println("step="+step);
+    float radar_lat = recHdr.get("radar_lat").floatValue(); // System.out.println("rad_lat="+radar_lat);
+    float radar_lon = recHdr.get("radar_lon").floatValue(); // System.out.println("rad_lon="+radar_lon);
+    short ground_height = recHdr.get("ground_height").shortValue(); // System.out.println("ground_H="+ground_height);
+    short radar_height = recHdr.get("radar_height").shortValue(); // System.out.println("radar_H="+radar_height);
+    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100; // System.out.println("rad_alt="+radar_alt);
+    short num_rays = recHdr.get("num_rays").shortValue(); // System.out.println("num_rays="+num_rays);
+    short bins = recHdr.get("bins").shortValue(); // System.out.println("bins="+bins);
+    float range_first = (recHdr.get("range_first").intValue()) * 0.01f; // System.out.println("range_1st="+range_first);
+    float range_last = (recHdr.get("range_last").intValue()) * 0.01f; // System.out.println("step="+step);
     short number_sweeps = recHdr.get("number_sweeps").shortValue();
-    //System.out.println("number_sweeps="+number_sweeps);
-    int nparams = (recHdr.get("nparams").intValue()); //System.out.println("nparams="+nparams);
-    short year = recHdr.get("year").shortValue(); //System.out.println("year="+year);
+    // System.out.println("number_sweeps="+number_sweeps);
+    int nparams = (recHdr.get("nparams").intValue()); // System.out.println("nparams="+nparams);
+    short year = recHdr.get("year").shortValue(); // System.out.println("year="+year);
     short month = recHdr.get("month").shortValue();
     short day = recHdr.get("day").shortValue();
     int base_time = (recHdr.get("base_time").intValue());
@@ -337,9 +335,11 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     tsu_sec = volScan.getStartSweep();
     for (int i = 0; i < number_sweeps; i++) {
       String st1 = Short.toString(month);
-      if (st1.length() < 2) st1 = "0" + st1;
+      if (st1.length() < 2)
+        st1 = "0" + st1;
       String st2 = Short.toString(day);
-      if (st2.length() < 2) st2 = "0" + st2;
+      if (st2.length() < 2)
+        st2 = "0" + st2;
       date0 = year + "-" + st1 + "-" + st2;
       tsu[i] = date0 + "T" + calcTime(tsu_sec[i], 0) + "Z";
     }
@@ -476,17 +476,16 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   /**
    * Fill all of the variables/attributes in the ncfile
    *
-   * @param ncfile  NetcdfFile object which will be filled.
-   * @param bst     number of seconds since midnight for start of sweep
-   * @param yr      year of start of each sweep
-   * @param m       month of start of each sweep
-   * @param dda     day of start of each sweep
+   * @param ncfile NetcdfFile object which will be filled.
+   * @param bst number of seconds since midnight for start of sweep
+   * @param yr year of start of each sweep
+   * @param m month of start of each sweep
+   * @param dda day of start of each sweep
    * @param varList ArrayList of Variables of ncfile
-   * @param recHdr  java.util.Map with values for Attributes
+   * @param recHdr java.util.Map with values for Attributes
    */
-  public void doNetcdfFileCoordinate(ucar.nc2.NetcdfFile ncfile, int[] bst,
-                                     short[] yr, short[] m, short[] dda,
-                                     ArrayList<Variable> varList, java.util.Map<String, Number> recHdr) {
+  public void doNetcdfFileCoordinate(ucar.nc2.NetcdfFile ncfile, int[] bst, short[] yr, short[] m, short[] dda,
+      ArrayList<Variable> varList, java.util.Map<String, Number> recHdr) {
     // prepare attribute values
 
     String[] unit = {" ", "dbZ", "dbZ", "m/sec", "m/sec", "dB"};
@@ -495,28 +494,32 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     Short ray_header_length = 6;
     int ngates;
 
-    float radar_lat = recHdr.get("radar_lat").floatValue(); //System.out.println("rad_lat="+radar_lat);
-    float radar_lon = recHdr.get("radar_lon").floatValue(); //System.out.println("rad_lon="+radar_lon);
-    short ground_height = recHdr.get("ground_height").shortValue(); //System.out.println("ground_H="+ground_height);
-    short radar_height = recHdr.get("radar_height").shortValue(); //System.out.println("radar_H="+radar_height);
-    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100; //System.out.println("rad_alt="+radar_alt);
-    short num_rays = recHdr.get("num_rays").shortValue(); //System.out.println("HERE!! num_rays="+num_rays);
-    float range_first = (recHdr.get("range_first").intValue()) * 0.01f; //System.out.println("range_1st="+range_first);
-    float range_last = (recHdr.get("range_last").intValue()) * 0.01f; //System.out.println("step="+step);
+    float radar_lat = recHdr.get("radar_lat").floatValue(); // System.out.println("rad_lat="+radar_lat);
+    float radar_lon = recHdr.get("radar_lon").floatValue(); // System.out.println("rad_lon="+radar_lon);
+    short ground_height = recHdr.get("ground_height").shortValue(); // System.out.println("ground_H="+ground_height);
+    short radar_height = recHdr.get("radar_height").shortValue(); // System.out.println("radar_H="+radar_height);
+    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100; // System.out.println("rad_alt="+radar_alt);
+    short num_rays = recHdr.get("num_rays").shortValue(); // System.out.println("HERE!! num_rays="+num_rays);
+    float range_first = (recHdr.get("range_first").intValue()) * 0.01f; // System.out.println("range_1st="+range_first);
+    float range_last = (recHdr.get("range_last").intValue()) * 0.01f; // System.out.println("step="+step);
     short number_sweeps = recHdr.get("number_sweeps").shortValue();
-    int nparams = (recHdr.get("nparams").intValue()); //System.out.println("nparams="+nparams);
+    int nparams = (recHdr.get("nparams").intValue()); // System.out.println("nparams="+nparams);
     // define date/time
-    //int last_t=(int)(ray[nparams*number_sweeps-1][num_rays-1].getTime());
+    // int last_t=(int)(ray[nparams*number_sweeps-1][num_rays-1].getTime());
     int last_t = volScan.lastRay.getTime();
     String sss1 = Short.toString(m[0]);
-    if (sss1.length() < 2) sss1 = "0" + sss1;
+    if (sss1.length() < 2)
+      sss1 = "0" + sss1;
     String sss2 = Short.toString(dda[0]);
-    if (sss2.length() < 2) sss2 = "0" + sss2;
+    if (sss2.length() < 2)
+      sss2 = "0" + sss2;
     String base_date0 = yr[0] + "-" + sss1 + "-" + sss2;
     String sss11 = Short.toString(m[number_sweeps - 1]);
-    if (sss11.length() < 2) sss11 = "0" + sss11;
+    if (sss11.length() < 2)
+      sss11 = "0" + sss11;
     String sss22 = Short.toString(dda[number_sweeps - 1]);
-    if (sss22.length() < 2) sss22 = "0" + sss22;
+    if (sss22.length() < 2)
+      sss22 = "0" + sss22;
     String base_date1 = yr[number_sweeps - 1] + "-" + sss11 + "-" + sss22;
     String start_time = base_date0 + "T" + calcTime(bst[0], 0) + "Z";
     String end_time = base_date1 + "T" + calcTime(bst[number_sweeps - 1], last_t) + "Z";
@@ -560,7 +563,8 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       }
       // NCdump.printArray(distArr[0], "distanceR", System.out, null);
       List rgp = volScan.getTotalPowerGroups();
-      if (rgp.size() == 0) rgp = volScan.getReflectivityGroups();
+      if (rgp.size() == 0)
+        rgp = volScan.getReflectivityGroups();
       List[] sgp = new ArrayList[number_sweeps];
       for (int i = 0; i < number_sweeps; i++) {
         sgp[i] = (List) rgp.get((short) i);
@@ -582,16 +586,16 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
           }
         }
 
-        //                if (time[i].getShape().length == 0) {
-        //                    continue;
-        //                }
+        // if (time[i].getShape().length == 0) {
+        // continue;
+        // }
         timeArr[i] = (ArrayInt.D1) Array.factory(DataType.INT, time[i].getShape());
         timeIndex[i] = timeArr[i].getIndex();
         List rlist = sgp[i];
 
         for (int jj = 0; jj < num_rays; jj++) {
           rtemp[jj] = (Ray) rlist.get(jj);
-        }    //ray[i][jj]; }
+        } // ray[i][jj]; }
         for (int jj = 0; jj < num_rays; jj++) {
           timeArr[i].setInt(timeIndex[i].set(jj), rtemp[jj].getTime());
         }
@@ -619,12 +623,12 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
         for (int jj = 0; jj < num_rays; jj++) {
           rtemp[jj] = (Ray) rlist.get(jj);
-        } //ray[i][jj]; }
+        } // ray[i][jj]; }
         for (int jj = 0; jj < num_rays; jj++) {
           azimArr[i].setFloat(azimIndex[i].set(jj), rtemp[jj].getAz());
         }
       }
-      //NCdump.printArray(azimArr[0], "azimuthR", System.out, null);
+      // NCdump.printArray(azimArr[0], "azimuthR", System.out, null);
 
       Variable[] elevationR = new Variable[number_sweeps];
       ArrayFloat.D1[] elevArr = new ArrayFloat.D1[number_sweeps];
@@ -646,7 +650,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
         for (int jj = 0; jj < num_rays; jj++) {
           rtemp[jj] = (Ray) rlist.get(jj);
-        } //ray[i][jj]; }
+        } // ray[i][jj]; }
         for (int jj = 0; jj < num_rays; jj++) {
           elevArr[i].setFloat(elevIndex[i].set(jj), rtemp[jj].getElev());
         }
@@ -669,7 +673,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         List rlist = sgp[i];
         for (int jj = 0; jj < num_rays; jj++) {
           rtemp[jj] = (Ray) rlist.get(jj);
-        } //ray[i][jj]; }
+        } // ray[i][jj]; }
         ngates = rtemp[0].getBins();
         gatesArr.setInt(gatesIndex.set(i), ngates);
       }
@@ -683,42 +687,41 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       numGates.setCachedData(gatesArr, false);
       // startSweep.setCachedData(sweepArr, false);
 
-      //          -------------------------------------------------
+      // -------------------------------------------------
       // int b=(int)ray[0][0].getBins();
 
       // -- Test of readData() and readToByteChannel() -----------------
       /*
-Range r1=new Range(356, 359);
-Range r2=new Range(0, 15);
-java.util.List arlist=new ArrayList();
-arlist.add(r1);
-arlist.add(r2);
-Array testArr=readData(v[0], new Section(arlist));
-NCdump.printArray(testArr, "Total_Power_sweep_1", System.out, null);
-WritableByteChannel channel=new FileOutputStream(new File("C:\\netcdf\\tt.dat")).getChannel();
-long ikk=readToByteChannel(v[0], new Section(arlist), channel);
-System.out.println("IKK="+ikk);
-channel.close();
-      */
-      //---------------------------------------------------
+       * Range r1=new Range(356, 359);
+       * Range r2=new Range(0, 15);
+       * java.util.List arlist=new ArrayList();
+       * arlist.add(r1);
+       * arlist.add(r2);
+       * Array testArr=readData(v[0], new Section(arlist));
+       * NCdump.printArray(testArr, "Total_Power_sweep_1", System.out, null);
+       * WritableByteChannel channel=new FileOutputStream(new File("C:\\netcdf\\tt.dat")).getChannel();
+       * long ikk=readToByteChannel(v[0], new Section(arlist), channel);
+       * System.out.println("IKK="+ikk);
+       * channel.close();
+       */
+      // ---------------------------------------------------
 
     } catch (Exception e) {
       System.out.println(e.toString());
       e.printStackTrace();
     }
-  }   //----------- end of doNetcdf ----------------------------------
+  } // ----------- end of doNetcdf ----------------------------------
 
   /**
    * Read data from a top level Variable and return a memory resident Array.
    *
-   * @param v2      Variable. It may have FLOAT/INTEGER data type.
+   * @param v2 Variable. It may have FLOAT/INTEGER data type.
    * @param section wanted section of data of Variable. The section list is a list
-   *                of ucar.ma2.Range which define the requested data subset.
+   *        of ucar.ma2.Range which define the requested data subset.
    * @return Array of data which will be read from Variable through this call.
    */
-  public Array readData1(ucar.nc2.Variable v2, Section section)
-          throws IOException, InvalidRangeException {
-    //doData(raf, ncfile, varList);
+  public Array readData1(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
+    // doData(raf, ncfile, varList);
     int[] sh = section.getShape();
     Array temp = Array.factory(v2.getDataType(), sh);
     long pos0 = 0;
@@ -754,7 +757,7 @@ channel.close();
     else if (shortName.startsWith("DiffReflectivity"))
       groups = volScan.getDifferentialReflectivityGroups();
     else
-      throw new IllegalStateException("Illegal variable name = "+shortName);
+      throw new IllegalStateException("Illegal variable name = " + shortName);
 
     if (section.getRank() == 2) {
       Range radialRange = section.getRange(0);
@@ -767,7 +770,7 @@ channel.close();
       Range gateRange = section.getRange(2);
 
       for (int scanIdx : scanRange) {
-        readOneScan( groups.get(scanIdx), radialRange, gateRange, ii);
+        readOneScan(groups.get(scanIdx), radialRange, gateRange, ii);
       }
     }
     return data;
@@ -799,7 +802,7 @@ channel.close();
    * Read data from a top level Variable of INTEGER data type and return a memory resident Array.
    *
    * @param index LayoutRegular object
-   * @param v2    Variable has INTEGER data type.
+   * @param v2 Variable has INTEGER data type.
    * @return Array of data which will be read from Variable through this call.
    */
   public Array readIntData(LayoutRegular index, Variable v2) throws IOException {
@@ -816,33 +819,31 @@ channel.close();
    * Read data from a top level Variable of FLOAT data type and return a memory resident Array.
    *
    * @param index LayoutRegular object
-   * @param v2    Variable has FLOAT data type.
+   * @param v2 Variable has FLOAT data type.
    * @return Array of data which will be read from Variable through this call.
    */
-  public Array readFloatData(LayoutRegular index, Variable v2)
-          throws IOException {
+  public Array readFloatData(LayoutRegular index, Variable v2) throws IOException {
     float[] var = (float[]) (v2.read().get1DJavaArray(v2.getDataType().getPrimitiveClassType()));
     float[] data = new float[(int) index.getTotalNelems()];
     while (index.hasNext()) {
       Layout.Chunk chunk = index.next();
-      System.arraycopy(var, (int) chunk.getSrcPos() / 4, data,
-              (int) chunk.getDestElem(), chunk.getNelems());
+      System.arraycopy(var, (int) chunk.getSrcPos() / 4, data, (int) chunk.getDestElem(), chunk.getNelems());
     }
-    return Array.factory(v2.getDataType(), new int[]{(int) index.getTotalNelems()}, data);
+    return Array.factory(v2.getDataType(), new int[] {(int) index.getTotalNelems()}, data);
   }
-  //----------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------
 
   /**
    * Read data from a top level Variable and send data to a WritableByteChannel.
    *
-   * @param v2      Variable
+   * @param v2 Variable
    * @param section wanted section of data of Variable. The section list is a list
-   *                of ucar.ma2.Range which define the requested data subset.
+   *        of ucar.ma2.Range which define the requested data subset.
    * @param channel WritableByteChannel object - channel that can write bytes.
    * @return the number of bytes written, possibly zero.
    */
   public long readToByteChannel11(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-          throws java.io.IOException {
+      throws java.io.IOException {
     Array data = readData(v2, section);
     float[] ftdata = new float[(int) data.getSize()];
     byte[] bytedata = new byte[(int) data.getSize() * 4];
@@ -871,7 +872,7 @@ channel.close();
   }
 
 
-  //  -----------------------------------------------------------------------
+  // -----------------------------------------------------------------------
 
   /**
    * Convert 2 bytes binary angle to float
@@ -914,7 +915,8 @@ channel.close();
   static float calcElev(short angle) {
     final double maxval = 65536.0;
     double ang = (double) angle;
-    if (angle < 0) ang = (~angle) + 1;
+    if (angle < 0)
+      ang = (~angle) + 1;
     double temp = (ang / maxval) * 360.0;
     BigDecimal bd = new BigDecimal(temp);
     BigDecimal result = bd.setScale(2, RoundingMode.HALF_DOWN);
@@ -925,8 +927,8 @@ channel.close();
    * Calculate distance between sequential bins in a ray
    *
    * @param range_first range of first bin in centimeters
-   * @param range_last  range of last bin in centimeters
-   * @param num_bins    number of bins
+   * @param range_last range of last bin in centimeters
+   * @param num_bins number of bins
    * @return float distance in centimeters with precision of two decimal
    */
   static float calcStep(float range_first, float range_last, short num_bins) {
@@ -965,9 +967,9 @@ channel.close();
    * Calculate data values from raw ingest data
    *
    * @param recHdr java.util.Map object with values for calculation
-   * @param dty    type of data ( "Total_Power", "Reflectivity", "Velocity",
-   *               "Width", "Differential_Reflectivity")
-   * @param data   1-byte input value
+   * @param dty type of data ( "Total_Power", "Reflectivity", "Velocity",
+   *        "Width", "Differential_Reflectivity")
+   * @param data 1-byte input value
    * @return float value with precision of two decimal
    */
   static float calcData(Map<String, Number> recHdr, short dty, byte data) {
@@ -976,23 +978,23 @@ channel.close();
     float vNyq = recHdr.get("vNyq").floatValue();
     double temp = -999.99;
     switch (dty) {
-      default:        // dty=1,2 -total_power, reflectivity (dBZ)
+      default: // dty=1,2 -total_power, reflectivity (dBZ)
         if (data != 0) {
           temp = (((int) data & 0xFF) - 64) * 0.5;
         }
         break;
-      case 3:        // dty=3 - mean velocity (m/sec)
+      case 3: // dty=3 - mean velocity (m/sec)
         if (data != 0) {
           temp = ((((int) data & 0xFF) - 128) / 127.0) * vNyq * coef[multiprf];
         }
         break;
-      case 4:        // dty=4 - spectrum width (m/sec)
+      case 4: // dty=4 - spectrum width (m/sec)
         if (data != 0) {
           double v = ((((int) data & 0xFF) - 128) / 127.0) * vNyq * coef[multiprf];
           temp = (((int) data & 0xFF) / 256.0) * v;
         }
         break;
-      case 5:        // dty=5 - differential reflectivity (dB)
+      case 5: // dty=5 - differential reflectivity (dB)
         if (data != 0) {
           temp = ((((int) data & 0xFF) - 128) / 16.0);
         }
@@ -1006,7 +1008,7 @@ channel.close();
   /**
    * Calculate time as hh:mm:ss
    *
-   * @param t  number of seconds since midnight for start of sweep
+   * @param t number of seconds since midnight for start of sweep
    * @param t0 time in seconds from start of sweep
    * @return time as string "hh:mm:ss"
    */
@@ -1014,16 +1016,17 @@ channel.close();
     StringBuilder tim = new StringBuilder();
     int[] tt = new int[3];
     int mmh = (t + t0) / 60;
-    tt[2] = (t + t0) % 60;                  // Define SEC
-    tt[0] = mmh / 60;                     // Define HOUR
-    tt[1] = mmh % 60;                     // Define MIN
+    tt[2] = (t + t0) % 60; // Define SEC
+    tt[0] = mmh / 60; // Define HOUR
+    tt[1] = mmh % 60; // Define MIN
     for (int i = 0; i < 3; i++) {
       String s = Integer.toString(tt[i]);
       int len = s.length();
       if (len < 2) {
         s = "0" + tt[i];
       }
-      if (i != 2) s += ":";
+      if (i != 2)
+        s += ":";
       tim.append(s);
     }
     return tim.toString();
@@ -1032,13 +1035,13 @@ channel.close();
   /**
    * Calculate of Nyquist velocity
    *
-   * @param prf  PRF in Hertz
+   * @param prf PRF in Hertz
    * @param wave wavelength in 1/100 of centimeters
    * @return float value of Nyquist velocity in m/sec with precision of two decimal
    */
   static float calcNyquist(int prf, int wave) {
     double tmp = (prf * wave * 0.01) * 0.25;
-    tmp = tmp * 0.01;                    //Make it m/sec
+    tmp = tmp * 0.01; // Make it m/sec
     BigDecimal bd = new BigDecimal(tmp);
     BigDecimal result = bd.setScale(2, RoundingMode.HALF_DOWN);
     return result.floatValue();

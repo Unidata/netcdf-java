@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -47,51 +47,53 @@ import java.util.TreeMap;
  */
 
 public class Debug {
-    static private TreeMap map = new TreeMap();
-    static private boolean debug = false, changed = true;
+  static private TreeMap map = new TreeMap();
+  static private boolean debug = false, changed = true;
 
-    static public boolean isSet(String flagName) {
-        Object val;
-        if (null == (val = map.get(flagName))) {
-            if (debug) System.out.println("Debug.isSet new " + flagName);
-            map.put(flagName, new Boolean(false));
-            changed = true;
-            return false;
-        }
-
-        return ((Boolean) val).booleanValue();
+  static public boolean isSet(String flagName) {
+    Object val;
+    if (null == (val = map.get(flagName))) {
+      if (debug)
+        System.out.println("Debug.isSet new " + flagName);
+      map.put(flagName, new Boolean(false));
+      changed = true;
+      return false;
     }
 
-    static public void set(String flagName, boolean value) {
-        Object val;
-        if (null == (val = map.get(flagName))) {
-            changed = true;
-        }
-        map.put(flagName, new Boolean(value));
-        if (debug) System.out.println("  Debug.set " + flagName + " " + value);
-    }
+    return ((Boolean) val).booleanValue();
+  }
 
-    static public void clear() {
-        map = new TreeMap();
+  static public void set(String flagName, boolean value) {
+    Object val;
+    if (null == (val = map.get(flagName))) {
+      changed = true;
     }
+    map.put(flagName, new Boolean(value));
+    if (debug)
+      System.out.println("  Debug.set " + flagName + " " + value);
+  }
 
-    static public java.util.Set keySet() {
-        return map.keySet();
-    }
+  static public void clear() {
+    map = new TreeMap();
+  }
+
+  static public java.util.Set keySet() {
+    return map.keySet();
+  }
 }
 
 /**
  * $Log: Debug.java,v $
- * Revision 1.1  2003/08/12 23:51:27  ndp
+ * Revision 1.1 2003/08/12 23:51:27 ndp
  * Mass check in to begin Java-OPeNDAP development work
  *
- * Revision 1.2  2002/09/13 21:12:08  caron
+ * Revision 1.2 2002/09/13 21:12:08 caron
  * add keySet()
  *
- * Revision 1.1  2001/10/24 22:51:42  ndp
+ * Revision 1.1 2001/10/24 22:51:42 ndp
  * *** empty log message ***
  *
- * Revision 1.1.1.1  2001/09/26 15:36:47  caron
+ * Revision 1.1.1.1 2001/09/26 15:36:47 caron
  * checkin beta1
  *
  */

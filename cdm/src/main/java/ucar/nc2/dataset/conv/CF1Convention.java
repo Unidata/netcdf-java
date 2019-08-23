@@ -16,7 +16,6 @@ import ucar.nc2.dataset.*;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.DataType;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -24,9 +23,12 @@ import java.io.IOException;
  * CF-1 Convention. see http://www.cgd.ucar.edu/cms/eaton/cf-metadata/index.html
  * <p/>
  * <i>
- * "The CF conventions for climate and forecast metadata are designed to promote the processing and sharing of files created with the netCDF
- * API. The conventions define metadata that provide a definitive description of what the data in each variable represents, and of the
- * spatial and temporal properties of the data. This enables users of data from different sources to decide which quantities are comparable,
+ * "The CF conventions for climate and forecast metadata are designed to promote the processing and sharing of files
+ * created with the netCDF
+ * API. The conventions define metadata that provide a definitive description of what the data in each variable
+ * represents, and of the
+ * spatial and temporal properties of the data. This enables users of data from different sources to decide which
+ * quantities are comparable,
  * and facilitates building applications with powerful extraction, regridding, and display capabilities."
  * </i>
  *
@@ -35,7 +37,7 @@ import java.io.IOException;
 
 public class CF1Convention extends CSMConvention {
 
-  private static final String convName = "CF-1.";   // start with
+  private static final String convName = "CF-1."; // start with
 
   /**
    * Get which CF version this is, ie CF-1.x
@@ -98,17 +100,10 @@ public class CF1Convention extends CSMConvention {
     return CF.POSITIVE_UP;
   }
 
-  private static final String[] vertical_coords = {
-      "atmosphere_ln_pressure_coordinate",
-      "atmosphere_sigma_coordinate",
-      "atmosphere_hybrid_sigma_pressure_coordinate",
-      "atmosphere_hybrid_height_coordinate",
-      "atmosphere_sleve_coordinate",
-      "ocean_sigma_coordinate",
-      "ocean_s_coordinate",
-      "ocean_sigma_z_coordinate",
-      "ocean_double_sigma_coordinate",
-      "ocean_s_coordinate_g1",          // -sachin 03/25/09
+  private static final String[] vertical_coords = {"atmosphere_ln_pressure_coordinate", "atmosphere_sigma_coordinate",
+      "atmosphere_hybrid_sigma_pressure_coordinate", "atmosphere_hybrid_height_coordinate",
+      "atmosphere_sleve_coordinate", "ocean_sigma_coordinate", "ocean_s_coordinate", "ocean_sigma_z_coordinate",
+      "ocean_double_sigma_coordinate", "ocean_s_coordinate_g1", // -sachin 03/25/09
       "ocean_s_coordinate_g2"};
 
   public CF1Convention() {
@@ -190,8 +185,9 @@ public class CF1Convention extends CSMConvention {
       // simple geometry
 
       if (ds.findGlobalAttribute(CF.CONVENTIONS) != null) {
-        if (getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue())
-            >= 8) // only acknowledge simple geometry standard extension if CF-1.8 or higher
+        if (getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8) // only acknowledge simple
+                                                                                      // geometry standard extension if
+                                                                                      // CF-1.8 or higher
         {
           if (v.findAttribute(CF.GEOMETRY) != null) {
 
@@ -210,13 +206,16 @@ public class CF1Convention extends CSMConvention {
               v.addAttribute(new Attribute(CF.NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "")));
             }
 
-            v.addAttribute(new Attribute(CF.NODE_COORDINATES, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "")));
-            v.addAttribute(new Attribute(CF.PART_NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.PART_NODE_COUNT, "")));
+            v.addAttribute(
+                new Attribute(CF.NODE_COORDINATES, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "")));
+            v.addAttribute(
+                new Attribute(CF.PART_NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.PART_NODE_COUNT, "")));
             if (CF.POLYGON.equalsIgnoreCase(ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, ""))) {
 
               // Again, interior ring is not always required, but add it if it is present
               if (!ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "").equals("")) {
-                v.addAttribute(new Attribute(CF.INTERIOR_RING, ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "")));
+                v.addAttribute(
+                    new Attribute(CF.INTERIOR_RING, ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "")));
               }
             }
 
@@ -230,16 +229,13 @@ public class CF1Convention extends CSMConvention {
                   Attribute axis = temp.findAttribute(CF.AXIS);
                   if (axis != null) {
                     if ("x".equalsIgnoreCase(axis.getStringValue())) {
-                      temp.addAttribute(
-                          new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryX.toString()));
+                      temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryX.toString()));
                     }
                     if ("y".equalsIgnoreCase(axis.getStringValue())) {
-                      temp.addAttribute(
-                          new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryY.toString()));
+                      temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryY.toString()));
                     }
                     if ("z".equalsIgnoreCase(axis.getStringValue())) {
-                      temp.addAttribute(
-                          new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryZ.toString()));
+                      temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryZ.toString()));
                     }
 
                     cds += coord + " ";
@@ -359,7 +355,8 @@ public class CF1Convention extends CSMConvention {
       p.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       p.addAttribute(new Attribute(_Coordinate.AliasForDimension, p.getDimensionsString()));
       ds.addVariable(null, p);
-      parseInfo.format(" added Vertical Pressure coordinate %s from CF-1 %s%n", p.getFullName(), CF.atmosphere_ln_pressure_coordinate);
+      parseInfo.format(" added Vertical Pressure coordinate %s from CF-1 %s%n", p.getFullName(),
+          CF.atmosphere_ln_pressure_coordinate);
 
     } catch (IOException e) {
       String msg = " Unable to read variables from " + v.getFullName() + " formula_terms\n";
@@ -369,18 +366,21 @@ public class CF1Convention extends CSMConvention {
 
   }
 
-  /*  vertical coordinate will be identifiable by:
-      1. units of pressure; or
-      2. the presence of the positive attribute with a value of up or down (case insensitive).
-      3. Optionally, the vertical type may be indicated additionally by providing the standard_name attribute with an appropriate value, and/or the axis attribute with the value Z.
+  /*
+   * vertical coordinate will be identifiable by:
+   * 1. units of pressure; or
+   * 2. the presence of the positive attribute with a value of up or down (case insensitive).
+   * 3. Optionally, the vertical type may be indicated additionally by providing the standard_name attribute with an
+   * appropriate value, and/or the axis attribute with the value Z.
    */
 
   // we assume that coordinate axes get identified by
-  //  1) being coordinate variables or
-  //  2) being listed in coordinates attribute.
+  // 1) being coordinate variables or
+  // 2) being listed in coordinates attribute.
 
   /**
-   * Augment COARDS axis type identification with Standard names (including dimensionless vertical coordinates) and  CF.AXIS attributes
+   * Augment COARDS axis type identification with Standard names (including dimensionless vertical coordinates) and
+   * CF.AXIS attributes
    */
   protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
 
@@ -416,13 +416,13 @@ public class CF1Convention extends CSMConvention {
         return AxisType.Lon;
       }
 
-      if (sname.equalsIgnoreCase(CF.PROJECTION_X_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LONGITUDE) || sname
-          .equalsIgnoreCase("rotated_longitude")) {
+      if (sname.equalsIgnoreCase(CF.PROJECTION_X_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LONGITUDE)
+          || sname.equalsIgnoreCase("rotated_longitude")) {
         return AxisType.GeoX;
       }
 
-      if (sname.equalsIgnoreCase(CF.PROJECTION_Y_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LATITUDE) || sname
-          .equalsIgnoreCase("rotated_latitude")) {
+      if (sname.equalsIgnoreCase(CF.PROJECTION_Y_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LATITUDE)
+          || sname.equalsIgnoreCase("rotated_latitude")) {
         return AxisType.GeoY;
       }
 

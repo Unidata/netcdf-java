@@ -10,17 +10,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-
 import javax.swing.*;
-
 import ucar.nc2.util.ListenerManager;
 import ucar.util.prefs.PreferencesExt;
-
 import ucar.unidata.geoloc.*;
 
 /**
  * Manages a modal dialogue box that allows the user to define
  * projections using subclasses of ucar.unidata.gis.ProjectionImpl.
+ * 
  * <pre>
  *    1) It uses bean introspection on ProjectionImpl subclasses to dynamically
  *       configure edit fields for the projection's parameters. The subclass should
@@ -37,42 +35,34 @@ import ucar.unidata.geoloc.*;
 public class ProjectionManager {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionManager.class);
   private static final int min_sigfig = 6;
-  private static final Object[] voidObjectArg = new Object[]{};
+  private static final Object[] voidObjectArg = new Object[] {};
 
   // the current list of projection classes: be nice to do this dynamically
   // what about reading all classes in ucar.unidata.gis/projection ? (glenn doesnt like)
-  static String[] types = {
-          "ucar.unidata.geoloc.projection.LatLonProjection",
-          "ucar.unidata.geoloc.projection.AlbersEqualArea",
-          "ucar.unidata.geoloc.projection.FlatEarth",
-          "ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea",
-          "ucar.unidata.geoloc.projection.LambertConformal",
-          "ucar.unidata.geoloc.projection.Mercator",
-          "ucar.unidata.geoloc.projection.Orthographic",
-          "ucar.unidata.geoloc.projection.RotatedLatLon",
-          "ucar.unidata.geoloc.projection.Stereographic",
-          "ucar.unidata.geoloc.projection.TransverseMercator",
-          "ucar.unidata.geoloc.projection.UtmProjection",
-          "ucar.unidata.geoloc.projection.VerticalPerspectiveView",
-          "ucar.unidata.geoloc.projection.sat.MSGnavigation",
-          "ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse",
-          "ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection",
-          "ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection",
-          "ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse",
-          "ucar.unidata.geoloc.projection.proj4.PolyconicProjection",
-          "ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection",
-          "ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection",
-  };
+  static String[] types = {"ucar.unidata.geoloc.projection.LatLonProjection",
+      "ucar.unidata.geoloc.projection.AlbersEqualArea", "ucar.unidata.geoloc.projection.FlatEarth",
+      "ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea", "ucar.unidata.geoloc.projection.LambertConformal",
+      "ucar.unidata.geoloc.projection.Mercator", "ucar.unidata.geoloc.projection.Orthographic",
+      "ucar.unidata.geoloc.projection.RotatedLatLon", "ucar.unidata.geoloc.projection.Stereographic",
+      "ucar.unidata.geoloc.projection.TransverseMercator", "ucar.unidata.geoloc.projection.UtmProjection",
+      "ucar.unidata.geoloc.projection.VerticalPerspectiveView", "ucar.unidata.geoloc.projection.sat.MSGnavigation",
+      "ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse",
+      "ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection",
+      "ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection",
+      "ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse",
+      "ucar.unidata.geoloc.projection.proj4.PolyconicProjection",
+      "ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection",
+      "ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection",};
 
   private PreferencesExt store;
   private boolean eventsOK;
 
   // GUI stuff that needs class scope
   // private JTableProjection projTable;
-  //private NPController npViewControl;
-  //private NavigatedPanel mapViewPanel;
-  //private PersistentDataDialog viewDialog;
-  //private NewProjectionDialog newDialog = null;
+  // private NPController npViewControl;
+  // private NavigatedPanel mapViewPanel;
+  // private PersistentDataDialog viewDialog;
+  // private NewProjectionDialog newDialog = null;
 
   private Frame owner;
   private NewProjectionDialog dialog; // created in JFormDesigner
@@ -89,51 +79,50 @@ public class ProjectionManager {
     this.store = store;
 
     // manage NewProjectionListeners
-    lm = new ListenerManager(
-            "java.beans.PropertyChangeListener",
-            "java.beans.PropertyChangeEvent",
-            "propertyChange");
+    lm = new ListenerManager("java.beans.PropertyChangeListener", "java.beans.PropertyChangeEvent", "propertyChange");
 
 
     /*
-    // the actual list is a JTable subclass
-    projTable = new JTableProjection(store);
-
-    // empty table : populate it
-    if (projTable.isEmpty()) {
-      for (String aProjClassName : projClassName) {
-        try {
-          ProjectionClass pc = new ProjectionClass(aProjClassName);
-          ProjectionImpl pi = pc.makeDefaultProjection();
-          pi.setName("Default " + pi.getClassName());
-          projTable.addProjection(pi);
-
-        } catch (ClassNotFoundException ee) {
-          System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
-        } catch (IntrospectionException ee) {
-          System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
-        }
-      }
-    }
-
-    // put it together in the viewDialog
-    // viewDialog = new PersistentDataDialog(parent, false, "Projection", mapViewPanel, new JScrollPane(projTable), this);
-
-    // default current and working projection
-    if (null != (current = projTable.getSelected())) {
-      setWorkingProjection(current);
-      projTable.setCurrentProjection(current);
-    }
-
-    // listen for new working Projections from projTable
-    projTable.addNewProjectionListener(new NewProjectionListener() {
-      public void actionPerformed(NewProjectionEvent e) {
-        if (e.getProjection() != null) {
-          if (debug) System.out.println("NewProjectionListener from ProjTable " + e.getProjection());
-          setWorkingProjection(e.getProjection());
-        }
-      }
-    });  */
+     * // the actual list is a JTable subclass
+     * projTable = new JTableProjection(store);
+     * 
+     * // empty table : populate it
+     * if (projTable.isEmpty()) {
+     * for (String aProjClassName : projClassName) {
+     * try {
+     * ProjectionClass pc = new ProjectionClass(aProjClassName);
+     * ProjectionImpl pi = pc.makeDefaultProjection();
+     * pi.setName("Default " + pi.getClassName());
+     * projTable.addProjection(pi);
+     * 
+     * } catch (ClassNotFoundException ee) {
+     * System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
+     * } catch (IntrospectionException ee) {
+     * System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
+     * }
+     * }
+     * }
+     * 
+     * // put it together in the viewDialog
+     * // viewDialog = new PersistentDataDialog(parent, false, "Projection", mapViewPanel, new JScrollPane(projTable),
+     * this);
+     * 
+     * // default current and working projection
+     * if (null != (current = projTable.getSelected())) {
+     * setWorkingProjection(current);
+     * projTable.setCurrentProjection(current);
+     * }
+     * 
+     * // listen for new working Projections from projTable
+     * projTable.addNewProjectionListener(new NewProjectionListener() {
+     * public void actionPerformed(NewProjectionEvent e) {
+     * if (e.getProjection() != null) {
+     * if (debug) System.out.println("NewProjectionListener from ProjTable " + e.getProjection());
+     * setWorkingProjection(e.getProjection());
+     * }
+     * }
+     * });
+     */
 
     eventsOK = true;
   }
@@ -148,7 +137,8 @@ public class ProjectionManager {
   }
 
   public void setVisible() {
-    if (null == dialog) init();
+    if (null == dialog)
+      init();
     dialog.setVisible(true);
   }
 
@@ -163,7 +153,7 @@ public class ProjectionManager {
       try {
         ps.add(new ProjectionClass(p));
       } catch (ClassNotFoundException | IntrospectionException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
       }
     dialog.setProjectionManager(this, ps);
   }
@@ -171,205 +161,207 @@ public class ProjectionManager {
   /*
    * Get the currently selected object, of type getPersistentObjectClass()
    *
-  public PersistentObject getSelection() {
-    return (PersistentObject) current;
-  }
-
-  /
+   * public PersistentObject getSelection() {
+   * return (PersistentObject) current;
+   * }
+   * 
+   * /
    * Set the currently selected thing: must be of type getPersistentObjectClass().
    * this does NOT fire a PropertyChangeEvent
    *
-  public void setSelection(PersistentObject select) {
-    setWorkingProjection((ProjectionImpl) select);
-  }
-
-  ////// PersistentDataManager methods
-  public void accept() {
-    ProjectionRect bb = mapViewPanel.getMapArea();
-    current.setDefaultMapArea((ProjectionRect) bb.clone());
-    lm.sendEvent(new java.beans.PropertyChangeEvent(this, "ProjectionImpl", null, current));
-  }
-
-  public boolean contains(String id) {
-    return projTable.contains(id);
-  }
-
-  public void deleteSelected() {
-    projTable.deleteSelected();
-  }
-
-  public void edit(boolean isNew) {
-    if (null == newDialog)
-      newDialog = new NewProjectionDialog(parent);
-
-    if (isNew) {
-      newDialog.setDefaultProjection();
-    } else {
-      newDialog.setProjection(current);
-    }
-
-    newDialog.setVisible(true);
-  }
-
-
-  public void saveProjection(ProjectionImpl proj) {
-    //setVisible(true);  how to make this work? seperate Thread ?
-
-    // force new name
-    ProjectionImpl newProj = proj.constructCopy();
-    newProj.setName("");
-    setWorkingProjection(newProj);
-
-    if (null == newDialog) // lazy instantiation
-      newDialog = new NewProjectionDialog(parent);
-
-    // start up edit Dialog
-    newDialog.setProjection(current);
-    newDialog.show();
-  }
-
-  private void setMap(ucar.nc2.ui.util.Renderer map) {
-    if (null == newDialog) // lazy instantiation
-      newDialog = new NewProjectionDialog(parent);
-
-    if (map != null) {
-      npViewControl.addRenderer(map);
-      newDialog.setMap(map);
-    }
-    System.out.println("Projection Manager setMap " + map);
-  }
-
-
-  private void setWorkingProjection(ProjectionImpl proj) {
-    if (proj == null)
-      return;
-    if (debug) System.out.println("ProjManager.setWorkingProjection " + proj);
-    current = proj.constructCopy();
-    if (debug) System.out.println("ProjManager.setWorkingProjection map area = " + current.getDefaultMapArea());
-
-    npViewControl.setProjection(current);
-    //viewDialog.setCurrent(current.getName());
-  }
-
-    public void setProjection(ProjectionImpl proj) {
-      ProjectionClass pc = findProjectionClass(proj);
-      if (pc == null) {
-        System.out.println("Projection Manager: cant find Class for " + proj);
-        return;
-      }
-      if (debug) System.out.println(" NPDialog set projection " + proj);
-
-      //if (proj instanceof LambertConformal)
-      //  proj.setDefaultMapArea(new ProjectionRect(-2013.441384640456,-34.18738379648357,71.21978635954429,2160.192796203516));
-
-      setProjectionClass(pc, proj);
-      npEditControl.setProjection(proj);
-      startingName = proj.getName();
-    }
-
-    void setDefaultProjection() {
-      // let the first projection class be the default
-      ProjectionClass selectedClass = (ProjectionClass) projClassCB.getItemAt(0);
-      if (selectedClass == null) {
-        System.out.println("Projection Manager: no Default Projection available");
-        return;
-      }
-      ProjectionImpl proj = selectedClass.makeDefaultProjection();
-      setProjection(proj);
-      startingName = "";
-    }
-
-    public void setMap(ucar.nc2.ui.util.Renderer map) {
-      if (map != null)
-        npEditControl.addRenderer(map);
-    }
-
-    // user has hit the "accept/save" button
-    private void accept() {
-      ProjectionClass projClass = findProjectionClass(editProjection);
-      if (null == projClass) {
-        System.out.println("Projection Manager accept: findProjectionClass failed" + editProjection);
-        return;
-      }
-      setProjFromDialog(projClass, editProjection);
-
-      editProjection.setDefaultMapArea(mapEditPanel.getMapArea());
-      if (debug) System.out.println("Projection Manager accept bb =" + editProjection.getDefaultMapArea());
-      ProjectionImpl newProj = editProjection.constructCopy(); // use a copy
-
-
-     //if (!viewDialog.checkSaveOK(startingName, newProj.getName()))
-      //  return;
-
-      if (ProjectionManager.this.contains(newProj.getName()))
-        projTable.replaceProjection(newProj);
-      else
-        projTable.addProjection(newProj);
-
-      // set new projection to working projection and exit this Dialog
-      setWorkingProjection(newProj);
-      NewProjectionDialog.this.setVisible(false);
-    }
-
-    private ProjectionClass findProjectionClass(Projection proj) {
-      Class want = proj.getClass();
-      ComboBoxModel projClassList = projClassCB.getModel();
-      for (int i = 0; i < projClassList.getSize(); i++) {
-        ProjectionClass pc = (ProjectionClass) projClassList.getElementAt(i);
-        if (want.equals(pc.projClass))
-          return pc;
-      }
-      return null;
-    }
-
-    private void setProjectionClass(ProjectionClass pc, ProjectionImpl proj) {
-      if ((null == proj) || (null == pc))
-        return;
-
-      if (debug) System.out.println("Projection setProjectionClass= " + proj);
-
-      setFieldsWithClassParams(pc);
-      editProjection = proj.constructCopy();
-      putProjInDialog(pc, editProjection);
-
-      if (debug) System.out.println("Projection setProjectionClass ok ");
-
-      invalidate();    // force new layout
-      validate();
-    }
-
-    // construct input fields based on Projection Class
-    private void setFieldsWithClassParams(ProjectionClass projClass) {
-
-      // set the projection in the JComboBox
-      String want = projClass.toString();
-      for (int i = 0; i < projClassCB.getItemCount(); i++) {
-        ProjectionClass pc = (ProjectionClass) projClassCB.getItemAt(i);
-        if (pc.toString().equals(want)) {
-          projClassCB.setSelectedItem(pc);
-          break;
-        }
-      }
-
-      // set the parameter fields
-      paramPanel.removeAll();
-      paramPanel.setVisible(0 < projClass.paramList.size());
-
-      for (int i = 0; i < projClass.paramList.size(); i++) {
-        ProjectionParam pp = projClass.paramList.get(i);
-        // construct the label
-        JPanel thisPanel = new JPanel();
-        thisPanel.add(new JLabel(pp.name + ": "));
-        // text input field
-        JTextField tf = new JTextField();
-        pp.setTextField(tf);
-        tf.setColumns(12);
-        thisPanel.add(tf);
-        paramPanel.add(thisPanel);
-      }
-    }
-
-  } // end NewProjectionDialog   */
+   * public void setSelection(PersistentObject select) {
+   * setWorkingProjection((ProjectionImpl) select);
+   * }
+   * 
+   * ////// PersistentDataManager methods
+   * public void accept() {
+   * ProjectionRect bb = mapViewPanel.getMapArea();
+   * current.setDefaultMapArea((ProjectionRect) bb.clone());
+   * lm.sendEvent(new java.beans.PropertyChangeEvent(this, "ProjectionImpl", null, current));
+   * }
+   * 
+   * public boolean contains(String id) {
+   * return projTable.contains(id);
+   * }
+   * 
+   * public void deleteSelected() {
+   * projTable.deleteSelected();
+   * }
+   * 
+   * public void edit(boolean isNew) {
+   * if (null == newDialog)
+   * newDialog = new NewProjectionDialog(parent);
+   * 
+   * if (isNew) {
+   * newDialog.setDefaultProjection();
+   * } else {
+   * newDialog.setProjection(current);
+   * }
+   * 
+   * newDialog.setVisible(true);
+   * }
+   * 
+   * 
+   * public void saveProjection(ProjectionImpl proj) {
+   * //setVisible(true); how to make this work? seperate Thread ?
+   * 
+   * // force new name
+   * ProjectionImpl newProj = proj.constructCopy();
+   * newProj.setName("");
+   * setWorkingProjection(newProj);
+   * 
+   * if (null == newDialog) // lazy instantiation
+   * newDialog = new NewProjectionDialog(parent);
+   * 
+   * // start up edit Dialog
+   * newDialog.setProjection(current);
+   * newDialog.show();
+   * }
+   * 
+   * private void setMap(ucar.nc2.ui.util.Renderer map) {
+   * if (null == newDialog) // lazy instantiation
+   * newDialog = new NewProjectionDialog(parent);
+   * 
+   * if (map != null) {
+   * npViewControl.addRenderer(map);
+   * newDialog.setMap(map);
+   * }
+   * System.out.println("Projection Manager setMap " + map);
+   * }
+   * 
+   * 
+   * private void setWorkingProjection(ProjectionImpl proj) {
+   * if (proj == null)
+   * return;
+   * if (debug) System.out.println("ProjManager.setWorkingProjection " + proj);
+   * current = proj.constructCopy();
+   * if (debug) System.out.println("ProjManager.setWorkingProjection map area = " + current.getDefaultMapArea());
+   * 
+   * npViewControl.setProjection(current);
+   * //viewDialog.setCurrent(current.getName());
+   * }
+   * 
+   * public void setProjection(ProjectionImpl proj) {
+   * ProjectionClass pc = findProjectionClass(proj);
+   * if (pc == null) {
+   * System.out.println("Projection Manager: cant find Class for " + proj);
+   * return;
+   * }
+   * if (debug) System.out.println(" NPDialog set projection " + proj);
+   * 
+   * //if (proj instanceof LambertConformal)
+   * // proj.setDefaultMapArea(new
+   * ProjectionRect(-2013.441384640456,-34.18738379648357,71.21978635954429,2160.192796203516));
+   * 
+   * setProjectionClass(pc, proj);
+   * npEditControl.setProjection(proj);
+   * startingName = proj.getName();
+   * }
+   * 
+   * void setDefaultProjection() {
+   * // let the first projection class be the default
+   * ProjectionClass selectedClass = (ProjectionClass) projClassCB.getItemAt(0);
+   * if (selectedClass == null) {
+   * System.out.println("Projection Manager: no Default Projection available");
+   * return;
+   * }
+   * ProjectionImpl proj = selectedClass.makeDefaultProjection();
+   * setProjection(proj);
+   * startingName = "";
+   * }
+   * 
+   * public void setMap(ucar.nc2.ui.util.Renderer map) {
+   * if (map != null)
+   * npEditControl.addRenderer(map);
+   * }
+   * 
+   * // user has hit the "accept/save" button
+   * private void accept() {
+   * ProjectionClass projClass = findProjectionClass(editProjection);
+   * if (null == projClass) {
+   * System.out.println("Projection Manager accept: findProjectionClass failed" + editProjection);
+   * return;
+   * }
+   * setProjFromDialog(projClass, editProjection);
+   * 
+   * editProjection.setDefaultMapArea(mapEditPanel.getMapArea());
+   * if (debug) System.out.println("Projection Manager accept bb =" + editProjection.getDefaultMapArea());
+   * ProjectionImpl newProj = editProjection.constructCopy(); // use a copy
+   * 
+   * 
+   * //if (!viewDialog.checkSaveOK(startingName, newProj.getName()))
+   * // return;
+   * 
+   * if (ProjectionManager.this.contains(newProj.getName()))
+   * projTable.replaceProjection(newProj);
+   * else
+   * projTable.addProjection(newProj);
+   * 
+   * // set new projection to working projection and exit this Dialog
+   * setWorkingProjection(newProj);
+   * NewProjectionDialog.this.setVisible(false);
+   * }
+   * 
+   * private ProjectionClass findProjectionClass(Projection proj) {
+   * Class want = proj.getClass();
+   * ComboBoxModel projClassList = projClassCB.getModel();
+   * for (int i = 0; i < projClassList.getSize(); i++) {
+   * ProjectionClass pc = (ProjectionClass) projClassList.getElementAt(i);
+   * if (want.equals(pc.projClass))
+   * return pc;
+   * }
+   * return null;
+   * }
+   * 
+   * private void setProjectionClass(ProjectionClass pc, ProjectionImpl proj) {
+   * if ((null == proj) || (null == pc))
+   * return;
+   * 
+   * if (debug) System.out.println("Projection setProjectionClass= " + proj);
+   * 
+   * setFieldsWithClassParams(pc);
+   * editProjection = proj.constructCopy();
+   * putProjInDialog(pc, editProjection);
+   * 
+   * if (debug) System.out.println("Projection setProjectionClass ok ");
+   * 
+   * invalidate(); // force new layout
+   * validate();
+   * }
+   * 
+   * // construct input fields based on Projection Class
+   * private void setFieldsWithClassParams(ProjectionClass projClass) {
+   * 
+   * // set the projection in the JComboBox
+   * String want = projClass.toString();
+   * for (int i = 0; i < projClassCB.getItemCount(); i++) {
+   * ProjectionClass pc = (ProjectionClass) projClassCB.getItemAt(i);
+   * if (pc.toString().equals(want)) {
+   * projClassCB.setSelectedItem(pc);
+   * break;
+   * }
+   * }
+   * 
+   * // set the parameter fields
+   * paramPanel.removeAll();
+   * paramPanel.setVisible(0 < projClass.paramList.size());
+   * 
+   * for (int i = 0; i < projClass.paramList.size(); i++) {
+   * ProjectionParam pp = projClass.paramList.get(i);
+   * // construct the label
+   * JPanel thisPanel = new JPanel();
+   * thisPanel.add(new JLabel(pp.name + ": "));
+   * // text input field
+   * JTextField tf = new JTextField();
+   * pp.setTextField(tf);
+   * tf.setColumns(12);
+   * thisPanel.add(tf);
+   * paramPanel.add(thisPanel);
+   * }
+   * }
+   * 
+   * } // end NewProjectionDialog
+   */
 
   // inner class ProjectionClass: parsed projection classes
   class ProjectionClass {
@@ -415,7 +407,8 @@ public class ProjectionManager {
         ProjectionParam p = new ProjectionParam(pd.getName(), reader, writer, pd.getPropertyType());
         paramList.add(p);
 
-        if (debugBeans) System.out.println("  -->" + p);
+        if (debugBeans)
+          System.out.println("  -->" + p);
       }
 
       // get an instance of this class so we can call toClassName()
@@ -424,8 +417,8 @@ public class ProjectionManager {
         return;
       }
 
-      Class[] voidClassArg = new Class[]{};
-      Object[] voidObjectArg = new Object[]{};
+      Class[] voidClassArg = new Class[] {};
+      Object[] voidObjectArg = new Object[] {};
 
       // invoke the toClassName method
       try {
@@ -445,8 +438,8 @@ public class ProjectionManager {
     }
 
     ProjectionImpl makeDefaultProjection() {
-      Class[] voidClassArg = new Class[]{};
-      Object[] voidObjectArg = new Object[]{};
+      Class[] voidClassArg = new Class[] {};
+      Object[] voidObjectArg = new Object[] {};
 
       // the default constructor
       try {
@@ -469,7 +462,7 @@ public class ProjectionManager {
       for (ProjectionParam pp : paramList)
         pp.setProjFromDialog(this, projInstance);
     }
-  }  // end ProjectionClass inner class
+  } // end ProjectionClass inner class
 
   // inner class ProjectionParam: parameters for Projection Class
   class ProjectionParam {
@@ -477,7 +470,7 @@ public class ProjectionManager {
     Method writer;
     String name;
     Class paramType;
-    JTextField tf;      // edit field component
+    JTextField tf; // edit field component
 
     ProjectionParam(String name, Method reader, Method writer, Class paramType) {
       this.name = name;
@@ -497,9 +490,11 @@ public class ProjectionManager {
     private void putParamIntoDialog(ProjectionClass projClass, Projection proj) {
       Double value;
       try {
-        if (debugBeans) System.out.println("Projection putParamIntoDialog invoke reader on " + name);
+        if (debugBeans)
+          System.out.println("Projection putParamIntoDialog invoke reader on " + name);
         value = (Double) reader.invoke(proj, voidObjectArg);
-        if (debugBeans) System.out.println("Projection putParamIntoDialog value " + value);
+        if (debugBeans)
+          System.out.println("Projection putParamIntoDialog value " + value);
 
       } catch (IllegalAccessException | InvocationTargetException ee) {
         log.error("putParamIntoDialog failed  invoking read {} class {}", name, projClass);
@@ -515,7 +510,8 @@ public class ProjectionManager {
         String valstr = tf.getText();
         Double valdub = new Double(valstr);
         Object[] args = {valdub};
-        if (debugBeans) System.out.println("Projection setProjFromDialog invoke writer on " + name);
+        if (debugBeans)
+          System.out.println("Projection setProjFromDialog invoke writer on " + name);
         writer.invoke(proj, args);
 
       } catch (IllegalAccessException | InvocationTargetException ee) {

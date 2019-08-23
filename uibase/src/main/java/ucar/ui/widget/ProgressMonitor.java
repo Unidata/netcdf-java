@@ -12,15 +12,16 @@ import javax.swing.event.EventListenerList;
  * This wraps a javax.swing.ProgressMonitor, which allows tasks to be canceled. This class adds
  * extra behavior to javax.swing.ProgressMonitor:
  * <ol>
- * <li> Pass in the ProgressMonitorTask you want to monitor.
- * <li> Throws an actionEvent (on the AWT event thread) when the task is done.
- * <li> If an error, pops up an error message.
- * <li> Get status: success/failed/cancel when task is done.
+ * <li>Pass in the ProgressMonitorTask you want to monitor.
+ * <li>Throws an actionEvent (on the AWT event thread) when the task is done.
+ * <li>If an error, pops up an error message.
+ * <li>Get status: success/failed/cancel when task is done.
  * </ol>
  * <p/>
  * The ProgressMonitorTask is run in a background thread while a javax.swing.ProgressMonitor dialog
  * box shows progress. The task is checked every second to see if its done or canceled.
  * <p/>
+ * 
  * <pre>
  * Example:
  *
@@ -43,7 +44,7 @@ import javax.swing.event.EventListenerList;
  * </pre>
  *
  * @author jcaron
- * {@link ProgressMonitorTask}
+ *         {@link ProgressMonitorTask}
  */
 
 public class ProgressMonitor {
@@ -73,10 +74,11 @@ public class ProgressMonitor {
 
   /**
    * Add listener: action event sent when task is done. event.getActionCommand() =
-   * <ul><li> "success"
-   * <li> "error"
-   * <li> "cancel"
-   * <li> "done" if done, but success/error/cancel not set
+   * <ul>
+   * <li>"success"
+   * <li>"error"
+   * <li>"cancel"
+   * <li>"done" if done, but success/error/cancel not set
    * </ul>
    */
   public void addActionListener(ActionListener l) {

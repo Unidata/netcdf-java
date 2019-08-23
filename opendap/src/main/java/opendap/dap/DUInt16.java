@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -50,62 +50,62 @@ import java.io.*;
  * @see BaseType
  */
 public class DUInt16 extends DInt16 {
-    /**
-     * Constructs a new <code>DUInt16</code>.
-     */
-    public DUInt16() {
-        super();
-    }
+  /**
+   * Constructs a new <code>DUInt16</code>.
+   */
+  public DUInt16() {
+    super();
+  }
 
-    /**
-     * Constructs a new <code>DUInt16</code> with name <code>n</code>.
-     *
-     * @param n the name of the variable.
-     */
-    public DUInt16(String n) {
-        super(n);
-    }
+  /**
+   * Constructs a new <code>DUInt16</code> with name <code>n</code>.
+   *
+   * @param n the name of the variable.
+   */
+  public DUInt16(String n) {
+    super(n);
+  }
 
-    /**
-     * Constructs a new <code>UInt16PrimitiveVector</code>.
-     *
-     * @return a new <code>UInt16PrimitiveVector</code>.
-     */
-    public PrimitiveVector newPrimitiveVector() {
-        return new UInt16PrimitiveVector(this);
-    }
+  /**
+   * Constructs a new <code>UInt16PrimitiveVector</code>.
+   *
+   * @return a new <code>UInt16PrimitiveVector</code>.
+   */
+  public PrimitiveVector newPrimitiveVector() {
+    return new UInt16PrimitiveVector(this);
+  }
 
-    /**
-     * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
-     *
-     * @return the OPeNDAP type name of the class instance as a <code>String</code>.
-     */
-    public String getTypeName() {
-        return "UInt16";
-    }
+  /**
+   * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
+   *
+   * @return the OPeNDAP type name of the class instance as a <code>String</code>.
+   */
+  public String getTypeName() {
+    return "UInt16";
+  }
 
 
-    /**
-     * Prints the value of the variable, with its declaration.  This
-     * function is primarily intended for debugging OPeNDAP applications and
-     * text-based clients such as geturl.
-     *
-     * @param os           the <code>PrintWriter</code> on which to print the value.
-     * @param space        this value is passed to the <code>printDecl</code> method,
-     *                     and controls the leading spaces of the output.
-     * @param print_decl_p a boolean value controlling whether the
-     *                     variable declaration is printed as well as the value.
-     * @see BaseType#printVal(PrintWriter, String, boolean)
-     */
-    public void printVal(PrintWriter os, String space, boolean print_decl_p) {
-        // to print properly, cast to long and convert unsigned to signed
-        long tempVal = ((long) getValue()) & 0xFFFFL;
-        if (print_decl_p) {
-            printDecl(os, space, false);
-            os.println(" = " + tempVal + ";");
-        } else
-            os.print(tempVal);
-    }
+  /**
+   * Prints the value of the variable, with its declaration. This
+   * function is primarily intended for debugging OPeNDAP applications and
+   * text-based clients such as geturl.
+   *
+   * @param os the <code>PrintWriter</code> on which to print the value.
+   * @param space this value is passed to the <code>printDecl</code> method,
+   *        and controls the leading spaces of the output.
+   * @param print_decl_p a boolean value controlling whether the
+   *        variable declaration is printed as well as the value.
+   * @see BaseType#printVal(PrintWriter, String, boolean)
+   */
+  public void printVal(PrintWriter os, String space, boolean print_decl_p) {
+    // to print properly, cast to long and convert unsigned to signed
+    long tempVal = ((long) getValue()) & 0xFFFFL;
+    if (print_decl_p) {
+      printDecl(os, space, false);
+      os.println(" = " + tempVal + ";");
+    } else
+      os.print(tempVal);
+  }
 }
 
 

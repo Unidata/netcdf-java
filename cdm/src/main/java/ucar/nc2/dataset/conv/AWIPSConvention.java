@@ -53,10 +53,8 @@ public class AWIPSConvention extends CoordSysBuilder {
    * @return true if we think this is a AWIPS file.
    */
   public static boolean isMine(NetcdfFile ncfile) {
-    return (null != ncfile.findGlobalAttribute("projName")) &&
-            (null != ncfile.findDimension("charsPerLevel")) &&
-            (null != ncfile.findDimension("x")) &&
-            (null != ncfile.findDimension("y"));
+    return (null != ncfile.findGlobalAttribute("projName")) && (null != ncfile.findDimension("charsPerLevel"))
+        && (null != ncfile.findDimension("x")) && (null != ncfile.findDimension("y"));
   }
 
   private static final boolean debugProj = false;
@@ -71,7 +69,8 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
-    if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
+    if (null != ds.findVariable("x"))
+      return; // check if its already been done - aggregating enhanced datasets.
 
     Dimension dimx = ds.findDimension("x");
     int nx = dimx.getLength();
@@ -106,9 +105,12 @@ public class AWIPSConvention extends CoordSysBuilder {
     for (Variable ncvar : ds.getVariables()) {
       String levelName = ncvar.getShortName() + "Levels";
       Variable levelVar = ds.findVariable(levelName);
-      if (levelVar == null) continue;
-      if (levelVar.getRank() != 2) continue;
-      if (levelVar.getDataType() != DataType.CHAR) continue;
+      if (levelVar == null)
+        continue;
+      if (levelVar.getRank() != 2)
+        continue;
+      if (levelVar.getDataType() != DataType.CHAR)
+        continue;
 
       try {
         List<Dimension> levels = breakupLevels(ds, levelVar);
@@ -145,8 +147,10 @@ public class AWIPSConvention extends CoordSysBuilder {
   // pretty much WRF specific
 
   private String normalize(String units) {
-    if (units.equals("/second")) units = "1/sec";
-    if (units.equals("degrees K")) units = "K";
+    if (units.equals("/second"))
+      units = "1/sec";
+    if (units.equals("degrees K"))
+      units = "K";
     else {
       units = StringUtil2.substitute(units, "**", "^");
       units = StringUtil2.remove(units, ')');
@@ -160,7 +164,8 @@ public class AWIPSConvention extends CoordSysBuilder {
   // return the list of Dimensions that were created
 
   private List<Dimension> breakupLevels(NetcdfDataset ds, Variable levelVar) throws IOException {
-    if (debugBreakup) parseInfo.format("breakupLevels = %s%n", levelVar.getShortName());
+    if (debugBreakup)
+      parseInfo.format("breakupLevels = %s%n", levelVar.getShortName());
     List<Dimension> dimList = new ArrayList<>();
 
     ArrayChar levelVarData;
@@ -175,16 +180,21 @@ public class AWIPSConvention extends CoordSysBuilder {
     ArrayChar.StringIterator iter = levelVarData.getStringIterator();
     while (iter.hasNext()) {
       String s = iter.next();
-      if (debugBreakup) parseInfo.format("   %s%n", s);
+      if (debugBreakup)
+        parseInfo.format("   %s%n", s);
       StringTokenizer stoke = new StringTokenizer(s);
 
-/* problem with blank string:
-   char pvvLevels(levels_35=35, charsPerLevel=10);
-"MB 1000   ", "MB 975    ", "MB 950    ", "MB 925    ", "MB 900    ", "MB 875    ", "MB 850    ", "MB 825    ", "MB 800    ", "MB 775    ", "MB 750    ",
-"MB 725    ", "MB 700    ", "MB 675    ", "MB 650    ", "MB 625    ", "MB 600    ", "MB 575    ", "MB 550    ", "MB 525    ", "MB 500    ", "MB 450    ",
-"MB 400    ", "MB 350    ", "MB 300    ", "MB 250    ", "MB 200    ", "MB 150    ", "MB 100    ", "BL 0 30   ", "BL 60 90  ", "BL 90 120 ", "BL 120 150",
-"BL 150 180", ""
-*/
+      /*
+       * problem with blank string:
+       * char pvvLevels(levels_35=35, charsPerLevel=10);
+       * "MB 1000   ", "MB 975    ", "MB 950    ", "MB 925    ", "MB 900    ", "MB 875    ", "MB 850    ", "MB 825    ",
+       * "MB 800    ", "MB 775    ", "MB 750    ",
+       * "MB 725    ", "MB 700    ", "MB 675    ", "MB 650    ", "MB 625    ", "MB 600    ", "MB 575    ", "MB 550    ",
+       * "MB 525    ", "MB 500    ", "MB 450    ",
+       * "MB 400    ", "MB 350    ", "MB 300    ", "MB 250    ", "MB 200    ", "MB 150    ", "MB 100    ", "BL 0 30   ",
+       * "BL 60 90  ", "BL 90 120 ", "BL 120 150",
+       * "BL 150 180", ""
+       */
       if (!stoke.hasMoreTokens())
         continue; // skip it
 
@@ -206,7 +216,8 @@ public class AWIPSConvention extends CoordSysBuilder {
     if (values != null)
       dimList.add(makeZCoordAxis(ds, values, currentUnits));
 
-    if (debugBreakup) parseInfo.format("  done breakup%n");
+    if (debugBreakup)
+      parseInfo.format("  done breakup%n");
 
     return dimList;
   }
@@ -230,7 +241,8 @@ public class AWIPSConvention extends CoordSysBuilder {
         Array coordData = coord.read();
         Array newData = Array.makeArray(coord.getDataType(), values);
         if (MAMath.nearlyEquals(coordData, newData)) {
-          if (debugBreakup) parseInfo.format("  use existing coord %s%n", dim);
+          if (debugBreakup)
+            parseInfo.format("  use existing coord %s%n", dim);
           return dim;
         }
       }
@@ -246,7 +258,8 @@ public class AWIPSConvention extends CoordSysBuilder {
     // create new one
     dim = new Dimension(name, len);
     ds.addDimension(null, dim);
-    if (debugBreakup) parseInfo.format("  make Dimension = %s length = %d%n", name, len);
+    if (debugBreakup)
+      parseInfo.format("  make Dimension = %s length = %d%n", name, len);
 
     // if (len < 2) return dim; // skip 1D
 
@@ -254,8 +267,8 @@ public class AWIPSConvention extends CoordSysBuilder {
       parseInfo.format("  make ZCoordAxis = = %s length = %d%n", name, len);
     }
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, name,
-            makeUnitsName(units), makeLongName(name));
+    CoordinateAxis v =
+        new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, name, makeUnitsName(units), makeLongName(name));
     String positive = getZisPositive(ds, v);
     if (null != positive)
       v.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
@@ -271,42 +284,59 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   private String makeZCoordName(String units) {
-    if (units.equalsIgnoreCase("MB")) return "PressureLevels";
-    if (units.equalsIgnoreCase("K")) return "PotTempLevels";
-    if (units.equalsIgnoreCase("BL")) return "BoundaryLayers";
+    if (units.equalsIgnoreCase("MB"))
+      return "PressureLevels";
+    if (units.equalsIgnoreCase("K"))
+      return "PotTempLevels";
+    if (units.equalsIgnoreCase("BL"))
+      return "BoundaryLayers";
 
-    if (units.equalsIgnoreCase("FHAG")) return "FixedHeightAboveGround";
-    if (units.equalsIgnoreCase("FH")) return "FixedHeight";
-    if (units.equalsIgnoreCase("SFC")) return "Surface";
-    if (units.equalsIgnoreCase("MSL")) return "MeanSeaLevel";
-    if (units.equalsIgnoreCase("FRZ")) return "FreezingLevel";
-    if (units.equalsIgnoreCase("TROP")) return "Tropopause";
-    if (units.equalsIgnoreCase("MAXW")) return "MaxWindLevel";
+    if (units.equalsIgnoreCase("FHAG"))
+      return "FixedHeightAboveGround";
+    if (units.equalsIgnoreCase("FH"))
+      return "FixedHeight";
+    if (units.equalsIgnoreCase("SFC"))
+      return "Surface";
+    if (units.equalsIgnoreCase("MSL"))
+      return "MeanSeaLevel";
+    if (units.equalsIgnoreCase("FRZ"))
+      return "FreezingLevel";
+    if (units.equalsIgnoreCase("TROP"))
+      return "Tropopause";
+    if (units.equalsIgnoreCase("MAXW"))
+      return "MaxWindLevel";
     return units;
   }
 
   private String makeUnitsName(String units) {
-    if (units.equalsIgnoreCase("MB")) return "hPa";
-    if (units.equalsIgnoreCase("BL")) return "hPa";
-    if (units.equalsIgnoreCase("FHAG")) return "m";
-    if (units.equalsIgnoreCase("FH")) return "m";
+    if (units.equalsIgnoreCase("MB"))
+      return "hPa";
+    if (units.equalsIgnoreCase("BL"))
+      return "hPa";
+    if (units.equalsIgnoreCase("FHAG"))
+      return "m";
+    if (units.equalsIgnoreCase("FH"))
+      return "m";
     return "";
   }
 
   private String makeLongName(String name) {
-    if (name.equalsIgnoreCase("PotTempLevels")) return "Potential Temperature Level";
-    if (name.equalsIgnoreCase("BoundaryLayers")) return "BoundaryLayer hectoPascals above ground";
-    else return name;
+    if (name.equalsIgnoreCase("PotTempLevels"))
+      return "Potential Temperature Level";
+    if (name.equalsIgnoreCase("BoundaryLayers"))
+      return "BoundaryLayer hectoPascals above ground";
+    else
+      return name;
   }
 
   // create new variables as sections of ncVar
 
-  private void createNewVariables(NetcdfDataset ds, Variable ncVar, List<Dimension> newDims,
-                                  Dimension levelDim) throws InvalidRangeException {
+  private void createNewVariables(NetcdfDataset ds, Variable ncVar, List<Dimension> newDims, Dimension levelDim)
+      throws InvalidRangeException {
 
     List<Dimension> dims = ncVar.getDimensions();
     int newDimIndex = dims.indexOf(levelDim);
-    //String shapeS = ncVar.getShapeS();
+    // String shapeS = ncVar.getShapeS();
 
     int[] origin = new int[ncVar.getRank()];
     int[] shape = ncVar.getShape();
@@ -410,7 +440,8 @@ public class AWIPSConvention extends CoordSysBuilder {
     double lat0 = findAttributeDouble(ds, "lat00");
     double lon0 = findAttributeDouble(ds, "lon00");
     ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(lat0, lon0));
-    if (debugProj) parseInfo.format("getLCProjection start at proj coord %s%n", start);
+    if (debugProj)
+      parseInfo.format("getLCProjection start at proj coord %s%n", start);
     startx = start.getX();
     starty = start.getY();
 
@@ -421,11 +452,11 @@ public class AWIPSConvention extends CoordSysBuilder {
     double centralLat = findAttributeDouble(ds, "centralLat");
     double centralLon = findAttributeDouble(ds, "centralLon");
 
-    // scale factor at lat = k = 2*k0/(1+sin(lat))  [Snyder,Working Manual p157]
+    // scale factor at lat = k = 2*k0/(1+sin(lat)) [Snyder,Working Manual p157]
     // then to make scale = 1 at lat, k0 = (1+sin(lat))/2
     double latDxDy = findAttributeDouble(ds, "latDxDy");
     double latR = Math.toRadians(latDxDy);
-    double scale = (1.0 + Math.abs(Math.sin(latR))) / 2;  // thanks to R Schmunk
+    double scale = (1.0 + Math.abs(Math.sin(latR))) / 2; // thanks to R Schmunk
 
     // Stereographic(double latt, double lont, double scale)
 
@@ -477,7 +508,8 @@ public class AWIPSConvention extends CoordSysBuilder {
     double min = findAttributeDouble(ds, "xMin");
     double max = findAttributeDouble(ds, "xMax");
     double d = findAttributeDouble(ds, "dx");
-    if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d)) return null;
+    if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d))
+      return null;
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, CDM.LON_UNITS, "longitude");
     v.setValues(n, min, d);
@@ -495,7 +527,8 @@ public class AWIPSConvention extends CoordSysBuilder {
     double min = findAttributeDouble(ds, "yMin");
     double max = findAttributeDouble(ds, "yMax");
     double d = findAttributeDouble(ds, "dy");
-    if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d)) return null;
+    if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d))
+      return null;
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, CDM.LAT_UNITS, "latitude");
     v.setValues(n, min, d);
@@ -526,7 +559,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     int valLen = (int) vals.getSize();
     if (recLen != valLen) {
       try {
-        vals = vals.sectionNoReduce(new int[]{0}, new int[]{recordDim.getLength()}, null);
+        vals = vals.sectionNoReduce(new int[] {0}, new int[] {recordDim.getLength()}, null);
         parseInfo.format(" corrected the TimeCoordAxis length%n");
       } catch (InvalidRangeException e) {
         parseInfo.format("makeTimeCoordAxis InvalidRangeException%n");
@@ -556,7 +589,8 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     // posFirst: last '/' if it exists
     int posFirst = dsName.lastIndexOf('/');
-    if (posFirst < 0) posFirst = 0;
+    if (posFirst < 0)
+      posFirst = 0;
 
     // posLast: next '.' if it exists
     int posLast = dsName.indexOf('.', posFirst);
@@ -582,7 +616,8 @@ public class AWIPSConvention extends CoordSysBuilder {
 
   private CoordinateAxis makeTimeCoordAxisFromReference(NetcdfDataset ds, Variable timeVar, Array vals) {
     Variable refVar = ds.findVariable("reftime");
-    if (refVar == null) return null;
+    if (refVar == null)
+      return null;
     double refValue;
     try {
       Array refArray = refVar.read();

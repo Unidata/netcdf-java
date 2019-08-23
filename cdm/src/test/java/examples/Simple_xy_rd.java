@@ -1,16 +1,17 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
-   See COPYRIGHT file for conditions of use.
-
-   This is a simple example which reads a small dummy array, which was
-   written by simple_xy_wr.java. This is intended to illustrate the use
-   of the netCDF Java API.
-
-   This example demonstrates the netCDF Java API.
-
-   Full documentation of the netCDF Java API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf-java/
-*/
+/*
+ * This is part of the netCDF package.
+ * Copyright 2006 University Corporation for Atmospheric Research/Unidata.
+ * See COPYRIGHT file for conditions of use.
+ * 
+ * This is a simple example which reads a small dummy array, which was
+ * written by simple_xy_wr.java. This is intended to illustrate the use
+ * of the netCDF Java API.
+ * 
+ * This example demonstrates the netCDF Java API.
+ * 
+ * Full documentation of the netCDF Java API can be found at:
+ * http://www.unidata.ucar.edu/software/netcdf-java/
+ */
 package examples;
 
 import org.slf4j.Logger;
@@ -19,7 +20,6 @@ import ucar.ma2.ArrayInt;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 

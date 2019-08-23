@@ -5,7 +5,6 @@
 package ucar.nc2.dt;
 
 import ucar.unidata.geoloc.Station;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
@@ -21,36 +20,42 @@ public class StationImpl extends ucar.unidata.geoloc.StationImpl {
   protected List<StationObsDatatype> obsList;
   protected int count = -1;
 
-  public StationImpl() {
+  public StationImpl() {}
+
+  public StationImpl(String name, String desc, double lat, double lon, double alt) {
+    super(name, desc, "", lat, lon, alt);
   }
 
-  public StationImpl( String name, String desc, double lat, double lon, double alt) {
-    super( name, desc, "", lat, lon, alt);
-  }
-
-  public StationImpl( String name, String desc, double lat, double lon, double alt, int count) {
-    this( name, desc, lat, lon, alt);
+  public StationImpl(String name, String desc, double lat, double lon, double alt, int count) {
+    this(name, desc, lat, lon, alt);
     this.count = count;
   }
 
-  public int getNumObservations() { return (obsList == null) ? count : obsList.size(); }
+  public int getNumObservations() {
+    return (obsList == null) ? count : obsList.size();
+  }
 
   /////
 
-  public void incrCount() { count++; }
+  public void incrCount() {
+    count++;
+  }
 
   public List getObservations() throws IOException {
     if (obsList == null)
-        obsList = readObservations();
+      obsList = readObservations();
     return obsList;
   }
 
   // got to use this or subclass readObservations()
-  public void addObs( StationObsDatatype sobs) {
-    if (null == obsList) obsList = new ArrayList<StationObsDatatype>();
-    obsList.add( sobs);
+  public void addObs(StationObsDatatype sobs) {
+    if (null == obsList)
+      obsList = new ArrayList<StationObsDatatype>();
+    obsList.add(sobs);
   }
 
-  protected List<StationObsDatatype> readObservations()  throws IOException { return null; }
+  protected List<StationObsDatatype> readObservations() throws IOException {
+    return null;
+  }
 
 }

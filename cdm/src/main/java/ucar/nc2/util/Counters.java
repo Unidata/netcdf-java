@@ -50,6 +50,7 @@ public class Counters {
   /**
    * Add value to the named counter.
    * Add counter if it doesnt already exist.
+   * 
    * @return true if its a new value, not seen before.
    */
   public boolean count(String name, Comparable value) {
@@ -155,7 +156,8 @@ public class Counters {
       Comparable testKey = null;
       for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
         Comparable entryKey = entry.getKey();
-        if (testKey != null && entryKey.compareTo(testKey) != 0) same = false;
+        if (testKey != null && entryKey.compareTo(testKey) != 0)
+          same = false;
         testKey = entryKey;
 
         if (entry.getValue() > max) {

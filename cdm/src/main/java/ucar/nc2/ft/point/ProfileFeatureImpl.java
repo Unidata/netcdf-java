@@ -5,7 +5,6 @@
 package ucar.nc2.ft.point;
 
 import javax.annotation.Nonnull;
-
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.time.CalendarDateUnit;
@@ -22,9 +21,10 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
   private LatLonPoint latlonPoint;
   protected double time;
 
-  public ProfileFeatureImpl( String name, CalendarDateUnit timeUnit, String altUnits, double lat, double lon, double time, int nfeatures) {
+  public ProfileFeatureImpl(String name, CalendarDateUnit timeUnit, String altUnits, double lat, double lon,
+      double time, int nfeatures) {
     super(name, timeUnit, altUnits);
-    this.latlonPoint = new LatLonPointImpl(lat,lon);
+    this.latlonPoint = new LatLonPointImpl(lat, lon);
     this.time = time;
     if (nfeatures >= 0) {
       getInfo(); // create the object
@@ -37,7 +37,7 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
   public LatLonPoint getLatLon() {
     return latlonPoint;
   }
-  
+
   public Object getId() {
     return getName();
   }

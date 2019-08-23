@@ -10,7 +10,7 @@ import java.security.Provider;
 import java.util.Set;
 
 public class TimeDigest {
-  static public void main( String args[]) {
+  static public void main(String args[]) {
     testDigest();
   }
 
@@ -20,10 +20,10 @@ public class TimeDigest {
       Provider p = md.getProvider();
       Set<Provider.Service> services = p.getServices();
       for (Provider.Service service : services) {
-        System.out.println("Service="+service);
+        System.out.println("Service=" + service);
       }
     } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
     }
   }
 }

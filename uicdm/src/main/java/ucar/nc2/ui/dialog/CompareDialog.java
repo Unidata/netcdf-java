@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -37,7 +37,6 @@
 package ucar.nc2.ui.dialog;
 
 import ucar.ui.widget.FileManager;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -47,7 +46,9 @@ import java.awt.event.ActionEvent;
  * @author John Caron
  */
 public class CompareDialog extends JDialog {
-  public enum HowMuch {All, varOnly, varNameOnly}
+  public enum HowMuch {
+    All, varOnly, varNameOnly
+  }
 
   public static class Data {
     public HowMuch howMuch;
@@ -65,13 +66,8 @@ public class CompareDialog extends JDialog {
 
     @Override
     public String toString() {
-      return "Data{" +
-              "howMuch=" + howMuch +
-              ", name='" + name + '\'' +
-              ", showCompare=" + showCompare +
-              ", showDetails=" + showDetails +
-              ", readData=" + readData +
-              '}';
+      return "Data{" + "howMuch=" + howMuch + ", name='" + name + '\'' + ", showCompare=" + showCompare
+          + ", showDetails=" + showDetails + ", readData=" + readData + '}';
     }
   }
 
@@ -86,7 +82,8 @@ public class CompareDialog extends JDialog {
 
   private void okButtonActionPerformed(ActionEvent e) {
     HowMuch howMuch = all.isSelected() ? HowMuch.All : (varOnly.isSelected() ? HowMuch.varOnly : HowMuch.varNameOnly);
-    Data data =  new Data((String) datasetCombo.getSelectedItem(), howMuch, showCompare.isSelected(), showDetails.isSelected(), readData.isSelected());
+    Data data = new Data((String) datasetCombo.getSelectedItem(), howMuch, showCompare.isSelected(),
+        showDetails.isSelected(), readData.isSelected());
     firePropertyChange("OK", null, data);
     setVisible(false);
   }
@@ -97,19 +94,21 @@ public class CompareDialog extends JDialog {
 
   private void fileBrowserActionPerformed(ActionEvent e) {
     String filename = fileChooser.chooseFilename();
-    if (filename == null) return;
+    if (filename == null)
+      return;
     datasetCombo.insertItemAt(filename, 0);
     datasetCombo.setSelectedIndex(0);
   }
 
   private void datasetComboActionPerformed(ActionEvent e) {
-    //System.out.printf("%s%n", e);
-    if (!e.getActionCommand().equals("comboBoxChanged")) return;
+    // System.out.printf("%s%n", e);
+    if (!e.getActionCommand().equals("comboBoxChanged"))
+      return;
     datasetCombo.insertItemAt(datasetCombo.getSelectedItem(), 0);
   }
 
   private void initComponents() {
-    // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+    // JFormDesigner - Component initialization - DO NOT MODIFY //GEN-BEGIN:initComponents
     // Generated using JFormDesigner non-commercial license
     dialogPane = new JPanel();
     contentPanel = new JPanel();
@@ -126,131 +125,116 @@ public class CompareDialog extends JDialog {
     okButton = new JButton();
     varNameOnly = new JRadioButton();
 
-    //======== this ========
+    // ======== this ========
     setTitle("Compare current dataset with another dataset");
     Container contentPane = getContentPane();
     contentPane.setLayout(new BorderLayout());
 
-    //======== dialogPane ========
+    // ======== dialogPane ========
     {
       dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
       dialogPane.setLayout(new BorderLayout());
 
-      //======== contentPanel ========
+      // ======== contentPanel ========
       {
 
-        //---- fileBrowser ----
+        // ---- fileBrowser ----
         fileBrowser.setIcon(UIManager.getIcon("FileView.directoryIcon"));
         fileBrowser.setToolTipText("open Local dataset");
         fileBrowser.addActionListener(this::fileBrowserActionPerformed);
 
-        //---- label1 ----
+        // ---- label1 ----
         label1.setText("dataset:");
         label1.setFont(new Font("Dialog", Font.BOLD, 12));
 
-        //---- all ----
+        // ---- all ----
         all.setText("All");
         all.setSelected(true);
 
-        //---- varOnly ----
+        // ---- varOnly ----
         varOnly.setText("selected Variable");
 
-        //======== buttonBar ========
+        // ======== buttonBar ========
         {
           buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
           buttonBar.setLayout(new GridBagLayout());
-          ((GridBagLayout)buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
-          ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
+          ((GridBagLayout) buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
+          ((GridBagLayout) buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
         }
 
-        //---- readData ----
+        // ---- readData ----
         readData.setText("compare Data");
 
-        //---- showDetails ----
+        // ---- showDetails ----
         showDetails.setText("show Details");
 
-        //---- showCompare ----
+        // ---- showCompare ----
         showCompare.setText("show Compare");
         showCompare.setSelected(true);
 
-        //---- datasetCombo ----
+        // ---- datasetCombo ----
         datasetCombo.setEditable(true);
         datasetCombo.addActionListener(this::datasetComboActionPerformed);
 
-        //---- cancelButton ----
+        // ---- cancelButton ----
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(this::cancelButtonActionPerformed);
 
-        //---- okButton ----
+        // ---- okButton ----
         okButton.setText("OK");
         okButton.addActionListener(this::okButtonActionPerformed);
 
-        //---- varNameOnly ----
+        // ---- varNameOnly ----
         varNameOnly.setText("Variable names only");
 
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
-        contentPanelLayout.setHorizontalGroup(
-          contentPanelLayout.createParallelGroup()
-            .addGroup(contentPanelLayout.createSequentialGroup()
-              .addContainerGap()
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addComponent(label1)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addGroup(contentPanelLayout.createParallelGroup()
-                    .addGroup(contentPanelLayout.createSequentialGroup()
-                      .addComponent(datasetCombo, GroupLayout.PREFERRED_SIZE, 676, GroupLayout.PREFERRED_SIZE)
-                      .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                      .addComponent(fileBrowser))
-                    .addGroup(contentPanelLayout.createSequentialGroup()
-                      .addComponent(showCompare)
-                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                      .addComponent(showDetails)
-                      .addGap(18, 18, 18)
-                      .addComponent(readData))
-                    .addGroup(contentPanelLayout.createSequentialGroup()
-                      .addComponent(all)
-                      .addGap(18, 18, 18)
-                      .addComponent(varOnly)
-                      .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                      .addComponent(varNameOnly))))
-                .addComponent(buttonBar, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 779, GroupLayout.PREFERRED_SIZE))
-              .addContainerGap())
-            .addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup()
-              .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-              .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-              .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-              .addGap(32, 32, 32))
-        );
-        contentPanelLayout.setVerticalGroup(
-          contentPanelLayout.createParallelGroup()
-            .addGroup(contentPanelLayout.createSequentialGroup()
-              .addContainerGap()
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                  .addComponent(label1)
-                  .addComponent(datasetCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addComponent(fileBrowser))
-              .addGap(20, 20, 20)
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(all)
-                .addComponent(varOnly)
-                .addComponent(varNameOnly))
-              .addGap(18, 18, 18)
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(showCompare)
-                .addComponent(showDetails)
-                .addComponent(readData))
-              .addGap(22, 22, 22)
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(okButton)
-                .addComponent(cancelButton))
-              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-              .addComponent(buttonBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-              .addContainerGap())
-        );
+        contentPanelLayout.setHorizontalGroup(contentPanelLayout.createParallelGroup().addGroup(contentPanelLayout
+            .createSequentialGroup().addContainerGap()
+            .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                .addGroup(contentPanelLayout.createSequentialGroup().addComponent(label1)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(contentPanelLayout.createParallelGroup()
+                        .addGroup(contentPanelLayout.createSequentialGroup()
+                            .addComponent(datasetCombo, GroupLayout.PREFERRED_SIZE, 676, GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(fileBrowser))
+                        .addGroup(contentPanelLayout.createSequentialGroup().addComponent(showCompare)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addComponent(showDetails)
+                            .addGap(18, 18, 18).addComponent(readData))
+                        .addGroup(contentPanelLayout.createSequentialGroup().addComponent(all).addGap(18, 18, 18)
+                            .addComponent(varOnly).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(varNameOnly))))
+                .addComponent(buttonBar, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 779,
+                    GroupLayout.PREFERRED_SIZE))
+            .addContainerGap())
+            .addGroup(GroupLayout.Alignment.TRAILING,
+                contentPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+                    .addGap(32, 32, 32)));
+        contentPanelLayout
+            .setVerticalGroup(
+                contentPanelLayout.createParallelGroup()
+                    .addGroup(contentPanelLayout.createSequentialGroup().addContainerGap()
+                        .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                            .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(label1).addComponent(datasetCombo, GroupLayout.PREFERRED_SIZE,
+                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                            .addComponent(fileBrowser))
+                        .addGap(20, 20, 20)
+                        .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(all).addComponent(varOnly).addComponent(varNameOnly))
+                        .addGap(18, 18, 18)
+                        .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(showCompare).addComponent(showDetails).addComponent(readData))
+                        .addGap(22, 22, 22)
+                        .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(okButton).addComponent(cancelButton))
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                        .addComponent(buttonBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                            GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()));
       }
       dialogPane.add(contentPanel, BorderLayout.NORTH);
     }
@@ -258,15 +242,15 @@ public class CompareDialog extends JDialog {
     pack();
     setLocationRelativeTo(getOwner());
 
-    //---- buttonGroup1 ----
+    // ---- buttonGroup1 ----
     ButtonGroup buttonGroup1 = new ButtonGroup();
     buttonGroup1.add(all);
     buttonGroup1.add(varOnly);
     buttonGroup1.add(varNameOnly);
-    // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    // JFormDesigner - End of component initialization //GEN-END:initComponents
   }
 
-  // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+  // JFormDesigner - Variables declaration - DO NOT MODIFY //GEN-BEGIN:variables
   // Generated using JFormDesigner non-commercial license
   private JPanel dialogPane;
   private JPanel contentPanel;
@@ -282,5 +266,5 @@ public class CompareDialog extends JDialog {
   private JButton cancelButton;
   private JButton okButton;
   private JRadioButton varNameOnly;
-  // JFormDesigner - End of variables declaration  //GEN-END:variables
+  // JFormDesigner - End of variables declaration //GEN-END:variables
 }

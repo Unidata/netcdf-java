@@ -11,8 +11,7 @@ package thredds.crawlabledataset;
  * @author edavis
  * @since Nov 14, 2005 10:49:12 AM
  */
-public interface CrawlableDatasetLabeler
-{
+public interface CrawlableDatasetLabeler {
   /**
    * Return a label for the given dataset or null if this CrawlableDatasetLabeler
    * does not know how to label the given dataset.
@@ -21,7 +20,7 @@ public interface CrawlableDatasetLabeler
    * @return the label for the given dataset or null.
    * @throws NullPointerException if the given dataset is null.
    */
-  public String getLabel( CrawlableDataset dataset );
+  public String getLabel(CrawlableDataset dataset);
 
   /**
    * Return the configuration object.

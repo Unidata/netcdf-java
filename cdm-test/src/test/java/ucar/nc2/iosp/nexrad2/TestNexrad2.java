@@ -18,7 +18,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -34,7 +33,7 @@ public class TestNexrad2 {
     TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/nexrad/level2/VCP11", null, new MyAct(true));
     TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/nexrad/level2/VCP11", null, new MyAct(false));
     long took = System.currentTimeMillis() - start;
-    System.out.println("that took = "+took+" msec");
+    System.out.println("that took = " + took + " msec");
   }
 
   private class MyAct implements TestDir.Act {
@@ -59,7 +58,7 @@ public class TestNexrad2 {
     }
   }
 
-  private int testRead( NetcdfFile nexrad2) throws IOException {
+  private int testRead(NetcdfFile nexrad2) throws IOException {
     System.out.println(nexrad2.getLocation());
 
     Dimension scanR = nexrad2.findDimension("scanR");
@@ -69,25 +68,25 @@ public class TestNexrad2 {
 
     assert scanR.getLength() == scanV.getLength();
 
-    Variable elevR =  nexrad2.findVariable("elevationR");
+    Variable elevR = nexrad2.findVariable("elevationR");
     assert elevR != null;
     Array elevRdata = elevR.read();
 
-    Variable elevV =  nexrad2.findVariable("elevationV");
+    Variable elevV = nexrad2.findVariable("elevationV");
     assert elevV != null;
     Array elevVdata = elevV.read();
 
-    assert elevRdata.getSize() ==  elevVdata.getSize();
+    assert elevRdata.getSize() == elevVdata.getSize();
 
-    Variable v =  nexrad2.findVariable("Reflectivity");
+    Variable v = nexrad2.findVariable("Reflectivity");
     assert v != null;
     Array data = v.read();
 
-    v =  nexrad2.findVariable("RadialVelocity");
+    v = nexrad2.findVariable("RadialVelocity");
     assert v != null;
     data = v.read();
 
-    v =  nexrad2.findVariable("SpectrumWidth");
+    v = nexrad2.findVariable("SpectrumWidth");
     assert v != null;
     data = v.read();
 
@@ -95,7 +94,7 @@ public class TestNexrad2 {
 
   }
 
-  static public boolean testCoordSystem( NetcdfFile nexrad2) throws IOException {
+  static public boolean testCoordSystem(NetcdfFile nexrad2) throws IOException {
     Dimension scanR = nexrad2.findDimension("scanR");
     assert null != scanR;
     Dimension scanV = nexrad2.findDimension("scanV");
@@ -103,24 +102,24 @@ public class TestNexrad2 {
 
     assert scanR.getLength() == scanV.getLength();
 
-    Variable elevR =  nexrad2.findVariable("elevationR");
+    Variable elevR = nexrad2.findVariable("elevationR");
     assert elevR != null;
     Array elevRdata = elevR.read();
     IndexIterator elevRiter = elevRdata.getIndexIterator();
 
-    Variable elevV =  nexrad2.findVariable("elevationV");
+    Variable elevV = nexrad2.findVariable("elevationV");
     assert elevV != null;
     Array elevVdata = elevV.read();
     IndexIterator elevViter = elevVdata.getIndexIterator();
 
-    assert elevRdata.getSize() ==  elevVdata.getSize();
+    assert elevRdata.getSize() == elevVdata.getSize();
 
     int count = 0;
     boolean ok = true;
     while (elevRiter.hasNext()) {
       if (elevRiter.getFloatNext() != elevViter.getFloatNext()) {
         ok = false;
-        System.out.println(count+" "+elevRiter.getFloatCurrent()+" != "+elevViter.getFloatCurrent());
+        System.out.println(count + " " + elevRiter.getFloatCurrent() + " != " + elevViter.getFloatCurrent());
       }
       count++;
     }
@@ -130,10 +129,10 @@ public class TestNexrad2 {
 
   @Test
   public void testCoordSys() throws IOException {
-    //NetcdfDataset ncd = NetcdfDataset.openDataset(
-    //        "dods://localhost:8080/thredds/dodsC/testAll/Level2_KSOX_20051010_2322.ar2v", false, null);
+    // NetcdfDataset ncd = NetcdfDataset.openDataset(
+    // "dods://localhost:8080/thredds/dodsC/testAll/Level2_KSOX_20051010_2322.ar2v", false, null);
     String filename = TestDir.cdmUnitTestDir + "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v";
-    try (NetcdfFile ncfile = NetcdfDataset.openFile( filename, null)) {
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
       testCoordSystem(ncfile);
     }
   }
@@ -141,8 +140,9 @@ public class TestNexrad2 {
   @Test
   public void testBzipProblem() throws IOException, InvalidRangeException {
     // file where there was an error unzipping the file
-    String filename = TestDir.cdmUnitTestDir + "formats/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials";
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset( filename)) {
+    String filename =
+        TestDir.cdmUnitTestDir + "formats/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials";
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
 
       VariableDS azi = (VariableDS) ncd.findVariable("azimuthR");
       assert azi != null;
@@ -170,7 +170,8 @@ public class TestNexrad2 {
     }
   }
 
-  private void checkMissingValues(VariableDS elev, VariableDS azi, VariableDS time, VariableDS q) throws IOException, InvalidRangeException {
+  private void checkMissingValues(VariableDS elev, VariableDS azi, VariableDS time, VariableDS q)
+      throws IOException, InvalidRangeException {
     Array elevData = elev.read();
     IndexIterator elevII = elevData.getIndexIterator();
     Array aziData = azi.read();
@@ -183,14 +184,14 @@ public class TestNexrad2 {
       assert azi.isMissing(aziValue) == elev.isMissing(elevValue);
 
       // LOOK missing data broken for non-float coordinate axes
-      //int timeValue = timeII.getIntNext();
-      //assert azi.isMissing(aziValue) == time.isMissing(timeValue) : " azi= "+aziValue +" time= "+timeValue;
+      // int timeValue = timeII.getIntNext();
+      // assert azi.isMissing(aziValue) == time.isMissing(timeValue) : " azi= "+aziValue +" time= "+timeValue;
     }
 
     int[] shape = q.getShape();
     int rank = q.getRank();
     int[] origin = new int[rank];
-    shape[rank-1] = 1;
+    shape[rank - 1] = 1;
     Array qData = q.read(origin, shape);
     assert qData.getSize() == aziData.getSize();
 

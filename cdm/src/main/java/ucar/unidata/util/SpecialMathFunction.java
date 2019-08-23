@@ -5,8 +5,6 @@
 package ucar.unidata.util;
 
 import java.lang.ArithmeticException;
-
-
 import java.lang.Math;
 
 /**
@@ -21,12 +19,14 @@ public final class SpecialMathFunction {
 
   /**
    * Get the log base 2 of a number
+   * 
    * @param x a double value
    * @return The log<sub>2</sub> of x
    * @throws ArithmeticException if (x < 0)
    */
   static public double log2(double x) throws ArithmeticException {
-    if (x <= 0.0) throw new ArithmeticException("range exception");
+    if (x <= 0.0)
+      throw new ArithmeticException("range exception");
     return Math.log(x) / log2;
   }
 

@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -36,7 +36,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -51,15 +50,15 @@ public class TestRange {
   @Test
   public void testStride() throws InvalidRangeException {
     int nx = 1237;
-    Range r = new Range(0,nx-1,9);
-    System.out.printf("%s%n",r);
+    Range r = new Range(0, nx - 1, 9);
+    System.out.printf("%s%n", r);
     System.out.printf("%d %d %d %d%n", r.first(), r.last(), r.stride(), r.length());
     Assert.assertEquals(0, r.first());
     Assert.assertEquals(9, r.stride());
-    Assert.assertEquals(138,  r.length());
-    Assert.assertEquals(1233,  r.last());
+    Assert.assertEquals(138, r.length());
+    Assert.assertEquals(1233, r.last());
 
-    Section s = new Section( r, r);
+    Section s = new Section(r, r);
     Section.Iterator iter = s.getIterator(new int[] {nx, nx});
     int[] iterResult = new int[2];
     int count = 0;
@@ -73,7 +72,7 @@ public class TestRange {
         count++;
       }
     }
-    Assert.assertEquals(138*138, count);
+    Assert.assertEquals(138 * 138, count);
 
   }
 }

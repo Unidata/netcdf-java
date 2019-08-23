@@ -13,7 +13,6 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 public class CoordinateEns implements Coordinate {
   private final List<EnsCoordValue> ensSorted;
   private final int code;
-  private String name ="ens";
+  private String name = "ens";
 
   public CoordinateEns(int code, List<EnsCoordValue> ensSorted) {
     this.ensSorted = Collections.unmodifiableList(ensSorted);
@@ -60,7 +59,8 @@ public class CoordinateEns implements Coordinate {
   public int getIndexByMember(double need) {
     for (int i = 0; i < ensSorted.size(); i++) {
       EnsCoordValue coord = ensSorted.get(i);
-      if (Misc.nearlyEquals(need, coord.getEnsMember())) return i;
+      if (Misc.nearlyEquals(need, coord.getEnsMember()))
+        return i;
     }
     return -1;
   }
@@ -77,7 +77,7 @@ public class CoordinateEns implements Coordinate {
 
   @Override
   public int estMemorySize() {
-    return 160 + getSize() * ( 8 + Misc.referenceSize);
+    return 160 + getSize() * (8 + Misc.referenceSize);
   }
 
   @Override
@@ -100,15 +100,16 @@ public class CoordinateEns implements Coordinate {
   }
 
   public void setName(String name) {
-    if (!this.name.equals("ens")) throw new IllegalStateException("Cant modify");
+    if (!this.name.equals("ens"))
+      throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s: ", indent, getType());
-     for (EnsCoordValue level : ensSorted)
-       info.format(" %s", level);
+    for (EnsCoordValue level : ensSorted)
+      info.format(" %s", level);
     info.format(" (%d)%n", ensSorted.size());
   }
 
@@ -134,12 +135,15 @@ public class CoordinateEns implements Coordinate {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     CoordinateEns that = (CoordinateEns) o;
 
-    if (code != that.code) return false;
+    if (code != that.code)
+      return false;
     return ensSorted.equals(that.ensSorted);
 
   }
@@ -170,7 +174,8 @@ public class CoordinateEns implements Coordinate {
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<EnsCoordValue> levelSorted = new ArrayList<>(values.size());
-      for (Object val : values) levelSorted.add( (EnsCoordValue) val);
+      for (Object val : values)
+        levelSorted.add((EnsCoordValue) val);
       Collections.sort(levelSorted);
       return new CoordinateEns(code, levelSorted);
     }
@@ -193,8 +198,8 @@ public class CoordinateEns implements Coordinate {
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<EnsCoordValue> levelSorted = values.stream().map(val -> (EnsCoordValue) val).sorted()
-          .collect(Collectors.toList());
+      List<EnsCoordValue> levelSorted =
+          values.stream().map(val -> (EnsCoordValue) val).sorted().collect(Collectors.toList());
       return new CoordinateEns(code, levelSorted);
     }
   }

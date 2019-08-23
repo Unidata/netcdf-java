@@ -10,7 +10,6 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.PopupMenu;
 import ucar.nc2.util.Optional;
-
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
@@ -31,6 +30,7 @@ import java.util.Enumeration;
  * thrown, see addPropertyChangeListener.
  * <p>
  * Example:
+ * 
  * <pre>
  *  CatalogTreeView  tree = new CatalogTreeView();
     tree.addPropertyChangeListener(  new java.beans.PropertyChangeListener() {
@@ -44,12 +44,13 @@ import java.util.Enumeration;
         }
       }
     });
- </pre>
+ * </pre>
  *
  *
  * Handles Catalog References internally. Catalogs are read in a background thread, which can be cancelled by the user.
- * <p> You probably want to use CatalogChooser or ThreddsDatasetChooser for more complete
- *  functionality.
+ * <p>
+ * You probably want to use CatalogChooser or ThreddsDatasetChooser for more complete
+ * functionality.
  *
  * @author John Caron
  */
@@ -57,14 +58,14 @@ import java.util.Enumeration;
 public class CatalogTreeView extends JPanel {
   private Catalog catalog;
 
-    // state
+  // state
   // private DatasetFilter filter = null;
   private boolean accessOnly = true;
   private String catalogURL = "";
   private boolean openCatalogReferences = true;
   private boolean openDatasetScans = true;
 
-    // ui
+  // ui
   private JTree tree;
   private InvCatalogTreeModel model;
 
@@ -83,9 +84,10 @@ public class CatalogTreeView extends JPanel {
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     tree.setToggleClickCount(1);
 
-    tree.addMouseListener( new MouseAdapter() {
+    tree.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
-        if (!SwingUtilities.isLeftMouseButton(e)) return; // left button only
+        if (!SwingUtilities.isLeftMouseButton(e))
+          return; // left button only
 
         int selRow = tree.getRowForLocation(e.getX(), e.getY());
         if (selRow != -1) {
@@ -101,14 +103,15 @@ public class CatalogTreeView extends JPanel {
       }
     });
 
-    tree.addTreeWillExpandListener( new TreeWillExpandListener() {
-      public void treeWillCollapse(TreeExpansionEvent evt) { }
+    tree.addTreeWillExpandListener(new TreeWillExpandListener() {
+      public void treeWillCollapse(TreeExpansionEvent evt) {}
+
       public void treeWillExpand(TreeExpansionEvent evt) {
         InvCatalogTreeNode node = (InvCatalogTreeNode) evt.getPath().getLastPathComponent();
         if (node.ds instanceof CatalogRef) {
           CatalogRef catref = (CatalogRef) node.ds;
           if (!catref.isRead()) {
-            if (openCatalogReferences) //  && (openDatasetScans || !isDatasetScan))
+            if (openCatalogReferences) // && (openDatasetScans || !isDatasetScan))
               node.readCatref();
           }
         }
@@ -128,7 +131,7 @@ public class CatalogTreeView extends JPanel {
       public void actionPerformed(ActionEvent e) {
         InvCatalogTreeNode node = (InvCatalogTreeNode) tree.getLastSelectedPathComponent();
         if (node != null) {
-          node.makeChildren( true);
+          node.makeChildren(true);
           for (InvCatalogTreeNode child : node.children)
             tree.expandPath(makeTreePath(child));
         }
@@ -137,7 +140,7 @@ public class CatalogTreeView extends JPanel {
 
     ToolTipManager.sharedInstance().registerComponent(tree);
 
-   // layout
+    // layout
     setLayout(new BorderLayout());
     add(new JScrollPane(tree), BorderLayout.CENTER);
   }
@@ -145,31 +148,32 @@ public class CatalogTreeView extends JPanel {
   /**
    * Set whether catalog references are opened. default is true.
    */
-  public void setOpenCatalogReferences( boolean openCatalogReferences) {
+  public void setOpenCatalogReferences(boolean openCatalogReferences) {
     this.openCatalogReferences = openCatalogReferences;
   }
 
   /**
    * Set whether catalog references from dataset scans are opened. default is true.
    */
-  public void setOpenDatasetScans( boolean openDatasetScans) {
+  public void setOpenDatasetScans(boolean openDatasetScans) {
     this.openDatasetScans = openDatasetScans;
   }
 
   private void firePropertyChangeEvent(DatasetNode ds) {
     PropertyChangeEvent event = new PropertyChangeEvent(this, "Dataset", null, ds);
-    firePropertyChangeEvent( event);
+    firePropertyChangeEvent(event);
   }
 
   /**
    * Fires a PropertyChangeEvent:
-   * <ul><li>  when a new catalog is read and displayed:
+   * <ul>
+   * <li>when a new catalog is read and displayed:
    * propertyName = "Catalog", getNewValue() = catalog URL string
-   * <li>  when a node is selected:
+   * <li>when a node is selected:
    * propertyName = "Selection", getNewValue() = InvDataset chosen.
-   * <li>  when a node is double-clicked:
+   * <li>when a node is double-clicked:
    * propertyName = "Dataset", getNewValue() = InvDataset chosen.
-   * <li>  when a TreeNode is added:
+   * <li>when a TreeNode is added:
    * propertyName = "TreeNode", getNewValue() = InvDataset added.
    * </ul>
    */
@@ -177,22 +181,32 @@ public class CatalogTreeView extends JPanel {
     firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
-  /** Whether to throw events only if dataset has an Access.
-   *  @param accessOnly if true, throw events only if dataset has an Access
+  /**
+   * Whether to throw events only if dataset has an Access.
+   * 
+   * @param accessOnly if true, throw events only if dataset has an Access
    */
-  public void setAccessOnly( boolean accessOnly) { this.accessOnly = accessOnly; }
+  public void setAccessOnly(boolean accessOnly) {
+    this.accessOnly = accessOnly;
+  }
 
   /** Get the current catalog. */
-  public Catalog getCatalog() { return catalog; }
+  public Catalog getCatalog() {
+    return catalog;
+  }
 
   /** Get the URL of the current catalog. */
-  public String getCatalogURL() { return catalogURL; }
-  private void setCatalogURL( String catalogURL) {
+  public String getCatalogURL() {
+    return catalogURL;
+  }
+
+  private void setCatalogURL(String catalogURL) {
     this.catalogURL = catalogURL;
   }
 
   /**
    * Get the currently selected InvDataset.
+   * 
    * @return selected InvDataset, or null if none.
    */
   public DatasetNode getSelectedDataset() {
@@ -202,43 +216,50 @@ public class CatalogTreeView extends JPanel {
 
   private InvCatalogTreeNode getSelectedNode() {
     Object node = tree.getLastSelectedPathComponent();
-    if (node == null) return null;
-    if ( !(node instanceof InvCatalogTreeNode)) return null;
+    if (node == null)
+      return null;
+    if (!(node instanceof InvCatalogTreeNode))
+      return null;
     return (InvCatalogTreeNode) node;
   }
 
   /**
    * Set the currently selected InvDataset.
+   * 
    * @param ds select this InvDataset, must be already in the tree.
-   * LOOK does this work ?? doesnt throw event
+   *        LOOK does this work ?? doesnt throw event
    */
   public void setSelectedDataset(Dataset ds) {
-    if (ds == null) return;
+    if (ds == null)
+      return;
     TreePath path = makePath(ds);
-    if (path == null) return;
-    tree.setSelectionPath( path);
-    tree.scrollPathToVisible( path);
+    if (path == null)
+      return;
+    tree.setSelectionPath(path);
+    tree.scrollPathToVisible(path);
   }
 
   /**
    * Create the TreePath corresponding to the InvDataset.
+   * 
    * @param ds the InvDataset, must be already in the tree.
    * @return the corresponding TreePath.
    */
   TreePath makePath(Dataset ds) {
     return null;
-    //TreeNode node = (TreeNode) ds.getUserProperty("TreeNode");  // LOOK
-    //return makeTreePath( node);
+    // TreeNode node = (TreeNode) ds.getUserProperty("TreeNode"); // LOOK
+    // return makeTreePath( node);
   }
 
   /**
    * Create the TreePath corresponding to the given TreeNode.
+   * 
    * @param node the TreeNode; already in the Tree.
    * @return the corresponding TreePath.
    */
   TreePath makeTreePath(TreeNode node) {
     ArrayList<TreeNode> path = new ArrayList<>();
-    path.add( node);
+    path.add(node);
     TreeNode parent = node.getParent();
     while (parent != null) {
       path.add(0, parent);
@@ -251,24 +272,27 @@ public class CatalogTreeView extends JPanel {
 
   /**
    * Open all nodes of the tree.
+   * 
    * @param includeCatref open catrefs?
    */
-  public void openAll( boolean includeCatref) {
-    if (catalog == null) return;
-    open( (InvCatalogTreeNode) model.getRoot(), includeCatref);
+  public void openAll(boolean includeCatref) {
+    if (catalog == null)
+      return;
+    open((InvCatalogTreeNode) model.getRoot(), includeCatref);
     tree.repaint();
   }
 
-  private void open( InvCatalogTreeNode node, boolean includeCatref) {
-    if (node == null) return;
-    node.makeChildren( includeCatref);
+  private void open(InvCatalogTreeNode node, boolean includeCatref) {
+    if (node == null)
+      return;
+    node.makeChildren(includeCatref);
     tree.expandPath(makeTreePath(node));
 
-    //System.out.printf("open %s%n", node);
+    // System.out.printf("open %s%n", node);
     Enumeration e = node.children();
     while (e.hasMoreElements()) {
       InvCatalogTreeNode child = (InvCatalogTreeNode) e.nextElement();
-      //System.out.printf(" child %s%n", child);
+      // System.out.printf(" child %s%n", child);
       open(child, includeCatref);
     }
   }
@@ -278,11 +302,11 @@ public class CatalogTreeView extends JPanel {
     if (ds == null)
       return;
 
-    if ( (ds instanceof CatalogRef)) {
+    if ((ds instanceof CatalogRef)) {
       CatalogRef catref = (CatalogRef) ds;
-      //boolean isDatasetScan = catref.isDatasetScan();
+      // boolean isDatasetScan = catref.isDatasetScan();
       if (!catref.isRead()) {
-        if (openCatalogReferences) { //  && (openDatasetScans || !isDatasetScan)) {
+        if (openCatalogReferences) { // && (openDatasetScans || !isDatasetScan)) {
           InvCatalogTreeNode tnode = getSelectedNode();
           if (tnode != null)
             tnode.readCatref();
@@ -293,15 +317,17 @@ public class CatalogTreeView extends JPanel {
 
   void acceptSelected() {
     DatasetNode dsn = getSelectedDataset();
-    if (dsn == null) return;
+    if (dsn == null)
+      return;
     if (accessOnly && dsn instanceof Dataset) {
       Dataset ds = (Dataset) dsn;
-      if (!ds.hasAccess()) return;
+      if (!ds.hasAccess())
+        return;
     }
 
-    //setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    firePropertyChangeEvent( dsn);
-    //setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    // setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    firePropertyChangeEvent(dsn);
+    // setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
   }
 
   /**
@@ -319,32 +345,35 @@ public class CatalogTreeView extends JPanel {
       setCatalog(cat);
 
     } catch (Exception ioe) {
-      JOptionPane.showMessageDialog(this, "Error opening catalog location " + location+" err="+builder.getErrorMessage());
+      JOptionPane.showMessageDialog(this,
+          "Error opening catalog location " + location + " err=" + builder.getErrorMessage());
     }
   }
 
   public void redisplay() {
-    setCatalog( catalog);
+    setCatalog(catalog);
   }
 
   /**
    * Set the catalog to be displayed. If ok, then a "Catalog" PropertyChangeEvent is sent.
+   * 
    * @param catalog to be displayed
    */
   public void setCatalog(Catalog catalog) {
-    if (catalog == null) return;
+    if (catalog == null)
+      return;
     String catalogName = catalog.getBaseURI().toString();
     this.catalog = catalog;
 
     // send catalog event
-    setCatalogURL( catalogName);
+    setCatalogURL(catalogName);
 
     // display tree
     // this sends TreeNode events
     model = new InvCatalogTreeModel(catalog);
-    tree.setModel( model);
+    tree.setModel(model);
 
-      // debug
+    // debug
     if (debugTree) {
       System.out.println("*** catalog/showJTree =");
       showNode(tree.getModel(), tree.getModel().getRoot());
@@ -354,11 +383,11 @@ public class CatalogTreeView extends JPanel {
     // look for a specific dataset
     int pos = catalogName.indexOf('#');
     if (pos >= 0) {
-      String id = catalogName.substring( pos+1);
-      Dataset dataset = catalog.findDatasetByID( id);
+      String id = catalogName.substring(pos + 1);
+      Dataset dataset = catalog.findDatasetByID(id);
       if (dataset != null) {
         setSelectedDataset(dataset);
-        firePropertyChangeEvent( new PropertyChangeEvent(this, "Selection", null, dataset));
+        firePropertyChangeEvent(new PropertyChangeEvent(this, "Selection", null, dataset));
       }
     }
 
@@ -368,18 +397,19 @@ public class CatalogTreeView extends JPanel {
 
   // debug
   private void showNode(TreeModel tree, Object node) {
-    if (node == null) return;
+    if (node == null)
+      return;
     InvCatalogTreeNode tnode = (InvCatalogTreeNode) node;
     DatasetNode cp = tnode.ds;
-    System.out.println(" node= "+cp.getName()+" leaf= "+tree.isLeaf( node));
-    for (int i=0; i< tree.getChildCount(node); i++)
+    System.out.println(" node= " + cp.getName() + " leaf= " + tree.isLeaf(node));
+    for (int i = 0; i < tree.getChildCount(node); i++)
       showNode(tree, tree.getChild(node, i));
   }
 
   // make an InvCatalog into a TreeModel
   private class InvCatalogTreeModel extends javax.swing.tree.DefaultTreeModel {
-    InvCatalogTreeModel (DatasetNode top) {
-      super( new InvCatalogTreeNode( null, top), false);
+    InvCatalogTreeModel(DatasetNode top) {
+      super(new InvCatalogTreeNode(null, top), false);
     }
   }
 
@@ -391,17 +421,20 @@ public class CatalogTreeView extends JPanel {
     private ArrayList<InvCatalogTreeNode> children = null;
     private boolean isReading = false;
 
-    InvCatalogTreeNode( InvCatalogTreeNode parent, DatasetNode ds) {
+    InvCatalogTreeNode(InvCatalogTreeNode parent, DatasetNode ds) {
       this.parent = parent;
       this.ds = ds;
       // ds.setUserProperty("TreeNode", this);
-      if (debugTree) System.out.println("new="+ds.getName()+" ");
+      if (debugTree)
+        System.out.println("new=" + ds.getName() + " ");
       firePropertyChangeEvent(new PropertyChangeEvent(this, "TreeNode", null, ds));
     }
 
     public Enumeration children() {
-      if (debugTree) System.out.println("children="+ds.getName()+" ");
-      if (children == null) return Collections.enumeration( new ArrayList<InvCatalogTreeNode>());
+      if (debugTree)
+        System.out.println("children=" + ds.getName() + " ");
+      if (children == null)
+        return Collections.enumeration(new ArrayList<InvCatalogTreeNode>());
       return Collections.enumeration(children);
     }
 
@@ -410,13 +443,16 @@ public class CatalogTreeView extends JPanel {
     }
 
     public TreeNode getChildAt(int index) {
-     if (debugTree) System.out.println("getChildAt="+ds.getName()+" "+index);
-     return children.get(index);
+      if (debugTree)
+        System.out.println("getChildAt=" + ds.getName() + " " + index);
+      return children.get(index);
     }
 
     public int getChildCount() {
-      if (children == null) makeChildren( false);
-      if (children == null) return 0;
+      if (children == null)
+        makeChildren(false);
+      if (children == null)
+        return 0;
 
       return children.size();
     }
@@ -425,22 +461,25 @@ public class CatalogTreeView extends JPanel {
       if (children == null) {
         if (ds instanceof CatalogRef) {
           CatalogRef catref = (CatalogRef) ds;
-          if (debugRef) System.out.println("getChildCount on catref="+ds.getName()+" " + catref.isRead()+" "+isReading);
+          if (debugRef)
+            System.out.println("getChildCount on catref=" + ds.getName() + " " + catref.isRead() + " " + isReading);
           if (!catref.isRead() && !force) { // dont open it until explicitly asked
             return;
           }
         }
 
-        if (debugRef) System.out.println("getChildCount on ds="+ds.getName()+" ");
+        if (debugRef)
+          System.out.println("getChildCount on ds=" + ds.getName() + " ");
         children = new ArrayList<>();
         for (Dataset nested : ds.getDatasets())
-          children.add( new InvCatalogTreeNode( this, nested));
+          children.add(new InvCatalogTreeNode(this, nested));
       }
     }
 
     void readCatref() {
       CatalogRef catref = (CatalogRef) ds;
-      if (debugRef) System.out.println("readCatref on ="+ds.getName()+" "+isReading);
+      if (debugRef)
+        System.out.println("readCatref on =" + ds.getName() + " " + isReading);
       if (!isReading) {
         isReading = true;
         Optional<DatasetNode> opt = catref.readCatref();
@@ -453,21 +492,27 @@ public class CatalogTreeView extends JPanel {
     }
 
     public int getIndex(TreeNode child) {
-      if (debugTree) System.out.println("getIndex="+ds.getName()+" "+child);
+      if (debugTree)
+        System.out.println("getIndex=" + ds.getName() + " " + child);
       return children.indexOf(child);
     }
 
-    public TreeNode getParent() { return parent; }
+    public TreeNode getParent() {
+      return parent;
+    }
 
     public boolean isLeaf() {
-      if (debugTree) System.out.println("isLeaf="+ds.getName());
+      if (debugTree)
+        System.out.println("isLeaf=" + ds.getName());
       if (ds instanceof CatalogRef) {
         return false;
       }
       return !ds.hasNestedDatasets();
     }
 
-    public String toString() { return ds.getName(); }
+    public String toString() {
+      return ds.getName();
+    }
 
     public void setCatalog(DatasetNode catalog) {
       children = new ArrayList<>();
@@ -479,42 +524,43 @@ public class CatalogTreeView extends JPanel {
           datasets = top.getDatasets();
         }
       }
-      int[] childIndices = new int[ datasets.size()];
+      int[] childIndices = new int[datasets.size()];
       for (int count = 0; count < datasets.size(); count++) {
-        children.add( new InvCatalogTreeNode( this, datasets.get(count)));
+        children.add(new InvCatalogTreeNode(this, datasets.get(count)));
         childIndices[count] = count;
       }
 
       model.nodesWereInserted(this, childIndices);
       // model.nodeStructureChanged( this);
-      tree.expandPath( makeTreePath(this));
-      if (debugRef) System.out.println("model.nodeStructureChanged on "+this);
+      tree.expandPath(makeTreePath(this));
+      if (debugRef)
+        System.out.println("model.nodeStructureChanged on " + this);
       isReading = false;
     }
 
     public void failed() {
-      if (debugRef) System.out.println("failed called on "+this);
+      if (debugRef)
+        System.out.println("failed called on " + this);
       isReading = false;
     }
   }
 
 
   // this is to get the inline documentation into a tooltip
-  private static class MyTreeCellRenderer
-          extends javax.swing.tree.DefaultTreeCellRenderer {
+  private static class MyTreeCellRenderer extends javax.swing.tree.DefaultTreeCellRenderer {
     ImageIcon refIcon, refReadIcon, gridIcon, imageIcon, dqcIcon, dsScanIcon;
 
     public MyTreeCellRenderer() {
-      refIcon = BAMutil.getIcon( "nj22/CatalogRef", true);
-      refReadIcon = BAMutil.getIcon( "nj22/CatalogRefRead", true);
-      gridIcon = BAMutil.getIcon( "nj22/GridData", true);
-      imageIcon = BAMutil.getIcon( "nj22/ImageData", true);
-      dqcIcon = BAMutil.getIcon( "nj22/DQCData", true);
-      dsScanIcon = BAMutil.getIcon( "nj22/DatasetScan", true);
+      refIcon = BAMutil.getIcon("nj22/CatalogRef", true);
+      refReadIcon = BAMutil.getIcon("nj22/CatalogRefRead", true);
+      gridIcon = BAMutil.getIcon("nj22/GridData", true);
+      imageIcon = BAMutil.getIcon("nj22/ImageData", true);
+      dqcIcon = BAMutil.getIcon("nj22/DQCData", true);
+      dsScanIcon = BAMutil.getIcon("nj22/DatasetScan", true);
     }
 
-    public Component getTreeCellRendererComponent(JTree tree, Object value,
-      boolean selected, boolean expanded,boolean leaf, int row, boolean hasFocus) {
+    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
+        boolean leaf, int row, boolean hasFocus) {
 
       Component c = super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 
@@ -524,13 +570,16 @@ public class CatalogTreeView extends JPanel {
 
         String doc = ds.toString();
         if (doc != null)
-          ((JComponent)c).setToolTipText( doc);
+          ((JComponent) c).setToolTipText(doc);
 
         if (ds instanceof CatalogRef) {
-            if (((CatalogRef)ds).isRead()) setIcon(refReadIcon); else setIcon(refIcon);
-          
+          if (((CatalogRef) ds).isRead())
+            setIcon(refReadIcon);
+          else
+            setIcon(refIcon);
+
         } else if (leaf) {
-            setIcon( gridIcon);
+          setIcon(gridIcon);
         }
       }
 

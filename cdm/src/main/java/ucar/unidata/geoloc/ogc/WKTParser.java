@@ -8,10 +8,8 @@ package ucar.unidata.geoloc.ogc;
 import java.util.HashMap;
 import java.util.Map;
 import ucar.nc2.units.SimpleUnit;
-
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.*;
-
 import java.text.ParseException;
 
 /**
@@ -23,8 +21,8 @@ import java.text.ParseException;
 public class WKTParser {
 
   /*
-  * geogcs info
-  */
+   * geogcs info
+   */
 
   /**
    * geo coord sys name
@@ -111,9 +109,9 @@ public class WKTParser {
    * succeeds, the spatial reference text was successfully parsed.
    *
    * @param srtext The spatial reference text to be parsed.
-   *               Geocentric coordinate text is not currently supported.
+   *        Geocentric coordinate text is not currently supported.
    * @throws ParseException A ParseException is thrown
-   *                        if the spatial reference text could not be parsed.
+   *         if the spatial reference text could not be parsed.
    */
   public WKTParser(String srtext) throws ParseException {
     reader = new java.io.StringReader(srtext);
@@ -153,8 +151,7 @@ public class WKTParser {
       int val = reader.read();
       position++;
       if (val < 0) {
-        throw new ParseException("unexpected eof of srtext",
-                position);
+        throw new ParseException("unexpected eof of srtext", position);
       }
       return (char) val;
     } catch (java.io.IOException e1) {
@@ -175,10 +172,9 @@ public class WKTParser {
 
   private double eatReal() throws ParseException {
     StringBuilder b = new StringBuilder();
-    for (; ; ) {
+    for (;;) {
       char t = peek();
-      if (Character.isDigit(t) || (t == 'e') || (t == 'E')
-              || (t == '.') || (t == '-') || (t == '+')) {
+      if (Character.isDigit(t) || (t == 'e') || (t == 'E') || (t == '.') || (t == '-') || (t == '+')) {
         b.append(getChar());
       } else {
         break;
@@ -196,7 +192,7 @@ public class WKTParser {
     if (getChar() != '"') {
       throw new ParseException("expected string", position);
     }
-    for (; ; ) {
+    for (;;) {
       char t = getChar();
       if (t == '"') {
         break;
@@ -208,7 +204,7 @@ public class WKTParser {
 
   private String eatTerm() throws ParseException {
     StringBuilder b = new StringBuilder();
-    for (; ; ) {
+    for (;;) {
       char val = peek();
       if (!Character.isJavaIdentifierPart(val)) {
         break;
@@ -241,7 +237,7 @@ public class WKTParser {
     projName = eatString();
     eatComma();
     parseGeogcs();
-    for (; ; ) {
+    for (;;) {
       char next = getChar();
       if (next == ']') {
         break;
@@ -290,7 +286,7 @@ public class WKTParser {
   private void parseGeogcs() throws ParseException {
     eatLiteral("GEOGCS[");
     geogcsName = eatString();
-    for (; ; ) {
+    for (;;) {
       char t = getChar();
       if (t == ']') {
         break;
@@ -537,15 +533,10 @@ public class WKTParser {
         double scalef = 1.0;
         if (srp.getProjUnitName() != null) {
           try {
-            SimpleUnit unit =
-                    SimpleUnit.factoryWithExceptions(
-                            srp.getProjUnitName());
-            scalef = unit.convertTo(srp.getProjUnitValue(),
-                    SimpleUnit.kmUnit);
+            SimpleUnit unit = SimpleUnit.factoryWithExceptions(srp.getProjUnitName());
+            scalef = unit.convertTo(srp.getProjUnitValue(), SimpleUnit.kmUnit);
           } catch (Exception e) {
-            System.out.println(srp.getProjUnitValue() + " "
-                    + srp.getProjUnitName()
-                    + " not convertible to km");
+            System.out.println(srp.getProjUnitValue() + " " + srp.getProjUnitName() + " not convertible to km");
           }
         }
         falseEasting *= scalef;
@@ -593,8 +584,8 @@ public class WKTParser {
         proj = new Mercator(lon0, lat0, falseEasting, falseNorthing);
 
       } else if ("Universal_Transverse_Mercator".equals(projectionType)) {
-        //throw new java.text.ParseException(
-        //    "UTM adapter not implemented yet", 0);
+        // throw new java.text.ParseException(
+        // "UTM adapter not implemented yet", 0);
       }
       return proj;
     }
@@ -602,15 +593,15 @@ public class WKTParser {
   }
 
   static ProjectionImpl processUTM(WKTParser srp) {
-  // NAD_1983_UTM_Zone_12N
-      String name = srp.getProjName();
-      int pos = name.indexOf("UTM_Zone_");
-      String zoneS = name.substring(pos + 9);
-      char lastC;
-      int zone = Integer.parseInt(zoneS.substring(0, zoneS.length()-1));
-      lastC = zoneS.charAt(zoneS.length()-1);
-      boolean isNorth = (lastC =='N');
+    // NAD_1983_UTM_Zone_12N
+    String name = srp.getProjName();
+    int pos = name.indexOf("UTM_Zone_");
+    String zoneS = name.substring(pos + 9);
+    char lastC;
+    int zone = Integer.parseInt(zoneS.substring(0, zoneS.length() - 1));
+    lastC = zoneS.charAt(zoneS.length() - 1);
+    boolean isNorth = (lastC == 'N');
 
-      return new UtmProjection(zone, isNorth);
+    return new UtmProjection(zone, isNorth);
   }
 }

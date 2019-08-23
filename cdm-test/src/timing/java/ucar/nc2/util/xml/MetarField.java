@@ -8,7 +8,6 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Misc;
-
 import java.util.HashMap;
 
 public class MetarField {
@@ -23,7 +22,8 @@ public class MetarField {
   MetarField(String name) {
     this.name = name;
     fields.put(name, this);
-    if (showFields) System.out.println(name + " added");
+    if (showFields)
+      System.out.println(name + " added");
   }
 
   void sum(StructureData sdata, StructureMembers.Member m) {
@@ -36,11 +36,13 @@ public class MetarField {
   }
 
   void sum(String text) {
-    if (isText) return;
+    if (isText)
+      return;
     try {
       sum(Double.parseDouble(text));
     } catch (NumberFormatException e) {
-      if (showFields) System.out.println(name + " is text");
+      if (showFields)
+        System.out.println(name + " is text");
       isText = true;
     }
   }

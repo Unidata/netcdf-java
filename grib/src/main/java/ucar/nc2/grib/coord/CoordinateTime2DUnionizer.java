@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-
 import java.util.*;
 
 /**
@@ -35,8 +34,8 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   org.slf4j.Logger logger;
   private SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
 
-  CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code,
-      boolean makeVals, org.slf4j.Logger logger) {
+  CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code, boolean makeVals,
+      org.slf4j.Logger logger) {
     this.isTimeInterval = isTimeInterval;
     this.timeUnit = timeUnit;
     this.code = code;
@@ -50,8 +49,9 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
       long runtime = coordT2D.getRuntime(runIdx);
-      timeMap.put(runtime, times);  // possible duplicate runtimes from different partitions
-                                    // later partitions will override LOOK could check how many times there are and choose larger
+      timeMap.put(runtime, times); // possible duplicate runtimes from different partitions
+                                   // later partitions will override LOOK could check how many times there are and
+                                   // choose larger
     }
   }
 
@@ -61,15 +61,16 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   }
 
   // used when isRuntimeUnion=true
-  // set the list of runtime coordinates; add any that are not already present, and make an empty CoordinateTimeAbstract for it
+  // set the list of runtime coordinates; add any that are not already present, and make an empty CoordinateTimeAbstract
+  // for it
   void setRuntimeCoords(CoordinateRuntime runtimes) {
-    for (int idx=0; idx<runtimes.getSize(); idx++) {
+    for (int idx = 0; idx < runtimes.getSize(); idx++) {
       CalendarDate cd = runtimes.getRuntimeDate(idx);
       long runtime = runtimes.getRuntime(idx);
       CoordinateTimeAbstract time = timeMap.get(runtime);
       if (time == null) {
-        time = isTimeInterval ? new CoordinateTimeIntv(this.code, this.timeUnit, cd, new ArrayList<>(0), null) :
-                new CoordinateTime(this.code, this.timeUnit, cd, new ArrayList<>(0), null);
+        time = isTimeInterval ? new CoordinateTimeIntv(this.code, this.timeUnit, cd, new ArrayList<>(0), null)
+            : new CoordinateTime(this.code, this.timeUnit, cd, new ArrayList<>(0), null);
         timeMap.put(runtime, time);
       }
     }
@@ -80,8 +81,8 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
 
     // the set of unique runtimes, sorted
     List<Long> runtimes = new ArrayList<>();
-    List<Coordinate> times = new ArrayList<>();  // the corresponding time coordinate for each runtime
-    List<CoordinateTime2D.Time2D> allVals = new ArrayList<>();  // optionally all Time2D coordinates
+    List<Coordinate> times = new ArrayList<>(); // the corresponding time coordinate for each runtime
+    List<CoordinateTime2D.Time2D> allVals = new ArrayList<>(); // optionally all Time2D coordinates
     for (long runtime : timeMap.keySet()) {
       runtimes.add(runtime);
       CoordinateTimeAbstract time = timeMap.get(runtime);
@@ -89,9 +90,8 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
       if (makeVals) {
         CalendarDate cd = CalendarDate.of(runtime);
         for (Object timeVal : time.getValues())
-          allVals.add( isTimeInterval ?
-                  new CoordinateTime2D.Time2D(cd, null, (TimeCoordIntvValue) timeVal) :
-                  new CoordinateTime2D.Time2D(cd, (Integer) timeVal, null));
+          allVals.add(isTimeInterval ? new CoordinateTime2D.Time2D(cd, null, (TimeCoordIntvValue) timeVal)
+              : new CoordinateTime2D.Time2D(cd, (Integer) timeVal, null));
       }
     }
     Collections.sort(allVals);
@@ -157,4 +157,4 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     return totalMax == max ? maxCoord : null;
   }
 
-}  // Time2DUnionBuilder
+} // Time2DUnionBuilder

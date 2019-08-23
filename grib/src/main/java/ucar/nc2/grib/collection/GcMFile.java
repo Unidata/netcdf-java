@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +31,11 @@ public class GcMFile implements thredds.inventory.MFile {
       String filename;
       if (file.getPath().startsWith(dirPath)) {
         filename = file.getPath().substring(dirPath.length());
-        if (filename.startsWith("/")) filename = filename.substring(1);
+        if (filename.startsWith("/"))
+          filename = filename.substring(1);
       } else
-        filename = file.getPath();  // when does this happen ??
-      result.add( new GcMFile(directory, filename, file.getLastModified(), file.getLength(), index));
+        filename = file.getPath(); // when does this happen ??
+      result.add(new GcMFile(directory, filename, file.getLastModified(), file.getLength(), index));
     }
     return result;
   }
@@ -71,7 +71,7 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public String getPath() {
-    String path =  new File(directory, name).getPath();
+    String path = new File(directory, name).getPath();
     return StringUtil2.replace(path, '\\', "/");
   }
 
@@ -81,9 +81,9 @@ public class GcMFile implements thredds.inventory.MFile {
   }
 
   @Override
-   public MFile getParent() {
-     return new MFileOS(directory);
-   }
+  public MFile getParent() {
+    return new MFileOS(directory);
+  }
 
   @Override
   public int compareTo(thredds.inventory.MFile o) {
@@ -97,8 +97,7 @@ public class GcMFile implements thredds.inventory.MFile {
   }
 
   @Override
-  public void setAuxInfo(Object info) {
-  }
+  public void setAuxInfo(Object info) {}
 
   public File getDirectory() {
     return directory;
@@ -106,12 +105,7 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public String toString() {
-    return "GcMFile{" +
-        "directory=" + directory +
-        ", name='" + name + '\'' +
-        ", lastModified=" + lastModified +
-        ", length=" + length +
-        ", index=" + index +
-        '}';
+    return "GcMFile{" + "directory=" + directory + ", name='" + name + '\'' + ", lastModified=" + lastModified
+        + ", length=" + length + ", index=" + index + '}';
   }
 }

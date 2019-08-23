@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class TestDatasetWrapP {
   @Test
   public void doOne() throws Exception {
     try (NetcdfFile ncfile = NetcdfDataset.acquireFile(durl, null);
-         NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
+        NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
 
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
       System.out.println(" dataset wraps= " + durl.trueurl);

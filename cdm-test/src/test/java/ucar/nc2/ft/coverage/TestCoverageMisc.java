@@ -22,7 +22,6 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -75,12 +74,12 @@ public class TestCoverageMisc {
       Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
 
       // CFGridCoverageWriter2 adds another (dependent) time coordinate, so we need to test this case
-      ucar.nc2.util.Optional<Long> opt = CFGridCoverageWriter2.getSizeOfOutput(gds, Lists.newArrayList("Temperature_isobaric"),
-              new SubsetParams(), false);
+      ucar.nc2.util.Optional<Long> opt = CFGridCoverageWriter2.getSizeOfOutput(gds,
+          Lists.newArrayList("Temperature_isobaric"), new SubsetParams(), false);
       Assert.assertTrue(opt.isPresent());
 
       long size = opt.get();
-      Assert.assertEquals(25245084, size);  // Includes sizes of non-coverage variables.
+      Assert.assertEquals(25245084, size); // Includes sizes of non-coverage variables.
     }
   }
 

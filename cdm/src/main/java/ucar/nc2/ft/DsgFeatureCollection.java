@@ -6,11 +6,9 @@ package ucar.nc2.ft;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import ucar.nc2.Variable;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-
 import java.util.List;
 
 /**
@@ -23,6 +21,7 @@ import java.util.List;
 public interface DsgFeatureCollection {
   /**
    * Get the name of this feature collection.
+   * 
    * @return the name of this feature collection
    */
   @Nonnull
@@ -30,6 +29,7 @@ public interface DsgFeatureCollection {
 
   /**
    * All features in this collection have this feature type
+   * 
    * @return the feature type
    */
   @Nonnull
@@ -37,13 +37,15 @@ public interface DsgFeatureCollection {
 
   /**
    * The time unit.
-   * @return  time unit, may not be null
+   * 
+   * @return time unit, may not be null
    */
   @Nonnull
   CalendarDateUnit getTimeUnit();
 
   /**
    * The altitude unit string if it exists.
+   * 
    * @return altitude unit string, may be null
    */
   @Nullable
@@ -51,6 +53,7 @@ public interface DsgFeatureCollection {
 
   /*
    * Other variables needed for completeness, eg joined coordinate variables
+   * 
    * @return list of extra variables, may be empty not null
    */
   @Nonnull
@@ -74,6 +77,7 @@ public interface DsgFeatureCollection {
 
   /**
    * The number of Features in the collection. May not be known until after iterating through the collection.
+   * 
    * @return number of elements in the collection, or -1 if not known.
    */
   int size();

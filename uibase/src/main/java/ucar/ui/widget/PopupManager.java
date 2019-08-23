@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities;
  */
 public class PopupManager {
   private PopupFactory factory = PopupFactory.getSharedInstance(); // LOOK
-  private Popup popup;                                             // 1.4
+  private Popup popup; // 1.4
 
   private JPanel main;
   private JLabel info;
@@ -29,15 +29,19 @@ public class PopupManager {
 
   public PopupManager(String title) {
     main = new JPanel();
-    main.setBorder( new javax.swing.border.TitledBorder(title));
+    main.setBorder(new javax.swing.border.TitledBorder(title));
     info = new JLabel();
     main.add(info);
     main.setFocusable(false);
   }
 
   public void show(String text, Point p, Component owner, Object forWho) {
-    if (isShowing && (showing == forWho)) { return; }
-    if (isShowing) { popup.hide(); }
+    if (isShowing && (showing == forWho)) {
+      return;
+    }
+    if (isShowing) {
+      popup.hide();
+    }
 
     isShowing = true;
     showing = forWho;
@@ -55,13 +59,17 @@ public class PopupManager {
     int y = (int) (p.getY());
 
     popup = factory.getPopup(owner, main, x + 5, y + 5); // LOOK 1.4
-    if (popup != null ) { popup.show(); }
+    if (popup != null) {
+      popup.show();
+    }
   }
 
   public void hide() {
     if (!isShowing)
       return;
     isShowing = false;
-    if (popup != null) { popup.hide(); }
+    if (popup != null) {
+      popup.hide();
+    }
   }
 }

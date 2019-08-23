@@ -7,7 +7,7 @@ package ucar.nc2.ncml;
 import ucar.unidata.util.test.TestDir;
 
 /**
- * TestSuite that runs all the sample tests   - data in TestAll.cdmLocalTestDataDir
+ * TestSuite that runs all the sample tests - data in TestAll.cdmLocalTestDataDir
  *
  */
 public class TestNcML {

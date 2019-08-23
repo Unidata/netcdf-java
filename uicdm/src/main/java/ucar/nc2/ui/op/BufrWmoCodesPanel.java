@@ -11,7 +11,6 @@ import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -41,8 +40,8 @@ public class BufrWmoCodesPanel extends JPanel {
 
     codeTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(e -> {
-        CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
-        setEntries(csb.code);
+      CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
+      setEntries(csb.code);
     });
 
     ucar.ui.widget.PopupMenu varPopup = new ucar.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
@@ -58,16 +57,18 @@ public class BufrWmoCodesPanel extends JPanel {
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    /* entryTable.addListSelectionListener(e -> {
-        entryTable.getSelectedBean();
-    });  */
+    /*
+     * entryTable.addListSelectionListener(e -> {
+     * entryTable.getSelectedBean();
+     * });
+     */
 
     Map<Short, CodeFlagTables> tables = CodeFlagTables.getTables();
     List<CodeTableBean> beans = new ArrayList<>(tables.size());
     List<Short> list = new ArrayList<>(tables.keySet());
     Collections.sort(list);
     for (short key : list) {
-      beans.add(new CodeTableBean(tables.get( key)));
+      beans.add(new CodeTableBean(tables.get(key)));
     }
     codeTable.setBeans(beans);
 
@@ -89,9 +90,9 @@ public class BufrWmoCodesPanel extends JPanel {
     codeTable.saveState(false);
     entryTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
+    // prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
-    //prefs.putInt("splitPos2", split2.getDividerLocation());
+    // prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
   public void setEntries(CodeFlagTables codeTable) {
@@ -109,8 +110,7 @@ public class BufrWmoCodesPanel extends JPanel {
     CodeFlagTables code;
 
     // no-arg constructor
-    public CodeTableBean() {
-    }
+    public CodeTableBean() {}
 
     // create from a dataset
     public CodeTableBean(CodeFlagTables code) {

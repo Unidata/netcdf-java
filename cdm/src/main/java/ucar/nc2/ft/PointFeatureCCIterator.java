@@ -5,18 +5,18 @@
 package ucar.nc2.ft;
 
 import java.io.Closeable;
-
 import ucar.nc2.util.IOIterator;
 
 /**
  * An iterator over PointFeatureCC.
  * Use try-with-resource to make sure resources are released:
+ * 
  * <pre>
-   try (PointFeatureCCIterator iter = getIter()) {
-     while (iter.hasNext())
-       process(iter.next());
-   }
-   </pre>
+ * try (PointFeatureCCIterator iter = getIter()) {
+ *   while (iter.hasNext())
+ *     process(iter.next());
+ * }
+ * </pre>
  *
  * @author caron
  * @since Mar 20, 2008
@@ -25,6 +25,7 @@ public interface PointFeatureCCIterator extends Closeable, IOIterator<PointFeatu
 
   /**
    * true if another Feature object is available
+   * 
    * @return true if another Feature object is available
    * @throws java.io.IOException on i/o error
    */
@@ -33,6 +34,7 @@ public interface PointFeatureCCIterator extends Closeable, IOIterator<PointFeatu
   /**
    * Returns the next NestedPointFeatureCollection object
    * You must call hasNext() before calling next(), even if you know it will return true.
+   * 
    * @return the next NestedPointFeatureCollection object
    * @throws java.io.IOException on i/o error
    */
@@ -51,6 +53,7 @@ public interface PointFeatureCCIterator extends Closeable, IOIterator<PointFeatu
   interface Filter {
     /**
      * Filter collections.
+     * 
      * @param nestedPointFeatureCollection check this collection
      * @return true if the collection passes the filter
      */

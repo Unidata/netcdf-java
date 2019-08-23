@@ -14,16 +14,18 @@ import org.junit.Test;
 public class TestSuperComboBox {
 
   @Test
-  public void testStuff(){
+  public void testStuff() {
     try {
       JFrame frame = new JFrame("Test Combo Box");
       frame.addWindowListener(new WindowAdapter() {
-        public void windowClosing(WindowEvent e) {System.exit(0);}
+        public void windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
       });
 
       ArrayList a = new ArrayList(30);
-      for (int i=0; i<30; i++)
-        a.add("hifdsjflkjslfk "+i);
+      for (int i = 0; i < 30; i++)
+        a.add("hifdsjflkjslfk " + i);
       SuperComboBox scb = new SuperComboBox(frame, "myTestdjdslkfjslkj", true, a.iterator());
       JComboBox cb = new JComboBox();
       for (Object o : a) {
@@ -33,8 +35,8 @@ public class TestSuperComboBox {
       JPanel main = new JPanel(new FlowLayout());
       frame.getContentPane().add(main);
       main.setPreferredSize(new Dimension(200, 200));
-      main.add( scb);
-      main.add( cb);
+      main.add(scb);
+      main.add(cb);
 
       frame.pack();
       frame.setLocation(300, 300);

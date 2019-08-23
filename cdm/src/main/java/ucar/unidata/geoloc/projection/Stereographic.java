@@ -20,11 +20,12 @@ public class Stereographic extends ProjectionImpl {
 
   /**
    * Construct a Stereographic Projection using latitude of true scale and calculating scale factor.
-   * <p> Since the scale factor at lat = k = 2*k0/(1+sin(lat))  [Snyder,Working Manual p157]
+   * <p>
+   * Since the scale factor at lat = k = 2*k0/(1+sin(lat)) [Snyder,Working Manual p157]
    * then to make scale = 1 at lat, set k0 = (1+sin(lat))/2
    *
-   * @param latt    tangent point of projection, also origin of projection coord system
-   * @param lont    tangent point of projection, also origin of projection coord system
+   * @param latt tangent point of projection, also origin of projection coord system
+   * @param lont tangent point of projection, also origin of projection coord system
    * @param latTrue latitude of true scale in degrees north; latitude where scale factor = 1.0
    * @return Stereographic projection
    */
@@ -44,7 +45,8 @@ public class Stereographic extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result =  new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    ProjectionImpl result = new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(),
+        getFalseNorthing(), getEarthRadius());
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -60,8 +62,8 @@ public class Stereographic extends ProjectionImpl {
   /**
    * Construct a Stereographic Projection.
    *
-   * @param latt  tangent point of projection, also origin of projection coord system
-   * @param lont  tangent point of projection, also origin of projection coord system
+   * @param latt tangent point of projection, also origin of projection coord system
+   * @param lont tangent point of projection, also origin of projection coord system
    * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
    */
   public Stereographic(double latt, double lont, double scale) {
@@ -71,8 +73,8 @@ public class Stereographic extends ProjectionImpl {
   /**
    * Construct a Stereographic Projection.
    *
-   * @param latt  tangent point of projection, also origin of projection coord system
-   * @param lont  tangent point of projection, also origin of projection coord system
+   * @param latt tangent point of projection, also origin of projection coord system
+   * @param lont tangent point of projection, also origin of projection coord system
    * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
    */
   public Stereographic(double latt, double lont, double scale, double false_easting, double false_northing) {
@@ -82,14 +84,15 @@ public class Stereographic extends ProjectionImpl {
   /**
    * Construct a Stereographic Projection.
    *
-   * @param latt           tangent point of projection, also origin of projection coord system
-   * @param lont           tangent point of projection, also origin of projection coord system
-   * @param scale          scale factor at tangent point, "normally 1.0 but may be reduced"
-   * @param false_easting  false easting in units of x coords
+   * @param latt tangent point of projection, also origin of projection coord system
+   * @param lont tangent point of projection, also origin of projection coord system
+   * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
+   * @param false_easting false easting in units of x coords
    * @param false_northing false northing in units of y coords
-   * @param radius         earth radius in km
+   * @param radius earth radius in km
    */
-  public Stereographic(double latt, double lont, double scale, double false_easting, double false_northing, double radius) {
+  public Stereographic(double latt, double lont, double scale, double false_easting, double false_northing,
+      double radius) {
     super("Stereographic", false);
 
     this.latt = Math.toRadians(latt);
@@ -118,9 +121,9 @@ public class Stereographic extends ProjectionImpl {
    * calculating the scale factor.
    *
    * @param lat_ts_deg Latitude at natural origin (degrees_north)
-   * @param latt_deg   tangent point of projection (degrees_north)
-   * @param lont_deg   tangent point of projection, also origin of projection coord system  ((degrees_east)
-   * @param north      true if north pole, false is south pole
+   * @param latt_deg tangent point of projection (degrees_north)
+   * @param lont_deg tangent point of projection, also origin of projection coord system ((degrees_east)
+   * @param north true if north pole, false is south pole
    */
   public Stereographic(double lat_ts_deg, double latt_deg, double lont_deg, boolean north) {
     super("PolarStereographic", false);
@@ -153,7 +156,7 @@ public class Stereographic extends ProjectionImpl {
    * added by Qun He <qunhe@unc.edu>
    *
    * @param lat_ts Latitude at natural origin
-   * @param north  Is it north polar?
+   * @param north Is it north polar?
    * @return scale factor
    */
   private double getScaleFactor(double lat_ts, boolean north) {
@@ -201,7 +204,7 @@ public class Stereographic extends ProjectionImpl {
     return Math.toDegrees(latts);
   }
 
-    /**
+  /**
    * Get the tangent longitude in degrees
    *
    * @return the origin longitude.
@@ -231,7 +234,7 @@ public class Stereographic extends ProjectionImpl {
     return isPolar;
   }
 
-   //////////////////////////////////////////////
+  //////////////////////////////////////////////
   // setters for IDV serialization - do not use except for object creating
 
   /**
@@ -245,7 +248,7 @@ public class Stereographic extends ProjectionImpl {
    * @deprecated
    */
   public void setTangentLat(double latt) {
-    this.latt =  Math.toRadians(latt);
+    this.latt = Math.toRadians(latt);
     precalculate();
   }
 
@@ -299,14 +302,8 @@ public class Stereographic extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "Stereographic{" +
-            "falseEasting=" + falseEasting +
-            ", falseNorthing=" + falseNorthing +
-            ", scale=" + scale +
-            ", earthRadius=" + earthRadius +
-            ", latt=" + latt +
-            ", lont=" + lont +
-            '}';
+    return "Stereographic{" + "falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", scale=" + scale
+        + ", earthRadius=" + earthRadius + ", latt=" + latt + ", lont=" + lont + '}';
   }
 
   /**
@@ -317,23 +314,32 @@ public class Stereographic extends ProjectionImpl {
    * @return false if there is no seam
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return false;  // ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2);
+    return false; // ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2);
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Stereographic that = (Stereographic) o;
 
-    if (Double.compare(that.earthRadius, earthRadius) != 0) return false;
-    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
-    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
-    if (Double.compare(that.latt, latt) != 0) return false;
-    if (Double.compare(that.lont, lont) != 0) return false;
-    if (Double.compare(that.scale, scale) != 0) return false;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    if (Double.compare(that.earthRadius, earthRadius) != 0)
+      return false;
+    if (Double.compare(that.falseEasting, falseEasting) != 0)
+      return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0)
+      return false;
+    if (Double.compare(that.latt, latt) != 0)
+      return false;
+    if (Double.compare(that.lont, lont) != 0)
+      return false;
+    if (Double.compare(that.scale, scale) != 0)
+      return false;
+    if ((defaultMapArea == null) != (that.defaultMapArea == null))
+      return false; // common case is that these are null
     return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
   }
@@ -366,7 +372,7 @@ public class Stereographic extends ProjectionImpl {
     return falseEasting;
   }
 
-   /**
+  /**
    * Get the false northing, in km.
    *
    * @return the false northing.
@@ -376,59 +382,61 @@ public class Stereographic extends ProjectionImpl {
   }
 
 
-  /*MACROBODY
-  projToLatLon {double phi, lam;} {
-    double rho = Math.sqrt( fromX*fromX + fromY*fromY);
-    double c = 2.0 * Math.atan2( rho, 2.0*scale);
-    double sinc = Math.sin(c);
-    double cosc = Math.cos(c);
+  /*
+   * MACROBODY
+   * projToLatLon {double phi, lam;} {
+   * double rho = Math.sqrt( fromX*fromX + fromY*fromY);
+   * double c = 2.0 * Math.atan2( rho, 2.0*scale);
+   * double sinc = Math.sin(c);
+   * double cosc = Math.cos(c);
+   * 
+   * if (Math.abs(rho) < TOLERANCE)
+   * phi = latt;
+   * else
+   * phi = Math.asin( cosc * sinlatt + fromY * sinc * coslatt / rho);
+   * 
+   * toLat = Math.toDegrees(phi);
+   * 
+   * if ((Math.abs(fromX) < TOLERANCE) && (Math.abs(fromY) < TOLERANCE))
+   * lam = lont;
+   * else if (Math.abs(coslatt) < TOLERANCE)
+   * lam = lont + Math.atan2( fromX, ((latt > 0) ? -fromY : fromY) );
+   * else
+   * lam = lont + Math.atan2( fromX*sinc, rho*coslatt*cosc - fromY*sinc*sinlatt);
+   * 
+   * toLon = Math.toDegrees(lam);
+   * }
+   * 
+   * latLonToProj {} {
+   * double lat = Math.toRadians (fromLat);
+   * double lon = Math.toRadians(fromLon);
+   * // keep away from the singular point
+   * if ((Math.abs(lat + latt) <= TOLERANCE)) {
+   * lat = -latt * (1.0 - TOLERANCE);
+   * }
+   * 
+   * double sdlon = Math.sin(lon - lont);
+   * double cdlon = Math.cos(lon - lont);
+   * double sinlat = Math.sin(lat);
+   * double coslat = Math.cos(lat);
+   * 
+   * double k = 2.0 * scale / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
+   * toX = k * coslat * sdlon;
+   * toY = k * ( coslatt * sinlat - sinlatt * coslat * cdlon);
+   * }
+   * MACROBODY
+   */
 
-    if (Math.abs(rho) < TOLERANCE)
-        phi = latt;
-    else
-        phi = Math.asin( cosc * sinlatt + fromY * sinc * coslatt / rho);
 
-    toLat = Math.toDegrees(phi);
-
-    if ((Math.abs(fromX) < TOLERANCE) && (Math.abs(fromY) < TOLERANCE))
-        lam = lont;
-    else if (Math.abs(coslatt) < TOLERANCE)
-        lam = lont + Math.atan2( fromX, ((latt > 0) ? -fromY : fromY) );
-    else
-        lam = lont + Math.atan2( fromX*sinc, rho*coslatt*cosc - fromY*sinc*sinlatt);
-
-    toLon = Math.toDegrees(lam);
-  }
-
-  latLonToProj {} {
-    double lat = Math.toRadians (fromLat);
-    double lon = Math.toRadians(fromLon);
-    // keep away from the singular point
-    if ((Math.abs(lat + latt) <= TOLERANCE)) {
-        lat = -latt * (1.0 - TOLERANCE);
-    }
-
-    double sdlon = Math.sin(lon - lont);
-    double cdlon = Math.cos(lon - lont);
-    double sinlat = Math.sin(lat);
-    double coslat = Math.cos(lat);
-
-    double k = 2.0 * scale / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
-    toX =  k * coslat * sdlon;
-    toY =  k * ( coslatt * sinlat - sinlatt * coslat * cdlon);
-}
-  MACROBODY*/
-
-
-  /*BEGINGENERATED*/
+  /* BEGINGENERATED */
 
   /*
-  Note this section has been generated using the convert.tcl script.
-  This script, run as:
-  tcl convert.tcl Stereographic.java
-  takes the actual projection conversion code defined in the MACROBODY
-  section above and generates the following 6 methods
-  */
+   * Note this section has been generated using the convert.tcl script.
+   * This script, run as:
+   * tcl convert.tcl Stereographic.java
+   * takes the actual projection conversion code defined in the MACROBODY
+   * section above and generates the following 6 methods
+   */
 
 
   /**
@@ -456,8 +464,7 @@ public class Stereographic extends ProjectionImpl {
     double sinlat = Math.sin(lat);
     double coslat = Math.cos(lat);
 
-    double k = 2.0 * scale
-            / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
+    double k = 2.0 * scale / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
     toX = k * coslat * sdlon;
     toY = k * (coslatt * sinlat - sinlatt * coslat * cdlon);
 
@@ -469,7 +476,7 @@ public class Stereographic extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
@@ -495,9 +502,7 @@ public class Stereographic extends ProjectionImpl {
     if ((Math.abs(fromX) < TOLERANCE) && (Math.abs(fromY) < TOLERANCE)) {
       lam = lont;
     } else if (Math.abs(coslatt) < TOLERANCE) {
-      lam = lont + Math.atan2(fromX, ((latt > 0)
-              ? -fromY
-              : fromY));
+      lam = lont + Math.atan2(fromX, ((latt > 0) ? -fromY : fromY));
     } else {
       lam = lont + Math.atan2(fromX * sinc, rho * coslatt * cosc - fromY * sinc * sinlatt);
     }
@@ -512,12 +517,12 @@ public class Stereographic extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n], where
-   *                 (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates: to[2][n]
-   *                 where (to[0][i], to[1][i]) is the (x,y) coordinate of
-   *                 the ith point
+   * @param from array of lat/lon coordinates: from[2][n], where
+   *        (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate of
+   *        the ith point
    * @param latIndex index of lat coordinate; must be 0 or 1
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return the "to" array
@@ -546,8 +551,7 @@ public class Stereographic extends ProjectionImpl {
       double sinlat = Math.sin(lat);
       double coslat = Math.cos(lat);
 
-      double k = 2.0 * scale
-              / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
+      double k = 2.0 * scale / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
       toX = k * coslat * sdlon;
       toY = k * (coslatt * sinlat - sinlatt * coslat * cdlon);
 
@@ -561,11 +565,11 @@ public class Stereographic extends ProjectionImpl {
    * Convert projection coordinates to lat/lon coordinate.
    *
    * @param from array of projection coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (x, y) coordinate
-   *             of the ith point
-   * @param to   resulting array of lat/lon coordinates: to[2][n] where
-   *             (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *             the ith point
+   *        (from[0][i], from[1][i]) is the (x, y) coordinate
+   *        of the ith point
+   * @param to resulting array of lat/lon coordinates: to[2][n] where
+   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
+   *        the ith point
    * @return the "to" array
    */
   public float[][] projToLatLon(float[][] from, float[][] to) {
@@ -588,24 +592,17 @@ public class Stereographic extends ProjectionImpl {
       if (Math.abs(rho) < TOLERANCE) {
         phi = latt;
       } else {
-        phi = Math.asin(cosc * sinlatt
-                + fromY * sinc * coslatt / rho);
+        phi = Math.asin(cosc * sinlatt + fromY * sinc * coslatt / rho);
       }
 
       toLat = Math.toDegrees(phi);
 
-      if ((Math.abs(fromX) < TOLERANCE)
-              && (Math.abs(fromY) < TOLERANCE)) {
+      if ((Math.abs(fromX) < TOLERANCE) && (Math.abs(fromY) < TOLERANCE)) {
         lam = lont;
       } else if (Math.abs(coslatt) < TOLERANCE) {
-        lam = lont + Math.atan2(fromX, ((latt > 0)
-                ? -fromY
-                : fromY));
+        lam = lont + Math.atan2(fromX, ((latt > 0) ? -fromY : fromY));
       } else {
-        lam = lont
-                + Math.atan2(fromX * sinc,
-                rho * coslatt * cosc
-                        - fromY * sinc * sinlatt);
+        lam = lont + Math.atan2(fromX * sinc, rho * coslatt * cosc - fromY * sinc * sinlatt);
       }
 
       toLon = Math.toDegrees(lam);
@@ -619,12 +616,12 @@ public class Stereographic extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n], where
-   *                 (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates: to[2][n]
-   *                 where (to[0][i], to[1][i]) is the (x,y) coordinate of
-   *                 the ith point
+   * @param from array of lat/lon coordinates: from[2][n], where
+   *        (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate of
+   *        the ith point
    * @param latIndex index of lat coordinate; must be 0 or 1
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return the "to" array
@@ -653,8 +650,7 @@ public class Stereographic extends ProjectionImpl {
       double sinlat = Math.sin(lat);
       double coslat = Math.cos(lat);
 
-      double k = 2.0 * scale
-              / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
+      double k = 2.0 * scale / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
       toX = k * coslat * sdlon;
       toY = k * (coslatt * sinlat - sinlatt * coslat * cdlon);
 
@@ -668,11 +664,11 @@ public class Stereographic extends ProjectionImpl {
    * Convert projection coordinates to lat/lon coordinate.
    *
    * @param from array of projection coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (x, y) coordinate
-   *             of the ith point
-   * @param to   resulting array of lat/lon coordinates: to[2][n] where
-   *             (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *             the ith point
+   *        (from[0][i], from[1][i]) is the (x, y) coordinate
+   *        of the ith point
+   * @param to resulting array of lat/lon coordinates: to[2][n] where
+   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
+   *        the ith point
    * @return the "to" array
    */
   public double[][] projToLatLon(double[][] from, double[][] to) {
@@ -695,24 +691,17 @@ public class Stereographic extends ProjectionImpl {
       if (Math.abs(rho) < TOLERANCE) {
         phi = latt;
       } else {
-        phi = Math.asin(cosc * sinlatt
-                + fromY * sinc * coslatt / rho);
+        phi = Math.asin(cosc * sinlatt + fromY * sinc * coslatt / rho);
       }
 
       toLat = Math.toDegrees(phi);
 
-      if ((Math.abs(fromX) < TOLERANCE)
-              && (Math.abs(fromY) < TOLERANCE)) {
+      if ((Math.abs(fromX) < TOLERANCE) && (Math.abs(fromY) < TOLERANCE)) {
         lam = lont;
       } else if (Math.abs(coslatt) < TOLERANCE) {
-        lam = lont + Math.atan2(fromX, ((latt > 0)
-                ? -fromY
-                : fromY));
+        lam = lont + Math.atan2(fromX, ((latt > 0) ? -fromY : fromY));
       } else {
-        lam = lont
-                + Math.atan2(fromX * sinc,
-                rho * coslatt * cosc
-                        - fromY * sinc * sinlatt);
+        lam = lont + Math.atan2(fromX * sinc, rho * coslatt * cosc - fromY * sinc * sinlatt);
       }
 
       toLon = Math.toDegrees(lam);
@@ -723,6 +712,6 @@ public class Stereographic extends ProjectionImpl {
     return to;
   }
 
-  /*ENDGENERATED*/
+  /* ENDGENERATED */
 
 }

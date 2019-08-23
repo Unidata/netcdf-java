@@ -15,7 +15,15 @@ import com.sun.jna.Native;
  * @since 5/30/14
  */
 public class SizeT extends IntegerType {
-  public SizeT() { this(0); }
-  public SizeT(long value) { super(Native.SIZE_T_SIZE, value, true); }
-  public String toString() { return String.format("%d",super.longValue());}
+  public SizeT() {
+    this(0);
+  }
+
+  public SizeT(long value) {
+    super(Native.SIZE_T_SIZE, value, true);
+  }
+
+  public String toString() {
+    return String.format("%d", super.longValue());
+  }
 }

@@ -87,19 +87,22 @@ public class WriterCFPointDataset {
   private void createGlobalAttributes() {
     if (globalAtts != null) {
       for (Attribute att : globalAtts) {
-        if (att.getShortName().equalsIgnoreCase("cdm_data_type")) continue;
-        if (att.getShortName().equalsIgnoreCase("cdm_datatype")) continue;
-        if (att.getShortName().equalsIgnoreCase("thredds_data_type")) continue;
-        
+        if (att.getShortName().equalsIgnoreCase("cdm_data_type"))
+          continue;
+        if (att.getShortName().equalsIgnoreCase("cdm_datatype"))
+          continue;
+        if (att.getShortName().equalsIgnoreCase("thredds_data_type"))
+          continue;
+
         ncfileOut.addAttribute(null, att);
       }
     }
-    ncfileOut.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1"));  // LOOK CF-1.?
+    ncfileOut.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1")); // LOOK CF-1.?
     ncfileOut.addAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
   // private ArrayInt.D1 timeArray = new ArrayInt.D1(1);
-  //private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
+  // private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
 
   private void createRecordVariables(List<? extends VariableSimpleIF> dataVars) {
 
@@ -136,7 +139,8 @@ public class WriterCFPointDataset {
     }
 
     String coordinates = timeName + " " + latName + " " + lonName;
-    if (useAlt) coordinates = coordinates + " " + altName;
+    if (useAlt)
+      coordinates = coordinates + " " + altName;
     Attribute coordAtt = new Attribute(CF.COORDINATES, coordinates);
 
     // find all dimensions needed by the data variables
@@ -153,7 +157,8 @@ public class WriterCFPointDataset {
 
     // add the data variables all using the record dimension
     for (VariableSimpleIF oldVar : dataVars) {
-      if (ncfileOut.findVariable(oldVar.getShortName()) != null) continue;
+      if (ncfileOut.findVariable(oldVar.getShortName()) != null)
+        continue;
       List<Dimension> dims = oldVar.getDimensions();
       StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
@@ -176,7 +181,8 @@ public class WriterCFPointDataset {
     return (!d.isUnlimited() && !d.getShortName().equalsIgnoreCase("time"));
   }
 
-  public void writeRecord(double lat, double lon, double alt, Date time, double[] vals, String[] svals) throws IOException {
+  public void writeRecord(double lat, double lon, double alt, Date time, double[] vals, String[] svals)
+      throws IOException {
     int count = writeCoordinates(lat, lon, alt, time);
 
     Variable v;
@@ -234,10 +240,12 @@ public class WriterCFPointDataset {
   }
 
   public void writeRecord(PointFeature pf, StructureData sdata) throws IOException {
-    if (debug) System.out.println("PointFeature= " + pf);
+    if (debug)
+      System.out.println("PointFeature= " + pf);
 
     EarthLocation loc = pf.getLocation();
-    int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pf.getObservationTimeAsCalendarDate().toDate());
+    int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
+        pf.getObservationTimeAsCalendarDate().toDate());
 
     for (int i = count; i < recordVars.size(); i++) {
       Variable v = recordVars.get(i);
@@ -248,23 +256,26 @@ public class WriterCFPointDataset {
   }
 
   public void writeRecord(PointObsDatatype pobs, StructureData sdata) throws IOException {
-    if (debug) System.out.println("pobs= " + pobs);
+    if (debug)
+      System.out.println("pobs= " + pobs);
 
     ucar.unidata.geoloc.EarthLocation loc = pobs.getLocation();
-    int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobs.getObservationTimeAsDate());
+    int count =
+        writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobs.getObservationTimeAsDate());
 
     for (int i = count; i < recordVars.size(); i++) {
       Variable v = recordVars.get(i);
-      if (debug) System.out.println(" var= " + v.getShortName());
-      //assert v.hasCachedData();  ??
-      v.setCachedData( sdata.getArray(v.getShortName()), false);
+      if (debug)
+        System.out.println(" var= " + v.getShortName());
+      // assert v.hasCachedData(); ??
+      v.setCachedData(sdata.getArray(v.getShortName()), false);
     }
 
     ncfileOut.writeRecordData(recordVars);
   }
 
   public void finish() throws IOException {
-    //writeDataFinish();
+    // writeDataFinish();
     ncfileOut.close();
     ncfileOut.stream.flush();
     ncfileOut.stream.close();
@@ -308,23 +319,23 @@ public class WriterCFPointDataset {
     // extract the PointFeatureCollection
     PointFeatureCollection pointFeatureCollection = null;
     List<DsgFeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
-    for ( DsgFeatureCollection featureCollection : featureCollectionList) {
+    for (DsgFeatureCollection featureCollection : featureCollectionList) {
       if (featureCollection instanceof PointFeatureCollection)
         pointFeatureCollection = (PointFeatureCollection) featureCollection;
     }
     if (null == pointFeatureCollection)
-      throw new IOException("There is no PointFeatureCollection in  "+pfDataset.getLocation());
+      throw new IOException("There is no PointFeatureCollection in  " + pfDataset.getLocation());
 
-     long start = System.currentTimeMillis();
+    long start = System.currentTimeMillis();
 
     FileOutputStream fos = new FileOutputStream(fileOut);
-    DataOutputStream out = new DataOutputStream( new BufferedOutputStream(fos, 10000));
+    DataOutputStream out = new DataOutputStream(new BufferedOutputStream(fos, 10000));
     WriterCFPointDataset writer = null;
 
     // LOOK BAD
     List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
     ucar.nc2.NetcdfFile ncfile = pfDataset.getNetcdfFile();
-    if ((ncfile == null) || !(ncfile instanceof NetcdfDataset))  {
+    if ((ncfile == null) || !(ncfile instanceof NetcdfDataset)) {
       dataVars.addAll(pfDataset.getDataVariables());
     } else {
       NetcdfDataset ncd = (NetcdfDataset) ncfile;
@@ -341,7 +352,7 @@ public class WriterCFPointDataset {
         EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
         writer = new WriterCFPointDataset(out, pfDataset.getGlobalAttributes(), altUnits);
-        writer.writeHeader( dataVars, -1);
+        writer.writeHeader(dataVars, -1);
       }
       writer.writeRecord(pointFeature, data);
       count++;
@@ -352,7 +363,7 @@ public class WriterCFPointDataset {
     out.close();
 
     long took = System.currentTimeMillis() - start;
-    System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocation(),fileOut,took);
+    System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocation(), fileOut, took);
     return count;
   }
 
@@ -361,7 +372,7 @@ public class WriterCFPointDataset {
    *
    * @param fileIn open through TypedDatasetFactory.open(FeatureType.POINT, ..)
    * @param fileOut write to tehis netcdf-3 file
-   * @param inMemory  if true, write in memory for efficiency
+   * @param inMemory if true, write in memory for efficiency
    * @throws IOException on read/write error
    */
   public static void rewritePointObsDataset(String fileIn, String fileOut, boolean inMemory) throws IOException {
@@ -402,6 +413,6 @@ public class WriterCFPointDataset {
   public static void main(String args[]) throws IOException {
     String location = "R:/testdata/point/netcdf/02092412_metar.nc";
     File file = new File(location);
-    rewritePointObsDataset(location, "C:/TEMP/"+ file.getName(), true);
+    rewritePointObsDataset(location, "C:/TEMP/" + file.getName(), true);
   }
 }

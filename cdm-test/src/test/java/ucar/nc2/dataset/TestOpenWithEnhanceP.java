@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class TestOpenWithEnhanceP {
 
   private boolean show = false;
 
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
@@ -40,6 +39,7 @@ public class TestOpenWithEnhanceP {
   }
 
   String filename;
+
   public TestOpenWithEnhanceP(String filename) {
     this.filename = filename;
   }
@@ -47,9 +47,10 @@ public class TestOpenWithEnhanceP {
   @Test
   public void openWithEnhance() throws Exception {
     try (NetcdfDataset ncDataset = NetcdfDataset.openDataset(filename, true, null)) {
-      if (show) ncDataset.writeNcML(System.out, null);
+      if (show)
+        ncDataset.writeNcML(System.out, null);
       Assert.assertEquals(NetcdfDataset.getDefaultEnhanceMode(), ncDataset.getEnhanceMode());
-      Assert.assertTrue("size="+ncDataset.getCoordinateSystems().size(), ncDataset.getCoordinateSystems().size() > 0);
+      Assert.assertTrue("size=" + ncDataset.getCoordinateSystems().size(), ncDataset.getCoordinateSystems().size() > 0);
     }
   }
 }

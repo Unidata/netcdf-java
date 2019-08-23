@@ -11,7 +11,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.PointConfigXML;
-
 import java.util.Formatter;
 import java.io.IOException;
 

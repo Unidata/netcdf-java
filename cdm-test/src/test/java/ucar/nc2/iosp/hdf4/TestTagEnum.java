@@ -20,13 +20,15 @@ public class TestTagEnum {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
       while (true) {
         String line = dataIS.readLine();
-        if (line == null) break;
+        if (line == null)
+          break;
         if (line.startsWith("#define")) {
           StringTokenizer stoker = new StringTokenizer(line, " ()");
           stoker.nextToken(); // skip define
           String name = stoker.nextToken();
-          if (!stoker.hasMoreTokens()) continue;
-          //System.out.println(line);
+          if (!stoker.hasMoreTokens())
+            continue;
+          // System.out.println(line);
 
           if (name.startsWith("DFTAG_"))
             name = name.substring(6);
@@ -43,7 +45,8 @@ public class TestTagEnum {
             desc = desc.trim();
           }
 
-          System.out.println("  public final static Tags " + name + " = new Tags(\"" + name + "\", \"" + desc + "\", (short) " + code + ");");
+          System.out.println("  public final static Tags " + name + " = new Tags(\"" + name + "\", \"" + desc
+              + "\", (short) " + code + ");");
         }
       }
     }

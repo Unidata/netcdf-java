@@ -20,7 +20,6 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.Station;
 import ucar.ui.prefs.Field;
 import ucar.ui.prefs.PrefPanel;
-
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
@@ -34,6 +33,7 @@ import java.beans.PropertyChangeListener;
  * A Swing widget for THREDDS clients to choose a station and/or a region from navigatable map.
  * <p/>
  * Typically a user listens for property change events:
+ * 
  * <pre>
  *   stationRegionDateChooser.addPropertyChangeListener( new PropertyChangeListener() {
  * public void propertyChange(java.beans.PropertyChangeEvent e) {
@@ -53,7 +53,8 @@ import java.beans.PropertyChangeListener;
  * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
-/* implementation note:
+/*
+ * implementation note:
  * do we wnat to remove actionSource ? we have setSelectedStation instead.
  */
 public class StationRegionDateChooser extends NPController {
@@ -99,9 +100,9 @@ public class StationRegionDateChooser extends NPController {
   /**
    * Constructor
    *
-   * @param regionSelect  allow selecting a region
+   * @param regionSelect allow selecting a region
    * @param stationSelect allow selecting a station
-   * @param dateSelect    allow selecting a date range
+   * @param dateSelect allow selecting a date range
    */
   public StationRegionDateChooser(boolean stationSelect, boolean regionSelect, boolean dateSelect) {
     super();
@@ -170,7 +171,8 @@ public class StationRegionDateChooser extends NPController {
       // station was selected
       actionSource = new ActionSourceListener("station") {
         public void actionPerformed(ActionValueEvent e) {
-          if (debugEvent) System.out.println(" StationdatasetChooser: actionSource event " + e);
+          if (debugEvent)
+            System.out.println(" StationdatasetChooser: actionSource event " + e);
           selectedStation = (ucar.unidata.geoloc.Station) e.getValue();
           redraw();
         }
@@ -195,7 +197,8 @@ public class StationRegionDateChooser extends NPController {
       np.addGeoSelectionListener(new GeoSelectionListener() {
         public void actionPerformed(GeoSelectionEvent e) {
           setGeoSelection(e.getProjectionRect());
-          if (debugEvent) System.out.println("GeoSelectionEvent=" + geoSelection);
+          if (debugEvent)
+            System.out.println("GeoSelectionEvent=" + geoSelection);
           firePropertyChangeEvent(geoSelection, "GeoRegion");
           redraw();
         }
@@ -223,8 +226,7 @@ public class StationRegionDateChooser extends NPController {
     makeMyUI();
   }
 
-  protected void makeUI() {
-  } // override superclass
+  protected void makeUI() {} // override superclass
 
   private void makeMyUI() {
 
@@ -267,15 +269,14 @@ public class StationRegionDateChooser extends NPController {
 
       minmaxPP.finish(true, BorderLayout.EAST);
       minmaxPP.addActionListener(e -> {
-          // "Apply" was called
-          double minLon = minLonField.getDouble();
-          double minLat = minLatField.getDouble();
-          double maxLon = maxLonField.getDouble();
-          double maxLat = maxLatField.getDouble();
-          LatLonRect llbb = new LatLonRect(new LatLonPointImpl(minLat, minLon),
-                  new LatLonPointImpl(maxLat, maxLon));
-          setGeoSelection(llbb);
-          redraw();
+        // "Apply" was called
+        double minLon = minLonField.getDouble();
+        double minLat = minLatField.getDouble();
+        double maxLon = maxLonField.getDouble();
+        double maxLat = maxLatField.getDouble();
+        LatLonRect llbb = new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
+        setGeoSelection(llbb);
+        redraw();
       });
 
 
@@ -290,11 +291,14 @@ public class StationRegionDateChooser extends NPController {
       toolPanel.add(declutCB);
     }
 
-    if (regionSelect) BAMutil.addActionToContainer(toolPanel, bbAction);
-    if (dateSelect) BAMutil.addActionToContainer(toolPanel, dateAction);
+    if (regionSelect)
+      BAMutil.addActionToContainer(toolPanel, bbAction);
+    if (dateSelect)
+      BAMutil.addActionToContainer(toolPanel, dateAction);
 
     JPanel upperPanel = new JPanel(new BorderLayout());
-    if (regionSelect) upperPanel.add(minmaxPP, BorderLayout.NORTH);
+    if (regionSelect)
+      upperPanel.add(minmaxPP, BorderLayout.NORTH);
     upperPanel.add(toolPanel, BorderLayout.SOUTH);
 
     JPanel statusPanel = new JPanel(new BorderLayout());
@@ -321,7 +325,7 @@ public class StationRegionDateChooser extends NPController {
    * Fires a PropertyChangeEvent:
    * <ul>
    * <li>propertyName = "Station", getNewValue() = Station
-   * <li>propertyName =  "GeoRegion", getNewValue() = ProjectionRect
+   * <li>propertyName = "GeoRegion", getNewValue() = ProjectionRect
    * </ul>
    */
   private void firePropertyChangeEvent(Object newValue, String propertyName) {
@@ -343,7 +347,7 @@ public class StationRegionDateChooser extends NPController {
 
   public void setMapArea(ProjectionRect ma) {
     np.getProjectionImpl().setDefaultMapArea(ma);
-    //np.setMapArea(ma);
+    // np.setMapArea(ma);
   }
 
   /**
@@ -424,17 +428,21 @@ public class StationRegionDateChooser extends NPController {
     gNP.clearRect(r.x, r.y, r.width, r.height);
 
     if (regionSelect && geoSelectionMode) {
-      if (geoSelection != null) drawBB(gNP, geoSelection, Color.cyan);
-      if (geoBounds != null) drawBB(gNP, geoBounds, null);
+      if (geoSelection != null)
+        drawBB(gNP, geoSelection, Color.cyan);
+      if (geoBounds != null)
+        drawBB(gNP, geoBounds, null);
       // System.out.println("GeoRegionChooser.redraw geoBounds= "+geoBounds);
 
       if (geoSelection != null) {
         // gNP.setColor( Color.orange);
         Navigation navigate = np.getNavigation();
         double handleSize = RubberbandRectangleHandles.handleSizePixels / navigate.getPixPerWorld();
-        Rectangle2D rect = new Rectangle2D.Double(geoSelection.getX(), geoSelection.getY(), geoSelection.getWidth(), geoSelection.getHeight());
+        Rectangle2D rect = new Rectangle2D.Double(geoSelection.getX(), geoSelection.getY(), geoSelection.getWidth(),
+            geoSelection.getHeight());
         RubberbandRectangleHandles.drawHandledRect(gNP, rect, handleSize);
-        if (debug) System.out.println("GeoRegionChooser.drawHandledRect=" + handleSize + " = " + geoSelection);
+        if (debug)
+          System.out.println("GeoRegionChooser.drawHandledRect=" + handleSize + " = " + geoSelection);
       }
     }
 
@@ -521,8 +529,8 @@ public class StationRegionDateChooser extends NPController {
    * Wrap this in a JDialog component.
    *
    * @param parent JFrame (application) or JApplet (applet) or null
-   * @param title  dialog window title
-   * @param modal  is modal
+   * @param title dialog window title
+   * @param modal is modal
    * @return the JDialog widget
    */
   public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {

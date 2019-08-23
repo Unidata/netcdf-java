@@ -13,7 +13,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,10 +54,11 @@ public class CrawlingUtils {
 
           long size = result.getSize();
           double rate = (took == 0) ? 0.0 : (double) size / took / 1000.0;
-          if (showDetail) System.out.printf(" took= %d msecs rate= %f MB/sec%n", took, rate);
+          if (showDetail)
+            System.out.printf(" took= %d msecs rate= %f MB/sec%n", took, rate);
           total += size;
           time += took;
-          //if (stop.isCancel()) break;
+          // if (stop.isCancel()) break;
           count++;
         }
 
@@ -77,7 +77,8 @@ public class CrawlingUtils {
     private Array doLimitedRead(Variable v) throws IOException, InvalidRangeException {
       long size = v.getSize() * v.getElementSize();
       if (size < 1000 * 1000 || v.getRank() < 3) {
-        if (showDetail) System.out.printf(" thread %s read %s bytes = %d ", who, v.getFullName(), size);
+        if (showDetail)
+          System.out.printf(" thread %s read %s bytes = %d ", who, v.getFullName(), size);
         return v.read();
 
       } else {
@@ -95,7 +96,8 @@ public class CrawlingUtils {
           i++;
         }
         Section s = new Section(ranges);
-        if (showDetail) System.out.printf(" thread %s read %s(%s) bytes= %d ", who, v.getFullName(), s, s.computeSize());
+        if (showDetail)
+          System.out.printf(" thread %s read %s(%s) bytes= %d ", who, v.getFullName(), s, s.computeSize());
         Array result = v.read(s);
         assert result.getSize() == s.computeSize();
         return result;

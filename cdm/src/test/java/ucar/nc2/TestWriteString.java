@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -16,7 +15,8 @@ import java.lang.invoke.MethodHandles;
 public class TestWriteString {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
   String variableName = "dataVar";
   String units = "units";
@@ -49,7 +49,7 @@ public class TestWriteString {
     writeableFile.addVariableAttribute(variableName, longNameAttName, variableName);
     writeableFile.addVariableAttribute(variableName, unitsAttName, units);
 
-    writeableFile.addVariable("cellId", DataType.CHAR, "lat lon"); // STRING  illegal change to CHAR
+    writeableFile.addVariable("cellId", DataType.CHAR, "lat lon"); // STRING illegal change to CHAR
     writeableFile.addVariableAttribute("cellId", longNameAttName, "Cell ID");
 
     writeableFile.addVariable(timeVar, DataType.INT, timeDim);
@@ -60,7 +60,8 @@ public class TestWriteString {
     // could add bounds, but not familiar how it works
   }
 
-  private NetcdfFileWriter createTimeLatLonDataCube(String filename, double[] latitudes, double[] longitudes) throws IOException {
+  private NetcdfFileWriter createTimeLatLonDataCube(String filename, double[] latitudes, double[] longitudes)
+      throws IOException {
     NetcdfFileWriter writeableFile = NetcdfFileWriter.createNew(filename, true);
 
     // define dimensions, including unlimited
@@ -69,7 +70,7 @@ public class TestWriteString {
     Dimension timeDim = writeableFile.addUnlimitedDimension(timeVar);
 
     // define Variables
-    defineHeader(writeableFile, timeVar, latVar, lonVar, timeVar+" "+latVar+" "+lonVar);
+    defineHeader(writeableFile, timeVar, latVar, lonVar, timeVar + " " + latVar + " " + lonVar);
 
     // create the file
     writeableFile.create();
@@ -83,6 +84,6 @@ public class TestWriteString {
   public void testWrite() throws IOException {
     TestWriteString test = new TestWriteString();
     File tempFile = tempFolder.newFile();
-    test.createTimeLatLonDataCube(tempFile.getPath(), new double[] {1,2}, new double[] {10,20,30,40});
+    test.createTimeLatLonDataCube(tempFile.getPath(), new double[] {1, 2}, new double[] {10, 20, 30, 40});
   }
 }

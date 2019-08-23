@@ -9,7 +9,6 @@ import ucar.nc2.Group;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
-
 import java.io.IOException;
 
 /**

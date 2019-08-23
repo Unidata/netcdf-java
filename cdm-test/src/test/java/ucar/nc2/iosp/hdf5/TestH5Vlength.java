@@ -16,7 +16,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
@@ -40,7 +39,8 @@ public class TestH5Vlength {
   public void tearDown() throws Exception {
     out.close();
     boolean status = tempFile.delete();
-    if (!status) System.out.printf("delete failed%n");
+    if (!status)
+      System.out.printf("delete failed%n");
   }
 
   @Test
@@ -78,8 +78,8 @@ public class TestH5Vlength {
         assert false;
       }
 
-      int[] origin = new int[]{3};
-      int[] shape = new int[]{3};
+      int[] origin = new int[] {3};
+      int[] shape = new int[] {3};
       try {
         Array data2 = v.read(origin, shape);
         Index ima = data2.getIndex();
@@ -118,14 +118,15 @@ public class TestH5Vlength {
         assert false;
       }
 
-      int[] origin = new int[]{4};
-      int[] shape = new int[]{1};
+      int[] origin = new int[] {4};
+      int[] shape = new int[] {1};
       try {
         Array data2 = v.read(origin, shape);
         Index ima = data2.getIndex();
         assert (data2.getElementType() == String.class);
         assert (data2 instanceof ArrayObject);
-        assert ( data2.getObject(ima.set(0))).equals("Five score and seven years ago our forefathers brought forth on this continent a new nation,");
+        assert (data2.getObject(ima.set(0)))
+            .equals("Five score and seven years ago our forefathers brought forth on this continent a new nation,");
       } catch (IOException | InvalidRangeException e) {
         assert false;
       }
@@ -135,50 +136,50 @@ public class TestH5Vlength {
 
   // from bsantos@ipfn.ist.utl.pt
   /*
-  netcdf Q\:/cdmUnitTest/formats/netcdf4/vlenBigEndian {
-  types:
-    uint(*) vlen_t ;
-  dimensions:
-          acqtime = UNLIMITED ; // (10 currently)
-  variables:
-          uint64 acqtime(acqtime) ;
-                  acqtime:long_name = "Acquisition time" ;
-          uint blocknumber(acqtime) ;
-                  blocknumber:long_name = "Number of block" ;
-          uint64 speriod(acqtime) ;
-                  speriod:long_name = "Sample period for this data block" ;
-                  speriod:units = "ns" ;
-          uint64 srate(acqtime) ;
-                  srate:long_name = "Sample rate for this data block" ;
-                  srate:units = "samples/s" ;
-          double scale_factor(acqtime) ;
-                  scale_factor:long_name = "Scale factor for this data block" ;
-          double offset(acqtime) ;
-                  offset:long_name = "Offset value to be added after applying the scale_factor" ;
-          int samplesize(acqtime) ;
-          int nsamples(acqtime) ;
-                  nsamples:long_name = "Number of elements of this data block" ;
-          vlen_t levels(acqtime) ;
-                  levels:long_name = "Acquired values array" ;
-
-  // global attributes:
-                  :sourceID = "test3" ;
-                  :pulseID = "p1" ;
-                  :title = "Acquisition channel data" ;
-                  :version = 1. ;
-                  :time_stamp_reference = "UTC" ;
-                  :time_coverage_duration = 0 ;
-                  :license = "Freely available" ;
-                  :time_stamp_start_secs = 500L ;
-                  :time_stamp_start_nanosecs = 1000 ;
-  }
+   * netcdf Q\:/cdmUnitTest/formats/netcdf4/vlenBigEndian {
+   * types:
+   * uint(*) vlen_t ;
+   * dimensions:
+   * acqtime = UNLIMITED ; // (10 currently)
+   * variables:
+   * uint64 acqtime(acqtime) ;
+   * acqtime:long_name = "Acquisition time" ;
+   * uint blocknumber(acqtime) ;
+   * blocknumber:long_name = "Number of block" ;
+   * uint64 speriod(acqtime) ;
+   * speriod:long_name = "Sample period for this data block" ;
+   * speriod:units = "ns" ;
+   * uint64 srate(acqtime) ;
+   * srate:long_name = "Sample rate for this data block" ;
+   * srate:units = "samples/s" ;
+   * double scale_factor(acqtime) ;
+   * scale_factor:long_name = "Scale factor for this data block" ;
+   * double offset(acqtime) ;
+   * offset:long_name = "Offset value to be added after applying the scale_factor" ;
+   * int samplesize(acqtime) ;
+   * int nsamples(acqtime) ;
+   * nsamples:long_name = "Number of elements of this data block" ;
+   * vlen_t levels(acqtime) ;
+   * levels:long_name = "Acquired values array" ;
+   * 
+   * // global attributes:
+   * :sourceID = "test3" ;
+   * :pulseID = "p1" ;
+   * :title = "Acquisition channel data" ;
+   * :version = 1. ;
+   * :time_stamp_reference = "UTC" ;
+   * :time_coverage_duration = 0 ;
+   * :license = "Freely available" ;
+   * :time_stamp_start_secs = 500L ;
+   * :time_stamp_start_nanosecs = 1000 ;
+   * }
    */
   @Test
   public void testVlenEndian() throws IOException {
-    testVlenEndian(TestN4reading.testDir+"vlenBigEndian.nc", 10);
-    //testVlenEndian("C:/data/work/bruno/test3_p1_d1wave.nc", 10);
-    testVlenEndian(TestN4reading.testDir+"vlenLittleEndian.nc", 100);
-    //testVlenEndian("C:/data/work/bruno/fpscminicodac_1.nc", 100);
+    testVlenEndian(TestN4reading.testDir + "vlenBigEndian.nc", 10);
+    // testVlenEndian("C:/data/work/bruno/test3_p1_d1wave.nc", 10);
+    testVlenEndian(TestN4reading.testDir + "vlenLittleEndian.nc", 100);
+    // testVlenEndian("C:/data/work/bruno/fpscminicodac_1.nc", 100);
   }
 
   private void testVlenEndian(String filename, int n) throws IOException {

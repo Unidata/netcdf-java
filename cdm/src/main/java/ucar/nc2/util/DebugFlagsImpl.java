@@ -16,16 +16,16 @@ import java.util.StringTokenizer;
  */
 public class DebugFlagsImpl implements DebugFlags {
 
-  private Map<String,Boolean> map = new HashMap<>();
+  private Map<String, Boolean> map = new HashMap<>();
 
   /**
    * All flags are off
    */
-  public DebugFlagsImpl() {
-  }
+  public DebugFlagsImpl() {}
 
   /**
    * Constructor.
+   * 
    * @param flagsOn space-separated list of flags to turn on.
    */
   public DebugFlagsImpl(String flagsOn) {
@@ -35,7 +35,7 @@ public class DebugFlagsImpl implements DebugFlags {
   }
 
   public boolean isSet(String flagName) {
-    Boolean b  = map.get(flagName);
+    Boolean b = map.get(flagName);
     return (b != null) && b;
   }
 

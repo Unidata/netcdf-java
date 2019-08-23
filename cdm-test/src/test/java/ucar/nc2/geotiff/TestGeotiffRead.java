@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class TestGeotiffRead {
 
   // Even if this class is being excluded due to the NeedsCdmUnitTest annotation, JUnit still calls this method.
   // So, it mustn't throw an exception. Instead, when cdmUnitTest/ isn't available, it'll return an empty list.
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
     result.addAll(getAllFilesInDirectory(topdir, null));
@@ -77,7 +76,8 @@ public class TestGeotiffRead {
         if (stripOffsetTag != null) {
           int stripOffset = stripOffsetTag.value[0];
           IFDEntry stripSizeTag = geotiff.findTag(Tag.StripByteCounts);
-          if (stripSizeTag == null) throw new IllegalStateException();
+          if (stripSizeTag == null)
+            throw new IllegalStateException();
           int stripSize = stripSizeTag.value[0];
           logger.debug("stripOffset={} stripSize={}", stripOffset, stripSize);
         }
@@ -88,9 +88,9 @@ public class TestGeotiffRead {
   /**
    * Returns all of the files in {@code topDir} that satisfy {@code filter}.
    *
-   * @param topDir  a directory.
-   * @param filter  a file filter.
-   * @return  the files. An empty list will be returned if {@code topDir == null || !topDir.exists()}.
+   * @param topDir a directory.
+   * @param filter a file filter.
+   * @return the files. An empty list will be returned if {@code topDir == null || !topDir.exists()}.
    */
   private static List<Object[]> getAllFilesInDirectory(File topDir, FileFilter filter) {
     if (topDir == null || !topDir.exists()) {
@@ -100,8 +100,9 @@ public class TestGeotiffRead {
     List<File> files = new ArrayList<>();
 
     for (File f : topDir.listFiles()) {
-      if (filter != null && !filter.accept(f)) continue;
-      files.add( f);
+      if (filter != null && !filter.accept(f))
+        continue;
+      files.add(f);
     }
     Collections.sort(files);
 

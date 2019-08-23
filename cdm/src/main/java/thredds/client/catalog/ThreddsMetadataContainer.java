@@ -15,6 +15,7 @@ import java.util.List;
 public interface ThreddsMetadataContainer {
 
   Object getLocalField(String fldName);
+
   List getLocalFieldAsList(String fldName);
 
 }

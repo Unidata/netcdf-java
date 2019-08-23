@@ -10,7 +10,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import ucar.ui.prefs.Field;
 import ucar.ui.prefs.PrefPanel;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,18 +19,17 @@ import ucar.ui.widget.IndependentDialog;
 
 /**
  * This can be used both for java.net authentication:
- *   java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
+ * java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
  * <p>
  * or for org.apache.http authentication:
- *    httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
+ * httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
  *
  * @author John Caron
  *         Modified 12/30/2015 by DMH to utilize an internal map so it
  *         can support multiple AuthScopes to handle e.g. proxies like
  *         BasicCredentialsProvider
  */
-public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider
-{
+public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider {
 
   private IndependentDialog dialog;
   private UsernamePasswordCredentials pwa = null;
@@ -44,8 +42,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
    *
    * @param parent JFrame
    */
-  public UrlAuthenticatorDialog(javax.swing.JFrame parent)
-  {
+  public UrlAuthenticatorDialog(javax.swing.JFrame parent) {
     PrefPanel pp = new PrefPanel("UrlAuthenticatorDialog", null);
     serverF = pp.addTextField("server", "Server", "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
     realmF = pp.addTextField("realm", "Realm", "");
@@ -55,20 +52,19 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     userF = pp.addTextField("user", "User", "");
     passwF = pp.addPasswordField("password", "Password", "");
     pp.addActionListener(e -> {
-        char[] pw = passwF.getPassword();
-        if (pw == null) return;
-        pwa = new UsernamePasswordCredentials(userF.getText(), new String(pw));
-        dialog.setVisible( false);
+      char[] pw = passwF.getPassword();
+      if (pw == null)
+        return;
+      pwa = new UsernamePasswordCredentials(userF.getText(), new String(pw));
+      dialog.setVisible(false);
     });
-      // button to dismiss
+    // button to dismiss
     JButton cancel = new JButton("Cancel");
     pp.addButton(cancel);
-    cancel.addActionListener( new ActionListener()
-    {
-      public void actionPerformed(ActionEvent evt)
-      {
+    cancel.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
         pwa = null;
-        dialog.setVisible( false);
+        dialog.setVisible(false);
       }
     });
     pp.finish();
@@ -78,18 +74,14 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     dialog.setLocation(100, 100);
   }
 
-  public void clear()
-  {
-  }
+  public void clear() {}
 
-  public void setCredentials(AuthScope scope, Credentials cred)
-  {
-  }
+  public void setCredentials(AuthScope scope, Credentials cred) {}
 
-    // java.net calls this:
-  protected PasswordAuthentication getPasswordAuthentication()
-  {
-    if (pwa == null) throw new IllegalStateException();
+  // java.net calls this:
+  protected PasswordAuthentication getPasswordAuthentication() {
+    if (pwa == null)
+      throw new IllegalStateException();
 
     if (debug) {
       System.out.println("site= " + getRequestingSite());
@@ -99,32 +91,31 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
       System.out.println("scheme= " + getRequestingScheme());
     }
 
-    serverF.setText(getRequestingHost()+":"+getRequestingPort());
+    serverF.setText(getRequestingHost() + ":" + getRequestingPort());
     realmF.setText(getRequestingPrompt());
-    dialog.setVisible( true);
+    dialog.setVisible(true);
 
-     if (debug) {
-      System.out.println("user= ("+pwa.getUserName()+")");
-      System.out.println("password= ("+ pwa.getPassword() +")");
+    if (debug) {
+      System.out.println("user= (" + pwa.getUserName() + ")");
+      System.out.println("password= (" + pwa.getPassword() + ")");
     }
 
     return new PasswordAuthentication(pwa.getUserName(), pwa.getPassword().toCharArray());
   }
 
   // http client calls this:
- public Credentials getCredentials(AuthScope scope)
- {
-    serverF.setText(scope.getHost()+":"+scope.getPort());
+  public Credentials getCredentials(AuthScope scope) {
+    serverF.setText(scope.getHost() + ":" + scope.getPort());
     realmF.setText(scope.getRealm());
-    dialog.setVisible( true);
-    if (pwa == null) throw new IllegalStateException();
+    dialog.setVisible(true);
+    if (pwa == null)
+      throw new IllegalStateException();
     if (debug) {
-      System.out.println("user= ("+pwa.getUserName()+")");
-      System.out.println("password= ("+ pwa.getPassword() +")");
+      System.out.println("user= (" + pwa.getUserName() + ")");
+      System.out.println("password= (" + pwa.getPassword() + ")");
     }
     // Is this really necessary?
-    UsernamePasswordCredentials upc = new UsernamePasswordCredentials(pwa.getUserName(),
-        pwa.getPassword());
+    UsernamePasswordCredentials upc = new UsernamePasswordCredentials(pwa.getUserName(), pwa.getPassword());
     return upc;
   }
 }

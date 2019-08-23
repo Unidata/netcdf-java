@@ -9,7 +9,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.wmo.CommonCodeTable;
-
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -28,13 +27,19 @@ public class CodeFlagTables {
   static Map<Short, CodeFlagTables> tableMap;
 
   static public CodeFlagTables getTable(short id) {
-    if (tableMap == null) init();
+    if (tableMap == null)
+      init();
 
-    if (id == 263) return useCC(id, 5); // 0-1-7
-    if (id == 526) return useCC(id, 7); // 0-2-14
-    if (id == 531) return useCC(id, 8); // 0-2-19
-    if (id == 5699) return useCC(id, 3); // 0-22-67
-    if (id == 5700) return useCC(id, 4); // 0-22-68
+    if (id == 263)
+      return useCC(id, 5); // 0-1-7
+    if (id == 526)
+      return useCC(id, 7); // 0-2-14
+    if (id == 531)
+      return useCC(id, 8); // 0-2-19
+    if (id == 5699)
+      return useCC(id, 3); // 0-22-67
+    if (id == 5700)
+      return useCC(id, 4); // 0-22-68
 
     return tableMap.get(id);
   }
@@ -42,15 +47,16 @@ public class CodeFlagTables {
   static private CodeFlagTables useCC(short fxy, int cc) {
     CodeFlagTables cft = tableMap.get(fxy);
     if (cft == null) {
-      CommonCodeTable cct =  CommonCodeTable.getTable(cc);
-      cft = new CodeFlagTables(fxy, cct.getTableName(),  cct.getMap());
+      CommonCodeTable cct = CommonCodeTable.getTable(cc);
+      cft = new CodeFlagTables(fxy, cct.getTableName(), cct.getMap());
       tableMap.put(fxy, cft);
     }
     return cft;
   }
 
   static public boolean hasTable(short id) {
-    if (tableMap == null) init();
+    if (tableMap == null)
+      init();
     CodeFlagTables result = tableMap.get(id);
     return result != null;
   }
@@ -61,38 +67,39 @@ public class CodeFlagTables {
   }
 
   static public Map<Short, CodeFlagTables> getTables() {
-    if (tableMap == null) init();
+    if (tableMap == null)
+      init();
     return tableMap;
   }
 
   /*
-  <Exp_CodeFlagTables_E>
-    <No>837</No>
-    <FXY>002119</FXY>
-    <ElementName_E>Instrument operations</ElementName_E>
-    <CodeFigure>0</CodeFigure>
-    <EntryName_E>Intermediate frequency calibration mode (IF CAL)</EntryName_E>
-    <Status>Operational</Status>
-  </Exp_CodeFlagTables_E>
-
-<BUFRCREX_19_1_1_CodeFlag_en>
-  <No>2905</No>
-  <FXY>020042</FXY>
-  <ElementName_en>Airframe icing present</ElementName_en>
-  <CodeFigure>2</CodeFigure>
-  <EntryName_en>Reserved</EntryName_en>
-  <Status>Operational</Status>
-</BUFRCREX_19_1_1_CodeFlag_en>
-
-<BUFRCREX_22_0_1_CodeFlag_en>
-<No>3183</No>
-<FXY>020063</FXY>
-<ElementName_en>Special phenomena</ElementName_en>
-<CodeFigure>31</CodeFigure>
-<EntryName_en>Slight coloration of clouds at sunrise associated with a tropical disturbance</EntryName_en>
-<Status>Operational</Status>
-</BUFRCREX_22_0_1_CodeFlag_en>
-
+   * <Exp_CodeFlagTables_E>
+   * <No>837</No>
+   * <FXY>002119</FXY>
+   * <ElementName_E>Instrument operations</ElementName_E>
+   * <CodeFigure>0</CodeFigure>
+   * <EntryName_E>Intermediate frequency calibration mode (IF CAL)</EntryName_E>
+   * <Status>Operational</Status>
+   * </Exp_CodeFlagTables_E>
+   * 
+   * <BUFRCREX_19_1_1_CodeFlag_en>
+   * <No>2905</No>
+   * <FXY>020042</FXY>
+   * <ElementName_en>Airframe icing present</ElementName_en>
+   * <CodeFigure>2</CodeFigure>
+   * <EntryName_en>Reserved</EntryName_en>
+   * <Status>Operational</Status>
+   * </BUFRCREX_19_1_1_CodeFlag_en>
+   * 
+   * <BUFRCREX_22_0_1_CodeFlag_en>
+   * <No>3183</No>
+   * <FXY>020063</FXY>
+   * <ElementName_en>Special phenomena</ElementName_en>
+   * <CodeFigure>31</CodeFigure>
+   * <EntryName_en>Slight coloration of clouds at sunrise associated with a tropical disturbance</EntryName_en>
+   * <Status>Operational</Status>
+   * </BUFRCREX_22_0_1_CodeFlag_en>
+   * 
    */
   static void init(Map<Short, CodeFlagTables> table) {
     String filename = BufrTables.RESOURCE_PATH + CodeFlagFilename;
@@ -118,23 +125,27 @@ public class CodeFlagTables {
         String codeS = elem.getChildText("CodeFigure");
         String value = elem.getChildText("EntryName_en");
 
-        if ((codeS == null) || (value == null)) continue;
-        if (value.toLowerCase().startsWith("reserved"))  continue;
-        if (value.toLowerCase().startsWith("not used")) continue;
+        if ((codeS == null) || (value == null))
+          continue;
+        if (value.toLowerCase().startsWith("reserved"))
+          continue;
+        if (value.toLowerCase().startsWith("not used"))
+          continue;
 
         int code;
         if (codeS.toLowerCase().contains("all")) {
           code = -1;
-        } else try {
-          code = Integer.parseInt(codeS);
-        } catch (NumberFormatException e) {
-          log.debug("NumberFormatException on line " + line + " in " + codeS);
-          continue;
-        }
+        } else
+          try {
+            code = Integer.parseInt(codeS);
+          } catch (NumberFormatException e) {
+            log.debug("NumberFormatException on line " + line + " in " + codeS);
+            continue;
+          }
         ct.addValue((short) code, value);
       }
 
-    } catch (IOException|JDOMException e) {
+    } catch (IOException | JDOMException e) {
       log.error("Can't read BUFR code table " + filename, e);
     }
   }
@@ -142,7 +153,7 @@ public class CodeFlagTables {
   ////////////////////////////////////////////////
   private short fxy;
   private String name;
-  private Map<Integer, String> map;  // needs to be integer for EnumTypedef
+  private Map<Integer, String> map; // needs to be integer for EnumTypedef
 
   CodeFlagTables(short fxy, String name) {
     this.fxy = fxy;
@@ -168,7 +179,9 @@ public class CodeFlagTables {
     map.put(value, text);
   }
 
-  public short getId() { return fxy; }
+  public short getId() {
+    return fxy;
+  }
 
   public String fxy() {
     int f = fxy >> 14;
@@ -178,6 +191,8 @@ public class CodeFlagTables {
     return f + "-" + x + "-" + y;
   }
 
-  public String toString() { return name; }
+  public String toString() {
+    return name;
+  }
 
 }

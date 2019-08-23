@@ -16,36 +16,42 @@ public interface PointObsDatatype {
 
   /**
    * Nominal time of the observation. Units are found from getTimeUnits() in the containing dataset.
+   * 
    * @return nominal time of the observation in units of getTimeUnits()
    */
   public double getNominalTime();
 
   /**
    * Actual time of the observation. Units are found from getTimeUnits() in the containing dataset.
+   * 
    * @return actual time of the observation in units of getTimeUnits()
    */
   public double getObservationTime();
 
   /**
    * Nominal time of the observation, as a Date.
+   * 
    * @return nominal time of the observation as a Date
    */
   public Date getNominalTimeAsDate();
 
   /**
    * Actual time of the observation, as a Date.
+   * 
    * @return actual time of the observation as a Date
    */
   public Date getObservationTimeAsDate();
 
   /**
    * Location of the observation
+   * 
    * @return the location of the observation
    */
   public ucar.unidata.geoloc.EarthLocation getLocation();
 
   /**
    * The actual data of the observation.
+   * 
    * @return the actual data of the observation.
    * @throws java.io.IOException on io error
    */

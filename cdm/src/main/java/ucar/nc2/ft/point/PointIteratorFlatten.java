@@ -33,10 +33,11 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
    * Constructor.
    *
    * @param collectionIter iterator over the collections
-   * @param filter_bb      boundingbox, or null
-   * @param filter_date    data range, or null
+   * @param filter_bb boundingbox, or null
+   * @param filter_date data range, or null
    */
-  PointIteratorFlatten(IOIterator<PointFeatureCollection> collectionIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
+  PointIteratorFlatten(IOIterator<PointFeatureCollection> collectionIter, LatLonRect filter_bb,
+      CalendarDateRange filter_date) {
     this.collectionIter = collectionIter;
     if ((filter_bb != null) || (filter_date != null))
       this.filter = new PointIteratorFiltered.SpaceAndTimeFilter(filter_bb, filter_date);
@@ -44,8 +45,10 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
 
   @Override
   public void close() {
-    if (finished) return;
-    if (pfiter != null) pfiter.close();
+    if (finished)
+      return;
+    if (pfiter != null)
+      pfiter.close();
     // collectionIter.close();
     finishCalcBounds();
     finished = true;
@@ -55,7 +58,8 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
   public boolean hasNext() {
     try {
       pointFeature = nextFilteredDataPoint();
-      if (pointFeature != null) return true;
+      if (pointFeature != null)
+        return true;
 
       PointFeatureCollection feature = nextCollection();
       if (feature == null) {
@@ -74,26 +78,31 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
 
   @Override
   public PointFeature next() {
-    if (pointFeature == null) return null;
+    if (pointFeature == null)
+      return null;
     calcBounds(pointFeature);
     return pointFeature;
   }
 
   private PointFeatureCollection nextCollection() throws IOException {
-    if (!collectionIter.hasNext()) return null;
+    if (!collectionIter.hasNext())
+      return null;
     return collectionIter.next();
   }
 
   private PointFeature nextFilteredDataPoint() {
-    if (pfiter == null) return null;
-    if (!pfiter.hasNext()) return null;
+    if (pfiter == null)
+      return null;
+    if (!pfiter.hasNext())
+      return null;
     PointFeature pdata = pfiter.next();
 
     if (filter == null)
       return pdata;
 
     while (!filter.filter(pdata)) {
-      if (!pfiter.hasNext()) return null;
+      if (!pfiter.hasNext())
+        return null;
       pdata = pfiter.next();
     }
     return pdata;

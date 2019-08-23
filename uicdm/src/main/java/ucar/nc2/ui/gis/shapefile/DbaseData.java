@@ -3,8 +3,9 @@
  * See LICENSE for license information.
  */
 /*
-   Class to contain a single field of data from a dbase file
-  @author Russ Rew
+ * Class to contain a single field of data from a dbase file
+ * 
+ * @author Russ Rew
  */
 package ucar.nc2.ui.gis.shapefile;
 
@@ -13,7 +14,7 @@ import java.io.DataInputStream;
 
 public class DbaseData {
   DbaseFieldDesc desc;
-  int nrec;  /* number of records */
+  int nrec; /* number of records */
 
   /**
    * Character type data (String[]).
@@ -69,15 +70,17 @@ public class DbaseData {
   }
 
   /**
-   * Method to read an entry from the data stream.  The stream is assumed to be
-   * in the right spot for reading.  This method should be called from something
+   * Method to read an entry from the data stream. The stream is assumed to be
+   * in the right spot for reading. This method should be called from something
    * controlling the reading of the entire file.
    */
   int readRowN(DataInputStream ds, int n) {
-    if (n > nrec) return -1;
-    /* the assumption here is that the DataInputStream (ds)
-    * is already pointing at the right spot!
-    */
+    if (n > nrec)
+      return -1;
+    /*
+     * the assumption here is that the DataInputStream (ds)
+     * is already pointing at the right spot!
+     */
     try {
       ds.readFully(field, 0, desc.FieldLength);
     } catch (java.io.IOException e) {
@@ -91,7 +94,7 @@ public class DbaseData {
       case 'N':
         numeric[n] = Double.valueOf(new String(field, StandardCharsets.UTF_8));
         break;
-      case 'F':  /* binary floating point */
+      case 'F': /* binary floating point */
         if (desc.FieldLength == 4) {
           numeric[n] = (double) Swap.swapFloat(field, 0);
         } else {

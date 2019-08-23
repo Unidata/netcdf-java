@@ -13,7 +13,6 @@ import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import java.awt.*;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
@@ -30,67 +29,73 @@ import javax.swing.table.TableColumn;
  */
 public class BufrCdmIndexPanel extends JPanel {
 
-    private static final org.slf4j.Logger logger
-                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private PreferencesExt prefs;
+  private PreferencesExt prefs;
 
-    private BeanTable stationTable, fldTable;
-    private JSplitPane split, split2, split3;
+  private BeanTable stationTable, fldTable;
+  private JSplitPane split, split2, split3;
 
-    private TextHistoryPane infoPopup, detailTA;
-    private IndependentWindow infoWindow, detailWindow;
+  private TextHistoryPane infoPopup, detailTA;
+  private IndependentWindow infoWindow, detailWindow;
 
-/**
- *
- */
-    public BufrCdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
-        this.prefs = prefs;
+  /**
+   *
+   */
+  public BufrCdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
+    this.prefs = prefs;
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(e -> {
-        if (index == null) { return; }
-        Formatter f = new Formatter();
-        index.showIndex(f);
-        detailTA.setText(f.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
+      if (index == null) {
+        return;
+      }
+      Formatter f = new Formatter();
+      index.showIndex(f);
+      detailTA.setText(f.toString());
+      detailTA.gotoTop();
+      detailWindow.show();
     });
     buttPanel.add(infoButton);
 
     AbstractButton writeButton = BAMutil.makeButtcon("nj22/Netcdf", "Write index", false);
     writeButton.addActionListener(e -> {
-        Formatter f = new Formatter();
-        try {
-          if (writeIndex(f)) {
-            f.format("Index written");
-            detailTA.setText(f.toString());
-          }
-
-        } catch (Exception ex) {
-          ex.printStackTrace();
-          StringWriter sw = new StringWriter(10000);
-          ex.printStackTrace(new PrintWriter(sw));
-          detailTA.setText(sw.toString());
+      Formatter f = new Formatter();
+      try {
+        if (writeIndex(f)) {
+          f.format("Index written");
+          detailTA.setText(f.toString());
         }
-        detailTA.gotoTop();
-        detailWindow.show();
+
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        StringWriter sw = new StringWriter(10000);
+        ex.printStackTrace(new PrintWriter(sw));
+        detailTA.setText(sw.toString());
+      }
+      detailTA.gotoTop();
+      detailWindow.show();
     });
     buttPanel.add(writeButton);
 
-    /* AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
-    filesButton.addActionListener(e -> {
-        Formatter f = new Formatter();
-        showFiles(f);
-        detailTA.setText(f.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
-    });
-    buttPanel.add(filesButton); */
+    /*
+     * AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
+     * filesButton.addActionListener(e -> {
+     * Formatter f = new Formatter();
+     * showFiles(f);
+     * detailTA.setText(f.toString());
+     * detailTA.gotoTop();
+     * detailWindow.show();
+     * });
+     * buttPanel.add(filesButton);
+     */
 
     ////////////////
-    stationTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBean"), false, "stations", "BufrCdmIndexProto.Station", null);
-    fldTable = new BeanTable(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields", "BufrCdmIndexProto.Field", new FieldBean());
+    stationTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBean"), false, "stations",
+        "BufrCdmIndexProto.Station", null);
+    fldTable = new BeanTable(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields",
+        "BufrCdmIndexProto.Field", new FieldBean());
 
     JTable table = fldTable.getJTable();
     JComboBox<BufrCdmIndexProto.FldType> comboBox = new JComboBox<>(BufrCdmIndexProto.FldType.values());
@@ -125,16 +130,19 @@ public class BufrCdmIndexPanel extends JPanel {
 
   }
 
-/** */
-    public void save() {
-        stationTable.saveState(false);
-        fldTable.saveState(false);
-        prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-        prefs.putBeanObject("DetailWindowBounds", detailWindow.getBounds());
-        if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-        if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
-        if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
-    }
+  /** */
+  public void save() {
+    stationTable.saveState(false);
+    fldTable.saveState(false);
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putBeanObject("DetailWindowBounds", detailWindow.getBounds());
+    if (split != null)
+      prefs.putInt("splitPos", split.getDividerLocation());
+    if (split2 != null)
+      prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split3 != null)
+      prefs.putInt("splitPos3", split3.getDividerLocation());
+  }
 
   ///////////////////////////////////////////////
 
@@ -163,7 +171,8 @@ public class BufrCdmIndexPanel extends JPanel {
   }
 
   private void addFields(BufrCdmIndexProto.Field parent, FieldBean parentBean, List<FieldBean> flds) {
-    if (parent.getFldsList() == null) return;
+    if (parent.getFldsList() == null)
+      return;
     parentBean.children = new ArrayList<>();
     for (BufrCdmIndexProto.Field child : parent.getFldsList()) {
       FieldBean childBean = new FieldBean(parentBean, child);
@@ -177,7 +186,8 @@ public class BufrCdmIndexPanel extends JPanel {
   public boolean writeIndex(Formatter f) throws IOException {
     makeFileChooser();
     String filename = fileChooser.chooseFilename(indexFilename);
-    if (filename == null) return false;
+    if (filename == null)
+      return false;
     if (!filename.endsWith(BufrCdmIndex.NCX_IDX))
       filename += BufrCdmIndex.NCX_IDX;
     File idxFile = new File(filename);
@@ -248,8 +258,7 @@ public class BufrCdmIndexPanel extends JPanel {
       return "action children fxy";
     }
 
-    public FieldBean() {
-    }
+    public FieldBean() {}
 
     public FieldBean(FieldBean parent, BufrCdmIndexProto.Field child) {
       this.parent = parent;
@@ -258,7 +267,8 @@ public class BufrCdmIndexPanel extends JPanel {
 
     @Nullable
     public String getParent() {
-      if (parent == null) return null;
+      if (parent == null)
+        return null;
       Formatter f = new Formatter();
       FieldBean a = parent;
       while (a != null) {
@@ -297,13 +307,15 @@ public class BufrCdmIndexPanel extends JPanel {
 
     @Override
     public BufrCdmIndexProto.FldAction getAction() {
-      if (act != null) return act;
+      if (act != null)
+        return act;
       return child.getAction();
     }
 
     @Override
     public BufrCdmIndexProto.FldType getType() {
-      if (type != null) return type;
+      if (type != null)
+        return type;
       return child.getType();
     }
 
@@ -312,7 +324,8 @@ public class BufrCdmIndexPanel extends JPanel {
     }
 
     public String getActionS() {
-      if (act != null) return act.toString();
+      if (act != null)
+        return act.toString();
       BufrCdmIndexProto.FldAction fact = getAction();
       return fact != null ? fact.toString() : "";
     }

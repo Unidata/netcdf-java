@@ -10,7 +10,6 @@ import ucar.ma2.*;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
-
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,7 +35,8 @@ public class TimingTestRunner {
 
     public double mean() {
       int elements = values.size();
-      if (elements == 0) throw new IllegalStateException("No values");
+      if (elements == 0)
+        throw new IllegalStateException("No values");
       double sum = 0;
       for (int i = 0; i < values.size(); i++) {
         Double valo = (Double) values.get(i);
@@ -68,7 +68,8 @@ public class TimingTestRunner {
 
   static void testAllInDir(File dir, MClosure closure) throws IOException, InvalidRangeException {
     File[] fa = dir.listFiles();
-    if (fa == null || fa.length == 0) return;
+    if (fa == null || fa.length == 0)
+      return;
 
     List<File> list = Arrays.asList(fa);
     Collections.sort(list);
@@ -88,10 +89,12 @@ public class TimingTestRunner {
 
     testAllInDir(new File("C:/data/grib/"), new MClosure() {
       public void run(String filename) throws IOException, InvalidRangeException {
-        if (!filename.endsWith("grib1")) return;
+        if (!filename.endsWith("grib1"))
+          return;
         NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
         File fileout = new File(filename + ".ncml");
-        if (fileout.exists()) fileout.delete();
+        if (fileout.exists())
+          fileout.delete();
         ncfile.writeNcML(new FileOutputStream(fileout), filename);
         System.out.println(" wrote ncml file  =" + fileout);
 
@@ -104,7 +107,8 @@ public class TimingTestRunner {
     //
     testAllInDir(new File("C:/data/grib/"), new MClosure() {
       public void run(String filename) throws IOException, InvalidRangeException {
-        if (!filename.endsWith("ncml")) return;
+        if (!filename.endsWith("ncml"))
+          return;
         System.out.println(" open ncml file  =" + filename);
         openFile(filename, fileAvg, true);
       }
@@ -119,7 +123,8 @@ public class TimingTestRunner {
       long end = System.nanoTime();
       double took = (double) ((end - start)) / 1000 / 1000 / 1000;
       ncfile.close();
-      if (avg != null) avg.add(took);
+      if (avg != null)
+        avg.add(took);
     } catch (Exception e) {
       System.out.println("BAD " + filename);
       e.printStackTrace();
@@ -133,8 +138,9 @@ public class TimingTestRunner {
     //
     testAllInDir(new File(dir), new MClosure() {
       public void run(String filename) throws IOException, InvalidRangeException {
-        if (!filename.endsWith(suffix)) return;
-        //System.out.println(" open "+suffix+" file  ="+filename);
+        if (!filename.endsWith(suffix))
+          return;
+        // System.out.println(" open "+suffix+" file ="+filename);
         openFile(filename, fileAvg, false);
       }
     });
@@ -146,8 +152,9 @@ public class TimingTestRunner {
     //
     testAllInDir(new File(dir), new MClosure() {
       public void run(String filename) throws IOException, InvalidRangeException {
-        if (!filename.endsWith(suffix)) return;
-        //System.out.println(" open "+suffix+" file  ="+filename);
+        if (!filename.endsWith(suffix))
+          return;
+        // System.out.println(" open "+suffix+" file ="+filename);
         openFile(filename, fileAvg, true);
       }
     });

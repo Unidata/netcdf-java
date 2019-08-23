@@ -9,7 +9,6 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.ma2.*;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -41,7 +40,8 @@ public class WriteT41_ncRect {
           useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
         else
           useAtt = ncfile.addGlobalAttribute(useName, att.getNumericValue());
-        if (debug) System.out.println("add gatt= " + useAtt);
+        if (debug)
+          System.out.println("add gatt= " + useAtt);
       }
 
       // global dimensions
@@ -49,16 +49,19 @@ public class WriteT41_ncRect {
       for (Dimension oldD : bufr.getDimensions()) {
         String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
         boolean isRecord = useName.equals("record");
-        Dimension newD = ncfile.addDimension(null, useName, isRecord ? 0 : oldD.getLength(),
-                isRecord, oldD.isVariableLength());
-        if (isRecord) recordDim = newD;
-        if (debug) System.out.println("add dim= " + newD);
+        Dimension newD =
+            ncfile.addDimension(null, useName, isRecord ? 0 : oldD.getLength(), isRecord, oldD.isVariableLength());
+        if (isRecord)
+          recordDim = newD;
+        if (debug)
+          System.out.println("add dim= " + newD);
       }
 
       // Variables
       Structure recordStruct = (Structure) bufr.findVariable(BufrIosp2.obsRecord);
       for (Variable oldVar : recordStruct.getVariables()) {
-        if (oldVar.getDataType() == DataType.SEQUENCE) continue;
+        if (oldVar.getDataType() == DataType.SEQUENCE)
+          continue;
 
         String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
         DataType newType = oldVar.getDataType();
@@ -70,7 +73,8 @@ public class WriteT41_ncRect {
         }
 
         Variable newVar = ncfile.addVariable(null, varName, newType, newDims);
-        if (debug) System.out.println("add var= " + newVar);
+        if (debug)
+          System.out.println("add var= " + newVar);
 
         // attributes
         List<Attribute> attList = oldVar.getAttributes();
@@ -89,7 +93,8 @@ public class WriteT41_ncRect {
       Dimension seqD = ncfile.addDimension("level", max_seq);
 
       for (Variable v : recordStruct.getVariables()) {
-        if (v.getDataType() != DataType.SEQUENCE) continue;
+        if (v.getDataType() != DataType.SEQUENCE)
+          continue;
 
         Structure seq = (Structure) v;
         for (Variable seqVar : seq.getVariables()) {
@@ -104,14 +109,15 @@ public class WriteT41_ncRect {
           }
 
           Variable newVar = ncfile.addVariable(null, varName, newType, newDims);
-          if (debug) System.out.println("add var= " + newVar);
+          if (debug)
+            System.out.println("add var= " + newVar);
 
           // attributes
           List<Attribute> attList = seqVar.getAttributes();
           for (Attribute att : attList) {
             String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
             if (att.isArray())
-              newVar.addAttribute( new Attribute(useName, att.getValues()));
+              newVar.addAttribute(new Attribute(useName, att.getValues()));
             else if (att.isString())
               ncfile.addVariableAttribute(varName, useName, att.getStringValue());
             else
@@ -129,7 +135,8 @@ public class WriteT41_ncRect {
 
       double total = copyVarData(bufr, ncfile, recordStruct);
       ncfile.flush();
-      if (debug) System.out.println("FileWriter done total bytes = " + total);
+      if (debug)
+        System.out.println("FileWriter done total bytes = " + total);
     }
   }
 
@@ -152,16 +159,15 @@ public class WriteT41_ncRect {
       double avg = (double) total / count;
       int wasted = count * max - total;
       double wp = (double) wasted / (count * max);
-      System.out.println(" Max = " + max + " avg = " + avg + " wasted = " +
-              wasted + " %= " + wp);
+      System.out.println(" Max = " + max + " avg = " + avg + " wasted = " + wasted + " %= " + wp);
     } else {
-      System.out.println(" T41_ncFlat - countSeq called on empty recordStruct" +
-              " max = " + max + " count = " + count);
+      System.out.println(" T41_ncFlat - countSeq called on empty recordStruct" + " max = " + max + " count = " + count);
     }
     return max;
   }
 
-  private double copyVarData(NetcdfFile bufr, NetcdfFileWriter ncfile, Structure recordStruct) throws IOException, InvalidRangeException {
+  private double copyVarData(NetcdfFile bufr, NetcdfFileWriter ncfile, Structure recordStruct)
+      throws IOException, InvalidRangeException {
     int nrecs = (int) recordStruct.getSize();
     int sdataSize = recordStruct.getElementSize();
 
@@ -190,7 +196,8 @@ public class WriteT41_ncRect {
                 origin[0] = count;
                 origin[1] = countLevel;
 
-                if (debug && (count == 0) && (countLevel == 0)) System.out.println("write to = " + seqm.getName());
+                if (debug && (count == 0) && (countLevel == 0))
+                  System.out.println("write to = " + seqm.getName());
                 ncfile.write(seqm.getName(), origin, data.reshape(newShape));
               }
               countLevel++;
@@ -207,7 +214,8 @@ public class WriteT41_ncRect {
           int[] origin = new int[data.getRank() + 1];
           origin[0] = count;
 
-          if (debug && (count == 0)) System.out.println("write to = " + m.getName());
+          if (debug && (count == 0))
+            System.out.println("write to = " + m.getName());
           ncfile.write(m.getName(), origin, data.reshape(newShape));
         }
       }
@@ -216,7 +224,8 @@ public class WriteT41_ncRect {
 
     total += totalRecordBytes;
     totalRecordBytes /= 1000 * 1000;
-    if (debug) System.out.println("write record var; total = " + totalRecordBytes + " Mbytes # recs=" + nrecs);
+    if (debug)
+      System.out.println("write record var; total = " + totalRecordBytes + " Mbytes # recs=" + nrecs);
 
     return total;
   }

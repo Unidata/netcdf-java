@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-
 import com.google.common.collect.Lists;
 import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
@@ -19,7 +18,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
-
 import javax.annotation.Nullable;
 
 /**
@@ -48,7 +46,8 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
     this.calendarDateRange = covCollection.getCalendarDateRange();
   }
 
-  public FeatureDatasetCoverage(String location, AttributeContainer gatts, Closeable closer, List<CoverageCollection> covCollections) {
+  public FeatureDatasetCoverage(String location, AttributeContainer gatts, Closeable closer,
+      List<CoverageCollection> covCollections) {
     this.location = location;
     this.gatts = gatts;
     this.closer = closer;
@@ -58,12 +57,16 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
     FeatureType ft = null;
     for (CoverageCollection cc : covCollections) {
       FeatureType ftCheck = cc.getCoverageType();
-      if (ft == null) ft = ftCheck;
-      else if (ftCheck != ft) ft = FeatureType.COVERAGE;
+      if (ft == null)
+        ft = ftCheck;
+      else if (ftCheck != ft)
+        ft = FeatureType.COVERAGE;
 
       CalendarDateRange cdrCheck = cc.getCalendarDateRange();
-      if (cdr == null) cdr = cdrCheck;
-      else if (cdrCheck != null) cdr = cdr.extend( cdrCheck);
+      if (cdr == null)
+        cdr = cdrCheck;
+      else if (cdrCheck != null)
+        cdr = cdr.extend(cdrCheck);
 
     }
     this.featureType = ft;
@@ -73,20 +76,24 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
   public List<CoverageCollection> getCoverageCollections() {
     return covCollections;
   }
+
   public CoverageCollection getSingleCoverageCollection() {
-    if (covCollections.size() != 1) throw new RuntimeException("multiple collection in the dataset");
+    if (covCollections.size() != 1)
+      throw new RuntimeException("multiple collection in the dataset");
     return covCollections.get(0);
   }
 
-  public CoverageCollection findCoverageDataset( FeatureType type) {
+  public CoverageCollection findCoverageDataset(FeatureType type) {
     for (CoverageCollection cd : covCollections)
-      if (cd.getCoverageType() == type) return cd;
+      if (cd.getCoverageType() == type)
+        return cd;
     return null;
   }
 
-  public CoverageCollection findCoverageDataset( String name) {
+  public CoverageCollection findCoverageDataset(String name) {
     for (CoverageCollection cd : covCollections)
-      if (cd.getName().equals(name)) return cd;
+      if (cd.getName().equals(name))
+        return cd;
     return null;
   }
 
@@ -156,8 +163,9 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
   @Override
   public VariableSimpleIF getDataVariable(String shortName) {
     for (CoverageCollection cc : covCollections) {
-      VariableSimpleIF result =  cc.findCoverage(shortName);
-      if (result != null) return result;
+      VariableSimpleIF result = cc.findCoverage(shortName);
+      if (result != null)
+        return result;
     }
     return null;
   }
@@ -204,7 +212,8 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
 
   public synchronized void close() throws java.io.IOException {
     if (fileCache != null) {
-      if (fileCache.release(this)) return;
+      if (fileCache.release(this))
+        return;
     }
     reallyClose();
   }

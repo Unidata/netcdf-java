@@ -9,18 +9,17 @@ import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.stream.CdmRemote;
-
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 
 /**
- *  A Dataset Access element
+ * A Dataset Access element
  *
  * @author caron
  * @since 1/7/2015
  */
 @Immutable
-public class Access {                 // (5)
+public class Access { // (5)
   private final Dataset dataset;
   private final String urlPath;
   private final Service service;
@@ -48,7 +47,8 @@ public class Access {                 // (5)
   }
 
   public DataFormatType getDataFormatType() {
-    if (dataFormatS == null) return null;
+    if (dataFormatS == null)
+      return null;
     try {
       return DataFormatType.getType(dataFormatS);
     } catch (Exception e) {
@@ -62,7 +62,7 @@ public class Access {                 // (5)
 
   public long getDataSize() {
     return dataSize;
-  }                   // optional
+  } // optional
 
   /**
    * Get the standard URL, with resolution if the URL is reletive.
@@ -72,7 +72,8 @@ public class Access {                 // (5)
    */
   public String getStandardUrlName() {
     URI uri = getStandardUri();
-    if (uri == null) return null;
+    if (uri == null)
+      return null;
     return uri.toString();
   }
 
@@ -97,6 +98,7 @@ public class Access {                 // (5)
   /**
    * Construct "unresolved" URL: service.getBase() + getUrlPath() + service.getSuffix().
    * It is not resolved, so it may be a reletive URL.
+   * 
    * @return unresolved Url as a String
    */
   public String getUnresolvedUrlName() {
@@ -105,7 +107,8 @@ public class Access {                 // (5)
 
   public String getWrappedUrlName() {
     URI uri = getStandardUri();
-    if (uri == null) return null;
+    if (uri == null)
+      return null;
 
     if (service.getType() == ServiceType.THREDDS)
       return DataFactory.SCHEME + uri;
@@ -118,14 +121,19 @@ public class Access {                 // (5)
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Access access = (Access) o;
 
-    if (dataSize != access.dataSize) return false;
-    if (!Objects.equals(dataFormatS, access.dataFormatS)) return false;
-    if (!Objects.equals(service, access.service)) return false;
+    if (dataSize != access.dataSize)
+      return false;
+    if (!Objects.equals(dataFormatS, access.dataFormatS))
+      return false;
+    if (!Objects.equals(service, access.service))
+      return false;
     return Objects.equals(urlPath, access.urlPath);
 
   }
@@ -141,11 +149,7 @@ public class Access {                 // (5)
 
   @Override
   public String toString() {
-    return "Access{" +
-            "service=" + service +
-            ", urlPath='" + urlPath + '\'' +
-            ", dataFormatS='" + dataFormatS + '\'' +
-            ", dataSize=" + dataSize +
-            '}';
+    return "Access{" + "service=" + service + ", urlPath='" + urlPath + '\'' + ", dataFormatS='" + dataFormatS + '\''
+        + ", dataSize=" + dataSize + '}';
   }
 }

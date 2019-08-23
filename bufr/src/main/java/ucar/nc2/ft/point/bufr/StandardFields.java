@@ -15,7 +15,6 @@ import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.time.CalendarDate;
-
 import java.util.*;
 
 /**
@@ -31,10 +30,10 @@ public class StandardFields {
   private static Map<Integer, Map<String, BufrCdmIndexProto.FldType>> locals = new HashMap<>(10);
 
   static {
-         // first choice
+    // first choice
     addField("0-1-1", BufrCdmIndexProto.FldType.wmoBlock);
     addField("0-1-2", BufrCdmIndexProto.FldType.wmoId);
-    addField("0-1-18",BufrCdmIndexProto.FldType.stationId);
+    addField("0-1-18", BufrCdmIndexProto.FldType.stationId);
     addField("0-4-1", BufrCdmIndexProto.FldType.year);
     addField("0-4-2", BufrCdmIndexProto.FldType.month);
     addField("0-4-3", BufrCdmIndexProto.FldType.day);
@@ -45,7 +44,7 @@ public class StandardFields {
     addField("0-6-1", BufrCdmIndexProto.FldType.lon);
     addField("0-7-30", BufrCdmIndexProto.FldType.heightOfStation);
 
-     // second choice
+    // second choice
     addField("0-1-15", BufrCdmIndexProto.FldType.stationId);
     addField("0-1-19", BufrCdmIndexProto.FldType.stationId);
     addField("0-4-7", BufrCdmIndexProto.FldType.sec);
@@ -54,14 +53,14 @@ public class StandardFields {
     addField("0-6-2", BufrCdmIndexProto.FldType.lon);
     addField("0-7-1", BufrCdmIndexProto.FldType.heightOfStation);
 
-     // third choice
+    // third choice
     addField("0-1-62", BufrCdmIndexProto.FldType.stationId);
     addField("0-1-63", BufrCdmIndexProto.FldType.stationId);
     addField("0-7-2", BufrCdmIndexProto.FldType.height);
     addField("0-7-10", BufrCdmIndexProto.FldType.height);
     addField("0-7-7", BufrCdmIndexProto.FldType.height);
 
-    // 4th choice  LOOK
+    // 4th choice LOOK
     addField("0-1-5", BufrCdmIndexProto.FldType.stationId);
     addField("0-1-6", BufrCdmIndexProto.FldType.stationId);
     // addField("0-1-7", BufrCdmIndexProto.FldType.stationId); satellite id
@@ -72,9 +71,11 @@ public class StandardFields {
     addField("0-7-7", BufrCdmIndexProto.FldType.heightAboveStation);
 
     // locals
-    /* Map<String, BufrCdmIndexProto.FldType> ncep = new HashMap<String, BufrCdmIndexProto.FldType>(10);
-    ncep.put("0-1-198", BufrCdmIndexProto.FldType.stationId);
-    locals.put(7, ncep); */
+    /*
+     * Map<String, BufrCdmIndexProto.FldType> ncep = new HashMap<String, BufrCdmIndexProto.FldType>(10);
+     * ncep.put("0-1-198", BufrCdmIndexProto.FldType.stationId);
+     * locals.put(7, ncep);
+     */
 
     Map<String, BufrCdmIndexProto.FldType> uu = new HashMap<>(10);
     uu.put("0-1-194", BufrCdmIndexProto.FldType.stationId);
@@ -95,7 +96,7 @@ public class StandardFields {
     List<String> list = type2Flds.computeIfAbsent(type, k -> new ArrayList<>());
     list.add(fld); // keep in order
 
-    TypeAndOrder tao = new TypeAndOrder(type, list.size()-1);
+    TypeAndOrder tao = new TypeAndOrder(type, list.size() - 1);
     fld2type.put(fld, tao);
   }
 
@@ -103,9 +104,10 @@ public class StandardFields {
 
   private static TypeAndOrder findTao(int center, String key) {
     Map<String, BufrCdmIndexProto.FldType> local = locals.get(center);
-    if (local != null)  {
+    if (local != null) {
       BufrCdmIndexProto.FldType result = local.get(key);
-      if (result != null) return new TypeAndOrder(result, -1);
+      if (result != null)
+        return new TypeAndOrder(result, -1);
     }
 
     return fld2type.get(key);
@@ -113,16 +115,17 @@ public class StandardFields {
 
   public static BufrCdmIndexProto.FldType findField(int center, String key) {
     Map<String, BufrCdmIndexProto.FldType> local = locals.get(center);
-    if (local != null)  {
+    if (local != null) {
       BufrCdmIndexProto.FldType result = local.get(key);
-      if (result != null) return result;
+      if (result != null)
+        return result;
     }
 
     return findStandardField(key);
   }
 
   public static BufrCdmIndexProto.FldType findStandardField(String key) {
-    TypeAndOrder tao =  fld2type.get(key);
+    TypeAndOrder tao = fld2type.get(key);
     return (tao == null) ? null : tao.type;
   }
 
@@ -139,7 +142,7 @@ public class StandardFields {
       extract.match(center, subdds);
 
       if (subdds.getSubKeys() != null)
-       extract(center, subdds, extract);
+        extract(center, subdds, extract);
     }
   }
 
@@ -150,7 +153,8 @@ public class StandardFields {
     void match(int center, DataDescriptor dds) {
       String name = dds.getFxyName();
       BufrCdmIndexProto.FldType type = findField(center, name);
-      if (type == null) return;
+      if (type == null)
+        return;
 
       // got a match
       List<DataDescriptor> list = typeMap.computeIfAbsent(type, k -> new ArrayList<>(3));
@@ -158,19 +162,23 @@ public class StandardFields {
     }
 
     public boolean hasStation() {
-      if (typeMap.get(BufrCdmIndexProto.FldType.lat) == null) return false;
-      if (typeMap.get(BufrCdmIndexProto.FldType.lon) == null) return false;
-      if (typeMap.get(BufrCdmIndexProto.FldType.stationId) != null) return true;
+      if (typeMap.get(BufrCdmIndexProto.FldType.lat) == null)
+        return false;
+      if (typeMap.get(BufrCdmIndexProto.FldType.lon) == null)
+        return false;
+      if (typeMap.get(BufrCdmIndexProto.FldType.stationId) != null)
+        return true;
       return typeMap.get(BufrCdmIndexProto.FldType.wmoId) != null;
     }
 
     public boolean hasTime() {
-      if (typeMap.get(BufrCdmIndexProto.FldType.year) == null) return false;
-      if (typeMap.get(BufrCdmIndexProto.FldType.month) == null) return false;
-      return typeMap.get(BufrCdmIndexProto.FldType.day) != null
-          || typeMap.get(BufrCdmIndexProto.FldType.doy) != null;
-      //if (typeMap.get(BufrCdmIndexProto.FldType.hour) == null) return false;  // LOOK could assume 0:0 ??
-      //if (typeMap.get(BufrCdmIndexProto.FldType.minute) == null) return false;
+      if (typeMap.get(BufrCdmIndexProto.FldType.year) == null)
+        return false;
+      if (typeMap.get(BufrCdmIndexProto.FldType.month) == null)
+        return false;
+      return typeMap.get(BufrCdmIndexProto.FldType.day) != null || typeMap.get(BufrCdmIndexProto.FldType.doy) != null;
+      // if (typeMap.get(BufrCdmIndexProto.FldType.hour) == null) return false; // LOOK could assume 0:0 ??
+      // if (typeMap.get(BufrCdmIndexProto.FldType.minute) == null) return false;
     }
 
     @Override
@@ -226,17 +234,19 @@ public class StandardFields {
       // run through all available fields - LOOK we are not recursing into sub sequences
       for (Variable v : obs.getVariables()) {
         Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
-        if (att == null) continue;
+        if (att == null)
+          continue;
         String key = att.getStringValue();
         TypeAndOrder tao = findTao(center, key);
-        if (tao == null) continue;
+        if (tao == null)
+          continue;
 
         Field oldFld = map.get(tao.type);
         if (oldFld == null) {
           Field fld = new Field(tao, v);
           map.put(tao.type, fld);
         } else {
-          if (oldFld.tao.order < tao.order) {  // replace old one
+          if (oldFld.tao.order < tao.order) { // replace old one
             Field fld = new Field(tao, v);
             map.put(tao.type, fld);
           }
@@ -271,10 +281,14 @@ public class StandardFields {
 
     public String getFieldValueS(BufrCdmIndexProto.FldType type) {
       Field fld = map.get(type);
-      if (fld == null) return null;
-      if (fld.valueS != null) return fld.valueS;
-      if (fld.value != -1) return Integer.toString(fld.value);
-      if (!Double.isNaN(fld.valueD)) return Double.toString(fld.valueD);
+      if (fld == null)
+        return null;
+      if (fld.valueS != null)
+        return fld.valueS;
+      if (fld.value != -1)
+        return Integer.toString(fld.value);
+      if (!Double.isNaN(fld.valueD))
+        return Double.toString(fld.valueD);
       return null;
     }
 
@@ -285,7 +299,8 @@ public class StandardFields {
 
     public double getFieldValueD(BufrCdmIndexProto.FldType type) {
       Field fld = map.get(type);
-      if  (fld == null) return Double.NaN;
+      if (fld == null)
+        return Double.NaN;
       if (fld.hasScale)
         return fld.valueD * fld.scale + fld.offset;
       return fld.valueD;
@@ -295,14 +310,15 @@ public class StandardFields {
       if (hasField(BufrCdmIndexProto.FldType.stationId))
         return getFieldValueS(BufrCdmIndexProto.FldType.stationId);
       if (hasField(BufrCdmIndexProto.FldType.wmoBlock) && hasField(BufrCdmIndexProto.FldType.wmoId))
-         return getFieldValue(BufrCdmIndexProto.FldType.wmoBlock)+"/"+getFieldValue(BufrCdmIndexProto.FldType.wmoId);
+        return getFieldValue(BufrCdmIndexProto.FldType.wmoBlock) + "/" + getFieldValue(BufrCdmIndexProto.FldType.wmoId);
       if (hasField(BufrCdmIndexProto.FldType.wmoId))
-         return Integer.toString(getFieldValue(BufrCdmIndexProto.FldType.wmoId));
+        return Integer.toString(getFieldValue(BufrCdmIndexProto.FldType.wmoId));
       return null;
-     }
+    }
 
     public CalendarDate makeCalendarDate() {
-      if (!hasField(BufrCdmIndexProto.FldType.year)) return null;
+      if (!hasField(BufrCdmIndexProto.FldType.year))
+        return null;
       int year = getFieldValue(BufrCdmIndexProto.FldType.year);
 
       int hour = !hasField(BufrCdmIndexProto.FldType.hour) ? 0 : getFieldValue(BufrCdmIndexProto.FldType.hour);
@@ -310,12 +326,13 @@ public class StandardFields {
       int sec = !hasField(BufrCdmIndexProto.FldType.sec) ? 0 : getFieldValue(BufrCdmIndexProto.FldType.sec);
       if (sec < 0) {
         sec = 0;
-      } else if (sec > 0){
+      } else if (sec > 0) {
         Field fld = map.get(BufrCdmIndexProto.FldType.sec);
         if (fld.scale != 0) {
-          sec = (int) (sec * fld.scale);  // throw away msecs
+          sec = (int) (sec * fld.scale); // throw away msecs
         }
-        if (sec < 0 || sec > 59) sec = 0;
+        if (sec < 0 || sec > 59)
+          sec = 0;
       }
 
       if (hasField(BufrCdmIndexProto.FldType.month) && hasField(BufrCdmIndexProto.FldType.day)) {

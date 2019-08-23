@@ -20,13 +20,13 @@ class IFDEntry implements Comparable<IFDEntry> {
 
   protected List<GeoKey> geokeys = null;
 
-  IFDEntry( Tag tag, FieldType type) {
+  IFDEntry(Tag tag, FieldType type) {
     this.tag = tag;
     this.type = type;
     this.count = 1;
   }
 
-  IFDEntry( Tag tag, FieldType type, int count) {
+  IFDEntry(Tag tag, FieldType type, int count) {
     this.tag = tag;
     this.type = type;
     this.count = count;
@@ -52,38 +52,39 @@ class IFDEntry implements Comparable<IFDEntry> {
     this.value[2] = f;
     return this;
   }
-  public IFDEntry setValue( int[] v) {
+
+  public IFDEntry setValue(int[] v) {
     this.count = v.length;
     value = v.clone();
     return this;
   }
 
-  public IFDEntry setValue( double v) {
+  public IFDEntry setValue(double v) {
     this.count = 1;
     valueD = new double[1];
     valueD[0] = v;
     return this;
   }
 
-  public IFDEntry setValue( double[] v) {
+  public IFDEntry setValue(double[] v) {
     this.count = v.length;
     valueD = v.clone();
     return this;
   }
 
-  public IFDEntry setValue( String v) {
+  public IFDEntry setValue(String v) {
     this.count = v.length();
     valueS = v;
     return this;
   }
 
-  public void addGeoKey( GeoKey geokey) {
+  public void addGeoKey(GeoKey geokey) {
     if (geokeys == null)
       geokeys = new ArrayList<>();
-    geokeys.add( geokey);
+    geokeys.add(geokey);
   }
 
-  public int compareTo( IFDEntry o) {
+  public int compareTo(IFDEntry o) {
     return tag.compareTo(o.tag);
   }
 
@@ -102,11 +103,11 @@ class IFDEntry implements Comparable<IFDEntry> {
 
     else if (type == FieldType.RATIONAL) {
       for (int i = 0; i < value.length; i += 2) {
-        if (i > 0) sb.append(", ");
+        if (i > 0)
+          sb.append(", ");
         sb.append(value[i]).append("/").append(value[i + 1]);
       }
-    }
-    else
+    } else
       sb.append(", value=").append(Arrays.toString(value));
 
     sb.append(", geokeys=").append(geokeys);
@@ -116,17 +117,25 @@ class IFDEntry implements Comparable<IFDEntry> {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     IFDEntry ifdEntry = (IFDEntry) o;
 
-    if (count != ifdEntry.count) return false;
-    if (tag != null ? !tag.equals(ifdEntry.tag) : ifdEntry.tag != null) return false;
-    if (type != null ? !type.equals(ifdEntry.type) : ifdEntry.type != null) return false;
-    if (!Arrays.equals(value, ifdEntry.value)) return false;
-    if (!Arrays.equals(valueD, ifdEntry.valueD)) return false;
-    if (valueS != null ? !valueS.equals(ifdEntry.valueS) : ifdEntry.valueS != null) return false;
+    if (count != ifdEntry.count)
+      return false;
+    if (tag != null ? !tag.equals(ifdEntry.tag) : ifdEntry.tag != null)
+      return false;
+    if (type != null ? !type.equals(ifdEntry.type) : ifdEntry.type != null)
+      return false;
+    if (!Arrays.equals(value, ifdEntry.value))
+      return false;
+    if (!Arrays.equals(valueD, ifdEntry.valueD))
+      return false;
+    if (valueS != null ? !valueS.equals(ifdEntry.valueS) : ifdEntry.valueS != null)
+      return false;
     return !(geokeys != null ? !geokeys.equals(ifdEntry.geokeys) : ifdEntry.geokeys != null);
 
   }

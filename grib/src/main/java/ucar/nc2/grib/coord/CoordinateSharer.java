@@ -5,7 +5,6 @@
 package ucar.nc2.grib.coord;
 
 import com.google.common.collect.Sets;
-
 import java.util.*;
 
 /**
@@ -39,12 +38,12 @@ public class CoordinateSharer<T> {
 
   // result
   List<Coordinate> unionCoords = new ArrayList<>(); // all the coordinates in the group
-  Map<Coordinate, Integer> coordMap;                // fast lookup of coordinate to list index
+  Map<Coordinate, Integer> coordMap; // fast lookup of coordinate to list index
 
   // isRuntimeUnion=true only
   CoordinateRuntime.Builder2 runtimeAllBuilder;
-  CoordinateTime2DUnionizer  time2DUnionizer;
-  CoordinateTime2DUnionizer  timeIntv2DUnionizer;
+  CoordinateTime2DUnionizer time2DUnionizer;
+  CoordinateTime2DUnionizer timeIntv2DUnionizer;
   CoordinateRuntime runtimeAll;
   CoordinateTime2D time2Dall, timeIntv2Dall;
 
@@ -55,12 +54,12 @@ public class CoordinateSharer<T> {
       switch (coord.getType()) {
         case runtime:
           runtime = (CoordinateRuntime) coord;
-          if (isRuntimeUnion) {               // make union of all coords
+          if (isRuntimeUnion) { // make union of all coords
             if (runtimeAllBuilder == null)
               runtimeAllBuilder = new CoordinateRuntime.Builder2(runtime.getTimeUnits());
             runtimeAllBuilder.addAll(coord);
-          }
-          else runtimeSet.add(coord);   // unique coordinates
+          } else
+            runtimeSet.add(coord); // unique coordinates
           break;
 
         case time:
@@ -73,12 +72,16 @@ public class CoordinateSharer<T> {
 
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
-          if (isRuntimeUnion) {               // make union of all coordsz
+          if (isRuntimeUnion) { // make union of all coordsz
             if (time2D.isTimeInterval()) {
-              if (timeIntv2DUnionizer == null) timeIntv2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), true, logger);
+              if (timeIntv2DUnionizer == null)
+                timeIntv2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(),
+                    coord.getCode(), true, logger);
               timeIntv2DUnionizer.addAll(time2D);
             } else {
-              if (time2DUnionizer == null) time2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), true, logger);
+              if (time2DUnionizer == null)
+                time2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(),
+                    coord.getCode(), true, logger);
               time2DUnionizer.addAll(time2D);
             }
           } else {
@@ -102,12 +105,13 @@ public class CoordinateSharer<T> {
   }
 
   private Map<Coordinate, CoordinateTime2D> swap = new HashMap<>(); // old, new coordinate
+
   public void finish() {
     if (isRuntimeUnion) { // have to redo any time2D with runtimeAll
       runtimeAll = (CoordinateRuntime) runtimeAllBuilder.finish();
       unionCoords.add(runtimeAll);
       if (time2DUnionizer != null) {
-        time2DUnionizer.setRuntimeCoords(runtimeAll);    // make sure theres a single runtime
+        time2DUnionizer.setRuntimeCoords(runtimeAll); // make sure theres a single runtime
         time2Dall = (CoordinateTime2D) time2DUnionizer.finish();
         unionCoords.add(time2Dall);
       }
@@ -117,7 +121,7 @@ public class CoordinateSharer<T> {
         unionCoords.add(timeIntv2Dall);
       }
 
-    } else {  // not runtimeUnion
+    } else { // not runtimeUnion
 
       unionCoords.addAll(runtimeSet);
 
@@ -125,10 +129,11 @@ public class CoordinateSharer<T> {
       HashSet<CoordinateTime2D> coord2Dset = new HashSet<>();
       for (Coordinate coord : time2DSet) {
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-        CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(coord2D.isTimeInterval(), coord2D.getTimeUnit(), coord2D.getCode(), true, logger);
+        CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(coord2D.isTimeInterval(),
+            coord2D.getTimeUnit(), coord2D.getCode(), true, logger);
         unionizer.addAll(coord2D);
         unionizer.finish();
-        CoordinateTime2D result = (CoordinateTime2D) unionizer.getCoordinate();  // this tests for orthogonal and regular
+        CoordinateTime2D result = (CoordinateTime2D) unionizer.getCoordinate(); // this tests for orthogonal and regular
         if (result.isOrthogonal() || result.isRegular()) {
           if (!coord2Dset.contains(result)) { // its possible that result is a duplicate CoordinateTime2D.
             unionCoords.add(result); // use the new one
@@ -162,20 +167,22 @@ public class CoordinateSharer<T> {
 
   /**
    * If using runtimeUnion, or time2D, you must reindex the CoordinateND
-   * @param prev  previous CoordinateND
+   * 
+   * @param prev previous CoordinateND
    * @return new CoordinateND containing shared coordinates and sparseArray for the new coordinates
-   *   or the prev CoordinateND if reindexing not needed.
+   *         or the prev CoordinateND if reindexing not needed.
    */
   public CoordinateND<T> reindexCoordND(CoordinateND<T> prev) {
 
     boolean needReindex = false;
     for (Coordinate coord : prev.getCoordinates()) {
       if (isRuntimeUnion && (coord.getType() == Coordinate.Type.runtime) && !coord.equals(runtimeAll))
-          needReindex = true;
-      if (null != swap.get(coord))  // time2D got swapped
         needReindex = true;
-     }
-    if (!needReindex) return prev;
+      if (null != swap.get(coord)) // time2D got swapped
+        needReindex = true;
+    }
+    if (!needReindex)
+      return prev;
 
     // need to switch out the runtime and time2D
     List<Coordinate> coords = new ArrayList<>();
@@ -211,7 +218,7 @@ public class CoordinateSharer<T> {
 
     for (Coordinate coord : prev) {
       Coordinate swapCoord = swap.get(coord);
-      if (swapCoord != null)  // time2D got swapped
+      if (swapCoord != null) // time2D got swapped
         coord = swapCoord;
 
       Integer idx = getIndexIntoShared(coord); // index into unionCoords
@@ -219,7 +226,7 @@ public class CoordinateSharer<T> {
         Formatter f = new Formatter();
         showInfo(f);
         f.format("%nprev:%n");
-        for (Coordinate c :  prev)
+        for (Coordinate c : prev)
           f.format(" %d == (%s) %s%n", c.hashCode(), c, c.getName());
         logger.error("CoordinateSharer cant find coordinate {} ({})", coord.getName(), f, new Throwable());
       } else {
@@ -230,15 +237,17 @@ public class CoordinateSharer<T> {
     return result;
   }
 
-  private Integer getIndexIntoShared(Coordinate prev) {   // LOOK dont understand this, why cant you just use coordMap ??
+  private Integer getIndexIntoShared(Coordinate prev) { // LOOK dont understand this, why cant you just use coordMap ??
     if (isRuntimeUnion) {
       switch (prev.getType()) {
         case runtime:
           return coordMap.get(runtimeAll);
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) prev;
-          if (time2D.isTimeInterval()) return coordMap.get(timeIntv2Dall);
-          else return coordMap.get(time2Dall);
+          if (time2D.isTimeInterval())
+            return coordMap.get(timeIntv2Dall);
+          else
+            return coordMap.get(time2Dall);
         default:
           return coordMap.get(prev);
       }
@@ -248,21 +257,21 @@ public class CoordinateSharer<T> {
 
   public void showInfo(Formatter sb) {
     sb.format("unionCoords:%n");
-    for (Coordinate coord :  this.unionCoords)
+    for (Coordinate coord : this.unionCoords)
       sb.format(" %d == (%s) %s%n", coord.hashCode(), coord, coord.getName());
 
     sb.format("%ncoordMap:%n");
-    for (Coordinate coord :  this.coordMap.keySet())
+    for (Coordinate coord : this.coordMap.keySet())
       sb.format(" %d == (%s) %s%n", coord.hashCode(), coord, coord.getName());
 
     sb.format("%ntime2DBuilders:%n");
-    for (Coordinate coord :  this.time2DSet)
+    for (Coordinate coord : this.time2DSet)
       sb.format(" %d == (%s) %s%n", coord.hashCode(), coord, coord.getName());
 
     sb.format("%nswap:%n");
-    for (Map.Entry<Coordinate, CoordinateTime2D> entry :  this.swap.entrySet())
+    for (Map.Entry<Coordinate, CoordinateTime2D> entry : this.swap.entrySet())
       sb.format(" %d (%s) %s -> %d (%s) %s%n", entry.getKey().hashCode(), entry.getKey(), entry.getKey().getName(),
-              entry.getValue().hashCode(), entry.getValue(), entry.getValue().getName());
+          entry.getValue().hashCode(), entry.getValue(), entry.getValue().getName());
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +287,7 @@ public class CoordinateSharer<T> {
 
     RuntimeSmoosher(CoordinateRuntime runtime) {
       this.runtime = runtime;
-      for (int i=0; i<runtime.getNCoords(); i++)
+      for (int i = 0; i < runtime.getNCoords(); i++)
         coordSet.add(runtime.getRuntime(i));
     }
 

@@ -21,21 +21,21 @@ public class TimingUnits {
   private static void test(int length) {
     PerformanceHarness harness = new PerformanceHarness();
 
-    Average dateUnit = harness.calculatePerf(
-        new PerformanceChecker(TEST_TIME, new DateUnitTest("sec since 2006-01-01T12:23:00")), RUNS);
+    Average dateUnit = harness
+        .calculatePerf(new PerformanceChecker(TEST_TIME, new DateUnitTest("sec since 2006-01-01T12:23:00")), RUNS);
 
-    Average udUnit = harness.calculatePerf(
-        new PerformanceChecker(TEST_TIME, new UdunitsTest("sec since 2006-01-01T12:23")), RUNS);
+    Average udUnit =
+        harness.calculatePerf(new PerformanceChecker(TEST_TIME, new UdunitsTest("sec since 2006-01-01T12:23")), RUNS);
 
-    Average dateForm = harness.calculatePerf(
-        new PerformanceChecker(TEST_TIME, new DateFormatterTest("2006-01-01T12:23")), RUNS);
+    Average dateForm =
+        harness.calculatePerf(new PerformanceChecker(TEST_TIME, new DateFormatterTest("2006-01-01T12:23")), RUNS);
 
 
-    System.out.println(" date avg= "+ dateUnit.mean()+ " dev= "+dateUnit.stddev());
-    System.out.println(" udUnit  avg= "+ udUnit.mean()+ " dev= "+udUnit.stddev());
-    System.out.println(" udUnit/date  avg= "+ udUnit.mean() / dateUnit.mean());
-    System.out.println(" dateForm  avg= "+ dateForm.mean()+ " dev= "+dateForm.stddev());
-    System.out.println(" dateForm/udUnit  avg= "+ dateForm.mean() / udUnit.mean());
+    System.out.println(" date avg= " + dateUnit.mean() + " dev= " + dateUnit.stddev());
+    System.out.println(" udUnit  avg= " + udUnit.mean() + " dev= " + udUnit.stddev());
+    System.out.println(" udUnit/date  avg= " + udUnit.mean() / dateUnit.mean());
+    System.out.println(" dateForm  avg= " + dateForm.mean() + " dev= " + dateForm.stddev());
+    System.out.println(" dateForm/udUnit  avg= " + dateForm.mean() / udUnit.mean());
     System.out.println();
   }
 
@@ -50,7 +50,7 @@ public class TimingUnits {
       try {
         new DateUnit(s);
       } catch (Exception e) {
-        System.out.println(" error on parse"+e.getMessage());
+        System.out.println(" error on parse" + e.getMessage());
       }
     }
   }
@@ -65,9 +65,9 @@ public class TimingUnits {
 
     public void run() {
       try {
-        format.parse( s);
+        format.parse(s);
       } catch (Exception e) {
-        System.out.println(" error on parse"+e.getMessage());
+        System.out.println(" error on parse" + e.getMessage());
       }
     }
   }
@@ -84,7 +84,7 @@ public class TimingUnits {
       try {
         format.getISODate(s);
       } catch (Exception e) {
-        System.out.println(" error on parse"+e.getMessage());
+        System.out.println(" error on parse" + e.getMessage());
       }
     }
   }

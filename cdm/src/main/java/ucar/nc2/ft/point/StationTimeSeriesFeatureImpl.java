@@ -26,7 +26,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
   protected StationFeature s;
 
   public StationTimeSeriesFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt,
-                                      CalendarDateUnit timeUnit, String altUnits, int npts, StructureData sdata) {
+      CalendarDateUnit timeUnit, String altUnits, int npts, StructureData sdata) {
     super(name, timeUnit, altUnits);
     s = new StationFeatureImpl(name, desc, wmoId, lat, lon, alt, npts, sdata);
   }
@@ -83,14 +83,13 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
 
   @Override
   public String toString() {
-    return "StationFeatureImpl{" +
-        "s=" + s +
-        '}';
+    return "StationFeatureImpl{" + "s=" + s + '}';
   }
 
   @Override
   public StationTimeSeriesFeature subset(CalendarDateRange dateRange) {
-    if (dateRange == null) return this;
+    if (dateRange == null)
+      return this;
     return new StationFeatureSubset(this, dateRange);
   }
 
@@ -134,8 +133,8 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
 
     @Nonnull
     @Override
-     public StructureData getFeatureData() throws IOException {
-       return from.getFeatureData();
-     }
+    public StructureData getFeatureData() throws IOException {
+      return from.getFeatureData();
+    }
   }
 }

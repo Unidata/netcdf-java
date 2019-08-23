@@ -7,13 +7,10 @@ package ucar.nc2.iosp.bufr;
 import org.jdom2.Element;
 import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.*;
 import java.util.*;
 
@@ -34,11 +31,12 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   static private boolean debugIter = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
-//    debugOpen = debugFlag.isSet("Bufr/open");
+    // debugOpen = debugFlag.isSet("Bufr/open");
     debugIter = debugFlag.isSet("Bufr/iter");
   }
 
-  //static public final Set<NetcdfDataset.Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(NetcdfDataset.Enhance.ScaleMissing));
+  // static public final Set<NetcdfDataset.Enhance> enhance =
+  // Collections.unmodifiableSet(EnumSet.of(NetcdfDataset.Enhance.ScaleMissing));
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,8 +61,9 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     scanner = new MessageScanner(raf);
     protoMessage = scanner.getFirstDataMessage();
     if (protoMessage == null)
-      throw new IOException("No data messages in the file= "+ncfile.getLocation());
-    // DataDescriptor dds = protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables
+      throw new IOException("No data messages in the file= " + ncfile.getLocation());
+    // DataDescriptor dds = protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete
+    // tables
     if (!protoMessage.isTablesComplete())
       throw new IllegalStateException("BUFR file has incomplete tables");
 
@@ -78,7 +77,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     isSingle = false;
   }
 
-    // for BufrMessageViewer
+  // for BufrMessageViewer
   public void open(RandomAccessFile raf, NetcdfFile ncfile, Message single) throws IOException {
     this.raf = raf;
 
@@ -120,7 +119,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   @Override
   public Array readData(Variable v2, Section section) {
-    //return new ArraySequence(obsStructure.makeStructureMembers(), getStructureIterator(null, -1), nelems);
+    // return new ArraySequence(obsStructure.makeStructureMembers(), getStructureIterator(null, -1), nelems);
     return new ArraySequence(obsStructure.makeStructureMembers(), new SeqIter(), nelems);
   }
 
@@ -170,20 +169,23 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     }
 
     private StructureDataIterator readNextMessage() throws IOException {
-      if (!scanner.hasNext()) return null;
+      if (!scanner.hasNext())
+        return null;
       Message m = scanner.next();
       if (m == null) {
-          log.warn("BUFR scanner hasNext() true but next() null!");
-          return null;
+        log.warn("BUFR scanner hasNext() true but next() null!");
+        return null;
       }
       if (m.containsBufrTable()) // data messages only
         return readNextMessage();
 
       // mixed messages
       if (!protoMessage.equals(m)) {
-        if (messHash == null) messHash = new HashSet<>(20);
-        if (!messHash.contains(m.hashCode()))  {
-          log.warn("File " + raf.getLocation() + " has different BUFR message types hash=" + protoMessage.hashCode() + "; skipping");
+        if (messHash == null)
+          messHash = new HashSet<>(20);
+        if (!messHash.contains(m.hashCode())) {
+          log.warn("File " + raf.getLocation() + " has different BUFR message types hash=" + protoMessage.hashCode()
+              + "; skipping");
           messHash.add(m.hashCode());
         }
         return readNextMessage();
@@ -212,9 +214,11 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
     @Override
     public void close() {
-      if (currIter != null) currIter.close();
+      if (currIter != null)
+        currIter.close();
       currIter = null;
-      if (debugIter) System.out.printf("BUFR read recnum %d%n", recnum);
+      if (debugIter)
+        System.out.printf("BUFR read recnum %d%n", recnum);
     }
   }
 
@@ -273,7 +277,8 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
     @Override
     public void close() {
-      if (currIter != null) currIter.close();
+      if (currIter != null)
+        currIter.close();
       currIter = null;
     }
   }

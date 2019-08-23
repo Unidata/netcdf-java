@@ -12,18 +12,16 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.Range;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.unidata.util.test.TestDir;
 
 /**
- *  from (WUB-664639) (Didier Earith)
+ * from (WUB-664639) (Didier Earith)
  *
  * @author caron
  */
@@ -32,7 +30,7 @@ public class TestSectionFillValue {
 
   @Test
   public void testExplicitFillValue() throws Exception {
-    String filename = TestDir.cdmLocalTestDataDir +"standardVar.nc";
+    String filename = TestDir.cdmLocalTestDataDir + "standardVar.nc";
     try (NetcdfDataset ncfile = NetcdfDataset.openDataset(filename)) {
       VariableDS v = (VariableDS) ncfile.findVariable("t3");
       Assert.assertNotNull("t3", v);
@@ -47,7 +45,7 @@ public class TestSectionFillValue {
       }
 
       VariableDS v_section = (VariableDS) v.section(ranges);
-      Assert.assertNotNull (v_section.findAttribute("_FillValue"));
+      Assert.assertNotNull(v_section.findAttribute("_FillValue"));
       System.out.println(v_section.findAttribute("_FillValue"));
       Assert.assertTrue(v_section.hasFillValue());
     }
@@ -58,10 +56,11 @@ public class TestSectionFillValue {
     String filename = TestDir.cdmLocalTestDataDir + "testWriteFill.nc";
     List<String> varWithFill = Lists.newArrayList("temperature", "rtemperature");
     try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
-         NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+        NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
 
       for (Variable v : ncfile.getVariables()) {
-        if (!v.getDataType().isNumeric()) continue;
+        if (!v.getDataType().isNumeric())
+          continue;
         System.out.printf("testImplicitFillValue for %s type=%s%n", v.getShortName(), v.getDataType());
 
         VariableDS ve = (VariableDS) ncd.findVariable(v.getFullName());

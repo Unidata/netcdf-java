@@ -27,7 +27,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CloseableIterator;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -56,7 +55,8 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
   @Override
-  public List<Grib2CollectionWriter.Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException {
+  public List<Grib2CollectionWriter.Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog)
+      throws IOException {
     Map<GroupAndRuntime, Grib2CollectionWriter.Group> gdsMap = new HashMap<>();
 
     logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
@@ -77,19 +77,22 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
         try {
           if (Grib.debugGbxIndexOnly) {
-             index = (Grib2Index) GribIndex.open(false, mfile);
-           } else {
-             // this is where gbx9 files get recreated
-             index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, mfile, CollectionUpdateType.test, logger);
-           }
-          allFiles.add(mfile);  // add on success
+            index = (Grib2Index) GribIndex.open(false, mfile);
+          } else {
+            // this is where gbx9 files get recreated
+            index =
+                (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, mfile, CollectionUpdateType.test, logger);
+          }
+          allFiles.add(mfile); // add on success
 
         } catch (IOException ioe) {
-          logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
+          logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath()
+              + " failed", ioe);
           continue;
         }
         if (index == null) {
-          logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed");
+          logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath()
+              + " failed");
           continue;
         }
         int n = index.getNRecords();
@@ -106,13 +109,17 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
           }
 
           gr.setFile(fileno); // each record tracks which file it belongs to
-          Grib2Gds gds = gr.getGDS();  // use GDS to group records
-          int hashCode = gribConfig.convertGdsHash(gds.hashCode());  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
-          if (0 == hashCode) continue; // skip this group
+          Grib2Gds gds = gr.getGDS(); // use GDS to group records
+          int hashCode = gribConfig.convertGdsHash(gds.hashCode()); // allow external config to muck with gdsHash. Why?
+                                                                    // because of error in encoding and we need exact
+                                                                    // hash matching
+          if (0 == hashCode)
+            continue; // skip this group
           // GdsHashObject gdsHashObject = new GdsHashObject(gr.getGDS(), hashCode);
 
           CalendarDate runtimeDate = gr.getReferenceDate();
-          long runtime = singleRuntime ? runtimeDate.getMillis() : 0;  // seperate Groups for each runtime, if singleRuntime is true
+          long runtime = singleRuntime ? runtimeDate.getMillis() : 0; // seperate Groups for each runtime, if
+                                                                      // singleRuntime is true
           GroupAndRuntime gar = new GroupAndRuntime(hashCode, runtime);
           Grib2CollectionWriter.Group g = gdsMap.get(gar);
           if (g == null) {
@@ -129,7 +136,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     if (totalRecords == 0) {
       logger.warn("No records found in files. Check Grib1/Grib2 for collection {}. If wrong, delete gbx9.", name);
-      throw new IllegalStateException("No records found in dataset "+name);
+      throw new IllegalStateException("No records found in dataset " + name);
     }
 
     // rectilyze each group independently
@@ -145,7 +152,8 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     // debugging and validation
-    if (logger.isDebugEnabled()) logger.debug(statsAll.show());
+    if (logger.isDebugEnabled())
+      logger.debug(statsAll.show());
 
     return groups;
   }
@@ -160,7 +168,8 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     int[] intv = cust.getForecastTimeIntervalOffset(gr);
-    if (intv == null) return false;   // not an interval
+    if (intv == null)
+      return false; // not an interval
     int haveLength = intv[1] - intv[0];
 
     // discard zero length intervals if so configured
@@ -190,10 +199,13 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
   @Override
   protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
-                    List<? extends GribCollectionBuilder.Group> groups, List<MFile> files, CalendarDateRange dateRange) throws IOException {
+      List<? extends GribCollectionBuilder.Group> groups, List<MFile> files, CalendarDateRange dateRange)
+      throws IOException {
     Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
     List<Grib2CollectionWriter.Group> groups2 = new ArrayList<>();
-    for (Object g : groups) groups2.add((Grib2CollectionWriter.Group) g); // copy to change GribCollectionBuilder.Group ->  Grib2CollectionWriter.Group
+    for (Object g : groups)
+      groups2.add((Grib2CollectionWriter.Group) g); // copy to change GribCollectionBuilder.Group ->
+                                                    // Grib2CollectionWriter.Group
     File indexFileInCache = GribIndexCache.getFileOrCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type, dateRange);
   }
@@ -230,8 +242,10 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     Grib2Rectilyser(List<Grib2Record> records, int hashCode) {
       this.records = records;
       this.hashCode = hashCode;
-      /* int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());
-      gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash; */
+      /*
+       * int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());
+       * gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash;
+       */
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, GribRecordStats counter, Formatter info) {
@@ -262,19 +276,22 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       for (VariableBag vb : gribvars) {
         Grib2Pds pdsFirst = vb.first.getPDS();
         int code = cust.convertTimeUnit(pdsFirst.getTimeUnit());
-        vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(code) : userTimeUnit;   // so can override the code in config  "timeUnit"
+        vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(code) : userTimeUnit; // so can override the
+                                                                                                // code in config
+                                                                                                // "timeUnit"
         CoordinateND.Builder<Grib2Record> coordNBuilder = new CoordinateND.Builder<>();
 
         boolean isTimeInterval = vb.first.getPDS().isTimeInterval();
-          CoordinateTime2D.Builder2 builder2D = new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code);
-          coordNBuilder.addBuilder(builder2D);
+        CoordinateTime2D.Builder2 builder2D = new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code);
+        coordNBuilder.addBuilder(builder2D);
 
         if (vb.first.getPDS().isEnsemble())
           coordNBuilder.addBuilder(new CoordinateEns.Builder2(0));
 
         VertCoordType vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
         if (vertUnit.isVerticalCoordinate())
-          coordNBuilder.addBuilder(new CoordinateVert.Builder2(pdsFirst.getLevelType1(), cust.getVertUnit(pdsFirst.getLevelType1())));
+          coordNBuilder.addBuilder(
+              new CoordinateVert.Builder2(pdsFirst.getLevelType1(), cust.getVertUnit(pdsFirst.getLevelType1())));
 
         // populate the coordinates with the inventory of data
         for (Grib2Record gr : vb.atomList)
@@ -303,7 +320,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         tot_used += vb.coordND.getSparseArray().countNotMissing();
         tot_dups += vb.coordND.getSparseArray().getNdups();
         total += vb.coordND.getSparseArray().getTotalSize();
-       }
+      }
 
       counter.recordsUnique += tot_used;
       counter.dups += tot_dups;

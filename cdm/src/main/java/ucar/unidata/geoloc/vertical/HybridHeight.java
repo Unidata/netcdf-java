@@ -9,7 +9,6 @@ import ucar.ma2.ArrayDouble.D1;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.Parameter;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -17,7 +16,8 @@ import java.util.List;
 /**
  * Create a 3D height(z,y,x) array using the netCDF CF convention formula for
  * "Atmospheric Hybrid Height".
- * <p><strong>height(x,y,z) = a(z) + b(z)*orog(x,y)</strong>
+ * <p>
+ * <strong>height(x,y,z) = a(z) + b(z)*orog(x,y)</strong>
  *
  * @author murray
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
@@ -47,15 +47,14 @@ public class HybridHeight extends VerticalTransformImpl {
   /**
    * a and b Arrays
    */
-  private Array aArray = null,
-      bArray = null;
+  private Array aArray = null, bArray = null;
 
   /**
    * Construct a coordinate transform for hybrid height
    *
-   * @param ds      netCDF dataset
+   * @param ds netCDF dataset
    * @param timeDim time dimension
-   * @param params  list of transformation Parameters
+   * @param params list of transformation Parameters
    */
   public HybridHeight(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
 
@@ -76,11 +75,10 @@ public class HybridHeight extends VerticalTransformImpl {
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
-   * @throws IOException           problem reading data
+   * @throws IOException problem reading data
    * @throws InvalidRangeException not a valid time range
    */
-  public ArrayDouble.D3 getCoordinateArray(int timeIndex)
-      throws IOException, InvalidRangeException {
+  public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array orogArray = readArray(orogVar, timeIndex);
 
     if (null == aArray) {
@@ -113,45 +111,44 @@ public class HybridHeight extends VerticalTransformImpl {
 
     return height;
   }
-  
+
   /**
    * Get the 1D vertical coordinate array for this time step and point
    * 
    * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @param xIndex    the x index
-   * @param yIndex    the y index
+   * @param xIndex the x index
+   * @param yIndex the y index
    * @return vertical coordinate array
    * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_ 
-   */  
-  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
-  		throws IOException, InvalidRangeException {
-	  
-	  
-	  Array orogArray = readArray(orogVar, timeIndex);
-	  if (null == aArray) {
-		  aArray = aVar.read();
-		  bArray = bVar.read();
-	  }
+   * @throws ucar.ma2.InvalidRangeException _more_
+   */
+  public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
 
-	  int nz = (int) aArray.getSize();
-	  Index aIndex = aArray.getIndex();
-	  Index bIndex = bArray.getIndex();	  
 
-	  Index orogIndex = orogArray.getIndex();
-	  ArrayDouble.D1 height = new ArrayDouble.D1(nz);
+    Array orogArray = readArray(orogVar, timeIndex);
+    if (null == aArray) {
+      aArray = aVar.read();
+      bArray = bVar.read();
+    }
 
-	  for (int z = 0; z < nz; z++) {
-		  double az = aArray.getDouble(aIndex.set(z));
-		  double bz = bArray.getDouble(bIndex.set(z));
-		  
-          double orog = orogArray.getDouble(orogIndex.set(yIndex, xIndex));
-          height.set(z,  az + bz * orog);
-		  
-	  }
-	  
-	  return height;
-  }  
+    int nz = (int) aArray.getSize();
+    Index aIndex = aArray.getIndex();
+    Index bIndex = bArray.getIndex();
+
+    Index orogIndex = orogArray.getIndex();
+    ArrayDouble.D1 height = new ArrayDouble.D1(nz);
+
+    for (int z = 0; z < nz; z++) {
+      double az = aArray.getDouble(aIndex.set(z));
+      double bz = bArray.getDouble(bIndex.set(z));
+
+      double orog = orogArray.getDouble(orogIndex.set(yIndex, xIndex));
+      height.set(z, az + bz * orog);
+
+    }
+
+    return height;
+  }
 
 }
 

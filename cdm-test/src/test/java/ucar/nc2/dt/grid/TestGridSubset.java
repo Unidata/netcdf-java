@@ -27,7 +27,6 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +38,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testRegular() throws Exception {
-    try(GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc")) {
+    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc")) {
 
       GeoGrid grid = dataset.findGridByName("T");
       assert null != grid;
@@ -74,7 +73,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testGrib() throws Exception {
-    try(GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib1/AVN.wmo")) {
+    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib1/AVN.wmo")) {
 
       GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_7-0-2-11_L100"); // "Temperature_isobaric");
       assert null != grid : dataset.getLocation();
@@ -95,7 +94,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testWRF() throws Exception {
-    try(GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc")) {
+    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc")) {
 
       GeoGrid grid = dataset.findGridByName("T");
       assert null != grid;
@@ -135,7 +134,7 @@ public class TestGridSubset {
   @Category(NeedsCdmUnitTest.class)
   public void testMSG() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
-    try(GridDataset dataset = GridDataset.open(filename)) {
+    try (GridDataset dataset = GridDataset.open(filename)) {
       logger.debug("open {}", filename);
       GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
       assert null != grid : dataset.getLocation();
@@ -143,15 +142,15 @@ public class TestGridSubset {
       assert null != gcs;
       assert grid.getRank() == 3;
 
-      // bbox =  ll: 16.79S 20.5W+ ur: 14.1N 20.09E
+      // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), new LatLonPointImpl(14.1, 20.9));
 
       ProjectionImpl p = gcs.getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
       logger.debug("{} -> {}", bbox, prect);
 
-      ProjectionRect expected = new ProjectionRect(
-              new ProjectionPointImpl(-2129.5688, -1793.0041), 4297.8453, 3308.3885);
+      ProjectionRect expected =
+          new ProjectionRect(new ProjectionPointImpl(-2129.5688, -1793.0041), 4297.8453, 3308.3885);
       assert prect.nearlyEquals(expected);
 
       LatLonRect bb2 = p.projToLatLonBB(prect);
@@ -171,7 +170,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void test2D() throws Exception {
-    try(GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc")) {
+    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc")) {
 
       GeoGrid grid = dataset.findGridByName("salt");
       assert null != grid;
@@ -229,7 +228,8 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testLatLonSubset() throws Exception {
-    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc")) {
+    try (GridDataset dataset =
+        GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc")) {
       GeoGrid grid = dataset.findGridByName("micron11");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -239,10 +239,10 @@ public class TestGridSubset {
       logger.debug("original bbox = {}", gcs.getBoundingBox());
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
-      testLatLonSubset(grid, bbox, new int[]{141, 281});
+      testLatLonSubset(grid, bbox, new int[] {141, 281});
 
       bbox = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
-      testLatLonSubset(grid, bbox, new int[]{800, 1300});
+      testLatLonSubset(grid, bbox, new int[] {800, 1300});
     }
   }
 
@@ -268,7 +268,8 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testLatLonSubset2() throws Exception {
-    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2")) {
+    try (GridDataset dataset =
+        GridDataset.open(TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2")) {
       GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1"); // "Pressure_Surface");
       assert null != grid : dataset.getLocation();
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -302,7 +303,8 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testGiniSubsetStride() throws Exception {
-    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/WEST-CONUS_4km_IR_20070216_1500.gini")) {
+    try (GridDataset dataset =
+        GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/WEST-CONUS_4km_IR_20070216_1500.gini")) {
       GeoGrid grid = dataset.findGridByName("IR");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -361,7 +363,7 @@ public class TestGridSubset {
 
       GridCoordSys gcs = (GridCoordSys) grid.getCoordinateSystem();
       assert null != gcs;
-      assert gcs.hasVerticalAxis();          // returns true.
+      assert gcs.hasVerticalAxis(); // returns true.
 
       // subset geogrid
       GeoGrid subg = grid.subset(null, null, null, 1, 1, 1);
@@ -373,7 +375,7 @@ public class TestGridSubset {
 
       GridCoordSys gcs2 = (GridCoordSys) subg.getCoordinateSystem();
       assert null != gcs2;
-      assert !gcs2.hasVerticalAxis();          // fails
+      assert !gcs2.hasVerticalAxis(); // fails
     }
   }
 
@@ -421,7 +423,8 @@ public class TestGridSubset {
       logger.debug("original bbox = {}", gcs.getBoundingBox());
       logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
 
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(38, -110), new LatLonPointImpl(42, -90));
+      ucar.unidata.geoloc.LatLonRect llbb_subset =
+          new LatLonRect(new LatLonPointImpl(38, -110), new LatLonPointImpl(42, -90));
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
 
       GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
@@ -495,7 +498,8 @@ public class TestGridSubset {
   @Test
   @Ignore("Does this file exist in a shared location?")
   public void testBBSubsetVP2() throws Exception {
-    String filename = "C:/Documents and Settings/caron/My Documents/downloads/MSG2-SEVI-MSGCLAI-0000-0000-20070522114500.000000000Z-582760.grb";
+    String filename =
+        "C:/Documents and Settings/caron/My Documents/downloads/MSG2-SEVI-MSGCLAI-0000-0000-20070522114500.000000000Z-582760.grb";
     try (GridDataset dataset = GridDataset.open(filename)) {
       GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
       assert null != grid;
@@ -524,7 +528,8 @@ public class TestGridSubset {
   // this one has the coordinate bounds set in the file
   @Test
   public void testSubsetCoordEdges() throws Exception {
-    try (NetcdfDataset fooDataset = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "ncml/subsetCoordEdges.ncml")) {
+    try (NetcdfDataset fooDataset =
+        NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "ncml/subsetCoordEdges.ncml")) {
       logger.debug("Open {}", fooDataset.getLocation());
       CompareNetcdf2 compare = new CompareNetcdf2();
       boolean ok = true;
@@ -541,24 +546,30 @@ public class TestGridSubset {
       logger.debug("mid time = {}", Arrays.toString(fooTimeAxis.getCoordValues()));
       logger.debug("edge time = {}", Arrays.toString(fooTimeAxis.getCoordEdges()));
 
-      ok &= compare.compareData("time getCoordValues", fooTimeAxis.getCoordValues(), new double[] {15.5, 45.0, 74.5, 105.0});
-      ok &= compare.compareData("time getCoordEdges", fooTimeAxis.getCoordEdges(), new double[] {0.0, 31.0, 59.0, 90.0, 120.0});
+      ok &= compare.compareData("time getCoordValues", fooTimeAxis.getCoordValues(),
+          new double[] {15.5, 45.0, 74.5, 105.0});
+      ok &= compare.compareData("time getCoordEdges", fooTimeAxis.getCoordEdges(),
+          new double[] {0.0, 31.0, 59.0, 90.0, 120.0});
 
       // Expected: [-90.0, -18.0, 36.0, 72.0, 90.0]
-      // Actual:   [-90.0, -18.0, 36.0, 72.0, 90.0]
+      // Actual: [-90.0, -18.0, 36.0, 72.0, 90.0]
       logger.debug("mid lat = {}", Arrays.toString(fooLatAxis.getCoordValues()));
       logger.debug("edge lat = {}", Arrays.toString(fooLatAxis.getCoordEdges()));
 
-      ok &= compare.compareData("lat getCoordValues", fooLatAxis.getCoordValues(), new double[] {-54.0, 9.0, 54.0, 81.0});
-      ok &= compare.compareData("lat getCoordEdges", fooLatAxis.getCoordEdges(), new double[] {-90.0, -18.0, 36.0, 72.0, 90.0});
+      ok &=
+          compare.compareData("lat getCoordValues", fooLatAxis.getCoordValues(), new double[] {-54.0, 9.0, 54.0, 81.0});
+      ok &= compare.compareData("lat getCoordEdges", fooLatAxis.getCoordEdges(),
+          new double[] {-90.0, -18.0, 36.0, 72.0, 90.0});
 
       // Expected: [0.0, 36.0, 108.0, 216.0, 360.0]
-      // Actual:   [0.0, 36.0, 108.0, 216.0, 360.0]
+      // Actual: [0.0, 36.0, 108.0, 216.0, 360.0]
       logger.debug("mid lon= " + Arrays.toString(fooLonAxis.getCoordValues()));
       logger.debug("edge lon= " + Arrays.toString(fooLonAxis.getCoordEdges()));
 
-      ok &= compare.compareData("lon getCoordValues", fooLonAxis.getCoordValues(), new double[] {18.0, 72.0, 162.0, 288.0});
-      ok &= compare.compareData("lon getCoordEdges", fooLonAxis.getCoordEdges(), new double[] {0.0, 36.0, 108.0, 216.0, 360.0});
+      ok &= compare.compareData("lon getCoordValues", fooLonAxis.getCoordValues(),
+          new double[] {18.0, 72.0, 162.0, 288.0});
+      ok &= compare.compareData("lon getCoordEdges", fooLonAxis.getCoordEdges(),
+          new double[] {0.0, 36.0, 108.0, 216.0, 360.0});
 
       // take mid range for all of the 3 coordinates
       Range middleRange = new Range(1, 2);
@@ -569,25 +580,30 @@ public class TestGridSubset {
       CoordinateAxis1D fooSubLonAxis = (CoordinateAxis1D) fooSubGrid.getCoordinateSystem().getXHorizAxis();
 
       // Expected: [31.0, 59.0, 90.0]
-      // Actual:   [30.25, 59.75, 89.25]
+      // Actual: [30.25, 59.75, 89.25]
       logger.debug("subset mid time = {}", Arrays.toString(fooSubTimeAxis.getCoordValues()));
       logger.debug("subset edge time = {}", Arrays.toString(fooSubTimeAxis.getCoordEdges()));
-      ok &= compare.compareData("subset time getCoordValues", fooSubTimeAxis.getCoordValues(), new double[] {45.0, 74.5});
-      ok &= compare.compareData("subset time getCoordEdges", fooSubTimeAxis.getCoordEdges(), new double[] {31.0, 59.0, 90.0});
+      ok &=
+          compare.compareData("subset time getCoordValues", fooSubTimeAxis.getCoordValues(), new double[] {45.0, 74.5});
+      ok &= compare.compareData("subset time getCoordEdges", fooSubTimeAxis.getCoordEdges(),
+          new double[] {31.0, 59.0, 90.0});
 
       // Expected: [-18.0, 36.0, 72.0]
-      // Actual:   [-13.5, 31.5, 76.5]
+      // Actual: [-13.5, 31.5, 76.5]
       logger.debug("subset mid lat = {}", Arrays.toString(fooSubLatAxis.getCoordValues()));
       logger.debug("subset edge lat = {}", Arrays.toString(fooSubLatAxis.getCoordEdges()));
-      ok &= compare.compareData("subset lat getCoordValues", fooSubLatAxis.getCoordValues(), new double[] {9.0, 54.0} );
-      ok &= compare.compareData("subset lat getCoordEdges", fooSubLatAxis.getCoordEdges(), new double[] {-18.0, 36.0, 72.0} );
+      ok &= compare.compareData("subset lat getCoordValues", fooSubLatAxis.getCoordValues(), new double[] {9.0, 54.0});
+      ok &= compare.compareData("subset lat getCoordEdges", fooSubLatAxis.getCoordEdges(),
+          new double[] {-18.0, 36.0, 72.0});
 
       // Expected: [36.0, 108.0, 216.0]
-      // Actual:   [27.0, 117.0, 207.0]
+      // Actual: [27.0, 117.0, 207.0]
       logger.debug("subset mid lon = {}", Arrays.toString(fooSubLonAxis.getCoordValues()));
       logger.debug("subset edge lon = {}", Arrays.toString(fooSubLonAxis.getCoordEdges()));
-      ok &= compare.compareData("subset lon getCoordValues", fooSubLonAxis.getCoordValues(), new double[] {72.0, 162.0, } );
-      ok &= compare.compareData("subset lon getCoordEdges", fooSubLonAxis.getCoordEdges(), new double[] {36.0, 108.0, 216.0} );
+      ok &=
+          compare.compareData("subset lon getCoordValues", fooSubLonAxis.getCoordValues(), new double[] {72.0, 162.0,});
+      ok &= compare.compareData("subset lon getCoordEdges", fooSubLonAxis.getCoordEdges(),
+          new double[] {36.0, 108.0, 216.0});
 
       assert ok : "not ok";
     }
@@ -595,27 +611,27 @@ public class TestGridSubset {
 
   @Test
   @Ignore("Does this file exist in a shared location?")
-  public void testAaron() throws Exception{
-     // different scale/offset in aggregation
-     try (GridDataset dataset = GridDataset.open("G:/work/braekel/dataset.ncml" )) {
-       GridDatatype grid = null;
-       for (GridDatatype thisGrid : dataset.getGrids()) {
-         if (thisGrid.getName().equals("cref")) {
-           grid = thisGrid;
-         }
-       }
-       List<Range> ranges = new ArrayList<Range>();
-       ranges.add(new Range(0, 0));
-       ranges.add(new Range(0, 0));
-       ranges.add(new Range(638, 638));
-       ranges.add(new Range(3750, 4622));
+  public void testAaron() throws Exception {
+    // different scale/offset in aggregation
+    try (GridDataset dataset = GridDataset.open("G:/work/braekel/dataset.ncml")) {
+      GridDatatype grid = null;
+      for (GridDatatype thisGrid : dataset.getGrids()) {
+        if (thisGrid.getName().equals("cref")) {
+          grid = thisGrid;
+        }
+      }
+      List<Range> ranges = new ArrayList<Range>();
+      ranges.add(new Range(0, 0));
+      ranges.add(new Range(0, 0));
+      ranges.add(new Range(638, 638));
+      ranges.add(new Range(3750, 4622));
 
-       Array arr = grid.getVariable().read(ranges);
-       Index index = arr.getIndex();
-       index.set(new int[]{0, 0, 0, 834});
-       logger.debug("index {} value {}", index.currentElement(), arr.getDouble(index));
-     }
-   }
+      Array arr = grid.getVariable().read(ranges);
+      Index index = arr.getIndex();
+      index.set(new int[] {0, 0, 0, 834});
+      logger.debug("index {} value {}", index.currentElement(), arr.getDouble(index));
+    }
+  }
 
   // has runtime(time), time(time)
   @Test
@@ -635,7 +651,7 @@ public class TestGridSubset {
       assert runtime.getSize() == 2;
       assert runtime.getDimension(0) == time.getDimension(0);
 
-      GeoGrid grid2 = grid.subset(new Range(1,1), null, null, 1, 1, 1);
+      GeoGrid grid2 = grid.subset(new Range(1, 1), null, null, 1, 1, 1);
       GridCoordSystem gcs2 = grid2.getCoordinateSystem();
       assert null != gcs2;
       logger.debug("{}", gcs2);

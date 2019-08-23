@@ -12,7 +12,6 @@ import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -104,8 +103,7 @@ public class GribWmoTemplatesPanel extends JPanel {
     TemplateTable template;
 
     // no-arg constructor
-    public TemplateBean() {
-    }
+    public TemplateBean() {}
 
     public TemplateBean(TemplateTable template) {
       this.template = template;
@@ -143,8 +141,7 @@ public class GribWmoTemplatesPanel extends JPanel {
     WmoTemplateTables.Field te;
 
     // no-arg constructor
-    public EntryBean() {
-    }
+    public EntryBean() {}
 
     public EntryBean(WmoTemplateTables.Field te) {
       this.te = te;

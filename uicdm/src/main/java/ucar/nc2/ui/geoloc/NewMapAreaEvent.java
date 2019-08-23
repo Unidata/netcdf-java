@@ -8,6 +8,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 
 /**
  * Used to notify listeners that there is a new world bounding box.
+ * 
  * @author John Caron
  */
 public class NewMapAreaEvent extends java.util.EventObject {

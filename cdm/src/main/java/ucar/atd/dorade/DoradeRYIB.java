@@ -40,8 +40,8 @@ class DoradeRYIB extends DoradeDescriptor {
     //
     // Assemble the ray time, starting from the volume time, setting the
     // hh:mm:ss, and adjusting up by a day if we crossed a day bound
-    // since the beginning of the volume.  Why didn't they just put
-    // a complete time here?  Julian day without the year is useless!
+    // since the beginning of the volume. Why didn't they just put
+    // a complete time here? Julian day without the year is useless!
     // GRRR...
     //
     Date volumeTime = vold.getVolumeTime();

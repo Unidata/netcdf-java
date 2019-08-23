@@ -8,7 +8,6 @@
 package thredds.util;
 
 import ucar.nc2.constants.CDM;
-
 import javax.swing.text.AttributeSet;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
@@ -45,7 +44,8 @@ public class DodsURLExtractor {
    * Extract all A-HREF contained URLS from the given URL and return in List
    */
   public ArrayList extract(String url) throws IOException {
-    if (debug) System.out.println(" URLextract=" + url);
+    if (debug)
+      System.out.println(" URLextract=" + url);
 
     baseURL = new URL(url);
     InputStream in = baseURL.openStream();
@@ -64,7 +64,8 @@ public class DodsURLExtractor {
    * Extract text content from the given URL and return in String
    */
   public String getTextContent(String url) throws IOException {
-    if (debug) System.out.println(" URL.getTextContent=" + url);
+    if (debug)
+      System.out.println(" URL.getTextContent=" + url);
 
     baseURL = new URL(url);
     InputStream in = baseURL.openStream();
@@ -88,9 +89,9 @@ public class DodsURLExtractor {
     String line = buffIn.readLine();
     while (line != null) {
       String lline = line.toLowerCase();
-      if (lline.contains("<meta "))  // skip meta tags
+      if (lline.contains("<meta ")) // skip meta tags
         continue;
-      //System.out.println("--"+line);
+      // System.out.println("--"+line);
       bos.write(line.getBytes(CDM.utf8Charset));
       line = buffIn.readLine();
     }
@@ -103,16 +104,14 @@ public class DodsURLExtractor {
   private class CallerBacker extends HTMLEditorKit.ParserCallback {
 
     private boolean wantTag(HTML.Tag tag) {
-      return (tag == HTML.Tag.H1 || tag == HTML.Tag.H2
-              || tag == HTML.Tag.H3 || tag == HTML.Tag.H4
-              || tag == HTML.Tag.H5 || tag == HTML.Tag.H6);
+      return (tag == HTML.Tag.H1 || tag == HTML.Tag.H2 || tag == HTML.Tag.H3 || tag == HTML.Tag.H4 || tag == HTML.Tag.H5
+          || tag == HTML.Tag.H6);
     }
 
-    public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
-                               int position) {
+    public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes, int position) {
       isTitle = (tag == HTML.Tag.TITLE);
 
-      //System.out.println(" "+tag);
+      // System.out.println(" "+tag);
       if (wantURLS && tag == HTML.Tag.A)
         extractHREF(attributes);
     }
@@ -121,11 +120,10 @@ public class DodsURLExtractor {
       isTitle = false;
     }
 
-    public void handleSimpleTag(HTML.Tag tag, MutableAttributeSet attributes,
-                                int position) {
+    public void handleSimpleTag(HTML.Tag tag, MutableAttributeSet attributes, int position) {
       isTitle = false; // (tag == HTML.Tag.TITLE); // ??
 
-      //System.out.println(" "+tag);
+      // System.out.println(" "+tag);
       if (wantURLS && tag == HTML.Tag.A)
         extractHREF(attributes);
     }
@@ -135,14 +133,15 @@ public class DodsURLExtractor {
       while (e.hasMoreElements()) {
         Object name = e.nextElement();
         String value = (String) attributes.getAttribute(name);
-        //System.out.println(" name= <"+name+ ">"+" value= <"+value+ ">");
+        // System.out.println(" name= <"+name+ ">"+" value= <"+value+ ">");
         try {
           if (name == HTML.Attribute.HREF) {
             URL u = baseURL.toURI().resolve(value).toURL();
             String urlName = u.toString();
             if (urlList != null)
               urlList.add(u.toString());
-            if (debug) System.out.println(" extracted URL= <" + urlName + ">");
+            if (debug)
+              System.out.println(" extracted URL= <" + urlName + ">");
           }
         } catch (MalformedURLException ex) {
           System.err.println(ex);
@@ -159,7 +158,8 @@ public class DodsURLExtractor {
     } // extractHREF
 
     public void handleText(char[] text, int position) {
-      if (isTitle) title = new String(text);
+      if (isTitle)
+        title = new String(text);
 
       if (wantText) {
         textBuffer.append(text);

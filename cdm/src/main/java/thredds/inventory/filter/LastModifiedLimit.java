@@ -30,7 +30,8 @@ public class LastModifiedLimit implements MFileFilter {
 
   public boolean accept(MFile dataset) {
     long lastModified = dataset.getLastModified();
-    if (lastModified < 0) return true;  // means dont know - can happen for remote files
+    if (lastModified < 0)
+      return true; // means dont know - can happen for remote files
 
     long now = System.currentTimeMillis();
     return now - lastModified > lastModifiedLimitInMillis;

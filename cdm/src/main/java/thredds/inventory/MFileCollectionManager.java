@@ -10,7 +10,6 @@ import thredds.filesystem.MFileOS;
 import thredds.inventory.filter.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
-
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
@@ -21,12 +20,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * Manage Collections of MFiles.
  * Used in:
  * <ul>
- * <li> thredds.inventory
- * <li> ucar.nc2.ft.fmrc.Fmrc
- * <li> ucar.nc2.ncml.Aggregation
+ * <li>thredds.inventory
+ * <li>ucar.nc2.ft.fmrc.Fmrc
+ * <li>ucar.nc2.ncml.Aggregation
  * </ul>
  * <p/>
  * we need to be thread safe, for InvDatasetFeatureCollection
+ * 
  * @author caron
  * @since Jul 8, 2009
  */
@@ -44,12 +44,14 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   static public MController getController() {
-    if (null == controller) controller = new thredds.filesystem.ControllerOS();  // default
+    if (null == controller)
+      controller = new thredds.filesystem.ControllerOS(); // default
     return controller;
   }
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public MFileCollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
+  static public MFileCollectionManager open(String collectionName, String collectionSpec, String olderThan,
+      Formatter errlog) {
     return new MFileCollectionManager(collectionName, collectionSpec, olderThan, errlog);
   }
 
@@ -62,15 +64,15 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   // these are final
   private final List<CollectionConfig> scanList = new ArrayList<>(); // an MCollection is a collection of managed files
-  private final long olderThanInMsecs;  // LOOK why not use LastModifiedLimit filter ?
-  //protected String rootDir;
+  private final long olderThanInMsecs; // LOOK why not use LastModifiedLimit filter ?
+  // protected String rootDir;
   protected FeatureCollectionConfig config;
 
   @GuardedBy("this")
   private Map<String, MFile> map; // current map of MFile in the collection. this can change = keep under lock
 
   @GuardedBy("this")
-  private long lastScanned;       // last time scanned
+  private long lastScanned; // last time scanned
   @GuardedBy("this")
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
 
@@ -89,7 +91,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       filters.addIncludeFilter(new WildcardMatchOnName(sp.getFilter()));
     olderThanInMsecs = parseOlderThanFilter(olderThan);
 
-    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
+    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone()
+        : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
   }
 
@@ -122,11 +125,13 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       this.recheck = makeRecheck(config.updateConfig.recheckAfter);
 
       // static means never rescan on checkState; let it be externally triggered.
-      if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null) && (config.updateConfig.deleteAfter == null))
+      if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null)
+          && (config.updateConfig.deleteAfter == null))
         setStatic(true);
     }
 
-    if (this.auxInfo == null) this.auxInfo = new HashMap<>(10);
+    if (this.auxInfo == null)
+      this.auxInfo = new HashMap<>(10);
     this.auxInfo.put(FeatureCollectionConfig.AUX_CONFIG, config);
   }
 
@@ -173,7 +178,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     if (null != sp.getFilter())
       filters.addIncludeFilter(new WildcardMatchOnName(sp.getFilter()));
 
-    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
+    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone()
+        : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
     this.recheck = null;
@@ -181,7 +187,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.olderThanInMsecs = -1;
   }
 
-  public MFileCollectionManager(String name, CollectionConfig mc, CalendarDate startPartition, org.slf4j.Logger logger) {
+  public MFileCollectionManager(String name, CollectionConfig mc, CalendarDate startPartition,
+      org.slf4j.Logger logger) {
     super(name, logger);
     this.startCollection = startPartition;
     this.scanList.add(mc);
@@ -211,15 +218,17 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   /**
    * Add a directory scan to the collection
    *
-   * @param dirName             scan this directory
-   * @param suffix              require this suffix (overriddden by regexp), may be null
+   * @param dirName scan this directory
+   * @param suffix require this suffix (overriddden by regexp), may be null
    * @param regexpPatternString if present, use this reqular expression to filter files , may be null
-   * @param subdirsS            if "true", descend into subdirectories, may be null
-   * @param olderS              udunit time unit - files must be older than this amount of time (now - lastModified > olderTime), may be null
-   *                            // * @param dateFormatString dateFormatMark string, may be null
-   * @param auxInfo             attach this object to any MFile found by this scan
+   * @param subdirsS if "true", descend into subdirectories, may be null
+   * @param olderS udunit time unit - files must be older than this amount of time (now - lastModified > olderTime), may
+   *        be null
+   *        // * @param dateFormatString dateFormatMark string, may be null
+   * @param auxInfo attach this object to any MFile found by this scan
    */
-  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, Object auxInfo) {
+  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS,
+      String olderS, Object auxInfo) {
     CompositeMFileFilter filters = new CompositeMFileFilter();
     if (null != regexpPatternString)
       filters.addIncludeFilter(new RegExpMatchOnName(regexpPatternString));
@@ -279,6 +288,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   /**
    * Compute if synchronous scan is needed.
    * True if recheck is true and enough time has elapsed.
+   * 
    * @return true if rescan is needed
    */
   @Override
@@ -312,7 +322,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     return true;
   }
 
-    ////////////////////////
+  ////////////////////////
   // experimental
   protected ChangeChecker changeChecker = null;
 
@@ -325,11 +335,12 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     if (map == null) {
       boolean changed = scanFirstTime();
       if (changed && sendEvent)
-        sendEvent(new TriggerEvent(this, CollectionUpdateType.always));  // watch out for infinite loop
+        sendEvent(new TriggerEvent(this, CollectionUpdateType.always)); // watch out for infinite loop
       return changed;
     }
 
-    long olderThan = (olderThanInMsecs <= 0) ? -1 : System.currentTimeMillis() - olderThanInMsecs; // new files must be older than this.
+    long olderThan = (olderThanInMsecs <= 0) ? -1 : System.currentTimeMillis() - olderThanInMsecs; // new files must be
+                                                                                                   // older than this.
 
     // rescan
     Map<String, MFile> oldMap = map;
@@ -360,7 +371,11 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
           nchange++;
           logger.debug("{}: scan found Dataset changed= {}", collectionName, path);
 
-        } else if (changeChecker != null && changeChecker.hasntChangedSince(newFile, oldFile.getLastModified())) { // the ancilliary file hasnt changed
+        } else if (changeChecker != null && changeChecker.hasntChangedSince(newFile, oldFile.getLastModified())) { // the
+                                                                                                                   // ancilliary
+                                                                                                                   // file
+                                                                                                                   // hasnt
+                                                                                                                   // changed
           nchange++;
           logger.debug("{}: scan changeChecker found Dataset changed= {}", collectionName, path);
         }
@@ -389,17 +404,18 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     boolean changed = (nnew > 0) || (ndelete > 0) || (nchange > 0);
     if (changed) {
       if (logger.isInfoEnabled())
-        logger.info("{}: scan found changes {}: nnew={}, nchange={}, ndelete={}", collectionName, new Date(), nnew, nchange, ndelete);
+        logger.info("{}: scan found changes {}: nnew={}, nchange={}, ndelete={}", collectionName, new Date(), nnew,
+            nchange, ndelete);
 
-        map = newMap;
-        this.lastScanned = System.currentTimeMillis();
-        this.lastChanged.set(this.lastScanned);
+      map = newMap;
+      this.lastScanned = System.currentTimeMillis();
+      this.lastChanged.set(this.lastScanned);
     } else {
-        this.lastScanned = System.currentTimeMillis();
+      this.lastScanned = System.currentTimeMillis();
     }
 
-    if (changed && sendEvent) {  // event is processed on this thread
-      sendEvent(new TriggerEvent(this, CollectionUpdateType.always));  // watch out for infinite loop
+    if (changed && sendEvent) { // event is processed on this thread
+      sendEvent(new TriggerEvent(this, CollectionUpdateType.always)); // watch out for infinite loop
     }
 
     return changed;
@@ -462,12 +478,13 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private boolean scanFirstTime() throws IOException {
     Map<String, MFile> newMap = new HashMap<>();
     if (!hasScans()) {
-        map = newMap;
-        return false;
+      map = newMap;
+      return false;
     }
 
     reallyScan(newMap);
-    // deleteOld(newMap); // ?? hmmmmm LOOK this seems wrong; maintainence in background ?? generally collection doesnt exist
+    // deleteOld(newMap); // ?? hmmmmm LOOK this seems wrong; maintainence in background ?? generally collection doesnt
+    // exist
 
     // implement olderThan
     if (olderThanInMsecs > 0) {
@@ -516,7 +533,11 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       // System.out.printf("MFileCollectionManager reallyScan %s %s%n", mc.getDirectoryName(), CalendarDate.present());
 
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
-      Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
+      Iterator<MFile> iter =
+          (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true); /// NCDC
+                                                                                                            /// wants
+                                                                                                            /// subdir
+                                                                                                            /// /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
       if (iter == null) {
         logger.error(collectionName + ": Invalid collection= " + mc);
         continue;
@@ -535,7 +556,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       if (logger.isDebugEnabled()) {
         long took2 = (System.currentTimeMillis() - start) / 1000;
         logger.debug("{} : was scanned nfiles= {} took={} secs", collectionName, count, took2);
-     }
+      }
     }
 
     if (map.size() == 0) {

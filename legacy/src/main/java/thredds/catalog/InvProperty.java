@@ -16,13 +16,12 @@ public class InvProperty {
 
   private String name, value;
 
-  public InvProperty() {
-  }
+  public InvProperty() {}
 
   /**
    * Constructor
    *
-   * @param name  name
+   * @param name name
    * @param value value
    */
   public InvProperty(String name, String value) {
@@ -50,6 +49,7 @@ public class InvProperty {
 
   /**
    * Set the value of the property.
+   * 
    * @param value set to this value
    */
   public void setValue(String value) {
@@ -67,8 +67,10 @@ public class InvProperty {
    * InvProperty elements with same name are equal.
    */
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof InvProperty)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof InvProperty))
+      return false;
     return o.hashCode() == this.hashCode();
   }
 

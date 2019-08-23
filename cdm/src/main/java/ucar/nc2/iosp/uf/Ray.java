@@ -8,7 +8,6 @@ import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.Range;
 import ucar.ma2.IndexIterator;
-
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.io.IOException;
@@ -27,11 +26,11 @@ public class Ray {
 
   UF_mandatory_header2 uf_header2;
   UF_optional_header uf_opt_header;
-  short numberOfFields;   // in this ray
-  short numberOfRecords;  // in this ray
-  short numberOfFieldsInRecord;   // in this record
+  short numberOfFields; // in this ray
+  short numberOfRecords; // in this ray
+  short numberOfFieldsInRecord; // in this record
 
-  Map<String, UF_field_header2> field_header_map;  // key = 2 byte "data type"
+  Map<String, UF_field_header2> field_header_map; // key = 2 byte "data type"
 
   public Ray(ByteBuffer bos, int raySize, long rayOffset) {
     this.raySize = raySize;
@@ -44,8 +43,8 @@ public class Ray {
 
     uf_header2 = new UF_mandatory_header2(data);
 
-    if (uf_header2.offset2StartOfOptionalHeader > 0 &&
-            (uf_header2.dataHeaderPosition != uf_header2.offset2StartOfOptionalHeader)) {
+    if (uf_header2.offset2StartOfOptionalHeader > 0
+        && (uf_header2.dataHeaderPosition != uf_header2.offset2StartOfOptionalHeader)) {
       data = new byte[28];
       bos.get(data);
       uf_opt_header = new UF_optional_header(data);
@@ -63,7 +62,7 @@ public class Ray {
     data = new byte[UF_FIELD_HEADER2_LEN];
     for (int i = 0; i < numberOfFields; i++) {
       bos.get(b2);
-      //int type = getShort(b2, 0);
+      // int type = getShort(b2, 0);
       String type = new String(b2, CDM.utf8Charset);
       bos.get(b2);
       int offs = getShort(b2, 0);
@@ -276,44 +275,44 @@ public class Ray {
 
   class UF_mandatory_header2 {
     String textUF;
-    short recordSize;   // in 16-bit words
-    short offset2StartOfOptionalHeader; //, origin 1
+    short recordSize; // in 16-bit words
+    short offset2StartOfOptionalHeader; // , origin 1
     short localUseHeaderPosition;
     short dataHeaderPosition;
     short recordNumber;
-    short volumeNumber;       // on tape, n/a for disk
-    short rayNumber;          // within the volume scan
-    short recordNumber1;      // within ray (origin 1)
-    short sweepNumber;        // within the volume scan
-    String radarName;          // char[8]
-    String siteName;           // char[8]
-    short latitudeD;          // degrees (North positive, South negative)
-    short latitudeM;          // minutes
-    short latitudeS;          // seconds*64
-    short longitudeD;         // degrees (East positive, West negative)
-    short longitudeM;         // Minutes
-    short longitudeS;         // Seconds
-    short height;             // of antenna above sea level in meters
-    short year;               // (time of data acquisition)
+    short volumeNumber; // on tape, n/a for disk
+    short rayNumber; // within the volume scan
+    short recordNumber1; // within ray (origin 1)
+    short sweepNumber; // within the volume scan
+    String radarName; // char[8]
+    String siteName; // char[8]
+    short latitudeD; // degrees (North positive, South negative)
+    short latitudeM; // minutes
+    short latitudeS; // seconds*64
+    short longitudeD; // degrees (East positive, West negative)
+    short longitudeM; // Minutes
+    short longitudeS; // Seconds
+    short height; // of antenna above sea level in meters
+    short year; // (time of data acquisition)
     short month;
     short day;
     short hour;
     short minute;
     short second;
-    String timeZone;            // UT for universal  char[2]
-    short azimuth;            // (degrees*64) of midpoint of sample
-    short elevation;          // (degrees*64)
+    String timeZone; // UT for universal char[2]
+    short azimuth; // (degrees*64) of midpoint of sample
+    short elevation; // (degrees*64)
     short sweepMode;
-    //   0:Cal       1:PPI       2:Coplane 3:RHI
-    //   4:Vertical 5:Target 6:Manual 7:Idle
-    short fixedAngle;         // (degrees*64)
-    short sweepRate;          // ((degrees/second)*64)
-    short year1;              // (generation data of UF format)
+    // 0:Cal 1:PPI 2:Coplane 3:RHI
+    // 4:Vertical 5:Target 6:Manual 7:Idle
+    short fixedAngle; // (degrees*64)
+    short sweepRate; // ((degrees/second)*64)
+    short year1; // (generation data of UF format)
     short month1;
 
     short day1;
-    String nameOfUFGeneratorProgram; //  char[8]
-    short missing;             // Value stored for deleted or missing data (0x8000)
+    String nameOfUFGeneratorProgram; // char[8]
+    short missing; // Value stored for deleted or missing data (0x8000)
 
 
     UF_mandatory_header2(byte[] data) {
@@ -351,14 +350,13 @@ public class Ray {
       azimuth = getShort(data, 64);
       elevation = getShort(data, 66);
       sweepMode = getShort(data, 68);
-      fixedAngle = getShort(data, 70);         // (degrees*64)
-      sweepRate = getShort(data, 72);          // ((degrees/second)*64)
-      year1 = getShort(data, 74);              // (generation data of UF format)
+      fixedAngle = getShort(data, 70); // (degrees*64)
+      sweepRate = getShort(data, 72); // ((degrees/second)*64)
+      year1 = getShort(data, 74); // (generation data of UF format)
       month1 = getShort(data, 76);
       day1 = getShort(data, 78);
-      nameOfUFGeneratorProgram = new String(data, 80, 8,
-              CDM.utf8Charset); //  char[8]
-      missing = getShort(data, 88);             // Value stored for deleted or missing data (0x8000)
+      nameOfUFGeneratorProgram = new String(data, 80, 8, CDM.utf8Charset); // char[8]
+      missing = getShort(data, 88); // Value stored for deleted or missing data (0x8000)
 
     }
 
@@ -367,13 +365,13 @@ public class Ray {
 
   class UF_optional_header {
 
-    String sProjectName;   //  char[8]
+    String sProjectName; // char[8]
     short iBaselineAzimuth;
     short iBaselineelevation;
-    short iVolumeScanHour;  /* Time of start of current volume scan */
+    short iVolumeScanHour; /* Time of start of current volume scan */
     short iVolumeScanMinute;
     short iVolumeScanSecond;
-    String sFieldTapeName;  // char[8]
+    String sFieldTapeName; // char[8]
     short iFlag;
 
     UF_optional_header(byte[] data) {
@@ -392,26 +390,26 @@ public class Ray {
 
   class UF_field_header2 {
 
-    short dataOffset;   // from start of record, origin 1
-    short scaleFactor;  // met units = file value/scale
-    short startRange;   // km
-    short startRange1;   // meters
-    short binSpacing;  // in meters
+    short dataOffset; // from start of record, origin 1
+    short scaleFactor; // met units = file value/scale
+    short startRange; // km
+    short startRange1; // meters
+    short binSpacing; // in meters
     short binCount;
-    short pulseWidth;  // in meters
+    short pulseWidth; // in meters
     short HorizontalBeamWidth; // in degrees*64
     short verticalBeamWidth; // in degrees*64
     short receiverBandwidth; // in Mhz*64 ?
-    short polarization;  //:          1:horz   2:vert
-    short waveLength;  // in cm*64
+    short polarization; // : 1:horz 2:vert
+    short waveLength; // in cm*64
     short sampleSize;
-    String typeOfData;     //used to threshold  //  char[2]
+    String typeOfData; // used to threshold // char[2]
     short thresholdValue;
     short scale;
-    String editCode; //  char[2]
-    short prt;  // in microseconds
+    String editCode; // char[2]
+    short prt; // in microseconds
     short bits; // per bin, must be 16
-    //         38         12      <uf_fsi2>
+    // 38 12 <uf_fsi2>
 
     UF_field_header2(byte[] data) {
       dataOffset = getShort(data, 0);
@@ -469,10 +467,10 @@ public class Ray {
   /**
    * Read data from this ray.
    *
-   * @param raf       read from this file
-   * @param abbrev    which data type we want
+   * @param raf read from this file
+   * @param abbrev which data type we want
    * @param gateRange handles the possible subset of data to return
-   * @param ii        put the data here
+   * @param ii put the data here
    */
   public void readData(RandomAccessFile raf, String abbrev, Range gateRange, IndexIterator ii) throws IOException {
     long offset = rayOffset;

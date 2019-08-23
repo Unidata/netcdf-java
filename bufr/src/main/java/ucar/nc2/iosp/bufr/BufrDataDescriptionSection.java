@@ -5,14 +5,14 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents  Section 3 of a BUFR message.
+ * Represents Section 3 of a BUFR message.
+ * 
  * @author caron
  * @since May 10, 2008
  */

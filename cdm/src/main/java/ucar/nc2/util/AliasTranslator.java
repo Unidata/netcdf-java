@@ -2,7 +2,6 @@
 package ucar.nc2.util;
 
 import ucar.unidata.util.StringUtil2;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,7 +21,7 @@ public class AliasTranslator {
 
   public static String translateAlias(String scanDir) {
     for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.startsWith(entry.getKey()))  {   // only at the front
+      if (scanDir.startsWith(entry.getKey())) { // only at the front
         StringBuilder sb = new StringBuilder(scanDir);
         return sb.replace(0, entry.getKey().length(), entry.getValue()).toString();
       }

@@ -7,7 +7,6 @@ package ucar.nc2.ft;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
-
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -23,14 +22,16 @@ public interface FeatureDatasetFactory {
 
   /**
    * Determine if the factory can open this dataset as an instance of the given feature type
+   * 
    * @param wantFeatureType can factory open as this feature type? If null, can factory open as any feature type?
    * @param ncd examine this NetcdfDataset.
    * @param errlog place errors here
-   * @return "analysis object" - null if cannot open, else an Object that is passed back into FeatureDatasetFactory.open().
-   *   This allows expensive analysis results to be reused
+   * @return "analysis object" - null if cannot open, else an Object that is passed back into
+   *         FeatureDatasetFactory.open().
+   *         This allows expensive analysis results to be reused
    * @throws java.io.IOException on read error
    */
-  Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException;
+  Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException;
 
   /**
    * Open a NetcdfDataset as a FeatureDataset.
@@ -44,10 +45,12 @@ public interface FeatureDatasetFactory {
    * @return a subclass of FeatureDataset
    * @throws java.io.IOException on error
    */
-  FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException;
+  FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task,
+      Formatter errlog) throws IOException;
 
   /**
    * This Factory can open these types of Feature datasets.
+   * 
    * @return array of FeatureType
    */
   FeatureType[] getFeatureTypes();

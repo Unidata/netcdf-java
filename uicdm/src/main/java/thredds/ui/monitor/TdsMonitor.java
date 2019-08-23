@@ -19,14 +19,12 @@ import ucar.ui.prefs.ComboBox;
 import ucar.ui.prefs.Debug;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
-
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.awt.*;
 import java.util.*;
-
 import javax.swing.*;
 
 /**
@@ -54,7 +52,7 @@ public class TdsMonitor extends JPanel {
   private ManageForm manage;
   private DnsLookup dnsLookup = new DnsLookup();
 
-  //private HTTPSession session;
+  // private HTTPSession session;
   // private CredentialsProvider provider;
 
   public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
@@ -82,7 +80,7 @@ public class TdsMonitor extends JPanel {
     CredentialsProvider provider = new UrlAuthenticatorDialog(null);
     try {
       HTTPSession.setGlobalCredentialsProvider(provider, AuthSchemes.BASIC);
-    } catch(HTTPException e) {
+    } catch (HTTPException e) {
       System.err.println("Failed to set credentials");
     }
     HTTPSession.setGlobalUserAgent("TdsMonitor");
@@ -121,42 +119,44 @@ public class TdsMonitor extends JPanel {
 
   private static File ehLocation = LogLocalManager.getDirectory("cache", "dns");
 
-  /*private static String ehLocation = "C:\\data\\ehcache";
-  //private static String ehLocation = "/machine/data/thredds/ehcache/";
-  private static String config =
-          "<ehcache>\n" +
-                  "    <diskStore path='" + ehLocation.getPath() + "'/>\n" +
-                  "    <defaultCache\n" +
-                  "              maxElementsInMemory='10000'\n" +
-                  "              eternal='false'\n" +
-                  "              timeToIdleSeconds='120'\n" +
-                  "              timeToLiveSeconds='120'\n" +
-                  "              overflowToDisk='true'\n" +
-                  "              maxElementsOnDisk='10000000'\n" +
-                  "              diskPersistent='false'\n" +
-                  "              diskExpiryThreadIntervalSeconds='120'\n" +
-                  "              memoryStoreEvictionPolicy='LRU'\n" +
-                  "              />\n" +
-                  "    <cache name='dns'\n" +
-                  "            maxElementsInMemory='5000'\n" +
-                  "            eternal='false'\n" +
-                  "            timeToIdleSeconds='86400'\n" +
-                  "            timeToLiveSeconds='864000'\n" +
-                  "            overflowToDisk='true'\n" +
-                  "            maxElementsOnDisk='0'\n" +
-                  "            diskPersistent='true'\n" +
-                  "            diskExpiryThreadIntervalSeconds='3600'\n" +
-                  "            memoryStoreEvictionPolicy='LRU'\n" +
-                  "            />\n" +
-                  "</ehcache>";
-
-  private CacheManager cacheManager;
-  private Cache dnsCache;
-
-  void makeCache() {
-    cacheManager = new CacheManager(new StringBufferInputStream(config));
-    dnsCache = cacheManager.getCache("dns");
-  } */
+  /*
+   * private static String ehLocation = "C:\\data\\ehcache";
+   * //private static String ehLocation = "/machine/data/thredds/ehcache/";
+   * private static String config =
+   * "<ehcache>\n" +
+   * "    <diskStore path='" + ehLocation.getPath() + "'/>\n" +
+   * "    <defaultCache\n" +
+   * "              maxElementsInMemory='10000'\n" +
+   * "              eternal='false'\n" +
+   * "              timeToIdleSeconds='120'\n" +
+   * "              timeToLiveSeconds='120'\n" +
+   * "              overflowToDisk='true'\n" +
+   * "              maxElementsOnDisk='10000000'\n" +
+   * "              diskPersistent='false'\n" +
+   * "              diskExpiryThreadIntervalSeconds='120'\n" +
+   * "              memoryStoreEvictionPolicy='LRU'\n" +
+   * "              />\n" +
+   * "    <cache name='dns'\n" +
+   * "            maxElementsInMemory='5000'\n" +
+   * "            eternal='false'\n" +
+   * "            timeToIdleSeconds='86400'\n" +
+   * "            timeToLiveSeconds='864000'\n" +
+   * "            overflowToDisk='true'\n" +
+   * "            maxElementsOnDisk='0'\n" +
+   * "            diskPersistent='true'\n" +
+   * "            diskExpiryThreadIntervalSeconds='3600'\n" +
+   * "            memoryStoreEvictionPolicy='LRU'\n" +
+   * "            />\n" +
+   * "</ehcache>";
+   * 
+   * private CacheManager cacheManager;
+   * private Cache dnsCache;
+   * 
+   * void makeCache() {
+   * cacheManager = new CacheManager(new StringBufferInputStream(config));
+   * dnsCache = cacheManager.getCache("dns");
+   * }
+   */
 
   /////////////////////////
 
@@ -171,7 +171,8 @@ public class TdsMonitor extends JPanel {
 
       manage.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
-          if (!evt.getPropertyName().equals("Download")) return;
+          if (!evt.getPropertyName().equals("Download"))
+            return;
           ManageForm.Data data = (ManageForm.Data) evt.getNewValue();
           try {
             manage.getTextArea().setText(""); // clear the text area
@@ -255,8 +256,8 @@ public class TdsMonitor extends JPanel {
       serverCB = new JComboBox();
       serverCB.setModel(manage.getServersCB().getModel());
       serverCB.addActionListener(e -> {
-          String server = (String) serverCB.getSelectedItem();
-          setServer(server);
+        String server = (String) serverCB.getSelectedItem();
+        setServer(server);
       });
 
       // serverCB.setModel(manage.getServers().getModel());
@@ -330,7 +331,8 @@ public class TdsMonitor extends JPanel {
     abstract void resetLogs();
 
     void save() {
-      if (infoWindow != null) prefs.putBeanObject(FRAME_SIZE, infoWindow.getBounds());
+      if (infoWindow != null)
+        prefs.putBeanObject(FRAME_SIZE, infoWindow.getBounds());
     }
   }
 
@@ -433,8 +435,7 @@ public class TdsMonitor extends JPanel {
       logTable.showLogs(filter);
     }
 
-    void resetLogs() {
-    }
+    void resetLogs() {}
 
 
     void showInfo(Formatter f) {
@@ -452,82 +453,86 @@ public class TdsMonitor extends JPanel {
 
   /*
    * Finds all files matching
-   * a glob pattern.  This method recursively searches directories, allowing
+   * a glob pattern. This method recursively searches directories, allowing
    * for glob expressions like {@code "c:\\data\\200[6-7]\\*\\1*\\A*.nc"}.
    *
    * @param globExpression The glob expression
-   * @return List of File objects matching the glob pattern.  This will never
-   *         be null but might be empty
+   * 
+   * @return List of File objects matching the glob pattern. This will never
+   * be null but might be empty
+   * 
    * @throws Exception if the glob expression does not represent an absolute
-   *                   path
+   * path
+   * 
    * @author Mike Grant, Plymouth Marine Labs; Jon Blower
    *
-  java.util.List<File> globFiles(String globExpression) throws Exception {
-    // Check that the glob expression is an absolute path.  Relative paths
-    // would cause unpredictable and platform-dependent behaviour so
-    // we disallow them.
-    // If ds.getLocation() is a glob expression this test will still work
-    // because we are not attempting to resolve the string to a real path.
-    File globFile = new File(globExpression);
-    if (!globFile.isAbsolute()) {
-      throw new Exception("Dataset location " + globExpression +
-              " must be an absolute path");
-    }
-
-    // Break glob pattern into path components.  To do this in a reliable
-    // and platform-independent way we use methods of the File class, rather
-    // than String.split().
-    java.util.List<String> pathComponents = new ArrayList<String>();
-    while (globFile != null) {
-      // We "pop off" the last component of the glob pattern and place
-      // it in the first component of the pathComponents List.  We therefore
-      // ensure that the pathComponents end up in the right order.
-      File parent = globFile.getParentFile();
-      // For a top-level directory, getName() returns an empty string,
-      // hence we use getPath() in this case
-      String pathComponent = parent == null ? globFile.getPath() : globFile.getName();
-      pathComponents.add(0, pathComponent);
-      globFile = parent;
-    }
-
-    // We must have at least two path components: one directory and one
-    // filename or glob expression
-    java.util.List<File> searchPaths = new ArrayList<File>();
-    searchPaths.add(new File(pathComponents.get(0)));
-    int i = 1; // Index of the glob path component
-
-    while (i < pathComponents.size()) {
-      FilenameFilter globFilter = new GlobFilenameFilter(pathComponents.get(i));
-      java.util.List<File> newSearchPaths = new ArrayList<File>();
-      // Look for matches in all the current search paths
-      for (File dir : searchPaths) {
-        if (dir.isDirectory()) {
-          // Workaround for automounters that don't make filesystems
-          // appear unless they're poked
-          // do a listing on searchpath/pathcomponent whether or not
-          // it exists, then discard the results
-          new File(dir, pathComponents.get(i)).list();
-
-          for (File match : dir.listFiles(globFilter)) {
-            newSearchPaths.add(match);
-          }
-        }
-      }
-      // Next time we'll search based on these new matches and will use
-      // the next globComponent
-      searchPaths = newSearchPaths;
-      i++;
-    }
-
-    // Now we've done all our searching, we'll only retain the files from
-    // the list of search paths
-    java.util.List<File> filesToReturn = new ArrayList<File>();
-    for (File path : searchPaths) {
-      if (path.isFile()) filesToReturn.add(path);
-    }
-
-    return filesToReturn;
-  } */
+   * java.util.List<File> globFiles(String globExpression) throws Exception {
+   * // Check that the glob expression is an absolute path. Relative paths
+   * // would cause unpredictable and platform-dependent behaviour so
+   * // we disallow them.
+   * // If ds.getLocation() is a glob expression this test will still work
+   * // because we are not attempting to resolve the string to a real path.
+   * File globFile = new File(globExpression);
+   * if (!globFile.isAbsolute()) {
+   * throw new Exception("Dataset location " + globExpression +
+   * " must be an absolute path");
+   * }
+   * 
+   * // Break glob pattern into path components. To do this in a reliable
+   * // and platform-independent way we use methods of the File class, rather
+   * // than String.split().
+   * java.util.List<String> pathComponents = new ArrayList<String>();
+   * while (globFile != null) {
+   * // We "pop off" the last component of the glob pattern and place
+   * // it in the first component of the pathComponents List. We therefore
+   * // ensure that the pathComponents end up in the right order.
+   * File parent = globFile.getParentFile();
+   * // For a top-level directory, getName() returns an empty string,
+   * // hence we use getPath() in this case
+   * String pathComponent = parent == null ? globFile.getPath() : globFile.getName();
+   * pathComponents.add(0, pathComponent);
+   * globFile = parent;
+   * }
+   * 
+   * // We must have at least two path components: one directory and one
+   * // filename or glob expression
+   * java.util.List<File> searchPaths = new ArrayList<File>();
+   * searchPaths.add(new File(pathComponents.get(0)));
+   * int i = 1; // Index of the glob path component
+   * 
+   * while (i < pathComponents.size()) {
+   * FilenameFilter globFilter = new GlobFilenameFilter(pathComponents.get(i));
+   * java.util.List<File> newSearchPaths = new ArrayList<File>();
+   * // Look for matches in all the current search paths
+   * for (File dir : searchPaths) {
+   * if (dir.isDirectory()) {
+   * // Workaround for automounters that don't make filesystems
+   * // appear unless they're poked
+   * // do a listing on searchpath/pathcomponent whether or not
+   * // it exists, then discard the results
+   * new File(dir, pathComponents.get(i)).list();
+   * 
+   * for (File match : dir.listFiles(globFilter)) {
+   * newSearchPaths.add(match);
+   * }
+   * }
+   * }
+   * // Next time we'll search based on these new matches and will use
+   * // the next globComponent
+   * searchPaths = newSearchPaths;
+   * i++;
+   * }
+   * 
+   * // Now we've done all our searching, we'll only retain the files from
+   * // the list of search paths
+   * java.util.List<File> filesToReturn = new ArrayList<File>();
+   * for (File path : searchPaths) {
+   * if (path.isFile()) filesToReturn.add(path);
+   * }
+   * 
+   * return filesToReturn;
+   * }
+   */
 
   //////////////////////////////////////////////
 
@@ -550,7 +555,8 @@ public class TdsMonitor extends JPanel {
     frame.setIconImage(BAMutil.getImage("nj22/NetcdfUI"));
     frame.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-        if (!done) ui.exit();
+        if (!done)
+          ui.exit();
       }
     });
 

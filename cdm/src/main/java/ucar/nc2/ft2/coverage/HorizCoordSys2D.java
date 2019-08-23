@@ -9,7 +9,6 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -26,7 +25,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
   private final int nrows, ncols;
   private Edges edges;
 
-   HorizCoordSys2D(LatLonAxis2D latCoord, LatLonAxis2D lonCoord) {
+  HorizCoordSys2D(LatLonAxis2D latCoord, LatLonAxis2D lonCoord) {
     super(null, null, latCoord, lonCoord, null);
     int[] shape = latCoord.getShape(); // y, x
 
@@ -39,12 +38,13 @@ public class HorizCoordSys2D extends HorizCoordSys {
     return true;
   }
 
-    @Override
+  @Override
   public Optional<HorizCoordSys> subset(SubsetParams params) {
 
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
     Integer horizStride = (Integer) params.get(SubsetParams.horizStride);
-    if (horizStride == null || horizStride < 1) horizStride = 1;
+    if (horizStride == null || horizStride < 1)
+      horizStride = 1;
 
     LatLonAxis2D lataxisSubset = null, lonaxisSubset = null;
 
@@ -55,13 +55,13 @@ public class HorizCoordSys2D extends HorizCoordSys {
         errMessages.format("%s;%n", opt.getErrorMessage());
       } else {
         List<RangeIterator> ranges = opt.get();
-        lataxisSubset = latAxis2D.subset(ranges.get(1), ranges.get(0));  // x, y
+        lataxisSubset = latAxis2D.subset(ranges.get(1), ranges.get(0)); // x, y
         lonaxisSubset = lonAxis2D.subset(ranges.get(1), ranges.get(0));
       }
     } else if (horizStride > 1) {
       try {
-        lataxisSubset = latAxis2D.subset(new Range(0, ncols-1, horizStride), new Range(0, nrows-1, horizStride));
-        lonaxisSubset = lonAxis2D.subset(new Range(0, ncols-1, horizStride), new Range(0, nrows-1, horizStride));
+        lataxisSubset = latAxis2D.subset(new Range(0, ncols - 1, horizStride), new Range(0, nrows - 1, horizStride));
+        lonaxisSubset = lonAxis2D.subset(new Range(0, ncols - 1, horizStride), new Range(0, nrows - 1, horizStride));
       } catch (InvalidRangeException e) {
         errMessages.format("%s;%n", e.getMessage());
       }
@@ -72,8 +72,10 @@ public class HorizCoordSys2D extends HorizCoordSys {
       return Optional.empty(errs);
 
     // makes a copy of the axis
-    if (lataxisSubset == null) lataxisSubset = (LatLonAxis2D) latAxis2D.copy();
-    if (lonaxisSubset == null) lonaxisSubset = (LatLonAxis2D) lonAxis2D.copy();
+    if (lataxisSubset == null)
+      lataxisSubset = (LatLonAxis2D) latAxis2D.copy();
+    if (lonaxisSubset == null)
+      lonaxisSubset = (LatLonAxis2D) lonAxis2D.copy();
 
     return Optional.of(new HorizCoordSys2D(lataxisSubset, lonaxisSubset));
   }
@@ -93,7 +95,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
   @Override
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
     synchronized (this) {
-      if (edges == null) edges = new Edges();
+      if (edges == null)
+        edges = new Edges();
     }
     CoordReturn result = new CoordReturn();
     int[] index = new int[2];
@@ -119,7 +122,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
   // return y, x ranges
   private Optional<List<RangeIterator>> computeBounds(LatLonRect llbb, int horizStride) {
     synchronized (this) {
-      if (edges == null) edges = new Edges();
+      if (edges == null)
+        edges = new Edges();
     }
     return edges.computeBoundsExhaustive(llbb, horizStride);
   }
@@ -145,15 +149,15 @@ public class HorizCoordSys2D extends HorizCoordSys {
       }
 
       if (debug)
-        System.out.printf("Bounds (%d %d): lat= (%f,%f) lon = (%f,%f) %n",
-                nrows, ncols, latMinMax.min, latMinMax.max, lonMinMax.min, lonMinMax.max);
+        System.out.printf("Bounds (%d %d): lat= (%f,%f) lon = (%f,%f) %n", nrows, ncols, latMinMax.min, latMinMax.max,
+            lonMinMax.min, lonMinMax.max);
     }
 
     /**
      * Find the best index for the given lat,lon point.
      *
-     * @param wantLat   lat of point
-     * @param wantLon   lon of point
+     * @param wantLat lat of point
+     * @param wantLon lon of point
      * @param rectIndex return (row,col) index, or best guess here. may not be null
      * @return false if not in the grid.
      */
@@ -163,10 +167,14 @@ public class HorizCoordSys2D extends HorizCoordSys {
     }
 
     private boolean findCoordElementNoForce(double wantLat, double wantLon, int[] rectIndex) {
-      if (wantLat < latMinMax.min) return false;
-      if (wantLat > latMinMax.max) return false;
-      if (wantLon < lonMinMax.min) return false;
-      if (wantLon > lonMinMax.max) return false;
+      if (wantLat < latMinMax.min)
+        return false;
+      if (wantLat > latMinMax.max)
+        return false;
+      if (wantLon < lonMinMax.min)
+        return false;
+      if (wantLon > lonMinMax.max)
+        return false;
 
       double gradientLat = (latMinMax.max - latMinMax.min) / nrows;
       double gradientLon = (lonMinMax.max - lonMinMax.min) / ncols;
@@ -175,13 +183,14 @@ public class HorizCoordSys2D extends HorizCoordSys {
       double diffLon = wantLon - lonMinMax.min;
 
       // initial guess
-      rectIndex[0] = (int) Math.round(diffLat / gradientLat);  // row
-      rectIndex[1] = (int) Math.round(diffLon / gradientLon);  // col
+      rectIndex[0] = (int) Math.round(diffLat / gradientLat); // row
+      rectIndex[1] = (int) Math.round(diffLon / gradientLon); // col
 
       int count = 0;
       while (true) {
         count++;
-        if (debug) System.out.printf("%nIteration %d %n", count);
+        if (debug)
+          System.out.printf("%nIteration %d %n", count);
         if (contains(wantLat, wantLon, rectIndex))
           return true;
 
@@ -192,9 +201,9 @@ public class HorizCoordSys2D extends HorizCoordSys {
         if (count > 10) {
           // last ditch attempt
           return incr(wantLat, wantLon, rectIndex);
-          //if (!ok)
-          //  log.error("findCoordElement didnt converge lat,lon = "+wantLat+" "+ wantLon);
-          //return ok;
+          // if (!ok)
+          // log.error("findCoordElement didnt converge lat,lon = "+wantLat+" "+ wantLon);
+          // return ok;
         }
       }
     }
@@ -202,8 +211,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
     /**
      * Is the point (lat,lon) contained in the (row, col) rectangle ?
      *
-     * @param wantLat   lat of point
-     * @param wantLon   lon of point
+     * @param wantLat lat of point
+     * @param wantLon lon of point
      * @param rectIndex rectangle row, col, will be clipped to [0, nrows), [0, ncols)
      * @return true if contained
      */
@@ -214,53 +223,57 @@ public class HorizCoordSys2D extends HorizCoordSys {
       int row = rectIndex[0];
       int col = rectIndex[1];
 
-      if (debug) System.out.printf(" (%d,%d) contains (%f,%f) in (lat=%f %f) (lon=%f %f) ?%n",
-              rectIndex[0], rectIndex[1], wantLat, wantLon,
-              latEdge.get(row, col), latEdge.get(row + 1, col), lonEdge.get(row, col), lonEdge.get(row, col + 1));
+      if (debug)
+        System.out.printf(" (%d,%d) contains (%f,%f) in (lat=%f %f) (lon=%f %f) ?%n", rectIndex[0], rectIndex[1],
+            wantLat, wantLon, latEdge.get(row, col), latEdge.get(row + 1, col), lonEdge.get(row, col),
+            lonEdge.get(row, col + 1));
 
-      if (wantLat < latEdge.get(row, col)) return false;
-      if (wantLat > latEdge.get(row + 1, col)) return false;
-      if (wantLon < lonEdge.get(row, col)) return false;
+      if (wantLat < latEdge.get(row, col))
+        return false;
+      if (wantLat > latEdge.get(row + 1, col))
+        return false;
+      if (wantLon < lonEdge.get(row, col))
+        return false;
       return !(wantLon > lonEdge.get(row, col + 1));
     }
 
     /**
      * Is the point (lat,lon) contained in the (row, col) rectangle ?
      *
-     * @param wantLat   lat of point
-     * @param wantLon   lon of point
+     * @param wantLat lat of point
+     * @param wantLon lon of point
      * @param rectIndex rectangle row, col, will be clipped to [0, nrows), [0, ncols)
      * @return true if contained
      */
 
-/*
-  http://mathforum.org/library/drmath/view/54386.html
-
-      Given any three points on the plane (x0,y0), (x1,y1), and
-  (x2,y2), the area of the triangle determined by them is
-  given by the following formula:
-
-        1 | x0 y0 1 |
-    A = - | x1 y1 1 |,
-        2 | x2 y2 1 |
-
-  where the vertical bars represent the determinant.
-  the value of the expression above is:
-
-       (.5)(x1*y2 - y1*x2 -x0*y2 + y0*x2 + x0*y1 - y0*x1)
-
-  The amazing thing is that A is positive if the three points are
-  taken in a counter-clockwise orientation, and negative otherwise.
-
-  To be inside a rectangle (or any convex body), as you trace
-  around in a clockwise direction from p1 to p2 to p3 to p4 and
-  back to p1, the "areas" of triangles p1 p2 p, p2 p3 p, p3 p4 p,
-  and p4 p1 p must all be positive.  If you don't know the
-  orientation of your rectangle, then they must either all be
-  positive or all be negative.
-
-  this method works for arbitrary convex regions on the plane.
-*/
+    /*
+     * http://mathforum.org/library/drmath/view/54386.html
+     * 
+     * Given any three points on the plane (x0,y0), (x1,y1), and
+     * (x2,y2), the area of the triangle determined by them is
+     * given by the following formula:
+     * 
+     * 1 | x0 y0 1 |
+     * A = - | x1 y1 1 |,
+     * 2 | x2 y2 1 |
+     * 
+     * where the vertical bars represent the determinant.
+     * the value of the expression above is:
+     * 
+     * (.5)(x1*y2 - y1*x2 -x0*y2 + y0*x2 + x0*y1 - y0*x1)
+     * 
+     * The amazing thing is that A is positive if the three points are
+     * taken in a counter-clockwise orientation, and negative otherwise.
+     * 
+     * To be inside a rectangle (or any convex body), as you trace
+     * around in a clockwise direction from p1 to p2 to p3 to p4 and
+     * back to p1, the "areas" of triangles p1 p2 p, p2 p3 p, p3 p4 p,
+     * and p4 p1 p must all be positive. If you don't know the
+     * orientation of your rectangle, then they must either all be
+     * positive or all be negative.
+     * 
+     * this method works for arbitrary convex regions on the plane.
+     */
     private boolean contains(double wantLat, double wantLon, int[] rectIndex) {
       rectIndex[0] = Math.max(Math.min(rectIndex[0], nrows - 1), 0);
       rectIndex[1] = Math.max(Math.min(rectIndex[1], ncols - 1), 0);
@@ -282,8 +295,10 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
       // must all have same determinate sign
       boolean sign = detIsPositive(x1, y1, x2, y2, wantLon, wantLat);
-      if (sign != detIsPositive(x2, y2, x3, y3, wantLon, wantLat)) return false;
-      if (sign != detIsPositive(x3, y3, x4, y4, wantLon, wantLat)) return false;
+      if (sign != detIsPositive(x2, y2, x3, y3, wantLon, wantLat))
+        return false;
+      if (sign != detIsPositive(x3, y3, x4, y4, wantLon, wantLat))
+        return false;
       return sign == detIsPositive(x4, y4, x1, y1, wantLon, wantLat);
 
     }
@@ -307,17 +322,19 @@ public class HorizCoordSys2D extends HorizCoordSys {
       int drow = (int) Math.round(diffLat / gradientLat);
       int dcol = (int) Math.round(diffLon / gradientLon);
 
-      if (debug) System.out.printf("   jump from %d %d (grad=%f %f) (diff=%f %f) (delta=%d %d)",
-              row, col, gradientLat, gradientLon,
-              diffLat, diffLon, drow, dcol);
+      if (debug)
+        System.out.printf("   jump from %d %d (grad=%f %f) (diff=%f %f) (delta=%d %d)", row, col, gradientLat,
+            gradientLon, diffLat, diffLon, drow, dcol);
 
       if ((drow == 0) && (dcol == 0)) {
-        if (debug) System.out.printf("%n   incr:");
+        if (debug)
+          System.out.printf("%n   incr:");
         return incr(wantLat, wantLon, rectIndex);
       } else {
         rectIndex[0] = Math.max(Math.min(row + drow, nrows - 1), 0);
         rectIndex[1] = Math.max(Math.min(col + dcol, ncols - 1), 0);
-        if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
+        if (debug)
+          System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
         return (row != rectIndex[0]) || (col != rectIndex[1]); // nothing has changed
       }
 
@@ -326,24 +343,24 @@ public class HorizCoordSys2D extends HorizCoordSys {
     /**
      * jump to a new row,col
      *
-     * @param wantLat   want this lat
-     * @param wantLon   want this lon
+     * @param wantLat want this lat
+     * @param wantLon want this lon
      * @param rectIndex starting row, col and replaced by new guess
      * @return true if new guess, false if failure
      */
-  /*
-    choose x, y such that (matrix multiply) :
-
-    (wantx) = (fxx fxy)  (x)
-    (wanty)   (fyx fyy)  (y)
-
-     where fxx = d(fx)/dx  ~= delta lon in lon direction
-     where fxy = d(fx)/dy  ~= delta lon in lat direction
-     where fyx = d(fy)/dx  ~= delta lat in lon direction
-     where fyy = d(fy)/dy  ~= delta lat in lat direction
-
-    2 linear equations in 2 unknowns, solve in usual way
-   */
+    /*
+     * choose x, y such that (matrix multiply) :
+     * 
+     * (wantx) = (fxx fxy) (x)
+     * (wanty) (fyx fyy) (y)
+     * 
+     * where fxx = d(fx)/dx ~= delta lon in lon direction
+     * where fxy = d(fx)/dy ~= delta lon in lat direction
+     * where fyx = d(fy)/dx ~= delta lat in lon direction
+     * where fyy = d(fy)/dy ~= delta lat in lat direction
+     * 
+     * 2 linear equations in 2 unknowns, solve in usual way
+     */
     private boolean jump2(double wantLat, double wantLon, int[] rectIndex) {
       int row = Math.max(Math.min(rectIndex[0], nrows - 1), 0);
       int col = Math.max(Math.min(rectIndex[1], ncols - 1), 0);
@@ -360,24 +377,26 @@ public class HorizCoordSys2D extends HorizCoordSys {
       // solve for dlon
 
       double dx = (diffLon - dlondy * diffLat / dlatdy) / (dlondx - dlatdx * dlondy / dlatdy);
-      // double dy =  (diffLat - dlatdx * diffLon / dlondx) / (dlatdy - dlatdx * dlondy / dlondx);
+      // double dy = (diffLat - dlatdx * diffLon / dlondx) / (dlatdy - dlatdx * dlondy / dlondx);
       double dy = (diffLat - dlatdx * dx) / dlatdy;
 
       if (debug)
-        System.out.printf("   jump from %d %d (dlondx=%f dlondy=%f dlatdx=%f dlatdy=%f) (diffLat,Lon=%f %f) (deltalat,Lon=%f %f)",
-                row, col, dlondx, dlondy, dlatdx, dlatdy,
-                diffLat, diffLon, dy, dx);
+        System.out.printf(
+            "   jump from %d %d (dlondx=%f dlondy=%f dlatdx=%f dlatdy=%f) (diffLat,Lon=%f %f) (deltalat,Lon=%f %f)",
+            row, col, dlondx, dlondy, dlatdx, dlatdy, diffLat, diffLon, dy, dx);
 
       int drow = (int) Math.round(dy);
       int dcol = (int) Math.round(dx);
 
       if ((drow == 0) && (dcol == 0)) {
-        if (debug) System.out.printf("%n   incr:");
+        if (debug)
+          System.out.printf("%n   incr:");
         return incr(wantLat, wantLon, rectIndex);
       } else {
         rectIndex[0] = Math.max(Math.min(row + drow, nrows - 1), 0);
         rectIndex[1] = Math.max(Math.min(col + dcol, ncols - 1), 0);
-        if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
+        if (debug)
+          System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
         return (row != rectIndex[0]) || (col != rectIndex[1]); // nothing has changed
       }
 
@@ -391,14 +410,18 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
       if (Math.abs(diffLat) > Math.abs(diffLon)) { // try lat first
         rectIndex[0] = row + ((diffLat > 0) ? 1 : -1);
-        if (contains(wantLat, wantLon, rectIndex)) return true;
+        if (contains(wantLat, wantLon, rectIndex))
+          return true;
         rectIndex[1] = col + ((diffLon > 0) ? 1 : -1);
-        if (contains(wantLat, wantLon, rectIndex)) return true;
+        if (contains(wantLat, wantLon, rectIndex))
+          return true;
       } else {
         rectIndex[1] = col + ((diffLon > 0) ? 1 : -1);
-        if (contains(wantLat, wantLon, rectIndex)) return true;
+        if (contains(wantLat, wantLon, rectIndex))
+          return true;
         rectIndex[0] = row + ((diffLat > 0) ? 1 : -1);
-        if (contains(wantLat, wantLon, rectIndex)) return true;
+        if (contains(wantLat, wantLon, rectIndex))
+          return true;
       }
 
       // back to original, do box search
@@ -417,12 +440,14 @@ public class HorizCoordSys2D extends HorizCoordSys {
       int mincol = Math.max(col - 1, 0);
       int maxcol = Math.min(col + 1, ncols);
 
-      if (debug) System.out.printf("%n   box9:");
+      if (debug)
+        System.out.printf("%n   box9:");
       for (int i = minrow; i <= maxrow; i++)
         for (int j = mincol; j <= maxcol; j++) {
           rectIndex[0] = i;
           rectIndex[1] = j;
-          if (contains(wantLat, wantLon, rectIndex)) return true;
+          if (contains(wantLat, wantLon, rectIndex))
+            return true;
         }
 
       return false;
@@ -447,7 +472,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       int maxCol = -1, maxRow = -1;
 
       boolean allX = (minx > lonMinMax.max && maxx > lonMinMax.max && minx > maxx);
-      boolean allY =  (miny <= latMinMax.min && maxy >= latMinMax.max);
+      boolean allY = (miny <= latMinMax.min && maxy >= latMinMax.max);
       if (allX && allY) {
         // return full set
         return Optional.of(getRanges());
@@ -456,7 +481,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       if (minx > lonMinMax.max && maxx > lonMinMax.max && minx < maxx) { // otherwise ignoring minx > maxx
         return Optional.empty("no intersection");
       } else if (minx > lonMinMax.max && maxx > lonMinMax.max && minx > maxx) {
-        minCol = 0;   // all of x
+        minCol = 0; // all of x
         maxCol = nx;
         minx = lonMinMax.min;
       } else if (minx > lonMinMax.min && maxx > lonMinMax.max) {
@@ -480,18 +505,22 @@ public class HorizCoordSys2D extends HorizCoordSys {
           double lon = lonEdge.get(row, col);
 
           if ((lat >= miny) && (lat <= maxy) && (lon >= minx) && (lon <= maxx)) {
-            if (col > maxCol) maxCol = col;
-            if (col < minCol) minCol = col;
-            if (row > maxRow) maxRow = row;
-            if (row < minRow) minRow = row;
+            if (col > maxCol)
+              maxCol = col;
+            if (col < minCol)
+              minCol = col;
+            if (row > maxRow)
+              maxRow = row;
+            if (row < minRow)
+              minRow = row;
           }
         }
       }
 
       try {
         List<RangeIterator> list = new ArrayList<>();
-        list.add(new Range(minRow, maxRow-1, horizStride));
-        list.add(new Range(minCol, maxCol-1, horizStride));
+        list.add(new Range(minRow, maxRow - 1, horizStride));
+        list.add(new Range(minCol, maxCol - 1, horizStride));
         return Optional.of(list);
 
       } catch (InvalidRangeException e) {
@@ -510,10 +539,14 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
     // brute force
     public boolean findCoordElementExhaustive(double wantLat, double wantLon, int[] rectIndex) {
-      if (wantLat < latMinMax.min) return false;
-      if (wantLat > latMinMax.max) return false;
-      if (wantLon < lonMinMax.min) return false;
-      if (wantLon > lonMinMax.max) return false;
+      if (wantLat < latMinMax.min)
+        return false;
+      if (wantLat > latMinMax.max)
+        return false;
+      if (wantLon < lonMinMax.min)
+        return false;
+      if (wantLon > lonMinMax.max)
+        return false;
 
       for (int row = 0; row < nrows; row++) {
         for (int col = 0; col < ncols; col++) {
@@ -526,27 +559,28 @@ public class HorizCoordSys2D extends HorizCoordSys {
           }
         }
       }
-      //debug = saveDebug;
+      // debug = saveDebug;
       return false;
     }
   }
 
 
   /*
-  public int[] findXYindexFromCoord(double x_coord, double y_coord) {
-      int[] result = new int[2];
-
-      int[] result2 = new int[2];
-      boolean found = g2d.findCoordElement(y_coord, x_coord, result2);
-      if (found) {
-        result[0] = result2[1];
-        result[1] = result2[0];
-      } else {
-        result[0] = -1;
-        result[1] = -1;
-      }
-      return result;
-  } */
+   * public int[] findXYindexFromCoord(double x_coord, double y_coord) {
+   * int[] result = new int[2];
+   * 
+   * int[] result2 = new int[2];
+   * boolean found = g2d.findCoordElement(y_coord, x_coord, result2);
+   * if (found) {
+   * result[0] = result2[1];
+   * result[1] = result2[0];
+   * } else {
+   * result[0] = -1;
+   * result[1] = -1;
+   * }
+   * return result;
+   * }
+   */
 
 }
 

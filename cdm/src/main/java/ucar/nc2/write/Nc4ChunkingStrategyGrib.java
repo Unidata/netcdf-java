@@ -21,7 +21,8 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
 
   @Override
   public boolean isChunked(Variable v) {
-    if (v.isUnlimited()) return true;
+    if (v.isUnlimited())
+      return true;
     // if (getChunkAttribute(v) != null) return true;
 
     int n = v.getRank();
@@ -29,22 +30,24 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
   }
 
   @Override
-   public long[] computeChunking(Variable v) {
-     /* check attribute
-     int[] resultFromAtt = computeChunkingFromAttribute(v);
-     if (resultFromAtt != null)
-       return convertToLong(resultFromAtt); */
+  public long[] computeChunking(Variable v) {
+    /*
+     * check attribute
+     * int[] resultFromAtt = computeChunkingFromAttribute(v);
+     * if (resultFromAtt != null)
+     * return convertToLong(resultFromAtt);
+     */
 
-     // no unlimited dimensions
-     if (!v.isUnlimited()) {
-       int[] result = computeChunkingGrib(v);
-       return convertToLong(result);
-     }
+    // no unlimited dimensions
+    if (!v.isUnlimited()) {
+      int[] result = computeChunkingGrib(v);
+      return convertToLong(result);
+    }
 
-     // unlimited case
+    // unlimited case
     if (v.getRank() >= 2) {
       long varSize = v.getSize() * v.getElementSize();
-      if (varSize > getMinVariableSize())                // getMinVariableSize or getMinChunksize ??
+      if (varSize > getMinVariableSize()) // getMinVariableSize or getMinChunksize ??
         return convertToLong(computeChunkingGrib(v));
     }
 
@@ -57,13 +60,13 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
   private int[] computeChunkingGrib(Variable v) {
     int n = v.getRank();
     int[] result = new int[n];
-    if( n < 2 ) {
-    	result[0] = 1; // Unlimited variable with rank 1
+    if (n < 2) {
+      result[0] = 1; // Unlimited variable with rank 1
 
     } else {
-    	for (int i=0; i<n; i++)
-    		result[i] = (i<n-2) ? 1 : v.getDimension(i).getLength();
-    }	
+      for (int i = 0; i < n; i++)
+        result[i] = (i < n - 2) ? 1 : v.getDimension(i).getLength();
+    }
     return result;
   }
 }

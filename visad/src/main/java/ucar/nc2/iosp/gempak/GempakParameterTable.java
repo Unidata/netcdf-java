@@ -9,7 +9,6 @@ package ucar.nc2.iosp.gempak;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.nc2.constants.CDM;
-
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -27,7 +26,7 @@ import java.util.Set;
 public class GempakParameterTable {
 
   /**
-   * table to hold the  values
+   * table to hold the values
    */
   private HashMap<String, GempakParameter> paramMap = new HashMap<>(256);
 
@@ -39,26 +38,21 @@ public class GempakParameterTable {
   /**
    * indices of breakpoints in the table
    */
-  private static int[] indices = {
-          0, 4, 38, 59, 72, 79, 90, 97
-  };
+  private static int[] indices = {0, 4, 38, 59, 72, 79, 90, 97};
 
   /**
    * lengths
    */
-  private static int[] lengths = {
-          4, 33, 21, 13, 7, 11, 6, 6
-  };
+  private static int[] lengths = {4, 33, 21, 13, 7, 11, 6, 6};
 
   /**
    * Create a new table.
    */
-  public GempakParameterTable() {
-  }
+  public GempakParameterTable() {}
 
-    /*
-ID# NAME                             UNITS                GNAM         SCALE   MISSING  HZREMAP DIRECTION
-    */
+  /*
+   * ID# NAME UNITS GNAM SCALE MISSING HZREMAP DIRECTION
+   */
 
   /**
    * Add parameters from the table
@@ -71,12 +65,12 @@ ID# NAME                             UNITS                GNAM         SCALE   M
       if (is == null) {
         throw new IOException("Unable to open " + tbl);
       }
-      String content = readContents(is);   // LOOK this is silly - should just read one line at a time
-      // List           lines   = StringUtil.split(content, "\n", false);
+      String content = readContents(is); // LOOK this is silly - should just read one line at a time
+      // List lines = StringUtil.split(content, "\n", false);
       String[] lines = content.split("\n");
       List<String[]> result = new ArrayList<>();
       for (String line : lines) {
-        //String line  = (String) lines.get(i);
+        // String line = (String) lines.get(i);
         String tline = line.trim();
         if (tline.length() == 0) {
           continue;
@@ -92,12 +86,11 @@ ID# NAME                             UNITS                GNAM         SCALE   M
           if (indices[idx] + lengths[idx] > tline.length()) {
             words[idx] = line.substring(indices[idx]);
           } else {
-            words[idx] = line.substring(indices[idx],
-                    indices[idx] + lengths[idx]);
+            words[idx] = line.substring(indices[idx], indices[idx] + lengths[idx]);
           }
-          //if (trimWords) {
+          // if (trimWords) {
           words[idx] = words[idx].trim();
-          //}
+          // }
         }
         result.add(words);
       }
@@ -127,7 +120,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
     if (words[0] != null) {
       num = (int) Double.parseDouble(words[0]);
     }
-    if ((words[3] == null) || words[3].equals("")) {  // no param name
+    if ((words[3] == null) || words[3].equals("")) { // no param name
       return null;
     }
     String name = words[3];
@@ -163,8 +156,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
       decimalScale = 0;
     }
 
-    return new GempakParameter(num, name, description, unit,
-            decimalScale);
+    return new GempakParameter(num, name, description, unit, decimalScale);
   }
 
   /**
@@ -175,20 +167,18 @@ ID# NAME                             UNITS                GNAM         SCALE   M
    */
   public GempakParameter getParameter(String name) {
     GempakParameter param = paramMap.get(name);
-    if (param == null) {  // try the regex list
+    if (param == null) { // try the regex list
       Set<String> keys = templateParamMap.keySet();
       if (!keys.isEmpty()) {
         for (String key : keys) {
           Pattern p = Pattern.compile(key);
           Matcher m = p.matcher(name);
           if (m.matches()) {
-            //System.out.println("found match " + key + " for " + name);
+            // System.out.println("found match " + key + " for " + name);
             String value = m.group(1);
             GempakParameter match = templateParamMap.get(key);
-            param = new GempakParameter(match.getNumber(), name,
-                    match.getDescription() + " (" + value
-                            + " hour)", match.getUnit(),
-                    match.getDecimalScale());
+            param = new GempakParameter(match.getNumber(), name, match.getDescription() + " (" + value + " hour)",
+                match.getUnit(), match.getDecimalScale());
             paramMap.put(name, param);
             break;
           }
@@ -222,8 +212,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
     int totalRead = 0;
     byte[] content = new byte[1000000];
     while (true) {
-      int howMany = is.read(content, totalRead,
-              content.length - totalRead);
+      int howMany = is.read(content, totalRead, content.length - totalRead);
       if (howMany < 0) {
         break;
       }
@@ -233,9 +222,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
       totalRead += howMany;
       if (totalRead >= content.length) {
         byte[] tmp = content;
-        int newLength = ((content.length < 25000000)
-                ? content.length * 2
-                : content.length + 5000000);
+        int newLength = ((content.length < 25000000) ? content.length * 2 : content.length + 5000000);
         content = new byte[newLength];
         System.arraycopy(tmp, 0, content, 0, totalRead);
       }
@@ -250,7 +237,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
    * Get the input stream to the given resource
    *
    * @param resourceName The resource name. May be a file, url,
-   *                     java resource, etc.
+   *        java resource, etc.
    * @return The input stream to the resource
    */
   private InputStream getInputStream(String resourceName) throws IOException {
@@ -262,16 +249,16 @@ ID# NAME                             UNITS                GNAM         SCALE   M
       return s;
     }
 
-    //Try the file system
+    // Try the file system
     File f = new File(resourceName);
     if (f.exists()) {
-        s = new FileInputStream(f);
+      s = new FileInputStream(f);
     }
     if (s != null) {
       return s;
     }
 
-    //Try it as a url
+    // Try it as a url
     Matcher m = Pattern.compile(" ").matcher(resourceName);
     String encodedUrl = m.replaceAll("%20");
     URL dataUrl = new URL(encodedUrl);

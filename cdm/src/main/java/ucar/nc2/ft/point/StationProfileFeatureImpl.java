@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
-
 import ucar.ma2.StructureData;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeatureCollection;
@@ -37,14 +36,15 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
   protected Station station;
   protected PointFeatureCollectionIterator localIterator;
 
-  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
-    super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
+  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt,
+      CalendarDateUnit timeUnit, String altUnits, int npts) {
+    super(name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
     station = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
     this.timeSeriesNpts = npts;
   }
 
   public StationProfileFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int npts) {
-    super( s.getName(), timeUnit, altUnits, FeatureType.STATION_PROFILE);
+    super(s.getName(), timeUnit, altUnits, FeatureType.STATION_PROFILE);
     this.station = s;
     this.timeSeriesNpts = npts;
   }
@@ -94,7 +94,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
   public LatLonPoint getLatLon() {
     return station.getLatLon();
   }
-  
+
   @Override
   public boolean isMissing() {
     return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
@@ -148,12 +148,12 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
 
     @Override // new way
     public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(), new DateFilter());
+      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(), new DateFilter());
     }
 
     @Override // old way
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(), new DateFilter());
+      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(), new DateFilter());
     }
 
     private class DateFilter implements PointFeatureCollectionIterator.Filter {
@@ -209,7 +209,8 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
 
   @Override
   public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
+    if (localIterator == null)
+      resetIteration();
     return localIterator.hasNext();
   }
 

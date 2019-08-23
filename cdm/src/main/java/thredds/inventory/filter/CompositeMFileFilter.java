@@ -6,7 +6,6 @@ package thredds.inventory.filter;
 
 import thredds.inventory.MFileFilter;
 import thredds.inventory.MFile;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -23,13 +22,14 @@ public class CompositeMFileFilter implements MFileFilter {
   private List<MFileFilter> excludeFilters;
   private List<MFileFilter> andFilters;
 
-  public CompositeMFileFilter() {
-  }
+  public CompositeMFileFilter() {}
 
-  /* public CompositeMFileFilter(List<MFileFilter> filters) {
-    for (MFileFilter ff : filters)
-      addIncludeFilter(ff);
-  } */
+  /*
+   * public CompositeMFileFilter(List<MFileFilter> filters) {
+   * for (MFileFilter ff : filters)
+   * addIncludeFilter(ff);
+   * }
+   */
 
   public void addFilter(MFileFilter filter, boolean include) {
     if (include)
@@ -39,17 +39,20 @@ public class CompositeMFileFilter implements MFileFilter {
   }
 
   public void addIncludeFilter(MFileFilter filter) {
-    if (includeFilters == null) includeFilters = new ArrayList<>();
+    if (includeFilters == null)
+      includeFilters = new ArrayList<>();
     includeFilters.add(filter);
   }
 
   public void addExcludeFilter(MFileFilter filter) {
-    if (excludeFilters == null) excludeFilters = new ArrayList<>();
+    if (excludeFilters == null)
+      excludeFilters = new ArrayList<>();
     excludeFilters.add(filter);
   }
 
   public void addAndFilter(MFileFilter filter) {
-    if (andFilters == null) andFilters = new ArrayList<>();
+    if (andFilters == null)
+      andFilters = new ArrayList<>();
     andFilters.add(filter);
   }
 
@@ -59,7 +62,8 @@ public class CompositeMFileFilter implements MFileFilter {
 
   // inclusion is an OR
   private boolean include(MFile mfile) {
-    if (includeFilters == null) return true;
+    if (includeFilters == null)
+      return true;
     for (MFileFilter filter : includeFilters) {
       if (filter.accept(mfile))
         return true;
@@ -69,7 +73,8 @@ public class CompositeMFileFilter implements MFileFilter {
 
   // exclusion is an AND
   private boolean exclude(MFile mfile) {
-    if (excludeFilters == null) return false;
+    if (excludeFilters == null)
+      return false;
     for (MFileFilter filter : excludeFilters) {
       if (filter.accept(mfile))
         return true;
@@ -79,7 +84,8 @@ public class CompositeMFileFilter implements MFileFilter {
 
   // all AND filters must be satisfied
   private boolean andFilter(MFile mfile) {
-    if (andFilters == null) return true;
+    if (andFilters == null)
+      return true;
     for (MFileFilter filter : andFilters) {
       if (!filter.accept(mfile))
         return false;

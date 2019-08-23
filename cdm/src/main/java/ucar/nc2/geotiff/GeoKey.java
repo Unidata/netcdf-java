@@ -6,13 +6,14 @@ package ucar.nc2.geotiff;
 
 import java.util.*;
 
-/** A GeoKey is a GeoKey.Tag and a value.
- *  The value may be a String, an array of integers, or an array of doubles.
+/**
+ * A GeoKey is a GeoKey.Tag and a value.
+ * The value may be a String, an array of integers, or an array of doubles.
  *
  * @author caron
  */
 
-class GeoKey  {
+class GeoKey {
   boolean isDouble = false, isString = false;
   private int count;
   private int[] value;
@@ -26,36 +27,37 @@ class GeoKey  {
 
   /**
    * Construct a GeoKey with a Tag and TagValue
+   * 
    * @param tag GeoKey.Tag number
    * @param tagValue value
    */
-  GeoKey( GeoKey.Tag tag, GeoKey.TagValue tagValue) {
+  GeoKey(GeoKey.Tag tag, GeoKey.TagValue tagValue) {
     this.tag = tag;
     this.tagValue = tagValue;
     count = 1;
   }
 
-  GeoKey( GeoKey.Tag tag, int value) {
+  GeoKey(GeoKey.Tag tag, int value) {
     this.tag = tag;
     this.value = new int[1];
     this.value[0] = value;
     count = 1;
   }
 
-  GeoKey( GeoKey.Tag tag, int[] value) {
+  GeoKey(GeoKey.Tag tag, int[] value) {
     this.tag = tag;
     this.value = value;
     count = value.length;
   }
 
-  GeoKey( GeoKey.Tag tag, double[] value) {
+  GeoKey(GeoKey.Tag tag, double[] value) {
     this.tag = tag;
     this.dvalue = value;
     count = value.length;
     isDouble = true;
   }
 
-  GeoKey( GeoKey.Tag tag, double value) {
+  GeoKey(GeoKey.Tag tag, double value) {
     this.tag = tag;
     this.dvalue = new double[1];
     this.dvalue[0] = value;
@@ -63,21 +65,26 @@ class GeoKey  {
     isDouble = true;
   }
 
-  GeoKey( GeoKey.Tag tag, String value) {
+  GeoKey(GeoKey.Tag tag, String value) {
     this.tag = tag;
     this.valueS = value;
     count = 1;
     isString = true;
   }
 
-  int count() { return count; }
+  int count() {
+    return count;
+  }
+
   int tagCode() {
-    if (tag != null) return tag.code();
+    if (tag != null)
+      return tag.code();
     return id;
   }
 
   int value() {
-    if (tagValue != null) return tagValue.value();
+    if (tagValue != null)
+      return tagValue.value();
     return value[0];
   }
 
@@ -97,10 +104,11 @@ class GeoKey  {
 
   /**
    * Construct a GeoKey with a single integer value.
+   * 
    * @param id GeoKey.Tag number
    * @param v value
    */
-  GeoKey( int id, int v) {
+  GeoKey(int id, int v) {
     this.id = id;
     this.count = 1;
 
@@ -114,14 +122,14 @@ class GeoKey  {
   }
 
   public String toString() {
-    StringBuilder sbuf  = new StringBuilder();
+    StringBuilder sbuf = new StringBuilder();
     if (tag != null)
-      sbuf.append(" geoKey = "+tag);
+      sbuf.append(" geoKey = " + tag);
     else
-      sbuf.append(" geoKey = "+id);
+      sbuf.append(" geoKey = " + id);
 
     if (tagValue != null)
-      sbuf.append(" value = "+tagValue);
+      sbuf.append(" value = " + tagValue);
     else {
 
       sbuf.append(" values = ");
@@ -129,11 +137,11 @@ class GeoKey  {
       if (valueS != null)
         sbuf.append(valueS);
       else if (isDouble)
-        for (int i=0; i<count; i++)
-          sbuf.append(dvalue[i]+" ");
+        for (int i = 0; i < count; i++)
+          sbuf.append(dvalue[i] + " ");
       else
-        for (int i=0; i<count; i++)
-          sbuf.append(value[i]+" ");
+        for (int i = 0; i < count; i++)
+          sbuf.append(value[i] + " ");
     }
 
     return sbuf.toString();
@@ -200,33 +208,38 @@ class GeoKey  {
     static public final Tag GeoKey_ProjFalseOriginLong = new Tag("GeoKey_ProjFalseOriginLong", 3084);
     static public final Tag GeoKey_ProjFalseOriginLat = new Tag("GeoKey_ProjFalseOriginLat", 3085);
 
-    static Tag get( int code) {
+    static Tag get(int code) {
       return map.get(code);
     }
 
-    static Tag getOrMake( int code) {
-      Tag tag = Tag.get( code);
-      return (tag != null) ? tag : new Tag( code);
+    static Tag getOrMake(int code) {
+      Tag tag = Tag.get(code);
+      return (tag != null) ? tag : new Tag(code);
     }
 
     String name;
     int code;
 
-    private Tag( String  name, int code) {
+    private Tag(String name, int code) {
       this.name = name;
       this.code = code;
       map.put(code, this);
     }
 
-    Tag( int code) {
+    Tag(int code) {
       this.code = code;
-      //map.put( new Integer(code), this);
+      // map.put( new Integer(code), this);
     }
 
-    public int code() { return code; }
-    public String toString() { return name == null ? code+" " : code+" ("+name+")"; }
+    public int code() {
+      return code;
+    }
 
-    public int compareTo( Object o) {
+    public String toString() {
+      return name == null ? code + " " : code + " (" + name + ")";
+    }
+
+    public int compareTo(Object o) {
       if (!(o instanceof Tag))
         return 0;
       Tag to = (Tag) o;
@@ -257,68 +270,97 @@ class GeoKey  {
 
     //
     static public final TagValue GeogGeodeticDatum_WGS_84 = new TagValue(Tag.GeogGeodeticDatumGeoKey, "WGS_84", 4326);
-    static public final TagValue GeogPrimeMeridian_GREENWICH = new TagValue(Tag.GeogPrimeMeridianGeoKey, "Greenwich", 8901);
+    static public final TagValue GeogPrimeMeridian_GREENWICH =
+        new TagValue(Tag.GeogPrimeMeridianGeoKey, "Greenwich", 8901);
 
     // projections
-    static public final TagValue ProjectedCSType_UserDefined = new TagValue(Tag.ProjectedCSTypeGeoKey, "UserDefined", 32767);
-    static public final TagValue ProjCoordTrans_LambertConfConic_2SP = new TagValue(Tag.ProjCoordTransGeoKey, "LambertConfConic_2SP", 8);
-    static public final TagValue ProjCoordTrans_LambertConfConic_1SP = new TagValue(Tag.ProjCoordTransGeoKey, "LambertConfConic_1SP", 9);
-    static public final TagValue ProjCoordTrans_Stereographic = new TagValue(Tag.ProjCoordTransGeoKey, "Stereographic", 14);
-    static public final TagValue ProjCoordTrans_TransverseMercator = new TagValue(Tag.ProjCoordTransGeoKey, "TransverseMercator", 1);
-    static public final TagValue ProjCoordTrans_AlbersConicalEqualArea = new TagValue(Tag.ProjCoordTransGeoKey, "AlbersConicalEqualArea", 11);
-    static public final TagValue ProjCoordTrans_AlbersEqualAreaEllipse = new TagValue(Tag.ProjCoordTransGeoKey, "AlbersEqualAreaEllipse", 11);
-    static public final TagValue ProjCoordTrans_Mercator = new TagValue(Tag.ProjCoordTransGeoKey, "Mercator", 7);  
+    static public final TagValue ProjectedCSType_UserDefined =
+        new TagValue(Tag.ProjectedCSTypeGeoKey, "UserDefined", 32767);
+    static public final TagValue ProjCoordTrans_LambertConfConic_2SP =
+        new TagValue(Tag.ProjCoordTransGeoKey, "LambertConfConic_2SP", 8);
+    static public final TagValue ProjCoordTrans_LambertConfConic_1SP =
+        new TagValue(Tag.ProjCoordTransGeoKey, "LambertConfConic_1SP", 9);
+    static public final TagValue ProjCoordTrans_Stereographic =
+        new TagValue(Tag.ProjCoordTransGeoKey, "Stereographic", 14);
+    static public final TagValue ProjCoordTrans_TransverseMercator =
+        new TagValue(Tag.ProjCoordTransGeoKey, "TransverseMercator", 1);
+    static public final TagValue ProjCoordTrans_AlbersConicalEqualArea =
+        new TagValue(Tag.ProjCoordTransGeoKey, "AlbersConicalEqualArea", 11);
+    static public final TagValue ProjCoordTrans_AlbersEqualAreaEllipse =
+        new TagValue(Tag.ProjCoordTransGeoKey, "AlbersEqualAreaEllipse", 11);
+    static public final TagValue ProjCoordTrans_Mercator = new TagValue(Tag.ProjCoordTransGeoKey, "Mercator", 7);
     // units
     static public final TagValue ProjLinearUnits_METER = new TagValue(Tag.ProjLinearUnitsGeoKey, "Meter", 9001);
     static public final TagValue GeogAngularUnits_DEGREE = new TagValue(Tag.GeogAngularUnitsGeoKey, "Degree", 9102);
-    //add
-    static public final TagValue GeogGeodeticDatum6267 = new TagValue(Tag.GeogGeodeticDatumGeoKey, "North_American_1927", 6267);
+    // add
+    static public final TagValue GeogGeodeticDatum6267 =
+        new TagValue(Tag.GeogGeodeticDatumGeoKey, "North_American_1927", 6267);
 
-    static TagValue get( Tag tag, int code) {
-      if (tag == null) return null;
-      return map.get( tag.name+code);
+    static TagValue get(Tag tag, int code) {
+      if (tag == null)
+        return null;
+      return map.get(tag.name + code);
     }
 
     private Tag tag;
     private String name;
     private int value;
 
-    private TagValue( Tag tag, String name, int value) {
+    private TagValue(Tag tag, String name, int value) {
       this.tag = tag;
       this.name = name;
       this.value = value;
-      map.put( tag.name+value, this);
+      map.put(tag.name + value, this);
     }
 
 
-    public Tag tag() { return tag; }
-    public int value() { return value; }
-    public String toString() { return value+" ("+name+")"; }
+    public Tag tag() {
+      return tag;
+    }
 
-    public int compareTo( Object o) {
+    public int value() {
+      return value;
+    }
+
+    public String toString() {
+      return value + " (" + name + ")";
+    }
+
+    public int compareTo(Object o) {
       if (!(o instanceof TagValue))
         return 0;
-      int ret = tag.compareTo( o);
-      if (ret != 0) return ret;
-      return value - ((TagValue)o).value;
+      int ret = tag.compareTo(o);
+      if (ret != 0)
+        return ret;
+      return value - ((TagValue) o).value;
     }
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     GeoKey geoKey = (GeoKey) o;
 
-    if (isDouble != geoKey.isDouble) return false;
-    if (isString != geoKey.isString) return false;
-    if (count != geoKey.count) return false;
-    if (id != geoKey.id) return false;
-    if (!Arrays.equals(value, geoKey.value)) return false;
-    if (!Arrays.equals(dvalue, geoKey.dvalue)) return false;
-    if (valueS != null ? !valueS.equals(geoKey.valueS) : geoKey.valueS != null) return false;
-    if (tag != null ? !tag.equals(geoKey.tag) : geoKey.tag != null) return false;
+    if (isDouble != geoKey.isDouble)
+      return false;
+    if (isString != geoKey.isString)
+      return false;
+    if (count != geoKey.count)
+      return false;
+    if (id != geoKey.id)
+      return false;
+    if (!Arrays.equals(value, geoKey.value))
+      return false;
+    if (!Arrays.equals(dvalue, geoKey.dvalue))
+      return false;
+    if (valueS != null ? !valueS.equals(geoKey.valueS) : geoKey.valueS != null)
+      return false;
+    if (tag != null ? !tag.equals(geoKey.tag) : geoKey.tag != null)
+      return false;
     return !(tagValue != null ? !tagValue.equals(geoKey.tagValue) : geoKey.tagValue != null);
 
   }

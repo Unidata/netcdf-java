@@ -12,7 +12,6 @@ import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -47,8 +46,10 @@ public class MFileTable extends JPanel {
     varPopup.addAction("Open this file in Grib2Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FileBean bean = (FileBean) fileTable.getSelectedBean();
-        if (bean == null) return;
-        if (MFileTable.this.isPopup) fileWindow.setVisible(false);
+        if (bean == null)
+          return;
+        if (MFileTable.this.isPopup)
+          fileWindow.setVisible(false);
         Formatter f = new Formatter();
         f.format("list:");
         f.format(bean.getPath());
@@ -58,7 +59,8 @@ public class MFileTable extends JPanel {
     varPopup.addAction("Add Files to Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List<FileBean> beans = (List<FileBean>) fileTable.getSelectedBeans();
-        if (beans == null || beans.size() == 0) return;
+        if (beans == null || beans.size() == 0)
+          return;
         for (FileBean bean : beans)
           gribCollectionFiles.add(bean.getPath());
       }
@@ -70,8 +72,10 @@ public class MFileTable extends JPanel {
     });
     varPopup.addAction("Open Collection in Grib2Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        if (gribCollectionFiles.size() == 0) return;
-        if (MFileTable.this.isPopup) fileWindow.setVisible(false);
+        if (gribCollectionFiles.size() == 0)
+          return;
+        if (MFileTable.this.isPopup)
+          fileWindow.setVisible(false);
         Formatter f = new Formatter();
         f.format("list:");
         for (String s : gribCollectionFiles) {
@@ -91,11 +95,13 @@ public class MFileTable extends JPanel {
 
   public void save() {
     fileTable.saveState(false);
-    if (fileWindow != null) prefs.putBeanObject("FileWindowBounds", fileWindow.getBounds());
+    if (fileWindow != null)
+      prefs.putBeanObject("FileWindowBounds", fileWindow.getBounds());
   }
 
   public void setFiles(File dir, Collection<MFile> files) {
-    if (files == null) return;
+    if (files == null)
+      return;
 
     int count = 0;
     List<FileBean> beans = new ArrayList<>();
@@ -103,7 +109,8 @@ public class MFileTable extends JPanel {
       beans.add(new FileBean(dir, mfile, count++));
 
     fileTable.setBeans(beans);
-    if (isPopup) fileWindow.show();
+    if (isPopup)
+      fileWindow.show();
   }
 
 
@@ -111,8 +118,7 @@ public class MFileTable extends JPanel {
     MFile mfile;
     int count;
 
-    public FileBean() {
-    }
+    public FileBean() {}
 
     public FileBean(File dir, MFile mfile, int count) {
       this.mfile = mfile;

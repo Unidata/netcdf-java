@@ -19,6 +19,7 @@ public interface TrajectoryProfileFeatureCollection extends PointFeatureCCC, Ite
 
   /**
    * Use the internal iterator to check if there is another SectionFeature in the iteration.
+   * 
    * @return true is there is another SectionFeature in the iteration.
    * @throws java.io.IOException on read error
    * @deprecated use foreach
@@ -28,6 +29,7 @@ public interface TrajectoryProfileFeatureCollection extends PointFeatureCCC, Ite
   /**
    * Use the internal iterator to get the next SectionFeature in the iteration.
    * You must call hasNext() before you call this.
+   * 
    * @return the next SectionFeature in the iteration
    * @throws java.io.IOException on read error
    * @deprecated use foreach
@@ -36,6 +38,7 @@ public interface TrajectoryProfileFeatureCollection extends PointFeatureCCC, Ite
 
   /**
    * Reset the internal iterator for another iteration over the SectionFeatures in this Collection.
+   * 
    * @throws java.io.IOException on read error
    * @deprecated use foreach
    */

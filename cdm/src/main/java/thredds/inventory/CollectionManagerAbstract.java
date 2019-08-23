@@ -8,7 +8,6 @@ package thredds.inventory;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.ListenerManager;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -18,10 +17,11 @@ import java.util.*;
  * @author caron
  * @since Jan 19, 2010
  */
-public abstract class CollectionManagerAbstract extends CollectionAbstract implements CollectionManager  {
+public abstract class CollectionManagerAbstract extends CollectionAbstract implements CollectionManager {
 
-    // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public CollectionManager open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
+  // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
+  static public CollectionManager open(String collectionName, String collectionSpec, String olderThan,
+      Formatter errlog) {
     if (collectionSpec.startsWith(CATALOG))
       return new CollectionManagerCatalog(collectionName, collectionSpec, olderThan, errlog);
     else
@@ -55,7 +55,7 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   // fake default implementation
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return new MFileIterator( getFilesSorted().iterator(), null);
+    return new MFileIterator(getFilesSorted().iterator(), null);
   }
 
   @Override
@@ -76,7 +76,8 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
 
   @Override
   public void addEventListener(TriggerListener l) {
-    if (lm == null) createListenerManager();
+    if (lm == null)
+      createListenerManager();
     lm.addListener(l);
   }
 
@@ -87,10 +88,8 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   }
 
   private void createListenerManager() {
-    lm = new ListenerManager(
-            "thredds.inventory.CollectionManager$TriggerListener",
-            "thredds.inventory.CollectionManager$TriggerEvent",
-            "handleCollectionEvent");
+    lm = new ListenerManager("thredds.inventory.CollectionManager$TriggerListener",
+        "thredds.inventory.CollectionManager$TriggerEvent", "handleCollectionEvent");
   }
 
 }

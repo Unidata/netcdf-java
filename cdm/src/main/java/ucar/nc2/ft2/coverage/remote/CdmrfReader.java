@@ -20,7 +20,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.*;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +54,8 @@ public class CdmrfReader {
     // get the header
     try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
       method.setFollowRedirects(true);
-      if (showRequest) System.out.printf("CdmrFeature request %s %n", url);
+      if (showRequest)
+        System.out.printf("CdmrFeature request %s %n", url);
       int statusCode = method.execute();
 
       if (statusCode == 404)
@@ -78,10 +78,11 @@ public class CdmrfReader {
       NcStream.readFully(is, m);
 
       CdmrFeatureProto.CoverageDataset proto = CdmrFeatureProto.CoverageDataset.parseFrom(m);
-      CoverageCollection gridDataset =  decodeHeader(proto, reader);
+      CoverageCollection gridDataset = decodeHeader(proto, reader);
 
       long took = System.currentTimeMillis() - start;
-      if (showRequest) System.out.printf(" took %d msecs %n", took);
+      if (showRequest)
+        System.out.printf(" took %d msecs %n", took);
       return gridDataset;
     }
 
@@ -95,24 +96,26 @@ public class CdmrfReader {
   }
 
 
-  /* message CalendarDateRange {
-      required int64 start = 1;
-      required int64 end = 2;
-      required int32 calendar = 3; // ucar.nc2.time.Calendar ordinal
-    }
-
-    message CoverageDataset {
-      required string name = 1;
-      repeated Attribute atts = 2;
-      required Rectangle latlonRect = 3;
-      optional Rectangle projRect = 4;
-      required CalendarDateRange dateRange = 5;
-
-      repeated CoordSys coordSys = 6;
-      repeated CoordTransform coordTransforms = 7;
-      repeated CoordAxis coordAxes = 8;
-      repeated Coverage grids = 9;
-    } */
+  /*
+   * message CalendarDateRange {
+   * required int64 start = 1;
+   * required int64 end = 2;
+   * required int32 calendar = 3; // ucar.nc2.time.Calendar ordinal
+   * }
+   * 
+   * message CoverageDataset {
+   * required string name = 1;
+   * repeated Attribute atts = 2;
+   * required Rectangle latlonRect = 3;
+   * optional Rectangle projRect = 4;
+   * required CalendarDateRange dateRange = 5;
+   * 
+   * repeated CoordSys coordSys = 6;
+   * repeated CoordTransform coordTransforms = 7;
+   * repeated CoordAxis coordAxes = 8;
+   * repeated Coverage grids = 9;
+   * }
+   */
   CoverageCollection decodeHeader(CdmrFeatureProto.CoverageDataset proto, CdmrCoverageReader reader) {
     String name = endpoint;
     FeatureType csysType = convertCoverageType(proto.getCoverageType());
@@ -140,19 +143,24 @@ public class CdmrfReader {
     for (CdmrFeatureProto.Coverage pgrid : proto.getGridsList())
       coverages.add(decodeGrid(pgrid, reader));
 
-    //   public CoverageDataset(String name, AttributeContainerHelper atts, LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox,
-    //                         CalendarDateRange calendarDateRange, List<CoverageCoordSys > coordSys, List< CoverageCoordTransform > coordTransforms,
-    //                         List< CoverageCoordAxis > coordAxes, List< Coverage > coverages) {
+    // public CoverageDataset(String name, AttributeContainerHelper atts, LatLonRect latLonBoundingBox, ProjectionRect
+    // projBoundingBox,
+    // CalendarDateRange calendarDateRange, List<CoverageCoordSys > coordSys, List< CoverageCoordTransform >
+    // coordTransforms,
+    // List< CoverageCoordAxis > coordAxes, List< Coverage > coverages) {
 
-    return new CoverageCollection(name, csysType, gatts, latLonBoundingBox, projBoundingBox, calendarDateRange, coordSys, transforms, axes, coverages, reader);
+    return new CoverageCollection(name, csysType, gatts, latLonBoundingBox, projBoundingBox, calendarDateRange,
+        coordSys, transforms, axes, coverages, reader);
   }
 
-  /* message Rectangle {
-      required double startx = 1;
-      required double starty = 2;
-      required double incx = 3;
-      required double incy = 4;
-    } */
+  /*
+   * message Rectangle {
+   * required double startx = 1;
+   * required double starty = 2;
+   * required double incx = 3;
+   * required double incy = 4;
+   * }
+   */
   LatLonRect decodeLatLonRectangle(CdmrFeatureProto.Rectangle proto) {
     LatLonPointImpl start = new LatLonPointImpl(proto.getStarty(), proto.getStartx());
     return new LatLonRect(start, proto.getIncy(), proto.getIncx());
@@ -171,24 +179,25 @@ public class CdmrfReader {
   }
 
   /*
-message CoordSys {
-  required string name = 1;               // must be unique in dataset's CoordSys
-  repeated string axisNames = 2;
-  repeated string transformNames = 3;
-  optional CoverageType coverageType = 5;
-}
+   * message CoordSys {
+   * required string name = 1; // must be unique in dataset's CoordSys
+   * repeated string axisNames = 2;
+   * repeated string transformNames = 3;
+   * optional CoverageType coverageType = 5;
+   * }
    */
   CoverageCoordSys decodeCoordSys(CdmrFeatureProto.CoordSys proto) {
-    //   public CoverageCoordSys(String name, List<String> axisNames, List<String> transformNames, Type type) {
-    return new CoverageCoordSys(proto.getName(), proto.getAxisNamesList(), proto.getTransformNamesList(), convertCoverageType(proto.getCoverageType()));
+    // public CoverageCoordSys(String name, List<String> axisNames, List<String> transformNames, Type type) {
+    return new CoverageCoordSys(proto.getName(), proto.getAxisNamesList(), proto.getTransformNamesList(),
+        convertCoverageType(proto.getCoverageType()));
   }
 
   /*
-      message CoordTransform {
-    required bool isHoriz = 1;
-    required string name = 2;
-    repeated Attribute params = 3;
-  }
+   * message CoordTransform {
+   * required bool isHoriz = 1;
+   * required string name = 2;
+   * repeated Attribute params = 3;
+   * }
    */
   CoverageTransform decodeCoordTransform(CdmrFeatureProto.CoordTransform proto) {
 
@@ -197,29 +206,29 @@ message CoordSys {
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getParamsList())
       atts.addAttribute(NcStream.decodeAtt(patt));
 
-    //   public CoverageCoordTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
+    // public CoverageCoordTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
     return new CoverageTransform(name, atts, proto.getIsHoriz());
   }
 
   /*
-message CoordAxis {
-  required string name = 1;          // short name, unique within dataset
-  required DataType dataType = 2;
-  repeated Attribute atts = 3;       // look for calendar attribute here?
-  required AxisType axisType = 4;
-  required string units = 5;
-  optional string description = 6;
-
-  required DependenceType depend = 7;
-  optional string dependsOn = 8;    // depends on this axis
-
-  required int64 nvalues = 10;
-  required AxisSpacing spacing = 11;
-  required double startValue = 12;
-  required double endValue = 13;
-  optional double resolution = 14;     // resolution = (end-start) / (nvalues-1)
-  optional bytes values = 15;          // big endian doubles; not used for regular, may be deferred
-}
+   * message CoordAxis {
+   * required string name = 1; // short name, unique within dataset
+   * required DataType dataType = 2;
+   * repeated Attribute atts = 3; // look for calendar attribute here?
+   * required AxisType axisType = 4;
+   * required string units = 5;
+   * optional string description = 6;
+   * 
+   * required DependenceType depend = 7;
+   * optional string dependsOn = 8; // depends on this axis
+   * 
+   * required int64 nvalues = 10;
+   * required AxisSpacing spacing = 11;
+   * required double startValue = 12;
+   * required double endValue = 13;
+   * optional double resolution = 14; // resolution = (end-start) / (nvalues-1)
+   * optional bytes values = 15; // big endian doubles; not used for regular, may be deferred
+   * }
    */
   CoverageCoordAxis decodeCoordAxis(CdmrFeatureProto.CoordAxis proto, CoordAxisReader reader) {
     AxisType axisType = convertAxisType(proto.getAxisType());
@@ -245,11 +254,12 @@ message CoordAxis {
       DoubleBuffer db = bb.asDoubleBuffer();
       int n = db.remaining();
       values = new double[n];
-      for (int i = 0; i < n; i++) values[i] = db.get(i);
+      for (int i = 0; i < n; i++)
+        values[i] = db.get(i);
     }
 
     int[] shape = new int[proto.getShapeCount()]; // LOOK not used ??
-    for (int i=0; i<proto.getShapeCount(); i++)
+    for (int i = 0; i < proto.getShapeCount(); i++)
       shape[i] = proto.getShape(i);
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
@@ -273,7 +283,8 @@ message CoordAxis {
 
     if (dependenceType == CoverageCoordAxis.DependenceType.fmrcReg) {
       return new TimeAxis2DFmrcReg(builder);
-    } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
+    } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD
+        && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
       return new LatLonAxis2D(builder);
     } else if (axisType == AxisType.TimeOffset) {
       return new TimeOffsetAxis(builder);
@@ -283,14 +294,14 @@ message CoordAxis {
   }
 
   /*
-message Coverage {
-  required string name = 1; // short name
-  required DataType dataType = 2;
-  optional bool unsigned = 3 [default = false];
-  repeated Attribute atts = 4;
-  required string coordSys = 5;
-}
- */
+   * message Coverage {
+   * required string name = 1; // short name
+   * required DataType dataType = 2;
+   * optional bool unsigned = 3 [default = false];
+   * repeated Attribute atts = 4;
+   * required string coordSys = 5;
+   * }
+   */
   Coverage decodeGrid(CdmrFeatureProto.Coverage proto, CoverageReader reader) {
     DataType dataType = NcStream.convertDataType(proto.getDataType());
 
@@ -298,7 +309,8 @@ message Coverage {
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
       atts.add(NcStream.decodeAtt(patt));
 
-    return new Coverage(proto.getName(), dataType, atts, proto.getCoordSys(), proto.getUnits(), proto.getDescription(), reader, null);
+    return new Coverage(proto.getName(), dataType, atts, proto.getCoordSys(), proto.getUnits(), proto.getDescription(),
+        reader, null);
   }
 
   static public AxisType convertAxisType(CdmrFeatureProto.AxisType dtype) {
@@ -357,7 +369,7 @@ message Coverage {
     throw new IllegalStateException("illegal data type " + type);
   }
 
-  //   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
+  // public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
   static public FeatureType convertCoverageType(CdmrFeatureProto.CoverageType type) {
     switch (type) {
@@ -411,26 +423,26 @@ message Coverage {
   ///////////////////////////////////////////////////////////////////
 
   /*
-  message CoverageDataResponse {
-    repeated CoordAxis coordAxes = 1;              // may be shared if asking for multiple grids
-    repeated CoordSys coordSys = 2;                //    "
-    repeated CoordTransform coordTransforms = 3;   //    "
-
-    repeated GeoReferencedArray geoArray = 4;
-  }
+   * message CoverageDataResponse {
+   * repeated CoordAxis coordAxes = 1; // may be shared if asking for multiple grids
+   * repeated CoordSys coordSys = 2; // "
+   * repeated CoordTransform coordTransforms = 3; // "
+   * 
+   * repeated GeoReferencedArray geoArray = 4;
+   * }
    */
   public CoverageDataResponse decodeDataResponse(CdmrFeatureProto.CoverageDataResponse dproto) {
     List<CoverageTransform> transforms = new ArrayList<>();
     for (CdmrFeatureProto.CoordTransform pt : dproto.getCoordTransformsList())
-      transforms.add( decodeCoordTransform(pt));
+      transforms.add(decodeCoordTransform(pt));
 
     List<CoverageCoordSys> coordSys = new ArrayList<>();
     for (CdmrFeatureProto.CoordSys psys : dproto.getCoordSysList())
-      coordSys.add( decodeCoordSys(psys));
+      coordSys.add(decodeCoordSys(psys));
 
     List<CoverageCoordAxis> axes = new ArrayList<>();
     for (CdmrFeatureProto.CoordAxis paxis : dproto.getCoordAxesList())
-      axes.add( decodeCoordAxis(paxis, null));  // LOOK null reader - so all values must be present
+      axes.add(decodeCoordAxis(paxis, null)); // LOOK null reader - so all values must be present
 
     CoverageDataResponse result = new CoverageDataResponse(axes, coordSys, transforms);
 
@@ -441,39 +453,41 @@ message Coverage {
   }
 
   /*
-  message GeoReferencedArray {
-    string gridName = 1;          // full escaped name.
-    DataType dataType = 2;
-    bool bigend = 3;
-    uint32 version = 4;
-    Compress compress = 5;
-    uint64 uncompressedSize = 6;
-
-    repeated uint32 shape = 7;            // the shape of the returned array
-    repeated string axisName = 8;         // each dimension corresponds to this axis LOOK needed?
-    string coordSysName = 9;            // must have coordAxis corresponding to shape
-    bytes primdata = 10;              // rectangular, primitive array
-  }
+   * message GeoReferencedArray {
+   * string gridName = 1; // full escaped name.
+   * DataType dataType = 2;
+   * bool bigend = 3;
+   * uint32 version = 4;
+   * Compress compress = 5;
+   * uint64 uncompressedSize = 6;
+   * 
+   * repeated uint32 shape = 7; // the shape of the returned array
+   * repeated string axisName = 8; // each dimension corresponds to this axis LOOK needed?
+   * string coordSysName = 9; // must have coordAxis corresponding to shape
+   * bytes primdata = 10; // rectangular, primitive array
+   * }
    */
 
-  public GeoReferencedArray decodeGeoReferencedArray(CoverageDataResponse dataResponse, CdmrFeatureProto.GeoReferencedArray parray) {
+  public GeoReferencedArray decodeGeoReferencedArray(CoverageDataResponse dataResponse,
+      CdmrFeatureProto.GeoReferencedArray parray) {
     DataType dataType = NcStream.convertDataType(parray.getDataType());
     ByteOrder byteOrder = parray.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
     boolean deflate = parray.getCompress() == NcStreamProto.Compress.DEFLATE;
     long uncompressedSize = parray.getUncompressedSize();
 
     int[] shape = new int[parray.getShapeCount()];
-    for (int i=0; i< parray.getShapeCount(); i++)
+    for (int i = 0; i < parray.getShapeCount(); i++)
       shape[i] = parray.getShape(i);
 
     ByteBuffer bb = parray.getPrimdata().asReadOnlyByteBuffer();
     bb.order(byteOrder);
     Array data = Array.factory(dataType, shape, bb);
 
-    CoverageCoordSys csys = dataResponse.findCoordSys( parray.getCoordSysName());
-    if (csys == null) throw new IllegalStateException("Misformed response - no coordsys");
+    CoverageCoordSys csys = dataResponse.findCoordSys(parray.getCoordSysName());
+    if (csys == null)
+      throw new IllegalStateException("Misformed response - no coordsys");
 
     return new GeoReferencedArray(parray.getCoverageName(), dataType, data, csys);
-    }
+  }
 
 }

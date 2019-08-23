@@ -13,7 +13,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
-
 import javax.annotation.Nonnull;
 import java.util.Formatter;
 
@@ -36,12 +35,13 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
 
   @Override
   protected void setDataset(CoordSysContainer dataset) {
-    if (shape != null) throw new RuntimeException("Cant change axis once set");
+    if (shape != null)
+      throw new RuntimeException("Cant change axis once set");
     shape = new int[2];
     String runtimeName = dependsOn.get(0);
     CoverageCoordAxis runtime = dataset.findCoordAxis(runtimeName);
     if (runtime == null)
-      throw new IllegalStateException("FmrcTimeAxis2D cant find runtime axis with name "+runtimeName);
+      throw new IllegalStateException("FmrcTimeAxis2D cant find runtime axis with name " + runtimeName);
 
     assert runtime instanceof CoverageCoordAxis1D;
     assert runtime.getAxisType() == AxisType.RunTime;
@@ -82,10 +82,10 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
     if (latest) {
       run_index = runCoord.getNcoords() - 1;
 
-    } else if (rundate != null){
+    } else if (rundate != null) {
       double rundateTarget = runCoord.convert(rundate);
       CoordAxisHelper helper = new CoordAxisHelper(runCoord);
-      run_index = helper.findCoordElement(rundateTarget, true);  // LOOK Bounded
+      run_index = helper.findCoordElement(rundateTarget, true); // LOOK Bounded
     }
     if (run_index >= 0) {
       CoverageCoordAxis1D time1D = getTimeAxisForRun(run_index);
@@ -97,13 +97,15 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented, maybe illegal ??
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented,
+                                                                                            // maybe illegal ??
     return Optional.of(new TimeAxis2DFmrc(new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
   @Nonnull
-  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal ??
+  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal
+                                                                                 // ??
     throw new UnsupportedOperationException();
   }
 
@@ -124,7 +126,7 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
 
   public CoverageCoordAxis1D getTimeAxisForRun(CalendarDate rundate) {
     double rundateTarget = runCoord.convert(rundate);
-    int run_index = new CoordAxisHelper(runCoord).findCoordElement(rundateTarget, false);  // LOOK not Bounded
+    int run_index = new CoordAxisHelper(runCoord).findCoordElement(rundateTarget, false); // LOOK not Bounded
     return (run_index < 0 || run_index >= runCoord.getNcoords()) ? null : getTimeAxisForRun(run_index);
   }
 
@@ -140,9 +142,8 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
         values[count++] = subset.nextDouble();
 
       CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
-              AttributeContainerHelper.filter(attributes, "_Coordinate"),
-              dependenceType, getDependsOn(), spacing, n, values[0], values[n - 1],
-              0.0, values, reader);
+          AttributeContainerHelper.filter(attributes, "_Coordinate"), dependenceType, getDependsOn(), spacing, n,
+          values[0], values[n - 1], 0.0, values, reader);
       builder.setIsSubset(true);
       return new CoverageCoordAxis1D(builder);
     }
@@ -158,9 +159,8 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
         values[count++] = subset.nextDouble();
 
       CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
-              AttributeContainerHelper.filter(attributes, "_Coordinate"),
-              dependenceType, getDependsOn(), spacing, n / 2, values[0], values[n - 1],
-              0.0, values, reader);
+          AttributeContainerHelper.filter(attributes, "_Coordinate"), dependenceType, getDependsOn(), spacing, n / 2,
+          values[0], values[n - 1], 0.0, values, reader);
 
       builder.setIsSubset(true);
       return new CoverageCoordAxis1D(builder);

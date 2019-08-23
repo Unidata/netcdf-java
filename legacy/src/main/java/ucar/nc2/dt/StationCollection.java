@@ -52,10 +52,12 @@ public interface StationCollection extends PointCollection {
    * @return List of Station
    * @throws java.io.IOException on io error
    */
-  public List<ucar.unidata.geoloc.Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox, ucar.nc2.util.CancelTask cancel) throws IOException;
+  public List<ucar.unidata.geoloc.Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox,
+      ucar.nc2.util.CancelTask cancel) throws IOException;
 
   /**
    * Find a Station by name
+   * 
    * @param name find this name
    * @return Station, or null
    */
@@ -109,7 +111,8 @@ public interface StationCollection extends PointCollection {
    * @return List of getDataClass()
    * @throws java.io.IOException on io error
    */
-  public List getData(ucar.unidata.geoloc.Station s, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
+  public List getData(ucar.unidata.geoloc.Station s, Date start, Date end, ucar.nc2.util.CancelTask cancel)
+      throws IOException;
 
   /**
    * Get all data for a list of Stations.
@@ -155,7 +158,8 @@ public interface StationCollection extends PointCollection {
    * @see #getDataIterator as a (possibly) more efficient alternative
    * @throws java.io.IOException on io error
    */
-  public List getData(List<ucar.unidata.geoloc.Station> stations, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
+  public List getData(List<ucar.unidata.geoloc.Station> stations, Date start, Date end, ucar.nc2.util.CancelTask cancel)
+      throws IOException;
 
 
   /**
@@ -172,17 +176,19 @@ public interface StationCollection extends PointCollection {
    * @param s for this Station
    * @param start restrict data to after this time
    * @param end restrict data to before this time
-    * @return Iterator over type getDataClass()
+   * @return Iterator over type getDataClass()
    */
   public DataIterator getDataIterator(ucar.unidata.geoloc.Station s, Date start, Date end);
 
-  /** Get all data for a list of Stations.
+  /**
+   * Get all data for a list of Stations.
+   * 
    * @return Iterator over type getDataClass() *
-  public DataIterator getDataIterator(List stations) throws IOException;
-
-  /** Get data for a list of Stations within the specified date range.
+   *         public DataIterator getDataIterator(List stations) throws IOException;
+   * 
+   *         /** Get data for a list of Stations within the specified date range.
    * @return Iterator over type getDataClass() *
-  public DataIterator getDataIterator(List stations, Date start, Date end) throws IOException;
+   *         public DataIterator getDataIterator(List stations, Date start, Date end) throws IOException;
    */
 
 }

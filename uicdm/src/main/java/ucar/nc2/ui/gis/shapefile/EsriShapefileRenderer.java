@@ -7,7 +7,6 @@ package ucar.nc2.ui.gis.shapefile;
 import ucar.nc2.ui.gis.GisFeatureRendererMulti;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
-
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +14,7 @@ import java.util.HashMap;
 
 /**
  * Provides a convenient interface to ESRI shapefiles by creating lists of
- * ucar.unidata.gis.AbstractGisFeature.  Java2D Shape or VisAD SampledSet
+ * ucar.unidata.gis.AbstractGisFeature. Java2D Shape or VisAD SampledSet
  * objects can be created from these.
  *
  * @author Russ Rew
@@ -26,7 +25,7 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
   private static double defaultCoarseness = 0.0; // expose later?
 
   /**
-   * Use factory to obtain a EsriShapefileRenderer.  This caches the EsriShapefile for reuse.
+   * Use factory to obtain a EsriShapefileRenderer. This caches the EsriShapefile for reuse.
    * <p/>
    * Implementation note: should switch to weak references.
    */
@@ -42,8 +41,8 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
       sfileHash.put(filename, sfile);
       return sfile;
     } catch (Exception ex) {
-      //System.err.println("EsriShapefileRenderer failed on " + filename + "\n" + ex);
-      //ex.printStackTrace();
+      // System.err.println("EsriShapefileRenderer failed on " + filename + "\n" + ex);
+      // ex.printStackTrace();
       return null;
     }
   }

@@ -6,7 +6,6 @@
 package ucar.nc2.iosp.bufr.tables;
 
 import ucar.unidata.util.StringUtil2;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +28,10 @@ public class NcepTable {
       int count = 0;
       while (true) {
         String line = dataIS.readLine();
-        if (line == null) break;
-        if (line.startsWith("#")) continue;
+        if (line == null)
+          break;
+        if (line.startsWith("#"))
+          continue;
         count++;
 
         String[] flds = line.split(";");
@@ -53,15 +54,16 @@ public class NcepTable {
   }
 
   private static List<TableEntry> entries = null;
+
   private static class TableEntry {
-     public int cat, subcat;
-     public String value;
+    public int cat, subcat;
+    public String value;
 
     public TableEntry(int cat, int subcat, String value) {
       this.cat = cat;
       this.subcat = subcat;
       this.value = value.trim();
-      //System.out.printf(" %3d %3d: %s%n", cat, subcat, value);
+      // System.out.printf(" %3d %3d: %s%n", cat, subcat, value);
     }
   }
 
@@ -77,10 +79,12 @@ public class NcepTable {
 
 
   public static String getDataSubcategory(int cat, int subcat) {
-    if (entries == null) init();
+    if (entries == null)
+      init();
 
     for (TableEntry p : entries) {
-      if ((p.cat == cat) && (p.subcat == subcat)) return p.value;
+      if ((p.cat == cat) && (p.subcat == subcat))
+        return p.value;
     }
     return null;
   }

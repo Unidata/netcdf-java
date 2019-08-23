@@ -11,7 +11,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.Closeable;
 import java.io.IOException;
@@ -48,11 +47,12 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
 
   /**
    * Ctor
-   * @param name  CoverageCollection name
+   * 
+   * @param name CoverageCollection name
    * @param coverageType CoverageCollection type
    * @param atts CoverageCollection attributes
    * @param latLonBoundingBox if null, calculate
-   * @param projBoundingBox   if null, calculate
+   * @param projBoundingBox if null, calculate
    * @param calendarDateRange need this to get the Calendar
    * @param coordSys list of coordinate systems
    * @param coordTransforms list of coordinate transforms
@@ -61,9 +61,9 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
    * @param reader delegate for reading
    */
   public CoverageCollection(String name, FeatureType coverageType, AttributeContainerHelper atts,
-                            LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
-                            List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms, List<CoverageCoordAxis> coordAxes, List<Coverage> coverages,
-                            CoverageReader reader) {
+      LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
+      List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms, List<CoverageCoordAxis> coordAxes,
+      List<Coverage> coverages, CoverageReader reader) {
     this.name = name;
     this.atts = atts;
     this.calendarDateRange = calendarDateRange;
@@ -102,16 +102,16 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
     Map<String, CoordSysSet> map = new HashMap<>();
     for (Coverage coverage : coverages) {
       coverageMap.put(coverage.getName(), coverage);
-      CoordSysSet gset = map.get(coverage.getCoordSysName());             // duplicates get eliminated here
+      CoordSysSet gset = map.get(coverage.getCoordSysName()); // duplicates get eliminated here
       if (gset == null) {
         CoverageCoordSys ccsys = findCoordSys(coverage.getCoordSysName());
         if (ccsys == null) {
-          throw new IllegalStateException("Cant find "+coverage.getCoordSysName());
+          throw new IllegalStateException("Cant find " + coverage.getCoordSysName());
         }
 
         gset = new CoordSysSet(ccsys); // must use findByName because objects arent wired up yet
         map.put(coverage.getCoordSysName(), gset);
-        gset.getCoordSys().setDataset(this);  // wire dataset into coordSys
+        gset.getCoordSys().setDataset(this); // wire dataset into coordSys
       }
       gset.addCoverage(coverage);
       coverage.setCoordSys(gset.getCoordSys()); // wire coordSys into coverage
@@ -169,7 +169,7 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
 
   public ucar.nc2.time.Calendar getCalendar() {
     if (calendarDateRange != null)
-      return calendarDateRange.getStart().getCalendar();  // LOOK
+      return calendarDateRange.getStart().getCalendar(); // LOOK
     return ucar.nc2.time.Calendar.getDefault();
   }
 
@@ -259,7 +259,8 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
 
   public CoverageCoordSys findCoordSys(String name) {
     for (CoverageCoordSys gcs : coordSys)
-      if (gcs.getName().equalsIgnoreCase(name)) return gcs;
+      if (gcs.getName().equalsIgnoreCase(name))
+        return gcs;
     return null;
   }
 
@@ -269,7 +270,8 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
 
   public CoverageTransform findCoordTransform(String name) {
     for (CoverageTransform ct : coordTransforms)
-      if (ct.getName().equalsIgnoreCase(name)) return ct;
+      if (ct.getName().equalsIgnoreCase(name))
+        return ct;
     return null;
   }
 

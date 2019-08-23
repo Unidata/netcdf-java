@@ -5,7 +5,6 @@
 package ucar.nc2.ft.point;
 
 import javax.annotation.Nonnull;
-
 import com.google.common.base.Preconditions;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeature;
@@ -31,7 +30,8 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
     this.timeUnit = timeUnit;
   }
 
-  public PointFeatureImpl(DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime, CalendarDateUnit timeUnit) {
+  public PointFeatureImpl(DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime,
+      CalendarDateUnit timeUnit) {
     this.dsg = Preconditions.checkNotNull(dsg, "dgs == null");
     this.location = Preconditions.checkNotNull(location, "location == null");
     this.obsTime = obsTime;
@@ -47,13 +47,19 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
 
   @Nonnull
   @Override
-  public EarthLocation getLocation() { return location; }
+  public EarthLocation getLocation() {
+    return location;
+  }
 
   @Override
-  public double getNominalTime() { return nomTime; }
+  public double getNominalTime() {
+    return nomTime;
+  }
 
   @Override
-  public double getObservationTime() { return obsTime; }
+  public double getObservationTime() {
+    return obsTime;
+  }
 
   public String getDescription() {
     return location.toString(); // ??
@@ -78,11 +84,7 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
 
   @Override
   public String toString() {
-    return "PointFeatureImpl{" +
-        "location=" + location +
-        ", obsTime=" + obsTime +
-        ", nomTime=" + nomTime +
-        ", timeUnit=" + timeUnit +
-        '}';
+    return "PointFeatureImpl{" + "location=" + location + ", obsTime=" + obsTime + ", nomTime=" + nomTime
+        + ", timeUnit=" + timeUnit + '}';
   }
 }

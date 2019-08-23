@@ -37,7 +37,7 @@ public class GribCollectionConfig extends JDialog {
   }
 
   private void initComponents() {
-    // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+    // JFormDesigner - Component initialization - DO NOT MODIFY //GEN-BEGIN:initComponents
     // Generated using JFormDesigner non-commercial license
     label1 = new JLabel();
     excludeZero = new JCheckBox();
@@ -47,45 +47,36 @@ public class GribCollectionConfig extends JDialog {
     ApplyButton = new JButton();
     actionApply = new ActionApply();
 
-    //======== this ========
+    // ======== this ========
     setTitle("GribConfig");
     Container contentPane = getContentPane();
 
-    //---- label1 ----
+    // ---- label1 ----
     label1.setText("Interval Filter");
 
-    //---- excludeZero ----
+    // ---- excludeZero ----
     excludeZero.setText("excludeZero");
 
-    //======== panel1 ========
+    // ======== panel1 ========
     {
       panel1.setLayout(new BorderLayout());
 
-      //======== scrollPane1 ========
+      // ======== scrollPane1 ========
       {
         scrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        //---- intvLenTable ----
-        intvLenTable.setModel(new DefaultTableModel(
-          new Object[][] {
-            {null, ""},
-            {null, null},
-            {null, null},
-            {null, null},
-          },
-          new String[] {
-            "intvLength", "paramID"
-          }
-        ) {
-          Class<?>[] columnTypes = new Class<?>[] {
-            Integer.class, String.class
-          };
-          @Override
-          public Class<?> getColumnClass(int columnIndex) {
-            return columnTypes[columnIndex];
-          }
-        });
+        // ---- intvLenTable ----
+        intvLenTable
+            .setModel(new DefaultTableModel(new Object[][] {{null, ""}, {null, null}, {null, null}, {null, null},},
+                new String[] {"intvLength", "paramID"}) {
+              Class<?>[] columnTypes = new Class<?>[] {Integer.class, String.class};
+
+              @Override
+              public Class<?> getColumnClass(int columnIndex) {
+                return columnTypes[columnIndex];
+              }
+            });
         intvLenTable.setFillsViewportHeight(true);
         intvLenTable.setPreferredScrollableViewportSize(new Dimension(450, 500));
         intvLenTable.setPreferredSize(new Dimension(150, 400));
@@ -94,46 +85,33 @@ public class GribCollectionConfig extends JDialog {
       panel1.add(scrollPane1, BorderLayout.CENTER);
     }
 
-    //---- ApplyButton ----
+    // ---- ApplyButton ----
     ApplyButton.setAction(actionApply);
 
     GroupLayout contentPaneLayout = new GroupLayout(contentPane);
     contentPane.setLayout(contentPaneLayout);
-    contentPaneLayout.setHorizontalGroup(
-      contentPaneLayout.createParallelGroup()
-        .addGroup(contentPaneLayout.createSequentialGroup()
-          .addGap(17, 17, 17)
-          .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-            .addComponent(label1, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
-            .addComponent(excludeZero, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
-            .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
-          .addGap(126, 126, 126))
-        .addGroup(GroupLayout.Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
-          .addContainerGap()
-          .addComponent(ApplyButton)
-          .addGap(38, 38, 38))
-    );
-    contentPaneLayout.setVerticalGroup(
-      contentPaneLayout.createParallelGroup()
-        .addGroup(contentPaneLayout.createSequentialGroup()
-          .addComponent(label1)
-          .addGap(5, 5, 5)
-          .addComponent(excludeZero)
-          .addGroup(contentPaneLayout.createParallelGroup()
-            .addGroup(contentPaneLayout.createSequentialGroup()
-              .addGap(98, 98, 98)
-              .addComponent(ApplyButton))
-            .addGroup(contentPaneLayout.createSequentialGroup()
-              .addGap(5, 5, 5)
-              .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)))
-          .addContainerGap())
-    );
+    contentPaneLayout.setHorizontalGroup(contentPaneLayout.createParallelGroup()
+        .addGroup(contentPaneLayout.createSequentialGroup().addGap(17, 17, 17)
+            .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                .addComponent(label1, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+                .addComponent(excludeZero, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
+            .addGap(126, 126, 126))
+        .addGroup(GroupLayout.Alignment.TRAILING,
+            contentPaneLayout.createSequentialGroup().addContainerGap().addComponent(ApplyButton).addGap(38, 38, 38)));
+    contentPaneLayout.setVerticalGroup(contentPaneLayout.createParallelGroup().addGroup(
+        contentPaneLayout.createSequentialGroup().addComponent(label1).addGap(5, 5, 5).addComponent(excludeZero)
+            .addGroup(contentPaneLayout.createParallelGroup()
+                .addGroup(contentPaneLayout.createSequentialGroup().addGap(98, 98, 98).addComponent(ApplyButton))
+                .addGroup(contentPaneLayout.createSequentialGroup().addGap(5, 5, 5).addComponent(panel1,
+                    GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)))
+            .addContainerGap()));
     pack();
     setLocationRelativeTo(getOwner());
-    // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    // JFormDesigner - End of component initialization //GEN-END:initComponents
   }
 
-  // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+  // JFormDesigner - Variables declaration - DO NOT MODIFY //GEN-BEGIN:variables
   // Generated using JFormDesigner non-commercial license
   private JLabel label1;
   private JCheckBox excludeZero;
@@ -142,14 +120,14 @@ public class GribCollectionConfig extends JDialog {
   private JTable intvLenTable;
   private JButton ApplyButton;
   private ActionApply actionApply;
-  // JFormDesigner - End of variables declaration  //GEN-END:variables
+  // JFormDesigner - End of variables declaration //GEN-END:variables
 
   private class ActionApply extends AbstractAction {
     private ActionApply() {
-      // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+      // JFormDesigner - Action initialization - DO NOT MODIFY //GEN-BEGIN:initComponents
       // Generated using JFormDesigner non-commercial license
       putValue(NAME, "Apply");
-      // JFormDesigner - End of action initialization  //GEN-END:initComponents
+      // JFormDesigner - End of action initialization //GEN-END:initComponents
     }
 
     public void actionPerformed(ActionEvent e) {

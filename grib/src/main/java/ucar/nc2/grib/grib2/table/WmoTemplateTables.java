@@ -12,7 +12,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribNumbers;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -54,6 +53,7 @@ public class WmoTemplateTables {
   }
 
   public static final Version standard = Version.GRIB2_22_0_0;
+
   public enum Version {
     GRIB2_22_0_0;
 
@@ -64,7 +64,7 @@ public class WmoTemplateTables {
     @Nullable
     String[] getElemNames() {
       if (this == GRIB2_22_0_0) {
-        return new String[]{"GRIB2_22_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
+        return new String[] {"GRIB2_22_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
       }
       return null;
     }
@@ -86,15 +86,16 @@ public class WmoTemplateTables {
   }
 
   /*
-  <GRIB2_22_0_0_Template_en>
-    <No>1451</No>
-    <Title_en>Product definition template 4.55 - spatio-temporal changing tiles at a horizontal level or horizontal layer at a point in time</Title_en>
-    <OctetNo>35</OctetNo>
-    <Contents_en>Type of second fixed surface</Contents_en>
-    <Note_en>(see Code table 4.5)</Note_en>
-    <Status>Operational</Status>
-  </GRIB2_22_0_0_Template_en>
-  */
+   * <GRIB2_22_0_0_Template_en>
+   * <No>1451</No>
+   * <Title_en>Product definition template 4.55 - spatio-temporal changing tiles at a horizontal level or horizontal
+   * layer at a point in time</Title_en>
+   * <OctetNo>35</OctetNo>
+   * <Contents_en>Type of second fixed surface</Contents_en>
+   * <Note_en>(see Code table 4.5)</Note_en>
+   * <Status>Operational</Status>
+   * </GRIB2_22_0_0_Template_en>
+   */
 
   private void readXml(Version version) throws IOException {
     try (InputStream ios = WmoTemplateTables.class.getResourceAsStream(version.getResourceName())) {
@@ -246,7 +247,8 @@ public class WmoTemplateTables {
         } else {
           String desc = convert(tables, info, fld.value(raw));
           if (desc == null) {
-            f.format("%3d: %90s == %d (%s) %n", fld.start, fld.content, fld.value(raw), convert(tables, info, fld.value(raw)));
+            f.format("%3d: %90s == %d (%s) %n", fld.start, fld.content, fld.value(raw),
+                convert(tables, info, fld.value(raw)));
           } else {
             f.format("%3d: %90s == %d (table %s: %s) %n", fld.start, fld.content, fld.value(raw), info, desc);
           }

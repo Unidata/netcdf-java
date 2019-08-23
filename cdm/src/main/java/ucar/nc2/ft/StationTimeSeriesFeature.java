@@ -7,7 +7,6 @@ package ucar.nc2.ft;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
-
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
@@ -20,12 +19,14 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
 
   /**
    * The number of points in the time series. May not be known until after iterating through the collection.
+   * 
    * @return number of points in the time series, or -1 if not known.
    */
   int size();
 
   /**
    * Subset this collection by calendar dateRange
+   * 
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
    */
@@ -33,6 +34,7 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
 
   /**
    * The actual data of just this StationTimeSeries feature.
+   * 
    * @return the actual data associated with this StationTimeSeries
    * @throws java.io.IOException on i/o error
    */

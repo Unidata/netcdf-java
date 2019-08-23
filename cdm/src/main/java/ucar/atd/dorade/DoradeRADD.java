@@ -7,16 +7,19 @@ package ucar.atd.dorade;
 
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
-
 import java.io.*;
 import java.util.Arrays;
 
 class DoradeRADD extends DoradeDescriptor {
 
   /**
-   * <p>Title: RadarType</p>
-   * <p>Description: nested top level class for defining DORADE radar
-   * types</p>
+   * <p>
+   * Title: RadarType
+   * </p>
+   * <p>
+   * Description: nested top level class for defining DORADE radar
+   * types
+   * </p>
    */
   static class RadarType {
     private String name;
@@ -71,34 +74,32 @@ class DoradeRADD extends DoradeDescriptor {
    */
   public static final RadarType TYPE_MOVING_LIDAR = new RadarType("moving lidar");
 
-  private static RadarType[] radarTypes = {
-          TYPE_GROUND,       // 0
-          TYPE_AIR_FORE,     // 1
-          TYPE_AIR_AFT,      // 2
-          TYPE_AIR_LF,       // 3
-          TYPE_AIR_TAIL,     // 4
-          TYPE_SHIP,         // 5
-          TYPE_AIR_NOSE,     // 6
-          TYPE_SATELLITE,    // 7
-          TYPE_MOVING_LIDAR, // 8
-          TYPE_FIXED_LIDAR,  // 9
+  private static RadarType[] radarTypes = {TYPE_GROUND, // 0
+      TYPE_AIR_FORE, // 1
+      TYPE_AIR_AFT, // 2
+      TYPE_AIR_LF, // 3
+      TYPE_AIR_TAIL, // 4
+      TYPE_SHIP, // 5
+      TYPE_AIR_NOSE, // 6
+      TYPE_SATELLITE, // 7
+      TYPE_MOVING_LIDAR, // 8
+      TYPE_FIXED_LIDAR, // 9
   };
 
   //
   // lookup table mapping DORADE scan mode integer values to ScanMode-s
   //
-  private static ScanMode[] scanModeTable = {
-          ScanMode.MODE_calibration, // 0
-          ScanMode.MODE_PPI,         // 1
-          ScanMode.MODE_coplane,     // 2
-          ScanMode.MODE_RHI,         // 3
-          ScanMode.MODE_vertical,    // 4
-          ScanMode.MODE_target,      // 5
-          ScanMode.MODE_manual,      // 6
-          ScanMode.MODE_idle,        // 7
-          ScanMode.MODE_SUR,         // 8
-          ScanMode.MODE_air,         // 9
-          ScanMode.MODE_horizontal,  // 10
+  private static ScanMode[] scanModeTable = {ScanMode.MODE_calibration, // 0
+      ScanMode.MODE_PPI, // 1
+      ScanMode.MODE_coplane, // 2
+      ScanMode.MODE_RHI, // 3
+      ScanMode.MODE_vertical, // 4
+      ScanMode.MODE_target, // 5
+      ScanMode.MODE_manual, // 6
+      ScanMode.MODE_idle, // 7
+      ScanMode.MODE_SUR, // 8
+      ScanMode.MODE_air, // 9
+      ScanMode.MODE_horizontal, // 10
   };
 
 
@@ -150,7 +151,7 @@ class DoradeRADD extends DoradeDescriptor {
   private DoradeCELV myCELV;
   private DoradeCFAC myCFAC;
 
-  private int nCells;  // extracted from our CELV
+  private int nCells; // extracted from our CELV
 
 
   public DoradeRADD(RandomAccessFile file, boolean littleEndianData) throws DescriptorException {
@@ -210,8 +211,8 @@ class DoradeRADD extends DoradeDescriptor {
     //
     try {
       long startpos = file.getFilePointer();
-      //  try
-      //   {
+      // try
+      // {
       String dName = peekName(file);
       switch (dName) {
         case "CELV":
@@ -224,10 +225,10 @@ class DoradeRADD extends DoradeDescriptor {
         default:
           throw new DescriptorException("Expected " + dName + " descriptor not found!");
       }
-      //    } catch (DescriptorException ex) {
-      //    file.seek(startpos);
-      //	myCELV = new DoradeCSFD(file, littleEndianData);
-      //   }
+      // } catch (DescriptorException ex) {
+      // file.seek(startpos);
+      // myCELV = new DoradeCSFD(file, littleEndianData);
+      // }
     } catch (IOException ioex) {
       throw new DescriptorException(ioex);
     }
@@ -243,40 +244,17 @@ class DoradeRADD extends DoradeDescriptor {
 
   @Override
   public String toString() {
-    String sb = "DoradeRADD{" + "radarName='" + radarName + '\''
-        + ", radarConstant=" + radarConstant
-        + ", peakPower=" + peakPower
-        + ", noisePower=" + noisePower
-        + ", rcvrGain=" + rcvrGain
-        + ", antennaGain=" + antennaGain
-        + ", systemGain=" + systemGain
-        + ", hBeamWidth=" + hBeamWidth
-        + ", vBeamWidth=" + vBeamWidth
-        + ", radarTypeNdx=" + radarTypeNdx
-        + ", scanMode=" + scanMode
-        + ", rotVelocity=" + rotVelocity
-        + ", scanParam0=" + scanParam0
-        + ", scanParam1=" + scanParam1
-        + ", nParams=" + nParams
-        + ", nAdditionalDescriptors=" + nAdditionalDescriptors
-        + ", compressionScheme=" + compressionScheme
-        + ", dataReductionMethod=" + dataReductionMethod
-        + ", reductionBound0=" + reductionBound0
-        + ", reductionBound1=" + reductionBound1
-        + ", longitude=" + longitude
-        + ", latitude=" + latitude
-        + ", altitude=" + altitude
-        + ", unambiguousVelocity=" + unambiguousVelocity
-        + ", unambiguousRange=" + unambiguousRange
-        + ", nFrequencies=" + nFrequencies
-        + ", nPRTs=" + nPRTs
-        + ", frequencies=" + Arrays.toString(frequencies)
-        + ", PRTs=" + Arrays.toString(PRTs)
-        + ", myPARMs=" + Arrays.toString(myPARMs)
-        + ", myCELV=" + myCELV
-        + ", myCFAC=" + myCFAC
-        + ", nCells=" + nCells
-        + '}';
+    String sb = "DoradeRADD{" + "radarName='" + radarName + '\'' + ", radarConstant=" + radarConstant + ", peakPower="
+        + peakPower + ", noisePower=" + noisePower + ", rcvrGain=" + rcvrGain + ", antennaGain=" + antennaGain
+        + ", systemGain=" + systemGain + ", hBeamWidth=" + hBeamWidth + ", vBeamWidth=" + vBeamWidth + ", radarTypeNdx="
+        + radarTypeNdx + ", scanMode=" + scanMode + ", rotVelocity=" + rotVelocity + ", scanParam0=" + scanParam0
+        + ", scanParam1=" + scanParam1 + ", nParams=" + nParams + ", nAdditionalDescriptors=" + nAdditionalDescriptors
+        + ", compressionScheme=" + compressionScheme + ", dataReductionMethod=" + dataReductionMethod
+        + ", reductionBound0=" + reductionBound0 + ", reductionBound1=" + reductionBound1 + ", longitude=" + longitude
+        + ", latitude=" + latitude + ", altitude=" + altitude + ", unambiguousVelocity=" + unambiguousVelocity
+        + ", unambiguousRange=" + unambiguousRange + ", nFrequencies=" + nFrequencies + ", nPRTs=" + nPRTs
+        + ", frequencies=" + Arrays.toString(frequencies) + ", PRTs=" + Arrays.toString(PRTs) + ", myPARMs="
+        + Arrays.toString(myPARMs) + ", myCELV=" + myCELV + ", myCFAC=" + myCFAC + ", nCells=" + nCells + '}';
     return sb;
   }
 
@@ -284,10 +262,12 @@ class DoradeRADD extends DoradeDescriptor {
    * Get the compression scheme being used.
    *
    * @return the integer defining the compression scheme:
-   * <ul><code>
+   *         <ul>
+   *         <code>
    * <li>COMPRESSION_NONE
    * <li>COMPRESSION_HRD
-   * </code></ul>
+   * </code>
+   *         </ul>
    */
   public int getCompressionScheme() {
     return compressionScheme;
@@ -351,7 +331,7 @@ class DoradeRADD extends DoradeDescriptor {
   }
 
   /**
-   * Get the cell spacing.  An exception is thrown if the cell spacing
+   * Get the cell spacing. An exception is thrown if the cell spacing
    * is not constant.
    *
    * @return the cell spacing, in meters

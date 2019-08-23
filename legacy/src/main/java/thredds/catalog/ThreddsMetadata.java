@@ -6,11 +6,9 @@
 package thredds.catalog;
 
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
-
 import java.util.*;
 import java.net.URI;
 import java.io.IOException;
-
 import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -43,13 +41,13 @@ public class ThreddsMetadata {
   protected List<Vocab> projects = new ArrayList<Vocab>();
   protected List<InvProperty> properties = new ArrayList<InvProperty>(); //
   protected List<Source> publishers = new ArrayList<Source>(); //
-  protected List<Variables> variables = new ArrayList<Variables>();  //
+  protected List<Variables> variables = new ArrayList<Variables>(); //
   protected String variableMapLink;
 
   // singles
   protected GeospatialCoverage gc;
   protected DateRange timeCoverage;
-  //protected CalendarDateRange cdateCoverage;
+  // protected CalendarDateRange cdateCoverage;
   protected String authorityName, serviceName;
   protected FeatureType dataType;
   protected DataFormatType dataFormat;
@@ -72,7 +70,7 @@ public class ThreddsMetadata {
   /**
    * Add all the content from another ThreddsMetadata
    *
-   * @param tmd              get content from here
+   * @param tmd get content from here
    * @param includeInherited if false, dont add inherited InvMetadata
    */
   public void add(ThreddsMetadata tmd, boolean includeInherited) {
@@ -89,29 +87,39 @@ public class ThreddsMetadata {
     if (includeInherited)
       metadata.addAll(tmd.getMetadata());
     else {
-      for (InvMetadata mdata : tmd.getMetadata() ) {
+      for (InvMetadata mdata : tmd.getMetadata()) {
         if (!mdata.isInherited())
           metadata.add(mdata);
       }
     }
 
     // LOOK! should be copies ??!!
-    if (gc == null) gc = tmd.getGeospatialCoverage();
-    if (timeCoverage == null) timeCoverage = tmd.getTimeCoverage();
-    if (serviceName == null) serviceName = tmd.getServiceName();
-    if (dataType == null) dataType = tmd.getDataType();
-    if (dataSize == 0.0) dataSize = tmd.getDataSize();
-    if (dataFormat == null) dataFormat = tmd.getDataFormatType();
-    if (authorityName == null) authorityName = tmd.getAuthority();
-    if (variableMapLink == null) variableMapLink = tmd.getVariableMap();
+    if (gc == null)
+      gc = tmd.getGeospatialCoverage();
+    if (timeCoverage == null)
+      timeCoverage = tmd.getTimeCoverage();
+    if (serviceName == null)
+      serviceName = tmd.getServiceName();
+    if (dataType == null)
+      dataType = tmd.getDataType();
+    if (dataSize == 0.0)
+      dataSize = tmd.getDataSize();
+    if (dataFormat == null)
+      dataFormat = tmd.getDataFormatType();
+    if (authorityName == null)
+      authorityName = tmd.getAuthority();
+    if (variableMapLink == null)
+      variableMapLink = tmd.getVariableMap();
   }
 
   /**
    * Add a creator
+   * 
    * @param c add this
    */
   public void addCreator(Source c) {
-    if (c != null) creators.add(c);
+    if (c != null)
+      creators.add(c);
   }
 
   /**
@@ -123,6 +131,7 @@ public class ThreddsMetadata {
 
   /**
    * Set list of creators (type Source); may be empty, not null.
+   * 
    * @param creators set creators to this list
    */
   public void setCreators(List<Source> creators) {
@@ -131,10 +140,12 @@ public class ThreddsMetadata {
 
   /**
    * Add a contributor
+   * 
    * @param c add this
    */
   public void addContributor(Contributor c) {
-    if (c != null) contributors.add(c);
+    if (c != null)
+      contributors.add(c);
   }
 
   /**
@@ -146,6 +157,7 @@ public class ThreddsMetadata {
 
   /**
    * Set list of contributors (type Contributor); may be empty, not null.
+   * 
    * @param contributors set contributers to this
    */
   public void setContributors(List<Contributor> contributors) {
@@ -154,10 +166,12 @@ public class ThreddsMetadata {
 
   /**
    * Add a date
+   * 
    * @param d add this dateType
    */
   public void addDate(DateType d) {
-    if (d != null) dates.add(d);
+    if (d != null)
+      dates.add(d);
   }
 
   /**
@@ -169,10 +183,12 @@ public class ThreddsMetadata {
 
   /**
    * Add a documentation
+   * 
    * @param d add this
    */
   public void addDocumentation(InvDocumentation d) {
-    if (d != null) docs.add(d);
+    if (d != null)
+      docs.add(d);
   }
 
   /**
@@ -184,10 +200,12 @@ public class ThreddsMetadata {
 
   /**
    * Add a keyword
+   * 
    * @param keyword add this
    */
   public void addKeyword(Vocab keyword) {
-    if (keyword != null) keywords.add(keyword);
+    if (keyword != null)
+      keywords.add(keyword);
   }
 
   /**
@@ -199,6 +217,7 @@ public class ThreddsMetadata {
 
   /**
    * Set list of keywords; may be empty, not null.
+   * 
    * @param keywords set list of keywords to this
    */
   public void setKeywords(List<Vocab> keywords) {
@@ -207,14 +226,17 @@ public class ThreddsMetadata {
 
   /**
    * Add InvMetadata
+   * 
    * @param m add this
    */
   public void addMetadata(InvMetadata m) {
-    if (m != null) metadata.add(m);
+    if (m != null)
+      metadata.add(m);
   }
 
   /**
    * remove an InvMetadata element from list, using equals() to locate it.
+   * 
    * @param m remove this
    */
   public void removeMetadata(InvMetadata m) {
@@ -230,10 +252,12 @@ public class ThreddsMetadata {
 
   /**
    * Add a project
+   * 
    * @param project add this
    */
   public void addProject(Vocab project) {
-    if (project != null) projects.add(project);
+    if (project != null)
+      projects.add(project);
   }
 
   /**
@@ -245,6 +269,7 @@ public class ThreddsMetadata {
 
   /**
    * Set list of projects (type Vocab); may be empty, not null.
+   * 
    * @param projects set list of projects to this
    */
   public void setProjects(List<Vocab> projects) {
@@ -253,15 +278,18 @@ public class ThreddsMetadata {
 
   /**
    * Add a property
+   * 
    * @param p add this
    */
   public void addProperty(InvProperty p) {
-    if (p != null) properties.add(p);
+    if (p != null)
+      properties.add(p);
   }
 
   public void addProperties(List<Attribute> atts) {
     for (Attribute att : atts)
-      if (att.isString()) properties.add(new InvProperty(att.getShortName(), att.getStringValue()));
+      if (att.isString())
+        properties.add(new InvProperty(att.getShortName(), att.getStringValue()));
   }
 
   /**
@@ -273,10 +301,12 @@ public class ThreddsMetadata {
 
   /**
    * Add a publisher
+   * 
    * @param p add this
    */
   public void addPublisher(Source p) {
-    if (p != null) publishers.add(p);
+    if (p != null)
+      publishers.add(p);
   }
 
   /**
@@ -288,6 +318,7 @@ public class ThreddsMetadata {
 
   /**
    * Set list of publishers (type Source); may be empty, not null.
+   * 
    * @param publishers set list of publishers to this
    */
   public void setPublishers(List<Source> publishers) {
@@ -296,10 +327,12 @@ public class ThreddsMetadata {
 
   /**
    * Add variables
+   * 
    * @param vs add this
    */
   public void addVariables(Variables vs) {
-    if (vs != null) variables.add(vs);
+    if (vs != null)
+      variables.add(vs);
   }
 
   /**
@@ -311,8 +344,9 @@ public class ThreddsMetadata {
 
   /**
    * Add a variable Map link
-   * @param xlinkHref         : URI of xlink
-   * */
+   * 
+   * @param xlinkHref : URI of xlink
+   */
   public void addVariableMapLink(String xlinkHref) {
     variableMapLink = xlinkHref;
   }
@@ -323,6 +357,7 @@ public class ThreddsMetadata {
 
   /**
    * set GeospatialCoverage element
+   * 
    * @param gc set GeospatialCoverage to this
    */
   public void setGeospatialCoverage(GeospatialCoverage gc) {
@@ -338,6 +373,7 @@ public class ThreddsMetadata {
 
   /**
    * set TimeCoverage element
+   * 
    * @param tc set TimeCoverage to this
    */
   public void setTimeCoverage(DateRange tc) {
@@ -346,15 +382,17 @@ public class ThreddsMetadata {
 
   /**
    * set TimeCoverage from a CalendarDateRange
+   * 
    * @param cdc set CalendarDateRange to this
    */
   public void setTimeCoverage(CalendarDateRange cdc) {
-    if (cdc == null) return;
+    if (cdc == null)
+      return;
     this.timeCoverage = cdc.toDateRange();
   }
 
   /**
-   * @return TimeCoverage element  as DateRange
+   * @return TimeCoverage element as DateRange
    */
   public DateRange getTimeCoverage() {
     return timeCoverage;
@@ -376,6 +414,7 @@ public class ThreddsMetadata {
 
   /**
    * Set inherited
+   * 
    * @param inherited set true if inherited
    */
   public void setInherited(boolean inherited) {
@@ -391,6 +430,7 @@ public class ThreddsMetadata {
 
   /**
    * Set serviceName
+   * 
    * @param serviceName set service name to this, must be valid service
    */
   public void setServiceName(String serviceName) {
@@ -406,6 +446,7 @@ public class ThreddsMetadata {
 
   /**
    * Set dataType
+   * 
    * @param dataType set to this dataType
    */
   public void setDataType(FeatureType dataType) {
@@ -421,6 +462,7 @@ public class ThreddsMetadata {
 
   /**
    * Set dataTypeFormat
+   * 
    * @param dataFormat set to this dataTypeFormat
    */
   public void setDataFormatType(DataFormatType dataFormat) {
@@ -436,6 +478,7 @@ public class ThreddsMetadata {
 
   /**
    * Set authority
+   * 
    * @param authorityName set to this
    */
   public void setAuthority(String authorityName) {
@@ -449,32 +492,35 @@ public class ThreddsMetadata {
   public String getDocumentation(String type) {
     for (InvDocumentation doc : getDocumentation()) {
       String dtype = doc.getType();
-      if ((dtype != null) && dtype.equalsIgnoreCase(type)) return doc.getInlineContent();
+      if ((dtype != null) && dtype.equalsIgnoreCase(type))
+        return doc.getInlineContent();
     }
     return null;
   }
 
-  /* @return Documentation that are xlinks
-  public List<InvDocumentation> getDocumentationLinks() {
-    List<InvDocumentation> result = new ArrayList<InvDocumentation>();
-    for (InvDocumentation doc : getDocumentation()) {
-      if (doc.hasXlink())
-        result.add(doc);
-    }
-    return result;
-  }
-
-  /* set the list of Documentation that are xlinks
-  public void setDocumentationLinks(List newdocs) {
-    ArrayList result = new ArrayList(newdocs);
-    java.util.List olddocs = getDocumentation();
-    for (int i=0; i<olddocs.size(); i++) {
-      InvDocumentation doc = (InvDocumentation) olddocs.get(i);
-      if (!doc.hasXlink()) // keep the non-links
-        result.add(doc);
-    }
-    docs = result;
-  } */
+  /*
+   * @return Documentation that are xlinks
+   * public List<InvDocumentation> getDocumentationLinks() {
+   * List<InvDocumentation> result = new ArrayList<InvDocumentation>();
+   * for (InvDocumentation doc : getDocumentation()) {
+   * if (doc.hasXlink())
+   * result.add(doc);
+   * }
+   * return result;
+   * }
+   * 
+   * /* set the list of Documentation that are xlinks
+   * public void setDocumentationLinks(List newdocs) {
+   * ArrayList result = new ArrayList(newdocs);
+   * java.util.List olddocs = getDocumentation();
+   * for (int i=0; i<olddocs.size(); i++) {
+   * InvDocumentation doc = (InvDocumentation) olddocs.get(i);
+   * if (!doc.hasXlink()) // keep the non-links
+   * result.add(doc);
+   * }
+   * docs = result;
+   * }
+   */
 
   /**
    * @return specific type of documentation = history
@@ -485,6 +531,7 @@ public class ThreddsMetadata {
 
   /**
    * set specific type of documentation = history
+   * 
    * @param history add (or replace) the history documentation element to this content
    */
   public void setHistory(String history) {
@@ -500,6 +547,7 @@ public class ThreddsMetadata {
 
   /**
    * set specific type of documentation = processing_level
+   * 
    * @param processing add (or replace) the history documentation element to this content
    */
   public void setProcessing(String processing) {
@@ -515,6 +563,7 @@ public class ThreddsMetadata {
 
   /**
    * set specific type of documentation = rights
+   * 
    * @param rights add (or replace) the history documentation element to this content
    */
   public void setRights(String rights) {
@@ -530,6 +579,7 @@ public class ThreddsMetadata {
 
   /**
    * set specific type of documentation = summary
+   * 
    * @param summary add (or replace) the history documentation element to this content
    */
   public void setSummary(String summary) {
@@ -545,6 +595,7 @@ public class ThreddsMetadata {
 
   /**
    * Set size (bytes)
+   * 
    * @param size the data size in bytes. A value of 0.0 or NaN means not set.
    */
   public void setDataSize(double size) {
@@ -558,7 +609,7 @@ public class ThreddsMetadata {
   /**
    * set specified type of documentation
    *
-   * @param type    type of documentation
+   * @param type type of documentation
    * @param content documentation contenet
    */
   public void addDocumentation(String type, String content) {
@@ -581,6 +632,7 @@ public class ThreddsMetadata {
 
   /**
    * remove all instances of specified type of documentation
+   * 
    * @param type type of documentation
    */
   public void removeDocumentation(String type) {
@@ -610,7 +662,7 @@ public class ThreddsMetadata {
       String indent = InvDatasetImpl.indent(n + 2);
       buff.append(indent);
       buff.append("Metadata:\n");
-      for (InvMetadata m  : metadata) {
+      for (InvMetadata m : metadata) {
         buff.append(InvDatasetImpl.indent(n + 4)).append(m).append("\n");
       }
     }
@@ -628,8 +680,10 @@ public class ThreddsMetadata {
   }
 
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ThreddsMetadata)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof ThreddsMetadata))
+      return false;
     return o.hashCode() == this.hashCode();
   }
 
@@ -673,8 +727,7 @@ public class ThreddsMetadata {
     private String name;
     private String role;
 
-    public Contributor() {
-    }
+    public Contributor() {}
 
     public Contributor(String name, String role) {
       this.name = name;
@@ -705,8 +758,10 @@ public class ThreddsMetadata {
     }
 
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Contributor)) return false;
+      if (this == o)
+        return true;
+      if (!(o instanceof Contributor))
+        return false;
       return o.hashCode() == this.hashCode();
     }
 
@@ -761,6 +816,7 @@ public class ThreddsMetadata {
 
     /**
      * Set name
+     * 
      * @param name to set
      */
     public void setName(String name) {
@@ -797,8 +853,10 @@ public class ThreddsMetadata {
     }
 
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Source)) return false;
+      if (this == o)
+        return true;
+      if (!(o instanceof Source))
+        return false;
       return o.hashCode() == this.hashCode();
     }
 
@@ -842,8 +900,7 @@ public class ThreddsMetadata {
     private String vocabulary;
 
     // need no-arg constructor for bean handling
-    public Vocab() {
-    }
+    public Vocab() {}
 
     public Vocab(String text, String vocabulary) {
       this.text = text;
@@ -874,8 +931,10 @@ public class ThreddsMetadata {
     }
 
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Vocab)) return false;
+      if (this == o)
+        return true;
+      if (!(o instanceof Vocab))
+        return false;
       return o.hashCode() == this.hashCode();
     }
 
@@ -899,11 +958,13 @@ public class ThreddsMetadata {
 
   }
 
-  /* static private java.text.SimpleDateFormat dateFormat;
-  static {
-    dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-  } */
+  /*
+   * static private java.text.SimpleDateFormat dateFormat;
+   * static {
+   * dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+   * dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+   * }
+   */
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -922,20 +983,22 @@ public class ThreddsMetadata {
     private List<Vocab> names = new ArrayList<Vocab>(); // Vocab
 
     // need no-arg constructor for bean handling
-    public GeospatialCoverage() {
-    }
+    public GeospatialCoverage() {}
 
     public GeospatialCoverage(Range eastwest, Range northsouth, Range updown, List<Vocab> names, String zpositive) {
-      this.eastwest = eastwest; //  : new Range(defaultEastwest);
+      this.eastwest = eastwest; // : new Range(defaultEastwest);
       this.northsouth = northsouth; // : new Range(defaultNorthsouth);
-      this.updown = updown; //  : new Range(defaultUpdown);
-      if (names != null) this.names = new ArrayList<Vocab>(names);
-      if (zpositive != null) this.zpositive = zpositive;
+      this.updown = updown; // : new Range(defaultUpdown);
+      if (names != null)
+        this.names = new ArrayList<Vocab>(names);
+      if (zpositive != null)
+        this.zpositive = zpositive;
 
       if (names != null) {
         for (Vocab name : names) {
           String elem = name.getText();
-          if (elem.equalsIgnoreCase("global")) isGlobal = true;
+          if (elem.equalsIgnoreCase("global"))
+            isGlobal = true;
         }
       }
     }
@@ -1002,6 +1065,7 @@ public class ThreddsMetadata {
 
     /**
      * Set isGlobal
+     * 
      * @param isGlobal true if global coverage
      */
     public void setGlobal(boolean isGlobal) {
@@ -1018,6 +1082,7 @@ public class ThreddsMetadata {
 
     /**
      * Set starting latitude
+     * 
      * @param start starting latitude, decimal degrees north
      */
     public void setLatStart(double start) {
@@ -1036,6 +1101,7 @@ public class ThreddsMetadata {
 
     /**
      * Set latitude extent
+     * 
      * @param size latitude extent, decimal degrees north
      */
     public void setLatExtent(double size) {
@@ -1054,6 +1120,7 @@ public class ThreddsMetadata {
 
     /**
      * Set latitude resolution
+     * 
      * @param resolution latitude resolution, decimal degrees north
      */
     public void setLatResolution(double resolution) {
@@ -1072,6 +1139,7 @@ public class ThreddsMetadata {
 
     /**
      * Set latitude units
+     * 
      * @param units set units
      */
     public void setLatUnits(String units) {
@@ -1099,6 +1167,7 @@ public class ThreddsMetadata {
 
     /**
      * Set starting longitude
+     * 
      * @param start starting longitude
      */
     public void setLonStart(double start) {
@@ -1117,6 +1186,7 @@ public class ThreddsMetadata {
 
     /**
      * Set longitude extent
+     * 
      * @param size longitude extent
      */
     public void setLonExtent(double size) {
@@ -1135,6 +1205,7 @@ public class ThreddsMetadata {
 
     /**
      * Set longitude resolution
+     * 
      * @param resolution longitude resolution
      */
     public void setLonResolution(double resolution) {
@@ -1153,6 +1224,7 @@ public class ThreddsMetadata {
 
     /**
      * Set longitude units
+     * 
      * @param units longitude units
      */
     public void setLonUnits(String units) {
@@ -1164,12 +1236,14 @@ public class ThreddsMetadata {
 
     // LOOK not dealing with units degrees_west
     public double getLonEast() {
-      if (eastwest == null) return Double.NaN;
+      if (eastwest == null)
+        return Double.NaN;
       return Math.max(eastwest.start, eastwest.start + eastwest.size);
     }
 
     public double getLonWest() {
-      if (eastwest == null) return Double.NaN;
+      if (eastwest == null)
+        return Double.NaN;
       return Math.min(eastwest.start, eastwest.start + eastwest.size);
     }
 
@@ -1182,6 +1256,7 @@ public class ThreddsMetadata {
 
     /**
      * Set starting height
+     * 
      * @param start starting height
      */
     public void setHeightStart(double start) {
@@ -1200,6 +1275,7 @@ public class ThreddsMetadata {
 
     /**
      * Set height extent
+     * 
      * @param size height extent
      */
     public void setHeightExtent(double size) {
@@ -1218,6 +1294,7 @@ public class ThreddsMetadata {
 
     /**
      * Set height resolution
+     * 
      * @param resolution height resolution
      */
     public void setHeightResolution(double resolution) {
@@ -1236,6 +1313,7 @@ public class ThreddsMetadata {
 
     /**
      * Set height units
+     * 
      * @param units height units
      */
     public void setHeightUnits(String units) {
@@ -1246,8 +1324,8 @@ public class ThreddsMetadata {
     }
 
     public LatLonRect getBoundingBox() {
-      return isGlobal ? new LatLonRect() :
-          new LatLonRect(new LatLonPointImpl(getLatStart(), getLonStart()), getLatExtent(), getLonExtent());
+      return isGlobal ? new LatLonRect()
+          : new LatLonRect(new LatLonPointImpl(getLatStart(), getLonStart()), getLatExtent(), getLonExtent());
     }
 
     public void setBoundingBox(LatLonRect bb) {
@@ -1280,8 +1358,10 @@ public class ThreddsMetadata {
     }
 
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof GeospatialCoverage)) return false;
+      if (this == o)
+        return true;
+      if (!(o instanceof GeospatialCoverage))
+        return false;
       return o.hashCode() == this.hashCode();
     }
 
@@ -1313,7 +1393,7 @@ public class ThreddsMetadata {
       // hack, hack
       InvCatalogFactory10 converter = new InvCatalogFactory10();
       Element elem = converter.writeGeospatialCoverage(this);
-      //XMLOutputter outputter = new XMLOutputter("  ", true);
+      // XMLOutputter outputter = new XMLOutputter(" ", true);
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       fmt.output(elem, out);
     }
@@ -1329,10 +1409,10 @@ public class ThreddsMetadata {
     /**
      * Constructor
      *
-     * @param start      starting value
-     * @param size       ending = start + size
+     * @param start starting value
+     * @param size ending = start + size
      * @param resolution data resolution, or NaN if unknown
-     * @param units      what units are start, size in?
+     * @param units what units are start, size in?
      */
     public Range(double start, double size, double resolution, String units) {
       this.start = start;
@@ -1343,6 +1423,7 @@ public class ThreddsMetadata {
 
     /**
      * Copy constructor
+     * 
      * @param from copy this
      */
     public Range(Range from) {
@@ -1373,14 +1454,16 @@ public class ThreddsMetadata {
     }
 
     public void extend(Range r) {
-      double stop = Math.max(this.start+this.size, r.start+r.size);
+      double stop = Math.max(this.start + this.size, r.start + r.size);
       this.start = Math.min(this.start, r.start);
       this.size = this.start - stop;
     }
 
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Range)) return false;
+      if (this == o)
+        return true;
+      if (!(o instanceof Range))
+        return false;
       return o.hashCode() == this.hashCode();
     }
 
@@ -1409,117 +1492,118 @@ public class ThreddsMetadata {
   /**
    * Implements TimeCoverage type.
    *
-   static public class TimeCoverage {
-   static private TimeCoverage empty = new TimeCoverage();
-
-   private DateType start, end;
-   private TimeDuration duration, resolution;
-   private double durationSecs;
-   boolean hasStart, hasEnd, hasDuration, invalid;
-   private DateType _start, _end;
-
-   // need no-arg constructor for bean handling
-   public TimeCoverage() {
-   }
-
-   public TimeCoverage(DateType start, DateType end, TimeDuration duration, TimeDuration resolution) {
-   this.start = start;
-   this.end = end;
-   this.duration = duration;
-   this.resolution = resolution;
-   recalc();
-   }
-
-   private void recalc() {
-   hasStart = (start != null) && !start.isBlank();
-   hasEnd = (end != null) && !end.isBlank();
-   hasDuration = (duration != null) && !duration.isBlank();
-
-   invalid = true;
-   if (hasStart && hasEnd) {
-   invalid = false;
-   } else if (hasStart && hasDuration) {
-   invalid = false;
-   _end = start.add( duration);
-   } else if (hasEnd && hasDuration) {
-   invalid = false;
-   _start = end.subtract( duration);
-   }
-   hashCode = 0;
-   }
-
-   public boolean isEmpty() { return this.equals( empty); }
-
-   public boolean included( Date d) {
-   if (invalid) return false;
-
-   if (hasStart && hasEnd) {
-   if (start.after( d)) return false;
-   if (end.before( d)) return false;
-
-   } else if (hasStart && hasDuration) {
-   if (start.after( d)) return false;
-   if (_end.before( d)) return false;
-
-   } else if (hasEnd && hasDuration) {
-   if (_start.after( d)) return false;
-   if (end.before( d)) return false;
-
-   }
-
-   return true;
-   }
-
-   public DateType getStart() { return start; }
-   public void setStart(DateType start) {
-   this.start = start;
-   recalc();
-   }
-
-   public DateType getEnd() { return end; }
-   public void setEnd(DateType end) {
-   this.end = end;
-   recalc();
-   }
-
-   public TimeDuration getDuration() { return duration; }
-   public void setDuration(TimeDuration duration) {
-   this.duration = duration;
-   recalc();
-   }
-
-   public TimeDuration getResolution() { return resolution; }
-   public void setResolution(TimeDuration resolution) {
-   this.resolution = resolution;
-   recalc();
-   }
-
-   public String toString() { return "start= "+start +" end= "+end+ " duration= "+ duration
-   + " resolution= "+ resolution; }
-   public boolean equals(Object o) {
-   if (this == o) return true;
-   if (!(o instanceof TimeCoverage)) return false;
-   return o.hashCode() == this.hashCode();
-   }
-
-   public int hashCode() {
-   if (hashCode == 0) {
-   int result = 17;
-   if (hasStart && !start.isBlank())
-   result = 37*result + start.hashCode();
-   if (hasEnd && !end.isBlank())
-   result = 37*result + end.hashCode();
-   if (hasDuration && !duration.isBlank())
-   result = 37*result + duration.hashCode();
-   if (resolution != null && !resolution.isBlank())
-   result = 37*result + resolution.hashCode();
-   hashCode = result;
-   }
-   return hashCode;
-   }
-   private volatile int hashCode = 0; // Bloch, item 8
-
-   } */
+   * static public class TimeCoverage {
+   * static private TimeCoverage empty = new TimeCoverage();
+   * 
+   * private DateType start, end;
+   * private TimeDuration duration, resolution;
+   * private double durationSecs;
+   * boolean hasStart, hasEnd, hasDuration, invalid;
+   * private DateType _start, _end;
+   * 
+   * // need no-arg constructor for bean handling
+   * public TimeCoverage() {
+   * }
+   * 
+   * public TimeCoverage(DateType start, DateType end, TimeDuration duration, TimeDuration resolution) {
+   * this.start = start;
+   * this.end = end;
+   * this.duration = duration;
+   * this.resolution = resolution;
+   * recalc();
+   * }
+   * 
+   * private void recalc() {
+   * hasStart = (start != null) && !start.isBlank();
+   * hasEnd = (end != null) && !end.isBlank();
+   * hasDuration = (duration != null) && !duration.isBlank();
+   * 
+   * invalid = true;
+   * if (hasStart && hasEnd) {
+   * invalid = false;
+   * } else if (hasStart && hasDuration) {
+   * invalid = false;
+   * _end = start.add( duration);
+   * } else if (hasEnd && hasDuration) {
+   * invalid = false;
+   * _start = end.subtract( duration);
+   * }
+   * hashCode = 0;
+   * }
+   * 
+   * public boolean isEmpty() { return this.equals( empty); }
+   * 
+   * public boolean included( Date d) {
+   * if (invalid) return false;
+   * 
+   * if (hasStart && hasEnd) {
+   * if (start.after( d)) return false;
+   * if (end.before( d)) return false;
+   * 
+   * } else if (hasStart && hasDuration) {
+   * if (start.after( d)) return false;
+   * if (_end.before( d)) return false;
+   * 
+   * } else if (hasEnd && hasDuration) {
+   * if (_start.after( d)) return false;
+   * if (end.before( d)) return false;
+   * 
+   * }
+   * 
+   * return true;
+   * }
+   * 
+   * public DateType getStart() { return start; }
+   * public void setStart(DateType start) {
+   * this.start = start;
+   * recalc();
+   * }
+   * 
+   * public DateType getEnd() { return end; }
+   * public void setEnd(DateType end) {
+   * this.end = end;
+   * recalc();
+   * }
+   * 
+   * public TimeDuration getDuration() { return duration; }
+   * public void setDuration(TimeDuration duration) {
+   * this.duration = duration;
+   * recalc();
+   * }
+   * 
+   * public TimeDuration getResolution() { return resolution; }
+   * public void setResolution(TimeDuration resolution) {
+   * this.resolution = resolution;
+   * recalc();
+   * }
+   * 
+   * public String toString() { return "start= "+start +" end= "+end+ " duration= "+ duration
+   * + " resolution= "+ resolution; }
+   * public boolean equals(Object o) {
+   * if (this == o) return true;
+   * if (!(o instanceof TimeCoverage)) return false;
+   * return o.hashCode() == this.hashCode();
+   * }
+   * 
+   * public int hashCode() {
+   * if (hashCode == 0) {
+   * int result = 17;
+   * if (hasStart && !start.isBlank())
+   * result = 37*result + start.hashCode();
+   * if (hasEnd && !end.isBlank())
+   * result = 37*result + end.hashCode();
+   * if (hasDuration && !duration.isBlank())
+   * result = 37*result + duration.hashCode();
+   * if (resolution != null && !resolution.isBlank())
+   * result = 37*result + resolution.hashCode();
+   * hashCode = result;
+   * }
+   * return hashCode;
+   * }
+   * private volatile int hashCode = 0; // Bloch, item 8
+   * 
+   * }
+   */
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   /**
@@ -1579,10 +1663,12 @@ public class ThreddsMetadata {
     }
 
     public void setVocabularyId(Attribute id) {
-      if (id == null) return;
+      if (id == null)
+        return;
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < id.getLength(); i++) {
-        if (i > 0) sbuff.append(",");
+        if (i > 0)
+          sbuff.append(",");
         sbuff.append(id.getNumericValue(i));
       }
       this.id = sbuff.toString();
@@ -1597,8 +1683,10 @@ public class ThreddsMetadata {
     }
 
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Variable)) return false;
+      if (this == o)
+        return true;
+      if (!(o instanceof Variable))
+        return false;
       return o.hashCode() == this.hashCode();
     }
 
@@ -1620,8 +1708,7 @@ public class ThreddsMetadata {
 
     private volatile int hashCode = 0; // Bloch, item 8
 
-    public String toString()
-    {
+    public String toString() {
       return "Variable [" + name + "]";
     }
 
@@ -1696,13 +1783,16 @@ public class ThreddsMetadata {
     private boolean isInit = false;
 
     private void init() {
-      if (isInit || (mapUri != null)) return;
+      if (isInit || (mapUri != null))
+        return;
       isInit = true;
     }
 
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Variables)) return false;
+      if (this == o)
+        return true;
+      if (!(o instanceof Variables))
+        return false;
       return o.hashCode() == this.hashCode();
     }
 
@@ -1727,17 +1817,14 @@ public class ThreddsMetadata {
 
     private volatile int hashCode = 0; // Bloch, item 8
 
-    public String toString()
-    {
-      StringBuilder sb = new StringBuilder( "Variables" );
-      sb.append( " [" )
-        .append( getVocabulary() != null ? getVocabulary() : "" )
-        .append( "]" );
-      if ( mapUri != null )
-        sb.append( "map [").append( mapUri.toString()).append("]");
+    public String toString() {
+      StringBuilder sb = new StringBuilder("Variables");
+      sb.append(" [").append(getVocabulary() != null ? getVocabulary() : "").append("]");
+      if (mapUri != null)
+        sb.append("map [").append(mapUri.toString()).append("]");
       else
-        for ( Variable v : variables )
-          sb.append( " " ).append( v.toString() );
+        for (Variable v : variables)
+          sb.append(" ").append(v.toString());
       return sb.toString();
     }
   }
@@ -1745,211 +1832,217 @@ public class ThreddsMetadata {
   /**
    * Factory for metadata of type THREDDS.
    *
-   static public class Parser implements thredds.catalog.MetadataConverterIF {
-   private DOMBuilder builder = new DOMBuilder();
-
-   /**
+   * static public class Parser implements thredds.catalog.MetadataConverterIF {
+   * private DOMBuilder builder = new DOMBuilder();
+   * 
+   * /**
    * Read metadata from an XLink href, and convert to Java object representing
    * the metadata.
+   * 
    * @param dataset : InvDataset that this metadata refers to.
    * @param urlString : the location of the metadata: this must be an XML document whose
-   *    root Element contains the proper metadata.
+   *        root Element contains the proper metadata.
    * @return ThreddsMetadata object
    *
-  public Object readMetadataContentFromURL(InvDataset dataset, String urlString) throws java.net.MalformedURLException, java.io.IOException {
-  Document doc;
-  try {
-  SAXBuilder builder = new SAXBuilder(true);
-  doc = builder.build(urlString);
-  }
-  catch (JDOMException e) {
-  System.out.println("ThreddsMetadataFactory parsing error= \n" + e.getMessage());
-  throw new IOException("ThreddsMetadataFactory parsing error= " + e.getMessage());
-  }
-
-  if (showParsedXML) {
-  XMLOutputter xmlOut = new XMLOutputter();
-  System.out.println("*** catalog/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
-  }
-
-  return readMetadataContent(dataset, doc.getRootElement());
-  }
-
-  /**
-   * Read metadata from a org.w3c.dom.Element, and convert to Java object representing
-   * the metadata.
+   *         public Object readMetadataContentFromURL(InvDataset dataset, String urlString) throws
+   *         java.net.MalformedURLException, java.io.IOException {
+   *         Document doc;
+   *         try {
+   *         SAXBuilder builder = new SAXBuilder(true);
+   *         doc = builder.build(urlString);
+   *         }
+   *         catch (JDOMException e) {
+   *         System.out.println("ThreddsMetadataFactory parsing error= \n" + e.getMessage());
+   *         throw new IOException("ThreddsMetadataFactory parsing error= " + e.getMessage());
+   *         }
+   * 
+   *         if (showParsedXML) {
+   *         XMLOutputter xmlOut = new XMLOutputter();
+   *         System.out.println("*** catalog/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+   *         }
+   * 
+   *         return readMetadataContent(dataset, doc.getRootElement());
+   *         }
+   * 
+   *         /**
+   *         Read metadata from a org.w3c.dom.Element, and convert to Java object representing
+   *         the metadata.
    * @param dataset : InvDataset that this metadata refers to.
    * @param domElement : the DOM Element containing metadata info.
    * @return ThreddsMetadata object
    *
-  public Object readMetadataContent(InvDataset dataset, org.w3c.dom.Element domElement) {
-  // convert to JDOM element
-  Element mdataElement = builder.build(domElement);
-  return readMetadataContent(dataset, mdataElement);
-  }
-
-  /**
-   * Read metadata from a org.w3c.dom.Element, and convert to Java object representing
-   * the metadata.
-   * @param dataset  : InvDataset that this metadata refers to.
+   *         public Object readMetadataContent(InvDataset dataset, org.w3c.dom.Element domElement) {
+   *         // convert to JDOM element
+   *         Element mdataElement = builder.build(domElement);
+   *         return readMetadataContent(dataset, mdataElement);
+   *         }
+   * 
+   *         /**
+   *         Read metadata from a org.w3c.dom.Element, and convert to Java object representing
+   *         the metadata.
+   * @param dataset : InvDataset that this metadata refers to.
    * @param mdataElement : the JDOM Element containing aggregation children.
    * @return List of objects of type Aggregation
    *
-  public Object readMetadataContent(InvDataset dataset, Element mdataElement) {
-
-  ThreddsMetadata tm = new ThreddsMetadata();
-  boolean ok = true;
-
-  Element spatialElem = mdataElement.getChild("spatialExtent", defNS);
-  if (null == spatialElem) {
-  tm.err.append("** Warning: THREDDS Metadata record has no SpatialExtent element\n");
-  }
-  else if (null != spatialElem.getAttributeValue("isGlobal"))
-  tm.isGlobal = true;
-  else {
-  String minLat = spatialElem.getChildText("minLat", defNS);
-  String minLon = spatialElem.getChildText("minLon", defNS);
-  String maxLat = spatialElem.getChildText("maxLat", defNS);
-  String maxLon = spatialElem.getChildText("maxLon", defNS);
-
-  if (minLat == null) {
-  tm.err.append("Missing SpatialExtent minLat element\n");
-  } else {
-  try { tm.minLat = Double.parseDouble( minLat); }
-  catch (NumberFormatException e) {
-  tm.err.append("Bad format for SpatialExtent minLat = "+minLat+"\n");
-  }
-  }
-  if (minLon == null) {
-  tm.err.append("Missing SpatialExtent minLon element\n");
-  } else {
-  try { tm.minLon = Double.parseDouble( minLon); }
-  catch (NumberFormatException e) {
-  tm.err.append("Bad format for SpatialExtent minLon = "+minLon+"\n");
-  }
-  }
-  if (maxLat == null) {
-  tm.err.append("Missing SpatialExtent maxLat element\n");
-  } else {
-  try { tm.maxLat = Double.parseDouble( maxLat); }
-  catch (NumberFormatException e) {
-  tm.err.append("Bad format for SpatialExtent maxLat = "+maxLat+"\n");
-  }
-  }
-  if (maxLon == null) {
-  tm.err.append("Missing SpatialExtent maxLon element\n");
-  } else {
-  try { tm.maxLon = Double.parseDouble( maxLon); }
-  catch (NumberFormatException e) {
-  tm.err.append("Bad format for SpatialExtent maxLon = "+maxLon+"\n");
-  }
-  }
-  }
-
-  Element timeElem = mdataElement.getChild("timeExtent", defNS);
-  if (null == timeElem) {
-  tm.err.append("** Warning: THREDDS Metadata record has no TimeExtent element\n");
-  }
-  else {
-  String minDate = timeElem.getChildText("minDate", defNS);
-  String maxDate = timeElem.getChildText("maxDate", defNS);
-  if (minDate == null) {
-  tm.err.append("Missing TimeExtent minDate element\n");
-  } else {
-  try { tm.minDate = dateFormat.parse( minDate); }
-  catch (ParseException e) {
-  tm.err.append("Bad format for TimeExtent minDate = "+minDate+"\n");
-  }
-  }
-  if (maxDate == null) {
-  tm.err.append("Missing TimeExtent maxDate element\n");
-  } else {
-  try { tm.maxDate = dateFormat.parse( maxDate); }
-  catch (ParseException e) {
-  tm.err.append("Bad format for TimeExtent maxDate = "+maxDate+"\n");
-  }
-  }
-  }
-
-  // get fileAccess elements
-  java.util.List list = mdataElement.getChildren("param", defNS);
-  for (int j = 0; j < list.size(); j++) {
-  Element paramElement = (Element) list.get(j);
-  String name = paramElement.getText();
-  tm.params.add(name);
-  }
-
-  if (debug) System.out.println (" ThredddsMetadata added: "+ tm);
-  return ok ? tm : null;
-  }
-
-  /**
-   * Create a JDOM element from an InvMetadata content object
+   *         public Object readMetadataContent(InvDataset dataset, Element mdataElement) {
+   * 
+   *         ThreddsMetadata tm = new ThreddsMetadata();
+   *         boolean ok = true;
+   * 
+   *         Element spatialElem = mdataElement.getChild("spatialExtent", defNS);
+   *         if (null == spatialElem) {
+   *         tm.err.append("** Warning: THREDDS Metadata record has no SpatialExtent element\n");
+   *         }
+   *         else if (null != spatialElem.getAttributeValue("isGlobal"))
+   *         tm.isGlobal = true;
+   *         else {
+   *         String minLat = spatialElem.getChildText("minLat", defNS);
+   *         String minLon = spatialElem.getChildText("minLon", defNS);
+   *         String maxLat = spatialElem.getChildText("maxLat", defNS);
+   *         String maxLon = spatialElem.getChildText("maxLon", defNS);
+   * 
+   *         if (minLat == null) {
+   *         tm.err.append("Missing SpatialExtent minLat element\n");
+   *         } else {
+   *         try { tm.minLat = Double.parseDouble( minLat); }
+   *         catch (NumberFormatException e) {
+   *         tm.err.append("Bad format for SpatialExtent minLat = "+minLat+"\n");
+   *         }
+   *         }
+   *         if (minLon == null) {
+   *         tm.err.append("Missing SpatialExtent minLon element\n");
+   *         } else {
+   *         try { tm.minLon = Double.parseDouble( minLon); }
+   *         catch (NumberFormatException e) {
+   *         tm.err.append("Bad format for SpatialExtent minLon = "+minLon+"\n");
+   *         }
+   *         }
+   *         if (maxLat == null) {
+   *         tm.err.append("Missing SpatialExtent maxLat element\n");
+   *         } else {
+   *         try { tm.maxLat = Double.parseDouble( maxLat); }
+   *         catch (NumberFormatException e) {
+   *         tm.err.append("Bad format for SpatialExtent maxLat = "+maxLat+"\n");
+   *         }
+   *         }
+   *         if (maxLon == null) {
+   *         tm.err.append("Missing SpatialExtent maxLon element\n");
+   *         } else {
+   *         try { tm.maxLon = Double.parseDouble( maxLon); }
+   *         catch (NumberFormatException e) {
+   *         tm.err.append("Bad format for SpatialExtent maxLon = "+maxLon+"\n");
+   *         }
+   *         }
+   *         }
+   * 
+   *         Element timeElem = mdataElement.getChild("timeExtent", defNS);
+   *         if (null == timeElem) {
+   *         tm.err.append("** Warning: THREDDS Metadata record has no TimeExtent element\n");
+   *         }
+   *         else {
+   *         String minDate = timeElem.getChildText("minDate", defNS);
+   *         String maxDate = timeElem.getChildText("maxDate", defNS);
+   *         if (minDate == null) {
+   *         tm.err.append("Missing TimeExtent minDate element\n");
+   *         } else {
+   *         try { tm.minDate = dateFormat.parse( minDate); }
+   *         catch (ParseException e) {
+   *         tm.err.append("Bad format for TimeExtent minDate = "+minDate+"\n");
+   *         }
+   *         }
+   *         if (maxDate == null) {
+   *         tm.err.append("Missing TimeExtent maxDate element\n");
+   *         } else {
+   *         try { tm.maxDate = dateFormat.parse( maxDate); }
+   *         catch (ParseException e) {
+   *         tm.err.append("Bad format for TimeExtent maxDate = "+maxDate+"\n");
+   *         }
+   *         }
+   *         }
+   * 
+   *         // get fileAccess elements
+   *         java.util.List list = mdataElement.getChildren("param", defNS);
+   *         for (int j = 0; j < list.size(); j++) {
+   *         Element paramElement = (Element) list.get(j);
+   *         String name = paramElement.getText();
+   *         tm.params.add(name);
+   *         }
+   * 
+   *         if (debug) System.out.println (" ThredddsMetadata added: "+ tm);
+   *         return ok ? tm : null;
+   *         }
+   * 
+   *         /**
+   *         Create a JDOM element from an InvMetadata content object
    *
    * @param contentObject : the content object
    * @return an object representing the metadata content as a JDOM element
    *
-  public void addMetadataContent(org.w3c.dom.Element dome, Object contentObject) {
-
-  Element mdataElem = builder.build(dome);
-  ThreddsMetadata tm = (ThreddsMetadata) contentObject;
-
-  Element spatialElem = new Element("spatialExtent", defNS);
-  if (tm.isGlobal)
-  spatialElem.setAttribute("isGlobal", "true");
-  else {
-  spatialElem.addContent( new Element("minLat", defNS).setText(Double.toString(tm.minLat)));
-  spatialElem.addContent( new Element("minLon", defNS).setText(Double.toString(tm.minLon)));
-  spatialElem.addContent( new Element("maxLat", defNS).setText(Double.toString(tm.maxLat)));
-  spatialElem.addContent( new Element("maxLon", defNS).setText(Double.toString(tm.maxLon)));
-  }
-  mdataElem.addContent(spatialElem);
-
-  Element timeElem = new Element("timeExtent", defNS);
-  timeElem.addContent( new Element("minDate", defNS).setText(dateFormat.format( tm.minDate)));
-  timeElem.addContent( new Element("maxDate", defNS).setText(dateFormat.format( tm.maxDate)));
-  mdataElem.addContent(timeElem);
-
-  for (int i=0; i<tm.params.size(); i++) {
-  mdataElem.addContent( new Element("param", defNS).setText((String)tm.params.get(i)));
-  }
-  }
-
-  /**
-   * Validate internal data structures.
+   *         public void addMetadataContent(org.w3c.dom.Element dome, Object contentObject) {
+   * 
+   *         Element mdataElem = builder.build(dome);
+   *         ThreddsMetadata tm = (ThreddsMetadata) contentObject;
+   * 
+   *         Element spatialElem = new Element("spatialExtent", defNS);
+   *         if (tm.isGlobal)
+   *         spatialElem.setAttribute("isGlobal", "true");
+   *         else {
+   *         spatialElem.addContent( new Element("minLat", defNS).setText(Double.toString(tm.minLat)));
+   *         spatialElem.addContent( new Element("minLon", defNS).setText(Double.toString(tm.minLon)));
+   *         spatialElem.addContent( new Element("maxLat", defNS).setText(Double.toString(tm.maxLat)));
+   *         spatialElem.addContent( new Element("maxLon", defNS).setText(Double.toString(tm.maxLon)));
+   *         }
+   *         mdataElem.addContent(spatialElem);
+   * 
+   *         Element timeElem = new Element("timeExtent", defNS);
+   *         timeElem.addContent( new Element("minDate", defNS).setText(dateFormat.format( tm.minDate)));
+   *         timeElem.addContent( new Element("maxDate", defNS).setText(dateFormat.format( tm.maxDate)));
+   *         mdataElem.addContent(timeElem);
+   * 
+   *         for (int i=0; i<tm.params.size(); i++) {
+   *         mdataElem.addContent( new Element("param", defNS).setText((String)tm.params.get(i)));
+   *         }
+   *         }
+   * 
+   *         /**
+   *         Validate internal data structures.
    * @param contentObject : the content object
    * @param out : print error message here
    * @return true if no fatl validation errors.
    *
-  public boolean validateMetadataContent(Object contentObject, StringBuffer out) {
-  if (contentObject == null) return false;
-
-  ThreddsMetadata tm = (ThreddsMetadata) contentObject;
-  boolean hasErr = tm.err.length() > 0;
-  if (hasErr) out.append( tm.err);
-  return !hasErr;
-  }
-  } // Factory */
+   *         public boolean validateMetadataContent(Object contentObject, StringBuffer out) {
+   *         if (contentObject == null) return false;
+   * 
+   *         ThreddsMetadata tm = (ThreddsMetadata) contentObject;
+   *         boolean hasErr = tm.err.length() > 0;
+   *         if (hasErr) out.append( tm.err);
+   *         return !hasErr;
+   *         }
+   *         } // Factory
+   */
 
   /**
    * ********************************************************************
    */
 
-  /* testing
-  public static void main (String[] args) throws Exception {
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(false);
-    catFactory.registerMetadataConverter( MetadataType.THREDDS, new ThreddsMetadata.Parser());
-
-    InvCatalogImpl cat = (InvCatalogImpl) catFactory.readXML("file:///C:/dev/thredds/catalog/test/data/enhancedCat.xml");
-    System.out.println("\nDump=\n" + cat.dump());
-
-    StringBuffer buff = new StringBuffer();
-    boolean isValid = cat.check( buff);
-    System.out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
-    System.out.println("  messages=\n" + buff.toString());
-
-    if (isValid) System.out.println("\nBack to XML=\n" + catFactory.writeXML( cat));
-  } */
+  /*
+   * testing
+   * public static void main (String[] args) throws Exception {
+   * InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(false);
+   * catFactory.registerMetadataConverter( MetadataType.THREDDS, new ThreddsMetadata.Parser());
+   * 
+   * InvCatalogImpl cat = (InvCatalogImpl)
+   * catFactory.readXML("file:///C:/dev/thredds/catalog/test/data/enhancedCat.xml");
+   * System.out.println("\nDump=\n" + cat.dump());
+   * 
+   * StringBuffer buff = new StringBuffer();
+   * boolean isValid = cat.check( buff);
+   * System.out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
+   * System.out.println("  messages=\n" + buff.toString());
+   * 
+   * if (isValid) System.out.println("\nBack to XML=\n" + catFactory.writeXML( cat));
+   * }
+   */
   static public void main(String[] args) throws IOException {
     GeospatialCoverage gc = new GeospatialCoverage();
     LatLonRect bb = new LatLonRect();

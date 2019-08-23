@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
@@ -23,7 +22,8 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
 /**
- * fork ucar.nc2.dt.grid for adaption to Coverage (this class can evolve as needed and not worry about backwards compatibility).
+ * fork ucar.nc2.dt.grid for adaption to Coverage (this class can evolve as needed and not worry about backwards
+ * compatibility).
  * uses NetcdfDataset / CoordinateSystem.
  *
  * @see DtCoverageAdapter
@@ -54,13 +54,14 @@ public class DtCoverageDataset implements Closeable {
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
    * and turn into a DtCoverageDataset.
    *
-   * @param durl    netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param durl netcdf dataset to open, using NetcdfDataset.acquireDataset().
    * @param enhanceMode open netcdf dataset with this enhanceMode
    * @return GridDataset
    * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public DtCoverageDataset open(DatasetUrl durl, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
+  static public DtCoverageDataset open(DatasetUrl durl, Set<NetcdfDataset.Enhance> enhanceMode)
+      throws java.io.IOException {
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, durl, enhanceMode, -1, null, null);
     return new DtCoverageDataset(ds, null);
   }
@@ -95,7 +96,7 @@ public class DtCoverageDataset implements Closeable {
   /**
    * Create a DtCoverageDataset from a NetcdfDataset.
    *
-   * @param ncd       underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
+   * @param ncd underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @param parseInfo put parse info here, may be null
    * @throws java.io.IOException on read error
    */
@@ -104,7 +105,8 @@ public class DtCoverageDataset implements Closeable {
 
     // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
     Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || enhance.isEmpty()) enhance = NetcdfDataset.getDefaultEnhanceMode();
+    if (enhance == null || enhance.isEmpty())
+      enhance = NetcdfDataset.getDefaultEnhanceMode();
     ncd.enhance(enhance);
 
     DtCoverageCSBuilder facc = DtCoverageCSBuilder.classify(ncd, parseInfo);
@@ -114,9 +116,11 @@ public class DtCoverageDataset implements Closeable {
     Map<String, Gridset> csHash = new HashMap<>();
     for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
       DtCoverageCSBuilder fac = new DtCoverageCSBuilder(ncd, cs, parseInfo);
-      if (fac.type == null) continue;
+      if (fac.type == null)
+        continue;
       DtCoverageCS ccs = fac.makeCoordSys();
-      if (ccs == null) continue;
+      if (ccs == null)
+        continue;
       Gridset cset = new Gridset(ccs);
       gridSets.add(cset);
       gridsetHash.put(ccs.getName(), cset);
@@ -126,11 +130,13 @@ public class DtCoverageDataset implements Closeable {
     for (Variable v : ncd.getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
       List<CoordinateSystem> css = ve.getCoordinateSystems();
-      if (css.size() == 0) continue;
+      if (css.size() == 0)
+        continue;
       css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
-      CoordinateSystem cs = css.get(0);    // the largest one
+      CoordinateSystem cs = css.get(0); // the largest one
       Gridset cset = csHash.get(cs.getName());
-      if (cset == null) continue;
+      if (cset == null)
+        continue;
       DtCoverage ci = new DtCoverage(this, cset.gcc, (VariableDS) ve);
       cset.grids.add(ci);
       grids.add(ci);
@@ -196,27 +202,32 @@ public class DtCoverageDataset implements Closeable {
   }
 
   public CalendarDateRange getCalendarDateRange() {
-    if (dateRangeMax == null) makeTimeRanges();
+    if (dateRangeMax == null)
+      makeTimeRanges();
     return dateRangeMax;
   }
 
   public CalendarDate getCalendarDateStart() {
-    if (dateRangeMax == null) makeTimeRanges();
+    if (dateRangeMax == null)
+      makeTimeRanges();
     return (dateRangeMax == null) ? null : dateRangeMax.getStart();
   }
 
   public CalendarDate getCalendarDateEnd() {
-    if (dateRangeMax == null) makeTimeRanges();
+    if (dateRangeMax == null)
+      makeTimeRanges();
     return (dateRangeMax == null) ? null : dateRangeMax.getEnd();
   }
 
   public LatLonRect getBoundingBox() {
-    if (llbbMax == null) makeHorizRanges();
+    if (llbbMax == null)
+      makeHorizRanges();
     return llbbMax;
   }
 
   public ProjectionRect getProjBoundingBox() {
-    if (llbbMax == null) makeHorizRanges();
+    if (llbbMax == null)
+      makeHorizRanges();
     return projBB;
   }
 
@@ -387,7 +398,8 @@ public class DtCoverageDataset implements Closeable {
     buf.format("%nGeoReferencing Coordinate Axes%n");
     buf.format("Name__________________________Units_______________Type______Description%n");
     for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
-      if (axis.getAxisType() == null) continue;
+      if (axis.getAxisType() == null)
+        continue;
       axis.getInfo(buf);
       buf.format("%n");
     }
@@ -435,7 +447,8 @@ public class DtCoverageDataset implements Closeable {
 
   public synchronized void close() throws java.io.IOException {
     try {
-      if (ncd != null) ncd.close();
+      if (ncd != null)
+        ncd.close();
     } finally {
       ncd = null;
     }

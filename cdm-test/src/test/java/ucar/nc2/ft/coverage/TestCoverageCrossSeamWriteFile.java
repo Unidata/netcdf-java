@@ -23,7 +23,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -59,7 +58,7 @@ public class TestCoverageCrossSeamWriteFile {
       Assert.assertNotNull("HorizCoordSys", hcs);
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(10.0, 40.0), 50.0, 120.0);
-      writeTestFile(gcs, coverage, bbox, new int[]{1, 51, 121});
+      writeTestFile(gcs, coverage, bbox, new int[] {1, 51, 121});
     }
   }
 
@@ -85,7 +84,7 @@ public class TestCoverageCrossSeamWriteFile {
       Assert.assertNotNull("HorizCoordSys", hcs);
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
-      writeTestFile(gcs, coverage, bbox, new int[]{1, 11, 121});
+      writeTestFile(gcs, coverage, bbox, new int[] {1, 11, 121});
     }
   }
 
@@ -113,13 +112,15 @@ public class TestCoverageCrossSeamWriteFile {
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
-      writeTestFile(gcs, coverage, bbox, new int[]{1, 21, 241});
+      writeTestFile(gcs, coverage, bbox, new int[] {1, 21, 241});
     }
   }
 
-  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  public void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws IOException, InvalidRangeException {
+  public void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox, int[] expectedShape)
+      throws IOException, InvalidRangeException {
     String covName = coverage.getName();
     File tempFile = tempFolder.newFile();
     System.out.printf(" write %s to %s%n", covName, tempFile.getAbsolutePath());
@@ -127,12 +128,12 @@ public class TestCoverageCrossSeamWriteFile {
     SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);
     System.out.printf("params=%s%n", params);
 
-    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, tempFile.getPath(), null)) {
-      Optional<Long> estimatedSizeo = CFGridCoverageWriter2
-          .write(coverageDataset, Lists.newArrayList(covName), params, false, writer);
+    try (NetcdfFileWriter writer =
+        NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, tempFile.getPath(), null)) {
+      Optional<Long> estimatedSizeo =
+          CFGridCoverageWriter2.write(coverageDataset, Lists.newArrayList(covName), params, false, writer);
       if (!estimatedSizeo.isPresent())
-        throw new InvalidRangeException(
-            "Request contains no data: " + estimatedSizeo.getErrorMessage());
+        throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
     }
 
     // open the new file as a Coverage

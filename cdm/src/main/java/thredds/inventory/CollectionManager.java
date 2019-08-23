@@ -6,7 +6,6 @@
 package thredds.inventory;
 
 import ucar.nc2.units.TimeDuration;
-
 import java.io.IOException;
 
 /**
@@ -15,40 +14,56 @@ import java.io.IOException;
  * This is the older stuff used by FMRC. GRIB uses lighter weight MCollection.
  *
  * An MFile must have the property that
- * <pre>  NetcdfDataset.open(MFile.getPath, ...); </pre>
+ * 
+ * <pre>
+ *   NetcdfDataset.open(MFile.getPath, ...);
+ * </pre>
+ * 
  * should work.
  *
- * <p> A CollectionManager implements the <collection> element.
+ * <p>
+ * A CollectionManager implements the <collection> element.
  *
-<h3>collection element</h3>
-<p>A <strong>collection</strong> element defines the collection of datasets. </p>
-<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
+ * <h3>collection element</h3>
+ * <p>
+ * A <strong>collection</strong> element defines the collection of datasets.
+ * </p>
+ * 
+ * <pre>
+ * &lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
             <strong>name</strong>=&quot;WEST-CONUS_4km&quot; <strong>olderThan</strong>=&quot;1 min&quot; <strong></strong><strong>olderThan</strong>=&quot;15 min&quot; /&gt;
-</pre>
-
-The XML Schema:
-<pre>
+ * </pre>
+ * 
+ * The XML Schema:
+ * 
+ * <pre>
 &lt;xsd:complexType name=&quot;collectionType&quot;&gt;
   1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
   2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;
   3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
   5)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;
   6)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;
-&lt;/xsd:complexType&gt;<br /></pre>
-<p>where</p>
-<ol>
-  <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required).</li>
-  <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>.
-    This is used for external triggers and as an easy to read identifier for indexing, logging and debugging.
-    If missing, the spec string is used (not a good idea in the context of the TDS). </li>
-  <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included.
- This excludes files that are in the process of being written. However, it only applies to newly found files, that is,
- once a file is in the collection it is not removed because it got updated.</li>
-  <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the file name,
- as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract
- the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
-  <li><strong>timePartition</strong> (optional):: experimental, not complete yet.</li>
-</ol>
+&lt;/xsd:complexType&gt;<br />
+ * </pre>
+ * <p>
+ * where
+ * </p>
+ * <ol>
+ * <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string
+ * (required).</li>
+ * <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>.
+ * This is used for external triggers and as an easy to read identifier for indexing, logging and debugging.
+ * If missing, the spec string is used (not a good idea in the context of the TDS).</li>
+ * <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included.
+ * This excludes files that are in the process of being written. However, it only applies to newly found files, that is,
+ * once a file is in the collection it is not removed because it got updated.</li>
+ * <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the
+ * file name,
+ * as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in
+ * order to extract
+ * the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
+ * <li><strong>timePartition</strong> (optional):: experimental, not complete yet.</li>
+ * </ol>
  *
  * @author caron
  * @since Jan 19, 2010
@@ -57,6 +72,7 @@ public interface CollectionManager extends MCollection {
   /**
    * static means doesnt need to be monitored for changes; can be externally triggered, or read in at startup.
    * true if no recheckAfter and no update.rescan
+   * 
    * @return if static
    */
   boolean isStatic();
@@ -91,6 +107,7 @@ public interface CollectionManager extends MCollection {
 
   /**
    * If isScanNeeded(), do a scan. Do not send an event.
+   * 
    * @return true if scan was done, and anything changed.
    * @throws IOException on io error
    */
@@ -109,9 +126,11 @@ public interface CollectionManager extends MCollection {
 
   /**
    * Register to get Trigger events
+   * 
    * @param l listener
    */
   void addEventListener(TriggerListener l);
+
   void removeEventListener(TriggerListener l);
 
   ////////////////////////////////////////////////////
@@ -119,37 +138,36 @@ public interface CollectionManager extends MCollection {
 
   interface ChangeChecker {
     boolean hasChangedSince(MFile file, long when);
+
     boolean hasntChangedSince(MFile file, long when);
   }
 
   /**
    * A TriggerEvent.proto is sent if protoDataset.change = "cron" has been specified
    * A TriggerEvent.update is sent if a scan has happened and a change in the list of MFiles has occurred,
-   *  or an MFile has been updated
+   * or an MFile has been updated
    */
   interface TriggerListener {
     void handleCollectionEvent(TriggerEvent event);
   }
 
   class TriggerEvent extends java.util.EventObject {
-     private final CollectionUpdateType type;
+    private final CollectionUpdateType type;
 
-     TriggerEvent(Object source, CollectionUpdateType type) {
-       super(source);
-       this.type = type;
-     }
+    TriggerEvent(Object source, CollectionUpdateType type) {
+      super(source);
+      this.type = type;
+    }
 
-     public CollectionUpdateType getType() {
-       return type;
-     }
+    public CollectionUpdateType getType() {
+      return type;
+    }
 
-     @Override
-     public String toString() {
-       return "TriggerEvent{" +
-               "type='" + type + '\'' +
-               '}';
-     }
-   }
+    @Override
+    public String toString() {
+      return "TriggerEvent{" + "type='" + type + '\'' + '}';
+    }
+  }
 
 
 }

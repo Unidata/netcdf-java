@@ -8,7 +8,6 @@ package ucar.nc2.ft.point.standard;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.annotation.Nonnull;
-
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.constants.FeatureType;
@@ -29,6 +28,7 @@ import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * TrajectoryFeatureCollection using nested tables.
+ * 
  * @author caron
  * @since Dec 31, 2008
  */
@@ -47,7 +47,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
 
   @Override
   public TrajectoryFeatureCollection subset(LatLonRect boundingBox) {
-    return new StandardTrajectoryCollectionSubset( this, boundingBox);
+    return new StandardTrajectoryCollectionSubset(this, boundingBox);
   }
 
   ///////////////////////////////////////
@@ -57,7 +57,8 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     StructureData trajData;
 
     StandardTrajectoryFeature(Cursor cursor, StructureData trajData) {
-      super(ft.getFeatureName(cursor), StandardTrajectoryCollectionImpl.this.getTimeUnit(), StandardTrajectoryCollectionImpl.this.getAltUnits(), -1);
+      super(ft.getFeatureName(cursor), StandardTrajectoryCollectionImpl.this.getTimeUnit(),
+          StandardTrajectoryCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       this.trajData = trajData;
     }
@@ -82,14 +83,14 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     LatLonRect boundingBox;
 
     StandardTrajectoryCollectionSubset(TrajectoryFeatureCollection from, LatLonRect boundingBox) {
-      super(from.getName()+"-subset", from.getTimeUnit(), from.getAltUnits());
+      super(from.getName() + "-subset", from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.boundingBox = boundingBox;
     }
 
     @Override
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(), new FilterBB());
+      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(), new FilterBB());
     }
 
     private class FilterBB implements PointFeatureCollectionIterator.Filter {
@@ -116,12 +117,12 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
 
   @Override
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
-    return new TrajCollectionIterator( ft.getRootFeatureDataIterator());
+    return new TrajCollectionIterator(ft.getRootFeatureDataIterator());
   }
 
   @Override
   public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
-    return new TrajCollectionIterator( ft.getRootFeatureDataIterator());
+    return new TrajCollectionIterator(ft.getRootFeatureDataIterator());
   }
 
   private class TrajCollectionIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
@@ -143,13 +144,15 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
         if (prev != null && calcInfo != null)
           calcInfo.extend(prev.getInfo());
 
-        if(!structIter.hasNext()) {
+        if (!structIter.hasNext()) {
           structIter.close();
-          if (calcInfo != null) calcInfo.setComplete();
+          if (calcInfo != null)
+            calcInfo.setComplete();
           return false;
         }
         nextTraj = structIter.next();
-        if (!ft.isFeatureMissing(nextTraj)) break;
+        if (!ft.isFeatureMissing(nextTraj))
+          break;
       }
       return true;
     }
@@ -179,7 +182,8 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
 
   @Override
   public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
+    if (localIterator == null)
+      resetIteration();
     return localIterator.hasNext();
   }
 

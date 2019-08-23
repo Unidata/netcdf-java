@@ -3,8 +3,10 @@
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.geoloc;
+
 /**
  * Used to notify listeners that there is a new geographic area selection.
+ * 
  * @author John Caron
  */
 public class GeoSelectionEvent extends java.util.EventObject {
@@ -15,6 +17,8 @@ public class GeoSelectionEvent extends java.util.EventObject {
     this.pr = pr;
   }
 
-  public ucar.unidata.geoloc.ProjectionRect getProjectionRect() { return pr; }
+  public ucar.unidata.geoloc.ProjectionRect getProjectionRect() {
+    return pr;
+  }
 }
 

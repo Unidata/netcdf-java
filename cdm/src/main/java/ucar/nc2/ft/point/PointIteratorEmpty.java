@@ -26,6 +26,5 @@ public class PointIteratorEmpty extends PointIteratorAbstract {
   }
 
   @Override
-  public void close() {
-  }
+  public void close() {}
 }

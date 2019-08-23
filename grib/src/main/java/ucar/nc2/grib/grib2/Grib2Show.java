@@ -13,7 +13,6 @@ import ucar.nc2.grib.grib2.table.WmoTemplateTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables.TemplateTable;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
-
 import java.util.Formatter;
 
 /**
@@ -32,7 +31,8 @@ public class Grib2Show {
         f.format("%s", (char) ub);
       else
         f.format("(%d)", ub);
-      if (max > 0 && count++ > max) break;
+      if (max > 0 && count++ > max)
+        break;
     }
   }
 
@@ -42,7 +42,8 @@ public class Grib2Show {
     showBytes(f, gr.getHeader(), 100);
     f.format("\"%n");
 
-    Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
+    Grib2Variable gv =
+        new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
     f.format("cdmHash=%d%n", gv.hashCode());
 
     int d = gr.getDiscipline();
@@ -53,14 +54,19 @@ public class Grib2Show {
     Grib2SectionIdentification id = gr.getId();
     f.format("%nGrib2IdentificationSection%n");
     f.format(" Center        = (%d) %s%n", id.getCenter_id(), CommonCodeTable.getCenterName(id.getCenter_id(), 2));
-    f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id()));
+    f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(),
+        cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id()));
     f.format(" Master Table  = %d%n", id.getMaster_table_version());
     f.format(" Local Table   = %d%n", id.getLocal_table_version());
-    f.format(" RefTimeSignif = %d (%s)%n", id.getSignificanceOfRT(), cust.getCodeTableValue("1.2", id.getSignificanceOfRT()));
+    f.format(" RefTimeSignif = %d (%s)%n", id.getSignificanceOfRT(),
+        cust.getCodeTableValue("1.2", id.getSignificanceOfRT()));
     f.format(" RefTime       = %s%n", id.getReferenceDate());
-    f.format(" RefTime Fields = %d-%d-%d %d:%d:%d%n", id.getYear(), id.getMonth(), id.getDay(), id.getHour(), id.getMinute(), id.getSecond());
-    f.format(" ProductionStatus      = %d (%s)%n", id.getProductionStatus(), cust.getCodeTableValue("1.3", id.getProductionStatus()));
-    f.format(" TypeOfProcessedData   = %d (%s)%n", id.getTypeOfProcessedData(), cust.getCodeTableValue("1.4", id.getTypeOfProcessedData()));
+    f.format(" RefTime Fields = %d-%d-%d %d:%d:%d%n", id.getYear(), id.getMonth(), id.getDay(), id.getHour(),
+        id.getMinute(), id.getSecond());
+    f.format(" ProductionStatus      = %d (%s)%n", id.getProductionStatus(),
+        cust.getCodeTableValue("1.3", id.getProductionStatus()));
+    f.format(" TypeOfProcessedData   = %d (%s)%n", id.getTypeOfProcessedData(),
+        cust.getCodeTableValue("1.4", id.getTypeOfProcessedData()));
 
     if (gr.hasLocalUseSection()) {
       byte[] lus = gr.getLocalUseSection().getRawBytes();
@@ -84,21 +90,24 @@ public class Grib2Show {
     Grib2Pds pds = gr.getPDS();
     if (pds.isTimeInterval()) {
       TimeCoordIntvDateValue intv = cust.getForecastTimeInterval(gr);
-      if (intv != null) f.format(" Interval     = %s%n", intv);
+      if (intv != null)
+        f.format(" Interval     = %s%n", intv);
     }
     showPdsTemplate(pdss, f, cust);
     if (pds.getExtraCoordinatesCount() > 0) {
       float[] coords = pds.getExtraCoordinates();
       if (coords != null) {
         f.format("Hybrid Coordinates (%d) %n  ", coords.length);
-        for (float fc : coords) f.format("%10.5f ", fc);
+        for (float fc : coords)
+          f.format("%10.5f ", fc);
       }
       f.format("%n%n");
     }
 
     Grib2SectionDataRepresentation drs = gr.getDataRepresentationSection();
     f.format("%nGrib2SectionDataRepresentation%n");
-    f.format("  Template           = %d (%s) %n", drs.getDataTemplate(), cust.getCodeTableValue("5.0", drs.getDataTemplate()));
+    f.format("  Template           = %d (%s) %n", drs.getDataTemplate(),
+        cust.getCodeTableValue("5.0", drs.getDataTemplate()));
     f.format("  NPoints            = %d%n", drs.getDataPoints());
 
     Grib2SectionData ds = gr.getDataSection();
@@ -131,7 +140,8 @@ public class Grib2Show {
     int template = pds.getTemplateNumber();
     f.format(" Product Template %3d = %s%n", template, cust.getCodeTableValue("4.0", template));
     f.format(" Discipline %3d     = %s%n", discipline, cust.getCodeTableValue("0.0", discipline));
-    f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getCategory(discipline, pds.getParameterCategory()));
+    f.format(" Category %3d       = %s%n", pds.getParameterCategory(),
+        cust.getCategory(discipline, pds.getParameterCategory()));
     GribTables.Parameter entry = cust.getParameter(discipline, pds);
     if (entry != null) {
       f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
@@ -140,7 +150,8 @@ public class Grib2Show {
       f.format(" Unknown Parameter  = %d-%d-%d %n", discipline, pds.getParameterCategory(), pds.getParameterNumber());
       cust.getParameter(discipline, pds); // debug
     }
-    f.format(" Parameter Table  = %s%n", cust.getParamTablePathUsedFor(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
+    f.format(" Parameter Table  = %s%n",
+        cust.getParamTablePathUsedFor(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
 
     int tgp = pds.getGenProcessType();
     f.format(" Generating Process Type = %3d %s %n", tgp, cust.getCodeTableValue("4.3", tgp));
@@ -158,12 +169,14 @@ public class Grib2Show {
     if (param != null) {
       f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
     } else {
-      f.format(" Unknown Parameter  = %d-%d-%d %n", gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+      f.format(" Unknown Parameter  = %d-%d-%d %n", gr.getDiscipline(), gr.getPDS().getParameterCategory(),
+          gr.getPDS().getParameterNumber());
     }
 
     Grib2Pds pds = gr.getPDS();
     VertCoordType levelUnit = cust.getVertUnit(pds.getLevelType1());
-    f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
+    f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(),
+        cust.getLevelNameShort(pds.getLevelType1()));
 
     String intvName = "none";
     if (pds instanceof Grib2Pds.PdsInterval) {
@@ -173,15 +186,16 @@ public class Grib2Show {
       intvName = cust.getStatisticNameShort(statType);
     }
 
-    f.format("  Time Unit=%s; Stat=%s%n", Grib2Utils.getCalendarPeriod( pds.getTimeUnit()), intvName);
+    f.format("  Time Unit=%s; Stat=%s%n", Grib2Utils.getCalendarPeriod(pds.getTimeUnit()), intvName);
     f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
     f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
     TimeCoordIntvDateValue intv = cust.getForecastTimeInterval(gr);
-    if (intv != null) f.format("  TimeInterval=%s%n", intv);
+    if (intv != null)
+      f.format("  TimeInterval=%s%n", intv);
     f.format("%n");
     pds.show(f);
 
-    //CFSR malarky
+    // CFSR malarky
     cust.showSpecialPdsInfo(gr, f);
   }
 }

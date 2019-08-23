@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
-
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataFactory;
 import ucar.ma2.StructureDataIterator;
@@ -46,12 +45,12 @@ import ucar.unidata.geoloc.EarthLocationImpl;
  * <p>
  * Nested Tables must be put in canonical form, based on feature type:
  * <ol>
- * <li> point : obsTable
- * <li> station : stnTable -> obsTable
- * <li> traj : trajTable -> obsTable
- * <li> profile : profileTable -> obsTable
- * <li> stationProfile : stnTable -> profileTable -> obsTable
- * <li> section : sectionTable -> trajTable -> obsTable
+ * <li>point : obsTable
+ * <li>station : stnTable -> obsTable
+ * <li>traj : trajTable -> obsTable
+ * <li>profile : profileTable -> obsTable
+ * <li>stationProfile : stnTable -> profileTable -> obsTable
+ * <li>section : sectionTable -> trajTable -> obsTable
  * </ol>
  *
  * @author caron
@@ -82,7 +81,8 @@ public class NestedTable {
     nlevels = 0;
     Table t = leaf;
     while (t != null) {
-      if (t.getFeatureType() != null) featureType = t.getFeatureType();
+      if (t.getFeatureType() != null)
+        featureType = t.getFeatureType();
       t = t.parent;
       // if (!(t instanceof Table.TableTop)) // LOOK using nlevels is fishy
       nlevels++;
@@ -90,16 +90,18 @@ public class NestedTable {
     if (featureType == null)
       featureType = FeatureDatasetFactoryManager.findFeatureType(ds);
 
-    /* find joins with extra variables
-    t = leaf;
-    while (t != null) {
-      if (t.extraJoins != null) {
-        for (Join j : t.extraJoins) {
-          addExtraVariable(j.getExtraVariable());
-        }
-      }
-      t = t.parent; // recurse upwards
-    } */
+    /*
+     * find joins with extra variables
+     * t = leaf;
+     * while (t != null) {
+     * if (t.extraJoins != null) {
+     * for (Join j : t.extraJoins) {
+     * addExtraVariable(j.getExtraVariable());
+     * }
+     * }
+     * t = t.parent; // recurse upwards
+     * }
+     */
 
     // will find the first one, starting at the leaf and going up
     timeVE = findCoordinateAxis(Table.CoordName.Time, leaf, 0);
@@ -119,35 +121,43 @@ public class NestedTable {
 
     // LOOK: Major kludge
     if (featureType == null) {
-      if (nlevels == 1) featureType = FeatureType.POINT;
-      if (nlevels == 2) featureType = FeatureType.STATION;
-      if (nlevels == 3) featureType = FeatureType.STATION_PROFILE;
+      if (nlevels == 1)
+        featureType = FeatureType.POINT;
+      if (nlevels == 2)
+        featureType = FeatureType.STATION;
+      if (nlevels == 3)
+        featureType = FeatureType.STATION_PROFILE;
     }
 
     // find coordinates that are not part of the extras
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      if (!isCoordinate(axis) && !isExtra(axis)
-              && axis.getDimensionsAll().size() <= 1)  // Only permit 0-D and 1-D axes as extra variables.
+      if (!isCoordinate(axis) && !isExtra(axis) && axis.getDimensionsAll().size() <= 1) // Only permit 0-D and 1-D axes
+                                                                                        // as extra variables.
         addExtraVariable(axis);
     }
 
-    /* check for singleton
-    if (((nlevels == 1) && (featureType == FeatureType.STATION) || (featureType == FeatureType.PROFILE) || (featureType == FeatureType.TRAJECTORY)) ||
-            ((nlevels == 2) && (featureType == FeatureType.STATION_PROFILE) || (featureType == FeatureType.TRAJECTORY_PROFILE))) {
-
-      // singleton. use file name as feature name, so aggregation will work
-      StructureData sdata = StructureDataFactory.make(featureVariableName, ds.getLocation());
-      TableConfig parentConfig = new TableConfig(Table.Type.Singleton, featureType.toString());
-      parentConfig.sdata = sdata;
-      root = Table.factory(ds, parentConfig);
-
-      nlevels++;
-    } // */
+    /*
+     * check for singleton
+     * if (((nlevels == 1) && (featureType == FeatureType.STATION) || (featureType == FeatureType.PROFILE) ||
+     * (featureType == FeatureType.TRAJECTORY)) ||
+     * ((nlevels == 2) && (featureType == FeatureType.STATION_PROFILE) || (featureType ==
+     * FeatureType.TRAJECTORY_PROFILE))) {
+     * 
+     * // singleton. use file name as feature name, so aggregation will work
+     * StructureData sdata = StructureDataFactory.make(featureVariableName, ds.getLocation());
+     * TableConfig parentConfig = new TableConfig(Table.Type.Singleton, featureType.toString());
+     * parentConfig.sdata = sdata;
+     * root = Table.factory(ds, parentConfig);
+     * 
+     * nlevels++;
+     * } //
+     */
   }
 
   Table getRoot() {
     Table p = leaf;
-    while (p.parent != null) p = p.parent;
+    while (p.parent != null)
+      p = p.parent;
     return p;
   }
 
@@ -160,8 +170,10 @@ public class NestedTable {
   }
 
   private void addExtraVariable(Variable v) {
-    if (v == null) return;
-    if (extras == null) extras = new ArrayList<>();
+    if (v == null)
+      return;
+    if (extras == null)
+      extras = new ArrayList<>();
     extras.add(v);
   }
 
@@ -172,19 +184,18 @@ public class NestedTable {
 
   // Is v a coordinate axis for this feature type?
   private boolean isCoordinate(Variable v) {
-    if (v == null) return false;
+    if (v == null)
+      return false;
     String name = v.getShortName();
-    return (latVE != null && latVE.axisName.equals(name)) ||
-            (lonVE != null && lonVE.axisName.equals(name)) ||
-            (altVE != null && altVE.axisName.equals(name)) ||
-            (stnAltVE != null && stnAltVE.axisName.equals(name)) ||
-            (timeVE != null && timeVE.axisName.equals(name)) ||
-            (nomTimeVE != null && nomTimeVE.axisName.equals(name));
+    return (latVE != null && latVE.axisName.equals(name)) || (lonVE != null && lonVE.axisName.equals(name))
+        || (altVE != null && altVE.axisName.equals(name)) || (stnAltVE != null && stnAltVE.axisName.equals(name))
+        || (timeVE != null && timeVE.axisName.equals(name)) || (nomTimeVE != null && nomTimeVE.axisName.equals(name));
   }
 
   // find a coord axis of the given type in the table and its parents
   private CoordVarExtractor findCoordinateAxis(Table.CoordName coordName, Table t, int nestingLevel) {
-    if (t == null) return null;
+    if (t == null)
+      return null;
 
     String axisName = t.findCoordinateVariableName(coordName);
 
@@ -336,7 +347,8 @@ public class NestedTable {
 
     @Override
     public boolean isMissing(StructureData sdata) {
-      if (isString()) return false;
+      if (isString())
+        return false;
       double val = getCoordValue(sdata);
       return varTop.isMissing(val);
     }
@@ -465,8 +477,10 @@ public class NestedTable {
   }
 
   public String getAltUnits() {
-    if (altVE != null) return altVE.getUnitsString();         // fishy
-    if (stnAltVE != null) return stnAltVE.getUnitsString();
+    if (altVE != null)
+      return altVE.getUnitsString(); // fishy
+    if (stnAltVE != null)
+      return stnAltVE.getUnitsString();
     return null;
   }
 
@@ -479,10 +493,13 @@ public class NestedTable {
 
   // use recursion so that parent variables come first
   private void addDataVariables(List<VariableSimpleIF> list, Table t) {
-    if (t.parent != null) addDataVariables(list, t.parent);
+    if (t.parent != null)
+      addDataVariables(list, t.parent);
     for (VariableSimpleIF col : t.cols.values()) {
-      if (t.nondataVars.contains(col.getFullName())) continue;
-      if (t.nondataVars.contains(col.getShortName())) continue;  // fishy
+      if (t.nondataVars.contains(col.getFullName()))
+        continue;
+      if (t.nondataVars.contains(col.getShortName()))
+        continue; // fishy
       list.add(col);
     }
   }
@@ -528,8 +545,10 @@ public class NestedTable {
   }
 
   private double getTime(CoordVarExtractor cve, StructureData[] tableData) {
-    if (cve == null) return Double.NaN;
-    if (tableData[cve.nestingLevel] == null) return Double.NaN;
+    if (cve == null)
+      return Double.NaN;
+    if (tableData[cve.nestingLevel] == null)
+      return Double.NaN;
 
     if (cve.isString()) {
       String timeString = timeVE.getCoordValueString(tableData);
@@ -573,11 +592,14 @@ public class NestedTable {
     while (count++ < cursor.currentIndex)
       t = t.parent;
 
-    if (t.feature_id == null) return "unknown";
+    if (t.feature_id == null)
+      return "unknown";
     StructureData sdata = cursor.getParentStructure();
-    if (sdata == null) return "unknown";
+    if (sdata == null)
+      return "unknown";
     StructureMembers.Member m = sdata.findMember(t.feature_id);
-    if (m == null) return "unknown";
+    if (m == null)
+      return "unknown";
 
     if (m.getDataType().isString())
       return sdata.getScalarString(m);
@@ -615,15 +637,17 @@ public class NestedTable {
     return cursor.tableData[nest];
   }
 
-  /* public void addParentJoin(Cursor cursor) throws IOException {
-    Table t = leaf;
-    int level = 0;
-    while (t != null) {
-      addParentJoin(t, level, cursor);
-      level++;
-      t = t.parent;
-    }
-  }  */
+  /*
+   * public void addParentJoin(Cursor cursor) throws IOException {
+   * Table t = leaf;
+   * int level = 0;
+   * while (t != null) {
+   * addParentJoin(t, level, cursor);
+   * level++;
+   * t = t.parent;
+   * }
+   * }
+   */
 
   // add table join to this cursor level
   void addParentJoin(Cursor cursor) {
@@ -635,7 +659,7 @@ public class NestedTable {
       for (Join j : t.extraJoins) {
         sdata.add(j.getJoinData(cursor));
       }
-      cursor.tableData[level] = StructureDataFactory.make(sdata);  // LOOK should try to consolidate
+      cursor.tableData[level] = StructureDataFactory.make(sdata); // LOOK should try to consolidate
     }
   }
 
@@ -682,12 +706,13 @@ public class NestedTable {
   }
 
   public StructureDataIterator getMiddleFeatureDataIterator(Cursor cursor) throws IOException {
-    return leaf.parent.getStructureDataIterator(cursor);  // the middle table
+    return leaf.parent.getStructureDataIterator(cursor); // the middle table
   }
 
   // also called from StandardPointFeatureIterator
   StationFeature makeStation(StructureData stationData) {
-    if (stnVE.isMissing(stationData)) return null;
+    if (stnVE.isMissing(stationData))
+      return null;
     String stationName = stnVE.getCoordValueAsString(stationData);
 
     String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueAsString(stationData);
@@ -698,7 +723,8 @@ public class NestedTable {
     double elev = (stnAltVE == null) ? Double.NaN : stnAltVE.getCoordValue(stationData);
 
     // missing lat, lon means skip this station
-    if (Double.isNaN(lat) || Double.isNaN(lon)) return null;
+    if (Double.isNaN(lat) || Double.isNaN(lon))
+      return null;
 
     return new StationFeatureImpl(stationName, stationDesc, stnWmoId, lat, lon, elev, -1, stationData);
   }
@@ -706,92 +732,94 @@ public class NestedTable {
   /////////////////////////////////////////////////////////
   // Table.Construct: stations get constructed by reading the obs and extracting
 
-  /* private List<Station> constructStations(Table.TableConstruct stationTable) throws IOException {
-    Map<String, StationConstruct> stnMap = new HashMap<String, StationConstruct>();
-    ArrayList<Station> result = new ArrayList<Station>();
-    StructureDataIterator iter = stationTable.getStructureDataIterator(null, -1); // this will be the obs structure
-    int recno = 0;
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      String stationName = stnVE.getCoordValueString(sdata);
-      StationConstruct s = stnMap.get(stationName);
-      if (s == null) {
-        s = makeStationConstruct(stationName, stationTable.getObsStructure(), sdata);
-        stnMap.put(stationName, s);
-        result.add(s);
-      }
-      double obsTime = timeVE.getCoordValue(sdata);
-      s.addIndex(recno, obsTime);
-      recno++;
-    }
-
-    return result;
-  }
-
-  private StationConstruct makeStationConstruct(String stationName, Structure obsStruct, StructureData stationData) {
-    String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueString(stationData);
-    String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueString(stationData);
-
-    double lat = latVE.getCoordValue(stationData);
-    double lon = lonVE.getCoordValue(stationData);
-    double elev = (stnAltVE == null) ? Double.NaN : stnAltVE.getCoordValue(stationData);
-
-    return new StationConstruct(stationName, obsStruct, stationDesc, stnWmoId, lat, lon, elev);
-  }
-
-  private class StationConstruct extends StationImpl {
-    List<Index> index;
-    Structure obsStruct;
-
-    StationConstruct(String name, Structure obsStruct, String desc, String wmoId, double lat, double lon, double alt) {
-      super(name, desc, wmoId, lat, lon, alt);
-      this.obsStruct = obsStruct;
-    }
-
-    void addIndex(int recno, double time) {
-      if (index == null)
-        index = new ArrayList<Index>();
-
-      Index i = new Index();
-      i.recno = recno;
-      i.time = time;
-      index.add(i);
-    }
-
-    class Index {
-      int recno;
-      double time;
-    }
-
-    StructureDataIterator getStructureDataIterator(int bufferSize) {
-      return new IndexedStructureDataIterator();
-    }
-
-    private class IndexedStructureDataIterator implements ucar.ma2.StructureDataIterator {
-      private int count = 0;
-
-      public boolean hasNext() throws IOException {
-        return count < index.size();
-      }
-
-      public StructureData next() throws IOException {
-        Index i = index.get(count++);
-        try {
-          return obsStruct.readStructure(i.recno);
-        } catch (InvalidRangeException e) {
-          throw new IllegalStateException("bad recnum " + i.recno, e);
-        }
-      }
-
-      public void setBufferSize(int bytes) {
-      }
-
-      public StructureDataIterator reset() {
-        count = 0;
-        return this;
-      }
-    }
-
-  } */
+  /*
+   * private List<Station> constructStations(Table.TableConstruct stationTable) throws IOException {
+   * Map<String, StationConstruct> stnMap = new HashMap<String, StationConstruct>();
+   * ArrayList<Station> result = new ArrayList<Station>();
+   * StructureDataIterator iter = stationTable.getStructureDataIterator(null, -1); // this will be the obs structure
+   * int recno = 0;
+   * while (iter.hasNext()) {
+   * StructureData sdata = iter.next();
+   * String stationName = stnVE.getCoordValueString(sdata);
+   * StationConstruct s = stnMap.get(stationName);
+   * if (s == null) {
+   * s = makeStationConstruct(stationName, stationTable.getObsStructure(), sdata);
+   * stnMap.put(stationName, s);
+   * result.add(s);
+   * }
+   * double obsTime = timeVE.getCoordValue(sdata);
+   * s.addIndex(recno, obsTime);
+   * recno++;
+   * }
+   * 
+   * return result;
+   * }
+   * 
+   * private StationConstruct makeStationConstruct(String stationName, Structure obsStruct, StructureData stationData) {
+   * String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueString(stationData);
+   * String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueString(stationData);
+   * 
+   * double lat = latVE.getCoordValue(stationData);
+   * double lon = lonVE.getCoordValue(stationData);
+   * double elev = (stnAltVE == null) ? Double.NaN : stnAltVE.getCoordValue(stationData);
+   * 
+   * return new StationConstruct(stationName, obsStruct, stationDesc, stnWmoId, lat, lon, elev);
+   * }
+   * 
+   * private class StationConstruct extends StationImpl {
+   * List<Index> index;
+   * Structure obsStruct;
+   * 
+   * StationConstruct(String name, Structure obsStruct, String desc, String wmoId, double lat, double lon, double alt) {
+   * super(name, desc, wmoId, lat, lon, alt);
+   * this.obsStruct = obsStruct;
+   * }
+   * 
+   * void addIndex(int recno, double time) {
+   * if (index == null)
+   * index = new ArrayList<Index>();
+   * 
+   * Index i = new Index();
+   * i.recno = recno;
+   * i.time = time;
+   * index.add(i);
+   * }
+   * 
+   * class Index {
+   * int recno;
+   * double time;
+   * }
+   * 
+   * StructureDataIterator getStructureDataIterator(int bufferSize) {
+   * return new IndexedStructureDataIterator();
+   * }
+   * 
+   * private class IndexedStructureDataIterator implements ucar.ma2.StructureDataIterator {
+   * private int count = 0;
+   * 
+   * public boolean hasNext() throws IOException {
+   * return count < index.size();
+   * }
+   * 
+   * public StructureData next() throws IOException {
+   * Index i = index.get(count++);
+   * try {
+   * return obsStruct.readStructure(i.recno);
+   * } catch (InvalidRangeException e) {
+   * throw new IllegalStateException("bad recnum " + i.recno, e);
+   * }
+   * }
+   * 
+   * public void setBufferSize(int bytes) {
+   * }
+   * 
+   * public StructureDataIterator reset() {
+   * count = 0;
+   * return this;
+   * }
+   * }
+   * 
+   * }
+   */
 
 }

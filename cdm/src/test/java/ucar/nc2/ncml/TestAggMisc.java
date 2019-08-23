@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -42,7 +42,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
@@ -54,65 +53,57 @@ import java.lang.invoke.MethodHandles;
  * @since Nov 24, 2009
  */
 public class TestAggMisc {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    @Test
-    public void testNestedValues() throws IOException, InvalidRangeException, InterruptedException {
-        String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' >\n" +
-                      "  <aggregation dimName='time' type='joinExisting'>\n" +
-                      "   <netcdf>\n" +
-                      "     <dimension name='time' isUnlimited='true' length='10'/>\n" +
-                      "     <variable name='time' shape='time' type='double'>\n" +
-                      "         <values start='0' increment='1' />\n" +
-                      "     </variable>\n" +
-                      "   </netcdf>\n" +
-                      "   <netcdf >\n" +
-                      "     <dimension name='time' isUnlimited='true' length='10'/>\n" +
-                      "     <variable name='time' shape='time' type='double'>\n" +
-                      "         <values start='10' increment='1' />\n" +
-                      "     </variable>\n" +
-                      "   </netcdf>\n" +
-                      "  </aggregation>\n" +
-                      "</netcdf>";
+  @Test
+  public void testNestedValues() throws IOException, InvalidRangeException, InterruptedException {
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' >\n"
+        + "  <aggregation dimName='time' type='joinExisting'>\n" + "   <netcdf>\n"
+        + "     <dimension name='time' isUnlimited='true' length='10'/>\n"
+        + "     <variable name='time' shape='time' type='double'>\n" + "         <values start='0' increment='1' />\n"
+        + "     </variable>\n" + "   </netcdf>\n" + "   <netcdf >\n"
+        + "     <dimension name='time' isUnlimited='true' length='10'/>\n"
+        + "     <variable name='time' shape='time' type='double'>\n" + "         <values start='10' increment='1' />\n"
+        + "     </variable>\n" + "   </netcdf>\n" + "  </aggregation>\n" + "</netcdf>";
 
-        String location = "testNestedValues.ncml";
+    String location = "testNestedValues.ncml";
 
-        try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null)) {
-            TestDir.readAllData(ncfile);
+    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null)) {
+      TestDir.readAllData(ncfile);
 
-            Variable v = ncfile.findVariable("time");
-            Array data = v.read();
-            assert data.getSize() == 20;
-            logger.debug(NCdumpW.toString(data));
-        }
+      Variable v = ncfile.findVariable("time");
+      Array data = v.read();
+      assert data.getSize() == 20;
+      logger.debug(NCdumpW.toString(data));
     }
+  }
 
-    @Test
-    public void testNestedAgg() throws IOException, InvalidRangeException, InterruptedException {
-        String filename = "file:./" + TestDir.cdmLocalTestDataDir + "testNested.ncml";
+  @Test
+  public void testNestedAgg() throws IOException, InvalidRangeException, InterruptedException {
+    String filename = "file:./" + TestDir.cdmLocalTestDataDir + "testNested.ncml";
 
-        try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
-            TestDir.readAllData(ncfile);
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+      TestDir.readAllData(ncfile);
 
-            Variable v = ncfile.findVariable("time");
-            Array data = v.read();
-            assert data.getSize() == 59;
-            logger.debug(NCdumpW.toString(data));
-        }
+      Variable v = ncfile.findVariable("time");
+      Array data = v.read();
+      assert data.getSize() == 59;
+      logger.debug(NCdumpW.toString(data));
     }
+  }
 
-    @Test
-    public void testNestedScan() throws IOException, InvalidRangeException, InterruptedException {
-        String filename = "file:./" + TestNcML.topDir + "nested/TestNestedDirs.ncml";
+  @Test
+  public void testNestedScan() throws IOException, InvalidRangeException, InterruptedException {
+    String filename = "file:./" + TestNcML.topDir + "nested/TestNestedDirs.ncml";
 
-        try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
-            TestDir.readAllData(ncfile);
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+      TestDir.readAllData(ncfile);
 
-            Variable v = ncfile.findVariable("time");
-            Array data = v.read();
-            assert data.getSize() == 3;
-            logger.debug(NCdumpW.toString(data));
-        }
+      Variable v = ncfile.findVariable("time");
+      Array data = v.read();
+      assert data.getSize() == 3;
+      logger.debug(NCdumpW.toString(data));
     }
+  }
 }

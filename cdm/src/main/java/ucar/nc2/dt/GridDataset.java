@@ -6,24 +6,28 @@ package ucar.nc2.dt;
 
 import ucar.nc2.ft.FeatureDataset;
 import ucar.unidata.geoloc.ProjectionRect;
-
 import java.util.*;
 
 /**
  * A dataset containing Grid objects.
+ * 
  * @author caron
  */
 
 public interface GridDataset extends FeatureDataset {
 
-  /** get the list of GridDatatype objects contained in this dataset.
-   * @return  list of GridDatatype
+  /**
+   * get the list of GridDatatype objects contained in this dataset.
+   * 
+   * @return list of GridDatatype
    */
   List<GridDatatype> getGrids();
 
-  /** find the named GridDatatype.
+  /**
+   * find the named GridDatatype.
+   * 
    * @param name full unescaped name
-   * @return  the named GridDatatype, or null if not found
+   * @return the named GridDatatype, or null if not found
    */
   GridDatatype findGridDatatype(String name);
 
@@ -34,7 +38,8 @@ public interface GridDataset extends FeatureDataset {
 
   /**
    * Return GridDatatype objects grouped by GridCoordSystem. All GridDatatype in a Gridset
-   *   have the same GridCoordSystem.
+   * have the same GridCoordSystem.
+   * 
    * @return List of type GridDataset.Gridset
    */
   List<Gridset> getGridsets();
@@ -44,13 +49,17 @@ public interface GridDataset extends FeatureDataset {
    */
   interface Gridset {
 
-    /** Get list of GridDatatype objects with same Coordinate System
+    /**
+     * Get list of GridDatatype objects with same Coordinate System
+     * 
      * @return list of GridDatatype
      */
     List<GridDatatype> getGrids();
 
-    /** all the GridDatatype in this Gridset use this GridCoordSystem
-     * @return  the common GridCoordSystem
+    /**
+     * all the GridDatatype in this Gridset use this GridCoordSystem
+     * 
+     * @return the common GridCoordSystem
      */
     ucar.nc2.dt.GridCoordSystem getGeoCoordSystem();
   }

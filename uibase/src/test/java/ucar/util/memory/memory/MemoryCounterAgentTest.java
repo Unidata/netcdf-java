@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -24,12 +23,12 @@ public class MemoryCounterAgentTest {
   public static void measureSize(Object o) {
     long memShallow = MemoryCounterAgent.sizeOf(o);
     long memDeep = MemoryCounterAgent.deepSizeOf(o);
-    System.out.printf("%s, shallow=%d, deep=%d%n",
-        o.getClass().getSimpleName(), memShallow, memDeep);
+    System.out.printf("%s, shallow=%d, deep=%d%n", o.getClass().getSimpleName(), memShallow, memDeep);
   }
 
   public static void measureSize(String name, Object o, Class skipClass, boolean show) {
-    if (o == null) return;
+    if (o == null)
+      return;
     long memShallow = MemoryCounterAgent.sizeOf(o);
     long memDeep = MemoryCounterAgent.deepSizeOf3(name, o, skipClass, show);
     System.out.printf("%n %4d %6d %s (%s)%n", memShallow, memDeep, name, o.getClass().getName());
@@ -50,10 +49,10 @@ public class MemoryCounterAgentTest {
     measureSize(1000);
     measureSize(new Parent());
     measureSize(new Kid());
-    measureSize(Thread.State.TERMINATED);  //
+    measureSize(Thread.State.TERMINATED); //
 
     System.out.println("======================");
-    //testGrib1();
+    // testGrib1();
     System.out.println("======================");
     testGrib2();
   }
@@ -79,12 +78,12 @@ public class MemoryCounterAgentTest {
   static void testHDF5() throws IOException {
     String filename = "C:/data/hdf5/HIRDLS2-Aura12h_b033_2000d275.he5";
     NetcdfFile ncfile = NetcdfFile.open(filename);
-    //measureSize(filename, ncfile, null, true);
+    // measureSize(filename, ncfile, null, true);
 
     Variable vv = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Geolocation Fields/SpacecraftAltitude");
     measureSize(vv.getFullName(), vv, Group.class, true);
 
-    //showAll(ncfile);
+    // showAll(ncfile);
     ncfile.close();
   }
 
@@ -93,10 +92,10 @@ public class MemoryCounterAgentTest {
     NetcdfFile ncfile = NetcdfFile.open(filename);
     measureSize(filename, ncfile, null, true);
 
-    //Variable vv = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Geolocation Fields/SpacecraftAltitude");
-    //measureSize(vv.getName(), vv, Group.class, true);
+    // Variable vv = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Geolocation Fields/SpacecraftAltitude");
+    // measureSize(vv.getName(), vv, Group.class, true);
 
-    //showAll(ncfile);
+    // showAll(ncfile);
     ncfile.close();
   }
 

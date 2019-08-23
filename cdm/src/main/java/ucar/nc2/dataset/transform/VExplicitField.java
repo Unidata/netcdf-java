@@ -12,7 +12,8 @@ import ucar.unidata.geoloc.vertical.VTfromExistingData;
 import ucar.unidata.util.Parameter;
 
 /**
- * Create a Vertical Transform from an "explicit_field", where the vertical coordinate is explcitly specified as a variable.
+ * Create a Vertical Transform from an "explicit_field", where the vertical coordinate is explcitly specified as a
+ * variable.
  *
  * @author caron
  */
@@ -22,16 +23,18 @@ public class VExplicitField extends AbstractTransformBuilder implements VertTran
   }
 
   public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
-    VerticalCT ct = new VerticalCT (ctv.getName(), getTransformName(), VerticalCT.Type.Existing3DField, this);
+    VerticalCT ct = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.Existing3DField, this);
     String fieldName = ctv.findAttValueIgnoreCase(VTfromExistingData.existingDataField, null);
     if (null == fieldName)
-      throw new IllegalArgumentException("ExplicitField Vertical Transform must have attribute "+VTfromExistingData.existingDataField);
+      throw new IllegalArgumentException(
+          "ExplicitField Vertical Transform must have attribute " + VTfromExistingData.existingDataField);
     ct.addParameter(new Parameter("standard_name", getTransformName()));
     ct.addParameter(new Parameter(VTfromExistingData.existingDataField, fieldName));
     return ct;
   }
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+      VerticalCT vCT) {
     return new VTfromExistingData(ds, timeDim, vCT.getParameters());
   }
 

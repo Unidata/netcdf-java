@@ -14,7 +14,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.DebugFlagsImpl;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -34,7 +33,7 @@ import java.lang.invoke.MethodHandles;
  * } types[10];
  * } ArrayOfStructures;
  */
-public class TestDODSArrayOfStructure  {
+public class TestDODSArrayOfStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private DODSNetcdfFile dodsfile;
@@ -42,7 +41,7 @@ public class TestDODSArrayOfStructure  {
   @After
   public void after() throws IOException {
     dodsfile.close();
-    H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
+    H5header.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 
   @Before

@@ -8,12 +8,10 @@ package ucar.nc2.iosp.grid;
 
 
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
-
 import java.util.*;
 
 
@@ -67,13 +65,12 @@ public class GridCoordSys {
   /**
    * Create a coordinate system
    *
-   * @param hcs    horizontal coord sys
+   * @param hcs horizontal coord sys
    * @param record grid record
-   * @param name   name of the vertical dimension
+   * @param name name of the vertical dimension
    * @param lookup lookuptable
    */
-  GridCoordSys(GridHorizCoordSys hcs, GridRecord record, String name,
-               GridTableLookup lookup) {
+  GridCoordSys(GridHorizCoordSys hcs, GridRecord record, String name, GridTableLookup lookup) {
     this.hcs = hcs;
     this.record = record;
     this.verticalName = name;
@@ -81,15 +78,12 @@ public class GridCoordSys {
     this.levels = new ArrayList<>();
 
     dontUseVertical = !lookup.isVerticalCoordinate(record);
-    positive = lookup.isPositiveUp(record)
-            ? "up"
-            : "down";
+    positive = lookup.isPositiveUp(record) ? "up" : "down";
     units = lookup.getLevelUnit(record);
 
     if (GridServiceProvider.debugVert) {
-      System.out.println("GridCoordSys: " + getVerticalDesc()
-              + " useVertical= " + (!dontUseVertical)
-              + " positive=" + positive + " units=" + units);
+      System.out.println("GridCoordSys: " + getVerticalDesc() + " useVertical= " + (!dontUseVertical) + " positive="
+          + positive + " units=" + units);
     }
   }
 
@@ -126,9 +120,7 @@ public class GridCoordSys {
    * @return the number of levels
    */
   int getNLevels() {
-    return dontUseVertical
-            ? 1
-            : levels.size();
+    return dontUseVertical ? 1 : levels.size();
   }
 
   /**
@@ -144,10 +136,8 @@ public class GridCoordSys {
       }
       if (dontUseVertical && (levels.size() > 1)) {
         if (GridServiceProvider.debugVert) {
-          System.out.println(
-                  "GribCoordSys: unused level coordinate has > 1 levels = "
-                          + verticalName + " " + record.getLevelType1() + " "
-                          + levels.size());
+          System.out.println("GribCoordSys: unused level coordinate has > 1 levels = " + verticalName + " "
+              + record.getLevelType1() + " " + levels.size());
         }
       }
     }
@@ -155,11 +145,13 @@ public class GridCoordSys {
     if (positive.equals("down")) {
       Collections.reverse(levels);
       // TODO: delete
-      /* for( int i = 0; i < (levels.size()/2); i++ ){
-        Double tmp = (Double) levels.get( i );
-        levels.set( i, levels.get(levels.size() -i -1));
-        levels.set(levels.size() -i -1, tmp );
-     } */
+      /*
+       * for( int i = 0; i < (levels.size()/2); i++ ){
+       * Double tmp = (Double) levels.get( i );
+       * levels.set( i, levels.get(levels.size() -i -1));
+       * levels.set(levels.size() -i -1, tmp );
+       * }
+       */
     }
   }
 
@@ -193,7 +185,7 @@ public class GridCoordSys {
    * Add dimensions to the netcdf file
    *
    * @param ncfile the netCDF file
-   * @param g      the group to add to
+   * @param g the group to add to
    */
   void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
     if (dontUseVertical) {
@@ -207,7 +199,7 @@ public class GridCoordSys {
    * Add this coordinate system to the netCDF file
    *
    * @param ncfile the netCDF file
-   * @param g      the group to add to
+   * @param g the group to add to
    */
   void addToNetcdfFile(NetcdfFile ncfile, Group g) {
     if (dontUseVertical) {
@@ -228,7 +220,7 @@ public class GridCoordSys {
       dims = dims + " y x";
     }
 
-    //Collections.sort( levels);
+    // Collections.sort( levels);
     int nlevs = levels.size();
     // ncfile.addDimension(g, new Dimension(verticalName, nlevs, true));
 
@@ -236,8 +228,7 @@ public class GridCoordSys {
     Variable v = new Variable(ncfile, g, null, verticalName);
     v.setDataType(DataType.DOUBLE);
 
-    v.addAttribute(new Attribute("long_name",
-            lookup.getLevelDescription(record)));
+    v.addAttribute(new Attribute("long_name", lookup.getLevelDescription(record)));
     v.addAttribute(new Attribute("units", lookup.getLevelUnit(record)));
 
     // positive attribute needed for CF-1 Height and Pressure
@@ -255,17 +246,12 @@ public class GridCoordSys {
         axisType = AxisType.GeoZ;
       }
 
-      v.addAttribute(
-              new Attribute(
-                      "grid_level_type",
-                      Integer.toString(record.getLevelType1())));
+      v.addAttribute(new Attribute("grid_level_type", Integer.toString(record.getLevelType1())));
 
-      v.addAttribute(new Attribute(_Coordinate.AxisType,
-              axisType.toString()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
       v.addAttribute(new Attribute(_Coordinate.Axes, dims));
       if (!hcs.isLatLon()) {
-        v.addAttribute(new Attribute(_Coordinate.Transforms,
-                hcs.getGridName()));
+        v.addAttribute(new Attribute(_Coordinate.Transforms, hcs.getGridName()));
       }
     }
 
@@ -274,7 +260,7 @@ public class GridCoordSys {
       Double d = levels.get(i);
       data[i] = d;
     }
-    Array dataArray = Array.factory(DataType.DOUBLE, new int[]{nlevs}, data);
+    Array dataArray = Array.factory(DataType.DOUBLE, new int[] {nlevs}, data);
 
     v.setDimensions(verticalName);
     v.setCachedData(dataArray, false);
@@ -290,9 +276,9 @@ public class GridCoordSys {
   /**
    * Find the coordinate transform
    *
-   * @param g              group to check
+   * @param g group to check
    * @param nameStartsWith beginning of name
-   * @param levelType      type of level
+   * @param levelType type of level
    */
   void findCoordinateTransform(Group g, String nameStartsWith, int levelType) {
     // look for variable that uses this coordinate
@@ -311,7 +297,7 @@ public class GridCoordSys {
   }
 
   /**
-   * Get the index of a particular  GridRecord
+   * Get the index of a particular GridRecord
    *
    * @param record record to find
    * @return the index or -1

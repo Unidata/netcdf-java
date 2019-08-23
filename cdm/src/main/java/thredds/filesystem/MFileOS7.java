@@ -7,7 +7,6 @@ package thredds.filesystem;
 
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,13 +26,16 @@ public class MFileOS7 implements MFile {
 
   /**
    * Make MFileOS7 if file exists, otherwise return null
+   * 
    * @param filename full path name
    * @return MFileOS or null
    */
   static public MFileOS7 getExistingFile(String filename) throws IOException {
-    if (filename == null) return null;
+    if (filename == null)
+      return null;
     Path path = Paths.get(filename);
-    if (Files.exists(path)) return new MFileOS7(path);
+    if (Files.exists(path))
+      return new MFileOS7(path);
     return null;
   }
 
@@ -43,17 +45,17 @@ public class MFileOS7 implements MFile {
 
   public MFileOS7(Path path) throws IOException {
     this.path = path;
-    this.attr =  Files.readAttributes(path, BasicFileAttributes.class);
+    this.attr = Files.readAttributes(path, BasicFileAttributes.class);
   }
 
   public MFileOS7(Path path, BasicFileAttributes attr) {
     this.path = path;
-    this.attr =  attr;
+    this.attr = attr;
   }
 
   public MFileOS7(String filename) throws IOException {
     this.path = Paths.get(filename);
-    this.attr =  Files.readAttributes(path, BasicFileAttributes.class);
+    this.attr = Files.readAttributes(path, BasicFileAttributes.class);
   }
 
   @Override
@@ -83,16 +85,16 @@ public class MFileOS7 implements MFile {
   }
 
   @Override
-   public MFile getParent() throws IOException {
-     return new MFileOS7(path.getParent());
-   }
+  public MFile getParent() throws IOException {
+    return new MFileOS7(path.getParent());
+  }
 
   @Override
   public int compareTo(MFile o) {
-    return getPath().compareTo( o.getPath());
+    return getPath().compareTo(o.getPath());
   }
 
-    @Override
+  @Override
   public Object getAuxInfo() {
     return auxInfo;
   }

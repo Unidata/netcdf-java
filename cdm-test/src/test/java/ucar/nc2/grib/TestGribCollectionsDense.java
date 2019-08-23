@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -47,7 +47,6 @@ import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -97,7 +96,8 @@ public class TestGribCollectionsDense {
     System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
     System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
     System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
-    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
+    System.out.printf(" total files needed=%7d%n",
+        GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
     FileCache.shutdown();
     RandomAccessFile.setGlobalFileCache(null);
@@ -107,21 +107,24 @@ public class TestGribCollectionsDense {
 
   @Test
   public void testLeaf() throws IOException {
-    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2");
+    TestGribCollectionMissing.Count count = TestGribCollectionMissing
+        .read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2");
     assert count.nread == 1009;
     assert count.nmiss == 0;
   }
 
   @Test
   public void testGC() throws IOException {
-    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_1800.grib2.ncx4");
+    TestGribCollectionMissing.Count count = TestGribCollectionMissing
+        .read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_1800.grib2.ncx4");
     assert count.nread == 1009;
     assert count.nmiss == 0;
   }
 
   @Test
   public void testPofG() throws IOException {
-    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx4");
+    TestGribCollectionMissing.Count count =
+        TestGribCollectionMissing.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx4");
     assert count.nread == 3140;
     assert count.nmiss == 0;
   }
@@ -129,7 +132,8 @@ public class TestGribCollectionsDense {
   @Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx4");
+    TestGribCollectionMissing.Count count =
+        TestGribCollectionMissing.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx4");
     TestDir.checkLeaks();
     assert count.nread == 5384;
     assert count.nmiss == 0;
@@ -138,7 +142,7 @@ public class TestGribCollectionsDense {
   @Test
   public void problem() throws IOException {
     String filename = "gribCollections/dgex/dgex_46.ncx4";
-    //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx4";
+    // String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx4";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Total_precipitation_surface_6_Hour_Accumulation");
       assert gdt != null;

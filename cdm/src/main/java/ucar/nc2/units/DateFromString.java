@@ -8,7 +8,6 @@ import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -33,28 +32,31 @@ public class DateFromString {
    * @param dateFormatString the date format String
    * @return the Date that was parsed.
    */
-  public static Date getDateUsingSimpleDateFormat( String dateString, String dateFormatString )
-  {
+  public static Date getDateUsingSimpleDateFormat(String dateString, String dateFormatString) {
     // Determine first numeric character in dateString and drop proceeding characters.
     int smallestIndex = dateString.length();
-    if ( smallestIndex == 0 ) return null;
-    for ( int i = 0; i < 10; i++ )
-    {
-      int curIndex = dateString.indexOf( String.valueOf( i ) );
-      if ( curIndex != -1 && smallestIndex > curIndex )
+    if (smallestIndex == 0)
+      return null;
+    for (int i = 0; i < 10; i++) {
+      int curIndex = dateString.indexOf(String.valueOf(i));
+      if (curIndex != -1 && smallestIndex > curIndex)
         smallestIndex = curIndex;
     }
 
-    return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, smallestIndex );
+    return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, smallestIndex);
   }
 
   /**
-   * Parse the given date string, starting at a position given by the offset of the demark character in the dateFormatString.
+   * Parse the given date string, starting at a position given by the offset of the demark character in the
+   * dateFormatString.
    * The rest of the dateFormatString is the date format string (as described in java.text.SimpleDateFormat).
-   * <pre> Example:
+   * 
+   * <pre>
+   *  Example:
    *   dateString =        wrfout_d01_2006-07-06_080000.nc
    *   dateFormatString = wrfout_d01_#yyyy-MM-dd_HHmm
    * </pre>
+   * 
    * This simply counts over "wrfout_d01_" number of chars in dateString, then applies the remaining dateFormatString.
    *
    * @param dateString the String to be parsed
@@ -62,21 +64,21 @@ public class DateFromString {
    * @param demark the demarkation character
    * @return the Date that was parsed.
    */
-  public static Date getDateUsingDemarkatedCount( String dateString, String dateFormatString, char demark )
-  {
+  public static Date getDateUsingDemarkatedCount(String dateString, String dateFormatString, char demark) {
     // the position of the demark char is where to start parsing the dateString
-    int pos1 = dateFormatString.indexOf( demark);
+    int pos1 = dateFormatString.indexOf(demark);
 
     // the rest of the dateFormatString is the SimpleDateFormat
-    dateFormatString = dateFormatString.substring( pos1+1);
+    dateFormatString = dateFormatString.substring(pos1 + 1);
 
-    return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, pos1 );
+    return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, pos1);
   }
 
   /**
    * Parse the given date string (between the demarcation characters)
    * using the given date format string (as described in
    * java.text.SimpleDateFormat) and return a Date.
+   * 
    * <pre>
    * Example:
    *  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
@@ -93,27 +95,28 @@ public class DateFromString {
    * @param demark the demarkation character
    * @return the Date that was parsed.
    */
-  public static Date getDateUsingDemarkatedMatch( String dateString, String dateFormatString, char demark )
-  {
+  public static Date getDateUsingDemarkatedMatch(String dateString, String dateFormatString, char demark) {
     // extract the match string
-    int pos1 = dateFormatString.indexOf( demark);
-    int pos2 = dateFormatString.indexOf( demark, pos1+1);
+    int pos1 = dateFormatString.indexOf(demark);
+    int pos2 = dateFormatString.indexOf(demark, pos1 + 1);
     if ((pos1 < 0) || (pos2 < 0)) {
-      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = '"+ dateFormatString+"'", new Throwable());
+      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = '" + dateFormatString + "'",
+          new Throwable());
       return null;
     }
-    String match = dateFormatString.substring(pos1+1, pos2);
+    String match = dateFormatString.substring(pos1 + 1, pos2);
 
     int pos3 = dateString.indexOf(match);
-    if (pos3 < 0) return null;
+    if (pos3 < 0)
+      return null;
 
-    if (pos1 > 0) {  // pos1 > 0, date is before the match: "yyyyMMddHH#/wrfout_d01_#"
+    if (pos1 > 0) { // pos1 > 0, date is before the match: "yyyyMMddHH#/wrfout_d01_#"
       dateFormatString = dateFormatString.substring(0, pos1);
-      dateString = dateString.substring(pos3-dateFormatString.length(), pos3);
+      dateString = dateString.substring(pos3 - dateFormatString.length(), pos3);
 
-    }  else {        // pos1 == 0, date is after the match: "#wrfout_d01_#yyyy-MM-dd_HHmm"
-      dateFormatString = dateFormatString.substring(pos2+1);
-      dateString = dateString.substring(pos3+match.length());
+    } else { // pos1 == 0, date is after the match: "#wrfout_d01_#yyyy-MM-dd_HHmm"
+      dateFormatString = dateFormatString.substring(pos2 + 1);
+      dateString = dateString.substring(pos3 + match.length());
     }
 
     // any leading or trailing "." in the dateFormatString means trim
@@ -121,64 +124,66 @@ public class DateFromString {
     while (dateFormatString.charAt(posDot1) == '.')
       posDot1++;
     int posDot2 = dateFormatString.length();
-    while (dateFormatString.charAt(posDot2-1) == '.')
+    while (dateFormatString.charAt(posDot2 - 1) == '.')
       posDot2--;
     if (posDot1 != 0 || posDot2 != dateFormatString.length()) {
       dateFormatString = dateFormatString.substring(posDot1, posDot2);
       dateString = dateString.substring(posDot1, posDot2);
     }
 
-    return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, 0 );
+    return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, 0);
   }
 
-  public static Date getDateUsingDemarkatedMatchOld( String dateString, String dateFormatString, char demark )
-  {
+  public static Date getDateUsingDemarkatedMatchOld(String dateString, String dateFormatString, char demark) {
     // extract the match string
-    int pos1 = dateFormatString.indexOf( demark);
-    int pos2 = dateFormatString.indexOf( demark, pos1+1);
+    int pos1 = dateFormatString.indexOf(demark);
+    int pos2 = dateFormatString.indexOf(demark, pos1 + 1);
     if ((pos1 < 0) || (pos2 < 0)) {
-      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = '"+ dateFormatString+"'", new Throwable());
+      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = '" + dateFormatString + "'",
+          new Throwable());
       return null;
     }
-    String match = dateFormatString.substring(pos1+1, pos2);
+    String match = dateFormatString.substring(pos1 + 1, pos2);
 
     int pos3 = dateString.indexOf(match);
-    if (pos3 < 0) return null;
+    if (pos3 < 0)
+      return null;
 
-    if (pos1 > 0) {  // pos1 > 0, date is before the match: "yyyyMMddHH#/wrfout_d01_#"
+    if (pos1 > 0) { // pos1 > 0, date is before the match: "yyyyMMddHH#/wrfout_d01_#"
       dateFormatString = dateFormatString.substring(0, pos1);
-      dateString = dateString.substring(pos3-dateFormatString.length(), pos3);
+      dateString = dateString.substring(pos3 - dateFormatString.length(), pos3);
 
-    }  else {        // pos1 == 0, date is after the match: "#wrfout_d01_#yyyy-MM-dd_HHmm"
-      dateFormatString = dateFormatString.substring(pos2+1);
-      dateString = dateString.substring(pos3+match.length());
+    } else { // pos1 == 0, date is after the match: "#wrfout_d01_#yyyy-MM-dd_HHmm"
+      dateFormatString = dateFormatString.substring(pos2 + 1);
+      dateString = dateString.substring(pos3 + match.length());
     }
 
-    return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, 0 );
+    return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, 0);
   }
 
-  public static Double getHourUsingDemarkatedMatch( String hourString, String formatString, char demark )
-  {
+  public static Double getHourUsingDemarkatedMatch(String hourString, String formatString, char demark) {
     // extract the match string
-    int pos1 = formatString.indexOf( demark);
-    int pos2 = formatString.indexOf( demark, pos1+1);
-    if ((pos1 < 0) || (pos2 < 0)) return null;
-    String match = formatString.substring(pos1+1, pos2);
+    int pos1 = formatString.indexOf(demark);
+    int pos2 = formatString.indexOf(demark, pos1 + 1);
+    if ((pos1 < 0) || (pos2 < 0))
+      return null;
+    String match = formatString.substring(pos1 + 1, pos2);
 
     // where does it live in the hour string ?
     int pos3 = hourString.indexOf(match);
-    if (pos3 < 0) return null;
+    if (pos3 < 0)
+      return null;
 
     // for now, just match the number of chars
     if (pos1 > 0) {
-      hourString = hourString.substring(pos3-pos1, pos3);
-    }  else {
+      hourString = hourString.substring(pos3 - pos1, pos3);
+    } else {
       int len = formatString.length() - pos2 - 1;
       int start = pos3 + match.length();
-      hourString = hourString.substring(start, start+len);
+      hourString = hourString.substring(start, start + len);
     }
 
-    return Double.valueOf( hourString);
+    return Double.valueOf(hourString);
   }
 
   /**
@@ -189,13 +194,12 @@ public class DateFromString {
    * @param dateFormatString the date format String
    * @return the Date that was parsed.
    */
-  public static Date getDateUsingCompleteDateFormat( String dateString, String dateFormatString )
-  {
-    return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, 0 );
+  public static Date getDateUsingCompleteDateFormat(String dateString, String dateFormatString) {
+    return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, 0);
   }
 
   /**
-   * Parse the given date string (starting at the given startIndex)  using the
+   * Parse the given date string (starting at the given startIndex) using the
    * given date format string (as described in java.text.SimpleDateFormat) and
    * return a Date. Assumes TimeZone is GMT.
    *
@@ -204,29 +208,31 @@ public class DateFromString {
    * @param startIndex the index at which to start parsing the date string
    * @return the Date that was parsed.
    */
-  public static Date getDateUsingCompleteDateFormatWithOffset( String dateString, String dateFormatString, int startIndex )
-  {
+  public static Date getDateUsingCompleteDateFormatWithOffset(String dateString, String dateFormatString,
+      int startIndex) {
     try {
-      SimpleDateFormat dateFormat = new SimpleDateFormat( dateFormatString, Locale.US );
-      dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+      SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatString, Locale.US);
+      dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
       // We have to cut off the dateString, so that it doesnt grab extra characters.
-      // eg  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
+      // eg new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
       String s;
       if (startIndex + dateFormatString.length() <= dateString.length())
-        s = dateString.substring( startIndex, startIndex + dateFormatString.length());
+        s = dateString.substring(startIndex, startIndex + dateFormatString.length());
       else
         s = dateString;
 
-      Date result = dateFormat.parse( s );
+      Date result = dateFormat.parse(s);
       if (result == null)
-        throw new RuntimeException("SimpleDateFormat bad ="+dateFormatString+" working on ="+s);
+        throw new RuntimeException("SimpleDateFormat bad =" + dateFormatString + " working on =" + s);
       return result;
 
     } catch (ParseException e) {
-      throw new RuntimeException("SimpleDateFormat = "+dateFormatString+" fails on "+ dateString+ " ParseException:"+e.getMessage());
+      throw new RuntimeException(
+          "SimpleDateFormat = " + dateFormatString + " fails on " + dateString + " ParseException:" + e.getMessage());
     } catch (IllegalArgumentException e) {
-      throw new RuntimeException("SimpleDateFormat = "+dateFormatString+" fails on "+ dateString+ " IllegalArgumentException:"+e.getMessage());
+      throw new RuntimeException("SimpleDateFormat = " + dateFormatString + " fails on " + dateString
+          + " IllegalArgumentException:" + e.getMessage());
     }
   }
 
@@ -245,15 +251,9 @@ public class DateFromString {
    * @param substitutionPattern the String to use in the capture group replacement.
    * @return the calculated Date
    */
-  public static Date getDateUsingRegExp( String dateString,
-                                         String matchPattern,
-                                         String substitutionPattern )
-  {
+  public static Date getDateUsingRegExp(String dateString, String matchPattern, String substitutionPattern) {
     String dateFormatString = "yyyy-MM-dd'T'HH:mm";
-    return getDateUsingRegExpAndDateFormat( dateString,
-                                            matchPattern,
-                                            substitutionPattern,
-                                            dateFormatString );
+    return getDateUsingRegExpAndDateFormat(dateString, matchPattern, substitutionPattern, dateFormatString);
   }
 
   /**
@@ -266,29 +266,24 @@ public class DateFromString {
    * @param dateFormatString the date format string to use in the parsing of the date string.
    * @return the calculated Date
    */
-  public static Date getDateUsingRegExpAndDateFormat( String dateString,
-                                                      String matchPattern,
-                                                      String substitutionPattern,
-                                                      String dateFormatString )
-  {
+  public static Date getDateUsingRegExpAndDateFormat(String dateString, String matchPattern, String substitutionPattern,
+      String dateFormatString) {
     // Match the given date string against the regular expression.
-    Pattern pattern = Pattern.compile( matchPattern );
-    Matcher matcher = pattern.matcher( dateString );
-    if ( ! matcher.matches() )
-    {
+    Pattern pattern = Pattern.compile(matchPattern);
+    Matcher matcher = pattern.matcher(dateString);
+    if (!matcher.matches()) {
       return null;
     }
 
     // Build date string to use with date format string by
     // substituting the capture groups into the substitution pattern.
     StringBuffer dateStringFormatted = new StringBuffer();
-    matcher.appendReplacement( dateStringFormatted, substitutionPattern );
-    if ( dateStringFormatted.length() == 0 )
-    {
+    matcher.appendReplacement(dateStringFormatted, substitutionPattern);
+    if (dateStringFormatted.length() == 0) {
       return null;
     }
 
-    return getDateUsingCompleteDateFormat( dateStringFormatted.toString(), dateFormatString );
+    return getDateUsingCompleteDateFormat(dateStringFormatted.toString(), dateFormatString);
   }
 
 

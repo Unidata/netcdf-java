@@ -6,10 +6,8 @@
 package ucar.nc2.util.xml;
 
 import org.jdom2.Element;
-
 import java.io.*;
 import java.util.List;
-
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
@@ -34,16 +32,16 @@ public class TimeStringParsing {
       for (Element cacheElemNested : cacheElemList) {
         String varName = cacheElemNested.getAttributeValue("varName");
         String sdata = cacheElemNested.getText();
-        System.out.println("text size = "+sdata.length());
+        System.out.println("text size = " + sdata.length());
 
         long start = System.nanoTime();
         String[] vals = sdata.split(" ");
-        double took =  .001 * .001 * .001 * (System.nanoTime() - start);
+        double took = .001 * .001 * .001 * (System.nanoTime() - start);
         System.out.println(" split took = " + took + " sec; ");
 
         start = System.nanoTime();
         Array data = Array.makeArray(DataType.DOUBLE, vals);
-        took =  .001 * .001 * .001 * (System.nanoTime() - start);
+        took = .001 * .001 * .001 * (System.nanoTime() - start);
         System.out.println(" makeArray took = " + took + " sec; ");
       }
     }

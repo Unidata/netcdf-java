@@ -20,7 +20,6 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.StructureData;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -34,7 +33,8 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
 
   static public boolean isValidFile(NetcdfFile ds) {
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
-    if (conv == null) return false;
+    if (conv == null)
+      return false;
 
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
@@ -65,21 +65,24 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     // depth may be in inner or outer
     boolean isProfile = getWrappingParent(ds, timeVar) == outerSequence;
     if (isProfile)
-      return new DapperPointDataset( ds);
+      return new DapperPointDataset(ds);
     else
-      return new DapperStationDataset( ds);
+      return new DapperStationDataset(ds);
   }
 
-  static private StructureDS getWrappingParent( NetcdfDataset ds, Variable v) {
+  static private StructureDS getWrappingParent(NetcdfDataset ds, Variable v) {
     String name = v.getParentStructure().getFullNameEscaped();
     return (StructureDS) ds.findVariable(name);
   }
 
   /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
-  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
-  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
-    return new DapperDataset( ncd);
+  public boolean isMine(NetcdfDataset ds) {
+    return isValidFile(ds);
+  }
+
+  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+    return new DapperDataset(ncd);
   }
 
   public DapperDataset() {}
@@ -118,7 +121,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     if (altVar == null) {
       parseInfo.append("Missing altitude variable");
     }
-     if (timeVar == null) {
+    if (timeVar == null) {
       parseInfo.append("Missing time variable");
       fatal = true;
     }
@@ -136,7 +139,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       if (refFile instanceof DODSNetcdfFile)
         dodsFile = (DODSNetcdfFile) refFile;
       else if (refFile instanceof NetcdfDataset)
-        refFile = ((NetcdfDataset)refFile).getReferencedFile();
+        refFile = ((NetcdfDataset) refFile).getReferencedFile();
       else
         throw new IllegalArgumentException("Must be a DODSNetcdfFile");
     }
@@ -145,13 +148,13 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     List recordMembers = outerSequence.getVariables();
     for (int i = 0; i < recordMembers.size(); i++) {
       Variable v = (Variable) recordMembers.get(i);
-      dataVariables.add( v);
+      dataVariables.add(v);
     }
 
     recordMembers = innerSequence.getVariables();
     for (int i = 0; i < recordMembers.size(); i++) {
       Variable v = (Variable) recordMembers.get(i);
-      dataVariables.add( v);
+      dataVariables.add(v);
     }
 
     dataVariables.remove(latVar);
@@ -160,15 +163,15 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     dataVariables.remove(timeVar);
     dataVariables.remove(innerSequence);
 
-    dataVariables.remove( ds.findVariable("_id"));
-    dataVariables.remove( ds.findVariable("attributes"));
-    dataVariables.remove( ds.findVariable("variable_attributes"));
+    dataVariables.remove(ds.findVariable("_id"));
+    dataVariables.remove(ds.findVariable("attributes"));
+    dataVariables.remove(ds.findVariable("variable_attributes"));
     setBoundingBox();
 
     try {
       timeUnit = new DateUnit(timeVar.getUnitsString());
     } catch (Exception e) {
-      parseInfo.append("Bad time units= "+ timeVar.getUnitsString());
+      parseInfo.append("Bad time units= " + timeVar.getUnitsString());
       fatal = true;
     }
 
@@ -179,12 +182,14 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     startDate = timeUnit.makeDate(time_start);
     endDate = timeUnit.makeDate(time_end);
 
-    title = ds.findAttValueIgnoreCase(null,"title","");
-    desc = ds.findAttValueIgnoreCase(null,"description", "");
+    title = ds.findAttValueIgnoreCase(null, "title", "");
+    desc = ds.findAttValueIgnoreCase(null, "description", "");
   }
 
   protected void setTimeUnits() {}
+
   protected void setStartDate() {}
+
   protected void setEndDate() {}
 
   protected void setBoundingBox() {
@@ -211,51 +216,52 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     extractMembers(as);
     int n = (int) as.getSize();
     List<SeqPointObs> dataList = new ArrayList<SeqPointObs>(n);
-    for (int i=0; i<n; i++)
-      dataList.add( new SeqPointObs( i, as.getStructureData(i)));
+    for (int i = 0; i < n; i++)
+      dataList.add(new SeqPointObs(i, as.getStructureData(i)));
     return dataList;
   }
 
   public List getData(LatLonRect boundingBox, CancelTask cancel) throws IOException {
-    String CE = outerSequence.getFullName() + "&" + makeBB( boundingBox);
+    String CE = outerSequence.getFullName() + "&" + makeBB(boundingBox);
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
     extractMembers(as);
     int n = (int) as.getSize();
     ArrayList dataList = new ArrayList(n);
-    for (int i=0; i<n; i++)
-      dataList.add( new SeqPointObs( i, as.getStructureData(i)));
+    for (int i = 0; i < n; i++)
+      dataList.add(new SeqPointObs(i, as.getStructureData(i)));
     return dataList;
 
   }
 
   public List getData(LatLonRect boundingBox, Date start, Date end, CancelTask cancel) throws IOException {
-    String CE = outerSequence.getFullName() + "&" + makeBB( boundingBox) + "&"+ makeTimeRange( start, end);
+    String CE = outerSequence.getFullName() + "&" + makeBB(boundingBox) + "&" + makeTimeRange(start, end);
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
     extractMembers(as);
 
     int n = (int) as.getSize();
     ArrayList dataList = new ArrayList(n);
-    for (int i=0; i<n; i++)
-      dataList.add( new SeqPointObs( i, as.getStructureData(i)));
+    for (int i = 0; i < n; i++)
+      dataList.add(new SeqPointObs(i, as.getStructureData(i)));
     return dataList;
   }
 
-  private String makeBB( LatLonRect bb) {
-    return latVar.getFullName()+">="+bb.getLowerLeftPoint().getLatitude()+"&"+
-           latVar.getFullName()+"<="+bb.getUpperRightPoint().getLatitude()+"&"+
-           lonVar.getFullName()+">="+bb.getLowerLeftPoint().getLongitude()+"&"+
-           lonVar.getFullName()+"<="+bb.getUpperRightPoint().getLongitude();
+  private String makeBB(LatLonRect bb) {
+    return latVar.getFullName() + ">=" + bb.getLowerLeftPoint().getLatitude() + "&" + latVar.getFullName() + "<="
+        + bb.getUpperRightPoint().getLatitude() + "&" + lonVar.getFullName() + ">="
+        + bb.getLowerLeftPoint().getLongitude() + "&" + lonVar.getFullName() + "<="
+        + bb.getUpperRightPoint().getLongitude();
   }
 
-  private String makeTimeRange( Date start, Date end) {
+  private String makeTimeRange(Date start, Date end) {
     double startValue = timeUnit.makeValue(start);
     double endValue = timeUnit.makeValue(end);
-    return timeVar.getFullName()+">="+startValue+"&"+   // LOOK
-           timeVar.getFullName()+"<="+endValue;
+    return timeVar.getFullName() + ">=" + startValue + "&" + // LOOK
+        timeVar.getFullName() + "<=" + endValue;
   }
 
   private StructureMembers.Member latMember, lonMember, innerMember, altMember, timeMember;
-  private void extractMembers( ArrayStructure as) {
+
+  private void extractMembers(ArrayStructure as) {
     StructureMembers members = as.getStructureMembers();
     latMember = members.findMember(latVar.getShortName());
     lonMember = members.findMember(lonVar.getShortName());
@@ -276,8 +282,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
 
   // return List of Station
   public void readStations(List stations) throws IOException {
-    String CE = latVar.getShortName()+","+lonVar.getShortName()+","+altVar.getShortName()+
-      ","+ID;
+    String CE = latVar.getShortName() + "," + lonVar.getShortName() + "," + altVar.getShortName() + "," + ID;
 
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
     StructureMembers members = as.getStructureMembers();
@@ -287,28 +292,30 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     StructureMembers.Member idMember = members.findMember(ID);
 
     int n = (int) as.getSize();
-    for (int i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
       StructureData sdata = as.getStructureData(i);
       double lat = sdata.convertScalarDouble(latMember);
       double lon = sdata.convertScalarDouble(lonMember);
       double alt = sdata.convertScalarDouble(altMember);
       int id = sdata.getScalarInt(idMember);
 
-      StationImpl s = new StationImpl(Integer.toString(id), "Station"+i,lat, lon, alt);
+      StationImpl s = new StationImpl(Integer.toString(id), "Station" + i, lat, lon, alt);
       stations.add(s);
     }
   }
 
   // return List of PointObsDatatype
   public List readStationData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
-    String CE = outerSequence.getShortName()+"."+innerSequence.getShortName()+"&"+
-      outerSequence.getShortName()+"."+ID+"="+s.getName();
+    String CE = outerSequence.getShortName() + "." + innerSequence.getShortName() + "&" + outerSequence.getShortName()
+        + "." + ID + "=" + s.getName();
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
 
-    /* unwrap the outer structure
-    StructureMembers outerMembers = as.getStructureMembers();
-    StructureMembers.Member outerMember = outerMembers.findMember(outerSequence.getShortName()); */
-    StructureData outerStructure = as.getStructureData(0); 
+    /*
+     * unwrap the outer structure
+     * StructureMembers outerMembers = as.getStructureMembers();
+     * StructureMembers.Member outerMember = outerMembers.findMember(outerSequence.getShortName());
+     */
+    StructureData outerStructure = as.getStructureData(0);
 
     // get at the inner sequence
     ArrayStructure asInner = (ArrayStructure) outerStructure.getArray(innerSequence.getShortName());
@@ -317,10 +324,10 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
 
     int n = (int) asInner.getSize();
     ArrayList stationData = new ArrayList(n);
-    for (int i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
       StructureData sdata = asInner.getStructureData(i);
       double obsTime = sdata.convertScalarDouble(timeMember);
-      stationData.add( new SeqStationObs(s, obsTime, sdata));
+      stationData.add(new SeqStationObs(s, obsTime, sdata));
     }
     return stationData;
   }
@@ -335,13 +342,14 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     /**
      * Constructor for the case where you keep track of the location, time of each record, but not the data.
      */
-    protected SeqPointObs( ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime, int recno) {
-      super( location, obsTime, nomTime);
+    protected SeqPointObs(ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime, int recno) {
+      super(location, obsTime, nomTime);
       this.recno = recno;
     }
 
     /**
      * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
+     * 
      * @param recno record number LOOK why do we need ??
      * @param sdata the structure data
      */
@@ -364,21 +372,21 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       }
 
       nomTime = obsTime;
-      location = new ucar.unidata.geoloc.EarthLocationImpl( lat, lon, alt);
+      location = new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {
       if (llpt == null)
-         llpt = new LatLonPointImpl( location.getLatitude(), location.getLongitude());
+        llpt = new LatLonPointImpl(location.getLatitude(), location.getLongitude());
       return llpt;
     }
 
     public Date getNominalTimeAsDate() {
-      return timeUnit.makeDate( getNominalTime());
+      return timeUnit.makeDate(getNominalTime());
     }
 
     public Date getObservationTimeAsDate() {
-      return timeUnit.makeDate( getObservationTime());
+      return timeUnit.makeDate(getObservationTime());
     }
 
     public StructureData getData() throws IOException {
@@ -392,6 +400,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
 
     /**
      * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
+     * 
      * @param sdata the structure data
      */
     public SeqStationObs(ucar.unidata.geoloc.Station s, double obsTime, StructureData sdata) {
@@ -400,11 +409,11 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     }
 
     public Date getNominalTimeAsDate() {
-      return timeUnit.makeDate( getNominalTime());
+      return timeUnit.makeDate(getNominalTime());
     }
 
     public Date getObservationTimeAsDate() {
-      return timeUnit.makeDate( getObservationTime());
+      return timeUnit.makeDate(getObservationTime());
     }
 
     public StructureData getData() throws IOException {
@@ -415,25 +424,29 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
 
   /////////////////////////
 
-   public DataIterator getDataIterator(int bufferSize) throws IOException {
-    return new DataIteratorAdapter( getData( (CancelTask) null).iterator()); // LOOK
+  public DataIterator getDataIterator(int bufferSize) throws IOException {
+    return new DataIteratorAdapter(getData((CancelTask) null).iterator()); // LOOK
   }
 
   //////////////////////////////
   private static class DapperPointDataset extends PointObsDatasetImpl {
     DapperDataset dd;
+
     DapperPointDataset(NetcdfDataset ds) throws IOException {
       super(ds);
       dd = new DapperDataset(ds);
     }
 
     protected void setTimeUnits() {}
+
     protected void setStartDate() {}
+
     protected void setEndDate() {}
+
     protected void setBoundingBox() {}
 
     public List getData(CancelTask cancel) throws IOException {
-      return dd.getData( cancel);
+      return dd.getData(cancel);
     }
 
     public int getDataCount() {
@@ -441,21 +454,22 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     }
 
     public List getData(LatLonRect boundingBox, CancelTask cancel) throws IOException {
-      return dd.getData( boundingBox, cancel);
+      return dd.getData(boundingBox, cancel);
     }
 
     public List getData(LatLonRect boundingBox, Date start, Date end, CancelTask cancel) throws IOException {
-      return dd.getData( boundingBox, start, end, cancel);
+      return dd.getData(boundingBox, start, end, cancel);
     }
 
     public DataIterator getDataIterator(int bufferSize) throws IOException {
-      return dd.getDataIterator( bufferSize);
+      return dd.getDataIterator(bufferSize);
     }
   }
 
   /////////////////////////////
   private static class DapperStationDataset extends StationObsDatasetImpl {
     DapperDataset dd;
+
     DapperStationDataset(NetcdfDataset ds) throws IOException {
       super(ds);
       dd = new DapperDataset(ds);
@@ -465,18 +479,21 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     }
 
 
-  public List getData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
-    return dd.readStationData(s, cancel);
-  }
+    public List getData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
+      return dd.readStationData(s, cancel);
+    }
 
     /////////////////////////////
     protected void setTimeUnits() {}
+
     protected void setStartDate() {}
+
     protected void setEndDate() {}
+
     protected void setBoundingBox() {}
 
     public List getData(CancelTask cancel) throws IOException {
-      return dd.getData( cancel);
+      return dd.getData(cancel);
     }
 
     public int getDataCount() {
@@ -484,24 +501,24 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     }
 
     public List getData(LatLonRect boundingBox, CancelTask cancel) throws IOException {
-      return dd.getData( boundingBox, cancel);
+      return dd.getData(boundingBox, cancel);
     }
 
     public List getData(LatLonRect boundingBox, Date start, Date end, CancelTask cancel) throws IOException {
-      return dd.getData( boundingBox, start, end, cancel);
+      return dd.getData(boundingBox, start, end, cancel);
     }
 
     public DataIterator getDataIterator(int bufferSize) throws IOException {
-      return dd.getDataIterator( bufferSize);
+      return dd.getDataIterator(bufferSize);
     }
 
   }
 
 
   public static void main(String args[]) throws IOException {
-    //String url = "http://dapper.pmel.noaa.gov/dapper/epic/puget_prof_ctd.cdp";
+    // String url = "http://dapper.pmel.noaa.gov/dapper/epic/puget_prof_ctd.cdp";
     String url = "http://dapper.pmel.noaa.gov/dapper/epic/woce_sl_time_monthly.cdp";
-    NetcdfDataset ncd = NetcdfDataset.openDataset( url);
+    NetcdfDataset ncd = NetcdfDataset.openDataset(url);
     DapperDataset.factory(ncd);
   }
 

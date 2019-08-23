@@ -14,7 +14,6 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.TrajectoryProfileFeature;
 import ucar.nc2.time.CalendarDateUnit;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -22,6 +21,7 @@ import java.util.*;
  * Write a CF "Discrete Sample" trajectory profile (section) collection file.
  * Contiguous ragged array representation of trajectory profile, H.6.3
  * *
+ * 
  * @author caron
  * @since 7/14/2014
  */
@@ -30,21 +30,23 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
 
   private int ntraj;
   private int traj_strlen;
-  private Structure trajStructure;  // used for netcdf4 extended
+  private Structure trajStructure; // used for netcdf4 extended
   private HashMap<String, Integer> trajIndexMap;
 
-  private Map<String, Variable> trajVarMap  = new HashMap<>();
+  private Map<String, Variable> trajVarMap = new HashMap<>();
 
   ///////////////////////////////////////////////////
-  private Structure profileStruct;  // used for netcdf4 extended
+  private Structure profileStruct; // used for netcdf4 extended
   private Map<String, Variable> profileVarMap = new HashMap<>();
   private boolean headerDone = false;
 
-  public WriterCFTrajectoryProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
-                                             CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+  public WriterCFTrajectoryProfileCollection(String fileOut, List<Attribute> globalAtts,
+      List<VariableSimpleIF> dataVars, CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config)
+      throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectoryProfile.name()));
-    writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectory profile, H.6.3"));
+    writer.addGroupAttribute(null,
+        new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectory profile, H.6.3"));
   }
 
   public void setFeatureAuxInfo2(int ntraj, int traj_strlen) {
@@ -53,11 +55,12 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     trajIndexMap = new HashMap<>(2 * ntraj);
   }
 
-  public int writeProfile (TrajectoryProfileFeature section, ProfileFeature profile) throws IOException {
+  public int writeProfile(TrajectoryProfileFeature section, ProfileFeature profile) throws IOException {
     int count = 0;
     for (PointFeature pf : profile) {
       if (!headerDone) {
-        if (id_strlen == 0) id_strlen = profile.getName().length() * 2;
+        if (id_strlen == 0)
+          id_strlen = profile.getName().length() * 2;
         writeHeader(section, profile, pf);
         headerDone = true;
       }
@@ -74,7 +77,8 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(TrajectoryProfileFeature section, ProfileFeature profile, PointFeature obs) throws IOException {
+  private void writeHeader(TrajectoryProfileFeature section, ProfileFeature profile, PointFeature obs)
+      throws IOException {
 
     StructureData sectionData = section.getFeatureData();
     StructureData profileData = profile.getFeatureData();
@@ -83,9 +87,9 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
     if (useAlt) {
-      obsCoords.add( VariableSimpleImpl.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-              .add(new Attribute(CF.STANDARD_NAME, "altitude"))
-              .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits))));
+      obsCoords.add(VariableSimpleImpl.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+          .add(new Attribute(CF.STANDARD_NAME, "altitude"))
+          .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits))));
       coordNames.format(" %s", altitudeCoordinateName);
     }
 
@@ -100,7 +104,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     List<VariableSimpleIF> trajVars = new ArrayList<>();
 
     trajVars.add(VariableSimpleImpl.makeString(trajIdName, "trajectory identifier", null, traj_strlen)
-            .add(new Attribute(CF.CF_ROLE, CF.TRAJECTORY_ID)));
+        .add(new Attribute(CF.CF_ROLE, CF.TRAJECTORY_ID)));
 
     for (StructureMembers.Member m : trajData.getMembers()) {
       if (getDataVar(m.getName()) != null)
@@ -117,6 +121,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   }
 
   private int trajRecno = 0;
+
   private int writeSectionData(TrajectoryProfileFeature section) throws IOException {
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
@@ -127,7 +132,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     sdall.add(section.getFeatureData());
 
     trajRecno = super.writeStructureData(trajRecno, trajStructure, sdall, trajVarMap);
-    return trajRecno-1;
+    return trajRecno - 1;
   }
 
   @Override
@@ -138,19 +143,21 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> profileVars = new ArrayList<>();
     profileVars.add(VariableSimpleImpl.makeString(profileIdName, "profile identifier", null, id_strlen)
-            .add(new Attribute(CF.CF_ROLE, CF.PROFILE_ID))             // profileId:cf_role = "profile_id";
-            .add(new Attribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue))));
+        .add(new Attribute(CF.CF_ROLE, CF.PROFILE_ID)) // profileId:cf_role = "profile_id";
+        .add(new Attribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue))));
 
     profileVars.add(VariableSimpleImpl.makeScalar(latName, "profile latitude", CDM.LAT_UNITS, DataType.DOUBLE));
     profileVars.add(VariableSimpleImpl.makeScalar(lonName, "profile longitude", CDM.LON_UNITS, DataType.DOUBLE));
-    profileVars.add(VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+    profileVars.add(
+        VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
             .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
 
-    profileVars.add(VariableSimpleImpl.makeScalar(trajectoryIndexName, "trajectory index for this profile", null, DataType.INT)
+    profileVars
+        .add(VariableSimpleImpl.makeScalar(trajectoryIndexName, "trajectory index for this profile", null, DataType.INT)
             .add(new Attribute(CF.INSTANCE_DIMENSION, trajDimName)));
 
     profileVars.add(VariableSimpleImpl.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
-            .add(new Attribute(CF.SAMPLE_DIMENSION, recordDimName)));
+        .add(new Attribute(CF.SAMPLE_DIMENSION, recordDimName)));
 
     for (StructureMembers.Member m : profileData.getMembers()) {
       VariableSimpleIF dv = getDataVar(m.getName());
@@ -167,6 +174,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   }
 
   private int profileRecno = 0;
+
   public void writeProfileData(int sectionIndex, ProfileFeature profile, int nobs) throws IOException {
     trackBB(profile.getLatLon(), profile.getTime());
 
@@ -175,7 +183,8 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     profileCoords.addMember(lonName, null, null, DataType.DOUBLE, profile.getLatLon().getLongitude());
     // double time = (profile.getTime() != null) ? (double) profile.getTime().getTime() : 0.0;
     double timeInMyUnits = timeUnit.makeOffsetFromRefDate(profile.getTime());
-    profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, timeInMyUnits);  // LOOK time not always part of profile
+    profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, timeInMyUnits); // LOOK time not always part
+                                                                                          // of profile
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(numberOfObsName, null, null, DataType.INT, nobs);
     profileCoords.addMember(trajectoryIndexName, null, null, DataType.INT, sectionIndex);
@@ -189,10 +198,12 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
 
 
   private int obsRecno = 0;
+
   public void writeObsData(PointFeature pf) throws IOException {
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
-    if (useAlt) coords.addMember(altitudeCoordinateName, null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
+    if (useAlt)
+      coords.addMember(altitudeCoordinateName, null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(coords); // coords first so it takes precedence

@@ -16,23 +16,25 @@ import ucar.ma2.StructureData;
  */
 public class Cursor {
   StructureData[] tableData; // current struct data
-  int[] recnum;              // current recnum
-  int currentIndex;          // the "parent index", current iteration is over its children.
+  int[] recnum; // current recnum
+  int currentIndex; // the "parent index", current iteration is over its children.
 
   Cursor(int nlevels) {
     tableData = new StructureData[nlevels];
     recnum = new int[nlevels];
   }
 
-  /* t.kunicki 11/25/10
-  // Flattened data can now accurately access parent structure
-  private int getParentIndex() {
-    int maxIndex = tableData.length - 1;
-    int parentIndex = currentIndex < maxIndex ? currentIndex + 1 : currentIndex;
-    while (tableData[parentIndex] == null && parentIndex < maxIndex) parentIndex++;
-    return parentIndex;
-   }
-  // end t.kunicki 11/25/10 */
+  /*
+   * t.kunicki 11/25/10
+   * // Flattened data can now accurately access parent structure
+   * private int getParentIndex() {
+   * int maxIndex = tableData.length - 1;
+   * int parentIndex = currentIndex < maxIndex ? currentIndex + 1 : currentIndex;
+   * while (tableData[parentIndex] == null && parentIndex < maxIndex) parentIndex++;
+   * return parentIndex;
+   * }
+   * // end t.kunicki 11/25/10
+   */
 
   StructureData getParentStructure() {
     return tableData[getParentIndex()];
@@ -40,7 +42,8 @@ public class Cursor {
 
   private int getParentIndex() { // skip null structureData, to allow dummy tables to be inserted, eg FslWindProfiler
     int indx = currentIndex;
-    while ((tableData[indx] == null || tableData[indx].getMembers().size() == 0) && (indx < tableData.length-1)) indx++;
+    while ((tableData[indx] == null || tableData[indx].getMembers().size() == 0) && (indx < tableData.length - 1))
+      indx++;
     return indx;
   }
 
@@ -50,7 +53,7 @@ public class Cursor {
 
   Cursor copy() {
     Cursor clone = new Cursor(tableData.length);
-    //clone.what = what; // not a copy !!
+    // clone.what = what; // not a copy !!
     clone.currentIndex = currentIndex;
     System.arraycopy(this.tableData, 0, clone.tableData, 0, tableData.length);
     System.arraycopy(this.recnum, 0, clone.recnum, 0, tableData.length);

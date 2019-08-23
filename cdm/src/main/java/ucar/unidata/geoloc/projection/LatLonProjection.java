@@ -6,7 +6,6 @@ package ucar.unidata.geoloc.projection;
 
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
-
 import ucar.unidata.util.Format;
 
 /**
@@ -64,7 +63,7 @@ public class LatLonProjection extends ProjectionImpl {
   /**
    * Create a new LatLonProjection
    *
-   * @param name           name of projection
+   * @param name name of projection
    * @param defaultMapArea bounding box
    */
   public LatLonProjection(String name, ProjectionRect defaultMapArea) {
@@ -111,12 +110,16 @@ public class LatLonProjection extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     LatLonProjection that = (LatLonProjection) o;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
-    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+    if ((defaultMapArea == null) != (that.defaultMapArea == null))
+      return false; // common case is that these are null
+    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea))
+      return false;
 
     return Double.compare(that.centerLon, centerLon) == 0;
   }
@@ -140,8 +143,7 @@ public class LatLonProjection extends ProjectionImpl {
    * @return the given result
    */
   public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result) {
-    result.setLocation(LatLonPointImpl.lonNormal(latlon.getLongitude(),
-        centerLon), latlon.getLatitude());
+    result.setLocation(LatLonPointImpl.lonNormal(latlon.getLongitude(), centerLon), latlon.getLatitude());
     return result;
   }
 
@@ -149,7 +151,7 @@ public class LatLonProjection extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
@@ -164,11 +166,11 @@ public class LatLonProjection extends ProjectionImpl {
    * Convert projection coordinates to lat/lon coordinate.
    *
    * @param from array of projection coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (x, y) coordinate
-   *             of the ith point
-   * @param to   resulting array of lat/lon coordinates: to[2][n] where
-   *             (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *             the ith point
+   *        (from[0][i], from[1][i]) is the (x, y) coordinate
+   *        of the ith point
+   * @param to resulting array of lat/lon coordinates: to[2][n] where
+   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
+   *        the ith point
    * @return the "to" array
    */
   public float[][] projToLatLon(float[][] from, float[][] to) {
@@ -184,18 +186,17 @@ public class LatLonProjection extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n], where
-   *                 (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates: to[2][n]
-   *                 where (to[0][i], to[1][i]) is the (x,y) coordinate of
-   *                 the ith point
+   * @param from array of lat/lon coordinates: from[2][n], where
+   *        (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate of
+   *        the ith point
    * @param latIndex index of lat coordinate; must be 0 or 1
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return the "to" array
    */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
-                                int lonIndex) {
+  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     float[] toX = to[INDEX_X];
     float[] toY = to[INDEX_Y];
@@ -216,11 +217,11 @@ public class LatLonProjection extends ProjectionImpl {
    * Convert projection coordinates to lat/lon coordinate.
    *
    * @param from array of projection coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (x, y) coordinate
-   *             of the ith point
-   * @param to   resulting array of lat/lon coordinates: to[2][n] where
-   *             (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *             the ith point
+   *        (from[0][i], from[1][i]) is the (x, y) coordinate
+   *        of the ith point
+   * @param to resulting array of lat/lon coordinates: to[2][n] where
+   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
+   *        the ith point
    * @return the "to" array
    */
   public double[][] projToLatLon(double[][] from, double[][] to) {
@@ -235,18 +236,17 @@ public class LatLonProjection extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n], where
-   *                 (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates: to[2][n]
-   *                 where (to[0][i], to[1][i]) is the (x,y) coordinate of
-   *                 the ith point
+   * @param from array of lat/lon coordinates: from[2][n], where
+   *        (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate of
+   *        the ith point
    * @param latIndex index of lat coordinate; must be 0 or 1
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return the "to" array
    */
-  public double[][] latLonToProj(double[][] from, double[][] to,
-                                 int latIndex, int lonIndex) {
+  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     double[] toX = to[INDEX_X];
     double[] toY = to[INDEX_Y];
@@ -264,7 +264,7 @@ public class LatLonProjection extends ProjectionImpl {
 
 
   /**
-   * Set the center of the Longitude range. It is normalized to  +/- 180.
+   * Set the center of the Longitude range. It is normalized to +/- 180.
    * The cylinder is cut at the "seam" = centerLon +- 180.
    * Use this to keep the Longitude values kept in the range [centerLon +-180], which
    * makes seam handling easier.
@@ -278,7 +278,7 @@ public class LatLonProjection extends ProjectionImpl {
   }
 
   /**
-   * Get the center of the Longitude range. It is normalized to  +/- 180.
+   * Get the center of the Longitude range. It is normalized to +/- 180.
    *
    * @return the center longitude
    */
@@ -294,7 +294,7 @@ public class LatLonProjection extends ProjectionImpl {
    * @return false if there is no seam
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return Math.abs(pt1.getX() - pt2.getX()) > 270.0;  // ?? LOOK: do I believe this
+    return Math.abs(pt1.getX() - pt2.getX()) > 270.0; // ?? LOOK: do I believe this
   }
 
 
@@ -322,12 +322,8 @@ public class LatLonProjection extends ProjectionImpl {
     double lat0 = latlonR.getLowerLeftPoint().getLatitude();
     double height = Math.abs(latlonR.getUpperRightPoint().getLatitude() - lat0);
     double width = latlonR.getWidth();
-    double lon0 = LatLonPointImpl.lonNormal(
-        latlonR.getLowerLeftPoint().getLongitude(),
-        centerLon);
-    double lon1 = LatLonPointImpl.lonNormal(
-        latlonR.getUpperRightPoint().getLongitude(),
-        centerLon);
+    double lon0 = LatLonPointImpl.lonNormal(latlonR.getLowerLeftPoint().getLongitude(), centerLon);
+    double lon1 = LatLonPointImpl.lonNormal(latlonR.getUpperRightPoint().getLongitude(), centerLon);
 
     ProjectionRect[] rects = new ProjectionRect[] {new ProjectionRect(), new ProjectionRect()};
     if (lon0 < lon1) {
@@ -343,7 +339,7 @@ public class LatLonProjection extends ProjectionImpl {
     return rects;
   }
 
-  public LatLonRect projToLatLonBB(ProjectionRect world) {    
+  public LatLonRect projToLatLonBB(ProjectionRect world) {
     double startLat = world.getMinY();
     double startLon = world.getMinX();
 
@@ -373,7 +369,7 @@ public class LatLonProjection extends ProjectionImpl {
     lat0 = Math.min(lat1, lat0);
     double width = lon1 - lon0;
     if (width < 1.0e-8) {
-      width = 360.0;  // assume its the whole thing
+      width = 360.0; // assume its the whole thing
     }
     lon0 = LatLonPointImpl.lonNormal(lon0, centerLon);
     lon1 = LatLonPointImpl.lonNormal(lon1, centerLon);

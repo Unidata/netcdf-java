@@ -19,7 +19,6 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +35,8 @@ import java.util.List;
 public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordinate {
   private final List<TimeCoordIntvValue> timeIntervals;
 
-  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<TimeCoordIntvValue> timeIntervals, int[] time2runtime) {
+  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, CalendarDate refDate,
+      List<TimeCoordIntvValue> timeIntervals, int[] time2runtime) {
     super(code, timeUnit, refDate, time2runtime);
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
   }
@@ -72,7 +72,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public int estMemorySize() {
-    return 616 + getSize() * (24);  // LOOK wrong
+    return 616 + getSize() * (24); // LOOK wrong
   }
 
   @Override
@@ -82,6 +82,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   /**
    * Check if we all time intervals have the same length.
+   * 
    * @return time interval name or MIXED_INTERVALS
    */
   public String getTimeIntervalName() {
@@ -89,8 +90,10 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     int firstValue = -1;
     for (TimeCoordIntvValue tinv : timeIntervals) {
       int value = (tinv.getBounds2() - tinv.getBounds1());
-      if (firstValue < 0) firstValue = value;
-      else if (value != firstValue) return MIXED_INTERVALS;
+      if (firstValue < 0)
+        firstValue = value;
+      else if (value != firstValue)
+        return MIXED_INTERVALS;
     }
 
     firstValue = (firstValue * timeUnit.getValue());
@@ -99,14 +102,15 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   /**
    * Make calendar date range, using the first and last ending bounds
-   * @param cal  optional calendar, may be null
-   * @return  calendar date range
+   * 
+   * @param cal optional calendar, may be null
+   * @return calendar date range
    */
   @Override
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
     CalendarDateUnit cdu = CalendarDateUnit.of(cal, timeUnit.getField(), refDate);
-    CalendarDate start = cdu.makeCalendarDate( timeUnit.getValue() * timeIntervals.get(0).getBounds2());
-    CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(getSize()-1).getBounds2());
+    CalendarDate start = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(0).getBounds2());
+    CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(getSize() - 1).getBounds2());
     return CalendarDateRange.of(start, end);
   }
 
@@ -148,12 +152,15 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     CoordinateTimeIntv that = (CoordinateTimeIntv) o;
 
-    if (code != that.code) return false;
+    if (code != that.code)
+      return false;
     return timeIntervals.equals(that.timeIntervals);
 
   }
@@ -169,7 +176,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     List<TimeCoordIntvValue> timeIntervalsBest = new ArrayList<>(timeIntervals.size());
     int[] time2runtimeBest = new int[n];
     int count = 0;
-    for (int i=0; i<best.length; i++) {
+    for (int i = 0; i < best.length; i++) {
       int time = best[i];
       if (time >= 0) {
         time2runtimeBest[count] = time;
@@ -185,7 +192,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     private final Grib2Tables cust;
-    private final int code;                  // pdsFirst.getTimeUnit()
+    private final int code; // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
     private final CalendarDate refDate;
 
@@ -211,14 +218,17 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       int tuInRecord = pds.getTimeUnit();
       if (tuInRecord == code) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
-        if (intv == null) throw new IllegalStateException("CoordinateTimeIntv must have TimeIntervalOffset");
+        if (intv == null)
+          throw new IllegalStateException("CoordinateTimeIntv must have TimeIntervalOffset");
         tinv = new TimeCoordIntvValue(intv[0], intv[1]);
 
       } else {
         TimeCoordIntvDateValue tinvd = cust.getForecastTimeInterval(gr); // converts to calendar date
-        if (tinvd == null) throw new IllegalStateException("CoordinateTimeIntv has no ForecastTime");
+        if (tinvd == null)
+          throw new IllegalStateException("CoordinateTimeIntv has no ForecastTime");
         tinv = tinvd.convertReferenceDate(refDate, timeUnit);
-        if (tinv == null) throw new IllegalStateException("CoordinateTimeIntv has no ReferenceTime");
+        if (tinv == null)
+          throw new IllegalStateException("CoordinateTimeIntv has no ReferenceTime");
       }
 
       return tinv;
@@ -227,7 +237,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<TimeCoordIntvValue> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add( (TimeCoordIntvValue) val);
+      for (Object val : values)
+        offsetSorted.add((TimeCoordIntvValue) val);
       Collections.sort(offsetSorted);
 
       return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted, null);
@@ -236,7 +247,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     private final Grib1Customizer cust;
-    private final int code;                  // pdsFirst.getTimeUnit()
+    private final int code; // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
     private final CalendarDate refDate;
 
@@ -252,7 +263,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       Grib1SectionProductDefinition pds = gr.getPDSsection();
       Grib1ParamTime ptime = gr.getParamTime(cust);
       int[] intv = ptime.getInterval();
-      TimeCoordIntvValue  tinv = new TimeCoordIntvValue(intv[0], intv[1]);
+      TimeCoordIntvValue tinv = new TimeCoordIntvValue(intv[0], intv[1]);
 
       // If its a different time unit, we have to adjust the interval.
       int tuInRecord = pds.getTimeUnit();
@@ -266,7 +277,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<TimeCoordIntvValue> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add( (TimeCoordIntvValue) val);
+      for (Object val : values)
+        offsetSorted.add((TimeCoordIntvValue) val);
       Collections.sort(offsetSorted);
 
       return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted, null);

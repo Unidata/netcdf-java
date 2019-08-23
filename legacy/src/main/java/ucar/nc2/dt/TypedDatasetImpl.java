@@ -10,7 +10,6 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
-
 import java.util.*;
 
 /**
@@ -31,7 +30,8 @@ public abstract class TypedDatasetImpl implements TypedDataset {
   /** No-arg constructor */
   public TypedDatasetImpl() {}
 
-  /** Constructor when theres no NetcdfFile underneath.
+  /**
+   * Constructor when theres no NetcdfFile underneath.
    *
    * @param title title of the dataset.
    * @param description description of the dataset.
@@ -43,7 +43,9 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     this.location = location;
   }
 
-  /** Construtor when theres a NetcdfFile underneath
+  /**
+   * Construtor when theres a NetcdfFile underneath
+   * 
    * @param netcdfDataset adapt this NetcdfDataset
    */
   public TypedDatasetImpl(NetcdfDataset netcdfDataset) {
@@ -57,42 +59,70 @@ public abstract class TypedDatasetImpl implements TypedDataset {
       desc = netcdfDataset.findAttValueIgnoreCase(null, "description", null);
   }
 
-  public void setTitle( String title) { this.title = title; }
-  public void setDescription( String desc) { this.desc = desc; }
-  public void setLocationURI( String location) {this.location = location; }
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setDescription(String desc) {
+    this.desc = desc;
+  }
+
+  public void setLocationURI(String location) {
+    this.location = location;
+  }
 
   protected abstract void setStartDate(); // reminder for subclasses to set this
+
   protected abstract void setEndDate(); // reminder for subclasses to set this
+
   protected abstract void setBoundingBox(); // reminder for subclasses to set this
 
-  protected void removeDataVariable( String varName) {
+  protected void removeDataVariable(String varName) {
     Iterator iter = dataVariables.iterator();
     while (iter.hasNext()) {
       VariableSimpleIF v = (VariableSimpleIF) iter.next();
-      if (v.getShortName().equals( varName) )
+      if (v.getShortName().equals(varName))
         iter.remove();
     }
   }
 
   /////////////////////////////////////////////////
 
-  public NetcdfFile getNetcdfFile() { return netcdfDataset; }
-  public String getTitle() { return title; }
-  public String getDescription() { return desc; }
-  public String getLocationURI() {return location; }
-  public String getLocation() {return location; }
+  public NetcdfFile getNetcdfFile() {
+    return netcdfDataset;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getDescription() {
+    return desc;
+  }
+
+  public String getLocationURI() {
+    return location;
+  }
+
+  public String getLocation() {
+    return location;
+  }
+
   public List<Attribute> getGlobalAttributes() {
-    if (netcdfDataset == null) return new ArrayList<>();
+    if (netcdfDataset == null)
+      return new ArrayList<>();
     return netcdfDataset.getGlobalAttributes();
   }
 
-  public Attribute findGlobalAttributeIgnoreCase( String name ) {
-    if (netcdfDataset == null) return null;
-    return netcdfDataset.findGlobalAttributeIgnoreCase( name);
+  public Attribute findGlobalAttributeIgnoreCase(String name) {
+    if (netcdfDataset == null)
+      return null;
+    return netcdfDataset.findGlobalAttributeIgnoreCase(name);
   }
 
   public void close() throws java.io.IOException {
-    if (netcdfDataset != null) netcdfDataset.close();
+    if (netcdfDataset != null)
+      netcdfDataset.close();
   }
 
   public String getDetailInfo() {
@@ -105,7 +135,7 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     sbuff.append("  start= ").append(formatter.toDateTimeString(getStartDate())).append("\n");
     sbuff.append("  end  = ").append(formatter.toDateTimeString(getEndDate())).append("\n");
     sbuff.append("  bb   = ").append(getBoundingBox()).append("\n");
-    if (getBoundingBox() != null )
+    if (getBoundingBox() != null)
       sbuff.append("  bb   = ").append(getBoundingBox().toString2()).append("\n");
 
     sbuff.append("  has netcdf = ").append(getNetcdfFile() != null).append("\n");
@@ -120,7 +150,8 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     List<VariableSimpleIF> vars = getDataVariables();
     sbuff.append("  Variables (").append(vars.size()).append(")\n");
     for (VariableSimpleIF v : vars) {
-      sbuff.append("    name='").append(v.getShortName()).append("' desc='").append(v.getDescription()).append("' units='").append(v.getUnitsString()).append("' type=").append(v.getDataType()).append("\n");
+      sbuff.append("    name='").append(v.getShortName()).append("' desc='").append(v.getDescription())
+          .append("' units='").append(v.getUnitsString()).append("' type=").append(v.getDataType()).append("\n");
     }
 
     sbuff.append("\nparseInfo=\n");
@@ -130,17 +161,29 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     return sbuff.toString();
   }
 
-  public Date getStartDate() { return startDate; }
-  public Date getEndDate() { return endDate; }
-  public LatLonRect getBoundingBox() { return boundingBox; }
+  public Date getStartDate() {
+    return startDate;
+  }
 
-  public List<VariableSimpleIF> getDataVariables() {return dataVariables; }
-  public VariableSimpleIF getDataVariable( String shortName) {
+  public Date getEndDate() {
+    return endDate;
+  }
+
+  public LatLonRect getBoundingBox() {
+    return boundingBox;
+  }
+
+  public List<VariableSimpleIF> getDataVariables() {
+    return dataVariables;
+  }
+
+  public VariableSimpleIF getDataVariable(String shortName) {
     for (VariableSimpleIF s : dataVariables) {
       String ss = s.getShortName();
-      if (shortName.equals(ss)) return s;
+      if (shortName.equals(ss))
+        return s;
     }
     return null;
-  }  
+  }
 
 }

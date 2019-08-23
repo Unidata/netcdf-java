@@ -19,7 +19,7 @@ import ucar.unidata.geoloc.*;
  * We call it "flat" because it should only be used where the spherical
  * geometry of the earth is not significant. In actuallity, we use the simple
  * "arclen" routine which computes dy along a meridian, and dx along a
- * latitude circle.  We rotate the coordinate system to/from a true north system.
+ * latitude circle. We rotate the coordinate system to/from a true north system.
  * <p/>
  * See John Snyder, Map Projections used by the USGS, Bulletin 1532,
  * 2nd edition (1983), p 145
@@ -46,7 +46,7 @@ public class FlatEarth extends ProjectionImpl {
   /**
    * origin
    */
-  //private LatLonPointImpl origin;  // why are we keeping this?
+  // private LatLonPointImpl origin; // why are we keeping this?
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -63,9 +63,9 @@ public class FlatEarth extends ProjectionImpl {
     this(0.0, 0.0, 0.0, EARTH_RADIUS);
   }
 
-   public FlatEarth(double lat0, double lon0) {
-     this(lat0, lon0, 0.0, EARTH_RADIUS);
-   }
+  public FlatEarth(double lat0, double lon0) {
+    this(lat0, lon0, 0.0, EARTH_RADIUS);
+  }
 
   public FlatEarth(double lat0, double lon0, double rotAngle) {
     this(lat0, lon0, rotAngle, EARTH_RADIUS);
@@ -75,10 +75,10 @@ public class FlatEarth extends ProjectionImpl {
    * Construct a FlatEarth Projection, two standard parellels.
    * For the one standard parellel case, set them both to the same value.
    *
-   * @param lat0     lat origin of the coord. system on the projection plane
-   * @param lon0     lon origin of the coord. system on the projection plane
+   * @param lat0 lat origin of the coord. system on the projection plane
+   * @param lon0 lon origin of the coord. system on the projection plane
    * @param rotAngle angle of rotation, in degrees
-   * @param radius  earth radius in km
+   * @param radius earth radius in km
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
   public FlatEarth(double lat0, double lon0, double rotAngle, double radius) {
@@ -108,16 +108,23 @@ public class FlatEarth extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     FlatEarth flatEarth = (FlatEarth) o;
 
-    if (Double.compare(flatEarth.lat0, lat0) != 0) return false;
-    if (Double.compare(flatEarth.lon0, lon0) != 0) return false;
-    if (Double.compare(flatEarth.radius, radius) != 0) return false;
-    if (Double.compare(flatEarth.rotAngle, rotAngle) != 0) return false;
-    if ((defaultMapArea == null) != (flatEarth.defaultMapArea == null)) return false; // common case is that these are null
+    if (Double.compare(flatEarth.lat0, lat0) != 0)
+      return false;
+    if (Double.compare(flatEarth.lon0, lon0) != 0)
+      return false;
+    if (Double.compare(flatEarth.radius, radius) != 0)
+      return false;
+    if (Double.compare(flatEarth.rotAngle, rotAngle) != 0)
+      return false;
+    if ((defaultMapArea == null) != (flatEarth.defaultMapArea == null))
+      return false; // common case is that these are null
     return defaultMapArea == null || flatEarth.defaultMapArea.equals(defaultMapArea);
 
   }
@@ -137,7 +144,7 @@ public class FlatEarth extends ProjectionImpl {
     return result;
   }
 
-// bean properties
+  // bean properties
 
   /**
    * Get the origin longitude.
@@ -186,12 +193,7 @@ public class FlatEarth extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "FlatEarth{" +
-            "rotAngle=" + rotAngle +
-            ", radius=" + radius +
-            ", lat0=" + lat0 +
-            ", lon0=" + lon0 +
-            '}';
+    return "FlatEarth{" + "rotAngle=" + rotAngle + ", radius=" + radius + ", lat0=" + lat0 + ", lon0=" + lon0 + '}';
   }
 
   /**
@@ -201,8 +203,7 @@ public class FlatEarth extends ProjectionImpl {
    * @param result the object to write to
    * @return the given result
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon,
-                                      ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
@@ -211,8 +212,7 @@ public class FlatEarth extends ProjectionImpl {
     fromLat = Math.toRadians(fromLat);
 
     dy = radius * (fromLat - lat0);
-    dx = radius * Math.cos(fromLat)
-            * (Math.toRadians(fromLon) - lon0);
+    dx = radius * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
 
 
     toX = cosRot * dx - sinRot * dy;
@@ -228,13 +228,12 @@ public class FlatEarth extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
 
-  public LatLonPoint projToLatLon(ProjectionPoint world,
-                                  LatLonPointImpl result) {
+  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
     double x = world.getX();
     double y = world.getY();
@@ -246,14 +245,13 @@ public class FlatEarth extends ProjectionImpl {
     yp = -sinRot * x + cosRot * y;
 
     toLat = Math.toDegrees(lat0) + Math.toDegrees(yp / radius);
-    //double lat2;
-    //lat2 = lat0 + Math.toDegrees(yp/radius);
+    // double lat2;
+    // lat2 = lat0 + Math.toDegrees(yp/radius);
     cosl = Math.cos(Math.toRadians(toLat));
     if (Math.abs(cosl) < TOLERANCE) {
       toLon = Math.toDegrees(lon0);
     } else {
-      toLon = Math.toDegrees(lon0)
-              + Math.toDegrees(xp / cosl / radius);
+      toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
     }
 
     toLon = LatLonPointImpl.lonNormal(toLon);
@@ -267,19 +265,18 @@ public class FlatEarth extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
    */
 
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
-                                int lonIndex) {
+  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     float[] fromLatA = from[latIndex];
     float[] fromLonA = from[lonIndex];
@@ -293,8 +290,7 @@ public class FlatEarth extends ProjectionImpl {
 
       fromLat = Math.toRadians(fromLat);
       double dy = radius * (fromLat - lat0);
-      double dx = radius * Math.cos(fromLat)
-              * (Math.toRadians(fromLon) - lon0);
+      double dx = radius * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
 
 
       toX = cosRot * dx - sinRot * dy;
@@ -323,11 +319,11 @@ public class FlatEarth extends ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
 
@@ -347,15 +343,13 @@ public class FlatEarth extends ProjectionImpl {
       double yp = -sinRot * fromX + cosRot * fromY;
 
 
-      toLat = Math.toDegrees(lat0)
-              + Math.toDegrees(yp / radius);
+      toLat = Math.toDegrees(lat0) + Math.toDegrees(yp / radius);
       double cosl = Math.cos(Math.toRadians(toLat));
 
       if (Math.abs(cosl) < TOLERANCE) {
         toLon = Math.toDegrees(lon0);
       } else {
-        toLon = Math.toDegrees(lon0)
-                + Math.toDegrees(xp / cosl / radius);
+        toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
       }
 
       toLon = LatLonPointImpl.lonNormal(toLon);
@@ -369,19 +363,18 @@ public class FlatEarth extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
    */
 
-  public double[][] latLonToProj(double[][] from, double[][] to,
-                                 int latIndex, int lonIndex) {
+  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     double[] fromLatA = from[latIndex];
     double[] fromLonA = from[lonIndex];
@@ -395,8 +388,7 @@ public class FlatEarth extends ProjectionImpl {
 
       fromLat = Math.toRadians(fromLat);
       double dy = radius * (fromLat - lat0);
-      double dx = radius * Math.cos(fromLat)
-              * (Math.toRadians(fromLon) - lon0);
+      double dx = radius * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
 
       toX = cosRot * dx - sinRot * dy;
       toY = sinRot * dx + cosRot * dy;
@@ -412,11 +404,11 @@ public class FlatEarth extends ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
 
@@ -435,16 +427,14 @@ public class FlatEarth extends ProjectionImpl {
       double xp = cosRot * fromX + sinRot * fromY;
       double yp = -sinRot * fromX + cosRot * fromY;
 
-      //toLat =  lat0 + Math.toDegrees(yp);
-      toLat = Math.toDegrees(lat0)
-              + Math.toDegrees(yp / radius);
+      // toLat = lat0 + Math.toDegrees(yp);
+      toLat = Math.toDegrees(lat0) + Math.toDegrees(yp / radius);
       double cosl = Math.cos(Math.toRadians(toLat));
 
       if (Math.abs(cosl) < TOLERANCE) {
         toLon = Math.toDegrees(lon0);
       } else {
-        toLon = Math.toDegrees(lon0)
-                + Math.toDegrees(xp / cosl / radius);
+        toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
       }
 
       toLon = LatLonPointImpl.lonNormal(toLon);

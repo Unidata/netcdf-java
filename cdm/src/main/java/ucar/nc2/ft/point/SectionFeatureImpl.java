@@ -6,7 +6,6 @@ package ucar.nc2.ft.point;
 
 import java.io.IOException;
 import java.util.Iterator;
-
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.ft.ProfileFeature;
@@ -47,7 +46,8 @@ public abstract class SectionFeatureImpl extends PointFeatureCCImpl implements T
 
   @Override
   public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
+    if (localIterator == null)
+      resetIteration();
     return localIterator.hasNext();
   }
 

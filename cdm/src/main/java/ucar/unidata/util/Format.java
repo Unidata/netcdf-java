@@ -15,8 +15,8 @@ public class Format {
   /**
    * Blank fill sbuff with blanks, until position tabStop.
    *
-   * @param sbuff     StringBuffer to manipulate
-   * @param tabStop   pad out to here
+   * @param sbuff StringBuffer to manipulate
+   * @param tabStop pad out to here
    * @param alwaysOne true if you want to guarentee at least one space.
    */
   public static void tab(StringBuffer sbuff, int tabStop, boolean alwaysOne) {
@@ -35,8 +35,8 @@ public class Format {
   /**
    * Blank fill sbuff with blanks, until position tabStop.
    *
-   * @param sbuff     StringBuilder to manipulate
-   * @param tabStop   pad out to here
+   * @param sbuff StringBuilder to manipulate
+   * @param tabStop pad out to here
    * @param alwaysOne true if you want to guarentee at least one space.
    */
   public static void tab(StringBuilder sbuff, int tabStop, boolean alwaysOne) {
@@ -56,7 +56,7 @@ public class Format {
    * Create a new string by padding the existing one with blanks to specified width.
    * Do nothing if length is already greater or equal to width.
    *
-   * @param s     string to pad
+   * @param s string to pad
    * @param width length of return string
    * @return padded string
    */
@@ -68,8 +68,8 @@ public class Format {
    * Create a new string by padding the existing one with blanks to specified width.
    * Do nothing if length is already greater or equal to width.
    *
-   * @param s            string to pad
-   * @param width        length of return string
+   * @param s string to pad
+   * @param width length of return string
    * @param rightJustify if true, right justify, else left justify
    * @return padded string
    */
@@ -96,7 +96,7 @@ public class Format {
   /**
    * Format an integer value.
    *
-   * @param v     : value
+   * @param v : value
    * @param width pad to this width
    * @return formatted string
    */
@@ -107,7 +107,7 @@ public class Format {
   /**
    * Format a long value.
    *
-   * @param v     : value
+   * @param v : value
    * @param width pad to this width
    * @return formatted string
    */
@@ -120,7 +120,7 @@ public class Format {
    * This will try to do a reasonable job of getting
    * a representation that has min_sigfig significant figures in minimum width.
    *
-   * @param d          the number to format.
+   * @param d the number to format.
    * @param min_sigfig minimum number of significant figures
    * @return string representation
    */
@@ -134,9 +134,9 @@ public class Format {
    * a representation that has min_sigfig significant figures in the specified width.
    * Right now, all it does is call d( double d, int min_sigfig) and left pad out to width chars.
    *
-   * @param d          the number to format.
+   * @param d the number to format.
    * @param min_sigfig minimum number of significant figures
-   * @param width      width of the result
+   * @param width width of the result
    * @return string representation, right justified in field of specified width
    */
   public static String d(double d, int min_sigfig, int width) {
@@ -147,47 +147,48 @@ public class Format {
   /**
    * Double value formatting with fixed number of digits to the right of the decimal point.
    *
-   * @param d              the number to format.
+   * @param d the number to format.
    * @param fixed_decimals number of digits to the right of the decimal point
    * @return string representation, with specified number of decimal places
    */
   public static String dfrac(double d, int fixed_decimals) {
     return formatDouble(d, 100, fixed_decimals).trim();
-    //String s = Double.toString( d);
-    //s = sigfigFix( s, 100, num_dec);
-    //return s.trim();
+    // String s = Double.toString( d);
+    // s = sigfigFix( s, 100, num_dec);
+    // return s.trim();
   }
 
-  /* This dorks with Double.toString():
-  *
-  * From Double.toString() (m = magnitude of the number):
-  *
-  *  If m is greater than or equal to 10^-3 but less than 10^7, then it is represented as the
-  *  integer part of m, in decimal form with no leading zeroes, followed by '.' (.),
-  *  followed by one or more decimal digits representing the fractional part of m.
-  *
-  *  If m is less than 10^-3 or greater than 10^7, then it is represented in scientific notation.
-  *  Let n be the unique integer such that 10n<=m<10n+1; then let a be the mathematically exact
-  *  quotient of m and 10n so that 1<=a<10. The magnitude is then represented as the integer part
-  *  of a, as a single decimal digit, followed by '.' (.), followed by decimal digits representing
-  *  the fractional part of a, followed by the letter 'E' (E), followed by a representation of n
-  *  as a decimal integer, as produced by the method Integer.toString(int).
-  *
-  *  How many digits must be printed for the fractional part of m or a? There must be
-  *  at least one digit to represent the fractional part, and beyond that as many,
-  *  but only as many, more digits as are needed to uniquely distinguish the argument
-  *  value from adjacent values of type double. That is, suppose that x is the exact
-  *  mathematical value represented by the decimal representation produced by this method
-  *  for a finite nonzero argument d. Then d must be the double value nearest to x; or if
-  *  two double values are equally close to x, then d must be one of them and the least
-  *  significant bit of the significand of d must be 0.
-  */
+  /*
+   * This dorks with Double.toString():
+   *
+   * From Double.toString() (m = magnitude of the number):
+   *
+   * If m is greater than or equal to 10^-3 but less than 10^7, then it is represented as the
+   * integer part of m, in decimal form with no leading zeroes, followed by '.' (.),
+   * followed by one or more decimal digits representing the fractional part of m.
+   *
+   * If m is less than 10^-3 or greater than 10^7, then it is represented in scientific notation.
+   * Let n be the unique integer such that 10n<=m<10n+1; then let a be the mathematically exact
+   * quotient of m and 10n so that 1<=a<10. The magnitude is then represented as the integer part
+   * of a, as a single decimal digit, followed by '.' (.), followed by decimal digits representing
+   * the fractional part of a, followed by the letter 'E' (E), followed by a representation of n
+   * as a decimal integer, as produced by the method Integer.toString(int).
+   *
+   * How many digits must be printed for the fractional part of m or a? There must be
+   * at least one digit to represent the fractional part, and beyond that as many,
+   * but only as many, more digits as are needed to uniquely distinguish the argument
+   * value from adjacent values of type double. That is, suppose that x is the exact
+   * mathematical value represented by the decimal representation produced by this method
+   * for a finite nonzero argument d. Then d must be the double value nearest to x; or if
+   * two double values are equally close to x, then d must be one of them and the least
+   * significant bit of the significand of d must be 0.
+   */
 
   /**
    * Format a double value
    *
-   * @param d              value to format
-   * @param min_sigFigs    minimum significant figures
+   * @param d value to format
+   * @param min_sigFigs minimum significant figures
    * @param fixed_decimals number of fixed decimals
    * @return double formatted as a string
    */
@@ -246,14 +247,13 @@ public class Format {
           fraction.append("0");
         }
       } else if (fixed_decimals < fracFigs) {
-        int chop = fracFigs - fixed_decimals;  // LOOK should round !!
+        int chop = fracFigs - fixed_decimals; // LOOK should round !!
         fraction.setLength(fraction.length() - chop);
       }
 
     } else {
       // Don't count leading zeros in the fraction, if no number
-      if (((numFigs == 0) || number.toString().equals("0"))
-              && (fracFigs > 0)) {
+      if (((numFigs == 0) || number.toString().equals("0")) && (fracFigs > 0)) {
         numFigs = 0;
         number = new StringBuilder();
         for (int i = 0; i < fraction.length(); ++i) {
@@ -282,39 +282,41 @@ public class Format {
     }
 
 
-    /*int sigFigs = numFigs + fracFigs;
-   if (sigFigs > max_sigFigs) {
-
-     if (numFigs >= max_sigFigs) {  // enough sig figs in just the number part
-       fraction.setLength( 0 );
-       for ( int i=max_sigFigs; i<numFigs; ++i )
-         number.setCharAt( i, '0' );  // should round?
-     } else {
-
-       // Want fewer figures in the fraction; chop (should round? )
-       int chop = sigFigs - max_sigFigs;
-       fraction.setLength( fraction.length() - chop );
-     }
-   }
-
-
-   /* may want a fixed decimal place
-   if (dec_places != -1) {
-
-     if (dec_places == 0) {
-       fraction.setLength( 0 );
-       fracFigs = 0;
-     } else if (dec_places > fracFigs) {
-       int want = dec_places - fracFigs;
-       for (int i=0; i<want; i++)
-         fraction.append("0");
-     } else if (dec_places < fracFigs) {
-       int chop = fracFigs - dec_places;
-       fraction.setLength( fraction.length() - chop );
-       fracFigs = dec_places;
-     }
-
-   } */
+    /*
+     * int sigFigs = numFigs + fracFigs;
+     * if (sigFigs > max_sigFigs) {
+     * 
+     * if (numFigs >= max_sigFigs) { // enough sig figs in just the number part
+     * fraction.setLength( 0 );
+     * for ( int i=max_sigFigs; i<numFigs; ++i )
+     * number.setCharAt( i, '0' ); // should round?
+     * } else {
+     * 
+     * // Want fewer figures in the fraction; chop (should round? )
+     * int chop = sigFigs - max_sigFigs;
+     * fraction.setLength( fraction.length() - chop );
+     * }
+     * }
+     * 
+     * 
+     * /* may want a fixed decimal place
+     * if (dec_places != -1) {
+     * 
+     * if (dec_places == 0) {
+     * fraction.setLength( 0 );
+     * fracFigs = 0;
+     * } else if (dec_places > fracFigs) {
+     * int want = dec_places - fracFigs;
+     * for (int i=0; i<want; i++)
+     * fraction.append("0");
+     * } else if (dec_places < fracFigs) {
+     * int chop = fracFigs - dec_places;
+     * fraction.setLength( fraction.length() - chop );
+     * fracFigs = dec_places;
+     * }
+     * 
+     * }
+     */
 
     if (fraction.length() == 0) {
       return sign + number + exponent;

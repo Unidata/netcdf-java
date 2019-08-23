@@ -13,7 +13,6 @@ import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
-
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -22,7 +21,8 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 public class GeotiffPanel extends OpPanel {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private TextHistoryPane ta;
 
   public GeotiffPanel(PreferencesExt p) {

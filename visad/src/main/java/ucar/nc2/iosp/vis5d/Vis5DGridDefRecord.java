@@ -26,19 +26,19 @@ public class Vis5DGridDefRecord extends GridDefRecord {
   private static final int PROJ_ROTATED = 4;
   private int projection;
 
-  //private Vis5DCoordinateSystem coord_sys;
+  // private Vis5DCoordinateSystem coord_sys;
 
   /**
    * Create a new grid nav block with the values
    *
    * @param Projection _more_
-   * @param projargs   _more_
-   * @param nr         _more_
-   * @param nc         _more_
+   * @param projargs _more_
+   * @param nr _more_
+   * @param nc _more_
    */
   public Vis5DGridDefRecord(int Projection, double[] projargs, int nr, int nc) {
     projection = Projection;
-    //coord_sys = new Vis5DCoordinateSystem(Projection, projargs, nr, nc);
+    // coord_sys = new Vis5DCoordinateSystem(Projection, projargs, nr, nc);
     setParams(Projection, projargs);
     addParam(GDS_KEY, this.toString());
   }
@@ -89,7 +89,7 @@ public class Vis5DGridDefRecord extends GridDefRecord {
     double CentralLon;
     double CentralRow;
     double CentralCol;
-    double Rotation;  /* radians */
+    double Rotation; /* radians */
     double Cone;
     double Hemisphere;
     double ConeFactor;
@@ -137,7 +137,7 @@ public class Vis5DGridDefRecord extends GridDefRecord {
    * _more_
    *
    * @param Projection _more_
-   * @param projargs   _more_
+   * @param projargs _more_
    */
   public static void printProjArgs(int Projection, double[] projargs) {
     double NorthBound;
@@ -154,7 +154,7 @@ public class Vis5DGridDefRecord extends GridDefRecord {
     double CentralLon;
     double CentralRow;
     double CentralCol;
-    double Rotation;  /* radians */
+    double Rotation; /* radians */
     double Cone;
     double Hemisphere;
     double ConeFactor;
@@ -174,9 +174,7 @@ public class Vis5DGridDefRecord extends GridDefRecord {
         RowInc = projargs[2];
         ColInc = projargs[3];
         System.out.println("Generic, Linear, Cylindrical, Spherical:");
-        System.out.println("NB: " + NorthBound + ", WB: " + WestBound
-                + ", rowInc: " + RowInc + ", colInc: "
-                + ColInc);
+        System.out.println("NB: " + NorthBound + ", WB: " + WestBound + ", rowInc: " + RowInc + ", colInc: " + ColInc);
         break;
 
       case PROJ_ROTATED:
@@ -188,11 +186,8 @@ public class Vis5DGridDefRecord extends GridDefRecord {
         CentralLon = projargs[5];
         Rotation = projargs[6];
         System.out.println("Rotated:");
-        System.out.println("NB: " + NorthBound + ", WB: " + WestBound
-                + ", rowInc: " + RowInc + ", colInc: "
-                + ColInc + ", clat: " + CentralLat
-                + ", clon: " + CentralLon + ", rotation: "
-                + Rotation);
+        System.out.println("NB: " + NorthBound + ", WB: " + WestBound + ", rowInc: " + RowInc + ", colInc: " + ColInc
+            + ", clat: " + CentralLat + ", clon: " + CentralLon + ", rotation: " + Rotation);
         break;
 
       case PROJ_LAMBERT:
@@ -203,10 +198,8 @@ public class Vis5DGridDefRecord extends GridDefRecord {
         CentralLon = projargs[4];
         ColInc = projargs[5];
         System.out.println("Lambert: ");
-        System.out.println("lat1: " + Lat1 + ", lat2: " + Lat2
-                + ", poleRow: " + PoleRow + ", PoleCol: "
-                + PoleCol + ", clon: " + CentralLon
-                + ", colInc: " + ColInc);
+        System.out.println("lat1: " + Lat1 + ", lat2: " + Lat2 + ", poleRow: " + PoleRow + ", PoleCol: " + PoleCol
+            + ", clon: " + CentralLon + ", colInc: " + ColInc);
         break;
 
       case PROJ_STEREO:
@@ -216,10 +209,8 @@ public class Vis5DGridDefRecord extends GridDefRecord {
         CentralCol = projargs[3];
         ColInc = projargs[4];
         System.out.println("Stereo: ");
-        System.out.println("clat: " + CentralLat + ", clon: "
-                + CentralLon + ", cRow: " + CentralRow
-                + ", cCol: " + CentralCol + ", colInc: "
-                + ColInc);
+        System.out.println("clat: " + CentralLat + ", clon: " + CentralLon + ", cRow: " + CentralRow + ", cCol: "
+            + CentralCol + ", colInc: " + ColInc);
         break;
 
       default:

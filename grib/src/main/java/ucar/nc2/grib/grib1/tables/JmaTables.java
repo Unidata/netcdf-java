@@ -11,7 +11,6 @@ import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ import java.util.Map;
  * @since 1/27/2015
  */
 public class JmaTables extends Grib1Customizer {
-  private static Map<Integer, VertCoordType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, VertCoordType> levelTypesMap; // shared by all instances
 
   JmaTables(Grib1ParamTables tables) {
     super(34, tables);
@@ -32,8 +31,8 @@ public class JmaTables extends Grib1Customizer {
   /////////////////// local time types
   @Override
   public Grib1ParamTime getParamTime(Grib1SectionProductDefinition pds) {
-    int p1 = pds.getTimeValue1();  // octet 19
-    int p2 = pds.getTimeValue2();  // octet 20
+    int p1 = pds.getTimeValue1(); // octet 19
+    int p2 = pds.getTimeValue2(); // octet 20
     int timeRangeIndicator = pds.getTimeRangeIndicator(); // octet 21
     int n = pds.getNincluded();
 
@@ -44,10 +43,11 @@ public class JmaTables extends Grib1Customizer {
 
     switch (timeRangeIndicator) {
       /*
-      Monthly-diurnal (ds628.5/fcst_phy2m125_diurnal)
-      Average over the days of the month.
-      128: Average of N forecast products with a valid time ranging between reference time + P1 and reference time + P2;
-        products have reference times at Intervals of 24 hours, beginning at the given reference time.
+       * Monthly-diurnal (ds628.5/fcst_phy2m125_diurnal)
+       * Average over the days of the month.
+       * 128: Average of N forecast products with a valid time ranging between reference time + P1 and reference time +
+       * P2;
+       * products have reference times at Intervals of 24 hours, beginning at the given reference time.
        */
       case 128:
         isInterval = true;
@@ -55,14 +55,22 @@ public class JmaTables extends Grib1Customizer {
         end = p2;
         break;
 
-      /* 129: Temporal variance of N forecasts; each product has valid time ranging between reference time + P1 and reference time + P2;
-         products have reference times at intervals of 24 hours, beginning at the given reference time;
-         unit of measurement is square of that in Code Table 2 */  // LOOK
+      /*
+       * 129: Temporal variance of N forecasts; each product has valid time ranging between reference time + P1 and
+       * reference time + P2;
+       * products have reference times at intervals of 24 hours, beginning at the given reference time;
+       * unit of measurement is square of that in Code Table 2
+       */ // LOOK
 
-      /* 131: Temporal variance of N forecasts; valid time of the first product ranges between R + P1 and R + P2,
-          where R is reference time given in octets 13 to 17, then subsequent products have valid time range at interval of P2 - P1;
-          thus all N products cover continuous time span; products have reference times at intervals of P2 - P1, beginning at the given reference time;
-          unit of measurement is square of that in Code Table 2 */ // LOOK
+      /*
+       * 131: Temporal variance of N forecasts; valid time of the first product ranges between R + P1 and R + P2,
+       * where R is reference time given in octets 13 to 17, then subsequent products have valid time range at interval
+       * of P2 - P1;
+       * thus all N products cover continuous time span; products have reference times at intervals of P2 - P1,
+       * beginning at the given reference time;
+       * unit of measurement is square of that in Code Table 2
+       */
+      // LOOK
 
 
       case 129:
@@ -72,24 +80,29 @@ public class JmaTables extends Grib1Customizer {
         end = p2;
         break;
 
-      /* 130: Average of N forecast products; valid time of the first product ranges between R + P1 and R + P2, where R is reference time given in octets 13 to 17,
-        then subsequent products have valid time range at interval of P2 - P1; thus all N products cover continuous time span; products have reference times at
-        intervals of P2 - P1, beginning at the given reference time
+      /*
+       * 130: Average of N forecast products; valid time of the first product ranges between R + P1 and R + P2, where R
+       * is reference time given in octets 13 to 17,
+       * then subsequent products have valid time range at interval of P2 - P1; thus all N products cover continuous
+       * time span; products have reference times at
+       * intervals of P2 - P1, beginning at the given reference time
        */
       case 130:
         isInterval = true;
         start = p1;
-        end = (n > 0) ? p1 + n * (p2 - p1) : p2;  // prob n >= 1
+        end = (n > 0) ? p1 + n * (p2 - p1) : p2; // prob n >= 1
         break;
 
-       /* Temporal variance of N uninitialized analyses (P1 = 0) or instantaneous forecasts (P1 > 0);
-          each product has valid time at the reference time + P1;
-          products have reference times at intervals of P2, beginning at the given reference time;
-          unit of measurement is square of that in Code Table 2 */ // LOOK
+      /*
+       * Temporal variance of N uninitialized analyses (P1 = 0) or instantaneous forecasts (P1 > 0);
+       * each product has valid time at the reference time + P1;
+       * products have reference times at intervals of P2, beginning at the given reference time;
+       * unit of measurement is square of that in Code Table 2
+       */ // LOOK
       case 132:
         forecastTime = p1;
         start = p1;
-        end = (n > 0) ? p1 + (n - 1) * p2 : p1;  // LOOK ??
+        end = (n > 0) ? p1 + (n - 1) * p2 : p1; // LOOK ??
         isInterval = (n > 0);
         break;
 
@@ -161,19 +174,24 @@ public class JmaTables extends Grib1Customizer {
   }
 
   protected VertCoordType getLevelType(int code) {
-    if (levelTypesMap == null) makeLevelTypesMap();
+    if (levelTypesMap == null)
+      makeLevelTypesMap();
     VertCoordType levelType = levelTypesMap.get(code);
-    if (levelType != null) return levelType;
+    if (levelType != null)
+      return levelType;
     return super.getLevelType(code);
   }
 
   private static void makeLevelTypesMap() {
     levelTypesMap = new HashMap<>(10);
     // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
-    levelTypesMap.put(100, new VertCoordType(100, "Isobaric Surface", "isobaric_surface_low", "hPa", null, false, false));   // 3D
+    levelTypesMap.put(100,
+        new VertCoordType(100, "Isobaric Surface", "isobaric_surface_low", "hPa", null, false, false)); // 3D
     levelTypesMap.put(211, new VertCoordType(211, "Entire soil", "entire_soil", "", null, false, false));
-    levelTypesMap.put(212, new VertCoordType(212, "The bottom of land surface model", "bottom_of_model", "", null, false, false));
-    levelTypesMap.put(213, new VertCoordType(213, "Underground layer number of land surface model", "underground_layer", "layer", null, false, false));   // 3D
+    levelTypesMap.put(212,
+        new VertCoordType(212, "The bottom of land surface model", "bottom_of_model", "", null, false, false));
+    levelTypesMap.put(213, new VertCoordType(213, "Underground layer number of land surface model", "underground_layer",
+        "layer", null, false, false)); // 3D
   }
 
   //////////////////// gen process
@@ -182,7 +200,8 @@ public class JmaTables extends Grib1Customizer {
   @Override
   @Nullable
   public String getGeneratingProcessName(int genProcess) {
-    if (genProcessMap == null) makeGenProcessMap();
+    if (genProcessMap == null)
+      makeGenProcessMap();
     return genProcessMap.get(genProcess);
   }
 

@@ -11,7 +11,7 @@ public class Optional<T> {
   private final T value;
   private final String errMessage;
 
-  public static<T> Optional<T> empty(String errMessage) {
+  public static <T> Optional<T> empty(String errMessage) {
     return new Optional<>(null, errMessage);
   }
 

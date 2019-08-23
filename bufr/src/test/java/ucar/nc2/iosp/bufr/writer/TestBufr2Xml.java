@@ -14,7 +14,7 @@ public class TestBufr2Xml {
   @Test
   public void testStuff() throws Exception {
 
-    //String filename = "C:/temp/cache/uniqueMessages.bufr";
+    // String filename = "C:/temp/cache/uniqueMessages.bufr";
     String filename = "C:/data/formats/bufr/uniqueExamples.bufr";
     int size = 0;
     int count = 0;
@@ -24,8 +24,8 @@ public class TestBufr2Xml {
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
         Message message = scan.next();
-        if (message == null || !message.isTablesComplete() ||
-            !message.isBitCountOk()) continue;
+        if (message == null || !message.isTablesComplete() || !message.isBitCountOk())
+          continue;
         byte[] mbytes = scan.getMessageBytesFromLast(message);
         NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
         NetcdfDataset ncd = new NetcdfDataset(ncfile);

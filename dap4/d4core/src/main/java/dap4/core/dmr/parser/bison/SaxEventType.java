@@ -1,11 +1,13 @@
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information. */
+/*
+ * Copyright 2012, UCAR/Unidata.
+ * See the LICENSE file for more information.
+ */
 
 package dap4.core.dmr.parser.bison;
 
 /**
- Provide an enumeration to mark all the possible Sax Parser
- generated events (except error events)
+ * Provide an enumeration to mark all the possible Sax Parser
+ * generated events (except error events)
  */
 
 /**
@@ -13,21 +15,8 @@ package dap4.core.dmr.parser.bison;
  * Exceptions: TBD
  */
 
-public enum SaxEventType
-{
-    CHARACTERS,
-    ENDDOCUMENT,
-    ENDELEMENT,
-    ENDPREFIXMAPPING,
-    IGNORABLEWHITESPACE,
-    NOTATIONDECL,
-    PROCESSINGINSTRUCTION,
-    SETDOCUMENTLOCATOR,
-    SKIPPEDENTITY,
-    STARTDOCUMENT,
-    STARTELEMENT,
-    STARTPREFIXMAPPING,
-    UNPARSEDENTITYDECL,
-    // Following is added to support each attribute as an eventtype
-    ATTRIBUTE;
+public enum SaxEventType {
+  CHARACTERS, ENDDOCUMENT, ENDELEMENT, ENDPREFIXMAPPING, IGNORABLEWHITESPACE, NOTATIONDECL, PROCESSINGINSTRUCTION, SETDOCUMENTLOCATOR, SKIPPEDENTITY, STARTDOCUMENT, STARTELEMENT, STARTPREFIXMAPPING, UNPARSEDENTITYDECL,
+  // Following is added to support each attribute as an eventtype
+  ATTRIBUTE;
 }; // enum SaxEventType

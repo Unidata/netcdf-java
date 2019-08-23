@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
-
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.ft.PointFeature;
@@ -100,8 +99,10 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
         stationProfileData = sdataIter.next();
         Station s = ft.makeStation(stationProfileData);
-        if (s == null) continue; // skip missing station ids
-        if (!ft.isFeatureMissing(stationProfileData)) break;
+        if (s == null)
+          continue; // skip missing station ids
+        if (!ft.isFeatureMissing(stationProfileData))
+          break;
       }
       return true;
     }
@@ -114,7 +115,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       cursor.currentIndex = 2;
       ft.addParentJoin(cursor); // there may be parent joins
 
-      StationProfileFeature result =  new StandardStationProfileFeature(ft.makeStation(stationProfileData), cursor, stationProfileData, cursor.recnum[2]);
+      StationProfileFeature result = new StandardStationProfileFeature(ft.makeStation(stationProfileData), cursor,
+          stationProfileData, cursor.recnum[2]);
       prev = (DsgCollectionImpl) result; // common for Station and StationProfile
       return result;
     }
@@ -129,13 +131,14 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   //////////////////////////////////////////////////////////
   // a single StationProfileFeature in this collection
   private class StandardStationProfileFeature extends StationProfileFeatureImpl {
-    //int recnum;
+    // int recnum;
     Cursor cursor;
 
     StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) {
-      super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(), StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
+      super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(),
+          StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
-      //this.recnum = recnum;
+      // this.recnum = recnum;
 
       cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = recnum; // the station record
@@ -156,7 +159,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     @Override
     public ProfileFeature getProfileByDate(CalendarDate date) {
       for (ProfileFeature pf : this) {
-        if (pf.getTime().equals(date)) return pf;
+        if (pf.getTime().equals(date))
+          return pf;
       }
       return null;
     }
@@ -207,13 +211,14 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
               calcInfo.setComplete();
             return false;
           }
-          //nextProfile = iter.next();
+          // nextProfile = iter.next();
           profileData = sdataIter.next();
           cursor.tableData[1] = profileData;
           cursor.recnum[1] = sdataIter.getCurrentRecno();
           cursor.currentIndex = 1;
           ft.addParentJoin(cursor); // there may be parent joins
-          if (!ft.isMissing(cursor)) break; // skip missing data!
+          if (!ft.isMissing(cursor))
+            break; // skip missing data!
         }
         return true;
       }
@@ -221,7 +226,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       @Override
       public PointFeatureCollection next() {
         count++;
-        PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
+        PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(),
+            ft.getObsTime(cursor), cursor.copy(), profileData);
         prev = (DsgCollectionImpl) result;
         return result;
       }
@@ -239,8 +245,10 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     private Cursor cursor;
     StructureData profileData;
 
-    StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor, StructureData profileData) {
-      super(timeUnit.makeCalendarDate(time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time, -1);
+    StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor,
+        StructureData profileData) {
+      super(timeUnit.makeCalendarDate(time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time,
+          -1);
       this.cursor = cursor;
       this.profileData = profileData;
 
@@ -282,13 +290,15 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
 
-      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) {
+      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter,
+          Cursor cursor) {
         super(StandardProfileFeature.this, ft, timeUnit, structIter, cursor);
       }
 
       @Override
       protected boolean isMissing() throws IOException {
-        if (super.isMissing()) return true;
+        if (super.isMissing())
+          return true;
         // must also check for missing z values
         return ft.isAltMissing(this.cursor);
       }

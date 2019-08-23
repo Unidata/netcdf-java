@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -44,7 +44,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -58,16 +57,16 @@ public class TestNcMLStrides extends TestCase {
   }
 
   NetcdfFile ncfile = null;
-  String location = "file:"+ TestDir.cdmUnitTestDir + "agg/strides/strides.ncml";
+  String location = "file:" + TestDir.cdmUnitTestDir + "agg/strides/strides.ncml";
 
   public void setUp() {
     try {
       ncfile = NcMLReader.readNcML(location, null);
-      //System.out.println("ncfile opened = "+location);
+      // System.out.println("ncfile opened = "+location);
     } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = "+e);
+      System.out.println("bad URL error = " + e);
     } catch (IOException e) {
-      System.out.println("IO error = "+e);
+      System.out.println("IO error = " + e);
       e.printStackTrace();
     }
   }
@@ -77,17 +76,17 @@ public class TestNcMLStrides extends TestCase {
   }
 
   public void testStride() throws IOException, InvalidRangeException {
-    System.out.println("ncfile opened = "+location+"\n"+ncfile);
+    System.out.println("ncfile opened = " + location + "\n" + ncfile);
     Variable time = ncfile.findVariable("time");
 
     ArrayInt all = (ArrayInt) time.read();
-    for (int i=0; i<all.getSize(); i++)
-      assert (all.getInt(i) == i+1);
+    for (int i = 0; i < all.getSize(); i++)
+      assert (all.getInt(i) == i + 1);
 
     testStride("0:13:3");
 
-    for (int i=1;i<12;i++)
-      testStride("0:13:"+i);
+    for (int i = 1; i < 12; i++)
+      testStride("0:13:" + i);
   }
 
   public void testStride(String stride) throws IOException, InvalidRangeException {
@@ -100,8 +99,9 @@ public class TestNcMLStrides extends TestCase {
     logger.debug("data({}) {}", stride, NCdumpW.toString(data));
     Index ci = correct.getIndex();
     Index di = data.getIndex();
-    for (int i=0; i<data.getSize(); i++)
-      assert (data.getInt(di.set(i)) == correct.getInt(ci.set(i))) : stride +" index " + i + " = " + data.getInt(di.set(i)) +" != "+ correct.getInt(ci.set(i));
+    for (int i = 0; i < data.getSize(); i++)
+      assert (data.getInt(di.set(i)) == correct.getInt(ci.set(i))) : stride + " index " + i + " = "
+          + data.getInt(di.set(i)) + " != " + correct.getInt(ci.set(i));
   }
 
 }

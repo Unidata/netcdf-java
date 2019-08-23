@@ -10,13 +10,13 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Scan files and extract Grib1Records. usage:
+ * 
  * <pre>
  * Grib1RecordScanner reader = new Grib1RecordScanner(raf);
  * while (reader.hasNext()) {
@@ -34,7 +34,7 @@ import java.util.Map;
 public class Grib1RecordScanner {
 
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
-  private static final KMPMatch matcher = new KMPMatch(new byte[]{'G', 'R', 'I', 'B'});
+  private static final KMPMatch matcher = new KMPMatch(new byte[] {'G', 'R', 'I', 'B'});
   private static final boolean debug = false;
   private static final boolean debugGds = false;
   private static final int maxScan = 16000;
@@ -64,7 +64,8 @@ public class Grib1RecordScanner {
         return false;
       }
 
-      /* Due to a trick done by ECMWF's GRIBEX to support large GRIBs, we need a special treatment
+      /*
+       * Due to a trick done by ECMWF's GRIBEX to support large GRIBs, we need a special treatment
        * to fix the length of the GRIB message. See:
        * https://software.ecmwf.int/wiki/display/EMOS/Changes+in+cycle+000281
        * https://github.com/Unidata/thredds/issues/445
@@ -122,7 +123,7 @@ public class Grib1RecordScanner {
     return lenActual;
   }
 
-////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
 
   private final Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<>();
   private final ucar.unidata.io.RandomAccessFile raf;
@@ -165,7 +166,7 @@ public class Grib1RecordScanner {
       // read the header - stuff between the records
       int sizeHeader = (int) (foundAt - lastPos);
       if (sizeHeader > 100) {
-        sizeHeader = 100;   // maximum 100 bytes, more likely to be garbage
+        sizeHeader = 100; // maximum 100 bytes, more likely to be garbage
       }
       long startPos = foundAt - sizeHeader;
       header = new byte[sizeHeader];
@@ -185,11 +186,11 @@ public class Grib1RecordScanner {
     try {
       is = new Grib1SectionIndicator(raf);
       Grib1SectionProductDefinition pds = new Grib1SectionProductDefinition(raf);
-      Grib1SectionGridDefinition gds = pds.gdsExists() ? new Grib1SectionGridDefinition(raf)
-          : new Grib1SectionGridDefinition(pds);
+      Grib1SectionGridDefinition gds =
+          pds.gdsExists() ? new Grib1SectionGridDefinition(raf) : new Grib1SectionGridDefinition(pds);
       if (!pds.gdsExists() && debugGds) {
-        log.warn(" NO GDS: center = {}, GridDefinition={} file={}", pds.getCenter(),
-            pds.getGridDefinition(), raf.getLocation());
+        log.warn(" NO GDS: center = {}, GridDefinition={} file={}", pds.getCenter(), pds.getGridDefinition(),
+            raf.getLocation());
       }
 
       Grib1SectionBitMap bitmap = pds.bmsExists() ? new Grib1SectionBitMap(raf) : null;
@@ -205,20 +206,21 @@ public class Grib1RecordScanner {
         throw new IllegalStateException("Illegal Grib1SectionBinaryData Message Length");
       }
 
-      /* ecmwf offset by 1 bug - LOOK not sure if this is still needed
-          // obtain BMS or BDS offset in the file for this product
-          if (pds.getPdsVars().getCenter() == 98) {  // check for ecmwf offset by 1 bug
-            int length = GribNumbers.uint3(raf);  // should be length of BMS
-            if ((length + raf.getFilePointer()) < EOR) {
-              dataOffset = raf.getFilePointer() - 3;  // ok
-            } else {
-              //System.out.println("ECMWF off by 1 bug" );
-              dataOffset = raf.getFilePointer() - 2;
-            }
-          } else {
-            dataOffset = raf.getFilePointer();
-          }
-      */
+      /*
+       * ecmwf offset by 1 bug - LOOK not sure if this is still needed
+       * // obtain BMS or BDS offset in the file for this product
+       * if (pds.getPdsVars().getCenter() == 98) { // check for ecmwf offset by 1 bug
+       * int length = GribNumbers.uint3(raf); // should be length of BMS
+       * if ((length + raf.getFilePointer()) < EOR) {
+       * dataOffset = raf.getFilePointer() - 3; // ok
+       * } else {
+       * //System.out.println("ECMWF off by 1 bug" );
+       * dataOffset = raf.getFilePointer() - 2;
+       * }
+       * } else {
+       * dataOffset = raf.getFilePointer();
+       * }
+       */
 
       // look for duplicate gds
       long crc = gds.calcCRC();
@@ -231,8 +233,8 @@ public class Grib1RecordScanner {
 
       // check that end section is correct
       boolean foundEnding = checkEnding(ending);
-      log.debug(" read until {} grib ending at {} header ='{}' foundEnding={}",
-            raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
+      log.debug(" read until {} grib ending at {} header ='{}' foundEnding={}", raf.getFilePointer(), ending,
+          StringUtil2.cleanup(header), foundEnding);
 
       if (!foundEnding && (allowBadIsLength || is.isMessageLengthFixed)) {
         foundEnding = checkEnding(dataSection.getStartingPosition() + dataSection.getLength());
@@ -248,8 +250,8 @@ public class Grib1RecordScanner {
       }
 
       // skip this record
-      // lastPos = is.getEndPos() + 20;  cant use is.getEndPos(), may be bad
-      lastPos += 20;  // skip over the "GRIB" of this message
+      // lastPos = is.getEndPos() + 20; cant use is.getEndPos(), may be bad
+      lastPos += 20; // skip over the "GRIB" of this message
       if (hasNext()) { // search forward for another one
         return next();
       }
@@ -277,9 +279,7 @@ public class Grib1RecordScanner {
         if (clean.length() > 40) {
           clean = clean.substring(0, 40) + "...";
         }
-        log.debug(
-            "Missing End of GRIB message at pos=" + ending + " header= " + clean + " for=" + raf
-                .getLocation());
+        log.debug("Missing End of GRIB message at pos=" + ending + " header= " + clean + " for=" + raf.getLocation());
         return false;
       }
     }

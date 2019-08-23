@@ -10,6 +10,7 @@ import ucar.unidata.util.Parameter;
 /**
  * Projective geometry transformations from (lat,lon) to (x,y) on
  * a projective cartesian surface.
+ * 
  * @author John Caron
  */
 
@@ -37,7 +38,7 @@ public interface Projection {
   String paramsToString();
 
   /**
-   * Convert a LatLonPoint to projection coordinates.  Note: do not assume
+   * Convert a LatLonPoint to projection coordinates. Note: do not assume
    * a new object is created on each call for the return value.
    *
    * @param latlon convert from these lat, lon coordinates
@@ -51,7 +52,7 @@ public interface Projection {
    * Note: do not assume a new object is created on each call for the
    * return value.
    *
-   * @param ppt    convert from these projection coordinates
+   * @param ppt convert from these projection coordinates
    * @param result return result here, or null
    * @return lat/lon coordinates
    */

@@ -14,7 +14,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.ArrayDouble;
-
 import java.io.IOException;
 
 /**
@@ -40,55 +39,58 @@ public class CEDRICRadarConvention extends CF1Convention {
   public CEDRICRadarConvention() {
     this.conventionName = "CEDRICRadar";
   }
-      
+
   public void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
-  /*  float lat = 40.45f;
-    float lon = -104.64f;
-    ProjectionImpl projection = new FlatEarth(lat, lon);
+    /*
+     * float lat = 40.45f;
+     * float lon = -104.64f;
+     * ProjectionImpl projection = new FlatEarth(lat, lon);
+     * 
+     * Variable ct = new Variable( ncDataset, null, null, projection.getClassName());
+     * ct.setDataType( DataType.CHAR);
+     * ct.setDimensions( "");
+     * 
+     * ct.addAttribute( new Attribute("grid_mapping_name", "flat_earth"));
+     * ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
+     * ct.addAttribute( new Attribute(_Coordinate.Axes, "GeoX GeoY"));
+     * ncDataset.addVariable(null, ct);
+     */
+    NcMLReader.wrapNcMLresource(ncDataset, CoordSysBuilder.resourcesDir + "CEDRICRadar.ncml", cancelTask);
+    Variable lat = ncDataset.findVariable("radar_latitude");
+    Variable lon = ncDataset.findVariable("radar_longitude");
+    float latv = (float) lat.readScalarDouble();
+    float lonv = (float) lon.readScalarDouble();
+    Variable pv = ncDataset.findVariable("Projection");
+    pv.addAttribute(new Attribute("longitude_of_projection_origin", lonv));
+    pv.addAttribute(new Attribute("latitude_of_projection_origin", latv));
 
-    Variable ct = new Variable( ncDataset, null, null, projection.getClassName());
-    ct.setDataType( DataType.CHAR);
-    ct.setDimensions( "");
+    Variable tvar = ncDataset.findVariable("time");
+    /*
+     * Date dt = null;
+     * Variable sdate = ncDataset.findVariable("start_date");
+     * Variable stime = ncDataset.findVariable("start_time");
+     * String dateStr = sdate.readScalarString();
+     * String timeStr = stime.readScalarString();
+     * try {
+     * dt = DateUtil.parse(dateStr + " " + timeStr);
+     * } catch (Exception e) {}
+     */
 
-    ct.addAttribute( new Attribute("grid_mapping_name", "flat_earth"));
-    ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
-    ct.addAttribute( new Attribute(_Coordinate.Axes, "GeoX GeoY"));
-    ncDataset.addVariable(null, ct);
-  */
-        NcMLReader.wrapNcMLresource(ncDataset, CoordSysBuilder.resourcesDir + "CEDRICRadar.ncml", cancelTask);
-        Variable lat = ncDataset.findVariable("radar_latitude");
-        Variable lon = ncDataset.findVariable("radar_longitude");
-        float    latv = (float)lat.readScalarDouble();
-        float    lonv = (float)lon.readScalarDouble();
-        Variable pv = ncDataset.findVariable("Projection");
-        pv.addAttribute(new Attribute("longitude_of_projection_origin", lonv) );
-        pv.addAttribute(new Attribute("latitude_of_projection_origin", latv) );
+    int nt = 1;
 
-        Variable tvar = ncDataset.findVariable("time");
-        /*Date dt = null;
-        Variable sdate = ncDataset.findVariable("start_date");
-        Variable stime = ncDataset.findVariable("start_time");
-        String dateStr = sdate.readScalarString();
-        String timeStr = stime.readScalarString();
-        try {
-          dt = DateUtil.parse(dateStr + " " + timeStr);
-        } catch (Exception e) {}  */
+    ArrayDouble.D1 data = new ArrayDouble.D1(nt);
 
-        int nt = 1;
+    // fake
+    data.setDouble(0, 0);
+    // data.setDouble(0, dt.getTime()/1000);
 
-        ArrayDouble.D1 data = new ArrayDouble.D1(nt);
+    tvar.setCachedData(data, false);
 
-        // fake
-        data.setDouble(0, 0);
-        // data.setDouble(0, dt.getTime()/1000);
+    super.augmentDataset(ncDataset, cancelTask);
 
-        tvar.setCachedData(data, false);
+    // System.out.println("here\n");
 
-        super.augmentDataset(ncDataset, cancelTask);
-
-   //     System.out.println("here\n");
-
-  //  ncDataset.finish();
+    // ncDataset.finish();
   }
 }
 

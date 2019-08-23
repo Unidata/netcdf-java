@@ -40,6 +40,7 @@ public final class GridIndex {
   /**
    * Constructor for creating an Index from the Grid file.
    * Use the addXXX() methods.
+   * 
    * @param filename name of data file, for debugging
    */
   public GridIndex(String filename) {
@@ -94,7 +95,7 @@ public final class GridIndex {
   /**
    * adds a GlobalAttribute to the index.
    *
-   * @param name  GlobalAttribute
+   * @param name GlobalAttribute
    * @param value String
    */
   public final void addGlobalAttribute(String name, String value) {

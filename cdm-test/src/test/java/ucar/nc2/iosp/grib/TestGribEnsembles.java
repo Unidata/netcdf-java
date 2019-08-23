@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -45,9 +45,7 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.Grib;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.lang.invoke.MethodHandles;
-
 import static org.junit.Assert.*;
 
 @Category(NeedsCdmUnitTest.class)
@@ -98,12 +96,12 @@ public class TestGribEnsembles {
       assertEquals(3, xIndex);
       assertEquals(-1, zIndex);
 
-      Dimension ensDim = gridDatatype.getDimension(ensIndex); //ensIndex = 0
+      Dimension ensDim = gridDatatype.getDimension(ensIndex); // ensIndex = 0
       assertEquals(1, ensDim.getLength());
       assertEquals("ens", ensDim.getShortName());
 
       Variable variable = gridDatatype.getVariable().getOriginalVariable();
-      ensDim = variable.getDimension(ensIndex); //ensIndex = 0
+      ensDim = variable.getDimension(ensIndex); // ensIndex = 0
     }
 
   }
@@ -124,17 +122,17 @@ public class TestGribEnsembles {
       assertEquals(requiredName, gridDatatype.getFullName());
 
       Dimension ensDimension = gridDatatype.getEnsembleDimension();
-      assertNotNull(ensDimension); //fails in 4.3 , null returned
+      assertNotNull(ensDimension); // fails in 4.3 , null returned
       assertEquals(51, ensDimension.getLength()); // is 2 in 4.2, however it should be 51 (incl. control forecast)
 
       Dimension timeDimension = gridDatatype.getTimeDimension();
-      assertEquals(1, timeDimension.getLength()); //ok in both versions
+      assertEquals(1, timeDimension.getLength()); // ok in both versions
 
       Dimension xDimension = gridDatatype.getXDimension();
-      assertEquals(31, xDimension.getLength()); //ok in both versions
+      assertEquals(31, xDimension.getLength()); // ok in both versions
 
       Dimension yDimension = gridDatatype.getYDimension();
-      assertEquals(21, yDimension.getLength()); //ok in both versions
+      assertEquals(21, yDimension.getLength()); // ok in both versions
     }
   }
 

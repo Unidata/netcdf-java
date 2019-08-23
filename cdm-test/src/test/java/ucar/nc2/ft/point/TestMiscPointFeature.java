@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -74,44 +74,51 @@ public class TestMiscPointFeature {
   @Category(NeedsCdmUnitTest.class)
   public void testProblemTraj() throws IOException {
     String location = TestDir.cdmUnitTestDir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
-    Assert.assertEquals("npoints", 383, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY, true));
+    Assert.assertEquals("npoints", 383,
+        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY, true));
   }
 
   @Test
   public void testProblemStation() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.4.1.ncml";
-    Assert.assertEquals("npoints", 100, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
+    Assert.assertEquals("npoints", 100,
+        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
   }
 
   @Test
   @Ignore("Dont support multiple lat/lon coordinates for now")
   public void testProblemStationWithPreciseCoords() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.3.2.ncml";
-    Assert.assertEquals("npoints", 100, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
+    Assert.assertEquals("npoints", 100,
+        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
   }
+
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testGempakStationProfile() throws IOException {
     String location = TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml";
-    Assert.assertEquals("npoints", 8769, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
+    Assert.assertEquals("npoints", 8769,
+        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
   }
 
   @Test
   public void testProblemStationProfile() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "point/stationProfileSingle.ncml";
-    Assert.assertEquals("npoints", 9, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
+    Assert.assertEquals("npoints", 9,
+        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
   }
 
   @Test
   public void testProblemSection() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.6.3.1.ncml";
-    Assert.assertEquals("npoints", 145, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY_PROFILE, true));
+    Assert.assertEquals("npoints", 145,
+        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY_PROFILE, true));
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testProblem3() throws IOException {
-    String location =  TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc";
+    String location = TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc";
     assert 198 == TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true);
   }
 
@@ -119,7 +126,8 @@ public class TestMiscPointFeature {
   public void testStationVarLevels() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/stationData2Levels.ncml";
     Formatter buf = new Formatter();
-    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
+        .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
       Assert.assertNotNull(pods);
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
@@ -171,7 +179,8 @@ public class TestMiscPointFeature {
   public void testStationVarSingle() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/stationSingle.ncml";
     Formatter buf = new Formatter();
-    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
+        .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
@@ -185,7 +194,7 @@ public class TestMiscPointFeature {
       assert s.getDescription() != null : "No description on station";
       assert s.getDescription().equalsIgnoreCase("flabulous") : "description should equal 'flabulous'";
       assert s.getWmoId() != null : "No wmoId on station";
-      assert s.getWmoId().equalsIgnoreCase("whoa") : "wmoId should equal 'whoa' but ='"+s.getWmoId()+"'";
+      assert s.getWmoId().equalsIgnoreCase("whoa") : "wmoId should equal 'whoa' but ='" + s.getWmoId() + "'";
     }
   }
 
@@ -193,7 +202,8 @@ public class TestMiscPointFeature {
   public void testStationVarRagged() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
     Formatter buf = new Formatter();
-    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
+        .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
@@ -204,8 +214,8 @@ public class TestMiscPointFeature {
       for (Station s : stations) {
         System.out.printf("%s%n", s);
         assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
-        assert s.getDescription() != null  && !s.getDescription().isEmpty() : "No description on station";
-        assert s.getWmoId() != null  && !s.getWmoId().isEmpty() : "No wmoId on station";
+        assert s.getDescription() != null && !s.getDescription().isEmpty() : "No description on station";
+        assert s.getWmoId() != null && !s.getWmoId().isEmpty() : "No wmoId on station";
       }
     }
   }
@@ -215,7 +225,8 @@ public class TestMiscPointFeature {
   public void testProfileSingleId() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/profileSingle.ncml";
     Formatter buf = new Formatter();
-    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.PROFILE, file, null, buf)) {
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
+        .open(ucar.nc2.constants.FeatureType.PROFILE, file, null, buf)) {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
@@ -236,7 +247,8 @@ public class TestMiscPointFeature {
   public void testStationVarMulti() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
     Formatter buf = new Formatter();
-    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
+        .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
@@ -247,37 +259,40 @@ public class TestMiscPointFeature {
       for (Station s : stations) {
         System.out.printf("%s%n", s);
         assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
-        assert s.getDescription() != null  && !s.getDescription().isEmpty() : "No description on station";
-        assert s.getWmoId() != null  && !s.getWmoId().isEmpty() : "No wmoId on station";
+        assert s.getDescription() != null && !s.getDescription().isEmpty() : "No description on station";
+        assert s.getWmoId() != null && !s.getWmoId().isEmpty() : "No wmoId on station";
       }
     }
   }
 
   @Test
-   public void testDataVars() throws Exception {
-     String file = TestDir.cdmLocalTestDataDir + "point/stationSingle.ncml";
-     Formatter buf = new Formatter();
-     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
-       List<VariableSimpleIF> dataVars = pods.getDataVariables();
-       for (VariableSimpleIF dv : dataVars) System.out.printf(" %s%n", dv );
-       assert (dataVars.size() == 1) : "Should only be one data var";
-       VariableSimpleIF data =  dataVars.get(0);
-       assert data.getShortName().equalsIgnoreCase("data");
-     }
-   }
+  public void testDataVars() throws Exception {
+    String file = TestDir.cdmLocalTestDataDir + "point/stationSingle.ncml";
+    Formatter buf = new Formatter();
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
+        .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+      List<VariableSimpleIF> dataVars = pods.getDataVariables();
+      for (VariableSimpleIF dv : dataVars)
+        System.out.printf(" %s%n", dv);
+      assert (dataVars.size() == 1) : "Should only be one data var";
+      VariableSimpleIF data = dataVars.get(0);
+      assert data.getShortName().equalsIgnoreCase("data");
+    }
+  }
 
   @Test
-   public void testAltUnits() throws Exception {
-     String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
-     Formatter buf = new Formatter();
-     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
-       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
-       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-       DsgFeatureCollection fc = collectionList.get(0);
-       assert fc.getAltUnits() != null : "no Alt Units";
-       assert fc.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
-     }
-   }
+  public void testAltUnits() throws Exception {
+    String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
+    Formatter buf = new Formatter();
+    try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
+        .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+      List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+      DsgFeatureCollection fc = collectionList.get(0);
+      assert fc.getAltUnits() != null : "no Alt Units";
+      assert fc.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
+    }
+  }
 
 
   // make sure that try/with tolerates a null return from FeatureDatasetFactoryManager
@@ -316,23 +331,24 @@ public class TestMiscPointFeature {
 
     List<DsgFeatureCollection> featCols = featDsetPoint.getPointFeatureCollectionList();
     assert !featCols.isEmpty();
-    DsgFeatureCollection featCol = featCols.get(0);  // We only care about the first one.
+    DsgFeatureCollection featCol = featCols.get(0); // We only care about the first one.
 
     assert featCol instanceof StationProfileFeatureCollection;
     StationProfileFeatureCollection stationProfileFeatCol = (StationProfileFeatureCollection) featCol;
 
     assert stationProfileFeatCol.hasNext();
-    StationProfileFeature stationProfileFeat = stationProfileFeatCol.next();  // We only care about the first one.
+    StationProfileFeature stationProfileFeat = stationProfileFeatCol.next(); // We only care about the first one.
 
     List<CalendarDate> timesList = stationProfileFeat.getTimes();
-    Set<CalendarDate> timesSet = new TreeSet<>(stationProfileFeat.getTimes());  // Nukes dupes.
-    Assert.assertEquals(timesList.size(), timesSet.size());  // Assert that the times are unique.
+    Set<CalendarDate> timesSet = new TreeSet<>(stationProfileFeat.getTimes()); // Nukes dupes.
+    Assert.assertEquals(timesList.size(), timesSet.size()); // Assert that the times are unique.
   }
 
   @Test
-  public void testFlatten() throws IOException {  // kunicki
+  public void testFlatten() throws IOException { // kunicki
     Formatter formatter = new Formatter(System.err);
-    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
+    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION,
+        TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
       if (fd != null && fd instanceof FeatureDatasetPoint) {
         FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
         DsgFeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
@@ -340,16 +356,17 @@ public class TestMiscPointFeature {
           StationTimeSeriesFeatureCollection stsfc = (StationTimeSeriesFeatureCollection) fc;
           // subset criteria not important, just want to get data
           // into flattened representation
-          PointFeatureCollection pfc = stsfc.flatten(
-                  new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180)),
-                  CalendarDateRange.of(CalendarDate.parseISOformat(null, "1900-01-01"), CalendarDate.parseISOformat(null, "2100-01-01")));
+          PointFeatureCollection pfc =
+              stsfc.flatten(new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180)),
+                  CalendarDateRange.of(CalendarDate.parseISOformat(null, "1900-01-01"),
+                      CalendarDate.parseISOformat(null, "2100-01-01")));
 
           for (PointFeature pf : pfc) {
-              // the call to cursor.getParentStructure() in
-              // in StandardPointFeatureIterator.makeStation()
-              // is returning the observation structure, not the
-              // station structure since Cursor.currentIndex = 0
-              //Station s = stsfc.getStation(pf);
+            // the call to cursor.getParentStructure() in
+            // in StandardPointFeatureIterator.makeStation()
+            // is returning the observation structure, not the
+            // station structure since Cursor.currentIndex = 0
+            // Station s = stsfc.getStation(pf);
             StructureData sdata = pf.getFeatureData();
             Assert.assertNotNull(sdata);
 
@@ -366,11 +383,13 @@ public class TestMiscPointFeature {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testGempak() throws Exception {
-    String file = TestDir.cdmUnitTestDir + "formats/gempak/surface/09052812.sf";       // Q:/cdmUnitTest/formats/gempak/surface/09052812.sf
+    String file = TestDir.cdmUnitTestDir + "formats/gempak/surface/09052812.sf"; // Q:/cdmUnitTest/formats/gempak/surface/09052812.sf
     Formatter buf = new Formatter();
-    FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf);
-    if (pods == null) {  // try as ANY_POINT
-      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
+    FeatureDatasetPoint pods =
+        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf);
+    if (pods == null) { // try as ANY_POINT
+      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.ANY_POINT, file,
+          null, buf);
     }
     if (pods == null) {
       System.out.printf("can't open file=%s%n error=%s%n", file, buf);

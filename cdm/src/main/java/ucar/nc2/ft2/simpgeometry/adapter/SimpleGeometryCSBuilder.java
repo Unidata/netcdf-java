@@ -17,7 +17,6 @@ import ucar.nc2.ft2.simpgeometry.Polygon;
 import ucar.nc2.ft2.simpgeometry.SimpleGeometryReader;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
-
 import java.util.*;
 
 /**
@@ -33,7 +32,8 @@ public class SimpleGeometryCSBuilder {
 
   // classify based on largest coordinate system
   public static SimpleGeometryCSBuilder classify(NetcdfDataset ds, Formatter errlog) {
-    if (errlog != null) errlog.format("SimpleGeometryFactory for '%s'%n", ds.getLocation());
+    if (errlog != null)
+      errlog.format("SimpleGeometryFactory for '%s'%n", ds.getLocation());
 
     // sort by largest size first
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
@@ -42,11 +42,14 @@ public class SimpleGeometryCSBuilder {
     SimpleGeometryCSBuilder builder = null;
     for (CoordinateSystem cs : css) {
       builder = new SimpleGeometryCSBuilder(ds, cs, errlog);
-      if (builder.type != null) break;
+      if (builder.type != null)
+        break;
     }
-    
-    if (builder == null) return null;
-    if (errlog != null) errlog.format("simple geometry = %s%n", builder.type);
+
+    if (builder == null)
+      return null;
+    if (errlog != null)
+      errlog.format("simple geometry = %s%n", builder.type);
     return builder;
   }
 
@@ -60,7 +63,7 @@ public class SimpleGeometryCSBuilder {
     return fac.type == null ? "" : fac.showSummary();
   }
 
-  
+
   private FeatureType type;
   private List<CoordinateAxis> allAxes;
   private List<CoordinateAxis> sgAxes;
@@ -71,118 +74,123 @@ public class SimpleGeometryCSBuilder {
   private SimpleGeometryReader geometryReader;
   private Map<String, List<String>> geometryContainersAssoc;
   private ProjectionImpl orgProj;
-  
+
   public SimpleGeometryCSBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
 
     // must be at least 2 dimensions
     if (cs.getRankDomain() < 2) {
-      if (errlog != null) errlog.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
+      if (errlog != null)
+        errlog.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
       return;
     }
-    
+
     sgAxes = new ArrayList<>();
     geometrySeriesVarNames = new ArrayList<>();
     geometryContainerNames = new ArrayList<>();
     geometryContainersAssoc = new HashMap<>();
     dims = ds.getDimensions();
     allAxes = cs.getCoordinateAxes();
-    
-    // Look through the variables and build a list of geometry variables, also build up map of simple geometry containers 
-    for(Variable var : ds.getVariables()) {
-    	if(!var.findAttValueIgnoreCase(CF.GEOMETRY, "").equals("")) {
-    		
-    		geometrySeriesVarNames.add(var.getFullNameEscaped());
-    		String varName = var.findAttValueIgnoreCase(CF.GEOMETRY, "");
-    		
-    		// Using the Geometry Container name, add this variable as a reference to that container
-    		
-    		// Check if container exists
-    		if(ds.findVariable(varName) != null) {
-    		
-    			// Add container name to container name list, if not present already
-    			if(!geometryContainerNames.contains(varName)) geometryContainerNames.add(varName);
-    			
-    			// If the list is null, instantiate it
-    			if(geometryContainersAssoc.get(varName) == null) {
-    				List<String> strList = new ArrayList<>();
-    				geometryContainersAssoc.put(varName, strList);
-    			}
-    		
-    			// Then add this variable as a reference.
-    			geometryContainersAssoc.get(var.findAttValueIgnoreCase(CF.GEOMETRY, "")).add(var.getFullNameEscaped());
-    		}
-    	}
+
+    // Look through the variables and build a list of geometry variables, also build up map of simple geometry
+    // containers
+    for (Variable var : ds.getVariables()) {
+      if (!var.findAttValueIgnoreCase(CF.GEOMETRY, "").equals("")) {
+
+        geometrySeriesVarNames.add(var.getFullNameEscaped());
+        String varName = var.findAttValueIgnoreCase(CF.GEOMETRY, "");
+
+        // Using the Geometry Container name, add this variable as a reference to that container
+
+        // Check if container exists
+        if (ds.findVariable(varName) != null) {
+
+          // Add container name to container name list, if not present already
+          if (!geometryContainerNames.contains(varName))
+            geometryContainerNames.add(varName);
+
+          // If the list is null, instantiate it
+          if (geometryContainersAssoc.get(varName) == null) {
+            List<String> strList = new ArrayList<>();
+            geometryContainersAssoc.put(varName, strList);
+          }
+
+          // Then add this variable as a reference.
+          geometryContainersAssoc.get(var.findAttValueIgnoreCase(CF.GEOMETRY, "")).add(var.getFullNameEscaped());
+        }
+      }
     }
-    
+
     // Create Simple Geometry Reader if there are any Axes with type SimpleGeometryID
-    // Also, populate simple geometry axis list 
+    // Also, populate simple geometry axis list
     boolean sgtype = false;
-    for(CoordinateAxis axis : cs.getCoordinateAxes()) {
-    	if(axis.getAxisType().equals(AxisType.SimpleGeometryID) || axis.getAxisType().equals(AxisType.SimpleGeometryX)
-    			|| axis.getAxisType().equals(AxisType.SimpleGeometryY) || axis.getAxisType().equals(AxisType.SimpleGeometryZ)) {
-    		sgAxes.add(axis);
-    		sgtype = true;
-    	}
+    for (CoordinateAxis axis : cs.getCoordinateAxes()) {
+      if (axis.getAxisType().equals(AxisType.SimpleGeometryID) || axis.getAxisType().equals(AxisType.SimpleGeometryX)
+          || axis.getAxisType().equals(AxisType.SimpleGeometryY)
+          || axis.getAxisType().equals(AxisType.SimpleGeometryZ)) {
+        sgAxes.add(axis);
+        sgtype = true;
+      }
     }
-    
-    if(sgtype) {
-    	geometryReader = new SimpleGeometryReader(ds);
-    	this.type = FeatureType.SIMPLE_GEOMETRY;
-    } else geometryReader = null;
-    
+
+    if (sgtype) {
+      geometryReader = new SimpleGeometryReader(ds);
+      this.type = FeatureType.SIMPLE_GEOMETRY;
+    } else
+      geometryReader = null;
+
     this.type = classify();
     this.coordTransforms = new ArrayList<>(cs.getCoordinateTransforms());
     this.orgProj = cs.getProjection();
   }
 
-  private FeatureType classify () {
+  private FeatureType classify() {
 
     // now to classify
-    
-    if(geometryReader != null) {
-    	return FeatureType.SIMPLE_GEOMETRY;
+
+    if (geometryReader != null) {
+      return FeatureType.SIMPLE_GEOMETRY;
     }
 
     return null;
   }
 
-  
+
   /**
    * Returns the list of all axes contained in this coordinate system.
    *
    * @return simple geometry axes
    */
-  public List<CoordinateAxis> getAllAxes(){
-	  return this.allAxes;
+  public List<CoordinateAxis> getAllAxes() {
+    return this.allAxes;
   }
-  
+
   /**
    * Returns a list of coord transforms contained in this coordinate system.
    * 
    * @return coordinate transforms
    */
-  public List<CoordinateTransform> getCoordTransforms(){
-	  return this.coordTransforms;
+  public List<CoordinateTransform> getCoordTransforms() {
+    return this.coordTransforms;
   }
-  
+
   /**
    * Returns the list of dimensions contained in this coordinate system.
    * 
    * @return dimensions
    */
-  public List<Dimension> getDimensions(){
-	  return this.dims;
+  public List<Dimension> getDimensions() {
+    return this.dims;
   }
-  
+
   /**
    * Returns the list of simple geometry axes contained in this coordinate system.
    *
    * @return simple geometry axes
    */
-  public List<CoordinateAxis> getSgAxes(){
-	  return this.sgAxes;
+  public List<CoordinateAxis> getSgAxes() {
+    return this.sgAxes;
   }
-  
+
   /**
    * Given a variable name, returns the type of geometry which that variable is holding
    * 
@@ -190,107 +198,103 @@ public class SimpleGeometryCSBuilder {
    * @return geometry type associated with that variable
    */
   public GeometryType getGeometryType(String name) {
-	 return geometryReader.getGeometryType(name);
+    return geometryReader.getGeometryType(name);
   }
-  
+
   /**
    * Get the projection of this coordinate system.
    * 
    * @return projection
    */
-  public Projection getProjection(){
-	  return this.orgProj;
+  public Projection getProjection() {
+    return this.orgProj;
   }
-  
+
   /**
    * Given a certain variable name and geometry index, returns a Simple Geometry Polygon.
    */
-  public Polygon getPolygon(String name, int index)
-  {
-	  return geometryReader.readPolygon(name, index);
-  }
-  
-  /**
-   * Given a certain Polygon variable name and geometry begin and end indicies, returns a list of Simple Geometry Polygon
-   */
-  public List<Polygon> getPolygons(String name, int indexBegin, int indexEnd) {
-	  List<Polygon> polyList = new ArrayList<>();
-	  
-	  for(int i = indexBegin; i <= indexEnd; i++)
-	  {
-		  polyList.add(geometryReader.readPolygon(name, i));
-	  }
-	  
-	  return polyList;
+  public Polygon getPolygon(String name, int index) {
+    return geometryReader.readPolygon(name, index);
   }
 
-  
+  /**
+   * Given a certain Polygon variable name and geometry begin and end indicies, returns a list of Simple Geometry
+   * Polygon
+   */
+  public List<Polygon> getPolygons(String name, int indexBegin, int indexEnd) {
+    List<Polygon> polyList = new ArrayList<>();
+
+    for (int i = indexBegin; i <= indexEnd; i++) {
+      polyList.add(geometryReader.readPolygon(name, i));
+    }
+
+    return polyList;
+  }
+
+
   /**
    * Given a certain variable name and geometry index, returns a Simple Geometry Line.
+   * 
    * @return line
    */
-  public Line getLine(String name, int index)
-  {
-	  return geometryReader.readLine(name, index);
+  public Line getLine(String name, int index) {
+    return geometryReader.readLine(name, index);
   }
-  
+
   /**
    * Given a certain line variable name and geometry begin and end indicies, returns a list of Simple Geometry Line
    */
   public List<Line> getLines(String name, int indexBegin, int indexEnd) {
-	  List<Line> lineList = new ArrayList<>();
-	  
-	  for(int i = indexBegin; i <= indexEnd; i++)
-	  {
-		  lineList.add(geometryReader.readLine(name, i));
-	  }
-	  
-	  return lineList;
+    List<Line> lineList = new ArrayList<>();
+
+    for (int i = indexBegin; i <= indexEnd; i++) {
+      lineList.add(geometryReader.readLine(name, i));
+    }
+
+    return lineList;
   }
 
-  
+
   /**
    * Given a certain variable name and geometry index, returns a Simple Geometry Point
    */
-  public Point getPoint(String name, int index)
-  {
-	  return geometryReader.readPoint(name, index);
+  public Point getPoint(String name, int index) {
+    return geometryReader.readPoint(name, index);
   }
-  
+
   /**
    * Given a certain Point variable name and geometry begin and end indicies, returns a list of Simple Geometry Points
    */
   public List<Point> getPoints(String name, int indexBegin, int indexEnd) {
-	  List<Point> ptList = new ArrayList<>();
-	  
-	  for(int i = indexBegin; i <= indexEnd; i++)
-	  {
-		  ptList.add(geometryReader.readPoint(name, i));
-	  }
-	  
-	  return ptList;
+    List<Point> ptList = new ArrayList<>();
+
+    for (int i = indexBegin; i <= indexEnd; i++) {
+      ptList.add(geometryReader.readPoint(name, i));
+    }
+
+    return ptList;
   }
-  
+
   /**
    * Returns the names of variables which are detected
    * as geometry containers.
    * 
    * @return variable name
    */
-  public List<String> getGeometryContainerNames(){
-	  return this.geometryContainerNames;
+  public List<String> getGeometryContainerNames() {
+    return this.geometryContainerNames;
   }
-  
+
   /**
    * Returns the names of variables which are detected
    * as geometry data series.
    * 
    * @return variable name
    */
-  public List<String> getGeometrySeriesNames(){
-	  return this.geometrySeriesVarNames;
+  public List<String> getGeometrySeriesNames() {
+    return this.geometrySeriesVarNames;
   }
-  
+
   /**
    * Returns a list of variables (in no particular order)
    * which utilize the given geometry container.
@@ -298,12 +302,13 @@ public class SimpleGeometryCSBuilder {
    * @param nameOfContainer to find associations for
    * @return associations (if any) null if none
    */
-  public List<String> getGeometryContainerAssociations(String nameOfContainer){
-	 return this.geometryContainersAssoc.get(nameOfContainer); 
+  public List<String> getGeometryContainerAssociations(String nameOfContainer) {
+    return this.geometryContainersAssoc.get(nameOfContainer);
   }
 
   public SimpleGeometryCS makeCoordSys() {
-    if (type == null) return null;
+    if (type == null)
+      return null;
 
     if (type == FeatureType.SIMPLE_GEOMETRY) {
       return new SimpleGeometryCS(this);
@@ -317,14 +322,17 @@ public class SimpleGeometryCSBuilder {
    * @return Feature type of this type
    */
   public FeatureType getFeatureType() {
-	  return this.type;
+    return this.type;
   }
-  
+
   @Override
   public String toString() {
     Formatter f2 = new Formatter();
     f2.format("%s", type == null ? "" : type.toString());
-    if (type == null) {f2.close(); return "";}
+    if (type == null) {
+      f2.close();
+      return "";
+    }
 
     f2.format("}");
     f2.format("%n allAxes=(");
@@ -340,7 +348,8 @@ public class SimpleGeometryCSBuilder {
   }
 
   public String showSummary() {
-    if (type == null) return "";
+    if (type == null)
+      return "";
 
     Formatter f2 = new Formatter();
     f2.format("%s", type.toString());

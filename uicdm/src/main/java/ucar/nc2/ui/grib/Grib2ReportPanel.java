@@ -35,7 +35,6 @@ import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
-
 import java.io.*;
 import java.util.*;
 
@@ -49,8 +48,7 @@ public class Grib2ReportPanel extends ReportPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public enum Report {
-    checkTables, localUseSection, uniqueTemplates, duplicatePds, drsSummary, gdsSummary, pdsSummary, pdsProblems, idProblems, timeCoord,
-    rename, copyCompress, gribIndex
+    checkTables, localUseSection, uniqueTemplates, duplicatePds, drsSummary, gdsSummary, pdsSummary, pdsProblems, idProblems, timeCoord, rename, copyCompress, gribIndex
   }
 
   public Grib2ReportPanel(PreferencesExt prefs) {
@@ -63,7 +61,8 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   @Override
-  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile,
+      boolean extra) throws IOException {
     switch ((Report) option) {
       case checkTables:
         doCheckTables(f, dcm, useIndex);
@@ -147,11 +146,12 @@ public class Grib2ReportPanel extends ReportPanel {
   ///////////////////////////////////////////////
   String dir = "C:/tmp/bzip/";
 
-  private void doCopyCompress(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+  private void doCopyCompress(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra)
+      throws IOException {
     f.format("Copy and Compress selected files%n");
     Counters counters = new Counters();
     counters.add("Nbits");
-    
+
     long totalOrg = 0;
     long totalZip = 0;
 
@@ -159,17 +159,18 @@ public class Grib2ReportPanel extends ReportPanel {
       f.format("------- %s%n", mfile.getPath());
       long orgSize = mfile.getLength();
       totalOrg += orgSize;
-      File fileOut = new File(dir+mfile.getName()+".bzip2");
+      File fileOut = new File(dir + mfile.getName() + ".bzip2");
 
       try (RandomAccessFile raf = new RandomAccessFile(mfile.getPath(), "r");
-           OutputStream fout = new BufferedOutputStream(new FileOutputStream(fileOut), 100 * 1000)) {
+          OutputStream fout = new BufferedOutputStream(new FileOutputStream(fileOut), 100 * 1000)) {
 
         int count = 0;
         Grib2RecordScanner scan = new Grib2RecordScanner(raf);
         while (scan.hasNext()) {
           ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
           doCopyCompress(f, gr, raf, fout, counters);
-          if (count++ % 100 == 0) System.out.printf("%s%n", count);
+          if (count++ % 100 == 0)
+            System.out.printf("%s%n", count);
         }
       }
       long zipSize = fileOut.length();
@@ -184,54 +185,73 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   /*
-  http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
-  Packed Data Values
-
-  Packed data is stored in a netCDF file by limiting precision and using a smaller data type than the original data, for example, packing double-precision (64-bit) values into short (16-bit) integers. The C-based netCDF libraries do not do the packing and unpacking. (The netCDF Java library will do automatic unpacking when the VariableEnhanced Interface is used. For details see EnhancedScaleMissing).
-
-  Each variable with packed data has two attributes called scale_factor and add_offset, so that the packed data may be read and unpacked using the formula:
-  unpacked_data_value = packed_data_value * scale_factor + add_offset
-
-  The type of the stored variable is the packed data type, typically byte, short or int.
-  The type of the scale_factor and add_offset attributes should be the type that you want the unpacked data to be, typically float or double.
-  To avoid introducing a bias into the unpacked values due to truncation when packing, the data provider should round to the nearest integer rather than just truncating towards zero before writing the data:
-  packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
-
-  Depending on whether the packed data values are intended to be interpreted by the reader as signed or unsigned integers, there are alternative ways for the data provider to compute the scale_factor and add_offset attributes. In either case, the formulas above apply for unpacking and packing the data.
-
-  A conventional way to indicate whether a byte, short, or int variable is meant to be interpreted as unsigned, even for the netCDF-3 classic model that has no external unsigned integer type, is by providing the special variable attribute _Unsigned with value "true". However, most existing data for which packed values are intended to be interpreted as unsigned are stored without this attribute, so readers must be aware of packing assumptions in this case. In the enhanced netCDF-4 data model, packed integers may be declared to be of the appropriate unsigned type.
-
-  Let n be the number of bits in the packed type, and assume dataMin and dataMax are the minimum and maximum values that will be used for a variable to be packed.
-
-  If the packed values are intended to be interpreted as signed integers (the default assumption for classic model data), you may use:
-
-    scale_factor =(dataMax - dataMin) / (2^n - 1)
-    add_offset = dataMin + 2n - 1 * scale_factor
-
-  If the packed values are intended to be interpreted as unsigned (for example, when read in the C interface using the nc_get_var_uchar() function), use:
-
-    scale_factor =(dataMax - dataMin) / (2^n - 1)
-    add_offset = dataMin
-
-  In either the signed or unsigned case, an alternate formula may be used for the add_offset and scale_factor packing parameters that reserves a packed value for a special value, such as an indicator of missing data. For example, to reserve the minimum packed value (-2n - 1) for use as a special value in the case of signed packed values:
-
-    scale_factor =(dataMax - dataMin) / (2^n - 2)
-    add_offset = (dataMax + dataMin) / 2
-
-  If the packed values are unsigned, then the analogous formula that reserves 0 as the packed form of a special value would be:
-
-    scale_factor =(dataMax - dataMin) / (2^n - 2)
-    add_offset = dataMin - scale_factor
-
-  Example, packing 32-bit floats into 16-bit shorts:
-      variables:
-        short data( z, y, x);
-  	    data:scale_offset = 34.02f;
-  	    data:add_offset = 1.54f;
-  The units attribute applies to unpacked values.
+   * http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
+   * Packed Data Values
+   * 
+   * Packed data is stored in a netCDF file by limiting precision and using a smaller data type than the original data,
+   * for example, packing double-precision (64-bit) values into short (16-bit) integers. The C-based netCDF libraries do
+   * not do the packing and unpacking. (The netCDF Java library will do automatic unpacking when the VariableEnhanced
+   * Interface is used. For details see EnhancedScaleMissing).
+   * 
+   * Each variable with packed data has two attributes called scale_factor and add_offset, so that the packed data may
+   * be read and unpacked using the formula:
+   * unpacked_data_value = packed_data_value * scale_factor + add_offset
+   * 
+   * The type of the stored variable is the packed data type, typically byte, short or int.
+   * The type of the scale_factor and add_offset attributes should be the type that you want the unpacked data to be,
+   * typically float or double.
+   * To avoid introducing a bias into the unpacked values due to truncation when packing, the data provider should round
+   * to the nearest integer rather than just truncating towards zero before writing the data:
+   * packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
+   * 
+   * Depending on whether the packed data values are intended to be interpreted by the reader as signed or unsigned
+   * integers, there are alternative ways for the data provider to compute the scale_factor and add_offset attributes.
+   * In either case, the formulas above apply for unpacking and packing the data.
+   * 
+   * A conventional way to indicate whether a byte, short, or int variable is meant to be interpreted as unsigned, even
+   * for the netCDF-3 classic model that has no external unsigned integer type, is by providing the special variable
+   * attribute _Unsigned with value "true". However, most existing data for which packed values are intended to be
+   * interpreted as unsigned are stored without this attribute, so readers must be aware of packing assumptions in this
+   * case. In the enhanced netCDF-4 data model, packed integers may be declared to be of the appropriate unsigned type.
+   * 
+   * Let n be the number of bits in the packed type, and assume dataMin and dataMax are the minimum and maximum values
+   * that will be used for a variable to be packed.
+   * 
+   * If the packed values are intended to be interpreted as signed integers (the default assumption for classic model
+   * data), you may use:
+   * 
+   * scale_factor =(dataMax - dataMin) / (2^n - 1)
+   * add_offset = dataMin + 2n - 1 * scale_factor
+   * 
+   * If the packed values are intended to be interpreted as unsigned (for example, when read in the C interface using
+   * the nc_get_var_uchar() function), use:
+   * 
+   * scale_factor =(dataMax - dataMin) / (2^n - 1)
+   * add_offset = dataMin
+   * 
+   * In either the signed or unsigned case, an alternate formula may be used for the add_offset and scale_factor packing
+   * parameters that reserves a packed value for a special value, such as an indicator of missing data. For example, to
+   * reserve the minimum packed value (-2n - 1) for use as a special value in the case of signed packed values:
+   * 
+   * scale_factor =(dataMax - dataMin) / (2^n - 2)
+   * add_offset = (dataMax + dataMin) / 2
+   * 
+   * If the packed values are unsigned, then the analogous formula that reserves 0 as the packed form of a special value
+   * would be:
+   * 
+   * scale_factor =(dataMax - dataMin) / (2^n - 2)
+   * add_offset = dataMin - scale_factor
+   * 
+   * Example, packing 32-bit floats into 16-bit shorts:
+   * variables:
+   * short data( z, y, x);
+   * data:scale_offset = 34.02f;
+   * data:add_offset = 1.54f;
+   * The units attribute applies to unpacked values.
    */
 
-  private void doCopyCompress(Formatter f, ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, OutputStream out, Counters counters) throws IOException {
+  private void doCopyCompress(Formatter f, ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, OutputStream out,
+      Counters counters) throws IOException {
     float[] data = gr.readData(raf);
 
     Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
@@ -242,9 +262,9 @@ public class Grib2ReportPanel extends ReportPanel {
     int nbits = info.numberOfBits;
     counters.count("Nbits", nbits);
 
-    int width = (2 << (nbits-1)) - 1;
-    //f.format(" nbits = %d%n", nbits);
-    //f.format(" width = %d (0x%s) %n", width2, Long.toHexString(width2));
+    int width = (2 << (nbits - 1)) - 1;
+    // f.format(" nbits = %d%n", nbits);
+    // f.format(" width = %d (0x%s) %n", width2, Long.toHexString(width2));
 
     float dataMin = Float.MAX_VALUE;
     float dataMax = -Float.MAX_VALUE;
@@ -252,29 +272,31 @@ public class Grib2ReportPanel extends ReportPanel {
       dataMin = Math.min(dataMin, fd);
       dataMax = Math.max(dataMax, fd);
     }
-    //f.format(" dataMin = %f%n", dataMin);
-    //f.format(" dataMax = %f%n", dataMax);
+    // f.format(" dataMin = %f%n", dataMin);
+    // f.format(" dataMax = %f%n", dataMax);
     // f.format(" range = %f%n", (dataMax - dataMin));
 
     // scale_factor =(dataMax - dataMin) / (2^n - 1)
     // add_offset = dataMin + 2^(n-1) * scale_factor
 
-    //float scale_factor = (dataMax - dataMin) / width2;
-    //float add_offset = dataMin + width2 * scale_factor / 2;
+    // float scale_factor = (dataMax - dataMin) / width2;
+    // float add_offset = dataMin + width2 * scale_factor / 2;
 
-    float scale_factor =(dataMax - dataMin) / (width - 2);
+    float scale_factor = (dataMax - dataMin) / (width - 2);
     float add_offset = dataMin - scale_factor;
 
-    //f.format(" scale_factor = %f%n", scale_factor);
-    //f.format(" add_offset = %f%n", add_offset);
+    // f.format(" scale_factor = %f%n", scale_factor);
+    // f.format(" add_offset = %f%n", add_offset);
 
     // unpacked_data_value = packed_data_value * scale_factor + add_offset
     // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
 
-      /* compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());  */
+    /*
+     * compressedSize = out.size();
+     * f.format(" compressedSize = %d%n", compressedSize);
+     * f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+     * f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+     */
   }
 
 
@@ -310,23 +332,23 @@ public class Grib2ReportPanel extends ReportPanel {
           int category = (Integer) att.getValue(1);
           int number = (Integer) att.getValue(2);
           if ((category > 191) || (number > 191)) {
-            fm.format("  local parameter (%d %d %d) = %s units=%s %n", discipline, category, number,
-                currName, dt.getUnitsString());
+            fm.format("  local parameter (%d %d %d) = %s units=%s %n", discipline, category, number, currName,
+                dt.getUnitsString());
             local++;
             continue;
           }
 
           GribTables.Parameter entry = WmoParamTable.getParameter(discipline, category, number);
           if (entry == null) {
-            fm.format("  missing from WMO table (%d %d %d) = %s units=%s %n", discipline, category,
-                number, currName, dt.getUnitsString());
+            fm.format("  missing from WMO table (%d %d %d) = %s units=%s %n", discipline, category, number, currName,
+                dt.getUnitsString());
             miss++;
             continue;
           }
 
           if (!entry.getOperationalStatus().equalsIgnoreCase("Operational")) {
-            fm.format("  %s parameter = %s (%d %d %d) %n", entry.getOperationalStatus(), currName,
-                discipline, category, number);
+            fm.format("  %s parameter = %s (%d %d %d) %n", entry.getOperationalStatus(), currName, discipline, category,
+                number);
             nonop++;
           }
         }
@@ -355,7 +377,8 @@ public class Grib2ReportPanel extends ReportPanel {
     f.format("File = %s%n", mf);
 
     Grib2Index index = createIndex(mf, f);
-    if (index == null) return;
+    if (index == null)
+      return;
 
     for (Grib2Record gr : index.getRecords()) {
       Grib2SectionLocalUse lus = gr.getLocalUseSection();
@@ -372,7 +395,8 @@ public class Grib2ReportPanel extends ReportPanel {
     if (!index.readIndex(path, mf.getLastModified())) {
       // make sure its a grib2 file
       try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
-        if (!Grib2RecordScanner.isValidFile(raf)) return null;
+        if (!Grib2RecordScanner.isValidFile(raf))
+          return null;
         index.makeIndex(path, raf);
       }
     }
@@ -424,7 +448,7 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   private void doUniqueTemplates(MFile mf, Map<Integer, FileList> gdsSet, Map<Integer, FileList> pdsSet,
-                                 Map<Integer, FileList> drsSet, Formatter f) {
+      Map<Integer, FileList> drsSet, Formatter f) {
     String path = mf.getPath();
     Grib2Index g1idx = new Grib2Index();
     boolean ok = g1idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
@@ -443,7 +467,7 @@ public class Grib2ReportPanel extends ReportPanel {
       pdsSet.get(pdsTemplate).findAndAdd(mf);
 
       int drsTemplate = gr.getDataRepresentationSection().getDataTemplate();
-      drsSet.computeIfAbsent(drsTemplate, k -> new FileList(k, "DRS"+k));
+      drsSet.computeIfAbsent(drsTemplate, k -> new FileList(k, "DRS" + k));
       drsSet.get(drsTemplate).findAndAdd(mf);
 
     }
@@ -533,25 +557,27 @@ public class Grib2ReportPanel extends ReportPanel {
   int prob = 0;
 
   private void doPdsProblems(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-      f.format("Check Grib-2 PDS probability and statistical variables%n");
-      total = 0;
-      prob = 0;
-      for (MFile mfile : dcm.getFilesSorted()) {
-        f.format("%n %s%n", mfile.getPath());
-        doPdsProblems(f, mfile);
-      }
-      f.format("problems = %d/%d%n", prob, total);
+    f.format("Check Grib-2 PDS probability and statistical variables%n");
+    total = 0;
+    prob = 0;
+    for (MFile mfile : dcm.getFilesSorted()) {
+      f.format("%n %s%n", mfile.getPath());
+      doPdsProblems(f, mfile);
+    }
+    f.format("problems = %d/%d%n", prob, total);
   }
 
   private void doPdsProblems(Formatter fm, MFile ff) throws IOException {
     String path = ff.getPath();
 
     Grib2Index index = createIndex(ff, fm);
-    if (index == null) return;
+    if (index == null)
+      return;
 
     Formatter errlog = new Formatter();
     // make sure ncx gets created for each file.
-    try (GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, ff, CollectionUpdateType.nocheck, new FeatureCollectionConfig(), errlog, logger)) {
+    try (GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, ff,
+        CollectionUpdateType.nocheck, new FeatureCollectionConfig(), errlog, logger)) {
       // ??
     }
 
@@ -629,7 +655,8 @@ public class Grib2ReportPanel extends ReportPanel {
     boolean shutup = false;
 
     Grib2Index index = createIndex(mf, f);
-    if (index == null) return;
+    if (index == null)
+      return;
 
     Grib2Tables cust = null;
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
@@ -644,7 +671,7 @@ public class Grib2ReportPanel extends ReportPanel {
       if (pds.isTimeInterval()) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
         if (intv != null)
-          counters.count("timeIntervalSize", intv[1]-intv[0]);
+          counters.count("timeIntervalSize", intv[1] - intv[0]);
       }
 
       counters.count("levelType", pds.getLevelType1());
@@ -662,16 +689,19 @@ public class Grib2ReportPanel extends ReportPanel {
 
       int ptype = pds.getGenProcessType();
       counters.count("genProcessType", ptype);
-      /* if (firstPtype < 0) firstPtype = ptype;
-      else if (firstPtype != ptype && !shutup) {
-        f.format(" getGenProcessType differs in %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), ptype);
-        shutup = true;
-      } */
+      /*
+       * if (firstPtype < 0) firstPtype = ptype;
+       * else if (firstPtype != ptype && !shutup) {
+       * f.format(" getGenProcessType differs in %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), ptype);
+       * shutup = true;
+       * }
+       */
       counters.count("genProcessId", pds.getGenProcessId());
 
       if (pds.getLevelScale1() > 127) {
         if (cust.isLevelUsed(pds.getLevelType1())) {
-          f.format(" LevelScale > 127: %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale1());
+          f.format(" LevelScale > 127: %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(),
+              pds.getLevelScale1());
           counters.count("levelScale", pds.getLevelScale1());
         }
       }
@@ -697,13 +727,14 @@ public class Grib2ReportPanel extends ReportPanel {
       f.format(" %s%n", mfile.getPath());
       doIdProblems(f, mfile, useIndex, countersAll);
     }
-    
+
     countersAll.show(f);
   }
 
   private void doIdProblems(Formatter f, MFile mf, boolean showProblems, Counters countersAll) throws IOException {
     Grib2Index index = createIndex(mf, f);
-    if (index == null) return;
+    if (index == null)
+      return;
 
     // these should be the same for the entire file
     int center = -1;
@@ -724,7 +755,8 @@ public class Grib2ReportPanel extends ReportPanel {
       countersAll.count("backProcess", gr.getPDS().getBackProcessId());
       countersAll.count("significanceOfReference", gr.getId().getSignificanceOfRT());
 
-      if (!showProblems) continue;
+      if (!showProblems)
+        continue;
 
       if (gr.getDiscipline() == 255) {
         f.format("  bad discipline= ");
@@ -733,7 +765,8 @@ public class Grib2ReportPanel extends ReportPanel {
       }
 
       int val = gr.getId().getCenter_id();
-      if (center < 0) center = val;
+      if (center < 0)
+        center = val;
       else if (center != val) {
         f.format("  center %d != %d ", center, val);
         gr.show(f);
@@ -741,7 +774,8 @@ public class Grib2ReportPanel extends ReportPanel {
       }
 
       val = gr.getId().getSubcenter_id();
-      if (subcenter < 0) subcenter = val;
+      if (subcenter < 0)
+        subcenter = val;
       else if (subcenter != val) {
         f.format("  subcenter %d != %d ", subcenter, val);
         gr.show(f);
@@ -749,7 +783,8 @@ public class Grib2ReportPanel extends ReportPanel {
       }
 
       val = gr.getId().getMaster_table_version();
-      if (master < 0) master = val;
+      if (master < 0)
+        master = val;
       else if (master != val) {
         f.format("  master %d != %d ", master, val);
         gr.show(f);
@@ -757,7 +792,8 @@ public class Grib2ReportPanel extends ReportPanel {
       }
 
       val = gr.getId().getLocal_table_version();
-      if (local < 0) local = val;
+      if (local < 0)
+        local = val;
       else if (local != val) {
         f.format("  local %d != %d ", local, val);
         gr.show(f);
@@ -765,7 +801,8 @@ public class Grib2ReportPanel extends ReportPanel {
       }
 
       val = gr.getPDS().getGenProcessId();
-      if (genProcess < 0) genProcess = val;
+      if (genProcess < 0)
+        genProcess = val;
       else if (genProcess != val) {
         f.format("  genProcess %d != %d ", genProcess, val);
         gr.show(f);
@@ -773,7 +810,8 @@ public class Grib2ReportPanel extends ReportPanel {
       }
 
       val = gr.getPDS().getBackProcessId();
-      if (backProcess < 0) backProcess = val;
+      if (backProcess < 0)
+        backProcess = val;
       else if (backProcess != val) {
         f.format("  backProcess %d != %d ", backProcess, val);
         gr.show(f);
@@ -781,7 +819,8 @@ public class Grib2ReportPanel extends ReportPanel {
       }
 
       val = gr.getId().getSignificanceOfRT();
-      if (sigRef < 0) sigRef = val;
+      if (sigRef < 0)
+        sigRef = val;
       else if (sigRef != val) {
         f.format("  sigRef %d != %d ", sigRef, val);
         gr.show(f);
@@ -793,7 +832,8 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doDrsSummary(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+  private void doDrsSummary(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra)
+      throws IOException {
     f.format("Show Unique DRS Templates%n");
     Counters countersAll = new Counters();
     countersAll.add("DRS_template");
@@ -822,7 +862,8 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private void doDrsSummaryIndex(Formatter f, MFile mf, boolean extra, Counters counters) throws IOException {
     Grib2Index index = createIndex(mf, f);
-    if (index == null) return;
+    if (index == null)
+      return;
     long messageSum = 0;
     int nrecords = 0;
 
@@ -836,10 +877,10 @@ public class Grib2ReportPanel extends ReportPanel {
         messageSum += gr.getIs().getMessageLength();
         nrecords++;
 
-        //Grib2SectionBitMap bms = gr.getBitmapSection();
+        // Grib2SectionBitMap bms = gr.getBitmapSection();
         counters.count("BMS indicator", gr.repeat);
 
-        if (extra && template == 40) {  // expensive
+        if (extra && template == 40) { // expensive
           Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
           if (drs40 != null) {
             if (drs40.hasSignedProblem())
@@ -851,7 +892,8 @@ public class Grib2ReportPanel extends ReportPanel {
       }
 
       float percent = ((float) messageSum) / raf.length();
-      f.format("raf length = %d, messageSum = %d, percent = %f nrecords = %d%n", raf.length(), messageSum, percent, nrecords);
+      f.format("raf length = %d, messageSum = %d, percent = %f nrecords = %d%n", raf.length(), messageSum, percent,
+          nrecords);
     }
   }
 
@@ -865,18 +907,19 @@ public class Grib2ReportPanel extends ReportPanel {
     raf.close();
   }
 
-  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, Counters counters) throws IOException {
+  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, Counters counters)
+      throws IOException {
     Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
     int template = drss.getDataTemplate();
     counters.count("DRS_template", template);
 
-    //Grib2SectionBitMap bms = gr.getBitmapSection();
+    // Grib2SectionBitMap bms = gr.getBitmapSection();
     counters.count("BMS indicator", gr.repeat);
 
     GribData.Info info = gr.getBinaryDataInfo(raf);
     counters.count("Number_of_Bits", info.numberOfBits);
 
-    if (extra && template == 40) {  // expensive
+    if (extra && template == 40) { // expensive
       Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
       if (drs40 != null) {
         if (drs40.hasSignedProblem())
@@ -906,7 +949,8 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private void doGdsSummary(Formatter f, MFile mf, Counters counters, boolean extra) throws IOException {
     Grib2Index index = createIndex(mf, f);
-    if (index == null) return;
+    if (index == null)
+      return;
 
     Map<Integer, Grib2SectionGridDefinition> gdssMap = new HashMap<>();
     for (Grib2SectionGridDefinition gdss : index.getGds()) {
@@ -964,7 +1008,8 @@ public class Grib2ReportPanel extends ReportPanel {
     boolean shutup = false;
 
     Grib2Index index = createIndex(mf, f);
-    if (index == null) return 0;
+    if (index == null)
+      return 0;
     Grib2Tables cust = null;
 
     int count = 0;
@@ -979,7 +1024,8 @@ public class Grib2ReportPanel extends ReportPanel {
         for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals()) {
           counters.count("statType", ti.statProcessType);
 
-          if ((ti.timeRangeUnit != timeUnit) || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
+          if ((ti.timeRangeUnit != timeUnit)
+              || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
             counters.count("TimeIntervalsDiffer", ti.timeRangeUnit);
             if (showTinvDiffers) {
               f.format("  TimeInterval has different units timeUnit= %s file=%s%n  ", timeUnit, mf.getName());
@@ -995,7 +1041,8 @@ public class Grib2ReportPanel extends ReportPanel {
           shutup = true;
         }
 
-        if (cust == null) cust = Grib2Tables.factory(gr);
+        if (cust == null)
+          cust = Grib2Tables.factory(gr);
         double len = cust.getForecastTimeIntervalSizeInHours(pds);
         counters.count("TimeIntervalsLength", (int) len);
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
@@ -1037,7 +1084,8 @@ public class Grib2ReportPanel extends ReportPanel {
       for (GridMatch gm : gridsNew.values())
         namesNew.add(gm.grid.getFullName());
       for (GridMatch gm : gridsOld.values()) {
-        if (namesNew.contains(gm.grid.getFullName())) countExactMatch++;
+        if (namesNew.contains(gm.grid.getFullName()))
+          countExactMatch++;
         countOldVars++;
       }
 
@@ -1071,7 +1119,8 @@ public class Grib2ReportPanel extends ReportPanel {
         if (gm.match != null) {
           boolean exact = gm.match.grid.getFullName().equals(gm.grid.getFullName());
           boolean exactIg = !exact && gm.match.grid.getFullName().equalsIgnoreCase(gm.grid.getFullName());
-          if (exactIg) countExactMatchIg++;
+          if (exactIg)
+            countExactMatchIg++;
           String status = exact ? " " : exactIg ? "**" : " *";
           f.format("%s%s (%d)%n", status, gm.match.grid.getFullName(), gm.match.hashCode());
         }
@@ -1100,7 +1149,8 @@ public class Grib2ReportPanel extends ReportPanel {
         List<String> newGrids = gridsAll.computeIfAbsent(key, k -> new ArrayList<>());
         if (gmOld.match != null) {
           String keyNew = gmOld.match.grid.getShortName();
-          if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
+          if (!newGrids.contains(keyNew))
+            newGrids.add(keyNew);
         }
       }
 
@@ -1127,13 +1177,15 @@ public class Grib2ReportPanel extends ReportPanel {
       f.format(" OLD %s%n", key);
       List<String> newGrids = gridsAll.get(key);
       Collections.sort(newGrids);
-      if (newGrids.size() > 1) dups++;
+      if (newGrids.size() > 1)
+        dups++;
       for (String newKey : newGrids)
         f.format(" NEW %s%n", newKey);
       f.format("%n");
     }
 
-    f.format("Exact matches=%d  Exact ignore case=%d  totalOldVars=%d%n", countExactMatch, countExactMatchIg, countOldVars);
+    f.format("Exact matches=%d  Exact ignore case=%d  totalOldVars=%d%n", countExactMatch, countExactMatchIg,
+        countOldVars);
     f.format("Number with more than one map=%d total=%d%n", dups, total);
 
     // old -> new mapping xml table
@@ -1164,44 +1216,48 @@ public class Grib2ReportPanel extends ReportPanel {
       fout.close();
     }
 
-    /*  old -> new mapping xml table
-   if (!useIndex) {
-     Element rootElem = new Element("gribVarMap");
-     Document doc = new Document(rootElem);
-     rootElem.setAttribute("collection", dcm.getCollectionName());
-
-     for (String key : keys) {
-       Element param = new Element("param");
-       rootElem.addContent(param);
-       param.setAttribute("oldName", key);
-       List<String> newGrids = gridsAll.get(key);
-       Collections.sort(newGrids);
-       for (String newKey : newGrids)
-         param.addContent(new Element("newName").addContent(newKey));
-     }
-
-     FileOutputStream fout = new FileOutputStream("C:/tmp/gribVarMap.xml");
-     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-     fmt.output(doc, fout);
-     fout.close();
-   } */
+    /*
+     * old -> new mapping xml table
+     * if (!useIndex) {
+     * Element rootElem = new Element("gribVarMap");
+     * Document doc = new Document(rootElem);
+     * rootElem.setAttribute("collection", dcm.getCollectionName());
+     * 
+     * for (String key : keys) {
+     * Element param = new Element("param");
+     * rootElem.addContent(param);
+     * param.setAttribute("oldName", key);
+     * List<String> newGrids = gridsAll.get(key);
+     * Collections.sort(newGrids);
+     * for (String newKey : newGrids)
+     * param.addContent(new Element("newName").addContent(newKey));
+     * }
+     * 
+     * FileOutputStream fout = new FileOutputStream("C:/tmp/gribVarMap.xml");
+     * XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+     * fmt.output(doc, fout);
+     * fout.close();
+     * }
+     */
   }
 
   private GridMatch altMatch(GridMatch want, Collection<GridMatch> test) {
     // look for scale factor errors in prob
     for (GridMatch gm : test) {
-      if (gm.match != null) continue; // already matched
+      if (gm.match != null)
+        continue; // already matched
       if (gm.altMatch(want)) {
-        //gm.altMatch(want); //debug
+        // gm.altMatch(want); //debug
         return gm;
       }
     }
 
     // give up matching the prob
     for (GridMatch gm : test) {
-      if (gm.match != null) continue; // already matched
+      if (gm.match != null)
+        continue; // already matched
       if (gm.altMatchNoProb(want)) {
-        //gm.altMatchNoProb(want); // debug
+        // gm.altMatchNoProb(want); // debug
         return gm;
       }
     }
@@ -1241,7 +1297,8 @@ public class Grib2ReportPanel extends ReportPanel {
 
       GridCoordSystem gcs = grid.getCoordinateSystem();
       CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-      if (zaxis != null) isLayer = zaxis.isInterval();
+      if (zaxis != null)
+        isLayer = zaxis.isInterval();
 
       if (isNew) {
         Attribute att = grid.findAttributeIgnoreCase("Grib2_Parameter");
@@ -1255,11 +1312,13 @@ public class Grib2ReportPanel extends ReportPanel {
         att = grid.findAttributeIgnoreCase("Grib2_Statistical_Interval_Type");
         if (att != null) {
           int intv = att.getNumericValue().intValue();
-          if (intv != 255) interval = intv;
+          if (intv != 255)
+            interval = intv;
         }
 
         att = grid.findAttributeIgnoreCase("Grib2_Probability_Type");
-        if (att != null) prob = att.getNumericValue().intValue();
+        if (att != null)
+          prob = att.getNumericValue().intValue();
 
         att = grid.findAttributeIgnoreCase("Grib2_Probability_Name"); // :Grib2_Probability_Name = "above_17.5";
         if (att != null) {
@@ -1270,7 +1329,8 @@ public class Grib2ReportPanel extends ReportPanel {
         }
 
         att = grid.findAttributeIgnoreCase("Grib2_Ensemble_Derived_Type");
-        if (att != null) ens = att.getNumericValue().intValue();
+        if (att != null)
+          ens = att.getNumericValue().intValue();
 
       } else {
         Attribute att = grid.findAttributeIgnoreCase("GRIB_param_id");
@@ -1288,91 +1348,117 @@ public class Grib2ReportPanel extends ReportPanel {
         }
 
         att = grid.findAttributeIgnoreCase("GRIB_probability_type");
-        if (att != null) prob = att.getNumericValue().intValue();
+        if (att != null)
+          prob = att.getNumericValue().intValue();
         if (prob == 0) {
           att = grid.findAttributeIgnoreCase("GRIB_probability_lower_limit");
-          if (att != null) probLimit = (int) (1000 * att.getNumericValue().doubleValue());
-          //if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
+          if (att != null)
+            probLimit = (int) (1000 * att.getNumericValue().doubleValue());
+          // if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
         } else if (prob == 1) {
-          att = grid.findAttributeIgnoreCase("GRIB_probability_upper_limit"); // GRIB_probability_upper_limit = 12.89; // double
-          if (att != null) probLimit = (int) (1000 * att.getNumericValue().doubleValue());
-          //if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
+          att = grid.findAttributeIgnoreCase("GRIB_probability_upper_limit"); // GRIB_probability_upper_limit = 12.89;
+                                                                              // // double
+          if (att != null)
+            probLimit = (int) (1000 * att.getNumericValue().doubleValue());
+          // if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
         }
 
         att = grid.findAttributeIgnoreCase("GRIB_ensemble_derived_type");
-        if (att != null) ens = att.getNumericValue().intValue();
+        if (att != null)
+          ens = att.getNumericValue().intValue();
       }
     }
 
-    /* @Override
+    /*
+     * @Override
+     * public boolean equals(Object o) {
+     * if (this == o) return true;
+     * if (o == null || getClass() != o.getClass()) return false;
+     * 
+     * GridMatch gridMatch = (GridMatch) o;
+     * 
+     * if (ens != gridMatch.ens) return false;
+     * if (interval != gridMatch.interval) return false;
+     * if (isError != gridMatch.isError) return false;
+     * if (isLayer != gridMatch.isLayer) return false;
+     * if (level != gridMatch.level) return false;
+     * if (prob != gridMatch.prob) return false;
+     * if (probLimit != gridMatch.probLimit) return false;
+     * if (!Arrays.equals(param, gridMatch.param)) return false;
+     * 
+     * return true;
+     * }
+     * 
+     * @Override
+     * public int hashCode() {
+     * int result = param != null ? Arrays.hashCode(param) : 0;
+     * result = 31 * result + level;
+     * result = 31 * result + (isLayer ? 1 : 0);
+     * result = 31 * result + (isError ? 1 : 0);
+     * result = 31 * result + interval;
+     * result = 31 * result + prob;
+     * result = 31 * result + ens;
+     * result = 31 * result + probLimit;
+     * return result;
+     * }
+     */
+
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       GridMatch gridMatch = (GridMatch) o;
 
-      if (ens != gridMatch.ens) return false;
-      if (interval != gridMatch.interval) return false;
-      if (isError != gridMatch.isError) return false;
-      if (isLayer != gridMatch.isLayer) return false;
-      if (level != gridMatch.level) return false;
-      if (prob != gridMatch.prob) return false;
-      if (probLimit != gridMatch.probLimit) return false;
-      if (!Arrays.equals(param, gridMatch.param)) return false;
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = param != null ? Arrays.hashCode(param) : 0;
-      result = 31 * result + level;
-      result = 31 * result + (isLayer ? 1 : 0);
-      result = 31 * result + (isError ? 1 : 0);
-      result = 31 * result + interval;
-      result = 31 * result + prob;
-      result = 31 * result + ens;
-      result = 31 * result + probLimit;
-      return result;
-    } */
-
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-
-      GridMatch gridMatch = (GridMatch) o;
-
-      if (ens != gridMatch.ens) return false;
-      if (interval != gridMatch.interval) return false;
-      if (isError != gridMatch.isError) return false;
-      if (isLayer != gridMatch.isLayer) return false;
-      if (level != gridMatch.level) return false;
-      if (prob != gridMatch.prob) return false;
-      if (probLimit != gridMatch.probLimit) return false;
+      if (ens != gridMatch.ens)
+        return false;
+      if (interval != gridMatch.interval)
+        return false;
+      if (isError != gridMatch.isError)
+        return false;
+      if (isLayer != gridMatch.isLayer)
+        return false;
+      if (level != gridMatch.level)
+        return false;
+      if (prob != gridMatch.prob)
+        return false;
+      if (probLimit != gridMatch.probLimit)
+        return false;
       return Arrays.equals(param, gridMatch.param);
 
     }
 
     public boolean altMatch(GridMatch gridMatch) {
-      if (!altMatchNoProb(gridMatch)) return false;
+      if (!altMatchNoProb(gridMatch))
+        return false;
 
-      if (probLimit / 1000 == gridMatch.probLimit) return true;
+      if (probLimit / 1000 == gridMatch.probLimit)
+        return true;
       return probLimit == gridMatch.probLimit / 1000;
 
     }
 
     public boolean altMatchNoProb(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       GridMatch gridMatch = (GridMatch) o;
 
-      if (!Arrays.equals(param, gridMatch.param)) return false;
-      if (ens != gridMatch.ens) return false;
-      if (interval != gridMatch.interval) return false;
-      if (isError != gridMatch.isError) return false;
-      if (isLayer != gridMatch.isLayer) return false;
-      if (level != gridMatch.level) return false;
+      if (!Arrays.equals(param, gridMatch.param))
+        return false;
+      if (ens != gridMatch.ens)
+        return false;
+      if (interval != gridMatch.interval)
+        return false;
+      if (isError != gridMatch.isError)
+        return false;
+      if (isLayer != gridMatch.isLayer)
+        return false;
+      if (level != gridMatch.level)
+        return false;
       return prob == gridMatch.prob;
 
     }
@@ -1385,11 +1471,15 @@ public class Grib2ReportPanel extends ReportPanel {
       result = 31 * result + (isLayer ? 1 : 0);
       result = 31 * result + param[1];
       result = 31 * result + (isError ? 1 : 0);
-      if (interval >= 0) result = 31 * result + interval;
-      if (prob >= 0) result = 31 * result + prob;
+      if (interval >= 0)
+        result = 31 * result + interval;
+      if (prob >= 0)
+        result = 31 * result + prob;
       result = 31 * result + param[2];
-      if (ens >= 0) result = 31 * result + ens;
-      if (probLimit != Integer.MAX_VALUE) result = 31 * result + probLimit;
+      if (ens >= 0)
+        result = 31 * result + ens;
+      if (probLimit != Integer.MAX_VALUE)
+        result = 31 * result + probLimit;
       return result;
     }
 
@@ -1403,11 +1493,16 @@ public class Grib2ReportPanel extends ReportPanel {
       for (int i = 0; i < 3; i++)
         f.format("%d-", param[i]);
       f.format("%d", level);
-      if (isLayer) f.format("_layer");
-      if (interval >= 0) f.format("_intv%d", interval);
-      if (prob >= 0) f.format("_prob%d_%d", prob, probLimit);
-      if (ens >= 0) f.format("_ens%d", ens);
-      if (isError) f.format("_error");
+      if (isLayer)
+        f.format("_layer");
+      if (interval >= 0)
+        f.format("_intv%d", interval);
+      if (prob >= 0)
+        f.format("_prob%d_%d", prob, probLimit);
+      if (ens >= 0)
+        f.format("_ens%d", ens);
+      if (isError)
+        f.format("_error");
       return f.toString();
     }
   }

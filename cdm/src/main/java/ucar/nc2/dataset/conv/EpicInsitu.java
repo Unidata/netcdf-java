@@ -9,13 +9,13 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
-
 import java.util.List;
 
 /**
  * "Epic In Situ", dapper conventions.
  *
- * @see <a href="http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html">http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html</a>
+ * @see <a href=
+ *      "http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html">http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html</a>
  *
  * @author caron
  */
@@ -26,7 +26,7 @@ public class EpicInsitu extends ucar.nc2.dataset.CoordSysBuilder {
     this.conventionName = "EpicInsitu";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
     List<Variable> vars = ds.getVariables();
     findAxes(vars);
     ds.finish();
@@ -45,16 +45,17 @@ public class EpicInsitu extends ucar.nc2.dataset.CoordSysBuilder {
 
   private void checkIfAxis(Variable v) {
     Attribute att = v.findAttributeIgnoreCase("axis");
-    if (att == null) return;
+    if (att == null)
+      return;
     String axisType = att.getStringValue();
     if (axisType.equalsIgnoreCase("X"))
-      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon .toString()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     else if (axisType.equalsIgnoreCase("Y"))
-      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     else if (axisType.equalsIgnoreCase("Z"))
-      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     else if (axisType.equalsIgnoreCase("T"))
-      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
   }
 
 }

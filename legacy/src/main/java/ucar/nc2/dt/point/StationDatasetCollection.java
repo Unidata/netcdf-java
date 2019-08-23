@@ -8,7 +8,6 @@ import ucar.nc2.dt.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.StructureData;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
@@ -18,6 +17,7 @@ import java.text.ParseException;
 
 /**
  * A Collection of StationDatasets
+ * 
  * @deprecated use ucar.nc2.ft.point
  */
 public class StationDatasetCollection {
@@ -80,9 +80,9 @@ public class StationDatasetCollection {
   /**
    * Get data for this Station within the specified date range.
    *
-   * @param s     Station
+   * @param s Station
    * @param start starting Date
-   * @param end   ending Date
+   * @param end ending Date
    * @return Iterator over type getDataClass()
    * @throws java.io.IOException I/O error
    */
@@ -137,13 +137,15 @@ public class StationDatasetCollection {
         return null;
       StationObsDataset sobs = (StationObsDataset) iterSobs.next();
       DataIterator dataIter = makeDataIterator(sobs);
-      if (debug && dataIter != null) System.out.println("next sobs =" + sobs.getLocationURI());
+      if (debug && dataIter != null)
+        System.out.println("next sobs =" + sobs.getLocationURI());
       return dataIter == null ? getNextDataIterator() : dataIter;
     }
 
     protected DataIterator makeDataIterator(StationObsDataset sobs) {
       ucar.unidata.geoloc.Station s = sobs.getStation(stationName);
-      if (s == null) return null;
+      if (s == null)
+        return null;
       return sobs.getDataIterator(s);
     }
   }
@@ -165,7 +167,8 @@ public class StationDatasetCollection {
       if (end.before(want_start))
         return null;
       ucar.unidata.geoloc.Station s = sobs.getStation(stationName);
-      if (s == null) return null;
+      if (s == null)
+        return null;
       return sobs.getDataIterator(s, start, end);
     }
   }
@@ -188,7 +191,7 @@ public class StationDatasetCollection {
       ucar.unidata.geoloc.Station ss = sod.getStation();
       assert (ss.getName().equals(s.getName()));
 
-      System.out.println(ss.getName() + " " + format.toDateTimeStringISO( sod.getObservationTimeAsDate()));
+      System.out.println(ss.getName() + " " + format.toDateTimeStringISO(sod.getObservationTimeAsDate()));
 
       StructureData sdata = sod.getData();
       assert sdata != null;
@@ -206,7 +209,7 @@ public class StationDatasetCollection {
       ucar.unidata.geoloc.Station ss = sod.getStation();
       assert (ss.getName().equals(s.getName()));
 
-      System.out.println(ss.getName() + " " + format.toDateTimeStringISO( sod.getObservationTimeAsDate()));
+      System.out.println(ss.getName() + " " + format.toDateTimeStringISO(sod.getObservationTimeAsDate()));
 
       StructureData sdata = sod.getData();
       assert sdata != null;

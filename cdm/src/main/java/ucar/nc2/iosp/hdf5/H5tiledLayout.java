@@ -8,7 +8,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.Section;
 import ucar.nc2.iosp.LayoutTiled;
 import ucar.nc2.iosp.Layout;
-
 import java.io.IOException;
 
 /**
@@ -32,8 +31,8 @@ class H5tiledLayout implements Layout {
    * Constructor.
    * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
    *
-   * @param vinfo       the vinfo object for this variable
-   * @param dtype       type of data. may be different from v2.
+   * @param vinfo the vinfo object for this variable
+   * @param dtype type of data. may be different from v2.
    * @param wantSection the wanted section of data, contains a List of Range objects, must be complete
    * @throws java.io.IOException on io error
    */
@@ -55,15 +54,17 @@ class H5tiledLayout implements Layout {
     System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
 
     /*
-    if(vinfo.mdt.isVlen) {
-        nChunkDims++;
-        int[] newchunks = new int[nChunkDims];
-        System.arraycopy(chunkSize,0,newchunks,0,nChunkDims-1);
-        chunkSize = newchunks;
-    } */
+     * if(vinfo.mdt.isVlen) {
+     * nChunkDims++;
+     * int[] newchunks = new int[nChunkDims];
+     * System.arraycopy(chunkSize,0,newchunks,0,nChunkDims-1);
+     * chunkSize = newchunks;
+     * }
+     */
 
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
-    if (debug) System.out.println(" H5tiledLayout: " + this);
+    if (debug)
+      System.out.println(" H5tiledLayout: " + this);
 
     // create the data chunk iterator
     LayoutTiled.DataChunkIterator iter = vinfo.btree.getDataChunkIteratorNoFilter(this.want, nChunkDims);
@@ -91,7 +92,8 @@ class H5tiledLayout implements Layout {
     sbuff.append("want=").append(want).append("; ");
     sbuff.append("chunkSize=[");
     for (int i = 0; i < chunkSize.length; i++) {
-      if (i > 0) sbuff.append(",");
+      if (i > 0)
+        sbuff.append(",");
       sbuff.append(chunkSize[i]);
     }
     sbuff.append("] totalNelems=").append(getTotalNelems());

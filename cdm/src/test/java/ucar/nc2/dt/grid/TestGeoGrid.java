@@ -15,7 +15,6 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -25,7 +24,7 @@ public class TestGeoGrid extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testSubset() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmLocalTestDataDir+"rankTest.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmLocalTestDataDir + "rankTest.nc");
 
     GeoGrid grid = dataset.findGridByName("full4");
     assert null != grid;
@@ -35,55 +34,59 @@ public class TestGeoGrid extends TestCase {
 
     doRead4(grid);
 
-    GeoGrid grid_section = grid.subset(null, new Range(0,3,2), null, null);
+    GeoGrid grid_section = grid.subset(null, new Range(0, 3, 2), null, null);
     GridCoordSystem gcs_section = grid_section.getCoordinateSystem();
     CoordinateAxis zaxis = gcs_section.getVerticalAxis();
     assert zaxis.getSize() == 2;
 
-    assert gcs_section.getXHorizAxis().equals( gcs.getXHorizAxis());
-    assert gcs_section.getYHorizAxis().equals( gcs.getYHorizAxis());
-    assert gcs_section.getTimeAxis().equals( gcs.getTimeAxis());
+    assert gcs_section.getXHorizAxis().equals(gcs.getXHorizAxis());
+    assert gcs_section.getYHorizAxis().equals(gcs.getYHorizAxis());
+    assert gcs_section.getTimeAxis().equals(gcs.getTimeAxis());
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    logger.debug(NCdumpW.toString( data, "grid_section", null));
+    logger.debug(NCdumpW.toString(data, "grid_section", null));
 
     dataset.close();
   }
 
-  private void doRead4( GeoGrid gg) throws IOException {
-    Array aa = gg.readDataSlice(-1,-1,-1,-1);
+  private void doRead4(GeoGrid gg) throws IOException {
+    Array aa = gg.readDataSlice(-1, -1, -1, -1);
     int[] shape = aa.getShape();
     Index ima = aa.getIndex();
-    int[] w = getWeights( gg);
+    int[] w = getWeights(gg);
 
-    for (int i=0; i<shape[0]; i++) {
-      for (int j=0; j<shape[1]; j++) {
-        for (int k=0; k<shape[2]; k++) {
-          for (int m=0; m<shape[3]; m++) {
-            double got = aa.getDouble( ima.set(i,j,k,m));
-            double want = ((double) (i*w[0] + j*w[1] + k*w[2] + m*w[3]));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        for (int k = 0; k < shape[2]; k++) {
+          for (int m = 0; m < shape[3]; m++) {
+            double got = aa.getDouble(ima.set(i, j, k, m));
+            double want = ((double) (i * w[0] + j * w[1] + k * w[2] + m * w[3]));
 
-            assert (got == want)  : "got "+got+ " want "+want;
+            assert (got == want) : "got " + got + " want " + want;
             // System.out.println("got "+got+ " want "+want);
           }
         }
       }
     }
 
-    System.out.println("ok reading "+gg.getFullName());
+    System.out.println("ok reading " + gg.getFullName());
   }
 
-  private int[] getWeights( GeoGrid gg) {
+  private int[] getWeights(GeoGrid gg) {
     int rank = gg.getRank();
     int[] w = new int[rank];
 
-    for (int n=0; n<rank; n++) {
+    for (int n = 0; n < rank; n++) {
       Dimension dim = gg.getDimension(n);
       String dimName = dim.getShortName();
-      if (dimName.equals("time")) w[n]  = 1000;
-      if (dimName.equals("z")) w[n]  = 100;
-      if (dimName.equals("y")) w[n]  = 10;
-      if (dimName.equals("x")) w[n]  = 1;
+      if (dimName.equals("time"))
+        w[n] = 1000;
+      if (dimName.equals("z"))
+        w[n] = 100;
+      if (dimName.equals("y"))
+        w[n] = 10;
+      if (dimName.equals("x"))
+        w[n] = 1;
     }
 
     return w;

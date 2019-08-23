@@ -1,6 +1,7 @@
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information.
-*/
+/*
+ * Copyright 2012, UCAR/Unidata.
+ * See the LICENSE file for more information.
+ */
 
 package dap4.core.dmr;
 
@@ -18,94 +19,110 @@ import dap4.core.util.Escape;
  * </Error>
  */
 
-public class ErrorResponse
-{
+public class ErrorResponse {
 
-    //////////////////////////////////////////////////
-    // Instance variables
+  //////////////////////////////////////////////////
+  // Instance variables
 
-    int code = 0;
-    String message = null;
-    String context = null;
-    String otherinfo = null;
+  int code = 0;
+  String message = null;
+  String context = null;
+  String otherinfo = null;
 
-    //////////////////////////////////////////////////
-    // Constructor(s)
+  //////////////////////////////////////////////////
+  // Constructor(s)
 
-    public ErrorResponse() {}
+  public ErrorResponse() {}
 
-    public ErrorResponse(int httpcode, String message,
-                         String context, String other)
-    {
-	setCode(code);
-	setMessage(message);
-	setContext(context);
-	setOtherInfo(other);
-    }
+  public ErrorResponse(int httpcode, String message, String context, String other) {
+    setCode(code);
+    setMessage(message);
+    setContext(context);
+    setOtherInfo(other);
+  }
 
-    //////////////////////////////////////////////////
-    // Accessors
+  //////////////////////////////////////////////////
+  // Accessors
 
-    public int getCode() {return code;}
+  public int getCode() {
+    return code;
+  }
 
-    public String getRawMessage() {return message;}
+  public String getRawMessage() {
+    return message;
+  }
 
-    public String getMessage() // Return XML escaped version
-    {
-	return (message == null ? null : Escape.entityEscape(message,null));
-    }
+  public String getMessage() // Return XML escaped version
+  {
+    return (message == null ? null : Escape.entityEscape(message, null));
+  }
 
-    public String getRawContext() {return context;}
+  public String getRawContext() {
+    return context;
+  }
 
-    public String getContext() // Return XML escaped version
-    {
-	return (context == null ? null : Escape.entityEscape(context,null));
-    }
+  public String getContext() // Return XML escaped version
+  {
+    return (context == null ? null : Escape.entityEscape(context, null));
+  }
 
-    public String getRawOtherInfo() {return otherinfo;}
+  public String getRawOtherInfo() {
+    return otherinfo;
+  }
 
-    public String getOtherInfo() // Return XML escaped version
-    {
-	return (otherinfo == null ? null : Escape.entityEscape(otherinfo,null));
-    }
+  public String getOtherInfo() // Return XML escaped version
+  {
+    return (otherinfo == null ? null : Escape.entityEscape(otherinfo, null));
+  }
 
-    public void setCode(int code) {this.code = code;}
-    public void setMessage(String message) {this.message = message;}
-    public void setContext(String context) {this.context = context;}
-    public void setOtherInfo(String other) {this.otherinfo = other;}
+  public void setCode(int code) {
+    this.code = code;
+  }
 
-    //////////////////////////////////////////////////
-    // Converters
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    /**
-     * Convert an ErrorResponse to the equivalent XML
-     * @return  XML representation of the ErrorResponse
-     */
-    public String buildXML()
-    {
-        StringBuilder response = new StringBuilder();
-        response.append("<Error");
-        if(code > 0)
-            response.append(String.format(" httpcode=\"%d\"", code));
-        response.append(">\n");
-        if(message != null)
-            response.append("<Message>" + getMessage() + "</Message>\n");
-        if(context != null)
-            response.append("<Context>" + getContext() + "</Context>\n");
-        if(otherinfo != null)
-            response.append("<OtherInformation>" + getOtherInfo() + "</OtherInformation>\n");
-        return response.toString();
-    }
+  public void setContext(String context) {
+    this.context = context;
+  }
 
-    /**
-     * Convert an ErrorResponse to the equivalent DapException.
-     * @return  DapException representation of the ErrorResponse
-     */
-    public DapException buildException()
-    {
-        String XML = buildXML();
-        DapException dapex = new DapException(XML).setCode(code);
-        return dapex;
-    }
+  public void setOtherInfo(String other) {
+    this.otherinfo = other;
+  }
+
+  //////////////////////////////////////////////////
+  // Converters
+
+  /**
+   * Convert an ErrorResponse to the equivalent XML
+   * 
+   * @return XML representation of the ErrorResponse
+   */
+  public String buildXML() {
+    StringBuilder response = new StringBuilder();
+    response.append("<Error");
+    if (code > 0)
+      response.append(String.format(" httpcode=\"%d\"", code));
+    response.append(">\n");
+    if (message != null)
+      response.append("<Message>" + getMessage() + "</Message>\n");
+    if (context != null)
+      response.append("<Context>" + getContext() + "</Context>\n");
+    if (otherinfo != null)
+      response.append("<OtherInformation>" + getOtherInfo() + "</OtherInformation>\n");
+    return response.toString();
+  }
+
+  /**
+   * Convert an ErrorResponse to the equivalent DapException.
+   * 
+   * @return DapException representation of the ErrorResponse
+   */
+  public DapException buildException() {
+    String XML = buildXML();
+    DapException dapex = new DapException(XML).setCode(code);
+    return dapex;
+  }
 
 }

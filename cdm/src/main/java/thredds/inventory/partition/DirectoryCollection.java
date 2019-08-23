@@ -9,7 +9,6 @@ import thredds.filesystem.MFileOS7;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MFile;
 import ucar.nc2.util.CloseableIterator;
-
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -31,22 +30,24 @@ public class DirectoryCollection extends CollectionAbstract {
 
   /**
    * Create standard name = topCollectionName + last directory
+   * 
    * @param topCollectionName from config, name of the collection
    * @param dir directory for this
-   * @return  standard collection name, to name the index file
+   * @return standard collection name, to name the index file
    */
   public static String makeCollectionName(String topCollectionName, Path dir) {
-    int last = dir.getNameCount()-1;
+    int last = dir.getNameCount() - 1;
     Path lastDir = dir.getName(last);
     String lastDirName = lastDir.toString();
-    return topCollectionName +"-" + lastDirName;
+    return topCollectionName + "-" + lastDirName;
   }
 
   /**
    * Create standard name = topCollectionName + last directory
+   * 
    * @param topCollectionName from config, name of the collection
    * @param dir directory for this
-   * @return  standard collection name, to name the index file
+   * @return standard collection name, to name the index file
    */
   public static Path makeCollectionIndexPath(String topCollectionName, Path dir, String suffix) {
     String collectionName = makeCollectionName(topCollectionName, dir);
@@ -56,15 +57,17 @@ public class DirectoryCollection extends CollectionAbstract {
   ///////////////////////////////////////////////////////////////////////////////////
 
   final String topCollection;
-  final Path collectionDir;              //  directory for this collection
+  final Path collectionDir; // directory for this collection
   final long olderThanMillis;
   final boolean isTop;
 
-  public DirectoryCollection(String topCollectionName, String topDirS, boolean isTop, String olderThan, org.slf4j.Logger logger) {
+  public DirectoryCollection(String topCollectionName, String topDirS, boolean isTop, String olderThan,
+      org.slf4j.Logger logger) {
     this(topCollectionName, Paths.get(topDirS), isTop, olderThan, logger);
   }
 
-  public DirectoryCollection(String topCollectionName, Path collectionDir, boolean isTop, String olderThan, org.slf4j.Logger logger) {
+  public DirectoryCollection(String topCollectionName, Path collectionDir, boolean isTop, String olderThan,
+      org.slf4j.Logger logger) {
     super(null, logger);
     this.topCollection = cleanName(topCollectionName);
     this.collectionDir = collectionDir;
@@ -72,7 +75,8 @@ public class DirectoryCollection extends CollectionAbstract {
     this.isTop = isTop;
 
     this.olderThanMillis = parseOlderThanString(olderThan);
-    if (debug) System.out.printf("Open DirectoryCollection %s%n", collectionName);
+    if (debug)
+      System.out.printf("Open DirectoryCollection %s%n", collectionName);
   }
 
   @Override
@@ -82,7 +86,8 @@ public class DirectoryCollection extends CollectionAbstract {
 
   @Override
   public String getIndexFilename(String suffix) {
-    if (isTop) return super.getIndexFilename(suffix);
+    if (isTop)
+      return super.getIndexFilename(suffix);
     Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir, suffix);
     return indexPath.toString();
   }
@@ -99,7 +104,8 @@ public class DirectoryCollection extends CollectionAbstract {
 
   @Override
   public void close() {
-    if (debug) System.out.printf("Close DirectoryCollection %s%n", collectionName);
+    if (debug)
+      System.out.printf("Close DirectoryCollection %s%n", collectionName);
   }
 
   // returns everything in the current directory, subject to sfilter
@@ -119,7 +125,7 @@ public class DirectoryCollection extends CollectionAbstract {
         dirStream = Files.newDirectoryStream(dir, new MyStreamFilter());
         dirStreamIterator = dirStream.iterator();
       } catch (IOException ioe) {
-        logger.error("Files.newDirectoryStream failed to open directory "+dir.getFileName(), ioe);
+        logger.error("Files.newDirectoryStream failed to open directory " + dir.getFileName(), ioe);
         throw ioe;
       }
     }
@@ -136,24 +142,26 @@ public class DirectoryCollection extends CollectionAbstract {
         long now = System.currentTimeMillis();
         try {
           Path nextPath = dirStreamIterator.next();
-          BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
-          if (attr.isDirectory()) continue;
+          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
+          if (attr.isDirectory())
+            continue;
           FileTime last = attr.lastModifiedTime();
-          //System.out.printf("%s%n", last);
+          // System.out.printf("%s%n", last);
           long millisSinceModified = now - last.toMillis();
           if (millisSinceModified < olderThanMillis)
             continue;
           nextMFile = new MFileOS7(nextPath, attr);
           return true;
 
-       } catch (IOException e) {
-         throw new RuntimeException(e);
-       }
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       }
     }
 
     public MFile next() {
-      if (nextMFile == null) throw new NoSuchElementException();
+      if (nextMFile == null)
+        throw new NoSuchElementException();
       return nextMFile;
     }
 
@@ -164,7 +172,8 @@ public class DirectoryCollection extends CollectionAbstract {
     // better alternative is for caller to send in callback (Visitor pattern)
     // then we could use the try-with-resource
     public void close() throws IOException {
-      if (debug) System.out.printf(" closed %d (%d)%n", count, debugNum);
+      if (debug)
+        System.out.printf(" closed %d (%d)%n", count, debugNum);
       dirStream.close();
     }
   }
@@ -172,9 +181,12 @@ public class DirectoryCollection extends CollectionAbstract {
   ////////////////////////////////////////////////////////////////////////////////////////////
   private static final boolean debug = false;
   private static int debugCount = 0;
-  // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure DirectoryStream closes. like++
+
+  // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure DirectoryStream
+  // closes. like++
   public void iterateOverMFileCollection(Visitor visit) throws IOException {
-    if (debug) System.out.printf(" iterateOverMFileCollection %s ", collectionDir);
+    if (debug)
+      System.out.printf(" iterateOverMFileCollection %s ", collectionDir);
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(collectionDir, new MyStreamFilter())) {
       for (Path p : ds) {
@@ -182,18 +194,20 @@ public class DirectoryCollection extends CollectionAbstract {
           BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
           if (!attr.isDirectory())
             visit.consume(new MFileOS7(p));
-          if (debug) System.out.printf("%d ", count++);
+          if (debug)
+            System.out.printf("%d ", count++);
         } catch (IOException ioe) {
           // catch error and skip file
           logger.error("Failed to read attributes from file found in Files.newDirectoryStream ", ioe);
         }
       }
     }
-    if (debug) System.out.printf("%d%n", count);
+    if (debug)
+      System.out.printf("%d%n", count);
   }
 
   public interface Visitor {
-     void consume(MFile mfile);
+    void consume(MFile mfile);
   }
 
 }

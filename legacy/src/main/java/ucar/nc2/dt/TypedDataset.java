@@ -8,7 +8,6 @@ package ucar.nc2.dt;
 import java.io.Closeable;
 import java.util.Date;
 import java.util.List;
-
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 
@@ -43,36 +42,48 @@ public interface TypedDataset extends Closeable {
   /** @return the boundingBox for the entire dataset. */
   ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
-  /** List of global attributes.
-   * @return List of type ucar.nc2.Attribute */
+  /**
+   * List of global attributes.
+   * 
+   * @return List of type ucar.nc2.Attribute
+   */
   List<Attribute> getGlobalAttributes();
 
-  /** @return the global attribute with the given name, ingnoring case.
+  /**
+   * @return the global attribute with the given name, ingnoring case.
    * @param name attribute name
    */
-  ucar.nc2.Attribute findGlobalAttributeIgnoreCase( String name );
+  ucar.nc2.Attribute findGlobalAttributeIgnoreCase(String name);
 
-  /** The data Variables available in this dataset.
+  /**
+   * The data Variables available in this dataset.
    * Should just be data variable others might be searching for, not metadata or coordinate
    * system variables, etc.
-   * The shape of this VariableSimpleIF does not necessarily match the 
-   * @return List of type VariableSimpleIF */
+   * The shape of this VariableSimpleIF does not necessarily match the
+   * 
+   * @return List of type VariableSimpleIF
+   */
   List<VariableSimpleIF> getDataVariables();
 
-  /** Get the named data Variable.
+  /**
+   * Get the named data Variable.
+   * 
    * @param shortName of data Variable.
-   * @return VariableSimpleIF or null. */
-  VariableSimpleIF getDataVariable( String shortName);
+   * @return VariableSimpleIF or null.
+   */
+  VariableSimpleIF getDataVariable(String shortName);
 
-  /** @return  underlying NetcdfFile, or null if none. */
+  /** @return underlying NetcdfFile, or null if none. */
   ucar.nc2.NetcdfFile getNetcdfFile();
 
-  /** Close all resources associated with this dataset.
+  /**
+   * Close all resources associated with this dataset.
+   * 
    * @throws java.io.IOException on I/O error
    */
   @Override
   void close() throws java.io.IOException;
 
-  /** @return  debug / underlying implementation details */
+  /** @return debug / underlying implementation details */
   String getDetailInfo();
 }

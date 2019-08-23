@@ -2,7 +2,6 @@ package ucar.nc2;
 
 import static ucar.nc2.util.DiskCache.cleanCache;
 import static ucar.nc2.util.DiskCache.showCache;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -18,7 +17,8 @@ public class TestDiskCache {
       boolean ret = want.createNewFile();
       assert ret;
     }
-    System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = " + new Date(want.lastModified()));
+    System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = "
+        + new Date(want.lastModified()));
     System.out.println(" original=" + filename);
   }
 

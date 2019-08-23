@@ -13,7 +13,6 @@ import thredds.client.catalog.Catalog;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -85,7 +84,7 @@ public class NcmlConstructor {
     Group g;
     if (parent == ncfile.getRootGroup()) { // special handling
       g = parent;
-      
+
     } else {
       if (name == null) {
         errlog.format("NcML Group name is required (%s)%n", groupElem);
@@ -125,8 +124,8 @@ public class NcmlConstructor {
   /**
    * Read a NcML variable element, and nested elements, when it creates a new Variable.
    *
-   * @param ncfile      target dataset
-   * @param g       parent Group
+   * @param ncfile target dataset
+   * @param g parent Group
    * @param parentS parent Structure
    * @param varElem ncml variable element
    * @return return new Variable
@@ -162,13 +161,13 @@ public class NcmlConstructor {
       }
 
     } else if (dtype == DataType.SEQUENCE) {
-        Sequence s = new Sequence(ncfile, g, parentS, name);
-        v = s;
-        // look for nested variables
-        java.util.List<Element> varList = varElem.getChildren("variable", Catalog.ncmlNS);
-        for (Element vElem : varList) {
-          readVariable(ncfile, g, s, vElem);
-        }
+      Sequence s = new Sequence(ncfile, g, parentS, name);
+      v = s;
+      // look for nested variables
+      java.util.List<Element> varList = varElem.getChildren("variable", Catalog.ncmlNS);
+      for (Element vElem : varList) {
+        readVariable(ncfile, g, s, vElem);
+      }
 
     } else {
       v = new Variable(ncfile, g, parentS, name, dtype, shape);
@@ -188,7 +187,7 @@ public class NcmlConstructor {
     if (parentS != null)
       parentS.addMemberVariable(v);
     else
-      g.addVariable(v);    
+      g.addVariable(v);
 
     return v;
   }
@@ -212,7 +211,8 @@ public class NcmlConstructor {
     // otherwise values are listed in text
     String values = varElem.getChildText("values", Catalog.ncmlNS);
     String sep = valuesElem.getAttributeValue("separator");
-    if (sep == null) sep = " ";
+    if (sep == null)
+      sep = " ";
 
     if (v.getDataType() == DataType.CHAR) {
       int nhave = values.length();
@@ -257,7 +257,7 @@ public class NcmlConstructor {
   /**
    * Read an NcML dimension element.
    *
-   * @param g       put dimension into this group
+   * @param g put dimension into this group
    * @param dimElem ncml dimension element
    */
   private void readDim(Group g, Element dimElem) {
@@ -284,105 +284,114 @@ public class NcmlConstructor {
 
     Dimension dim = new Dimension(name, len, isShared, isUnlimited, isUnknown);
 
-    if (debugConstruct) System.out.println(" add new dim = " + dim);
+    if (debugConstruct)
+      System.out.println(" add new dim = " + dim);
     g.addDimension(dim);
   }
 
 }
 
 /*
-
- /**
-   * Copy contents of "src" to "target". skip ones that already exist (by name).
-   * Dimensions and Variables are replaced with equivalent elements, but unlimited dimensions are turned into regular dimensions.
-   * Attribute doesnt have to be replaced because its immutable, so its copied by reference.
-   *
-   * @param ncml ncml as an stream
-   * @param target transfer to this NetcdfDataset.
-   *
-  static public void transferDataset(String ncml, NetcdfFile target) throws IOException {
-    transferDataset(new ByteArrayInputStream(ncml.getBytes()), target);
-  }
-
-  static public void transferDataset(InputStream ncml, NetcdfFile target) throws IOException {
-    NetcdfDataset src = NcMLReader.readNcML(ncml, null);
-    transferGroup(src, src.getRootGroup(), target.getRootGroup());
-  }
-
-  // transfer the objects in src group to the target group
-  static private void transferGroup(NetcdfFile ds, Group src, Group targetGroup) {
-    // group attributes
-    transferGroupAttributes(src, targetGroup);
-
-    // dimensions
-    for (Dimension d : src.getDimensions()) {
-      if (null == targetGroup.findDimensionLocal(d.getName())) {
-        targetGroup.addDimension(d);
-      }
-    }
-
-    // variables
-    for (Variable v : src.getVariables()) {
-      targetGroup.addVariable(v);
-    }
-
-    // nested groups - check if target already has it
-    for (Group srcNested : src.getGroups()) {
-      Group nested = targetGroup.findGroup(srcNested.getShortName());
-      if (null == nested) {
-        nested = new Group(ds, targetGroup, srcNested.getShortName());
-        targetGroup.addGroup(nested);
-      }
-      transferGroup(ds, srcNested, nested);
-    }
-  }
-
-  /**
-   * Copy attributes from src to target, skip ones that already exist (by name)
-   * @param src copy from here
-   * @param target copy to here
-   *
-  static public void transferVariableAttributes(Variable src, Variable target) {
-    for (Attribute a : src.getAttributes()) {
-      if (null == target.findAttribute(a.getName()))
-        target.addAttribute(a);
-    }
-  }
-
-  /**
-   * Copy attributes from src to target, skip ones that already exist (by name)
-   * @param src copy from here
-   * @param target copy to here
-   *
-  static public void transferGroupAttributes(Group src, Group target) {
-    for (Attribute a : src.getAttributes()) {
-      if (null == target.findAttribute(a.getName()))
-        target.addAttribute(a);
-    }
-  }
-
-  /**
-   * Find the Group in newFile that corresponds (by name) with oldGroup
-   *
-   * @param newFile look in this NetcdfFile
-   * @param oldGroup corresponding (by name) with oldGroup
-   * @return corresponding Group, or null if no match.
-   *
-  static public Group findGroup(NetcdfFile newFile, Group oldGroup) {
-    List<Group> chain = new ArrayList<Group>(5);
-    Group g = oldGroup;
-    while ( g.getParentGroup() != null) { // skip the root
-      chain.add(0, g); // put in front
-      g = g.getParentGroup();
-    }
-
-    Group newg = newFile.getRootGroup();
-    for (Group oldg : chain) {
-      newg = newg.findGroup( oldg.getShortName());
-      if (newg == null) return null;
-    }
-    return newg;
-  }
-
+ * 
+ * /**
+ * Copy contents of "src" to "target". skip ones that already exist (by name).
+ * Dimensions and Variables are replaced with equivalent elements, but unlimited dimensions are turned into regular
+ * dimensions.
+ * Attribute doesnt have to be replaced because its immutable, so its copied by reference.
+ *
+ * @param ncml ncml as an stream
+ * 
+ * @param target transfer to this NetcdfDataset.
+ *
+ * static public void transferDataset(String ncml, NetcdfFile target) throws IOException {
+ * transferDataset(new ByteArrayInputStream(ncml.getBytes()), target);
+ * }
+ * 
+ * static public void transferDataset(InputStream ncml, NetcdfFile target) throws IOException {
+ * NetcdfDataset src = NcMLReader.readNcML(ncml, null);
+ * transferGroup(src, src.getRootGroup(), target.getRootGroup());
+ * }
+ * 
+ * // transfer the objects in src group to the target group
+ * static private void transferGroup(NetcdfFile ds, Group src, Group targetGroup) {
+ * // group attributes
+ * transferGroupAttributes(src, targetGroup);
+ * 
+ * // dimensions
+ * for (Dimension d : src.getDimensions()) {
+ * if (null == targetGroup.findDimensionLocal(d.getName())) {
+ * targetGroup.addDimension(d);
+ * }
+ * }
+ * 
+ * // variables
+ * for (Variable v : src.getVariables()) {
+ * targetGroup.addVariable(v);
+ * }
+ * 
+ * // nested groups - check if target already has it
+ * for (Group srcNested : src.getGroups()) {
+ * Group nested = targetGroup.findGroup(srcNested.getShortName());
+ * if (null == nested) {
+ * nested = new Group(ds, targetGroup, srcNested.getShortName());
+ * targetGroup.addGroup(nested);
+ * }
+ * transferGroup(ds, srcNested, nested);
+ * }
+ * }
+ * 
+ * /**
+ * Copy attributes from src to target, skip ones that already exist (by name)
+ * 
+ * @param src copy from here
+ * 
+ * @param target copy to here
+ *
+ * static public void transferVariableAttributes(Variable src, Variable target) {
+ * for (Attribute a : src.getAttributes()) {
+ * if (null == target.findAttribute(a.getName()))
+ * target.addAttribute(a);
+ * }
+ * }
+ * 
+ * /**
+ * Copy attributes from src to target, skip ones that already exist (by name)
+ * 
+ * @param src copy from here
+ * 
+ * @param target copy to here
+ *
+ * static public void transferGroupAttributes(Group src, Group target) {
+ * for (Attribute a : src.getAttributes()) {
+ * if (null == target.findAttribute(a.getName()))
+ * target.addAttribute(a);
+ * }
+ * }
+ * 
+ * /**
+ * Find the Group in newFile that corresponds (by name) with oldGroup
+ *
+ * @param newFile look in this NetcdfFile
+ * 
+ * @param oldGroup corresponding (by name) with oldGroup
+ * 
+ * @return corresponding Group, or null if no match.
+ *
+ * static public Group findGroup(NetcdfFile newFile, Group oldGroup) {
+ * List<Group> chain = new ArrayList<Group>(5);
+ * Group g = oldGroup;
+ * while ( g.getParentGroup() != null) { // skip the root
+ * chain.add(0, g); // put in front
+ * g = g.getParentGroup();
+ * }
+ * 
+ * Group newg = newFile.getRootGroup();
+ * for (Group oldg : chain) {
+ * newg = newg.findGroup( oldg.getShortName());
+ * if (newg == null) return null;
+ * }
+ * return newg;
+ * }
+ * 
  */
 

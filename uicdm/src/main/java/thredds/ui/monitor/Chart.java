@@ -9,11 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.text.*;
 import java.io.*;
-
 // Import the Swing classes
 import java.awt.*;
 import javax.swing.*;
-
 // Import the JFreeChart classes
 import org.jfree.chart.*;
 import org.jfree.chart.axis.*;
@@ -44,9 +42,7 @@ public class Chart extends JPanel {
       dataset.addSeries(data);
 
       // Create the chart
-      JFreeChart chart = ChartFactory.createTimeSeriesChart(
-              title, timeAxis, valueAxis,
-              dataset, true, true, false);
+      JFreeChart chart = ChartFactory.createTimeSeriesChart(title, timeAxis, valueAxis, dataset, true, true, false);
 
       // Setup the appearance of the chart
       chart.setBackgroundPaint(Color.white);
@@ -63,86 +59,78 @@ public class Chart extends JPanel {
       axis.setDateFormatOverride(new SimpleDateFormat("EEE HH"));
 
       this.add(new ChartPanel(chart));
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   public Chart(String filename) {
-      this.stockSymbol = filename.substring(0, filename.indexOf('.'));
+    this.stockSymbol = filename.substring(0, filename.indexOf('.'));
 
-      // Create time series
-      TimeSeries open = new TimeSeries("Open Price", Day.class);
-      TimeSeries close = new TimeSeries("Close Price", Day.class);
-      TimeSeries high = new TimeSeries("High", Day.class);
-      TimeSeries low = new TimeSeries("Low", Day.class);
+    // Create time series
+    TimeSeries open = new TimeSeries("Open Price", Day.class);
+    TimeSeries close = new TimeSeries("Close Price", Day.class);
+    TimeSeries high = new TimeSeries("High", Day.class);
+    TimeSeries low = new TimeSeries("Low", Day.class);
 
-      try (FileInputStream fin = new FileInputStream(filename);
+    try (FileInputStream fin = new FileInputStream(filename);
         BufferedReader br = new BufferedReader(new InputStreamReader(fin, StandardCharsets.UTF_8))) {
 
-        br.readLine(); // read key
-        String line = br.readLine();
-        while (line != null && !line.startsWith("<!--")) {
-          StringTokenizer st = new StringTokenizer(line, ",", false);
-          Day day = getDay(st.nextToken());
-          double openValue = Double.parseDouble(st.nextToken());
-          double highValue = Double.parseDouble(st.nextToken());
-          double lowValue = Double.parseDouble(st.nextToken());
-          double closeValue = Double.parseDouble(st.nextToken());
-          st.nextToken(); // skip volume value
+      br.readLine(); // read key
+      String line = br.readLine();
+      while (line != null && !line.startsWith("<!--")) {
+        StringTokenizer st = new StringTokenizer(line, ",", false);
+        Day day = getDay(st.nextToken());
+        double openValue = Double.parseDouble(st.nextToken());
+        double highValue = Double.parseDouble(st.nextToken());
+        double lowValue = Double.parseDouble(st.nextToken());
+        double closeValue = Double.parseDouble(st.nextToken());
+        st.nextToken(); // skip volume value
 
-          // Add this value to our series'
-          open.add(day, openValue);
-          close.add(day, closeValue);
-          high.add(day, highValue);
-          low.add(day, lowValue);
+        // Add this value to our series'
+        open.add(day, openValue);
+        close.add(day, closeValue);
+        high.add(day, highValue);
+        low.add(day, lowValue);
 
-          // Read the next day
-          line = br.readLine();
-        }
-
-        // Build the datasets
-        dataset.addSeries(open);
-        dataset.addSeries(close);
-        dataset.addSeries(low);
-        dataset.addSeries(high);
-        datasetOpenClose.addSeries(open);
-        datasetOpenClose.addSeries(close);
-        datasetHighLow.addSeries(high);
-        datasetHighLow.addSeries(low);
-
-        JFreeChart summaryChart = buildChart(dataset, "Summary", true);
-        JFreeChart openCloseChart = buildChart(datasetOpenClose, "Open/Close Data", false);
-        JFreeChart highLowChart = buildChart(datasetHighLow, "High/Low Data", true);
-        JFreeChart highLowDifChart = buildDifferenceChart(datasetHighLow, "High/Low Difference Chart");
-
-        // Create this panel
-        this.setLayout(new GridLayout(2, 2));
-        this.add(new ChartPanel(summaryChart));
-        this.add(new ChartPanel(openCloseChart));
-        this.add(new ChartPanel(highLowChart));
-        this.add(new ChartPanel(highLowDifChart));
-
-      } catch (IOException e) {
-        e.printStackTrace();
+        // Read the next day
+        line = br.readLine();
       }
+
+      // Build the datasets
+      dataset.addSeries(open);
+      dataset.addSeries(close);
+      dataset.addSeries(low);
+      dataset.addSeries(high);
+      datasetOpenClose.addSeries(open);
+      datasetOpenClose.addSeries(close);
+      datasetHighLow.addSeries(high);
+      datasetHighLow.addSeries(low);
+
+      JFreeChart summaryChart = buildChart(dataset, "Summary", true);
+      JFreeChart openCloseChart = buildChart(datasetOpenClose, "Open/Close Data", false);
+      JFreeChart highLowChart = buildChart(datasetHighLow, "High/Low Data", true);
+      JFreeChart highLowDifChart = buildDifferenceChart(datasetHighLow, "High/Low Difference Chart");
+
+      // Create this panel
+      this.setLayout(new GridLayout(2, 2));
+      this.add(new ChartPanel(summaryChart));
+      this.add(new ChartPanel(openCloseChart));
+      this.add(new ChartPanel(highLowChart));
+      this.add(new ChartPanel(highLowDifChart));
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private JFreeChart buildChart(TimeSeriesCollection dataset, String title, boolean endPoints) {
     // Create the chart
-    JFreeChart chart = ChartFactory.createTimeSeriesChart(
-            title,
-            "Date", "Price",
-            dataset,
-            true,
-            true,
-            false
-    );
+    JFreeChart chart = ChartFactory.createTimeSeriesChart(title, "Date", "Price", dataset, true, true, false);
 
     // Display each series in the chart with its point shape in the legend
     chart.getLegend();
-    //sl.setDisplaySeriesShapes(true);
+    // sl.setDisplaySeriesShapes(true);
 
     // Setup the appearance of the chart
     chart.setBackgroundPaint(Color.white);
@@ -159,7 +147,7 @@ public class Chart extends JPanel {
       XYItemRenderer renderer = plot.getRenderer();
       if (renderer instanceof StandardXYItemRenderer) {
         StandardXYItemRenderer rr = (StandardXYItemRenderer) renderer;
-        //rr.setPlotShapes(true);
+        // rr.setPlotShapes(true);
         rr.setShapesFilled(true);
         rr.setItemLabelsVisible(true);
       }
@@ -173,13 +161,9 @@ public class Chart extends JPanel {
 
   private JFreeChart buildDifferenceChart(TimeSeriesCollection dataset, String title) {
     // Creat the chart
-    JFreeChart chart = ChartFactory.createTimeSeriesChart(
-            title,
-            "Date", "Price",
-            dataset,
-            true, // legend
-            true, // tool tips
-            false // URLs
+    JFreeChart chart = ChartFactory.createTimeSeriesChart(title, "Date", "Price", dataset, true, // legend
+        true, // tool tips
+        false // URLs
     );
     chart.setBackgroundPaint(Color.white);
 
@@ -208,8 +192,7 @@ public class Chart extends JPanel {
 
       // Build a new Day
       return new Day(day, month, year);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
     return null;

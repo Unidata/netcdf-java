@@ -11,24 +11,25 @@ import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/** Test nc2 dods in the JUnit framework.
+/**
+ * Test nc2 dods in the JUnit framework.
  * Dataset {
-    Structure {
-        Byte b;
-        Int32 i32;
-        UInt32 ui32;
-        Int16 i16;
-        UInt16 ui16;
-        Float32 f32;
-        Float64 f64;
-        String s;
-        Url u;
-    } types;
-} SimpleStructure;*/
+ * Structure {
+ * Byte b;
+ * Int32 i32;
+ * UInt32 ui32;
+ * Int16 i16;
+ * UInt16 ui16;
+ * Float32 f32;
+ * Float64 f64;
+ * String s;
+ * Url u;
+ * } types;
+ * } SimpleStructure;
+ */
 public class TestDODSStructureScalars {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -43,7 +44,7 @@ public class TestDODSStructureScalars {
     assert v instanceof Structure;
     Structure s = (Structure) v;
     StructureData sdata = s.readStructure();
-    checkSD( sdata);
+    checkSD(sdata);
   }
 
   @Test
@@ -58,77 +59,77 @@ public class TestDODSStructureScalars {
     assert v instanceof Structure;
     Structure s = (Structure) v;
     Array sdata = s.read();
-    checkSD( (StructureData) sdata.getObject( sdata.getIndex()));
+    checkSD((StructureData) sdata.getObject(sdata.getIndex()));
   }
 
-  private void checkSD( StructureData s) {
+  private void checkSD(StructureData s) {
     Variable v = null;
     Array a = null;
 
-    assert(null != (a = s.getArray("b")));
+    assert (null != (a = s.getArray("b")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == byte.class;
     assert a instanceof ArrayByte.D0;
-    byte valb = ((ArrayByte.D0)a).get();
+    byte valb = ((ArrayByte.D0) a).get();
     assert (valb == 0);
 
     // int16
-    assert(null != (a = s.getArray("i16")));
+    assert (null != (a = s.getArray("i16")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
     assert a instanceof ArrayShort.D0;
-    short vals = ((ArrayShort.D0)a).get();
+    short vals = ((ArrayShort.D0) a).get();
     assert (vals == 0);
 
     // int32
-    assert(null != (a = s.getArray("i32")));
+    assert (null != (a = s.getArray("i32")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vali = ((ArrayInt.D0)a).get();
+    int vali = ((ArrayInt.D0) a).get();
     assert (vali == 1) : vali;
 
     // uint32
-    assert(null != (a = s.getArray("ui32")));
+    assert (null != (a = s.getArray("ui32")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    long vall = ((ArrayInt.D0)a).get();
+    long vall = ((ArrayInt.D0) a).get();
     assert (vall == 0);
 
     // uint16
-    assert(null != (a = s.getArray("ui16")));
+    assert (null != (a = s.getArray("ui16")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
     assert a instanceof ArrayShort.D0;
-    vali = ((ArrayShort.D0)a).get();
+    vali = ((ArrayShort.D0) a).get();
     assert (vali == 0);
 
     // float
-    assert(null != (a = s.getArray("f32")));
+    assert (null != (a = s.getArray("f32")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == float.class;
     assert a instanceof ArrayFloat.D0;
-    float valf = ((ArrayFloat.D0)a).get();
+    float valf = ((ArrayFloat.D0) a).get();
     assert (valf == 0.0);
 
     // double
-    assert(null != (a = s.getArray("f64")));
+    assert (null != (a = s.getArray("f64")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == double.class;
     assert a instanceof ArrayDouble.D0;
-    double vald = ((ArrayDouble.D0)a).get();
+    double vald = ((ArrayDouble.D0) a).get();
     assert (vald == 1000.0);
 
     // string
-    assert(null != (a = s.getArray("s")));
+    assert (null != (a = s.getArray("s")));
     assert a.getRank() == 0;
     assert a.getElementType() == String.class;
     assert a instanceof ArrayObject.D0;
@@ -136,7 +137,7 @@ public class TestDODSStructureScalars {
     assert str.equals("This is a data test string (pass 0).");
 
     // url
-    assert(null != (a = s.getArray("u")));
+    assert (null != (a = s.getArray("u")));
     assert a.getRank() == 0;
     assert a.getElementType() == String.class;
     assert a instanceof ArrayObject.D0;
@@ -157,9 +158,9 @@ public class TestDODSStructureScalars {
 
   @Test
   public void testScalarReadUncached() throws IOException {
-    DODSNetcdfFile.setPreload( false);
+    DODSNetcdfFile.setPreload(false);
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
-    DODSNetcdfFile.setPreload( true);
+    DODSNetcdfFile.setPreload(true);
 
     Variable v = null;
     assert null != (v = dodsfile.findVariable("types"));
@@ -168,13 +169,13 @@ public class TestDODSStructureScalars {
     scalarRead((Structure) v);
   }
 
-   private void scalarRead(Structure s) throws IOException {
+  private void scalarRead(Structure s) throws IOException {
 
     Variable v = null;
     Array a = null;
 
     // byte
-    assert(null != (v = s.findVariable("b")));
+    assert (null != (v = s.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -184,11 +185,11 @@ public class TestDODSStructureScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == byte.class;
     assert a instanceof ArrayByte.D0;
-    byte valb = ((ArrayByte.D0)a).get();
+    byte valb = ((ArrayByte.D0) a).get();
     assert (valb == 0);
 
     // int16
-    assert(null != (v = s.findVariable("i16")));
+    assert (null != (v = s.findVariable("i16")));
     assert v.getShortName().equals("i16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -198,11 +199,11 @@ public class TestDODSStructureScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
     assert a instanceof ArrayShort.D0;
-    short vals = ((ArrayShort.D0)a).get();
+    short vals = ((ArrayShort.D0) a).get();
     assert (vals == 0);
 
     // int32
-    assert(null != (v = s.findVariable("i32")));
+    assert (null != (v = s.findVariable("i32")));
     assert v.getShortName().equals("i32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -212,11 +213,11 @@ public class TestDODSStructureScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vali = ((ArrayInt.D0)a).get();
+    int vali = ((ArrayInt.D0) a).get();
     assert (vali == 1) : vali;
 
     // uint32
-    assert(null != (v = s.findVariable("ui32")));
+    assert (null != (v = s.findVariable("ui32")));
     assert v.getShortName().equals("ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -227,11 +228,11 @@ public class TestDODSStructureScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vall = ((ArrayInt.D0)a).get();
+    int vall = ((ArrayInt.D0) a).get();
     assert (vall == 0);
 
     // uint16
-    assert(null != (v = s.findVariable("ui16")));
+    assert (null != (v = s.findVariable("ui16")));
     assert v.getShortName().equals("ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -241,11 +242,11 @@ public class TestDODSStructureScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
     assert a instanceof ArrayShort.D0;
-    vali = ((ArrayShort.D0)a).get();
+    vali = ((ArrayShort.D0) a).get();
     assert (vali == 0);
 
     // uint32
-    assert(null != (v = s.findVariable("ui32")));
+    assert (null != (v = s.findVariable("ui32")));
     assert v.getShortName().equals("ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -255,11 +256,11 @@ public class TestDODSStructureScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    vall = ((ArrayInt.D0)a).get();
+    vall = ((ArrayInt.D0) a).get();
     assert (vall == 0);
 
     // float
-    assert(null != (v = s.findVariable("f32")));
+    assert (null != (v = s.findVariable("f32")));
     assert v.getShortName().equals("f32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -269,11 +270,11 @@ public class TestDODSStructureScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == float.class;
     assert a instanceof ArrayFloat.D0;
-    float valf = ((ArrayFloat.D0)a).get();
+    float valf = ((ArrayFloat.D0) a).get();
     assert (valf == 0.0);
 
     // double
-    assert(null != (v = s.findVariable("f64")));
+    assert (null != (v = s.findVariable("f64")));
     assert v.getShortName().equals("f64");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -283,11 +284,11 @@ public class TestDODSStructureScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == double.class;
     assert a instanceof ArrayDouble.D0;
-    double vald = ((ArrayDouble.D0)a).get();
+    double vald = ((ArrayDouble.D0) a).get();
     assert (vald == 1000.0);
 
     // string
-    assert(null != (v = s.findVariable("s")));
+    assert (null != (v = s.findVariable("s")));
     assert v.getShortName().equals("s");
     assert v.getRank() == 0;
     assert v.getDataType() == DataType.STRING : v.getDataType();
@@ -299,7 +300,7 @@ public class TestDODSStructureScalars {
     assert str.equals("This is a data test string (pass 0).");
 
     // url
-    assert(null != (v = s.findVariable("u")));
+    assert (null != (v = s.findVariable("u")));
     assert v.getShortName().equals("u");
     assert v.getRank() == 0;
     assert v.getDataType() == DataType.STRING : v.getDataType();
@@ -310,7 +311,7 @@ public class TestDODSStructureScalars {
   @Test
   public void testDODSwithDataset() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
-    NetcdfDataset ds = new  NetcdfDataset( dodsfile, false);
+    NetcdfDataset ds = new NetcdfDataset(dodsfile, false);
 
     // bug in forming dods name
     Variable v = null;

@@ -10,7 +10,6 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -22,7 +21,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class Grib1Parameter implements GribTables.Parameter {
 
-  private final Grib1ParamTableReader table;  // which table did this come from ?
+  private final Grib1ParamTableReader table; // which table did this come from ?
   private final int number;
   private final String name;
   private final String description;
@@ -38,7 +37,8 @@ public class Grib1Parameter implements GribTables.Parameter {
     this.cfName = null;
   }
 
-  public Grib1Parameter(Grib1ParamTableReader table, int number, String name, String description, String unit, String cf_name) {
+  public Grib1Parameter(Grib1ParamTableReader table, int number, String name, String description, String unit,
+      String cf_name) {
     this.table = table;
     this.number = number;
     this.name = setName(name);
@@ -115,7 +115,8 @@ public class Grib1Parameter implements GribTables.Parameter {
   }
 
   private String setName(String name) {
-    if (name == null) name = "";
+    if (name == null)
+      name = "";
     return StringUtil2.replace(name, ' ', "_"); // replace blanks
   }
 
@@ -129,25 +130,27 @@ public class Grib1Parameter implements GribTables.Parameter {
 
   @Override
   public String toString() {
-    return "GridParameter{" +
-            "number=" + number +
-            ", name='" + name + '\'' +
-            ", description='" + description + '\'' +
-            ", unit='" + unit + '\'' +
-            '}';
+    return "GridParameter{" + "number=" + number + ", name='" + name + '\'' + ", description='" + description + '\''
+        + ", unit='" + unit + '\'' + '}';
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Grib1Parameter that = (Grib1Parameter) o;
 
-    if (number != that.number) return false;
-    if (!Objects.equals(cfName, that.cfName)) return false;
-    if (!Objects.equals(description, that.description)) return false;
-    if (!Objects.equals(name, that.name)) return false;
+    if (number != that.number)
+      return false;
+    if (!Objects.equals(cfName, that.cfName))
+      return false;
+    if (!Objects.equals(description, that.description))
+      return false;
+    if (!Objects.equals(name, that.name))
+      return false;
     return Objects.equals(unit, that.unit);
 
   }

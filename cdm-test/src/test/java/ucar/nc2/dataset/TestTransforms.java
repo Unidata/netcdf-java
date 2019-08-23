@@ -20,7 +20,6 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -36,19 +35,21 @@ public class TestTransforms {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final boolean show = false;
-  private String testDir= TestDir.cdmUnitTestDir + "transforms/";
+  private String testDir = TestDir.cdmUnitTestDir + "transforms/";
 
   @Test
   public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
     String filename = testDir + "HybridSigmaPressure.nc";
-    test(filename, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class, SimpleUnit.pressureUnit);
+    test(filename, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
+        SimpleUnit.pressureUnit);
   }
 
   @Test
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
-    String filename = testDir +  "climo.cam2.h0.0000-09.nc";
+    String filename = testDir + "climo.cam2.h0.0000-09.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class, SimpleUnit.pressureUnit, true);
+    VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
+        SimpleUnit.pressureUnit, true);
 
     Dimension timeDim = ncd.findDimension("time");
     for (int i = 0; i < timeDim.getLength(); i++) {
@@ -64,10 +65,10 @@ public class TestTransforms {
 
   @Test
   public void testHybridSigmaPressure3() throws IOException, InvalidRangeException {
-    String filename = testDir +  "HIRLAMhybrid.ncml";
+    String filename = testDir + "HIRLAMhybrid.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VerticalTransform vt = test(ncd, "hybrid", "Relative_humidity_hybrid", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
-        SimpleUnit.pressureUnit, true);
+    VerticalTransform vt = test(ncd, "hybrid", "Relative_humidity_hybrid", "time", VerticalCT.Type.HybridSigmaPressure,
+        HybridSigmaPressure.class, SimpleUnit.pressureUnit, true);
 
     Dimension timeDim = ncd.findDimension("time");
     for (int i = 0; i < timeDim.getLength(); i++) {
@@ -83,31 +84,31 @@ public class TestTransforms {
 
   @Test
   public void testOceanS() throws IOException, InvalidRangeException {
-    String filename = testDir+ "OceanS.nc";
+    String filename = testDir + "OceanS.nc";
     test(filename, "s_rho", "salt", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
   @Test
   public void testOceanS2() throws IOException, InvalidRangeException {
-    String filename = testDir+ "OceanS2.nc";
+    String filename = testDir + "OceanS2.nc";
     test(filename, "s_rho", "temp", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
   @Test
   public void testOceanSigma() throws IOException, InvalidRangeException {
-    String filename = testDir+ "OceanSigma.nc";
+    String filename = testDir + "OceanSigma.nc";
     test(filename, "zpos", "salt", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
   @Test
   public void testOceanSigma2() throws IOException, InvalidRangeException {
-    String filename = testDir+ "erie_test.ncml";
+    String filename = testDir + "erie_test.ncml";
     test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
   @Test
   public void testGomoos() throws IOException, InvalidRangeException {
-    String filename = testDir+ "gomoos.ncml";
+    String filename = testDir + "gomoos.ncml";
     test(filename, "zpos", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
@@ -136,97 +137,100 @@ public class TestTransforms {
     test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
-  /* btestOceanS3
-  problem is that u is
-
-   float u(ocean_time=1, s_rho=6, eta_u=120, xi_u=155);
-     :coordinates = "lon_u lat_u s_rho ocean_time";
-
-    double s_rho(s_rho=6);
-     :long_name = "S-coordinate at RHO-points";
-     :positive = "up";
-     :standard_name = "ocean_s_coordinate";
-     :formula_terms = "s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc";
-
-     which uses zeta:
-        float zeta(ocean_time=1, eta_rho=120, xi_rho=156);
-
-     which is 120 x 126 instead of 120 x 125.
-
-     seems to be an rsignell file. may be motivation for staggered convention
-
- OceanS_Transform_s_rho type=Vertical
-    standard_name = ocean_s_coordinate
-    formula_terms = s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc
-    height_formula = height(x,y,z) = depth_c*s(z) + (depth(x,y)-depth_c)*C(z) + eta(x,y) * (1 + (depth_c*s(z) + (depth(x,y)-depth_c)*C(z))/depth(x,y)
-    C_formula = C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)
-    Eta_variableName = zeta
-    S_variableName = s_rho
-    Depth_variableName = h
-    Depth_c_variableName = hc
-    A_variableName = theta_s
-    B_variableName = theta_b
-
+  /*
+   * btestOceanS3
+   * problem is that u is
+   * 
+   * float u(ocean_time=1, s_rho=6, eta_u=120, xi_u=155);
+   * :coordinates = "lon_u lat_u s_rho ocean_time";
+   * 
+   * double s_rho(s_rho=6);
+   * :long_name = "S-coordinate at RHO-points";
+   * :positive = "up";
+   * :standard_name = "ocean_s_coordinate";
+   * :formula_terms = "s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc";
+   * 
+   * which uses zeta:
+   * float zeta(ocean_time=1, eta_rho=120, xi_rho=156);
+   * 
+   * which is 120 x 126 instead of 120 x 125.
+   * 
+   * seems to be an rsignell file. may be motivation for staggered convention
+   * 
+   * OceanS_Transform_s_rho type=Vertical
+   * standard_name = ocean_s_coordinate
+   * formula_terms = s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc
+   * height_formula = height(x,y,z) = depth_c*s(z) + (depth(x,y)-depth_c)*C(z) + eta(x,y) * (1 + (depth_c*s(z) +
+   * (depth(x,y)-depth_c)*C(z))/depth(x,y)
+   * C_formula = C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)
+   * Eta_variableName = zeta
+   * S_variableName = s_rho
+   * Depth_variableName = h
+   * Depth_c_variableName = hc
+   * A_variableName = theta_s
+   * B_variableName = theta_b
+   * 
    */
   @Test
   public void btestOceanS3() throws IOException, InvalidRangeException {
-    String filename = testDir+ "ocean_his.nc";
+    String filename = testDir + "ocean_his.nc";
     _test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit, false);
   }
 
   @Test
   public void btestOceanG1() throws IOException, InvalidRangeException {
-    String filename = testDir+ "ocean_his_g1.nc";
+    String filename = testDir + "ocean_his_g1.nc";
     _test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG1, OceanSG1.class, SimpleUnit.meterUnit, false);
   }
 
   @Test
   public void btestOceanG2() throws IOException, InvalidRangeException {
-    String filename = testDir+ "ocean_his_g2.nc";
+    String filename = testDir + "ocean_his_g2.nc";
     _test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG2, OceanSG2.class, SimpleUnit.meterUnit, false);
   }
 
   @Test
   public void testSigma() throws IOException, InvalidRangeException {
-    String filename = testDir+ "Sigma_LC.nc";
+    String filename = testDir + "Sigma_LC.nc";
     test(filename, "level", "Temperature", null, VerticalCT.Type.Sigma, AtmosSigma.class, SimpleUnit.pressureUnit);
   }
 
   @Test
   public void testExisting3D() throws IOException, InvalidRangeException {
-    String filename = testDir+ "VExisting3D_NUWG.nc";
+    String filename = testDir + "VExisting3D_NUWG.nc";
     test(filename, "VerticalTransform", "rhu_hybr", "record", VerticalCT.Type.Existing3DField, VTfromExistingData.class,
         null);
   }
 
   private VerticalTransform test(String filename, String levName, String varName, String timeName,
-                                 VerticalCT.Type vtype, Class vclass, SimpleUnit unit)
-      throws IOException, InvalidRangeException {
+      VerticalCT.Type vtype, Class vclass, SimpleUnit unit) throws IOException, InvalidRangeException {
 
     return _test(filename, levName, varName, timeName, vtype, vclass, unit, true);
   }
 
   private VerticalTransform _test(String filename, String levName, String varName, String timeName,
-                                 VerticalCT.Type vtype, Class vclass, SimpleUnit unit, boolean varsMatch)
+      VerticalCT.Type vtype, Class vclass, SimpleUnit unit, boolean varsMatch)
       throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     test(ncd, levName, varName, timeName, vtype, vclass, unit, varsMatch);
     ncd.close();
 
-    if (varsMatch) testGrid(filename, varName);
+    if (varsMatch)
+      testGrid(filename, varName);
     return null;
   }
 
   private VerticalTransform test(NetcdfDataset ncd, String levName, String varName, String timeName,
-                                 VerticalCT.Type vtype, Class vclass, SimpleUnit vunit, boolean varsMatch)
+      VerticalCT.Type vtype, Class vclass, SimpleUnit vunit, boolean varsMatch)
       throws IOException, InvalidRangeException {
 
     System.out.printf("file= %s%n", ncd.getLocation());
 
     VariableDS lev = (VariableDS) ncd.findVariable(levName);
     assert lev != null;
-    if (show) System.out.println(" dump of ctv = \n" + lev);
+    if (show)
+      System.out.println(" dump of ctv = \n" + lev);
 
     VariableDS v = (VariableDS) ncd.findVariable(varName);
     assert v != null;
@@ -252,7 +256,8 @@ public class TestTransforms {
     assert vct.getVerticalTransformType() == vtype : vct.getVerticalTransformType();
 
     VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    if (show) System.out.println(" dump of equivilent ctv = \n" + ctv);
+    if (show)
+      System.out.println(" dump of equivilent ctv = \n" + ctv);
 
     VerticalTransform vt = null;
     if (timeName == null) {
@@ -262,7 +267,8 @@ public class TestTransforms {
       assert (null != coordVals);
 
       Section cSection = new Section(coordVals.getShape());
-      if (show) System.out.printf(" coordVal shape = %s %n", cSection);
+      if (show)
+        System.out.printf(" coordVal shape = %s %n", cSection);
       assert varSection.computeSize() == cSection.computeSize();
 
     } else {
@@ -277,9 +283,12 @@ public class TestTransforms {
         ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
         assert (null != coordVals);
         Section cSection = new Section(coordVals.getShape());
-        if (show) System.out.printf("%s: varSection shape = %s %n", v.getFullName(), varSection);
-        if (show) System.out.printf("%s: coordVal shape = %s %n", v.getFullName(), cSection);
-        if (varsMatch) assert varSection.computeSize() == cSection.computeSize();
+        if (show)
+          System.out.printf("%s: varSection shape = %s %n", v.getFullName(), varSection);
+        if (show)
+          System.out.printf("%s: coordVal shape = %s %n", v.getFullName(), cSection);
+        if (varsMatch)
+          assert varSection.computeSize() == cSection.computeSize();
       }
     }
     assert vt != null;
@@ -288,7 +297,8 @@ public class TestTransforms {
     // should be compatible with vunit
     if (vunit != null) {
       String vertCoordUnit = vt.getUnitString();
-      assert vunit.isCompatible(vertCoordUnit) : vertCoordUnit + " not udunits compatible with " + vunit.getUnitString();
+      assert vunit.isCompatible(vertCoordUnit) : vertCoordUnit + " not udunits compatible with "
+          + vunit.getUnitString();
     }
 
     return vt;
@@ -313,7 +323,8 @@ public class TestTransforms {
         s = s.removeRange(0);
       assert s.equals(sv);
     } finally {
-      if (ds != null) ds.close();
+      if (ds != null)
+        ds.close();
     }
   }
 

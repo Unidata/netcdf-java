@@ -19,8 +19,11 @@ public class Index2D extends Index {
   /** array shapes */
   private int shape0, shape1;
 
-  Index2D() { super(2); }
-  public Index2D( int[] shape) {
+  Index2D() {
+    super(2);
+  }
+
+  public Index2D(int[] shape) {
     super(shape);
     precalc();
   }
@@ -36,33 +39,33 @@ public class Index2D extends Index {
     curr1 = current[1];
   }
 
-  public int [] getCurrentCounter() {
+  public int[] getCurrentCounter() {
     current[0] = curr0;
     current[1] = curr1;
     return current.clone();
   }
 
-   public String toString() {
-     return curr0+","+curr1;
-   }
+  public String toString() {
+    return curr0 + "," + curr1;
+  }
 
   public int currentElement() {
-    return offset + curr0*stride0 + curr1*stride1;
+    return offset + curr0 * stride0 + curr1 * stride1;
   }
 
   public int incr() {
-      if (++curr1 >= shape1) {
-        curr1 = 0;
-        if (++curr0 >= shape0) {
-          curr0 = 0;    // rollover !
-        }
+    if (++curr1 >= shape1) {
+      curr1 = 0;
+      if (++curr0 >= shape0) {
+        curr0 = 0; // rollover !
       }
-    return offset + curr0*stride0 + curr1*stride1;
+    }
+    return offset + curr0 * stride0 + curr1 * stride1;
   }
 
 
   public void setDim(int dim, int value) {
-    if (value < 0 || value >= shape[dim])  // check index here
+    if (value < 0 || value >= shape[dim]) // check index here
       throw new ArrayIndexOutOfBoundsException();
     if (dim == 1)
       curr1 = value;
@@ -70,7 +73,7 @@ public class Index2D extends Index {
       curr0 = value;
   }
 
-  public Index set(int[] index){
+  public Index set(int[] index) {
     if (index.length != rank)
       throw new ArrayIndexOutOfBoundsException();
     set0(index[0]);
@@ -79,15 +82,15 @@ public class Index2D extends Index {
   }
 
   public Index set0(int v) {
-    if (v < 0 || v >= shape0)  // check index here
+    if (v < 0 || v >= shape0) // check index here
       throw new ArrayIndexOutOfBoundsException();
     curr0 = v;
     return this;
   }
 
   public Index set1(int v) {
-    if (v < 0 || v >= shape1)  // check index here
-      throw new ArrayIndexOutOfBoundsException("index="+v+" shape="+shape1);
+    if (v < 0 || v >= shape1) // check index here
+      throw new ArrayIndexOutOfBoundsException("index=" + v + " shape=" + shape1);
     curr1 = v;
     return this;
   }
@@ -107,7 +110,7 @@ public class Index2D extends Index {
       throw new ArrayIndexOutOfBoundsException();
     if (v1 < 0 || v1 >= shape1)
       throw new ArrayIndexOutOfBoundsException();
-    return offset + v0*stride0 + v1*stride1;
+    return offset + v0 * stride0 + v1 * stride1;
   }
 
 }

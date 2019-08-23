@@ -14,7 +14,6 @@ import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -43,10 +42,11 @@ class NcepLocalParams {
   @Nullable
   public Grib2Parameter getParameter(int discipline, int category, int number) {
     int key = (discipline << 8) + category;
-    Table params = tableMap.get( key);
+    Table params = tableMap.get(key);
     if (params == null) {
-      params = factory( discipline, category);
-      if (params == null) return null;
+      params = factory(discipline, category);
+      if (params == null)
+        return null;
       tableMap.put(key, params);
     }
     return params.getParameter(number);
@@ -55,26 +55,28 @@ class NcepLocalParams {
   @Nullable
   public String getCategory(int discipline, int category) {
     int key = (discipline << 8) + category;
-    Table params = tableMap.get( key);
+    Table params = tableMap.get(key);
     return (params == null) ? null : params.title;
   }
 
   @Nullable
   ImmutableList<GribTables.Parameter> getParameters(String path) {
     Table table = new Table();
-    if (!table.readParameterTableXml(path)) return null;
+    if (!table.readParameterTableXml(path))
+      return null;
     return table.getParameters();
   }
 
   @Nullable
   private Table factory(int discipline, int category) {
     Table params = new Table();
-    if (!params.readParameterTableFromResource(getTablePath(discipline, category))) return null;
+    if (!params.readParameterTableFromResource(getTablePath(discipline, category)))
+      return null;
     return params;
   }
 
   String getTablePath(int discipline, int category) {
-    return resourcePath + "Table4.2."+discipline+"."+category+".xml";
+    return resourcePath + "Table4.2." + discipline + "." + category + ".xml";
   }
 
   ////////////////////////////////////////////////////
@@ -97,12 +99,13 @@ class NcepLocalParams {
     }
 
     private boolean readParameterTableXml(String path) {
-      if (debugOpen) logger.debug("readParameterTableXml table {}", path);
+      if (debugOpen)
+        logger.debug("readParameterTableXml table {}", path);
       try (InputStream is = GribResourceReader.getInputStream(path)) {
         SAXBuilder builder = new SAXBuilder();
         org.jdom2.Document doc = builder.build(is);
         Element root = doc.getRootElement();
-        paramMap = parseXml(root);  // all at once - thread safe
+        paramMap = parseXml(root); // all at once - thread safe
         return true;
 
       } catch (IOException | JDOMException ioe) {
@@ -112,7 +115,8 @@ class NcepLocalParams {
     }
 
     private boolean readParameterTableFromResource(String resource) {
-      if (debugOpen) logger.debug("readParameterTableFromResource from resource {}", resource);
+      if (debugOpen)
+        logger.debug("readParameterTableFromResource from resource {}", resource);
       ClassLoader cl = this.getClass().getClassLoader();
       try (InputStream is = cl.getResourceAsStream(resource)) {
         if (is == null) {
@@ -122,7 +126,7 @@ class NcepLocalParams {
         SAXBuilder builder = new SAXBuilder();
         org.jdom2.Document doc = builder.build(is);
         Element root = doc.getRootElement();
-        paramMap = parseXml(root);  // all at once - thread safe
+        paramMap = parseXml(root); // all at once - thread safe
         return true;
 
       } catch (IOException | JDOMException ioe) {
@@ -132,15 +136,15 @@ class NcepLocalParams {
     }
 
     /*
-    <parameterMap>
-    <table>Table4.2.0.0</table>
-    <title>Temperature</title>
-    <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-0.shtml</source>
-    <parameter code="0">
-      <shortName>TMP</shortName>
-      <description>Temperature</description>
-      <units>K</units>
-    </parameter>
+     * <parameterMap>
+     * <table>Table4.2.0.0</table>
+     * <title>Temperature</title>
+     * <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-0.shtml</source>
+     * <parameter code="0">
+     * <shortName>TMP</shortName>
+     * <description>Temperature</description>
+     * <units>K</units>
+     * </parameter>
      */
     HashMap<Integer, Grib2Parameter> parseXml(Element root) {
       tableName = root.getChildText("table");
@@ -161,7 +165,8 @@ class NcepLocalParams {
         String abbrev = elem.getChildText("shortName");
         String desc = elem.getChildText("description");
         String units = elem.getChildText("units");
-        if (units == null) units = "";
+        if (units == null)
+          units = "";
 
         String name;
         if (desc.length() > 80 && abbrev != null && !abbrev.equalsIgnoreCase("Validation")) {
@@ -171,23 +176,19 @@ class NcepLocalParams {
           desc = null;
         }
 
-        //   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev) {
+        // public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev) {
         Grib2Parameter parameter = new Grib2Parameter(discipline, category, code, name, units, abbrev, desc);
         result.put(parameter.getNumber(), parameter);
-        if (debug) logger.debug(" {}", parameter);
+        if (debug)
+          logger.debug(" {}", parameter);
       }
       return result;
     }
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("title", title)
-          .add("source", source)
-          .add("tableName", tableName)
-          .add("discipline", discipline)
-          .add("category", category)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("title", title).add("source", source).add("tableName", tableName)
+          .add("discipline", discipline).add("category", category).toString();
     }
   }
 

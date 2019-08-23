@@ -7,7 +7,6 @@ package ucar.nc2.ft;
 
 import java.io.IOException;
 import javax.annotation.Nonnull;
-
 import ucar.ma2.StructureData;
 
 /**
@@ -20,12 +19,14 @@ public interface TrajectoryProfileFeature extends PointFeatureCC, Iterable<Profi
 
   /**
    * The number of profiles along the trajectory.
+   * 
    * @return number of profiles along the trajectory, or -1 if not known.
    */
   int size();
 
   /**
    * The data associated with the Section feature.
+   * 
    * @return the actual data of this section. may be empty, not null.
    */
   @Nonnull
@@ -36,6 +37,7 @@ public interface TrajectoryProfileFeature extends PointFeatureCC, Iterable<Profi
 
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.
+   * 
    * @return true is there is another Section in the iteration.
    * @throws java.io.IOException on read error
    * @deprecated use foreach
@@ -45,6 +47,7 @@ public interface TrajectoryProfileFeature extends PointFeatureCC, Iterable<Profi
   /**
    * Use the internal iterator to get the next ProfileFeature in the iteration.
    * You must call hasNext() before you call this.
+   * 
    * @return the next ProfileFeature in the iteration
    * @throws java.io.IOException on read error
    * @deprecated use foreach
@@ -53,6 +56,7 @@ public interface TrajectoryProfileFeature extends PointFeatureCC, Iterable<Profi
 
   /**
    * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
+   * 
    * @throws java.io.IOException on read error
    * @deprecated use foreach
    */

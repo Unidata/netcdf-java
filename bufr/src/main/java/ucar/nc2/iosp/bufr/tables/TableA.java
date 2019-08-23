@@ -7,7 +7,6 @@ package ucar.nc2.iosp.bufr.tables;
 
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -25,20 +24,20 @@ public class TableA {
   private static Map<Integer, String> tableA = null;
 
   /*
-  <BUFR_19_1_1_TableA_en>
-    <No>27</No>
-    <CodeFigure>28</CodeFigure>
-    <Meaning_en>Precision orbit (satellite)</Meaning_en>
-    <Status>Operational</Status>
-  </BUFR_19_1_1_TableA_en>
-
-   <Exp_BUFRTableA_E>
-    <No>4</No>
-    <CodeFigure>3</CodeFigure>
-    <Meaning_E>Vertical soundings (satellite)</Meaning_E>
-    <Status>Operational</Status>
-  </Exp_BUFRTableA_E>
-  */
+   * <BUFR_19_1_1_TableA_en>
+   * <No>27</No>
+   * <CodeFigure>28</CodeFigure>
+   * <Meaning_en>Precision orbit (satellite)</Meaning_en>
+   * <Status>Operational</Status>
+   * </BUFR_19_1_1_TableA_en>
+   * 
+   * <Exp_BUFRTableA_E>
+   * <No>4</No>
+   * <CodeFigure>3</CodeFigure>
+   * <Meaning_E>Vertical soundings (satellite)</Meaning_E>
+   * <Status>Operational</Status>
+   * </Exp_BUFRTableA_E>
+   */
   static private void init() {
     String filename = BufrTables.RESOURCE_PATH + TABLEA_FILENAME;
     try (InputStream is = CodeFlagTables.class.getResourceAsStream(filename)) {
@@ -56,7 +55,7 @@ public class TableA {
 
         try {
           int code = Integer.parseInt(codeS);
-          map.put(code,  desc);
+          map.put(code, desc);
         } catch (NumberFormatException e) {
           log.debug("NumberFormatException on line " + line + " in " + codeS);
         }
@@ -76,7 +75,8 @@ public class TableA {
    * @return category name, or null if not found
    */
   static public String getDataCategory(int cat) {
-    if (tableA == null) init();
+    if (tableA == null)
+      init();
     String result = tableA.get(cat);
     return result != null ? result : "Unknown category=" + cat;
   }

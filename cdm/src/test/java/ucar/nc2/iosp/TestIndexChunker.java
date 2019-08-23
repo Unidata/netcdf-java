@@ -13,7 +13,6 @@ import junit.framework.TestCase;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -26,7 +25,7 @@ public class TestIndexChunker {
 
   @Test
   public void testFull() throws InvalidRangeException {
-    int[] shape = new int[] {123,22,92,12};
+    int[] shape = new int[] {123, 22, 92, 12};
     Section section = new Section(shape);
     IndexChunker index = new IndexChunker(shape, section);
     assert index.getTotalNelems() == section.computeSize();
@@ -43,7 +42,7 @@ public class TestIndexChunker {
     IndexChunker index = new IndexChunker(full, section);
     assert index.getTotalNelems() == section.computeSize();
     IndexChunker.Chunk chunk = index.next();
-    assert chunk.getNelems() == section.computeSize()/2;
+    assert chunk.getNelems() == section.computeSize() / 2;
   }
 
   @Test
@@ -51,9 +50,9 @@ public class TestIndexChunker {
     Section dataSection = new Section("0:0, 20:39,  0:1353 ");
     Section wantSection = new Section("0:2, 22:3152,0:1350");
     IndexChunkerTiled index = new IndexChunkerTiled(dataSection, wantSection);
-    while(index.hasNext()) {
+    while (index.hasNext()) {
       Layout.Chunk chunk = index.next();
-      System.out.println(" "+chunk);
+      System.out.println(" " + chunk);
     }
   }
 
@@ -62,16 +61,17 @@ public class TestIndexChunker {
     Section dataSection = new Section("0:0, 40:59,  0:1353  ");
     Section wantSection = new Section("0:2, 22:3152,0:1350");
     IndexChunkerTiled index = new IndexChunkerTiled(dataSection, wantSection);
-    while(index.hasNext()) {
+    while (index.hasNext()) {
       Layout.Chunk chunk = index.next();
-      System.out.println(" "+chunk);
+      System.out.println(" " + chunk);
     }
   }
 
   // @Test
   public void testDean() throws IOException {
     Nc4Chunking chunkingStrategy = Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.standard, 6, false);
-    NetcdfFileWriter ncSubsetFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, "C:/tmp/test.nc4", chunkingStrategy);
+    NetcdfFileWriter ncSubsetFile =
+        NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, "C:/tmp/test.nc4", chunkingStrategy);
   }
 
 }

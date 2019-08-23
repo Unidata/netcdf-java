@@ -20,7 +20,6 @@ import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.Assert2;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -28,14 +27,16 @@ public class GribCoverageValidator implements GribDataValidator {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Override
-  public void validate(GribTables cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
+  public void validate(GribTables cust, RandomAccessFile rafData, long dataPos, SubsetParams coords)
+      throws IOException {
     if (cust instanceof Grib1Customizer)
       validateGrib1((Grib1Customizer) cust, rafData, dataPos, coords);
     else
       validateGrib2((Grib2Tables) cust, rafData, dataPos, coords);
   }
 
-  public void validateGrib1(Grib1Customizer cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
+  public void validateGrib1(Grib1Customizer cust, RandomAccessFile rafData, long dataPos, SubsetParams coords)
+      throws IOException {
     rafData.seek(dataPos);
     Grib1Record gr = new Grib1Record(rafData);
     Grib1SectionProductDefinition pds = gr.getPDSsection();
@@ -56,8 +57,8 @@ public class GribCoverageValidator implements GribDataValidator {
     Grib1ParamTime ptime = gr.getParamTime(cust);
     if (ptime.isInterval()) {
       int tinv[] = ptime.getInterval();
-      Assert.assertTrue("time coord lower", tinv[0] <= timeOffset);          // lower <= time
-      Assert.assertTrue("time coord lower", tinv[1] >= timeOffset);          // upper >= time
+      Assert.assertTrue("time coord lower", tinv[0] <= timeOffset); // lower <= time
+      Assert.assertTrue("time coord lower", tinv[1] >= timeOffset); // upper >= time
     } else {
       Assert2.assertNearlyEquals(timeOffset, ptime.getForecastTime());
     }
@@ -71,8 +72,8 @@ public class GribCoverageValidator implements GribDataValidator {
         float lev2 = plevel.getValue2();
         double lower = Math.min(lev1, lev2);
         double upper = Math.max(lev1, lev2);
-        Assert.assertTrue("vert coord lower", lower <= wantVert);          // lower <= vert
-        Assert.assertTrue("vert coord upper", upper >= wantVert);          // upper >= vert
+        Assert.assertTrue("vert coord lower", lower <= wantVert); // lower <= vert
+        Assert.assertTrue("vert coord upper", upper >= wantVert); // upper >= vert
 
       } else {
         Assert2.assertNearlyEquals(lev1, wantVert);
@@ -87,7 +88,8 @@ public class GribCoverageValidator implements GribDataValidator {
 
   }
 
-  public void validateGrib2(Grib2Tables cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
+  public void validateGrib2(Grib2Tables cust, RandomAccessFile rafData, long dataPos, SubsetParams coords)
+      throws IOException {
     Grib2Record gr = Grib2RecordScanner.findRecordByDrspos(rafData, dataPos);
     Grib2Pds pds = gr.getPDS();
 
@@ -102,7 +104,7 @@ public class GribCoverageValidator implements GribDataValidator {
       TimeCoordIntvDateValue tinv = cust.getForecastTimeInterval(gr);
       double[] wantTimeOffsetIntv = coords.getTimeOffsetIntv();
       if (wantTimeOffset != null) {
-        Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset));          // lower <= time
+        Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset)); // lower <= time
         Assert.assertTrue("time coord upper", !tinv.getEnd().isBefore(wantTimeOffset));// upper >= time
 
       } else if (wantTimeOffsetIntv != null) {
@@ -127,10 +129,10 @@ public class GribCoverageValidator implements GribDataValidator {
     if (vertCoordIntv != null) {
       Assert.assertTrue(Grib2Utils.isLayer(pds));
       double level2val = pds.getLevelValue2();
-      //double lower = Math.min(level1val, level2val);
-      //double upper = Math.max(level1val, level2val);
-      //Assert.assertTrue("vert coord lower", lower <= wantVert);          // lower <= vert
-      //Assert.assertTrue("vert coord upper", upper >= wantVert);          // upper >= vert
+      // double lower = Math.min(level1val, level2val);
+      // double upper = Math.max(level1val, level2val);
+      // Assert.assertTrue("vert coord lower", lower <= wantVert); // lower <= vert
+      // Assert.assertTrue("vert coord upper", upper >= wantVert); // upper >= vert
       Assert2.assertNearlyEquals(vertCoordIntv[0], level1val, 1e-6);
       Assert2.assertNearlyEquals(vertCoordIntv[1], level2val, 1e-6);
 

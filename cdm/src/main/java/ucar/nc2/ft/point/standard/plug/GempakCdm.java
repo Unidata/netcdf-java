@@ -16,7 +16,6 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
-
 import java.util.*;
 
 /**
@@ -32,8 +31,10 @@ public class GempakCdm extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     boolean ok = false;
     String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
-    if (conv == null) return false;
-    if (conv.equals(Convention)) ok = true;
+    if (conv == null)
+      return false;
+    if (conv.equals(Convention))
+      ok = true;
 
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
@@ -41,10 +42,12 @@ public class GempakCdm extends TableConfigurerImpl {
       if (toke.equals(Convention))
         ok = true;
     }
-    if (!ok) return false;
+    if (!ok)
+      return false;
 
     CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
-    if (ftype == null) ftype = CF.FeatureType.point;
+    if (ftype == null)
+      ftype = CF.FeatureType.point;
 
     return (ftype == CF.FeatureType.timeSeries) || (ftype == CF.FeatureType.timeSeriesProfile);
   }
@@ -52,7 +55,8 @@ public class GempakCdm extends TableConfigurerImpl {
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
 
     CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
-    if (ftype == null) ftype = CF.FeatureType.point;
+    if (ftype == null)
+      ftype = CF.FeatureType.point;
 
     switch (ftype) {
       case point:
@@ -63,7 +67,7 @@ public class GempakCdm extends TableConfigurerImpl {
         else
           return getStationConfig(ds, errlog);
       case timeSeriesProfile:
-          return getStationProfileConfig(ds, errlog);
+        return getStationProfileConfig(ds, errlog);
       default:
         throw new IllegalStateException("unimplemented feature ftype= " + ftype);
     }
@@ -109,11 +113,13 @@ public class GempakCdm extends TableConfigurerImpl {
     Table.Type stationTableType = stnIsScalar ? Table.Type.Top : Table.Type.Structure;
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
-    stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
-    if (!stnIsScalar) stnTable.dimName = stationDim.getShortName();
+    stnTable.structureType =
+        hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+    if (!stnIsScalar)
+      stnTable.dimName = stationDim.getShortName();
 
-    stnTable.lat= lat.getFullName();
-    stnTable.lon= lon.getFullName();
+    stnTable.lat = lat.getFullName();
+    stnTable.lon = lon.getFullName();
 
     // optional alt coord
     Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
@@ -130,7 +136,8 @@ public class GempakCdm extends TableConfigurerImpl {
 
     if (!stnIsScalar) {
       if (!stnId.getDimension(0).equals(stationDim)) {
-        errlog.format("GempakCdm: Station id (%s) outer dimension must match latitude/longitude dimension (%s)", stnTable.stnId, stationDim);
+        errlog.format("GempakCdm: Station id (%s) outer dimension must match latitude/longitude dimension (%s)",
+            stnTable.stnId, stationDim);
         return null;
       }
     }
@@ -141,7 +148,7 @@ public class GempakCdm extends TableConfigurerImpl {
       errlog.format("GempakCdm: Must have a Time coordinate");
       return null;
     }
-    Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
+    Dimension obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(stn, obs)
 
     Table.Type obsTableType = null;
     Structure multidimStruct = null;
@@ -162,8 +169,8 @@ public class GempakCdm extends TableConfigurerImpl {
     }
 
     if (obsTableType == null) {
-        errlog.format("GempakCdm: Cannot figure out Station/obs table structure");
-        return null;
+      errlog.format("GempakCdm: Cannot figure out Station/obs table structure");
+      return null;
     }
 
     TableConfig obs = new TableConfig(obsTableType, obsDim.getShortName());
@@ -176,8 +183,8 @@ public class GempakCdm extends TableConfigurerImpl {
       obs.structName = multidimStruct.getFullName();
       obs.structureType = TableConfig.StructureType.Structure;
       // if time is not in this structure, need to join it
-      if (multidimStruct.findVariable( time.getShortName()) == null) {
-        obs.addJoin(new JoinArray( time, JoinArray.Type.raw, 0));
+      if (multidimStruct.findVariable(time.getShortName()) == null) {
+        obs.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
       }
     }
 
@@ -185,7 +192,8 @@ public class GempakCdm extends TableConfigurerImpl {
       obs.dimName = obsDim.getShortName();
     }
 
-    if (needFinish) ds.finish();
+    if (needFinish)
+      ds.finish();
     return stnTable;
   }
 
@@ -233,14 +241,14 @@ public class GempakCdm extends TableConfigurerImpl {
       errlog.format("GempakCdm: Must have a Time coordinate");
       return null;
     }
-    Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
+    Dimension obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(stn, obs)
 
     Table.Type obsTableType = Table.Type.Structure;
     Structure multidimStruct = Evaluator.findStructureWithDimensions(ds, stationDim, obsDim);
 
     if (multidimStruct == null) {
-        errlog.format("GempakCdm: Cannot figure out StationAsPoint table structure");
-        return null;
+      errlog.format("GempakCdm: Cannot figure out StationAsPoint table structure");
+      return null;
     }
 
     TableConfig obs = new TableConfig(obsTableType, obsDim.getShortName());
@@ -249,31 +257,33 @@ public class GempakCdm extends TableConfigurerImpl {
     obs.structureType = TableConfig.StructureType.Structure;
     obs.featureType = FeatureType.POINT;
 
-    obs.lat= lat.getFullName();
-    obs.lon= lon.getFullName();
-    obs.time= time.getFullName();
+    obs.lat = lat.getFullName();
+    obs.lon = lon.getFullName();
+    obs.time = time.getFullName();
     if (alt != null)
-       obs.elev = alt.getFullName();
+      obs.elev = alt.getFullName();
 
     List<String> vars = new ArrayList<>(30);
     for (Variable v : ds.getVariables()) {
-      if ((v.getDimension(0) == stationDim) &&
-          ((v.getRank() == 1) || ((v.getRank() == 2) && (v.getDataType() == DataType.CHAR)))) 
-          vars.add(v.getShortName());
+      if ((v.getDimension(0) == stationDim)
+          && ((v.getRank() == 1) || ((v.getRank() == 2) && (v.getDataType() == DataType.CHAR))))
+        vars.add(v.getShortName());
     }
 
     StructureDS s = new StructurePseudoDS(ds, null, "stnStruct", vars, stationDim);
     obs.addJoin(new JoinMuiltdimStructure(s, obsDim.getLength()));
-    obs.addJoin(new JoinArray( time, JoinArray.Type.modulo, obsDim.getLength()));
+    obs.addJoin(new JoinArray(time, JoinArray.Type.modulo, obsDim.getLength()));
 
-    if (needFinish) ds.finish();
+    if (needFinish)
+      ds.finish();
     return obs;
   }
 
   protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig stnTable = makeStationTable(ds, errlog);
-    if (stnTable == null) return null;
-    Dimension stationDim = ds.findDimension( stnTable.dimName);
+    if (stnTable == null)
+      return null;
+    Dimension stationDim = ds.findDimension(stnTable.dimName);
     stnTable.featureType = FeatureType.STATION_PROFILE;
 
     // obs table
@@ -282,12 +292,12 @@ public class GempakCdm extends TableConfigurerImpl {
       errlog.format("GempakCdm: Must have a Time coordinate");
       return null;
     }
-    Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
+    Dimension obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(stn, obs)
 
     Structure multidimStruct = Evaluator.findStructureWithDimensions(ds, stationDim, obsDim);
     if (multidimStruct == null) {
-        errlog.format("GempakCdm: Cannot figure out Station/obs table structure");
-        return null;
+      errlog.format("GempakCdm: Cannot figure out Station/obs table structure");
+      return null;
     }
 
     TableConfig timeTable = new TableConfig(Table.Type.MultidimStructure, obsDim.getShortName());
@@ -302,16 +312,16 @@ public class GempakCdm extends TableConfigurerImpl {
     TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, obsDim.getShortName());
     Structure nestedStruct = Evaluator.findNestedStructure(multidimStruct);
     if (nestedStruct == null) {
-        errlog.format("GempakCdm: Cannot find nested Structure for profile");
-        return null;
+      errlog.format("GempakCdm: Cannot find nested Structure for profile");
+      return null;
     }
 
     obsTable.structName = nestedStruct.getFullName();
     obsTable.nestedTableName = nestedStruct.getShortName();
     Variable elev = findZAxisNotStationAlt(ds);
-     if (elev == null) {
-        errlog.format("GempakCdm: Cannot find profile elevation variable");
-        return null;
+    if (elev == null) {
+      errlog.format("GempakCdm: Cannot find profile elevation variable");
+      return null;
     }
     obsTable.elev = elev.getShortName();
     timeTable.addChild(obsTable);
@@ -353,13 +363,15 @@ public class GempakCdm extends TableConfigurerImpl {
     stnTable.structureType = TableConfig.StructureType.PsuedoStructure;
     stnTable.dimName = stationDim.getShortName();
 
-    stnTable.lat= lat.getFullName();
-    stnTable.lon= lon.getFullName();
+    stnTable.lat = lat.getFullName();
+    stnTable.lon = lon.getFullName();
 
     stnTable.stnId = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, stationDim, errlog);
     stnTable.stnDesc = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, stationDim, errlog);
-    stnTable.stnWmoId = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, stationDim, errlog);
-    stnTable.stnAlt = Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);
+    stnTable.stnWmoId =
+        Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, stationDim, errlog);
+    stnTable.stnAlt =
+        Evaluator.findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);
 
     if (stnTable.stnId == null) {
       errlog.format("Must have a Station id variable with standard name station_id");
@@ -367,7 +379,8 @@ public class GempakCdm extends TableConfigurerImpl {
     }
     Variable stnId = ds.findVariable(stnTable.stnId);
     if (!stnId.getDimension(0).equals(stationDim)) {
-      errlog.format("GempakCdm: Station id (%s) outer dimension must match latitude/longitude dimension (%s)", stnTable.stnId, stationDim);
+      errlog.format("GempakCdm: Station id (%s) outer dimension must match latitude/longitude dimension (%s)",
+          stnTable.stnId, stationDim);
       return null;
     }
     return stnTable;

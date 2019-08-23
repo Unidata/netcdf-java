@@ -20,7 +20,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.*;
-
 import java.io.*;
 import java.util.*;
 
@@ -44,13 +43,15 @@ public class SequenceHelper {
 
   /**
    * Constructor.
+   * 
    * @param ncfile the netccdf file
    * @param typedDataVariables list of data variables; all record variables will be added to this list, except . You
-   *    can remove extra
+   *        can remove extra
    * @throws IllegalArgumentException if ncfile has no unlimited dimension and recDimName is null.
    */
-  public SequenceHelper(NetcdfDataset ncfile, boolean isProfile, StructureDS sequenceOuter, StructureDS sequenceInner, Variable latVar, Variable lonVar, Variable altVar,
-          Variable timeVar, List typedDataVariables, StringBuffer errBuffer) {
+  public SequenceHelper(NetcdfDataset ncfile, boolean isProfile, StructureDS sequenceOuter, StructureDS sequenceInner,
+      Variable latVar, Variable lonVar, Variable altVar, Variable timeVar, List typedDataVariables,
+      StringBuffer errBuffer) {
 
     this.ncfile = ncfile;
     this.isProfile = isProfile;
@@ -67,7 +68,7 @@ public class SequenceHelper {
       if (refFile instanceof DODSNetcdfFile)
         dodsFile = (DODSNetcdfFile) refFile;
       else if (refFile instanceof NetcdfDataset)
-        refFile = ((NetcdfDataset)refFile).getReferencedFile();
+        refFile = ((NetcdfDataset) refFile).getReferencedFile();
       else
         throw new IllegalArgumentException("Must be a DODSNetcdfFile");
     }
@@ -77,13 +78,13 @@ public class SequenceHelper {
     List recordMembers = sequenceOuter.getVariables();
     for (int i = 0; i < recordMembers.size(); i++) {
       Variable v = (Variable) recordMembers.get(i);
-      typedDataVariables.add( v);
+      typedDataVariables.add(v);
     }
 
     recordMembers = sequenceInner.getVariables();
     for (int i = 0; i < recordMembers.size(); i++) {
       Variable v = (Variable) recordMembers.get(i);
-      typedDataVariables.add( v);
+      typedDataVariables.add(v);
     }
 
     typedDataVariables.remove(latVar);
@@ -93,25 +94,27 @@ public class SequenceHelper {
     typedDataVariables.remove(sequenceInner);
   }
 
-  public void setTimeUnit( DateUnit timeUnit) {
+  public void setTimeUnit(DateUnit timeUnit) {
     this.timeUnit = timeUnit;
   }
 
   public DateUnit getTimeUnit() {
-    return( this.timeUnit );
+    return (this.timeUnit);
   }
 
-  /* private Variable getDODSVariable( Variable v) {
-    while (true) {
-      if ((v instanceof DODSVariable) || (v instanceof DODSStructure))
-        return v;
-      else {
-        if (v == v.getIOVar())
-         throw new IllegalStateException("Circular reference");
-        v = v.getIOVar();
-      }
-    }
-  } */
+  /*
+   * private Variable getDODSVariable( Variable v) {
+   * while (true) {
+   * if ((v instanceof DODSVariable) || (v instanceof DODSStructure))
+   * return v;
+   * else {
+   * if (v == v.getIOVar())
+   * throw new IllegalStateException("Circular reference");
+   * v = v.getIOVar();
+   * }
+   * }
+   * }
+   */
 
   public List getData(CancelTask cancel) throws IOException {
     String CE = sequenceOuter.getShortName();
@@ -119,51 +122,52 @@ public class SequenceHelper {
     extractMembers(as);
     int n = (int) as.getSize();
     ArrayList dataList = new ArrayList(n);
-    for (int i=0; i<n; i++)
-      dataList.add( new SeqPointObs( i, as.getStructureData(i)));
+    for (int i = 0; i < n; i++)
+      dataList.add(new SeqPointObs(i, as.getStructureData(i)));
     return dataList;
   }
 
   public List getData(LatLonRect boundingBox, CancelTask cancel) throws IOException {
-    String CE = sequenceOuter.getShortName() + "&" + makeBB( boundingBox);
+    String CE = sequenceOuter.getShortName() + "&" + makeBB(boundingBox);
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(sequenceOuter, CE);
     extractMembers(as);
     int n = (int) as.getSize();
     ArrayList dataList = new ArrayList(n);
-    for (int i=0; i<n; i++)
-      dataList.add( new SeqPointObs( i, as.getStructureData(i)));
+    for (int i = 0; i < n; i++)
+      dataList.add(new SeqPointObs(i, as.getStructureData(i)));
     return dataList;
 
   }
 
   public List getData(LatLonRect boundingBox, Date start, Date end, CancelTask cancel) throws IOException {
-    String CE = sequenceOuter.getShortName() + "&" + makeBB( boundingBox) + "&"+ makeTimeRange( start, end);
+    String CE = sequenceOuter.getShortName() + "&" + makeBB(boundingBox) + "&" + makeTimeRange(start, end);
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(sequenceOuter, CE);
     extractMembers(as);
 
     int n = (int) as.getSize();
     ArrayList dataList = new ArrayList(n);
-    for (int i=0; i<n; i++)
-      dataList.add( new SeqPointObs( i, as.getStructureData(i)));
+    for (int i = 0; i < n; i++)
+      dataList.add(new SeqPointObs(i, as.getStructureData(i)));
     return dataList;
   }
 
-  private String makeBB( LatLonRect bb) {
-    return latVar.getShortName()+">="+bb.getLowerLeftPoint().getLatitude()+"&"+
-           latVar.getShortName()+"<="+bb.getUpperRightPoint().getLatitude()+"&"+
-           lonVar.getShortName()+">="+bb.getLowerLeftPoint().getLongitude()+"&"+
-           lonVar.getShortName()+"<="+bb.getUpperRightPoint().getLongitude();
+  private String makeBB(LatLonRect bb) {
+    return latVar.getShortName() + ">=" + bb.getLowerLeftPoint().getLatitude() + "&" + latVar.getShortName() + "<="
+        + bb.getUpperRightPoint().getLatitude() + "&" + lonVar.getShortName() + ">="
+        + bb.getLowerLeftPoint().getLongitude() + "&" + lonVar.getShortName() + "<="
+        + bb.getUpperRightPoint().getLongitude();
   }
 
-  private String makeTimeRange( Date start, Date end) {
+  private String makeTimeRange(Date start, Date end) {
     double startValue = timeUnit.makeValue(start);
     double endValue = timeUnit.makeValue(end);
-    return timeVar.getShortName()+">="+startValue+"&"+   // LOOK
-           timeVar.getShortName()+"<="+endValue;
+    return timeVar.getShortName() + ">=" + startValue + "&" + // LOOK
+        timeVar.getShortName() + "<=" + endValue;
   }
 
   private StructureMembers.Member latMember, lonMember, innerMember, altMember, timeMember;
-  private void extractMembers( ArrayStructure as) {
+
+  private void extractMembers(ArrayStructure as) {
     StructureMembers members = as.getStructureMembers();
     latMember = members.findMember(latVar.getShortName());
     lonMember = members.findMember(lonVar.getShortName());
@@ -183,15 +187,17 @@ public class SequenceHelper {
   }
 
 
-  /* private class SeqDatatypeIterator extends DatatypeIterator {
-    protected Object makeDatatypeWithData(int recnum, StructureData sdata) {
-      return new SeqPointObs( recnum, sdata);
-    }
-
-    SeqDatatypeIterator(Structure struct, int bufferSize) {
-      super( struct, bufferSize);
-    }
-  } */
+  /*
+   * private class SeqDatatypeIterator extends DatatypeIterator {
+   * protected Object makeDatatypeWithData(int recnum, StructureData sdata) {
+   * return new SeqPointObs( recnum, sdata);
+   * }
+   * 
+   * SeqDatatypeIterator(Structure struct, int bufferSize) {
+   * super( struct, bufferSize);
+   * }
+   * }
+   */
 
   ////////////////////////////////////////////////////////////
   public class SeqPointObs extends PointObsDatatypeImpl {
@@ -203,13 +209,14 @@ public class SequenceHelper {
     /**
      * Constructor for the case where you keep track of the location, time of each record, but not the data.
      */
-    protected SeqPointObs( ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime, int recno) {
-      super( location, obsTime, nomTime);
+    protected SeqPointObs(ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime, int recno) {
+      super(location, obsTime, nomTime);
       this.recno = recno;
     }
 
     /**
      * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
+     * 
      * @param recno record number LOOK why do we need ??
      * @param sdata the structure data
      */
@@ -217,8 +224,8 @@ public class SequenceHelper {
       this.recno = recno;
       this.sdata = sdata;
 
-      double lat = sdata.convertScalarDouble( latMember);
-      double lon = sdata.convertScalarDouble( lonMember);
+      double lat = sdata.convertScalarDouble(latMember);
+      double lon = sdata.convertScalarDouble(lonMember);
 
       // double lat = sdata.convertScalarDouble(latMember);
       // double lon = sdata.convertScalarDouble(lonMember);
@@ -227,29 +234,29 @@ public class SequenceHelper {
       double alt = 0.0;
 
       if (isProfile) {
-        obsTime = sdata.convertScalarDouble( timeMember); // sdata.convertScalarDouble(timeMember);
-        alt = inner.convertScalarDouble( altMember); // inner.convertScalarDouble(altMember);
+        obsTime = sdata.convertScalarDouble(timeMember); // sdata.convertScalarDouble(timeMember);
+        alt = inner.convertScalarDouble(altMember); // inner.convertScalarDouble(altMember);
       } else {
-        obsTime = inner.convertScalarDouble( timeMember); // inner.convertScalarDouble(timeMember);
-        alt = sdata.convertScalarDouble( altMember); // sdata.convertScalarDouble(altMember);
+        obsTime = inner.convertScalarDouble(timeMember); // inner.convertScalarDouble(timeMember);
+        alt = sdata.convertScalarDouble(altMember); // sdata.convertScalarDouble(altMember);
       }
 
       nomTime = obsTime;
-      location = new ucar.unidata.geoloc.EarthLocationImpl( lat, lon, alt);
+      location = new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {
       if (llpt == null)
-         llpt = new LatLonPointImpl( location.getLatitude(), location.getLongitude());
+        llpt = new LatLonPointImpl(location.getLatitude(), location.getLongitude());
       return llpt;
     }
 
     public Date getNominalTimeAsDate() {
-      return timeUnit.makeDate( getNominalTime());
+      return timeUnit.makeDate(getNominalTime());
     }
 
     public Date getObservationTimeAsDate() {
-      return timeUnit.makeDate( getObservationTime());
+      return timeUnit.makeDate(getObservationTime());
     }
 
     public StructureData getData() throws IOException {
@@ -261,7 +268,7 @@ public class SequenceHelper {
   /////////////////////////
 
   public DataIterator getDataIterator(int bufferSize) throws IOException {
-    return new DataIteratorAdapter( getData(null).iterator()); // LOOK
+    return new DataIteratorAdapter(getData(null).iterator()); // LOOK
   }
 
 }

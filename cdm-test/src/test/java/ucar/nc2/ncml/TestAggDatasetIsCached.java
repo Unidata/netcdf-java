@@ -14,7 +14,6 @@ import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.EnumSet;
@@ -47,18 +46,18 @@ public class TestAggDatasetIsCached {
   public void TestAggCached() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
-    //String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
+    // String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
     boolean ok = true;
 
     System.out.printf("==========%n");
-    for (int i=0; i<2; i++) {
+    for (int i = 0; i < 2; i++) {
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
       NetcdfDataset ncd2 = NetcdfDataset.wrap(ncd, NetcdfDataset.getEnhanceAll());
       Formatter out = new Formatter();
       ok &= CompareNetcdf2.compareFiles(ncd, ncd2, out, false, false, false);
       System.out.printf("----------------%nfile=%s%n%s%n", filename, out);
 
-      EnumSet<NetcdfDataset.Enhance> modes =  ncd2.getEnhanceMode();
+      EnumSet<NetcdfDataset.Enhance> modes = ncd2.getEnhanceMode();
       showModes(modes);
       ncd2.close();
       System.out.printf("==========%n");
@@ -74,7 +73,8 @@ public class TestAggDatasetIsCached {
     assert cacheFiles.size() == 6;
     boolean gotit = false;
     for (String name : cacheFiles) {
-      if (name.endsWith("wqb.ncml")) gotit = true;
+      if (name.endsWith("wqb.ncml"))
+        gotit = true;
     }
     assert gotit;
   }
@@ -89,39 +89,44 @@ public class TestAggDatasetIsCached {
   @Test
   // check if caching works
   public void TestAggCached2() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";  // joinExisting
+    String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml"; // joinExisting
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
 
-    for (int i=0; i<2; i++) {
-      System.out.printf("%n=====Iteration %d =====%n", i+1);
+    for (int i = 0; i < 2; i++) {
+      System.out.printf("%n=====Iteration %d =====%n", i + 1);
       NetcdfDataset nc1 = NetcdfDataset.acquireDataset(durl, true, null); // put/get in the cache
       System.out.printf("-----------------------nc object == %d%n", nc1.hashCode());
 
       NetcdfDataset nc2 = new NetcdfDataset(nc1);
       System.out.printf("---new NetcdfDataset(nc1) object == %d%n", nc2.hashCode());
-      FeatureDataset fd2 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc2, null, new Formatter(System.out));
-      assert fd2 !=  null;  // no longer fails
+      FeatureDataset fd2 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc2,
+          null, new Formatter(System.out));
+      assert fd2 != null; // no longer fails
       System.out.printf("---FeatureDataset not failed%n");
 
       Formatter out = new Formatter();
       boolean ok = CompareNetcdf2.compareFiles(nc1, nc2, out, false, false, false);
-      System.out.printf("---fd compare ok %s%n%s%n", ok,out);
+      System.out.printf("---fd compare ok %s%n%s%n", ok, out);
 
       NetcdfDataset nc3 = NetcdfDataset.wrap(nc1, NetcdfDataset.getEnhanceAll());
       System.out.printf("---NetcdfDataset.wrap(nc1, enhance) object == %d%n", nc3.hashCode());
-      FeatureDataset fd3 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc3, null, new Formatter(System.out));
+      FeatureDataset fd3 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc3,
+          null, new Formatter(System.out));
       assert fd3 != null;
       System.out.printf("---FeatureDataset not failed %d%n", i);
 
-      /* out = new Formatter();
-      ok = CompareNetcdf2.compareFiles(nc1, nc3, out, false, false, false);
-      allok &= ok;
-      System.out.printf("---fd compare ok %s iter %d%n", ok, i);
-      System.out.printf("--------------%nfile=%s%n%s%n", filename, out); */
+      /*
+       * out = new Formatter();
+       * ok = CompareNetcdf2.compareFiles(nc1, nc3, out, false, false, false);
+       * allok &= ok;
+       * System.out.printf("---fd compare ok %s iter %d%n", ok, i);
+       * System.out.printf("--------------%nfile=%s%n%s%n", filename, out);
+       */
 
       NetcdfDataset nc4 = NetcdfDataset.wrap(nc1, null);
       System.out.printf("---NetcdfDataset.wrap(nc1, null) object == %d%n", nc4.hashCode());
-      FeatureDataset fd4 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc4, null, new Formatter(System.err));
+      FeatureDataset fd4 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc4,
+          null, new Formatter(System.err));
       assert fd4 != null;
       System.out.printf("---FeatureDataset not failed%n");
 
@@ -133,12 +138,14 @@ public class TestAggDatasetIsCached {
   }
 
 
-    /* @Test
-  public void testProblem() throws Exception {
-    show = true;
-    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, -1, -1));
-    openWithEnhance( TestDir.cdmUnitTestDir+"/ft/grid/cg/cg.ncml");
-    Aggregation.setPersistenceCache(null);
-  } */
+  /*
+   * @Test
+   * public void testProblem() throws Exception {
+   * show = true;
+   * Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, -1, -1));
+   * openWithEnhance( TestDir.cdmUnitTestDir+"/ft/grid/cg/cg.ncml");
+   * Aggregation.setPersistenceCache(null);
+   * }
+   */
 
 }

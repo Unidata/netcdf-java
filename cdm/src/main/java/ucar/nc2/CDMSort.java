@@ -7,17 +7,13 @@ package ucar.nc2;
 
 /**
  * Enumeration of the kinds of nodes in a CDM model.
+ * 
  * @link CDMNode.java
  *
  * @author Dennis Heimbigner
  */
 
 public enum CDMSort {
-    ATTRIBUTE,
-    DIMENSION,
-    ENUMERATION,
-    VARIABLE, // Atomic
-    SEQUENCE,
-    STRUCTURE,
-    GROUP
+  ATTRIBUTE, DIMENSION, ENUMERATION, VARIABLE, // Atomic
+  SEQUENCE, STRUCTURE, GROUP
 }

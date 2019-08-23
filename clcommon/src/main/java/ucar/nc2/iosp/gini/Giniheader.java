@@ -13,7 +13,6 @@ import ucar.unidata.geoloc.projection.Mercator;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.unidata.util.Parameter;
-
 import java.io.*;
 import java.util.*;
 import java.util.zip.Inflater;
@@ -30,9 +29,9 @@ import java.nio.*;
 class Giniheader {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Giniheader.class);
 
-  static private final int GINI_PIB_LEN = 21;   // gini product identification block
-  static private final int GINI_PDB_LEN = 512;  // gini product description block
-  static private final int GINI_HED_LEN = GINI_PDB_LEN + GINI_PIB_LEN;  // gini product header
+  static private final int GINI_PIB_LEN = 21; // gini product identification block
+  static private final int GINI_PDB_LEN = 512; // gini product description block
+  static private final int GINI_HED_LEN = GINI_PDB_LEN + GINI_PIB_LEN; // gini product header
   static private final double DEG_TO_RAD = 0.017453292;
 
   private boolean debug = false;
@@ -49,11 +48,12 @@ class Giniheader {
 
   static private int findWMOHeader(String pib) {
     int pos = pib.indexOf("KNES");
-    if (pos == -1) pos = pib.indexOf("CHIZ");
+    if (pos == -1)
+      pos = pib.indexOf("CHIZ");
 
-    if (pos != -1) {                    /* 'KNES' or 'CHIZ' found         */
-      pos = pib.indexOf("\r\r\n");    /* ----- UPC mod 20030710 -----   */
-      if (pos != -1) {                 /* CR CR NL found             */
+    if (pos != -1) { /* 'KNES' or 'CHIZ' found */
+      pos = pib.indexOf("\r\r\n"); /* ----- UPC mod 20030710 ----- */
+      if (pos != -1) { /* CR CR NL found */
         pos = pos + 3;
       }
     } else {
@@ -98,7 +98,8 @@ class Giniheader {
       inflater.setInput(b, pos, GINI_HED_LEN);
       try {
         int resultLength = inflater.inflate(buf, 0, GINI_HED_LEN);
-        if (resultLength != GINI_HED_LEN) log.warn("GINI: Zlib inflated image header size error");
+        if (resultLength != GINI_HED_LEN)
+          log.warn("GINI: Zlib inflated image header size error");
       } catch (DataFormatException ex) {
         log.error("ERROR on inflation " + ex.getMessage());
         ex.printStackTrace();
@@ -125,14 +126,14 @@ class Giniheader {
   }
 
   void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile) throws IOException {
-    int proj;                        /* projection type indicator     */
-                                            /* 1 - Mercator                  */
-                                            /* 3 - Lambert Conf./Tangent Cone*/
-                                            /* 5 - Polar Stereographic       */
+    int proj; /* projection type indicator */
+    /* 1 - Mercator */
+    /* 3 - Lambert Conf./Tangent Cone */
+    /* 5 - Polar Stereographic */
 
-    int ent_id;                      /* GINI creation entity          */
-    int sec_id;                      /* GINI sector ID                */
-    int phys_elem;                   /* 1 - Visible, 2- 3.9IR, 3 - 6.7IR ..*/
+    int ent_id; /* GINI creation entity */
+    int sec_id; /* GINI sector ID */
+    int phys_elem; /* 1 - Visible, 2- 3.9IR, 3 - 6.7IR .. */
     int nx;
     int ny;
     int pole;
@@ -142,7 +143,7 @@ class Giniheader {
     int ghour;
     int gminute;
     int gsecond;
-    double lonv;                        /* meridian parallel to y-axis */
+    double lonv; /* meridian parallel to y-axis */
     double lon1 = 0.0, lon2 = 0.0, lat1 = 0.0, lat2 = 0.0;
     double latt;
     double imageScale = 0.0;
@@ -155,7 +156,7 @@ class Giniheader {
 
     bos.position(0);
 
-    //sat_id = (int )( raf.readByte());
+    // sat_id = (int )( raf.readByte());
     byte nv = bos.get();
     att = new Attribute("source_id", nv);
     ncfile.addAttribute(null, att);
@@ -178,7 +179,7 @@ class Giniheader {
     bos.position(bos.position() + 4);
 
     gyear = (int) (bos.get());
-    gyear += (gyear < 50) ? 2000 : 1900; //TODO: Find example where this hack is necessary
+    gyear += (gyear < 50) ? 2000 : 1900; // TODO: Find example where this hack is necessary
     gmonth = (int) (bos.get());
     gday = (int) (bos.get());
     ghour = (int) (bos.get());
@@ -206,24 +207,24 @@ class Giniheader {
     taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     double[] tdata = new double[1];
     tdata[0] = cal.getTimeInMillis();
-    Array dataA = Array.factory( DataType.DOUBLE, new int[]{1}, tdata);
+    Array dataA = Array.factory(DataType.DOUBLE, new int[] {1}, tdata);
     taxis.setCachedData(dataA, false);
     DateFormatter formatter = new DateFormatter();
     taxis.addAttribute(new Attribute(CDM.UNITS, "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
     ncfile.addVariable(null, taxis);
 
-    //att = new Attribute( "Time", dstring);
-    //this.ncfile.addAttribute(null, att);
+    // att = new Attribute( "Time", dstring);
+    // this.ncfile.addAttribute(null, att);
     ncfile.addAttribute(null, new Attribute("time_coverage_start", dstring));
     ncfile.addAttribute(null, new Attribute("time_coverage_end", dstring));
-    bos.get();   /* skip a byte for hundreds of seconds */
+    bos.get(); /* skip a byte for hundreds of seconds */
 
     nv = bos.get();
     proj = (int) nv;
 
     /*
-    ** Get grid dimensions
-    */
+     ** Get grid dimensions
+     */
 
     nx = bos.getShort();
     att = new Attribute("NX", nx);
@@ -238,10 +239,10 @@ class Giniheader {
 
     switch (proj) {
 
-      case 1:                                                    /* Mercator */
+      case 1: /* Mercator */
         /*
-        ** Get the latitude and longitude of first and last "grid" points
-        */
+         ** Get the latitude and longitude of first and last "grid" points
+         */
 
         /* Latitude of first grid point */
         lat1 = readScaledInt(bos);
@@ -264,27 +265,31 @@ class Giniheader {
         ncfile.addAttribute(null, att);
 
         /*
-        ** Hack to catch incorrect sign of lon2 in header.
-        */
+         ** Hack to catch incorrect sign of lon2 in header.
+         */
 
-        //    if ( lon1 > 0.0 && lon2 < 0.0 ) lon2 *= -1;
+        // if ( lon1 > 0.0 && lon2 < 0.0 ) lon2 *= -1;
         double lon_1 = lon1;
         double lon_2 = lon2;
-        if (lon1 < 0) lon_1 += 360.0;
-        if (lon2 < 0) lon_2 += 360.0;
+        if (lon1 < 0)
+          lon_1 += 360.0;
+        if (lon2 < 0)
+          lon_2 += 360.0;
 
         lonv = (lon_1 + lon_2) / 2.0;
 
-        if (lonv > 180.0) lonv -= 360.0;
-        if (lonv < -180.0) lonv += 360.0;
+        if (lonv > 180.0)
+          lonv -= 360.0;
+        if (lonv < -180.0)
+          lonv += 360.0;
         /*
-        ** Get the "Latin" parameter.  The ICD describes this value as:
-        ** "Latin - The latitude(s) at which the Mercator projection cylinder
-        ** intersects the earth."  It should read that this is the latitude
-        ** at which the image resolution is that defined by octet 41.
-        */
+         ** Get the "Latin" parameter. The ICD describes this value as:
+         ** "Latin - The latitude(s) at which the Mercator projection cylinder
+         ** intersects the earth." It should read that this is the latitude
+         ** at which the image resolution is that defined by octet 41.
+         */
         bos.getInt(); /* skip 4 bytes */
-        bos.get();    /* skip 1 byte */
+        bos.get(); /* skip 1 byte */
 
         /* Latitude of proj cylinder intersects */
         latin = readScaledInt(bos);
@@ -294,17 +299,17 @@ class Giniheader {
         projection = new Mercator(lonv, latin);
         break;
 
-      case 3:                               /* Lambert Conformal             */
-      case 5:                               /* Polar Stereographic           */
+      case 3: /* Lambert Conformal */
+      case 5: /* Polar Stereographic */
         /*
-        ** Get lat/lon of first grid point
-        */
+         ** Get lat/lon of first grid point
+         */
         lat1 = readScaledInt(bos);
         lon1 = readScaledInt(bos);
         /*
-        ** Get Lov - the orientation of the grid; i.e. the east longitude of
-        ** the meridian which is parallel to the y-aixs
-        */
+         ** Get Lov - the orientation of the grid; i.e. the east longitude of
+         ** the meridian which is parallel to the y-aixs
+         */
         bos.get(); /* skip one byte */
 
         lonv = readScaledInt(bos);
@@ -313,8 +318,8 @@ class Giniheader {
         ncfile.addAttribute(null, att);
 
         /*
-        ** Get distance increment of grid
-        */
+         ** Get distance increment of grid
+         */
         dxKm = readScaledInt(bos);
         att = new Attribute("DxKm", dxKm);
         ncfile.addAttribute(null, att);
@@ -325,27 +330,29 @@ class Giniheader {
 
         /* calculate the lat2 and lon2 */
         if (proj == 5) {
-          latt = 60.0;            /* Fixed for polar stereographic */
+          latt = 60.0; /* Fixed for polar stereographic */
           imageScale = (1. + Math.sin(DEG_TO_RAD * latt)) / 2.;
         }
 
         lat2 = lat1 + dyKm * (ny - 1) / 111.26;
 
         /* Convert to east longitude */
-        if (lonv < 0.) lonv += 360.;
-        if (lon1 < 0.) lon1 += 360.;
+        if (lonv < 0.)
+          lonv += 360.;
+        if (lon1 < 0.)
+          lon1 += 360.;
 
         lon2 = lon1 + dxKm * (nx - 1) / 111.26 * Math.cos(DEG_TO_RAD * lat1);
 
         /*
-        ** Convert to normal longitude to McIDAS convention
-        */
+         ** Convert to normal longitude to McIDAS convention
+         */
         lonv = (lonv > 180.) ? -(360. - lonv) : lonv;
         lon1 = (lon1 > 180.) ? -(360. - lon1) : lon1;
         lon2 = (lon2 > 180.) ? -(360. - lon2) : lon2;
         /*
-        ** Check high bit of octet for North or South projection center
-        */
+         ** Check high bit of octet for North or South projection center
+         */
         nv = bos.get();
         pole = (int) nv;
         pole = (pole > 127) ? -1 : 1;
@@ -383,32 +390,32 @@ class Giniheader {
     ncfile.addAttribute(null, new Attribute("geospatial_lat_max", lat2));
     ncfile.addAttribute(null, new Attribute("geospatial_lon_min", lon1));
     ncfile.addAttribute(null, new Attribute("geospatial_lon_max", lon2));
-    //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
-    //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
+    // this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
+    // this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
 
     /*
      * Get the image resolution.
      */
-    bos.position(41);  /* jump to 42 bytes of PDB */
-    nv = bos.get();      /* Res [km] */
+    bos.position(41); /* jump to 42 bytes of PDB */
+    nv = bos.get(); /* Res [km] */
     att = new Attribute("imageResolution", nv);
     ncfile.addAttribute(null, att);
     // if(proj == 1)
-    //     dyKm = nv.doubleValue()/dyKm;
+    // dyKm = nv.doubleValue()/dyKm;
     /* compression flag 43 byte */
 
-    nv = bos.get();      /* Res [km] */
+    nv = bos.get(); /* Res [km] */
     att = new Attribute("compressionFlag", nv);
     ncfile.addAttribute(null, att);
 
     if (DataType.unsignedByteToShort(nv) == 128) {
       Z_type = 2;
-      //out.println( "ReadNexrInfo:: This is a Z file ");
+      // out.println( "ReadNexrInfo:: This is a Z file ");
     }
 
-   /* new 47 - 60 */
+    /* new 47 - 60 */
     bos.position(46);
-    nv = bos.get();      /* Cal indicator */
+    nv = bos.get(); /* Cal indicator */
     int navcal = DataType.unsignedByteToShort(nv);
     int[] calcods = null;
     if (navcal == 128)
@@ -439,18 +446,20 @@ class Giniheader {
 
     // size and beginning data position in file
     long begin = dataStart;
-    if (debug) log.warn(" name= " + vname + " velems=" + var.getSize() + " begin= " + begin + "\n");
+    if (debug)
+      log.warn(" name= " + vname + " velems=" + var.getSize() + " begin= " + begin + "\n");
     if (navcal == 128) {
       var.setDataType(DataType.FLOAT);
       var.setSPobject(new Vinfo(begin, nx, ny, Z_type, calcods));
-     /*   var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
-        int numer = calcods[0] - calcods[1];
-        int denom = calcods[2] - calcods[3];
-        float a  = (numer*1.f) / (1.f*denom);
-        float b  = calcods[0] - a * calcods[2];
-        var.addAttribute( new Attribute("scale_factor", new Float(a)));
-        var.addAttribute( new Attribute("add_offset", new Float(b)));
-      */
+      /*
+       * var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+       * int numer = calcods[0] - calcods[1];
+       * int denom = calcods[2] - calcods[3];
+       * float a = (numer*1.f) / (1.f*denom);
+       * float b = calcods[0] - a * calcods[2];
+       * var.addAttribute( new Attribute("scale_factor", new Float(a)));
+       * var.addAttribute( new Attribute("add_offset", new Float(b)));
+       */
     } else {
       var.setDataType(DataType.BYTE);
       var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
@@ -473,7 +482,8 @@ class Giniheader {
       start = projection.latLonToProj(new LatLonPointImpl(lat1, lon1));
     else
       start = new ProjectionPointImpl();
-    if (debug) log.warn("start at proj coord " + start);
+    if (debug)
+      log.warn("start at proj coord " + start);
 
     double startx = start.getX();
     double starty = start.getY();
@@ -489,21 +499,23 @@ class Giniheader {
     if (proj == 1) {
       double lon_1 = lon1;
       double lon_2 = lon2;
-      if (lon1 < 0) lon_1 += 360.0;
-      if (lon2 < 0) lon_2 += 360.0;
+      if (lon1 < 0)
+        lon_1 += 360.0;
+      if (lon2 < 0)
+        lon_2 += 360.0;
       double dx = (lon_2 - lon_1) / (nx - 1);
 
       for (int i = 0; i < data.length; i++) {
         double ln = lon1 + i * dx;
         ProjectionPoint pt = projection.latLonToProj(new LatLonPointImpl(lat1, ln));
-        data[i] = pt.getX();  // startx + i*dx;
+        data[i] = pt.getX(); // startx + i*dx;
       }
     } else {
       for (int i = 0; i < data.length; i++)
         data[i] = startx + i * dxKm;
     }
 
-    dataA = Array.factory(DataType.DOUBLE, new int[]{nx}, data);
+    dataA = Array.factory(DataType.DOUBLE, new int[] {nx}, data);
     xaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, xaxis);
 
@@ -514,19 +526,20 @@ class Giniheader {
     yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
     data = new double[ny];
-    double endy = starty + dyKm * (data.length - 1); // apparently lat1,lon1 is always the lower ledt, but data is upper left
+    double endy = starty + dyKm * (data.length - 1); // apparently lat1,lon1 is always the lower ledt, but data is upper
+                                                     // left
     if (proj == 1) {
       double dy = (lat2 - lat1) / (ny - 1);
       for (int i = 0; i < data.length; i++) {
         double la = lat2 - i * dy;
         ProjectionPoint pt = projection.latLonToProj(new LatLonPointImpl(la, lon1));
-        data[i] = pt.getY();  //endyy - i*dy;
+        data[i] = pt.getY(); // endyy - i*dy;
       }
     } else {
       for (int i = 0; i < data.length; i++)
         data[i] = endy - i * dyKm;
     }
-    dataA = Array.factory(DataType.DOUBLE, new int[]{ny}, data);
+    dataA = Array.factory(DataType.DOUBLE, new int[] {ny}, data);
     yaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, yaxis);
 
@@ -541,7 +554,7 @@ class Giniheader {
     ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
     ct.addAttribute(new Attribute(_Coordinate.Axes, "x y "));
     // fake data
-    dataA = Array.factory(DataType.CHAR, new int[]{});
+    dataA = Array.factory(DataType.CHAR, new int[] {});
     dataA.setChar(dataA.getIndex(), ' ');
     ct.setCachedData(dataA, false);
 
@@ -557,10 +570,10 @@ class Giniheader {
   int[] getCalibrationInfo(ByteBuffer bos, int phys_elem, int ent_id) {
 
     bos.position(46);
-    byte nv = bos.get();      /* Cal indicator */
+    byte nv = bos.get(); /* Cal indicator */
     int navcal = DataType.unsignedByteToShort(nv);
     int[] calcods = null;
-    if (navcal == 128) {    /* Unidata Cal block found; unpack values */
+    if (navcal == 128) { /* Unidata Cal block found; unpack values */
       int scale = 10000;
       int jscale = 100000000;
       byte[] unsb = new byte[8];
@@ -575,10 +588,10 @@ class Giniheader {
         for (int i = 0; i < calcod; i++) {
 
           bos.position(56 + i * 16);
-          int minb = bos.getInt() / 10000;        /* min brightness values         */
-          int maxb = bos.getInt() / 10000;       /* max brightness values         */
-          int mind = bos.getInt();               /* min data values               */
-          int maxd = bos.getInt();               /* max data values               */
+          int minb = bos.getInt() / 10000; /* min brightness values */
+          int maxb = bos.getInt() / 10000; /* max brightness values */
+          int mind = bos.getInt(); /* min data values */
+          int maxd = bos.getInt(); /* max data values */
 
           int idscal = 1;
           while (mind % idscal == 0 && maxd % idscal == 0) {
@@ -586,7 +599,8 @@ class Giniheader {
           }
           idscal /= 10;
 
-          if (idscal < jscale) jscale = idscal;
+          if (idscal < jscale)
+            jscale = idscal;
 
           calcods[1 + i * 5] = mind;
           calcods[2 + i * 5] = maxd;
@@ -596,7 +610,8 @@ class Giniheader {
 
         }
 
-        if (jscale > scale) jscale = scale;
+        if (jscale > scale)
+          jscale = scale;
         scale /= jscale;
 
         if (gini_GetPhysElemID(phys_elem, ent_id).contains("Precipitation")) {
@@ -690,7 +705,7 @@ class Giniheader {
         name = "JERS";
         break;
       case 4:
-        name ="ERS/QuikSCAT/Scatterometer";
+        name = "ERS/QuikSCAT/Scatterometer";
         break;
       case 5:
         name = "POES/NPOESS";

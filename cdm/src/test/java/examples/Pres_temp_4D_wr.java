@@ -1,17 +1,18 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
-   See COPYRIGHT file for conditions of use.
-
-   This is an example program which writes some 4D pressure and
-   temperatures. It is intended to illustrate the use of the netCDF
-   Java API. The companion program pres_temp_4D_rd.java shows how
-   to read the netCDF data file created by this program.
-
-   This example demonstrates the netCDF Java API.
-
-   Full documentation of the netCDF Java API can be found at:
-   http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm
-*/
+/*
+ * This is part of the netCDF package.
+ * Copyright 2006 University Corporation for Atmospheric Research/Unidata.
+ * See COPYRIGHT file for conditions of use.
+ * 
+ * This is an example program which writes some 4D pressure and
+ * temperatures. It is intended to illustrate the use of the netCDF
+ * Java API. The companion program pres_temp_4D_rd.java shows how
+ * to read the netCDF data file created by this program.
+ * 
+ * This example demonstrates the netCDF Java API.
+ * 
+ * Full documentation of the netCDF Java API can be found at:
+ * http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm
+ */
 package examples;
 
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -50,7 +50,7 @@ public class Pres_temp_4D_wr {
       // Create new netcdf-3 file with the given filename
       dataFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
 
-      //add dimensions  where time dimension is unlimit
+      // add dimensions where time dimension is unlimit
       Dimension lvlDim = dataFile.addDimension(null, "level", NLVL);
       Dimension latDim = dataFile.addDimension(null, "latitude", NLAT);
       Dimension lonDim = dataFile.addDimension(null, "longitude", NLON);
@@ -103,7 +103,7 @@ public class Pres_temp_4D_wr {
             }
       }
 
-      //Create the file. At this point the (empty) file will be written to disk
+      // Create the file. At this point the (empty) file will be written to disk
       dataFile.create();
 
       // A newly created Java integer array to be initialized to zeros.

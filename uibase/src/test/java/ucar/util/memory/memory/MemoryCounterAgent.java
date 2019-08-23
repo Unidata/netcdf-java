@@ -7,7 +7,6 @@
 package ucar.util.memory.memory;
 
 import java.lang.instrument.Instrumentation;
-
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -32,13 +31,13 @@ public class MemoryCounterAgent {
    */
   public static long sizeOf(Object obj) {
     if (instrumentation == null) {
-      throw new IllegalStateException( "Instrumentation environment not initialised.");
+      throw new IllegalStateException("Instrumentation environment not initialised.");
     }
     long result;
     if (isSharedFlyweight(obj))
       result = 0;
     else
-     result =  instrumentation.getObjectSize(obj);
+      result = instrumentation.getObjectSize(obj);
 
     return result;
   }
@@ -93,7 +92,7 @@ public class MemoryCounterAgent {
     return obj == null || visited.containsKey(obj) || isSharedFlyweight(obj);
   }
 
-  private static long internalSizeOf( Object obj, Stack stack, Map visited) {
+  private static long internalSizeOf(Object obj, Stack stack, Map visited) {
 
     if (skipObject(obj, visited)) {
       return 0;
@@ -125,7 +124,7 @@ public class MemoryCounterAgent {
     return sizeOf(obj);
   }
 
-  private static void addArrayElementsToStack(  Class clazz, Object obj, Stack stack) {
+  private static void addArrayElementsToStack(Class clazz, Object obj, Stack stack) {
     if (!clazz.getComponentType().isPrimitive()) {
       int length = Array.getLength(obj);
       for (int i = 0; i < length; i++) {
@@ -137,10 +136,11 @@ public class MemoryCounterAgent {
   ///////////////////////////////
 
   public static long deepSizeOf2(String name, Object obj, Class skipClass, boolean show) {
-    if (show) System.out.printf("%s %s\n", obj.getClass().getName(), name);
+    if (show)
+      System.out.printf("%s %s\n", obj.getClass().getName(), name);
     Map visited = new IdentityHashMap();
     Stack<NamedObject> stack = new Stack<NamedObject>();
-    stack.push( new NamedObject(name,obj));
+    stack.push(new NamedObject(name, obj));
 
     long result = 0;
     do {
@@ -149,7 +149,8 @@ public class MemoryCounterAgent {
     return result;
   }
 
-  private static long internalSizeOf2( NamedObject nobj, Stack<NamedObject> stack, Map visited, Class skipClass, boolean show) {
+  private static long internalSizeOf2(NamedObject nobj, Stack<NamedObject> stack, Map visited, Class skipClass,
+      boolean show) {
     Object obj = nobj.obj;
     if (skipObject(obj, visited)) {
       return 0;
@@ -168,10 +169,11 @@ public class MemoryCounterAgent {
             field.setAccessible(true);
             try {
               Object val = field.get(obj);
-              if ((skipClass != null) && skipClass.isInstance(val)) continue;
+              if ((skipClass != null) && skipClass.isInstance(val))
+                continue;
               if (!(val instanceof java.lang.Class) && !(val instanceof ucar.nc2.NetcdfFile))
-                stack.add( new NamedObject(nobj.name+"-"+field.getName(), val));
-              //if (show) System.out.printf("    add %s for %s\n", field.getName(), obj.getClass().getName());
+                stack.add(new NamedObject(nobj.name + "-" + field.getName(), val));
+              // if (show) System.out.printf(" add %s for %s\n", field.getName(), obj.getClass().getName());
             } catch (IllegalAccessException ex) {
               throw new RuntimeException(ex);
             }
@@ -183,15 +185,16 @@ public class MemoryCounterAgent {
 
     visited.put(obj, null);
     long result = sizeOf(obj);
-    if (show) System.out.printf("  %5d %s (%s)%n", result, nobj.name, obj.getClass().getName());
+    if (show)
+      System.out.printf("  %5d %s (%s)%n", result, nobj.name, obj.getClass().getName());
     return result;
   }
 
-  private static void addArrayElementsToStack2(  Class clazz, NamedObject nobj, Stack<NamedObject> stack) {
+  private static void addArrayElementsToStack2(Class clazz, NamedObject nobj, Stack<NamedObject> stack) {
     if (!clazz.getComponentType().isPrimitive()) {
       int length = Array.getLength(nobj.obj);
       for (int i = 0; i < length; i++) {
-        stack.add( new NamedObject(nobj.name, Array.get(nobj.obj, i)));
+        stack.add(new NamedObject(nobj.name, Array.get(nobj.obj, i)));
       }
     }
   }
@@ -199,6 +202,7 @@ public class MemoryCounterAgent {
   static private class NamedObject {
     String name;
     Object obj;
+
     NamedObject(String name, Object obj) {
       this.name = name;
       this.obj = obj;
@@ -208,7 +212,8 @@ public class MemoryCounterAgent {
   ///////////////////////////////
 
   public static long deepSizeOf3(String name, Object obj, Class skipClass, boolean show) {
-    if (show) System.out.printf("%s %s\n", obj.getClass().getName(), name);
+    if (show)
+      System.out.printf("%s %s\n", obj.getClass().getName(), name);
     Map visited = new IdentityHashMap();
 
     long result = deepSizeOf3(name, obj, visited, skipClass, show, 0);
@@ -216,17 +221,18 @@ public class MemoryCounterAgent {
   }
 
   private static long deepSizeOf3(String name, Object obj, Map visited, Class skipClass, boolean show, int indent) {
-    //if (name.endsWith("firstRecord-this$0-index-elementData"))
-    //  System.out.println("HEY");
+    // if (name.endsWith("firstRecord-this$0-index-elementData"))
+    // System.out.println("HEY");
     long result = internalSizeOf3(name, obj, visited, skipClass, show, indent);
     if (show) {
-      for (int i=0; i<indent; i++) System.out.print(" ");
+      for (int i = 0; i < indent; i++)
+        System.out.print(" ");
       System.out.printf("%6d %s (%s)\n", result, name, obj.getClass().getName());
     }
     return result;
   }
 
-  private static long internalSizeOf3( String name, Object obj, Map visited, Class skipClass, boolean show, int indent) {
+  private static long internalSizeOf3(String name, Object obj, Map visited, Class skipClass, boolean show, int indent) {
     if (skipObject(obj, visited))
       return 0;
 
@@ -239,7 +245,7 @@ public class MemoryCounterAgent {
       for (int i = 0; i < length; i++) {
         Object val = Array.get(obj, i);
         if (val != null)
-          result += deepSizeOf3( name, val, visited, skipClass, show, indent+2);
+          result += deepSizeOf3(name, val, visited, skipClass, show, indent + 2);
       }
     } else {
       // add all non-primitive fields to the stack
@@ -250,10 +256,12 @@ public class MemoryCounterAgent {
             field.setAccessible(true);
             try {
               Object val = field.get(obj);
-              if (val == null) continue;
-              if ((skipClass != null) && skipClass.isInstance(val)) continue;
+              if (val == null)
+                continue;
+              if ((skipClass != null) && skipClass.isInstance(val))
+                continue;
               if (!(val instanceof java.lang.Class) && !(val instanceof ucar.nc2.NetcdfFile))
-                result += deepSizeOf3(name+"-"+field.getName(), val, visited, skipClass, show, indent+2);
+                result += deepSizeOf3(name + "-" + field.getName(), val, visited, skipClass, show, indent + 2);
             } catch (IllegalAccessException ex) {
               throw new RuntimeException(ex);
             }

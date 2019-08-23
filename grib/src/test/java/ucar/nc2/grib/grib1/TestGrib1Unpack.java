@@ -13,7 +13,6 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.GribData;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -64,10 +63,10 @@ public class TestGrib1Unpack {
 
       Variable var = nc.findVariable("Temperature_isobaric");
       Array data = var.read();
-      Assert.assertEquals(73*73, data.getSize());
+      Assert.assertEquals(73 * 73, data.getSize());
 
       float first = data.getFloat(0);
-      float last = data.getFloat((73*73)-1);
+      float last = data.getFloat((73 * 73) - 1);
 
       Assert.assertEquals(291.0, first, 1e-6);
       Assert.assertEquals(278.0, last, 1e-6);
@@ -76,7 +75,8 @@ public class TestGrib1Unpack {
 
   // https://github.com/Unidata/thredds/issues/82
   // not sure what it should be
-  // raw:  line 22: 96057.882813,96302.679688,96524.906250,96693.546875,96893.937500,97179.359375,97464.890625,97647.703125,97722.148438,97733.218750,97721.312500,97769.500000,98008.898438,98483.460938,99064.515625,99570.500000,99935.101563,100199.570313,100381.640625,100439.078125,100336.703125,100103.062500,99817.539063,99564.757813,99389.359375,99292.281250,99253.007813,99231.726563,99176.851563,99073.953125,98956.421875,98831.359375,98658.148438,98440.015625,98264.398438,
+  // raw: line 22:
+  // 96057.882813,96302.679688,96524.906250,96693.546875,96893.937500,97179.359375,97464.890625,97647.703125,97722.148438,97733.218750,97721.312500,97769.500000,98008.898438,98483.460938,99064.515625,99570.500000,99935.101563,100199.570313,100381.640625,100439.078125,100336.703125,100103.062500,99817.539063,99564.757813,99389.359375,99292.281250,99253.007813,99231.726563,99176.851563,99073.953125,98956.421875,98831.359375,98658.148438,98440.015625,98264.398438,
   // linear:
   // cubic:
   @Test
@@ -100,7 +100,8 @@ public class TestGrib1Unpack {
     }
   }
 
-  private float[] getData(ucar.unidata.io.RandomAccessFile raf, Grib1Record gr, GribData.InterpolationMethod method, int lineno) throws IOException {
+  private float[] getData(ucar.unidata.io.RandomAccessFile raf, Grib1Record gr, GribData.InterpolationMethod method,
+      int lineno) throws IOException {
     float[] data;
     data = gr.readData(raf, method);
 
@@ -109,15 +110,17 @@ public class TestGrib1Unpack {
     if (method == GribData.InterpolationMethod.none) {
       int[] lines = gds.getNptsInLine();
       int count = 0;
-      for (int line=0; line<lines.length; line++) {
-        if (line != lineno) continue;
+      for (int line = 0; line < lines.length; line++) {
+        if (line != lineno)
+          continue;
         System.out.printf(" %3d: ", line);
-        for (int i=0; i<lines[line]; i++) System.out.printf("%f,", data[count++]);
+        for (int i = 0; i < lines[line]; i++)
+          System.out.printf("%f,", data[count++]);
         System.out.printf("%n");
       }
 
     } else {
-      int[] shape = new int[]{gds.getNy(), gds.getNx()};
+      int[] shape = new int[] {gds.getNy(), gds.getNx()};
       Array dataA = Array.factory(DataType.FLOAT, shape, data);
       Array lineA = dataA.slice(0, lineno);
       logger.debug("{}", NCdumpW.toString(lineA));
@@ -136,19 +139,20 @@ public class TestGrib1Unpack {
 
     System.out.printf("res = %f%n", scale_factor / 2);
 
-    int packed_data = Math.round((fd - add_offset) / scale_factor);   // nint((unpacked_data_value - add_offset) / scale_factor)
+    int packed_data = Math.round((fd - add_offset) / scale_factor); // nint((unpacked_data_value - add_offset) /
+                                                                    // scale_factor)
     float unpacked_data = packed_data * scale_factor + add_offset;
-    float diff = Math.abs(fd-unpacked_data);
-    System.out.printf("***   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+    float diff = Math.abs(fd - unpacked_data);
+    System.out.printf("***   org=%f, packed_data=%d unpacked=%f diff = %f%n", fd, packed_data, unpacked_data, diff);
 
     packed_data++;
     unpacked_data = packed_data * scale_factor + add_offset;
-    diff = Math.abs(fd-unpacked_data);
-    System.out.printf("***   org=%f, packed_data+1=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+    diff = Math.abs(fd - unpacked_data);
+    System.out.printf("***   org=%f, packed_data+1=%d unpacked=%f diff = %f%n", fd, packed_data, unpacked_data, diff);
 
-    packed_data -=2;
+    packed_data -= 2;
     unpacked_data = packed_data * scale_factor + add_offset;
-    diff = Math.abs(fd-unpacked_data);
-    System.out.printf("***   org=%f, packed_data-1=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+    diff = Math.abs(fd - unpacked_data);
+    System.out.printf("***   org=%f, packed_data-1=%d unpacked=%f diff = %f%n", fd, packed_data, unpacked_data, diff);
   }
 }

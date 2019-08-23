@@ -12,7 +12,7 @@ import java.util.*;
  * Handles the Ensemble coordinate dimension.
  */
 public abstract class GridEnsembleCoord {
-  static private org.slf4j.Logger log =  org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
 
   protected List<EnsCoord> ensCoords;
   protected int seq = 0;
@@ -33,12 +33,15 @@ public abstract class GridEnsembleCoord {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       EnsCoord ensCoord = (EnsCoord) o;
 
-      if (number != ensCoord.number) return false;
+      if (number != ensCoord.number)
+        return false;
       return type == ensCoord.type;
 
     }
@@ -50,14 +53,16 @@ public abstract class GridEnsembleCoord {
 
     @Override
     public String toString() {
-      return "number=" + number +", type=" + type;
+      return "number=" + number + ", type=" + type;
     }
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     GridEnsembleCoord that = (GridEnsembleCoord) o;
     return ensCoords.equals(that.ensCoords);
@@ -90,7 +95,7 @@ public abstract class GridEnsembleCoord {
    * Add this as a dimension to a netCDF file
    *
    * @param ncfile the netCDF file
-   * @param g      the group in the file
+   * @param g the group in the file
    */
   public void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
     ncfile.addDimension(g, new Dimension(getName(), getNEnsembles(), true));

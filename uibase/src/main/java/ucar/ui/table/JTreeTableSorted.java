@@ -12,18 +12,15 @@ import ucar.ui.widget.MyMouseAdapter;
 import ucar.ui.widget.PopupMenu;
 import ucar.util.ListenerManager;
 import ucar.util.prefs.PreferencesExt;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
-
 import javax.swing.tree.TreePath;
 
 /**
@@ -80,9 +77,9 @@ public class JTreeTableSorted extends JPanel {
     scrollPane = new JScrollPane(table);
     add(scrollPane, BorderLayout.CENTER);
 
-    //table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
+    // table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
     table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    //table.setFont( table.getFont().deriveFont( Font.BOLD));
+    // table.setFont( table.getFont().deriveFont( Font.BOLD));
 
     // now set the header renderers
     TableColumnModel tcm = table.getColumnModel();
@@ -108,17 +105,18 @@ public class JTreeTableSorted extends JPanel {
 
     // listen for list selection
     table.getSelectionModel().addListSelectionListener(e -> {
-        if (!e.getValueIsAdjusting() && lm.hasListeners() && (listSelectionEvent == null)) {
-          listSelectionEvent = e;
-          if (debugEvent) System.out.println(" JTreeTableSorted message selected = " + e);
-          SwingUtilities.invokeLater(new Runnable() {  // gotta do this after the dust settles
+      if (!e.getValueIsAdjusting() && lm.hasListeners() && (listSelectionEvent == null)) {
+        listSelectionEvent = e;
+        if (debugEvent)
+          System.out.println(" JTreeTableSorted message selected = " + e);
+        SwingUtilities.invokeLater(new Runnable() { // gotta do this after the dust settles
 
-            public void run() {
-              lm.sendEvent(listSelectionEvent);
-              listSelectionEvent = null;  // dont like this
-            }
-          }); // new Runnable
-        }
+          public void run() {
+            lm.sendEvent(listSelectionEvent);
+            listSelectionEvent = null; // dont like this
+          }
+        }); // new Runnable
+      }
     }); // new ListSelectionListener
 
     // listen for mouse clicks on the column header
@@ -130,7 +128,8 @@ public class JTreeTableSorted extends JPanel {
 
         // keep track of selection
         selectedRow = getSelectedRow();
-        if (debug) System.out.println("----selectedRow = " + selectedRow);
+        if (debug)
+          System.out.println("----selectedRow = " + selectedRow);
 
         if (colNo == threadCol) { // toggle threads
           threadHeaderRenderer.setOn(!threadHeaderRenderer.isOn);
@@ -148,10 +147,8 @@ public class JTreeTableSorted extends JPanel {
     allowSortColChange(allowSortColChange);
 
     // event manager for ListSelection
-    lm = new ListenerManager(
-            "javax.swing.event.ListSelectionListener",
-            "javax.swing.event.ListSelectionEvent",
-            "valueChanged");
+    lm = new ListenerManager("javax.swing.event.ListSelectionListener", "javax.swing.event.ListSelectionEvent",
+        "valueChanged");
 
     // default sort
     setSortCol(model.getSortCol(), model.getReverse());
@@ -217,7 +214,7 @@ public class JTreeTableSorted extends JPanel {
       // modify popup menu
       for (int i = 0; i < ncols; i++)
         if (!visible[i]) {
-          //System.out.println( colName[i]+" hide "+i);
+          // System.out.println( colName[i]+" hide "+i);
           acts[i].hideColumn();
           acts[i].putValue(BAMutil.STATE, Boolean.FALSE);
         }
@@ -274,10 +271,10 @@ public class JTreeTableSorted extends JPanel {
     for (int i = 0; i < table.getColumnCount(); i++) {
       TableColumn tc = tcm.getColumn(i);
       int maxw = ((sizes == null) || (i >= sizes.length)) ? 10 : sizes[i];
-      //     model.getPreferredWidthForColumn(tc) : sizes[i];
+      // model.getPreferredWidthForColumn(tc) : sizes[i];
       tc.setPreferredWidth(maxw);
     }
-    //table.sizeColumnsToFit(0);     //  must be called due to a JTable bug
+    // table.sizeColumnsToFit(0); // must be called due to a JTable bug
   }
 
   public void setColOn(int colno, boolean state, int pos) {
@@ -342,35 +339,39 @@ public class JTreeTableSorted extends JPanel {
   public void setRows(ArrayList rows) {
     model.setRows(rows);
 
-/*    if (rowList.size() > 0)
-      table.setRowSelectionInterval(0, 0);
-    else
-      table.clearSelection(); */
+    /*
+     * if (rowList.size() > 0)
+     * table.setRowSelectionInterval(0, 0);
+     * else
+     * table.clearSelection();
+     */
 
-    //table.clearSelection();
+    // table.clearSelection();
     table.fireDataChanged();
   }
 
   /*
-   Remove elem from rowList, update the table.
-   Searches for match using object identity (==)
-   @param Object elem
-    *
-   public void removeRow ( Object elem) {
-   Iterator iter = rowList.iterator();
-   while (iter.hasNext()) {
-   Object row = iter.next();
-   if (row == elem) {
-   iter.remove();
-   break;
-   }
-   }
-   table.revalidate();
-   } */
+   * Remove elem from rowList, update the table.
+   * Searches for match using object identity (==)
+   * 
+   * @param Object elem
+   *
+   * public void removeRow ( Object elem) {
+   * Iterator iter = rowList.iterator();
+   * while (iter.hasNext()) {
+   * Object row = iter.next();
+   * if (row == elem) {
+   * iter.remove();
+   * break;
+   * }
+   * }
+   * table.revalidate();
+   * }
+   */
 
   // public int getRowCount() { return table.getRowCount(); }
-  //int getSelectedRowIndex() { return table.getSelectedRow(); }   // for SuperComboBox
-  //void setSortOK(boolean sortOK) { this.sortOK = sortOK; }       // for SuperComboBox
+  // int getSelectedRowIndex() { return table.getSelectedRow(); } // for SuperComboBox
+  // void setSortOK(boolean sortOK) { this.sortOK = sortOK; } // for SuperComboBox
 
   /**
    * Get the currently selected row.
@@ -407,11 +408,13 @@ public class JTreeTableSorted extends JPanel {
   public void setSelectedRow(int rowno) {
     if ((rowno < 0) || (rowno >= model.getRowCount()))
       return;
-    if (debugSetPath) System.out.println("TreeTableSorted setSelected " + rowno);
+    if (debugSetPath)
+      System.out.println("TreeTableSorted setSelected " + rowno);
 
     selectedRow = model.getRow(rowno);
     TreePath path = model.getPath(selectedRow);
-    if (path != null) table.setSelectionPath(path);
+    if (path != null)
+      table.setSelectionPath(path);
 
     // for mysterious reasons, gotta do it again later
     invokeSetPath();
@@ -425,8 +428,10 @@ public class JTreeTableSorted extends JPanel {
         TreePath path = model.getPath(selectedRow);
         if (path != null) {
           int rowno = table.setSelectionPath(path);
-          if (rowno >= 0) ensureRowIsVisible(rowno);
-          if (debugSetPath) System.out.println("----reset selectedRow = " + rowno + " " + path);
+          if (rowno >= 0)
+            ensureRowIsVisible(rowno);
+          if (debugSetPath)
+            System.out.println("----reset selectedRow = " + rowno + " " + path);
         }
       }
     });
@@ -439,7 +444,8 @@ public class JTreeTableSorted extends JPanel {
    */
   public void incrSelected(boolean increment) {
     int rowno = table.incrSelected(increment);
-    if (rowno > 0) ensureRowIsVisible(rowno);
+    if (rowno > 0)
+      ensureRowIsVisible(rowno);
   }
 
   // Get the JTable delegate so you can do nasty things to it
@@ -461,18 +467,19 @@ public class JTreeTableSorted extends JPanel {
         modelIndex[i] = tc.getModelIndex();
       }
     } catch (java.lang.ArrayIndexOutOfBoundsException e) {
-      //can happen when model size increases
+      // can happen when model size increases
     }
 
     return modelIndex;
   }
 
 
-/////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
 
   private void ensureRowIsVisible(int nRow) {
     Rectangle visibleRect = table.getCellRect(nRow, 0, true);
-    if (debugSetPath) System.out.println("----ensureRowIsVisible = " + visibleRect);
+    if (debugSetPath)
+      System.out.println("----ensureRowIsVisible = " + visibleRect);
     if (visibleRect != null) {
       visibleRect.x = scrollPane.getViewport().getViewPosition().x;
       table.scrollRectToVisible(visibleRect);
@@ -502,16 +509,18 @@ public class JTreeTableSorted extends JPanel {
       TableColumnModel tcm = table.getColumnModel();
 
       if (state) {
-        if (tc != null) tcm.addColumn(tc);
+        if (tc != null)
+          tcm.addColumn(tc);
       } else
         hideColumn();
 
       JTreeTableSorted.this.revalidate();
-      //System.out.println(id+" "+state);
+      // System.out.println(id+" "+state);
     }
 
     public void addAtPos(int pos) {
-      if (tc == null) return;
+      if (tc == null)
+        return;
 
       TableColumnModel tcm = table.getColumnModel();
 
@@ -527,7 +536,7 @@ public class JTreeTableSorted extends JPanel {
     }
 
     public void hideColumn() {
-      //System.out.println("hideColumn "+id);
+      // System.out.println("hideColumn "+id);
       TableColumnModel tcm = table.getColumnModel();
       int idx = tcm.getColumnIndex(id);
       tc = tcm.getColumn(idx);
@@ -572,16 +581,16 @@ public class JTreeTableSorted extends JPanel {
         this.reverse = reverse;
         hasSortIndicator = true;
 
-        //System.out.println("setSortCol on "+modelCol+" "+sortCol+" "+reverse);
+        // System.out.println("setSortCol on "+modelCol+" "+sortCol+" "+reverse);
       } else if (hasSortIndicator) {
         compPanel.remove(1);
         hasSortIndicator = false;
-        //System.out.println("setSortCol off "+modelCol+" "+sortCol+" "+reverse);
+        // System.out.println("setSortCol off "+modelCol+" "+sortCol+" "+reverse);
       }
     }
 
-    public Component getTableCellRendererComponent(JTable table, Object value,
-                                                   boolean isSelected, boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+        int row, int column) {
 
       return comp;
     }
@@ -611,6 +620,6 @@ public class JTreeTableSorted extends JPanel {
       comp = (isOn) ? sort : unsort;
     }
 
-    void setSortCol(int sortCol, boolean reverse) { }
+    void setSortCol(int sortCol, boolean reverse) {}
   }
 }

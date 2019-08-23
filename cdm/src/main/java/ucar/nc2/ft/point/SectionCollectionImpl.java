@@ -5,7 +5,6 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
-
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeatureCCIterator;
 import ucar.nc2.ft.TrajectoryProfileFeature;
@@ -32,19 +31,20 @@ public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implemen
 
   @Override
   public boolean hasNext() throws IOException {
-     if (localIterator == null) resetIteration();
-     return localIterator.hasNext();
-   }
+    if (localIterator == null)
+      resetIteration();
+    return localIterator.hasNext();
+  }
 
-   @Override
-   public TrajectoryProfileFeature next() throws IOException {
-     return (TrajectoryProfileFeature) localIterator.next();
-   }
+  @Override
+  public TrajectoryProfileFeature next() throws IOException {
+    return (TrajectoryProfileFeature) localIterator.next();
+  }
 
-   @Override
-   public void resetIteration() throws IOException {
-     localIterator = getNestedPointFeatureCollectionIterator();
-   }
+  @Override
+  public void resetIteration() throws IOException {
+    localIterator = getNestedPointFeatureCollectionIterator();
+  }
 
 
 

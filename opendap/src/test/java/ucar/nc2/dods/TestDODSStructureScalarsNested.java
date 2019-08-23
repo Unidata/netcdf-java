@@ -10,31 +10,31 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/** Test nc2 dods in the JUnit framework.
+/**
+ * Test nc2 dods in the JUnit framework.
  *
  * Dataset {
-    Structure {
-        Structure {
-            Byte b;
-            Int32 i32;
-            UInt32 ui32;
-            Int16 i16;
-            UInt16 ui16;
-        } integers;
-        Structure {
-            Float32 f32;
-            Float64 f64;
-        } floats;
-        Structure {
-            String s;
-            Url u;
-        } strings;
-    } types;
-} NestedStructure;
+ * Structure {
+ * Structure {
+ * Byte b;
+ * Int32 i32;
+ * UInt32 ui32;
+ * Int16 i16;
+ * UInt16 ui16;
+ * } integers;
+ * Structure {
+ * Float32 f32;
+ * Float64 f64;
+ * } floats;
+ * Structure {
+ * String s;
+ * Url u;
+ * } strings;
+ * } types;
+ * } NestedStructure;
  */
 public class TestDODSStructureScalarsNested {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -49,56 +49,56 @@ public class TestDODSStructureScalarsNested {
     Structure types, s = null;
     Array a = null;
 
-    assert(null != (v = dodsfile.findVariable("types")));
+    assert (null != (v = dodsfile.findVariable("types")));
     assert v instanceof Structure;
     types = (Structure) v;
-    assert(null != (v = types.findVariable("integers")));
+    assert (null != (v = types.findVariable("integers")));
     assert v instanceof Structure;
     s = (Structure) v;
 
     // byte
-    assert(null != (v = s.findVariable("b")));
-    CheckByte( v);
+    assert (null != (v = s.findVariable("b")));
+    CheckByte(v);
 
     // int16
-    assert(null != (v = s.findVariable("i16")));
-    CheckInt16( v);
+    assert (null != (v = s.findVariable("i16")));
+    CheckInt16(v);
 
     // int32
-    assert(null != (v = s.findVariable("i32")));
-    CheckInt32( v);
+    assert (null != (v = s.findVariable("i32")));
+    CheckInt32(v);
 
     // uint32
-    assert(null != (v = s.findVariable("ui32")));
-    CheckUInt32( v);
+    assert (null != (v = s.findVariable("ui32")));
+    CheckUInt32(v);
 
     // uint16
-    assert(null != (v = s.findVariable("ui16")));
-    CheckUint16( v);
+    assert (null != (v = s.findVariable("ui16")));
+    CheckUint16(v);
 
-    assert(null != (v = types.findVariable("floats")));
+    assert (null != (v = types.findVariable("floats")));
     assert v instanceof Structure;
     s = (Structure) v;
 
     // float
-    assert(null != (v = s.findVariable("f32")));
-    CheckF( v);
+    assert (null != (v = s.findVariable("f32")));
+    CheckF(v);
 
     // double
-    assert(null != (v = s.findVariable("f64")));
-    CheckD( v);
+    assert (null != (v = s.findVariable("f64")));
+    CheckD(v);
 
-    assert(null != (v = types.findVariable("strings")));
+    assert (null != (v = types.findVariable("strings")));
     assert v instanceof Structure;
     s = (Structure) v;
 
     // string
-    assert(null != (v = s.findVariable("s")));
-    CheckS( v);
+    assert (null != (v = s.findVariable("s")));
+    CheckS(v);
 
     // url
-    assert(null != (v = s.findVariable("u")));
-    CheckUrl( v);
+    assert (null != (v = s.findVariable("u")));
+    CheckUrl(v);
 
   }
 
@@ -114,12 +114,12 @@ public class TestDODSStructureScalarsNested {
     StructureMembers.Member m;
     StructureData integers = null, floats = null, strings = null;
 
-    assert(null != (v = dodsfile.findVariable("types")));
-    System.out.println("types="+v);
+    assert (null != (v = dodsfile.findVariable("types")));
+    System.out.println("types=" + v);
     assert v instanceof DODSStructure;
     types = (DODSStructure) v;
 
-    assert(null != (v = types.findVariable("integers")));
+    assert (null != (v = types.findVariable("integers")));
     assert v instanceof Structure;
     s = (Structure) v;
     StructureData sdata = s.readStructure();
@@ -144,7 +144,7 @@ public class TestDODSStructureScalarsNested {
     assert (null != m);
     CheckUInt32Value(sdata.getArray(m));
 
-    assert(null != (v = types.findVariable("floats")));
+    assert (null != (v = types.findVariable("floats")));
     assert v instanceof Structure;
     s = (Structure) v;
     sdata = s.readStructure();
@@ -157,7 +157,7 @@ public class TestDODSStructureScalarsNested {
     assert (null != m);
     CheckDValue(sdata.getArray(m));
 
-    assert(null != (v = types.findVariable("strings")));
+    assert (null != (v = types.findVariable("strings")));
     assert v instanceof Structure;
     s = (Structure) v;
     sdata = s.readStructure();
@@ -180,14 +180,14 @@ public class TestDODSStructureScalarsNested {
     StructureMembers.Member m = null;
     StructureData integers = null, floats = null, strings = null;
 
-    assert(null != (v = dodsfile.findVariable("types")));
-    System.out.println("types="+v);
+    assert (null != (v = dodsfile.findVariable("types")));
+    System.out.println("types=" + v);
     assert v instanceof DODSStructure;
     types = (DODSStructure) v;
 
     StructureData sdata = types.readStructure();
 
-    assert(null != (m = sdata.findMember("integers")));
+    assert (null != (m = sdata.findMember("integers")));
     Array arr = sdata.getArray(m);
     integers = (StructureData) arr.getObject(arr.getIndex());
 
@@ -211,7 +211,7 @@ public class TestDODSStructureScalarsNested {
     assert (null != m);
     CheckUInt32Value(integers.getArray(m));
 
-    assert(null != (m = sdata.findMember("floats")));
+    assert (null != (m = sdata.findMember("floats")));
     arr = sdata.getArray(m);
     floats = (StructureData) arr.getObject(arr.getIndex());
 
@@ -223,7 +223,7 @@ public class TestDODSStructureScalarsNested {
     assert (null != m);
     CheckDValue(floats.getArray(m));
 
-    assert(null != (m = sdata.findMember("strings")));
+    assert (null != (m = sdata.findMember("strings")));
     arr = sdata.getArray(m);
     strings = (StructureData) arr.getObject(arr.getIndex());
 
@@ -232,223 +232,225 @@ public class TestDODSStructureScalarsNested {
     CheckSValue(strings.getArray(m));
   }
 
-  /** LOOK not dealing with nested structures yet ?? 
-  public void testStructureRead3() throws IOException {
-    dodsfile = TestDODSRead.open("test.05");
+  /**
+   * LOOK not dealing with nested structures yet ??
+   * public void testStructureRead3() throws IOException {
+   * dodsfile = TestDODSRead.open("test.05");
+   * 
+   * StructureMembers.Member m = null;
+   * DODSStructure types = (DODSStructure) dodsfile.findVariable("types");
+   * StructureData sdata = types.readStructure();
+   * m = sdata.findNestedMember("integers.b");
+   * assert (null != m);
+   * CheckByteValue(sdata.getArray(m));
+   * 
+   * m = sdata.findNestedMember("integers.i16");
+   * assert (null != m);
+   * CheckInt16Value(sdata.getArray(m));
+   * 
+   * m = sdata.findNestedMember("integers.i32");
+   * assert (null != m);
+   * CheckInt32Value(sdata.getArray(m));
+   * 
+   * m = sdata.findNestedMember("integers.ui16");
+   * assert (null != m);
+   * CheckUInt16Value(sdata.getArray(m));
+   * 
+   * m = sdata.findNestedMember("integers.ui32");
+   * assert (null != m);
+   * CheckUInt32Value(sdata.getArray(m));
+   * 
+   * m = sdata.findNestedMember("floats.f32");
+   * assert (null != m);
+   * CheckFValue(sdata.getArray(m));
+   * 
+   * m = sdata.findNestedMember("floats.f64");
+   * assert (null != m);
+   * CheckDValue(sdata.getArray(m));
+   * 
+   * m = sdata.findNestedMember("strings.s");
+   * assert (null != m);
+   * CheckSValue(sdata.getArray(m));
+   * }
+   */
 
-    StructureMembers.Member m = null;
-    DODSStructure types = (DODSStructure) dodsfile.findVariable("types");
-    StructureData sdata = types.readStructure();
-    m = sdata.findNestedMember("integers.b");
-    assert (null != m);
-    CheckByteValue(sdata.getArray(m));
-
-    m = sdata.findNestedMember("integers.i16");
-    assert (null != m);
-    CheckInt16Value(sdata.getArray(m));
-
-    m = sdata.findNestedMember("integers.i32");
-    assert (null != m);
-    CheckInt32Value(sdata.getArray(m));
-
-    m = sdata.findNestedMember("integers.ui16");
-    assert (null != m);
-    CheckUInt16Value(sdata.getArray(m));
-
-    m = sdata.findNestedMember("integers.ui32");
-    assert (null != m);
-    CheckUInt32Value(sdata.getArray(m));
-
-    m = sdata.findNestedMember("floats.f32");
-    assert (null != m);
-    CheckFValue(sdata.getArray(m));
-
-    m = sdata.findNestedMember("floats.f64");
-    assert (null != m);
-    CheckDValue(sdata.getArray(m));
-
-    m = sdata.findNestedMember("strings.s");
-    assert (null != m);
-    CheckSValue(sdata.getArray(m));
-  } */
-
-  void CheckByte( Variable v) throws IOException {
+  void CheckByte(Variable v) throws IOException {
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.UBYTE;
     CheckByteValue(v.read());
   }
 
-  void CheckByteValue( Array a) {
+  void CheckByteValue(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == byte.class;
     assert a instanceof ArrayByte.D0;
-    byte valb = ((ArrayByte.D0)a).get();
+    byte valb = ((ArrayByte.D0) a).get();
     assert (valb == 0);
   }
 
-  void CheckInt16( Variable v) throws IOException {
+  void CheckInt16(Variable v) throws IOException {
     // int16
-    //assert(null != (v = dodsfile.findVariable("types.integers.i16")));
-    //assert v.getName().equals("types.integers.i16");
+    // assert(null != (v = dodsfile.findVariable("types.integers.i16")));
+    // assert v.getName().equals("types.integers.i16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.SHORT;
     CheckInt16Value(v.read());
   }
 
-  void CheckInt16Value( Array a) {
+  void CheckInt16Value(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
     assert a instanceof ArrayShort.D0;
-    short vals = ((ArrayShort.D0)a).get();
+    short vals = ((ArrayShort.D0) a).get();
     assert (vals == 0);
   }
 
-  void CheckInt32( Variable v) throws IOException {
+  void CheckInt32(Variable v) throws IOException {
 
     // int32
-    //assert(null != (v = dodsfile.findVariable("types.integers.i32")));
-   // assert v.getName().equals("types.integers.i32");
+    // assert(null != (v = dodsfile.findVariable("types.integers.i32")));
+    // assert v.getName().equals("types.integers.i32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.INT;
     CheckInt32Value(v.read());
   }
 
-  void CheckInt32Value( Array a) {
+  void CheckInt32Value(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vali = ((ArrayInt.D0)a).get();
+    int vali = ((ArrayInt.D0) a).get();
     assert (vali == 1) : vali;
   }
 
-  void CheckUInt32( Variable v) throws IOException {
+  void CheckUInt32(Variable v) throws IOException {
 
     // uint32
-    //assert(null != (v = dodsfile.findVariable("types.integers.ui32")));
-    //assert v.getName().equals("types.integers.ui32");
+    // assert(null != (v = dodsfile.findVariable("types.integers.ui32")));
+    // assert v.getName().equals("types.integers.ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.UINT : v.getDataType();
     CheckUInt32Value(v.read());
   }
 
-  void CheckUInt32Value( Array a) {
+  void CheckUInt32Value(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vall = ((ArrayInt.D0)a).get();
+    int vall = ((ArrayInt.D0) a).get();
     assert (vall == 0);
   }
 
-  void CheckUint16( Variable v) throws IOException {
+  void CheckUint16(Variable v) throws IOException {
 
     // uint16
-    //assert(null != (v = dodsfile.findVariable("types.integers.ui16")));
-    //assert v.getName().equals("types.integers.ui16");
+    // assert(null != (v = dodsfile.findVariable("types.integers.ui16")));
+    // assert v.getName().equals("types.integers.ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.USHORT : v.getDataType();
-     CheckUInt16Value(v.read());
+    CheckUInt16Value(v.read());
   }
 
-  void CheckUInt16Value( Array a) {
+  void CheckUInt16Value(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
     assert a instanceof ArrayShort.D0;
-    int vali = ((ArrayShort.D0)a).get();
+    int vali = ((ArrayShort.D0) a).get();
     assert (vali == 0);
   }
 
-  void CheckLong32( Variable v) throws IOException {
+  void CheckLong32(Variable v) throws IOException {
 
     // uint32
-    //assert(null != (v = dodsfile.findVariable("types.integers.ui32")));
-    //assert v.getName().equals("types.integers.ui32");
+    // assert(null != (v = dodsfile.findVariable("types.integers.ui32")));
+    // assert v.getName().equals("types.integers.ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.LONG : v.getDataType();
     CheckLongValue(v.read());
   }
 
-  void CheckLongValue( Array a) {
+  void CheckLongValue(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == long.class;
     assert a instanceof ArrayLong.D0;
-    long vall = ((ArrayLong.D0)a).get();
+    long vall = ((ArrayLong.D0) a).get();
     assert (vall == 0);
   }
 
-  void CheckF( Variable v) throws IOException {
+  void CheckF(Variable v) throws IOException {
 
     // float
-    //assert(null != (v = dodsfile.findVariable("types.floats.f32")));
-    //assert v.getName().equals("types.floats.f32");
+    // assert(null != (v = dodsfile.findVariable("types.floats.f32")));
+    // assert v.getName().equals("types.floats.f32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.FLOAT : v.getDataType();
     CheckFValue(v.read());
   }
 
-  void CheckFValue( Array a) {
+  void CheckFValue(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == float.class;
     assert a instanceof ArrayFloat.D0;
-    float valf = ((ArrayFloat.D0)a).get();
+    float valf = ((ArrayFloat.D0) a).get();
     assert (valf == 0.0);
   }
 
-  void CheckD( Variable v) throws IOException {
+  void CheckD(Variable v) throws IOException {
 
     // double
-    //assert(null != (v = dodsfile.findVariable("types.floats.f64")));
-    //assert v.getName().equals("types.floats.f64");
+    // assert(null != (v = dodsfile.findVariable("types.floats.f64")));
+    // assert v.getName().equals("types.floats.f64");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.DOUBLE : v.getDataType();
     CheckDValue(v.read());
   }
 
-  void CheckDValue( Array a) {
+  void CheckDValue(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == double.class;
     assert a instanceof ArrayDouble.D0;
-    double vald = ((ArrayDouble.D0)a).get();
+    double vald = ((ArrayDouble.D0) a).get();
     assert (vald == 1000.0);
   }
 
-  void CheckS( Variable v) throws IOException {
+  void CheckS(Variable v) throws IOException {
 
     // string
-    //assert(null != (v = dodsfile.findVariable("types.strings.s")));
-    //assert v.getName().equals("types.strings.s");
+    // assert(null != (v = dodsfile.findVariable("types.strings.s")));
+    // assert v.getName().equals("types.strings.s");
     assert v.getRank() == 0;
     assert v.getDataType() == DataType.STRING : v.getDataType();
-     CheckSValue(v.read());
+    CheckSValue(v.read());
   }
 
-  void CheckSValue( Array a) {
+  void CheckSValue(Array a) {
     assert a.getRank() == 0;
     assert a.getElementType() == String.class;
     String str = (String) a.getObject(a.getIndex());
     assert str.equals("This is a data test string (pass 0).");
   }
 
-  void CheckUrl( Variable v) throws IOException {
+  void CheckUrl(Variable v) throws IOException {
 
     // url
-    //assert(null != (v = dodsfile.findVariable("types.strings.u")));
-    //assert v.getName().equals("types.strings.u");
+    // assert(null != (v = dodsfile.findVariable("types.strings.u")));
+    // assert v.getName().equals("types.strings.u");
     assert v.getRank() == 0;
     assert v.getDataType() == DataType.STRING : v.getDataType();
     String str = v.readScalarString();

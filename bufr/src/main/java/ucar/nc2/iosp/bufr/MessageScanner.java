@@ -7,7 +7,6 @@ package ucar.nc2.iosp.bufr;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.KMPMatch;
-
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
 
@@ -18,11 +17,10 @@ import java.nio.channels.WritableByteChannel;
  * @since May 9, 2008
  */
 public class MessageScanner {
-//  static public final int MAX_MESSAGE_SIZE = 500 * 1000; // GTS allows up to 500 Kb messages (ref?)
+  // static public final int MAX_MESSAGE_SIZE = 500 * 1000; // GTS allows up to 500 Kb messages (ref?)
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MessageScanner.class);
 
-  static private final KMPMatch matcher = new KMPMatch(
-          "BUFR".getBytes(CDM.utf8Charset));
+  static private final KMPMatch matcher = new KMPMatch("BUFR".getBytes(CDM.utf8Charset));
 
   /**
    * is this a valid BUFR file.
@@ -33,10 +31,12 @@ public class MessageScanner {
    */
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    if (!raf.searchForward(matcher, 40 * 1000)) return false; // must find "BUFR" in first 40k
+    if (!raf.searchForward(matcher, 40 * 1000))
+      return false; // must find "BUFR" in first 40k
     raf.skipBytes(4);
     BufrIndicatorSection is = new BufrIndicatorSection(raf);
-    if (is.getBufrEdition() > 4) return false;
+    if (is.getBufrEdition() > 4)
+      return false;
     // if(is.getBufrLength() > MAX_MESSAGE_SIZE) return false;
     return !(is.getBufrLength() > raf.length());
   }
@@ -71,9 +71,12 @@ public class MessageScanner {
   public Message getFirstDataMessage() throws IOException {
     while (hasNext()) {
       Message m = next();
-      if (m == null) continue;
-      if (m.containsBufrTable()) continue; // not data
-      if (m.getNumberDatasets() == 0) continue; // empty
+      if (m == null)
+        continue;
+      if (m.containsBufrTable())
+        continue; // not data
+      if (m.getNumberDatasets() == 0)
+        continue; // empty
       return m;
     }
     return null;
@@ -84,24 +87,26 @@ public class MessageScanner {
   }
 
   public boolean hasNext() throws IOException {
-    if (lastPos >= raf.length()) return false;
+    if (lastPos >= raf.length())
+      return false;
     raf.seek(lastPos);
     boolean more = raf.searchForward(matcher, -1); // will scan to end for another BUFR header
     if (more) {
       long stop = raf.getFilePointer();
       int sizeHeader = (int) (stop - lastPos);
-      if (sizeHeader > 30) sizeHeader = 30;
+      if (sizeHeader > 30)
+        sizeHeader = 30;
       header = new byte[sizeHeader];
-      startPos = stop-sizeHeader;
+      startPos = stop - sizeHeader;
       raf.seek(startPos);
       int nRead = raf.read(header);
       if (nRead != header.length) {
-          log.warn("Unable to read full BUFR header. Got " + nRead +
-                  " but expected " + header.length);
-          return false;
+        log.warn("Unable to read full BUFR header. Got " + nRead + " but expected " + header.length);
+        return false;
       }
     }
-    if (debug && countMsgs % 100 == 0) System.out.printf("%d ", countMsgs);
+    if (debug && countMsgs % 100 == 0)
+      System.out.printf("%d ", countMsgs);
     return more;
   }
 
@@ -119,13 +124,16 @@ public class MessageScanner {
       int dataLength = BufrNumbers.uint3(raf);
       BufrDataSection dataSection = new BufrDataSection(dataPos, dataLength);
       lastPos = dataPos + dataLength + 4; // position to the end message plus 1
-      //nbytes +=  lastPos - startPos;
+      // nbytes += lastPos - startPos;
 
-      /* length consistency checks
-      if (is.getBufrLength() > MAX_MESSAGE_SIZE) {
-        log.warn("Illegal length - BUFR message at pos "+start+" header= "+cleanup(header)+" size= "+is.getBufrLength());
-        return null;
-      } */
+      /*
+       * length consistency checks
+       * if (is.getBufrLength() > MAX_MESSAGE_SIZE) {
+       * log.warn("Illegal length - BUFR message at pos "+start+" header= "+cleanup(header)+" size= "+is.getBufrLength()
+       * );
+       * return null;
+       * }
+       */
 
       if (is.getBufrEdition() > 4) {
         log.warn("Illegal edition - BUFR message at pos " + start + " header= " + cleanup(header));
@@ -133,7 +141,8 @@ public class MessageScanner {
       }
 
       if (is.getBufrEdition() < 2) {
-        log.warn("Edition "+ is.getBufrEdition()+" is not supported - BUFR message at pos " + start + " header= " +cleanup(header));
+        log.warn("Edition " + is.getBufrEdition() + " is not supported - BUFR message at pos " + start + " header= "
+            + cleanup(header));
         return null;
       }
 
@@ -142,28 +151,32 @@ public class MessageScanner {
       raf.seek(dataPos + dataLength);
       for (int i = 0; i < 3; i++) {
         if (raf.read() != 55) {
-          log.warn("Missing End of BUFR message at pos= {} header= {} file= {}", ending, cleanup(header), raf.getLocation());
+          log.warn("Missing End of BUFR message at pos= {} header= {} file= {}", ending, cleanup(header),
+              raf.getLocation());
           return null;
         }
       }
       // allow off by one : may happen when dataLength rounded to even bytes
       if (raf.read() != 55) {
-        raf.seek(dataPos + dataLength-1); // see if byte before is a '7'
+        raf.seek(dataPos + dataLength - 1); // see if byte before is a '7'
         if (raf.read() != 55) {
-          log.warn("Missing End of BUFR message at pos= {} header= {} edition={} file= {}", ending, cleanup(header), is.getBufrEdition(), raf.getLocation());
+          log.warn("Missing End of BUFR message at pos= {} header= {} edition={} file= {}", ending, cleanup(header),
+              is.getBufrEdition(), raf.getLocation());
           return null;
         } else {
-          log.info("End of BUFR message off-by-one at pos= {} header= {} edition={} file= {}", ending, cleanup(header), is.getBufrEdition(), raf.getLocation());
+          log.info("End of BUFR message off-by-one at pos= {} header= {} edition={} file= {}", ending, cleanup(header),
+              is.getBufrEdition(), raf.getLocation());
           lastPos--;
         }
       }
 
       Message m = new Message(raf, is, ids, dds, dataSection);
-      m.setHeader( cleanup(header));
-      m.setStartPos( start);
+      m.setHeader(cleanup(header));
+      m.setStartPos(start);
 
       if (useEmbeddedTables && m.containsBufrTable()) {
-        if (embedTable == null) embedTable = new EmbeddedTable(m, raf);
+        if (embedTable == null)
+          embedTable = new EmbeddedTable(m, raf);
         embedTable.addTable(m);
       } else if (embedTable != null) {
         m.setTableLookup(embedTable.getTableLookup());
@@ -175,7 +188,7 @@ public class MessageScanner {
       return m;
 
     } catch (IOException ioe) {
-      log.error("Error reading message at "+lastPos, ioe);
+      log.error("Error reading message at " + lastPos, ioe);
       lastPos = raf.getFilePointer(); // dont do an infinite loop
       return null;
     }
@@ -216,7 +229,7 @@ public class MessageScanner {
     return countMsgs;
   }
 
-    // the WMO header is in here somewhere when the message comes over the IDD
+  // the WMO header is in here somewhere when the message comes over the IDD
   private static String cleanup(byte[] h) {
     byte[] bb = new byte[h.length];
     int count = 0;
@@ -227,9 +240,9 @@ public class MessageScanner {
     return new String(bb, 0, count, CDM.utf8Charset);
   }
 
-  public long writeCurrentMessage( WritableByteChannel out) throws IOException {
+  public long writeCurrentMessage(WritableByteChannel out) throws IOException {
     long nbytes = lastPos - startPos;
-    return  raf.readToByteChannel(out, startPos, nbytes);
+    return raf.readToByteChannel(out, startPos, nbytes);
   }
 
 }

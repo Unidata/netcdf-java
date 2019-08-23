@@ -14,7 +14,6 @@ import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Assert2;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.prefs.BackingStoreException;
@@ -24,10 +23,11 @@ import java.util.prefs.Preferences;
 public class TestXMLStore {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
   static {
-      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
 
   private String storeFile;
@@ -97,7 +97,7 @@ public class TestXMLStore {
     barr[1] = 2;
     barr[2] = 3;
     byte[] ba = prefs.getByteArray("testBA", barr2);
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
       assert ba[i] == barr[i] : "BA failed";
   }
 
@@ -130,7 +130,7 @@ public class TestXMLStore {
     barr[1] = 3;
     barr[2] = 4;
     byte[] ba = prefs.getByteArray("testBA", barr2);
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
       assert ba[i] == barr[i] : "BA failed";
   }
 
@@ -172,7 +172,7 @@ public class TestXMLStore {
     prefs.put("testS2", "WayBetter");
     store.save();
 
-    XMLStore store2 =XMLStore.createFromFile(storeFile, null);
+    XMLStore store2 = XMLStore.createFromFile(storeFile, null);
     Preferences prefs2 = store2.getPreferences().node("SemperUbi");
 
     s = prefs2.get("testS2", "");
@@ -224,7 +224,7 @@ public class TestXMLStore {
     Preferences prefs3 = store3.getPreferences().node("SemperUbi/SubSemperUbi2");
 
     s = prefs3.get("testS2", "deff");
-    assert s.equals("deff") : "testPersistenceAddRemoveNode failed 3 " +s;
+    assert s.equals("deff") : "testPersistenceAddRemoveNode failed 3 " + s;
   }
 
   @Test
@@ -241,6 +241,6 @@ public class TestXMLStore {
     Preferences pref2 = store2.getPreferences().node("badchars");
 
     String s = pref2.get("baddog", null);
-    assert s.equals(bad) : "bad==="+s+"===";
+    assert s.equals(bad) : "bad===" + s + "===";
   }
 }

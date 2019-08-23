@@ -10,15 +10,15 @@ package ucar.units;
  * @author Steven R. Emmerson
  */
 public final class NameException extends UnitException {
-	private static final long	serialVersionUID	= 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs from a message.
-	 * 
-	 * @param msg
-	 *            The message.
-	 */
-	public NameException(final String msg) {
-		super(msg);
-	}
+  /**
+   * Constructs from a message.
+   * 
+   * @param msg
+   *        The message.
+   */
+  public NameException(final String msg) {
+    super(msg);
+  }
 }

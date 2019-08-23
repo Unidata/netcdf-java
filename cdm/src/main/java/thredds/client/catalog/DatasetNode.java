@@ -5,7 +5,6 @@
 package thredds.client.catalog;
 
 import thredds.client.catalog.builder.DatasetBuilder;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,9 +21,10 @@ import java.util.Map;
 public class DatasetNode {
   protected final DatasetNode parent;
   protected final String name;
-  protected final Map<String, Object> flds;     // keep memory small. dont store reference objects for nulls
+  protected final Map<String, Object> flds; // keep memory small. dont store reference objects for nulls
 
-  protected DatasetNode(DatasetNode parent, String name, Map<String, Object> flds, List<DatasetBuilder> datasetBuilders) {
+  protected DatasetNode(DatasetNode parent, String name, Map<String, Object> flds,
+      List<DatasetBuilder> datasetBuilders) {
     this.parent = parent;
     this.name = name;
     this.flds = Collections.unmodifiableMap(flds);
@@ -53,8 +53,8 @@ public class DatasetNode {
   }
 
   /**
-    Get top level datasets contained directly in this catalog.
-    Do not dereference catRefs.
+   * Get top level datasets contained directly in this catalog.
+   * Do not dereference catRefs.
    */
   public List<Dataset> getDatasetsLocal() {
     List<Dataset> datasets = (List<Dataset>) flds.get(Dataset.Datasets);
@@ -62,17 +62,17 @@ public class DatasetNode {
   }
 
   /**
-    Get top level datasets contained in this catalog, or if its a catref,
-    get the datasets in the referenced catalog only if already read in.
- */
+   * Get top level datasets contained in this catalog, or if its a catref,
+   * get the datasets in the referenced catalog only if already read in.
+   */
   public List<Dataset> getDatasets() {
     return getDatasetsLocal();
   }
 
   /**
-    Get top level datasets logically contained in this catalog.
-    If this is a catalogRef, read it in.
- */
+   * Get top level datasets logically contained in this catalog.
+   * If this is a catalogRef, read it in.
+   */
   public List<Dataset> getDatasetsLogical() {
     return getDatasets();
   }
@@ -80,9 +80,11 @@ public class DatasetNode {
   // Look though all datasets here or under here. do not go into catrefs
   public Dataset findDatasetByName(String name) {
     for (Dataset ds : getDatasets()) {
-      if (ds.getName().equals(name)) return ds;
+      if (ds.getName().equals(name))
+        return ds;
       Dataset result = ds.findDatasetByName(name);
-      if (result != null) return result;
+      if (result != null)
+        return result;
     }
     return null;
   }
@@ -93,20 +95,24 @@ public class DatasetNode {
   }
 
   public Catalog getParentCatalog() {
-    if (parent == null) return null;
-    if (parent instanceof Catalog) return (Catalog) parent;
+    if (parent == null)
+      return null;
+    if (parent instanceof Catalog)
+      return (Catalog) parent;
     return parent.getParentCatalog();
   }
 
   public Dataset getParentDataset() {
-    if (parent == null) return null;
+    if (parent == null)
+      return null;
     return (parent instanceof Dataset) ? (Dataset) parent : null;
   }
 
   public List getLocalFieldAsList(String fldName) {
     Object value = flds.get(fldName);
     if (value != null) {
-      if (value instanceof List) return (List) value;
+      if (value instanceof List)
+        return (List) value;
       List result = new ArrayList(1);
       result.add(value);
       return result;

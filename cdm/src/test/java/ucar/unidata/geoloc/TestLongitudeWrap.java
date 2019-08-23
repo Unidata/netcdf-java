@@ -8,7 +8,6 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Assert2;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class TestLongitudeWrap {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{100, -100, 200});
+    result.add(new Object[] {100, -100, 200});
 
     return result;
   }

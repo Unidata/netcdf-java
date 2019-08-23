@@ -76,74 +76,76 @@ public class SuperComboBox extends JPanel {
   private JButton next, prev, down; // arrow button
   private JWindow pulldown; // pulldown menu
   private JTableSorted table; // inside the pulldown
-  private IndependentWindow loopControl;  // loop control
+  private IndependentWindow loopControl; // loop control
 
   private ActionSourceListener actionSource;
 
   private boolean isNamedObject = false;
-  private boolean eventOK = true;               // disallow events to prevent infinite loop
-  private boolean sendExternalEvent = true;     // disallow events to prevent infinite loop
-  private boolean immediateMode = false;        // used for looping
+  private boolean eventOK = true; // disallow events to prevent infinite loop
+  private boolean sendExternalEvent = true; // disallow events to prevent infinite loop
+  private boolean immediateMode = false; // used for looping
 
   private boolean debug = false, debugEvent = false;
 
   private int height = 222;
   private int width = 100;
 
-   /** default is one column, with an iterator of NamedObjects
-    * @param parent parent container
-    * @param name column name
-    * @param sortOK  true allow sorting, column adding and removing
-    * @param iter Iterator of objects inside the combobox.
-    */
+  /**
+   * default is one column, with an iterator of NamedObjects
+   * 
+   * @param parent parent container
+   * @param name column name
+   * @param sortOK true allow sorting, column adding and removing
+   * @param iter Iterator of objects inside the combobox.
+   */
   public SuperComboBox(RootPaneContainer parent, String name, boolean sortOK, Iterator iter) {
     this.name = name;
 
-      // create JLabel
+    // create JLabel
     text = new MyTextField(" ");
     text.setToolTipText(name);
 
-      // create arrow buttons
-    JPanel seqPanel = new JPanel(new GridLayout(1,2));
+    // create arrow buttons
+    JPanel seqPanel = new JPanel(new GridLayout(1, 2));
     prev = makeButton(SpinIcon.TypeLeft);
     prev.setToolTipText("previous");
-    seqPanel.add( prev);
+    seqPanel.add(prev);
 
     next = makeButton(SpinIcon.TypeRight);
     next.setToolTipText("next");
-    seqPanel.add( next);
+    seqPanel.add(next);
 
-    //JPanel bPanel = new JPanel(new GridLayout(2,1));
+    // JPanel bPanel = new JPanel(new GridLayout(2,1));
     JPanel bPanel = new JPanel(new BorderLayout());
     down = makeButton(SpinIcon.TypeDown);
     down.setToolTipText("show menu");
-    bPanel.add( seqPanel, BorderLayout.NORTH);
-    bPanel.add( down, BorderLayout.SOUTH);
+    bPanel.add(seqPanel, BorderLayout.NORTH);
+    bPanel.add(down, BorderLayout.SOUTH);
 
-      // the jtable
-    String [] colNames = new String [1];
+    // the jtable
+    String[] colNames = new String[1];
     colNames[0] = name;
 
     table = new JTableSorted(colNames, list);
-    table.setSortOK( sortOK);
+    table.setSortOK(sortOK);
     if (iter != null)
-      setCollection( iter);
+      setCollection(iter);
 
-      // the pulldown menu list
+    // the pulldown menu list
     JFrame parentComponent = (parent instanceof JFrame) ? (JFrame) parent : null;
     pulldown = new JWindow(parentComponent);
-    pulldown.getContentPane().add( table);
+    pulldown.getContentPane().add(table);
     pulldown.pack();
 
-      // put it together
+    // put it together
     setBorder(new EtchedBorder(EtchedBorder.RAISED));
     setLayout(new BorderLayout());
-    //add(seqPanel, BorderLayout.WEST);
+    // add(seqPanel, BorderLayout.WEST);
     add(text, BorderLayout.CENTER);
     add(bPanel, BorderLayout.EAST);
 
     // add the listeners
-    text.addMouseListener( new MyMouseAdapter() {
+    text.addMouseListener(new MyMouseAdapter() {
       public void click(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e))
           showPulldownMenu();
@@ -152,78 +154,92 @@ public class SuperComboBox extends JPanel {
 
     // popup menu
     LoopControl popup = new LoopControl();
-    text.addMouseListener( popup);
+    text.addMouseListener(popup);
     loopControl = popup.getLoopControl();
 
-    prev.addMouseListener( new MouseAdapter() {
+    prev.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         table.incrSelected(false);
       }
     });
-    next.addMouseListener( new MouseAdapter() {
+    next.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         table.incrSelected(true);
       }
     });
-    down.addMouseListener( new MouseAdapter() {
+    down.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         showPulldownMenu();
       }
     });
 
-    table.addListSelectionListener( new ListSelectionListener() {
+    table.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        if (debugEvent) System.out.println(" JTable event ");
+        if (debugEvent)
+          System.out.println(" JTable event ");
         if (eventOK && !e.getValueIsAdjusting()) {
           setSelection();
           hidePulldownMenu();
         }
       }
     });
-    table.getTable().addMouseListener( new MyMouseAdapter() {
+    table.getTable().addMouseListener(new MyMouseAdapter() {
       public void click(MouseEvent e) {
-        //System.out.println("table.table click");
+        // System.out.println("table.table click");
         hidePulldownMenu();
       }
     });
 
-      // event management
+    // event management
     actionSource = new ActionSourceListener(name) {
-      public void actionPerformed( ActionValueEvent e) {
-        if (debugEvent) System.out.println(" actionSource event "+e);
-        setSelectedByName( e.getValue().toString());
+      public void actionPerformed(ActionValueEvent e) {
+        if (debugEvent)
+          System.out.println(" actionSource event " + e);
+        setSelectedByName(e.getValue().toString());
       }
     };
   }
 
-    /** add ActionValueListener listener */
-  public void addActionValueListener( ActionValueListener l) { actionSource.addActionValueListener(l); }
-    /** remove ActionValueListener listener */
-  public void removeActionValueListener( ActionValueListener l) { actionSource.removeActionValueListener(l); }
+  /** add ActionValueListener listener */
+  public void addActionValueListener(ActionValueListener l) {
+    actionSource.addActionValueListener(l);
+  }
 
-    /** better way to do event management */
-  public ActionSourceListener getActionSourceListener() { return actionSource; }
+  /** remove ActionValueListener listener */
+  public void removeActionValueListener(ActionValueListener l) {
+    actionSource.removeActionValueListener(l);
+  }
 
-       /** get the LoopControl Window associated with this list */
-  public IndependentWindow getLoopControl() { return loopControl; }
-       /** get the name associated with this list */
-  public String getName() { return name; }
+  /** better way to do event management */
+  public ActionSourceListener getActionSourceListener() {
+    return actionSource;
+  }
+
+  /** get the LoopControl Window associated with this list */
+  public IndependentWindow getLoopControl() {
+    return loopControl;
+  }
+
+  /** get the name associated with this list */
+  public String getName() {
+    return name;
+  }
 
   /**
    * Set the list of things to be selected.
    * Iterator may return objects of type NamedObjects,
    * otherwise will use object.toString()
    */
-  public void setCollection( Iterator iter) {
+  public void setCollection(Iterator iter) {
     setCollection(iter, false);
   }
 
-  public void setCollection( Iterator iter, boolean keepIndex) {
+  public void setCollection(Iterator iter, boolean keepIndex) {
     eventOK = false;
     list = new ArrayList<>();
 
     if (iter != null) {
-      FontMetrics fm = text.getFontMetrics( text.getFont());
+      FontMetrics fm = text.getFontMetrics(text.getFont());
 
       int width = 0;
       while (iter.hasNext()) {
@@ -242,12 +258,13 @@ public class SuperComboBox extends JPanel {
       }
       // resize
       Dimension d = text.getPreferredSize();
-      d.width = width+10;
+      d.width = width + 10;
       text.setPreferredSize(d);
       text.revalidate();
     }
 
-    if (debugEvent) System.out.println(" New collection set = ");
+    if (debugEvent)
+      System.out.println(" New collection set = ");
     table.setList(list);
     if (list.size() == 0)
       setLabel("none");
@@ -259,13 +276,15 @@ public class SuperComboBox extends JPanel {
     eventOK = true;
   }
 
-  /** Set the displayed text. Typically its only used when the list is empty.
+  /**
+   * Set the displayed text. Typically its only used when the list is empty.
    */
   public void setLabel(String s) {
-    text.setText( s);
+    text.setText(s);
   }
 
-  /** Get the currently selected object. May be null.
+  /**
+   * Get the currently selected object. May be null.
    */
   @Nullable
   public Object getSelectedObject() {
@@ -273,21 +292,25 @@ public class SuperComboBox extends JPanel {
     return (selected == null) ? null : selected.getUserObject();
   }
 
-  /** Get the index of the currently selected object in the list.
+  /**
+   * Get the index of the currently selected object in the list.
    * If sortOK, then this may not be the original index.
+   * 
    * @return index of selected object, or -1 if none selected.
    */
   public int getSelectedIndex() {
     return table.getSelectedRowIndex();
   }
 
-  /** Set the currently selected object using its choice name.
+  /**
+   * Set the currently selected object using its choice name.
    * Note that no event is sent due to this call.
+   * 
    * @param choiceName name of object to match.
    * @return index of selection, or -1 if not found;
    */
-  public int setSelectedByName( String choiceName) {
-    for (int i=0; i<list.size(); i++) {
+  public int setSelectedByName(String choiceName) {
+    for (int i = 0; i < list.size(); i++) {
       TableRow row = list.get(i);
       String value = row.getValueAt(0).toString();
       if (choiceName.equals(value)) {
@@ -297,19 +320,21 @@ public class SuperComboBox extends JPanel {
         return i;
       }
     }
-    // setSelectedByIndex(-1);  // force it to 0 or none
+    // setSelectedByIndex(-1); // force it to 0 or none
     return -1;
   }
 
-  /** Set the currently selected object using its index.
+  /**
+   * Set the currently selected object using its index.
    * If sortOK, then this may not be the original index.
+   * 
    * @param index of selected object.
    */
-   public void setSelectedByIndex( int index) {
+  public void setSelectedByIndex(int index) {
     if ((index >= 0) && (index < list.size())) {
       table.setSelected(index);
       setSelection();
-    } else if ( list.size() > 0) {
+    } else if (list.size() > 0) {
       table.setSelected(0);
       setSelection();
     } else
@@ -324,13 +349,14 @@ public class SuperComboBox extends JPanel {
 
   private void setSelection() {
     TableRow selected = getSelectedRow();
-    if (debug) System.out.println(" setSelection = "+ selected);
+    if (debug)
+      System.out.println(" setSelection = " + selected);
     if (selected != null) {
       Object selectedObject = selected.getValueAt(0);
       String selectedName = selectedObject.toString();
-      text.setText( selectedName.trim());
+      text.setText(selectedName.trim());
       if ((selected instanceof NamedObjectRow) || (selected instanceof GeoGridRow)) {
-        text.setToolTipText( ((NamedObject)selected.getUserObject()).getDescription());
+        text.setToolTipText(((NamedObject) selected.getUserObject()).getDescription());
       }
       repaint();
 
@@ -339,11 +365,12 @@ public class SuperComboBox extends JPanel {
       }
 
       if (sendExternalEvent) {
-        if (debugEvent) System.out.println("--->SuperCombo send event "+selectedName);
+        if (debugEvent)
+          System.out.println("--->SuperCombo send event " + selectedName);
         if (immediateMode)
-          actionSource.fireActionValueEvent( "redrawImmediate", selectedObject);
+          actionSource.fireActionValueEvent("redrawImmediate", selectedObject);
         else
-          actionSource.fireActionValueEvent( ActionSourceListener.SELECTED, selectedObject);
+          actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedObject);
       }
     }
   }
@@ -364,73 +391,122 @@ public class SuperComboBox extends JPanel {
   private void hidePulldownMenu() {
     if (pulldown.isShowing()) {
       pulldown.setVisible(false);
-      //System.out.println("hidePulldownMenu");
+      // System.out.println("hidePulldownMenu");
     }
   }
 
 
-  /* private void showPulldownMenu() {
-    hidePulldownMenu();
-    Point p = text.getLocationOnScreen();
-    p.y += text.getHeight();
-    PopupFactory factory = PopupFactory.getSharedInstance();
-    popup = factory.getPopup(this, table, p.x, p.y);
-    popup.show();
-  }
-
-  private void hidePulldownMenu() {
-    if (popup != null) {
-      popup.hide();
-      popup = null;
-    }
-  } */
+  /*
+   * private void showPulldownMenu() {
+   * hidePulldownMenu();
+   * Point p = text.getLocationOnScreen();
+   * p.y += text.getHeight();
+   * PopupFactory factory = PopupFactory.getSharedInstance();
+   * popup = factory.getPopup(this, table, p.x, p.y);
+   * popup.show();
+   * }
+   * 
+   * private void hidePulldownMenu() {
+   * if (popup != null) {
+   * popup.hide();
+   * popup = null;
+   * }
+   * }
+   */
 
   private JButton makeButton(SpinIcon.Type type) {
-      SpinIcon icon = new SpinIcon(type);
-      JButton butt  = new JButton( icon);
-      Insets i = new Insets(0,0,0,0);
-      butt.setMargin( i);
-      butt.setBorderPainted(false);
-      butt.setFocusPainted(false);
-      butt.setPreferredSize(new Dimension(icon.getIconWidth()+2, icon.getIconHeight()+2));
-      return butt;
+    SpinIcon icon = new SpinIcon(type);
+    JButton butt = new JButton(icon);
+    Insets i = new Insets(0, 0, 0, 0);
+    butt.setMargin(i);
+    butt.setBorderPainted(false);
+    butt.setFocusPainted(false);
+    butt.setPreferredSize(new Dimension(icon.getIconWidth() + 2, icon.getIconHeight() + 2));
+    return butt;
   }
 
 
   private static class SimpleRow extends TableRowAbstract {
     Object o;
-    SimpleRow( Object o){ this.o = o; }
-    public Object getValueAt( int col) { return o; }
-    public Object getUserObject() { return o; }
+
+    SimpleRow(Object o) {
+      this.o = o;
+    }
+
+    public Object getValueAt(int col) {
+      return o;
+    }
+
+    public Object getUserObject() {
+      return o;
+    }
   }
 
   private static class NamedObjectRow extends TableRowAbstract implements NamedObject {
     NamedObject o;
-    NamedObjectRow( NamedObject o){ this.o = o; }
-    public Object getValueAt( int col) { return this; }
-    public Object getUserObject() { return o; }
-    public Object getValue() { return o; }
 
-    public String getName() { return o.getName(); }
-    public String getDescription() { return o.getDescription(); }
-    public String toString() { return getName(); }
+    NamedObjectRow(NamedObject o) {
+      this.o = o;
+    }
+
+    public Object getValueAt(int col) {
+      return this;
+    }
+
+    public Object getUserObject() {
+      return o;
+    }
+
+    public Object getValue() {
+      return o;
+    }
+
+    public String getName() {
+      return o.getName();
+    }
+
+    public String getDescription() {
+      return o.getDescription();
+    }
+
+    public String toString() {
+      return getName();
+    }
   }
 
   private static class GeoGridRow extends TableRowAbstract implements NamedObject {
     NamedObject o;
-    GeoGridRow(NamedObject o){ this.o = o; }
-    public Object getValueAt( int col) { return this; }
-    public Object getUserObject() { return o; }
-    public Object getValue() { return o; }
 
-    public String getName() { return o.getName(); }
-    public String getDescription() { return o.getDescription(); }
+    GeoGridRow(NamedObject o) {
+      this.o = o;
+    }
+
+    public Object getValueAt(int col) {
+      return this;
+    }
+
+    public Object getUserObject() {
+      return o;
+    }
+
+    public Object getValue() {
+      return o;
+    }
+
+    public String getName() {
+      return o.getName();
+    }
+
+    public String getDescription() {
+      return o.getDescription();
+    }
+
     public String toString() {
       String desc = o.getDescription();
       if (desc == null || desc.isEmpty() || desc.trim().equals("-"))
         return o.getName();
       else
-        return o.getName() +" == "+ o.getDescription();
+        return o.getName() + " == " + o.getDescription();
     }
   }
 
@@ -441,55 +517,55 @@ public class SuperComboBox extends JPanel {
     private int nitems = 0;
     private int currentItem = 0;
 
-    MyTextField( String name) {
+    MyTextField(String name) {
       super(name);
       setOpaque(true);
       setBackground(Color.white);
       setForeground(Color.black);
 
-      addMouseListener( new MyMouseListener());
-      addMouseMotionListener( new MyMouseMotionListener());
+      addMouseListener(new MyMouseListener());
+      addMouseMotionListener(new MyMouseMotionListener());
     }
 
     public void paintComponent(Graphics g) {
       super.paintComponent(g);
 
-      g.setColor( Color.black);
-//      g.setColor( component.isEnabled() ? MetalLookAndFeel.getControlInfo() :
- //                                           MetalLookAndFeel.getControlShadow() );
+      g.setColor(Color.black);
+      // g.setColor( component.isEnabled() ? MetalLookAndFeel.getControlInfo() :
+      // MetalLookAndFeel.getControlShadow() );
       b = getBounds();
-      nitems = list.size();  // number of items
+      nitems = list.size(); // number of items
 
       int posx = getItemPos();
-      int line = b.height-1;
-      for (int w2=arrow_size; w2>=0; w2--) {
-        g.drawLine( posx-w2, line, posx+w2, line );
+      int line = b.height - 1;
+      for (int w2 = arrow_size; w2 >= 0; w2--) {
+        g.drawLine(posx - w2, line, posx + w2, line);
         line--;
       }
     }
 
-        // return slider indicator position for currently selected item
+    // return slider indicator position for currently selected item
     protected int getItemPos() {
       if (nitems < 1)
-        return -arrow_size;   // dont show indicator
+        return -arrow_size; // dont show indicator
       else if (nitems == 1)
-        return b.width/2;   // indicator in center
+        return b.width / 2; // indicator in center
 
-      int item = table.getSelectedRowIndex();  // selected item
-      int eff_width = b.width - 2*arrow_size;   // effective width
-      int pixel =  (item * eff_width)/(nitems-1);  // divided into n-1 intervals
-      return pixel+arrow_size;
+      int item = table.getSelectedRowIndex(); // selected item
+      int eff_width = b.width - 2 * arrow_size; // effective width
+      int pixel = (item * eff_width) / (nitems - 1); // divided into n-1 intervals
+      return pixel + arrow_size;
     }
 
     // return item selected by this pixel position
-    protected int getItem( int pixel) {
+    protected int getItem(int pixel) {
       if (nitems < 2)
         return 0;
 
-      int eff_width = b.width - 2*arrow_size;   // effective width
-      double fitem = ((double) (pixel-arrow_size)*(nitems-1)) / eff_width;
-      int item =  (int)(fitem+.5);
-      item = Math.max( Math.min(item, nitems-1), 0);
+      int eff_width = b.width - 2 * arrow_size; // effective width
+      double fitem = ((double) (pixel - arrow_size) * (nitems - 1)) / eff_width;
+      int item = (int) (fitem + .5);
+      item = Math.max(Math.min(item, nitems - 1), 0);
       return item;
     }
 
@@ -503,10 +579,10 @@ public class SuperComboBox extends JPanel {
       public void mouseReleased(MouseEvent anEvent) {
         sendExternalEvent = true;
         if (wasDragged) {
-          int item = getItem( anEvent.getX());
+          int item = getItem(anEvent.getX());
           if (item != currentItem) {
             setSelection();
-            //if (debug) System.out.println("release select "+item);
+            // if (debug) System.out.println("release select "+item);
           }
         }
         wasDragged = false;
@@ -516,7 +592,7 @@ public class SuperComboBox extends JPanel {
     private class MyMouseMotionListener extends MouseMotionAdapter {
 
       public void mouseDragged(MouseEvent anEvent) {
-        int item = getItem( anEvent.getX());
+        int item = getItem(anEvent.getX());
         table.setSelected(item);
         MyTextField.this.repaint();
         wasDragged = true;
@@ -541,7 +617,7 @@ public class SuperComboBox extends JPanel {
     private boolean stopped, forward, first = true, continuous = true, less = true;
     private int step = 1, start = -1;
 
-    LoopControl () {
+    LoopControl() {
       loopPanel = new JPanel();
 
       // create VCR buttons
@@ -550,16 +626,16 @@ public class SuperComboBox extends JPanel {
           start(true);
         }
       };
-      BAMutil.setActionProperties( play, "VCRPlay", "play", false, 'S', KeyEvent.VK_NUMPAD6);
-      BAMutil.addActionToContainer( loopPanel, play);
+      BAMutil.setActionProperties(play, "VCRPlay", "play", false, 'S', KeyEvent.VK_NUMPAD6);
+      BAMutil.addActionToContainer(loopPanel, play);
 
       fastforward = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          setSelectedByIndex(list.size()-1);
+          setSelectedByIndex(list.size() - 1);
         }
       };
-      BAMutil.setActionProperties( fastforward, "VCRFastForward", "go to end", false, 'F', KeyEvent.VK_NUMPAD1);
-      BAMutil.addActionToContainer( loopPanel, fastforward);
+      BAMutil.setActionProperties(fastforward, "VCRFastForward", "go to end", false, 'F', KeyEvent.VK_NUMPAD1);
+      BAMutil.addActionToContainer(loopPanel, fastforward);
 
       next = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -570,16 +646,16 @@ public class SuperComboBox extends JPanel {
           }
         }
       };
-      BAMutil.setActionProperties( next, "VCRNextFrame", "Next frame", false, 'N', KeyEvent.VK_PAGE_DOWN);
-      BAMutil.addActionToContainer( loopPanel, next);
+      BAMutil.setActionProperties(next, "VCRNextFrame", "Next frame", false, 'N', KeyEvent.VK_PAGE_DOWN);
+      BAMutil.addActionToContainer(loopPanel, next);
 
       stop = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           stopped = true;
         }
       };
-      BAMutil.setActionProperties( stop, "VCRStop", "stop", false, 'S', KeyEvent.VK_ESCAPE);
-      BAMutil.addActionToContainer( loopPanel, stop);
+      BAMutil.setActionProperties(stop, "VCRStop", "stop", false, 'S', KeyEvent.VK_ESCAPE);
+      BAMutil.addActionToContainer(loopPanel, stop);
 
       prev = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -590,54 +666,56 @@ public class SuperComboBox extends JPanel {
           }
         }
       };
-      BAMutil.setActionProperties( prev, "VCRPrevFrame", "Previous frame", false, 'P', KeyEvent.VK_PAGE_UP);
-      BAMutil.addActionToContainer( loopPanel, prev);
+      BAMutil.setActionProperties(prev, "VCRPrevFrame", "Previous frame", false, 'P', KeyEvent.VK_PAGE_UP);
+      BAMutil.addActionToContainer(loopPanel, prev);
 
       rewind = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           setSelectedByIndex(0);
         }
       };
-      BAMutil.setActionProperties( rewind, "VCRRewind", "rewind", false, 'R', KeyEvent.VK_NUMPAD7);
-      BAMutil.addActionToContainer( loopPanel, rewind);
+      BAMutil.setActionProperties(rewind, "VCRRewind", "rewind", false, 'R', KeyEvent.VK_NUMPAD7);
+      BAMutil.addActionToContainer(loopPanel, rewind);
 
       back = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           start(false);
         }
       };
-      BAMutil.setActionProperties( back, "VCRBack", "play backwards", false, 'B', KeyEvent.VK_NUMPAD4);
-      BAMutil.addActionToContainer( loopPanel, back);
+      BAMutil.setActionProperties(back, "VCRBack", "play backwards", false, 'B', KeyEvent.VK_NUMPAD4);
+      BAMutil.addActionToContainer(loopPanel, back);
 
-      moreOrLess = new JButton( new SpinIcon( SpinIcon.TypeRight));
+      moreOrLess = new JButton(new SpinIcon(SpinIcon.TypeRight));
       moreOrLess.setBorder(BorderFactory.createEmptyBorder());
-      moreOrLess.setMargin(new Insets(0,0,0,0));
-      moreOrLess.addActionListener( new AbstractAction() {
+      moreOrLess.setMargin(new Insets(0, 0, 0, 0));
+      moreOrLess.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          if (less) makeMore();
-          else makeLess();
+          if (less)
+            makeMore();
+          else
+            makeLess();
         }
       });
       loopPanel.add(moreOrLess);
 
-      iw = new IndependentWindow(name+" loop", null, loopPanel);
-      iw.setResizable( false);
+      iw = new IndependentWindow(name + " loop", null, loopPanel);
+      iw.setResizable(false);
 
-        // these arent added to the panel right away
+      // these arent added to the panel right away
       loopAct = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           Boolean state = (Boolean) getValue(BAMutil.STATE);
           continuous = state;
         }
       };
-      BAMutil.setActionProperties( loopAct, "MovieLoop", "continuous loop", true, 'L', 0);
+      BAMutil.setActionProperties(loopAct, "MovieLoop", "continuous loop", true, 'L', 0);
 
       helpAct = new AbstractAction() {
         public void actionPerformed(ActionEvent evt) {
           // faqo.apputil.Help.getDefaultHelp().gotoTarget("movieLoop");
         }
       };
-      BAMutil.setActionProperties( helpAct, "Help", "online Help...", false, 'H', KeyEvent.VK_H);
+      BAMutil.setActionProperties(helpAct, "Help", "online Help...", false, 'H', KeyEvent.VK_H);
 
       stepSpinner = new JSpinner();
       stepSpinner.setToolTipText("step");
@@ -649,12 +727,12 @@ public class SuperComboBox extends JPanel {
     }
 
     private void makeMore() {
-      loopButt = BAMutil.addActionToContainer( loopPanel, loopAct);
+      loopButt = BAMutil.addActionToContainer(loopPanel, loopAct);
       loopAct.putValue(BAMutil.STATE, continuous);
-      helpButt = BAMutil.addActionToContainer( loopPanel, helpAct);
-      loopPanel.add( ifPanel);
+      helpButt = BAMutil.addActionToContainer(loopPanel, helpAct);
+      loopPanel.add(ifPanel);
 
-      moreOrLess.setIcon( new SpinIcon( SpinIcon.TypeLeft));
+      moreOrLess.setIcon(new SpinIcon(SpinIcon.TypeLeft));
       moreOrLess.setToolTipText("less");
 
       loopPanel.revalidate();
@@ -667,7 +745,7 @@ public class SuperComboBox extends JPanel {
       loopPanel.remove(helpButt);
       loopPanel.remove(ifPanel);
 
-      moreOrLess.setIcon( new SpinIcon( SpinIcon.TypeRight));
+      moreOrLess.setIcon(new SpinIcon(SpinIcon.TypeRight));
       moreOrLess.setToolTipText("more");
 
       loopPanel.revalidate();
@@ -675,12 +753,15 @@ public class SuperComboBox extends JPanel {
       less = true;
     }
 
-    IndependentWindow getLoopControl() { return iw; }
+    IndependentWindow getLoopControl() {
+      return iw;
+    }
+
     public void showPopup(MouseEvent e) {
       if (first) {
-        Point pt = new Point( 0, 0);
-        SwingUtilities.convertPointToScreen( pt, SuperComboBox.this);
-        iw.setLocation( pt);
+        Point pt = new Point(0, 0);
+        SwingUtilities.convertPointToScreen(pt, SuperComboBox.this);
+        iw.setLocation(pt);
         first = false;
       }
       iw.show();
@@ -700,16 +781,19 @@ public class SuperComboBox extends JPanel {
       if ((startName != null) && (startName.length() > 0)) {
         start = setSelectedByName(startName);
       }
-      if (debug) System.out.println(" start = "+start+" step = "+step);
+      if (debug)
+        System.out.println(" start = " + start + " step = " + step);
 
-      SwingUtilities.invokeLater( new RunLoop());  // execute on eventTread
+      SwingUtilities.invokeLater(new RunLoop()); // execute on eventTread
     }
 
 
-    private int incr( boolean forward, boolean continuous) {
+    private int incr(boolean forward, boolean continuous) {
       int current = getSelectedIndex();
-      if (forward) current += step;
-      else current -= step;
+      if (forward)
+        current += step;
+      else
+        current -= step;
       if (!continuous && ((current < 0) || (current >= list.size()))) {
         return -1;
       }
@@ -724,7 +808,10 @@ public class SuperComboBox extends JPanel {
     class RunLoop implements Runnable {
       public void run() {
         loopPanel.repaint();
-        if (stopped) { stop(); return; }
+        if (stopped) {
+          stop();
+          return;
+        }
 
         int current = incr(forward, continuous);
         if (current < 0) {
@@ -732,24 +819,26 @@ public class SuperComboBox extends JPanel {
           return;
         }
 
-          // goto next
+        // goto next
         setSelectedByIndex(current);
         text.paintImmediately(text.getBounds());
-          // set another event
-        SwingUtilities.invokeLater( new RunLoop());
+        // set another event
+        SwingUtilities.invokeLater(new RunLoop());
       }
 
       private void stop() {
         immediateMode = false;
         eventOK = true;
-        /* if (Debug.isSet("timing/loop")) {
-          long tookTime = System.currentTimeMillis() - startTime;
-          System.out.println("timing/loop: "+list.size()+" " + tookTime*.001 + " seconds");
-        } */
+        /*
+         * if (Debug.isSet("timing/loop")) {
+         * long tookTime = System.currentTimeMillis() - startTime;
+         * System.out.println("timing/loop: "+list.size()+" " + tookTime*.001 + " seconds");
+         * }
+         */
       }
 
     }
 
-  }  // inner class LoopControl
+  } // inner class LoopControl
 
 }

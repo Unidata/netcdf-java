@@ -15,6 +15,7 @@ public interface AttributeContainer {
 
   /**
    * Returns the list of attributes for this variable.
+   * 
    * @return list of attributes, immutable
    */
   java.util.List<Attribute> getAttributes();
@@ -26,6 +27,7 @@ public interface AttributeContainer {
 
   /**
    * Add new or replace old if has same name
+   * 
    * @param att add this Attribute
    * @return the added attribute
    */
@@ -34,6 +36,7 @@ public interface AttributeContainer {
 
   /**
    * Find a String-valued Attribute by Attribute name (ignore case), return the (string) value of the Attribute.
+   * 
    * @return the attribute value, or defaultValue if not found
    */
   String findAttValueIgnoreCase(String attName, String defaultValue);

@@ -2,13 +2,11 @@ package ucar.unidata.geoloc.projection;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPointImpl;
-
 import java.lang.invoke.MethodHandles;
 
 /**

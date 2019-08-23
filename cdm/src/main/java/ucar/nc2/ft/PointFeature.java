@@ -18,6 +18,7 @@ import ucar.unidata.geoloc.EarthLocation;
 public interface PointFeature {
   /**
    * Location of this observation
+   * 
    * @return the location of this observation
    */
   @Nonnull
@@ -26,12 +27,14 @@ public interface PointFeature {
   /**
    * Actual time of this observation.
    * Convert to CalendarDate with getFeatureCollection().getTimeUnit().makeDate()
+   * 
    * @return actual time of this observation.
    */
   double getObservationTime();
 
   /**
    * Actual time of this observation, as a CalendarDate.
+   * 
    * @return actual time of this observation, as a CalendarDate.
    */
   @Nonnull
@@ -41,6 +44,7 @@ public interface PointFeature {
    * Nominal time of this observation.
    * Convert to Date with getTimeUnit().makeDate().
    * When the nominal time is not given in the data, it is usually set to the observational time.
+   * 
    * @return Nominal time of this observation.
    */
   double getNominalTime();
@@ -48,6 +52,7 @@ public interface PointFeature {
   /**
    * Nominal time of this observation, as a CalendarDate.
    * Will be equal to the observation date if not exists independently.
+   * 
    * @return Nominal time of this observation, as a CalendarDate.
    */
   @Nonnull
@@ -66,9 +71,9 @@ public interface PointFeature {
   @Nonnull
   StructureData getDataAll() throws java.io.IOException;
 
- /**
-  * Get the containing DsgFeatureCollection
-  */
- @Nonnull
- DsgFeatureCollection getFeatureCollection();
+  /**
+   * Get the containing DsgFeatureCollection
+   */
+  @Nonnull
+  DsgFeatureCollection getFeatureCollection();
 }

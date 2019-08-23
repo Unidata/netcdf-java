@@ -7,171 +7,181 @@ package ucar.ma2;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.Sequence;
-
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Concrete implementation of ArrayStructure, data storage is in member arrays, which are converted to
- *   StructureData member data on the fly.
- * This defers object creation for efficiency. Use getJavaArrayXXX<type>() and getScalarXXX<type>() data accessors if possible.
+ * StructureData member data on the fly.
+ * This defers object creation for efficiency. Use getJavaArrayXXX<type>() and getScalarXXX<type>() data accessors if
+ * possible.
  *
  * How to create:
+ * 
  * <pre>
-    ArrayStructureMA asma = new ArrayStructureMA( smembers, getShape());
-    for (int i = 0; i < orgVariables.size(); i++) {
-      Variable v = (Variable) orgVariables.get(i);
-      Array data = v.read();
-      asma.setMemberArray( v.getName(), data);
-    } </pre>
-
+ * ArrayStructureMA asma = new ArrayStructureMA(smembers, getShape());
+ * for (int i = 0; i < orgVariables.size(); i++) {
+ *   Variable v = (Variable) orgVariables.get(i);
+ *   Array data = v.read();
+ *   asma.setMemberArray(v.getName(), data);
+ * }
+ * </pre>
+ * 
  * How to do Nested Structures:
-  <pre>
-   Structure {
-     float f1;
-     short f2(3);
+ * 
+ * <pre>
+  Structure {
+    float f1;
+    short f2(3);
 
-     Structure {
-       int g1;
-       double(2) g2;
-       double(3,4) g3;
+    Structure {
+      int g1;
+      double(2) g2;
+      double(3,4) g3;
 
-       Structure {
-         int h1;
-         double(2) h2;
-       } nested2(7);
+      Structure {
+        int h1;
+        double(2) h2;
+      } nested2(7);
 
-     } nested1(12);
-   } s(4);
-   </pre>
-   <ul>
-   <li>For f1, you need an ArrayFloat of shape {4}
-   <li>For f2, you need an ArrayShort of shape {4, 3} .
-   <li>For nested1, you need an ArrayStructure of shape {4, 12}.
-   Use an ArrayStructureMA that has 3 members:
-   <ul><li>For g1, you need an ArrayInt of shape (4, 12}
-   <li>For g2, you need an ArrayDouble of shape {4, 12, 2}.
-   <li>For g3, you need an ArrayDouble of shape {4, 12, 3, 4}.
-   </ul>
-   <li>For nested2, you need an ArrayStructure of shape {4, 12, 7}.
-   Use an ArrayStructureMA that has 2 members:
-   <ul><li>For h1, you need an ArrayInt of shape (4, 12, 7}
-   <li>For h2, you need an ArrayDouble of shape {4, 12, 7, 2}.
-   </ul>
-   </ul>
-   Example code:
- <pre>
-  public void testMA() throws IOException, InvalidRangeException {
-    StructureMembers members = new StructureMembers("s");
-
-    StructureMembers.Member m = members.addMember("f1", "desc", CDM.UNITS, DataType.FLOAT, new int[]{1});
-    Array data = Array.factory(DataType.FLOAT, new int[]{4});
-    m.setDataArray(data);
-    fill(data);
-
-    m = members.addMember("f2", "desc", CDM.UNITS, DataType.SHORT, new int[]{3});
-    data = Array.factory(DataType.SHORT, new int[]{4, 3});
-    m.setDataArray(data);
-    fill(data);
-
-    m = members.addMember("nested1", "desc", CDM.UNITS, DataType.STRUCTURE, new int[]{9});
-    data = makeNested1(m);
-    m.setDataArray(data);
-
-    ArrayStructureMA as = new ArrayStructureMA(members, new int[]{4});
-    //System.out.println( NCdumpW.printArray(as, "", null));
-    new TestStructureArray().testArrayStructure(as);
-
-    // get f2 out of the 3nd "s"
-    StructureMembers.Member f2 = as.getStructureMembers().findMember("f2");
-    short[] f2data = as.getJavaArrayShort(2, f2);
-    assert f2data[0] == 20;
-    assert f2data[1] == 21;
-    assert f2data[2] == 22;
-
-    // get nested1 out of the 3nd "s"
-    StructureMembers.Member nested1 = as.getStructureMembers().findMember("nested1");
-    ArrayStructure nested1Data = as.getArrayStructure(2, nested1);
-
-    // get g1 out of the 7th "nested1"
-    StructureMembers.Member g1 = nested1Data.getStructureMembers().findMember("g1");
-    int g1data = nested1Data.getScalarInt(6, g1);
-    assert g1data == 26;
-
-    // get nested2 out of the 7th "nested1"
-    StructureMembers.Member nested2 = nested1Data.getStructureMembers().findMember("nested2");
-    ArrayStructure nested2Data = nested1Data.getArrayStructure(6, nested2);
-
-    // get h1 out of the 4th "nested2"
-    StructureMembers.Member h1 = nested2Data.getStructureMembers().findMember("h1");
-    int val = nested2Data.getScalarInt(4, h1);
-    assert (val == 264);
-  }
-
-
-  public ArrayStructure makeNested1(StructureMembers.Member parent) throws IOException, InvalidRangeException {
-    StructureMembers members = new StructureMembers(parent.getName());
-    parent.setStructureMembers(members);
-
-    StructureMembers.Member m = members.addMember("g1", "desc", CDM.UNITS, DataType.INT, new int[]{1});
-    Array data = Array.factory(DataType.INT, new int[]{4, 9});
-    m.setDataArray(data);
-    fill(data);
-
-    m = members.addMember("g2", "desc", CDM.UNITS, DataType.DOUBLE, new int[]{2});
-    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 2});
-    m.setDataArray(data);
-    fill(data);
-
-    m = members.addMember("g3", "desc", CDM.UNITS, DataType.DOUBLE, new int[]{3, 4});
-    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 3, 4});
-    m.setDataArray(data);
-    fill(data);
-
-    m = members.addMember("nested2", "desc", CDM.UNITS, DataType.STRUCTURE, new int[]{7});
-    data = makeNested2(m);
-    m.setDataArray(data);
-
-    return new ArrayStructureMA(members, new int[]{4, 9});
-  }
-
-  public ArrayStructure makeNested2(StructureMembers.Member parent) throws IOException, InvalidRangeException {
-    StructureMembers members = new StructureMembers(parent.getName());
-    parent.setStructureMembers(members);
-
-    StructureMembers.Member m = members.addMember("h1", "desc", CDM.UNITS, DataType.INT, new int[]{1});
-    Array data = Array.factory(DataType.INT, new int[]{4, 9, 7});
-    m.setDataArray(data);
-    fill(data);
-
-    m = members.addMember("h2", "desc", CDM.UNITS, DataType.DOUBLE, new int[]{2});
-    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 7, 2});
-    m.setDataArray(data);
-    fill(data);
-
-    return new ArrayStructureMA(members, new int[]{4, 9, 7});
-  }
- </pre>
-
+    } nested1(12);
+  } s(4);
+ * </pre>
+ * <ul>
+ * <li>For f1, you need an ArrayFloat of shape {4}
+ * <li>For f2, you need an ArrayShort of shape {4, 3} .
+ * <li>For nested1, you need an ArrayStructure of shape {4, 12}.
+ * Use an ArrayStructureMA that has 3 members:
+ * <ul>
+ * <li>For g1, you need an ArrayInt of shape (4, 12}
+ * <li>For g2, you need an ArrayDouble of shape {4, 12, 2}.
+ * <li>For g3, you need an ArrayDouble of shape {4, 12, 3, 4}.
+ * </ul>
+ * <li>For nested2, you need an ArrayStructure of shape {4, 12, 7}.
+ * Use an ArrayStructureMA that has 2 members:
+ * <ul>
+ * <li>For h1, you need an ArrayInt of shape (4, 12, 7}
+ * <li>For h2, you need an ArrayDouble of shape {4, 12, 7, 2}.
+ * </ul>
+ * </ul>
+ * Example code:
+ * 
+ * <pre>
+ * public void testMA() throws IOException, InvalidRangeException {
+ *   StructureMembers members = new StructureMembers("s");
+ * 
+ *   StructureMembers.Member m = members.addMember("f1", "desc", CDM.UNITS, DataType.FLOAT, new int[] {1});
+ *   Array data = Array.factory(DataType.FLOAT, new int[] {4});
+ *   m.setDataArray(data);
+ *   fill(data);
+ * 
+ *   m = members.addMember("f2", "desc", CDM.UNITS, DataType.SHORT, new int[] {3});
+ *   data = Array.factory(DataType.SHORT, new int[] {4, 3});
+ *   m.setDataArray(data);
+ *   fill(data);
+ * 
+ *   m = members.addMember("nested1", "desc", CDM.UNITS, DataType.STRUCTURE, new int[] {9});
+ *   data = makeNested1(m);
+ *   m.setDataArray(data);
+ * 
+ *   ArrayStructureMA as = new ArrayStructureMA(members, new int[] {4});
+ *   // System.out.println( NCdumpW.printArray(as, "", null));
+ *   new TestStructureArray().testArrayStructure(as);
+ * 
+ *   // get f2 out of the 3nd "s"
+ *   StructureMembers.Member f2 = as.getStructureMembers().findMember("f2");
+ *   short[] f2data = as.getJavaArrayShort(2, f2);
+ *   assert f2data[0] == 20;
+ *   assert f2data[1] == 21;
+ *   assert f2data[2] == 22;
+ * 
+ *   // get nested1 out of the 3nd "s"
+ *   StructureMembers.Member nested1 = as.getStructureMembers().findMember("nested1");
+ *   ArrayStructure nested1Data = as.getArrayStructure(2, nested1);
+ * 
+ *   // get g1 out of the 7th "nested1"
+ *   StructureMembers.Member g1 = nested1Data.getStructureMembers().findMember("g1");
+ *   int g1data = nested1Data.getScalarInt(6, g1);
+ *   assert g1data == 26;
+ * 
+ *   // get nested2 out of the 7th "nested1"
+ *   StructureMembers.Member nested2 = nested1Data.getStructureMembers().findMember("nested2");
+ *   ArrayStructure nested2Data = nested1Data.getArrayStructure(6, nested2);
+ * 
+ *   // get h1 out of the 4th "nested2"
+ *   StructureMembers.Member h1 = nested2Data.getStructureMembers().findMember("h1");
+ *   int val = nested2Data.getScalarInt(4, h1);
+ *   assert (val == 264);
+ * }
+ * 
+ * 
+ * public ArrayStructure makeNested1(StructureMembers.Member parent) throws IOException, InvalidRangeException {
+ *   StructureMembers members = new StructureMembers(parent.getName());
+ *   parent.setStructureMembers(members);
+ * 
+ *   StructureMembers.Member m = members.addMember("g1", "desc", CDM.UNITS, DataType.INT, new int[] {1});
+ *   Array data = Array.factory(DataType.INT, new int[] {4, 9});
+ *   m.setDataArray(data);
+ *   fill(data);
+ * 
+ *   m = members.addMember("g2", "desc", CDM.UNITS, DataType.DOUBLE, new int[] {2});
+ *   data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 2});
+ *   m.setDataArray(data);
+ *   fill(data);
+ * 
+ *   m = members.addMember("g3", "desc", CDM.UNITS, DataType.DOUBLE, new int[] {3, 4});
+ *   data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 3, 4});
+ *   m.setDataArray(data);
+ *   fill(data);
+ * 
+ *   m = members.addMember("nested2", "desc", CDM.UNITS, DataType.STRUCTURE, new int[] {7});
+ *   data = makeNested2(m);
+ *   m.setDataArray(data);
+ * 
+ *   return new ArrayStructureMA(members, new int[] {4, 9});
+ * }
+ * 
+ * public ArrayStructure makeNested2(StructureMembers.Member parent) throws IOException, InvalidRangeException {
+ *   StructureMembers members = new StructureMembers(parent.getName());
+ *   parent.setStructureMembers(members);
+ * 
+ *   StructureMembers.Member m = members.addMember("h1", "desc", CDM.UNITS, DataType.INT, new int[] {1});
+ *   Array data = Array.factory(DataType.INT, new int[] {4, 9, 7});
+ *   m.setDataArray(data);
+ *   fill(data);
+ * 
+ *   m = members.addMember("h2", "desc", CDM.UNITS, DataType.DOUBLE, new int[] {2});
+ *   data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 7, 2});
+ *   m.setDataArray(data);
+ *   fill(data);
+ * 
+ *   return new ArrayStructureMA(members, new int[] {4, 9, 7});
+ * }
+ * </pre>
+ * 
  * @author caron
  * @see Array
  */
 public class ArrayStructureMA extends ArrayStructure {
-  /* Implementation notes
-     Most of the methods are now the default methods in the superclass, so that other subclasses can call them.
-     This happens when the data is "enhanced", member arrays are set and must override the other possible storage methods.
+  /*
+   * Implementation notes
+   * Most of the methods are now the default methods in the superclass, so that other subclasses can call them.
+   * This happens when the data is "enhanced", member arrays are set and must override the other possible storage
+   * methods.
    */
 
   /**
    * Create a new Array of type StructureData and the given members and shape.
-   * <p> You must set the data Arrays on each of the Members, using setDataObject(). These data Arrays contain the data
+   * <p>
+   * You must set the data Arrays on each of the Members, using setDataObject(). These data Arrays contain the data
    * for that member Variable, for all the StructureData. Therefore it has rank one greater that the Members. The extra
-   * dimension must be the outermost (slowest varying) dimension. ie, if some member has shape [3,10], the array would have
+   * dimension must be the outermost (slowest varying) dimension. ie, if some member has shape [3,10], the array would
+   * have
    * shape [nrows, 3, 10].
    *
    * @param members a description of the structure members
-   * @param shape       the shape of the Array.
+   * @param shape the shape of the Array.
    */
   public ArrayStructureMA(StructureMembers members, int[] shape) {
     super(members, shape);
@@ -180,12 +190,13 @@ public class ArrayStructureMA extends ArrayStructure {
   public ArrayStructureMA(StructureMembers members, int[] shape, StructureData[] sdata) {
     super(members, shape);
     if (nelems != sdata.length)
-      throw new IllegalArgumentException("StructureData length= "+sdata.length+"!= shape.length="+nelems);
+      throw new IllegalArgumentException("StructureData length= " + sdata.length + "!= shape.length=" + nelems);
     this.sdata = sdata;
   }
 
   /**
    * Turn any ArrayStructure into a ArrayStructureMA
+   * 
    * @param from copy from here. If from is a ArrayStructureMA, return it.
    * @return equivalent ArrayStructureMA
    * @throws java.io.IOException on error reading a sequence
@@ -218,8 +229,9 @@ public class ArrayStructureMA extends ArrayStructure {
       if (numRecords == -1) {
         numRecords = firstDimLen;
       } else {
-        assert numRecords == firstDimLen : String.format("Expected all structure members to have the same first" +
-                "dimension length, but %d != %d.", numRecords, firstDimLen);
+        assert numRecords == firstDimLen : String.format(
+            "Expected all structure members to have the same first" + "dimension length, but %d != %d.", numRecords,
+            firstDimLen);
       }
 
       memberArrayMap.put(m.getName(), array);
@@ -227,9 +239,9 @@ public class ArrayStructureMA extends ArrayStructure {
 
     int[] shape;
     if (numRecords == -1) {
-      shape = new int[] { 0 };  // "from" really was empty.
+      shape = new int[] {0}; // "from" really was empty.
     } else {
-      shape = new int[] { numRecords };
+      shape = new int[] {numRecords};
     }
 
     ArrayStructureMA to = new ArrayStructureMA(new StructureMembers(from.getStructureMembers()), shape);
@@ -242,18 +254,19 @@ public class ArrayStructureMA extends ArrayStructure {
   }
 
   @Override
-  protected StructureData makeStructureData( ArrayStructure as, int index) {
-    return new StructureDataA( as, index);
+  protected StructureData makeStructureData(ArrayStructure as, int index) {
+    return new StructureDataA(as, index);
   }
 
   /**
    * Set the data array for this member.
+   * 
    * @param memberName name of member
    * @param data Array for this member.
    */
-  public void setMemberArray( String memberName, Array data) {
-    StructureMembers.Member m = members.findMember( memberName);
-    m.setDataArray( data);
+  public void setMemberArray(String memberName, Array data) {
+    StructureMembers.Member m = members.findMember(memberName);
+    m.setDataArray(data);
   }
 
   public Array getArray(int recno, StructureMembers.Member m) {
@@ -282,9 +295,9 @@ public class ArrayStructureMA extends ArrayStructure {
     for (Variable v : from.getVariables()) {
       Array data;
       if (v instanceof Sequence) {
-        data = Array.factory(DataType.SEQUENCE, shape);  // an array sequence - one for each parent element
-        //Structure s = (Structure) v;
-        //StructureMembers smn = s.makeStructureMembers();
+        data = Array.factory(DataType.SEQUENCE, shape); // an array sequence - one for each parent element
+        // Structure s = (Structure) v;
+        // StructureMembers smn = s.makeStructureMembers();
         // data = new ArraySequenceNested(smn, (int) Index.computeSize(v.getShapeAll())); // ??
 
       } else if (v instanceof Structure)

@@ -18,12 +18,12 @@ class DoradeCSFD extends DoradeCELV {
   public DoradeCSFD(RandomAccessFile file, boolean littleEndianData) throws DescriptorException {
     //
     // The CSFD descriptor:
-    //	descriptor name			char[4]	= "CSFD"
-    //	descriptor len			int	= 64
-    //	number of segments (<= 8)	int
-    //	distance to first cell, m	float
-    //	segment cell spacing		float[8]
-    //	cells in segment		short[8]
+    // descriptor name char[4] = "CSFD"
+    // descriptor len int = 64
+    // number of segments (<= 8) int
+    // distance to first cell, m float
+    // segment cell spacing float[8]
+    // cells in segment short[8]
     //
     byte[] data = readDescriptor(file, littleEndianData, "CSFD");
 

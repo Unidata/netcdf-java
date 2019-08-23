@@ -11,29 +11,29 @@ package ucar.nc2.ui.gis;
  * @author Russ Rew
  */
 
-public interface GisPart  {
+public interface GisPart {
 
-    /**
-     * Get number of points in this part.
-     *
-     * @return number of points in this part.
-     */
-    int getNumPoints();
+  /**
+   * Get number of points in this part.
+   *
+   * @return number of points in this part.
+   */
+  int getNumPoints();
 
-    /**
-     * Get x coordinates for this part.
-     *
-     * @return array of x coordinates.
-     */
-    double[] getX();
+  /**
+   * Get x coordinates for this part.
+   *
+   * @return array of x coordinates.
+   */
+  double[] getX();
 
 
-    /**
-     * Get y coordinates for this part.
-     *
-     * @return array of y coordinates.
-     */
-    double[] getY();
+  /**
+   * Get y coordinates for this part.
+   *
+   * @return array of y coordinates.
+   */
+  double[] getY();
 
 } // GisPart
 

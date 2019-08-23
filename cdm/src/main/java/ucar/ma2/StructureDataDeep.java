@@ -7,7 +7,6 @@ package ucar.ma2;
 
 import ucar.nc2.Structure;
 import ucar.nc2.iosp.IospHelper;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -22,8 +21,9 @@ public class StructureDataDeep extends StructureDataA {
 
   /**
    * Make deep copy from sdata to another StructureData object whose data is self contained
-   * @param sdata    original sdata
-   * @param members  the StructureData members. a reference is kept to this object
+   * 
+   * @param sdata original sdata
+   * @param members the StructureData members. a reference is kept to this object
    * @return StructureData with all data self contained
    */
   static public StructureDataDeep copy(StructureData sdata, StructureMembers members) {
@@ -33,13 +33,15 @@ public class StructureDataDeep extends StructureDataA {
 
   /**
    * Make deep copy from an ArrayStructure to a ArrayStructureBB whose data is contained in a ByteBuffer
-   * @param as    original ArrayStructure
-   * @param bo    what byte order to use ? (null for any)
-   * @param canonical  packing must be canonical
+   * 
+   * @param as original ArrayStructure
+   * @param bo what byte order to use ? (null for any)
+   * @param canonical packing must be canonical
    * @return ArrayStructureBB with all data self contained
    */
   static public ArrayStructureBB copyToArrayBB(ArrayStructure as, ByteOrder bo, boolean canonical) throws IOException {
-    if (!canonical && as.getClass().equals(ArrayStructureBB.class)) { // no subclasses, LOOK detect already canonical later
+    if (!canonical && as.getClass().equals(ArrayStructureBB.class)) { // no subclasses, LOOK detect already canonical
+                                                                      // later
       ArrayStructureBB abb = (ArrayStructureBB) as;
       ByteBuffer bb = abb.getByteBuffer();
       if (bo == null || bo.equals(bb.order()))
@@ -49,7 +51,7 @@ public class StructureDataDeep extends StructureDataA {
     StructureMembers smo = as.getStructureMembers();
     StructureMembers sm = new StructureMembers(smo);
     ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
-    ArrayStructureBB.setOffsets(sm);  // this makes the packing canonical
+    ArrayStructureBB.setOffsets(sm); // this makes the packing canonical
     if (bo != null) {
       ByteBuffer bb = abb.getByteBuffer();
       bb.order(bo);
@@ -65,9 +67,10 @@ public class StructureDataDeep extends StructureDataA {
   /**
    * Make deep copy to an ArrayStructureBB whose data is contained in a ByteBuffer.
    * Use the order of the members in the given Structure; skip copying any not in the Structure
-   * @param s     list of structure members come from here; must be compatible with ArrayStructure's data
-   * @param as    original ArrayStructure
-   * @param bo    what byte order to use ? (null for default)
+   * 
+   * @param s list of structure members come from here; must be compatible with ArrayStructure's data
+   * @param as original ArrayStructure
+   * @param bo what byte order to use ? (null for default)
    * @return ArrayStructureBB with all data self contained
    */
   static public ArrayStructureBB copyToArrayBB(Structure s, ArrayStructure as, ByteOrder bo) throws IOException {
@@ -89,7 +92,8 @@ public class StructureDataDeep extends StructureDataA {
 
   /**
    * Make deep copy from a StructureData to a ArrayStructureBB whose data is contained in a ByteBuffer.
-   * @param sdata  original ArrayStructure.
+   * 
+   * @param sdata original ArrayStructure.
    * @return ArrayStructureBB with all data self contained
    */
   static public ArrayStructureBB copyToArrayBB(StructureData sdata) {
@@ -98,16 +102,17 @@ public class StructureDataDeep extends StructureDataA {
 
   /**
    * Make deep copy from a StructureData to a ArrayStructureBB whose data is contained in a ByteBuffer
-   * @param sdata    original ArrayStructure
-   * @param sm       the StructureData members. a reference is kept to this object
-   * @param bo       Byte Order of the ByteBuffer
+   * 
+   * @param sdata original ArrayStructure
+   * @param sm the StructureData members. a reference is kept to this object
+   * @param bo Byte Order of the ByteBuffer
    * @return ArrayStructureBB with all data self contained
    */
   static public ArrayStructureBB copyToArrayBB(StructureData sdata, StructureMembers sm, ByteOrder bo) {
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
     bb.order(bo);
-    ArrayStructureBB abb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
+    ArrayStructureBB abb = new ArrayStructureBB(sm, new int[] {1}, bb, 0);
     ArrayStructureBB.setOffsets(sm);
     copyToArrayBB(sdata, abb);
     return abb;
@@ -115,12 +120,13 @@ public class StructureDataDeep extends StructureDataA {
 
   /**
    * Make deep copy from a StructureData into the given ArrayStructureBB
-   * @param sdata    original data from here
-   * @param abb      copy data into this ArrayStructureBB, starting from wherever the ByteBuffer current position is
+   * 
+   * @param sdata original data from here
+   * @param abb copy data into this ArrayStructureBB, starting from wherever the ByteBuffer current position is
    * @return number of bytes copied
    */
   static public int copyToArrayBB(StructureData sdata, ArrayStructureBB abb) {
-    //StructureMembers sm = sdata.getStructureMembers();
+    // StructureMembers sm = sdata.getStructureMembers();
     ByteBuffer bb = abb.getByteBuffer();
     int start = bb.limit();
 
@@ -130,7 +136,7 @@ public class StructureDataDeep extends StructureDataA {
       assert m.getDataType() == wantMember.getDataType();
 
       DataType dtype = m.getDataType();
-      //System.out.printf("do %s (%s) = %d%n", m.getName(), m.getDataType(), bb.position());
+      // System.out.printf("do %s (%s) = %d%n", m.getName(), m.getDataType(), bb.position());
       if (m.isScalar()) {
         switch (dtype) {
           case STRING:
@@ -165,19 +171,20 @@ public class StructureDataDeep extends StructureDataA {
             bb.putLong(sdata.getScalarLong(m));
             break;
           case STRUCTURE:
-            StructureData sd  = sdata.getScalarStructure(m);
-            ArrayStructureBB out_abb = new ArrayStructureBB(sd.getStructureMembers(),
-                    new int[]{1}, bb, 0);
+            StructureData sd = sdata.getScalarStructure(m);
+            ArrayStructureBB out_abb = new ArrayStructureBB(sd.getStructureMembers(), new int[] {1}, bb, 0);
             copyToArrayBB(sd, out_abb);
             break;
           default:
             throw new IllegalStateException("scalar " + dtype.toString());
-            /* case BOOLEAN:
-           break;
-         case SEQUENCE:
-           break;
-         case OPAQUE:
-           break; */
+            /*
+             * case BOOLEAN:
+             * break;
+             * case SEQUENCE:
+             * break;
+             * case OPAQUE:
+             * break;
+             */
         }
       } else {
         int n = m.getSize();
@@ -225,12 +232,14 @@ public class StructureDataDeep extends StructureDataA {
             break;
           default:
             throw new IllegalStateException("array " + dtype.toString());
-            /* case BOOLEAN:
-          break;
-         case OPAQUE:
-          break;
-        case STRUCTURE:
-          break; // */
+            /*
+             * case BOOLEAN:
+             * break;
+             * case OPAQUE:
+             * break;
+             * case STRUCTURE:
+             * break; //
+             */
           case SEQUENCE:
             break; // skip
         }
@@ -239,10 +248,10 @@ public class StructureDataDeep extends StructureDataA {
     return bb.limit() - start;
   }
 
-  //private ArrayStructureBB abb;
+  // private ArrayStructureBB abb;
   private StructureDataDeep(ArrayStructureBB abb) {
     super(abb, 0);
-    //this.abb = abb;
+    // this.abb = abb;
   }
 
   // public ByteBuffer getByteBuffer() { return abb.getByteBuffer(); }

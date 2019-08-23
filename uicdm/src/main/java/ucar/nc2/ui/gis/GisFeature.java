@@ -13,35 +13,35 @@ package ucar.nc2.ui.gis;
  * @author Russ Rew
  */
 
-public interface GisFeature  {
+public interface GisFeature {
 
-    /**
-     * Get the bounding box for this feature.
-     *
-     * @return rectangle bounding this feature
-     */
-    java.awt.geom.Rectangle2D getBounds2D();
+  /**
+   * Get the bounding box for this feature.
+   *
+   * @return rectangle bounding this feature
+   */
+  java.awt.geom.Rectangle2D getBounds2D();
 
-    /**
-     * Get total number of points in all parts of this feature.
-     *
-     * @return total number of points in all parts of this feature.
-     */
-    int getNumPoints();
+  /**
+   * Get total number of points in all parts of this feature.
+   *
+   * @return total number of points in all parts of this feature.
+   */
+  int getNumPoints();
 
-    /**
-     * Get number of parts comprising this feature.
-     *
-     * @return number of parts comprising this feature.
-     */
-    int getNumParts();
+  /**
+   * Get number of parts comprising this feature.
+   *
+   * @return number of parts comprising this feature.
+   */
+  int getNumParts();
 
-    /**
-     * Get the parts of this feature, in the form of an iterator.
-     *
-     * @return the iterator over the parts of this feature.  Each part
-     * is a GisPart.
-     */
-    java.util.Iterator getGisParts();
+  /**
+   * Get the parts of this feature, in the form of an iterator.
+   *
+   * @return the iterator over the parts of this feature. Each part
+   *         is a GisPart.
+   */
+  java.util.Iterator getGisParts();
 
 } // GisFeature

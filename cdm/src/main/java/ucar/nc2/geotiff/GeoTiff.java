@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
-
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
 
@@ -78,7 +77,9 @@ public class GeoTiff implements Closeable {
     tags.add(ifd);
   }
 
-  List<IFDEntry> getTags() { return tags; }
+  List<IFDEntry> getTags() {
+    return tags;
+  }
 
   void deleteTag(IFDEntry ifd) {
     tags.remove(ifd);
@@ -86,10 +87,11 @@ public class GeoTiff implements Closeable {
 
   void setTransform(double xStart, double yStart, double xInc, double yInc) {
     // tie the raster 0, 0 to xStart, yStart
-    addTag(new IFDEntry(Tag.ModelTiepointTag, FieldType.DOUBLE).setValue(new double[]{0.0, 0.0, 0.0, xStart, yStart, 0.0}));
+    addTag(new IFDEntry(Tag.ModelTiepointTag, FieldType.DOUBLE)
+        .setValue(new double[] {0.0, 0.0, 0.0, xStart, yStart, 0.0}));
 
     // define the "affine transformation" : requires grid to be regular (!)
-    addTag(new IFDEntry(Tag.ModelPixelScaleTag, FieldType.DOUBLE).setValue(new double[]{xInc, yInc, 0.0}));
+    addTag(new IFDEntry(Tag.ModelPixelScaleTag, FieldType.DOUBLE).setValue(new double[] {xInc, yInc, 0.0}));
   }
 
   private List<GeoKey> geokeys = new ArrayList<>();
@@ -99,7 +101,8 @@ public class GeoTiff implements Closeable {
   }
 
   private void writeGeoKeys() {
-    if (geokeys.size() == 0) return;
+    if (geokeys.size() == 0)
+      return;
 
     // count extras
     int extra_chars = 0;
@@ -200,7 +203,7 @@ public class GeoTiff implements Closeable {
     ByteBuffer direct = ByteBuffer.allocateDirect(4 * data.length);
     FloatBuffer buffer = direct.asFloatBuffer();
     buffer.put(data);
-    //buffer.flip();
+    // buffer.flip();
     channel.write(direct);
 
     if (imageNumber == 1)
@@ -223,7 +226,7 @@ public class GeoTiff implements Closeable {
     if (imageNumber == 1) {
       writeHeader(channel);
     } else {
-      //now this is not the first image we need to fill the Offset of nextIFD
+      // now this is not the first image we need to fill the Offset of nextIFD
       channel.position(lastIFD);
       ByteBuffer buffer = ByteBuffer.allocate(4);
       if (debugRead)
@@ -258,7 +261,8 @@ public class GeoTiff implements Closeable {
   private void init() throws IOException {
     file = new RandomAccessFile(filename, "rw");
     channel = file.getChannel();
-    if (debugRead) System.out.println("Opened file to write: '" + filename + "', size=" + channel.size());
+    if (debugRead)
+      System.out.println("Opened file to write: '" + filename + "', size=" + channel.size());
     readonly = false;
   }
 
@@ -283,7 +287,8 @@ public class GeoTiff implements Closeable {
     // position to where the "next IFD" goes
     channel.position(startOverflowData - 4);
     lastIFD = startOverflowData - 4;
-    if (debugRead) System.out.println("pos before writing nextIFD= " + channel.position());
+    if (debugRead)
+      System.out.println("pos before writing nextIFD= " + channel.position());
     buffer = ByteBuffer.allocate(4);
     buffer.putInt(0);
     buffer.flip();
@@ -312,7 +317,7 @@ public class GeoTiff implements Closeable {
       channel.write(buffer);
       // write data
       channel.position(nextOverflowData);
-      //System.out.println(" write offset = "+ifd.tag.getName());
+      // System.out.println(" write offset = "+ifd.tag.getName());
       ByteBuffer vbuffer = ByteBuffer.allocate(size);
       writeValues(vbuffer, ifd);
       vbuffer.flip();
@@ -368,7 +373,8 @@ public class GeoTiff implements Closeable {
   private int writeSValue(ByteBuffer buffer, IFDEntry ifd) {
     buffer.put(ifd.valueS.getBytes(CDM.utf8Charset));
     int size = ifd.valueS.length();
-    if ((size & 1) != 0) size++;  // check if odd
+    if ((size & 1) != 0)
+      size++; // check if odd
     return size;
   }
 
@@ -383,7 +389,8 @@ public class GeoTiff implements Closeable {
   public void read() throws IOException {
     file = new RandomAccessFile(filename, "r");
     channel = file.getChannel();
-    if (debugRead) System.out.println("Opened file to read:'" + filename + "', size=" + channel.size());
+    if (debugRead)
+      System.out.println("Opened file to read:'" + filename + "', size=" + channel.size());
     readonly = true;
 
     int nextOffset = readHeader(channel);
@@ -392,11 +399,12 @@ public class GeoTiff implements Closeable {
       parseGeoInfo();
     }
 
-    //parseGeoInfo();
+    // parseGeoInfo();
   }
 
   IFDEntry findTag(Tag tag) {
-    if (tag == null) return null;
+    if (tag == null)
+      return null;
     for (IFDEntry ifd : tags) {
       if (ifd.tag == tag)
         return ifd;
@@ -422,7 +430,8 @@ public class GeoTiff implements Closeable {
     buffer.order(byteOrder);
     buffer.position(4);
     int firstIFD = buffer.getInt();
-    if (debugRead) System.out.println(" firstIFD == " + firstIFD);
+    if (debugRead)
+      System.out.println(" firstIFD == " + firstIFD);
 
     return firstIFD;
   }
@@ -441,30 +450,35 @@ public class GeoTiff implements Closeable {
       buffer.rewind();
     }
     short nentries = buffer.getShort();
-    if (debugRead) System.out.println(" nentries = " + nentries);
+    if (debugRead)
+      System.out.println(" nentries = " + nentries);
 
     start += 2;
     for (int i = 0; i < nentries; i++) {
       IFDEntry ifd = readIFDEntry(channel, start);
-      if (debugRead) System.out.println(i + " == " + ifd);
+      if (debugRead)
+        System.out.println(i + " == " + ifd);
 
       tags.add(ifd);
       start += 12;
     }
 
-    if (debugRead) System.out.println(" looking for nextIFD at pos == " + channel.position() + " start = " + start);
+    if (debugRead)
+      System.out.println(" looking for nextIFD at pos == " + channel.position() + " start = " + start);
     channel.position(start);
     buffer = ByteBuffer.allocate(4);
     buffer.order(byteOrder);
     assert 4 == channel.read(buffer);
     buffer.flip();
     int nextIFD = buffer.getInt();
-    if (debugRead) System.out.println(" nextIFD == " + nextIFD);
+    if (debugRead)
+      System.out.println(" nextIFD == " + nextIFD);
     return nextIFD;
   }
 
   private IFDEntry readIFDEntry(FileChannel channel, int start) throws IOException {
-    if (debugRead) System.out.println("readIFDEntry starting position to " + start);
+    if (debugRead)
+      System.out.println("readIFDEntry starting position to " + start);
 
     channel.position(start);
     ByteBuffer buffer = ByteBuffer.allocate(12);
@@ -472,13 +486,15 @@ public class GeoTiff implements Closeable {
     int n = channel.read(buffer);
     assert n == 12;
     buffer.flip();
-    if (showBytes) printBytes(System.out, "IFDEntry bytes", buffer, 12);
+    if (showBytes)
+      printBytes(System.out, "IFDEntry bytes", buffer, 12);
 
     IFDEntry ifd;
     buffer.position(0);
     int code = readUShortValue(buffer);
     Tag tag = Tag.get(code);
-    if (tag == null) tag = new Tag(code);
+    if (tag == null)
+      tag = new Tag(code);
     FieldType type = FieldType.get(readUShortValue(buffer));
     int count = buffer.getInt();
 
@@ -488,7 +504,8 @@ public class GeoTiff implements Closeable {
       readValues(buffer, ifd);
     } else {
       int offset = buffer.getInt();
-      if (debugRead) System.out.println("position to " + offset);
+      if (debugRead)
+        System.out.println("position to " + offset);
       channel.position(offset);
       ByteBuffer vbuffer = ByteBuffer.allocate(ifd.count * ifd.type.size);
       vbuffer.order(byteOrder);
@@ -501,37 +518,39 @@ public class GeoTiff implements Closeable {
   }
 
   /*
-     * Construct a GeoKey from an IFDEntry.
-     * @param id GeoKey.Tag number
-     * @param v value
-     *
-    GeoKey(int id, IFDEntry data, int vcount, int offset) {
-      this.id = id;
-      this.geoTag = GeoKey.Tag.get(id);
-      this.count = vcount;
-
-      if (data.type == FieldType.SHORT) {
-
-        if (vcount == 1)
-          geoValue = TagValue.get(geoTag, offset);
-        else {
-          value = new int[vcount];
-          for (int i=0; i<vcount; i++)
-            value[i] = data.value[offset + i];
-        }
-
-      if (geoValue == null) {
-        if (data.type == FieldType.ASCII)
-          valueS = data.valueS.substring( offset, offset+vcount);
-        else {
-          value = new int[vcount];
-          for (int i=0; i<vcount; i++)
-            value[i] = data.value[offset + i];
-        }
-      }
-    }
-
-  */
+   * Construct a GeoKey from an IFDEntry.
+   * 
+   * @param id GeoKey.Tag number
+   * 
+   * @param v value
+   *
+   * GeoKey(int id, IFDEntry data, int vcount, int offset) {
+   * this.id = id;
+   * this.geoTag = GeoKey.Tag.get(id);
+   * this.count = vcount;
+   * 
+   * if (data.type == FieldType.SHORT) {
+   * 
+   * if (vcount == 1)
+   * geoValue = TagValue.get(geoTag, offset);
+   * else {
+   * value = new int[vcount];
+   * for (int i=0; i<vcount; i++)
+   * value[i] = data.value[offset + i];
+   * }
+   * 
+   * if (geoValue == null) {
+   * if (data.type == FieldType.ASCII)
+   * valueS = data.valueS.substring( offset, offset+vcount);
+   * else {
+   * value = new int[vcount];
+   * for (int i=0; i<vcount; i++)
+   * value[i] = data.value[offset + i];
+   * }
+   * }
+   * }
+   * 
+   */
 
   private void readValues(ByteBuffer buffer, IFDEntry ifd) {
 
@@ -603,10 +622,12 @@ public class GeoTiff implements Closeable {
   private void parseGeoInfo() {
     IFDEntry keyDir = findTag(Tag.GeoKeyDirectoryTag);
 
-    if (null == keyDir) return;
+    if (null == keyDir)
+      return;
 
     int nkeys = keyDir.value[3];
-    if (debugReadGeoKey) System.out.println("parseGeoInfo nkeys = " + nkeys + " keyDir= " + keyDir);
+    if (debugReadGeoKey)
+      System.out.println("parseGeoInfo nkeys = " + nkeys + " keyDir= " + keyDir);
     int pos = 4;
 
     for (int i = 0; i < nkeys; i++) {
@@ -644,7 +665,8 @@ public class GeoTiff implements Closeable {
 
       if (key != null) {
         keyDir.addGeoKey(key);
-        if (debugReadGeoKey) System.out.println(" yyy  add geokey=" + key);
+        if (debugReadGeoKey)
+          System.out.println(" yyy  add geokey=" + key);
       }
     }
 

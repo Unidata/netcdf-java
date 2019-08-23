@@ -25,8 +25,8 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
   @Nullable
-  static Grib2Collection readFromIndex(String name, RandomAccessFile raf,
-      FeatureCollectionConfig config, org.slf4j.Logger logger) {
+  static Grib2Collection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config,
+      org.slf4j.Logger logger) {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -43,8 +43,8 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
   @Nullable
-  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf,
-      FeatureCollectionConfig config, org.slf4j.Logger logger) {
+  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config,
+      org.slf4j.Logger logger) {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -63,9 +63,9 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   protected Grib2Tables cust; // gets created in readIndex, after center etc is read in
 
-  Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config,
-      org.slf4j.Logger logger) {
-    super( new GribCollectionMutable(name, null, config, false), config, logger);  // directory will be set in readFromIndex
+  Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+    super(new GribCollectionMutable(name, null, config, false), config, logger); // directory will be set in
+                                                                                 // readFromIndex
   }
 
   protected int getVersion() {
@@ -105,7 +105,8 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
     String desc = null;
     if (config.gribConfig.gdsNamer != null)
       desc = config.gribConfig.gdsNamer.get(gds.hashCode());
-    if (desc == null) desc = hcs.makeDescription(); // default desc
+    if (desc == null)
+      desc = hcs.makeDescription(); // default desc
 
     return new GribHorizCoordSystem(hcs, rawGds, gds, hcsName, desc, -1);
   }

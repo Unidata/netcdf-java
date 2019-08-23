@@ -26,21 +26,20 @@ public class Example {
 
   private static void test(int length) {
     PerformanceHarness harness = new PerformanceHarness();
-    Average arrayClone = harness.calculatePerf(
-        new PerformanceChecker(TEST_TIME, new ArrayCloneTest(length)), RUNS);
+    Average arrayClone = harness.calculatePerf(new PerformanceChecker(TEST_TIME, new ArrayCloneTest(length)), RUNS);
 
-    Average arrayNewAndCopy = harness.calculatePerf(
-        new PerformanceChecker(TEST_TIME, new ArrayNewAndCopyTest(length)), RUNS);
+    Average arrayNewAndCopy =
+        harness.calculatePerf(new PerformanceChecker(TEST_TIME, new ArrayNewAndCopyTest(length)), RUNS);
 
-    Average arrayNewAndCopy2 = harness.calculatePerf(
-        new PerformanceChecker(TEST_TIME, new ArrayNewAndCopyTest2(length)), RUNS);
+    Average arrayNewAndCopy2 =
+        harness.calculatePerf(new PerformanceChecker(TEST_TIME, new ArrayNewAndCopyTest2(length)), RUNS);
 
     System.out.println("Length=" + length);
-    System.out.println(" Clone avg= "+ arrayClone.mean()+ " dev= "+arrayClone.stddev());
-    System.out.println(" Copy  avg= "+ arrayNewAndCopy.mean()+ " dev= "+arrayNewAndCopy.stddev());
-    System.out.println(" Copy/Clone  avg= "+ arrayNewAndCopy.mean() / arrayClone.mean());
-    System.out.println(" Copy2  avg= "+ arrayNewAndCopy2.mean()+ " dev= "+arrayNewAndCopy2.stddev());
-    System.out.println(" Copy2/Clone  avg= "+ arrayNewAndCopy2.mean() / arrayClone.mean());
+    System.out.println(" Clone avg= " + arrayClone.mean() + " dev= " + arrayClone.stddev());
+    System.out.println(" Copy  avg= " + arrayNewAndCopy.mean() + " dev= " + arrayNewAndCopy.stddev());
+    System.out.println(" Copy/Clone  avg= " + arrayNewAndCopy.mean() / arrayClone.mean());
+    System.out.println(" Copy2  avg= " + arrayNewAndCopy2.mean() + " dev= " + arrayNewAndCopy2.stddev());
+    System.out.println(" Copy2/Clone  avg= " + arrayNewAndCopy2.mean() / arrayClone.mean());
     System.out.println();
   }
 

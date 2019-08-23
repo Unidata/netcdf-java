@@ -15,7 +15,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -26,10 +25,11 @@ import java.lang.invoke.MethodHandles;
 public class TestH5ReadStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  /*Structure {
-     char a_string(10);
-     char b_string(13);
-   } Compound String(10);
+  /*
+   * Structure {
+   * char a_string(10);
+   * char b_string(13);
+   * } Compound String(10);
    */
   @Test
   public void testStructureArray() throws IOException {
@@ -74,12 +74,12 @@ public class TestH5ReadStructure {
   }
 
   /*
-   Structure {
-     int a_name;
-     double c_name;
-     float b_name;
-   } ArrayOfStructures(30);
-   type = Layout(8);  type= 2 (chunked) storageSize = (3,16) dataSize=0 dataAddress=1576
+   * Structure {
+   * int a_name;
+   * double c_name;
+   * float b_name;
+   * } ArrayOfStructures(30);
+   * type = Layout(8); type= 2 (chunked) storageSize = (3,16) dataSize=0 dataAddress=1576
    */
   @Test
   public void testStructureArrayChunked() throws IOException {
@@ -137,11 +137,11 @@ public class TestH5ReadStructure {
   }
 
   /*
-    Structure {
-     int a_name;
-     float b_name(3);
-   } ArrayOfStructures(10);
-    type = Layout(8);  type= 1 (contiguous) storageSize = (10,16) dataSize=0 dataAddress=2048
+   * Structure {
+   * int a_name;
+   * float b_name(3);
+   * } ArrayOfStructures(10);
+   * type = Layout(8); type= 1 (contiguous) storageSize = (10,16) dataSize=0 dataAddress=2048
    */
   @Test
   public void testStructureWithArrayMember() throws IOException {
@@ -156,7 +156,7 @@ public class TestH5ReadStructure {
       assert (v.getShape()[0] == 10);
 
       try {
-        Array data = v.read(new int[]{4}, new int[]{3});
+        Array data = v.read(new int[] {4}, new int[] {3});
         assert (data.getElementType() == StructureData.class);
         assert (data instanceof ArrayStructure);
         assert (data.getSize() == 3) : data.getSize();
@@ -232,12 +232,13 @@ public class TestH5ReadStructure {
 
   @Test
   public void testMemberVariable() throws java.io.IOException, InvalidRangeException {
-    try (NetcdfFile ncfile = TestH5.openH5("20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp")) {
+    try (NetcdfFile ncfile =
+        TestH5.openH5("20130212_CN021_P3_222k_B02_WD7195FBPAT10231Nat_Nat_Std_CHTNWD_OP3_14.mip222k.oschp")) {
 
       Variable v = ncfile.findVariable("/Chromosomes/Summary.StartIndex");
       System.out.printf("%s%n", v);
 
-//Section section=new Section(new int[]{2}, new int[]{5});
+      // Section section=new Section(new int[]{2}, new int[]{5});
       Array a1 = v.read(); // section); // different from int[] a1 and different from Arrays a1
       System.out.printf("size = %d%n", a1.getSize());
       System.out.printf("%s%n", a1);
@@ -255,7 +256,7 @@ public class TestH5ReadStructure {
       assert (a3.getSize() == 9);
       System.out.printf("%s%n", a3);
 
-      Array a4 = a1.section(new int[]{12}, new int[]{9});
+      Array a4 = a1.section(new int[] {12}, new int[] {9});
       System.out.printf("a3 = %s%n", a3);
       System.out.printf("a4 = %s%n", a4);
 
@@ -271,12 +272,12 @@ public class TestH5ReadStructure {
       }
 
       // this low-level test fails
-      //for (int i = 0; i < a3.getSize(); i++) {
-      //   System.out.printf("%s%n %s%n", a3.getLong(i), a4.getLong(i));
-      //   assert (a3.getLong(i) == a4.getLong(i));
-      //}
+      // for (int i = 0; i < a3.getSize(); i++) {
+      // System.out.printf("%s%n %s%n", a3.getLong(i), a4.getLong(i));
+      // assert (a3.getLong(i) == a4.getLong(i));
+      // }
 
-      //assert (Arrays.equals(a3, a4));
+      // assert (Arrays.equals(a3, a4));
     }
   }
 }

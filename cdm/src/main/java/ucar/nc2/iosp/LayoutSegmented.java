@@ -19,7 +19,7 @@ public class LayoutSegmented implements Layout {
   private long total, done;
   private int elemSize; // size of each element
 
-  private long[] segPos;    // bytes
+  private long[] segPos; // bytes
   private long[] segMax, segMin; // bytes
 
   // outer chunk
@@ -27,21 +27,22 @@ public class LayoutSegmented implements Layout {
   private IndexChunker.Chunk chunkOuter;
 
   // inner chunk = deal with segmentation
-  private IndexChunker.Chunk chunkInner = new IndexChunker.Chunk(0,0,0);
+  private IndexChunker.Chunk chunkInner = new IndexChunker.Chunk(0, 0, 0);
 
   private static final boolean debugNext = false;
 
   /**
    * Constructor.
    *
-   * @param segPos      starting address of each segment.
-   * @param segSize     number of bytes in each segment. Assume multiple of elemSize
-   * @param elemSize    size of an element in bytes.
-   * @param srcShape    shape of the entire data array.
+   * @param segPos starting address of each segment.
+   * @param segSize number of bytes in each segment. Assume multiple of elemSize
+   * @param elemSize size of an element in bytes.
+   * @param srcShape shape of the entire data array.
    * @param wantSection the wanted section of data
    * @throws ucar.ma2.InvalidRangeException if ranges are misformed
    */
-  public LayoutSegmented(long[] segPos, int[] segSize, int elemSize, int[] srcShape, Section wantSection) throws InvalidRangeException {
+  public LayoutSegmented(long[] segPos, int[] segSize, int elemSize, int[] srcShape, Section wantSection)
+      throws InvalidRangeException {
     assert segPos.length == segSize.length;
     this.segPos = segPos;
 
@@ -58,7 +59,7 @@ public class LayoutSegmented implements Layout {
       totalElems += segSize[i];
       segMax[i] = totalElems;
     }
-    assert totalElems >=  Index.computeSize(srcShape) * elemSize;
+    assert totalElems >= Index.computeSize(srcShape) * elemSize;
 
     chunker = new IndexChunker(srcShape, wantSection);
     this.total = chunker.getTotalNelems();
@@ -82,14 +83,16 @@ public class LayoutSegmented implements Layout {
 
   private long getFilePos(long elem) {
     int segno = 0;
-    while (elem >= segMax[segno]) segno++;
+    while (elem >= segMax[segno])
+      segno++;
     return segPos[segno] + elem - segMin[segno];
   }
 
   // how many more bytes are in this segment ?
   private int getMaxBytes(long start) {
     int segno = 0;
-    while (start >= segMax[segno]) segno++;
+    while (start >= segMax[segno])
+      segno++;
     return (int) (segMax[segno] - start);
   }
 
@@ -104,7 +107,7 @@ public class LayoutSegmented implements Layout {
 
     } else {
       result = nextOuter();
-      int nbytes = getMaxBytes( chunkOuter.getSrcElem() * elemSize);
+      int nbytes = getMaxBytes(chunkOuter.getSrcElem() * elemSize);
       if (nbytes < result.getNelems() * elemSize)
         result = nextInner(true, nbytes);
     }
@@ -122,25 +125,25 @@ public class LayoutSegmented implements Layout {
   private Chunk nextInner(boolean first, int nbytes) {
     if (first) {
       chunkInner.setNelems(nbytes / elemSize);
-      chunkInner.setDestElem( chunkOuter.getDestElem());
+      chunkInner.setDestElem(chunkOuter.getDestElem());
       needInner = chunkOuter.getNelems();
       doneInner = 0;
 
     } else {
-      chunkInner.incrDestElem( chunkInner.getNelems()); // increment using last chunks' value
-      nbytes = getMaxBytes( (chunkOuter.getSrcElem() + doneInner) * elemSize);
+      chunkInner.incrDestElem(chunkInner.getNelems()); // increment using last chunks' value
+      nbytes = getMaxBytes((chunkOuter.getSrcElem() + doneInner) * elemSize);
       nbytes = Math.min(nbytes, needInner * elemSize);
       chunkInner.setNelems(nbytes / elemSize); // set this chunk's value
     }
 
-    chunkInner.setSrcPos( getFilePos( (chunkOuter.getSrcElem() + doneInner) * elemSize));
+    chunkInner.setSrcPos(getFilePos((chunkOuter.getSrcElem() + doneInner) * elemSize));
     return chunkInner;
   }
 
   public Chunk nextOuter() {
     chunkOuter = chunker.next();
-    long srcPos = getFilePos( chunkOuter.getSrcElem() * elemSize);
-    chunkOuter.setSrcPos( srcPos);
+    long srcPos = getFilePos(chunkOuter.getSrcElem() * elemSize);
+    chunkOuter.setSrcPos(srcPos);
     return chunkOuter;
   }
 

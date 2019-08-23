@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib1.tables;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +22,6 @@ import thredds.client.catalog.Catalog;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
 import ucar.unidata.util.StringUtil2;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +41,7 @@ public class Grib1ParamTableReader {
   private int center_id;
   private int subcenter_id;
   private int version;
-  private final String name;  // name of the table
+  private final String name; // name of the table
   private String path; // path of filename containing this table
   private String desc; // optional desc from within the file
   private Map<Integer, Grib1Parameter> parameters; // param number -> param
@@ -162,13 +160,8 @@ public class Grib1ParamTableReader {
 
   @Override
   public String toString() {
-    return "Grib1ParamTable{" +
-        "center_id=" + center_id +
-        ", subcenter_id=" + subcenter_id +
-        ", version=" + version +
-        ", name='" + name + '\'' +
-        ", path='" + path + '\'' +
-        '}';
+    return "Grib1ParamTable{" + "center_id=" + center_id + ", subcenter_id=" + subcenter_id + ", version=" + version
+        + ", name='" + name + '\'' + ", path='" + path + '\'' + '}';
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -185,49 +178,48 @@ public class Grib1ParamTableReader {
       } else if (name.startsWith("US058")) {
         return readParameterTableXml(new FnmocParser());// FNMOC
       } else if (name.endsWith(".tab")) {
-        return readParameterTableTab();                               // wgrib format
+        return readParameterTableTab(); // wgrib format
       } else if (name.endsWith(".wrf")) {
-        return readParameterTableSplit("\\|", new int[]{0, 3, 1, 2}); // WRF AMPS
+        return readParameterTableSplit("\\|", new int[] {0, 3, 1, 2}); // WRF AMPS
       } else if (name.endsWith(".h")) {
         return readParameterTableNcl(); // NCL
       } else if (name.endsWith(".dss")) {
-        return readParameterTableSplit("\t", new int[]{0, -1, 1, 2}); // NCAR DSS
+        return readParameterTableSplit("\t", new int[] {0, -1, 1, 2}); // NCAR DSS
       } else if (name.endsWith(".xml")) {
         return readParameterTableXml(new DssParser(Namespace.NO_NAMESPACE));// NCAR DSS XML format
       } else if (name.startsWith("2.98")) {
         return readParameterTableEcmwfEcCodes(); // ecmwf from ecCodes package
       } else {
-        throw new RuntimeException(
-            "Grib1ParamTableReader: Dont know how to read " + name + " file=" + path);
+        throw new RuntimeException("Grib1ParamTableReader: Dont know how to read " + name + " file=" + path);
       }
 
     } catch (IOException ioError) {
-      logger.warn(
-          "An error occurred in Grib1ParamTable while trying to open the parameter table {}:{}",
-          path, ioError.getMessage());
+      logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table {}:{}", path,
+          ioError.getMessage());
       throw new RuntimeException(ioError);
     }
   }
 
-/*
- * Brazilian Space Agency - INPE/CPTEC
- * Center: 46
- * Subcenter: 0
- * Parameter table version: 254
- *
-
-TBLE2 cptec_254_params[] = {
-{1, "Pressure", "hPa", "PRES"},
-{2, "Pressure reduced to MSL", "hPa", "PSNM"},
-{3, "Pressure tendency", "Pa/s", "TSPS"},
-{6, "Geopotential", "dam", "GEOP"},
-{7, "Geopotential height", "gpm", "ZGEO"},
-{8, "Geometric height", "m", "GZGE"},
-{11, "ABSOLUTE TEMPERATURE", "K", "TEMP"},
-
+  /*
+   * Brazilian Space Agency - INPE/CPTEC
+   * Center: 46
+   * Subcenter: 0
+   * Parameter table version: 254
+   *
+   * 
+   * TBLE2 cptec_254_params[] = {
+   * {1, "Pressure", "hPa", "PRES"},
+   * {2, "Pressure reduced to MSL", "hPa", "PSNM"},
+   * {3, "Pressure tendency", "Pa/s", "TSPS"},
+   * {6, "Geopotential", "dam", "GEOP"},
+   * {7, "Geopotential height", "gpm", "ZGEO"},
+   * {8, "Geometric height", "m", "GZGE"},
+   * {11, "ABSOLUTE TEMPERATURE", "K", "TEMP"},
+   * 
    */
 
-  private static final Pattern nclPattern = Pattern.compile("\\{(\\d*),\\s*\"([^\"]*)\",\\s*\"([^\"]*)\",\\s*\"([^\"]*)\".*");
+  private static final Pattern nclPattern =
+      Pattern.compile("\\{(\\d*),\\s*\"([^\"]*)\",\\s*\"([^\"]*)\",\\s*\"([^\"]*)\".*");
 
   private Map<Integer, Grib1Parameter> readParameterTableNcl() throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
@@ -275,13 +267,12 @@ TBLE2 cptec_254_params[] = {
           logger.warn("Cant parse " + m.group(1) + " in file " + path);
           continue;
         }
-        Grib1Parameter parameter = new Grib1Parameter(this, p1, m.group(4), m.group(2),
-            m.group(3));
+        Grib1Parameter parameter = new Grib1Parameter(this, p1, m.group(4), m.group(2), m.group(3));
         result.put(parameter.getNumber(), parameter);
         logger.debug(" {}", parameter);
       }
 
-      return Collections.unmodifiableMap(result);  // all at once - thread safe
+      return Collections.unmodifiableMap(result); // all at once - thread safe
     }
 
   }
@@ -301,38 +292,38 @@ TBLE2 cptec_254_params[] = {
   }
 
   /*
-  WMO standard table 2: Version Number 3.
-  Codes and data units for FM 92-X Ext.GRIB.
-  ......................
-  001
-  P
-  Pressure
-  Pa
-  Pa
-  ......................
-  002
-  MSL
-  Mean sea level pressure
-  Pa
-  Pa
-  ......................
-  003
-  None
-  Pressure tendency
-  Pa s**-1
-  Pa s**-1
-  ......................
-  004
-  PV
-  Potential vorticity
-  K m**2 kg**-1 s**-1
-  K m**2 kg**-1 s**-1
-  ......................
-  005
-  None
-  ICAO Standard Atmosphere reference height
-  m
-  m
+   * WMO standard table 2: Version Number 3.
+   * Codes and data units for FM 92-X Ext.GRIB.
+   * ......................
+   * 001
+   * P
+   * Pressure
+   * Pa
+   * Pa
+   * ......................
+   * 002
+   * MSL
+   * Mean sea level pressure
+   * Pa
+   * Pa
+   * ......................
+   * 003
+   * None
+   * Pressure tendency
+   * Pa s**-1
+   * Pa s**-1
+   * ......................
+   * 004
+   * PV
+   * Potential vorticity
+   * K m**2 kg**-1 s**-1
+   * K m**2 kg**-1 s**-1
+   * ......................
+   * 005
+   * None
+   * ICAO Standard Atmosphere reference height
+   * m
+   * m
    */
 
   private Map<Integer, Grib1Parameter> readParameterTableEcmwf() throws IOException {
@@ -360,7 +351,7 @@ TBLE2 cptec_254_params[] = {
         if ((line.length() == 0) || line.startsWith("#")) {
           continue;
         }
-        if (line.startsWith("...")) { // ...  may have already been read
+        if (line.startsWith("...")) { // ... may have already been read
           line = br.readLine();
           if (line == null) {
             break;
@@ -392,7 +383,7 @@ TBLE2 cptec_254_params[] = {
         result.put(parameter.getNumber(), parameter);
         logger.debug("readParameterTableEcmwf {} ({})", parameter, notes);
       }
-      return Collections.unmodifiableMap(result);  // all at once - thread safe
+      return Collections.unmodifiableMap(result); // all at once - thread safe
     }
 
   }
@@ -421,7 +412,7 @@ TBLE2 cptec_254_params[] = {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path);
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
       String line = br.readLine();
       if (line == null) {
         throw new FileNotFoundException(path + " is empty");
@@ -456,7 +447,7 @@ TBLE2 cptec_254_params[] = {
           tmpUnit = tmpUnit.substring(0, lastUnitIndex).trim();
         }
         String unit = tmpUnit.trim();
-        // unit = Util.cleanUnit(unit); // fixes some common unit mistakes  // jcaron - just use unit as it is
+        // unit = Util.cleanUnit(unit); // fixes some common unit mistakes // jcaron - just use unit as it is
 
         // get parameter number - 251
         String[] lineArray = line.trim().split("\\s+"); // all and any white space
@@ -464,7 +455,7 @@ TBLE2 cptec_254_params[] = {
 
         // get shortName - atte
         String name = lineArray[1].trim();
-        //if (name.equals("~")) {}; - todo create name from long name(?)
+        // if (name.equals("~")) {}; - todo create name from long name(?)
 
         // get description. bracketed by [] - [Adiabatic Tendency of temperature]
         int startDesc = line.indexOf("[");
@@ -484,7 +475,7 @@ TBLE2 cptec_254_params[] = {
         logger.debug(" {}", parameter);
       }
 
-      return Collections.unmodifiableMap(result);  // all at once - thread safe
+      return Collections.unmodifiableMap(result); // all at once - thread safe
     }
   }
 
@@ -493,7 +484,7 @@ TBLE2 cptec_254_params[] = {
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
-      return parser.parseXml(root);  // all at once - thread safe
+      return parser.parseXml(root); // all at once - thread safe
 
     } catch (JDOMException | IOException e) {
       throw new IOException(e);
@@ -512,11 +503,12 @@ TBLE2 cptec_254_params[] = {
       this.ns = ns;
     }
 
-    /* http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.60-1.3.xml
-     <parameter code="5">
-     <description>ICAO Standard Atmosphere reference height</description>
-     <units>m</units>
-     </parameter>
+    /*
+     * http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.60-1.3.xml
+     * <parameter code="5">
+     * <description>ICAO Standard Atmosphere reference height</description>
+     * <units>m</units>
+     * </parameter>
      */
     public Map<Integer, Grib1Parameter> parseXml(Element root) {
       Map<Integer, Grib1Parameter> result = new HashMap<>();
@@ -536,34 +528,33 @@ TBLE2 cptec_254_params[] = {
           name = elem1.getChildText("shortName", ns);
         }
         String cf = elem1.getChildText("CF", ns);
-        Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTableReader.this, code, name, desc,
-            units, cf);
+        Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTableReader.this, code, name, desc, units, cf);
         result.put(parameter.getNumber(), parameter);
         logger.debug(" {}", parameter);
       }
-      return Collections.unmodifiableMap(result);  // all at once - thread safe
+      return Collections.unmodifiableMap(result); // all at once - thread safe
     }
   }
 
   private class FnmocParser implements XmlTableParser {
     /*
-    <pnTable>
-      <name>Master Parameter Table</name>
-      <updatedDTG>201110110856</updatedDTG>
-      <tableStatus setDTG="2007050712">current</tableStatus>
-      <fnmocTable>
-        <entry>
-          <grib1Id>001</grib1Id>
-          <fnmocId>pres</fnmocId>
-          <name>pres</name>
-          <nameFull/>
-          <description>Commonly used for atmospheric pressure, the pressure exerted by the atmosphere as a consequence of
-            gravitational attraction exerted upon the "column" of air lying directly above the point in question.
-          </description>
-          <unitsFNMOC>pa</unitsFNMOC>
-          <productionStatus>current</productionStatus>
-        </entry>
-    */
+     * <pnTable>
+     * <name>Master Parameter Table</name>
+     * <updatedDTG>201110110856</updatedDTG>
+     * <tableStatus setDTG="2007050712">current</tableStatus>
+     * <fnmocTable>
+     * <entry>
+     * <grib1Id>001</grib1Id>
+     * <fnmocId>pres</fnmocId>
+     * <name>pres</name>
+     * <nameFull/>
+     * <description>Commonly used for atmospheric pressure, the pressure exerted by the atmosphere as a consequence of
+     * gravitational attraction exerted upon the "column" of air lying directly above the point in question.
+     * </description>
+     * <unitsFNMOC>pa</unitsFNMOC>
+     * <productionStatus>current</productionStatus>
+     * </entry>
+     */
 
     public HashMap<Integer, Grib1Parameter> parseXml(Element root) {
       HashMap<Integer, Grib1Parameter> result = new HashMap<>();
@@ -581,15 +572,14 @@ TBLE2 cptec_254_params[] = {
         if (desc == null) {
           continue;
         }
-        //if (desc.startsWith("no definition")) continue; // skip; use standard def
+        // if (desc.startsWith("no definition")) continue; // skip; use standard def
         desc = StringUtil2.collapseWhitespace(desc);
         String units = elem1.getChildText("unitsFNMOC");
         if (units == null) {
           units = "";
         }
         String name = elem1.getChildText("name");
-        Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTableReader.this, code, name, desc,
-            units, null);
+        Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTableReader.this, code, name, desc, units, null);
         result.put(parameter.getNumber(), parameter);
         logger.debug(" {}", parameter);
       }
@@ -599,8 +589,7 @@ TBLE2 cptec_254_params[] = {
   }
 
   // order: num, name, desc, unit
-  private Map<Integer, Grib1Parameter> readParameterTableSplit(String regexp, int[] order)
-      throws IOException {
+  private Map<Integer, Grib1Parameter> readParameterTableSplit(String regexp, int[] order) throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path);
@@ -626,7 +615,7 @@ TBLE2 cptec_254_params[] = {
         result.put(parameter.getNumber(), parameter);
         logger.debug(" {}", parameter);
       }
-      return Collections.unmodifiableMap(result);  // all at once - thread safe
+      return Collections.unmodifiableMap(result); // all at once - thread safe
     }
 
   }
@@ -635,8 +624,7 @@ TBLE2 cptec_254_params[] = {
 
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       HashMap<Integer, Grib1Parameter> params;
-      try (BufferedReader br = new BufferedReader(
-          new InputStreamReader(is, StandardCharsets.UTF_8))) {
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
         br.readLine(); // skip a line
 
         // thread safe - local var
@@ -672,7 +660,7 @@ TBLE2 cptec_254_params[] = {
           logger.debug(parameter.getNumber() + " " + parameter.getDescription() + " " + parameter.getUnit());
         }
       }
-      return Collections.unmodifiableMap(params);  // all at once - thread safe
+      return Collections.unmodifiableMap(params); // all at once - thread safe
     }
 
   }

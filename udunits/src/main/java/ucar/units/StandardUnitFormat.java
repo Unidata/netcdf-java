@@ -25,9 +25,7 @@ import java.util.TimeZone;
  *
  * @author Steven R. Emmerson
  */
-public final class
-        StandardUnitFormat
-        extends UnitFormatImpl implements StandardUnitFormatConstants {
+public final class StandardUnitFormat extends UnitFormatImpl implements StandardUnitFormatConstants {
   private static final long serialVersionUID = 2L;
 
   /**
@@ -45,25 +43,22 @@ public final class
   private static final SimpleDateFormat dateFormat;
 
   /**
-   * The Comparator for ordering base units for printing.  Orders
+   * The Comparator for ordering base units for printing. Orders
    * Factor-s by decreasing exponent (major) and lexically (minor).
    *
    * @serial
    */
-  private static final Comparator<Factor> factorComparator =
-          new Comparator<Factor>() {
-            public int compare(Factor f1, Factor f2) {
-              int comp = f2.getExponent() - f1.getExponent();
-              if (comp == 0)
-                comp = f1.getID().compareTo(f2.getID());
-              return comp;
-            }
-          };
+  private static final Comparator<Factor> factorComparator = new Comparator<Factor>() {
+    public int compare(Factor f1, Factor f2) {
+      int comp = f2.getExponent() - f1.getExponent();
+      if (comp == 0)
+        comp = f1.getID().compareTo(f2.getID());
+      return comp;
+    }
+  };
 
   static {
-    dateFormat =
-            (SimpleDateFormat) DateFormat.getDateInstance(
-                    DateFormat.SHORT, Locale.US);
+    dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
     dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     dateFormat.applyPattern(" '@' yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
   }
@@ -96,36 +91,30 @@ public final class
    * @Throws UnitSystemException if the unit system can't be initialized.
    */
   private static boolean isTimeUnit(final Unit unit) throws UnitSystemException {
-    return unit.isCompatible(UnitSystemManager.instance().getBaseUnit(
-            BaseQuantity.TIME));
+    return unit.isCompatible(UnitSystemManager.instance().getBaseUnit(BaseQuantity.TIME));
   }
 
 
   /**
-   * Decodes a unit specification.  An unrecognized unit is made into
+   * Decodes a unit specification. An unrecognized unit is made into
    * an UnknownUnit.
    *
-   * @param spec   The unit specification to be decoded.
+   * @param spec The unit specification to be decoded.
    * @param unitDB The unit database to use.
    * @return The unit corresponding to the specification.
-   * @throws UnitParseException     The unit specification syntax is
-   *                                invalid.
+   * @throws UnitParseException The unit specification syntax is
+   *         invalid.
    * @throws SpecificationException Something's wrong with the
-   *                                specification.
-   * @throws UnitDBException        Something's wrong with the unit
-   *                                database.
-   * @throws PrefixDBException      Something's wrong with the unit prefix
-   *                                database.
-   * @throws UnitSystemException    Something's wrong with the underlying
-   *                                system of units.
+   *         specification.
+   * @throws UnitDBException Something's wrong with the unit
+   *         database.
+   * @throws PrefixDBException Something's wrong with the unit prefix
+   *         database.
+   * @throws UnitSystemException Something's wrong with the underlying
+   *         system of units.
    */
-  public Unit
-  parse(String spec, UnitDB unitDB)
-          throws UnitParseException,
-          SpecificationException,
-          UnitDBException,
-          PrefixDBException,
-          UnitSystemException {
+  public Unit parse(String spec, UnitDB unitDB)
+      throws UnitParseException, SpecificationException, UnitDBException, PrefixDBException, UnitSystemException {
     if (spec == null)
       throw new UnitParseException(spec);
 
@@ -148,28 +137,25 @@ public final class
    * Formats a Factor.
    *
    * @param factor The factor to be formatted.
-   * @param buf    The buffer to append to.
+   * @param buf The buffer to append to.
    * @return The appended-to buffer.
    */
-  public StringBuffer
-  format(Factor factor, StringBuffer buf) {
+  public StringBuffer format(Factor factor, StringBuffer buf) {
     return buf.append(factor.toString());
   }
 
 
   /**
-   * Formats a unit.  The symbol or name will be used if available;
+   * Formats a unit. The symbol or name will be used if available;
    * otherwise, a specification in terms of underlying units will be
    * returned.
    *
    * @param unit The unit to be formatted.
-   * @param buf  The buffer to append to.
+   * @param buf The buffer to append to.
    * @return The appended-to buffer.
    * @throws UnitClassException The class of the unit is unknown.
    */
-  public StringBuffer
-  format(Unit unit, StringBuffer buf)
-          throws UnitClassException {
+  public StringBuffer format(Unit unit, StringBuffer buf) throws UnitClassException {
     return format(unit, buf, true);
   }
 
@@ -178,13 +164,11 @@ public final class
    * Formats a unit in the underlying system of units.
    *
    * @param unit The unit to be formatted.
-   * @param buf  The buffer to append to.
+   * @param buf The buffer to append to.
    * @return The appended-to buffer.
    * @throws UnitClassException The class of the unit is unknown.
    */
-  public StringBuffer
-  longFormat(Unit unit, StringBuffer buf)
-          throws UnitClassException {
+  public StringBuffer longFormat(Unit unit, StringBuffer buf) throws UnitClassException {
     return format(unit, buf, false);
   }
 
@@ -192,15 +176,13 @@ public final class
   /**
    * Formats a unit.
    *
-   * @param unit      The unit to be formatted.
-   * @param buf       The buffer to append to.
+   * @param unit The unit to be formatted.
+   * @param buf The buffer to append to.
    * @param normalize Whether or not to reduce the unit.
    * @return The appended-to buffer.
    * @throws UnitClassException The class of the unit is unknown.
    */
-  private StringBuffer
-  format(Unit unit, StringBuffer buf, boolean normalize)
-          throws UnitClassException {
+  private StringBuffer format(Unit unit, StringBuffer buf, boolean normalize) throws UnitClassException {
     boolean done = false;
     if (!normalize) {
       String id = unit.getSymbol();
@@ -229,14 +211,12 @@ public final class
   }
 
 
-  private StringBuffer
-  format(BaseUnit baseUnit, StringBuffer buf) {
+  private StringBuffer format(BaseUnit baseUnit, StringBuffer buf) {
     return buf.append(baseUnit.getSymbol());
   }
 
 
-  private StringBuffer
-  format(DerivedUnit unit, StringBuffer buf) {
+  private StringBuffer format(DerivedUnit unit, StringBuffer buf) {
     Factor[] factors = unit.getDimension().getFactors();
     Arrays.sort(factors, factorComparator);
     for (int i = 0; i < factors.length; i++)
@@ -247,9 +227,7 @@ public final class
   }
 
 
-  private StringBuffer
-  format(ScaledUnit unit, StringBuffer buf, boolean normalize)
-          throws UnitClassException {
+  private StringBuffer format(ScaledUnit unit, StringBuffer buf, boolean normalize) throws UnitClassException {
     double scale = unit.getScale();
     if (scale != 0.0) {
       if (scale == 1) {
@@ -266,44 +244,33 @@ public final class
   }
 
 
-  private StringBuffer
-  format(OffsetUnit unit, StringBuffer buf, boolean normalize)
-          throws UnitClassException {
+  private StringBuffer format(OffsetUnit unit, StringBuffer buf, boolean normalize) throws UnitClassException {
     double offset = unit.getOffset();
     if (offset == 0.0) {
       format(unit.getUnit(), buf, normalize);
     } else {
       int start = buf.length();
       format(unit.getUnit(), buf, normalize);
-      return (isBlackSpace(buf, start)
-              ? buf
-              : buf.insert(start, '(').append(')')).
-              append(" @ ").append(offset);
+      return (isBlackSpace(buf, start) ? buf : buf.insert(start, '(').append(')')).append(" @ ").append(offset);
     }
     return buf;
   }
 
 
-  private static boolean
-  isBlackSpace(StringBuffer buf, int start) {
+  private static boolean isBlackSpace(StringBuffer buf, int start) {
     return buf.substring(start).indexOf(' ') == -1;
   }
 
 
-  private StringBuffer
-  format(TimeScaleUnit unit, StringBuffer buf, boolean normalize)
-          throws UnitClassException {
-    return format(unit.getUnit(), buf, normalize).
-            append(dateFormat.format(unit.getOrigin()));
+  private StringBuffer format(TimeScaleUnit unit, StringBuffer buf, boolean normalize) throws UnitClassException {
+    return format(unit.getUnit(), buf, normalize).append(dateFormat.format(unit.getOrigin()));
   }
 
 
   /**
    * Gets a unit from a unit database.
    */
-  private static Unit
-  getUnit(UnitDB unitDB, String string)
-          throws UnitDBAccessException {
+  private static Unit getUnit(UnitDB unitDB, String string) throws UnitDBAccessException {
     return unitDB.get(string);
   }
 
@@ -311,9 +278,7 @@ public final class
   /**
    * Gets a prefix from the prefix database.
    */
-  private static Prefix
-  getPrefix(String string)
-          throws PrefixDBException {
+  private static Prefix getPrefix(String string) throws PrefixDBException {
     PrefixDB prefixDB = PrefixDBManager.instance();
     Prefix prefix = prefixDB.getPrefixByName(string);
     if (prefix == null)
@@ -321,7 +286,8 @@ public final class
     return prefix;
   }
 
-  final public Unit unitSpec(UnitDB unitDB) throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
+  final public Unit unitSpec(UnitDB unitDB)
+      throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit = DerivedUnitImpl.DIMENSIONLESS;
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
       case PLUS:
@@ -338,17 +304,18 @@ public final class
         unit = shiftExpr(unitDB);
         break;
       default:
-        jj_la1[0] = jj_gen;
-        ;
+        jj_la1[0] = jj_gen;;
     }
     jj_consume_token(0);
     {
-      if (true) return unit;
+      if (true)
+        return unit;
     }
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit shiftExpr(UnitDB unitDB) throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
+  final public Unit shiftExpr(UnitDB unitDB)
+      throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit;
     Date timestamp;
     double origin;
@@ -376,21 +343,21 @@ public final class
         }
         break;
       default:
-        jj_la1[2] = jj_gen;
-        ;
+        jj_la1[2] = jj_gen;;
     }
     {
-      if (true) return unit;
+      if (true)
+        return unit;
     }
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit productExpr(UnitDB unitDB) throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
+  final public Unit productExpr(UnitDB unitDB)
+      throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit;
     Unit unit2;
     unit = powerExpr(unitDB);
-    label_1:
-    while (true) {
+    label_1: while (true) {
       switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
         case SP:
         case PLUS:
@@ -405,8 +372,7 @@ public final class
         case NAME:
         case LB:
         case LN:
-        case LG:
-          ;
+        case LG:;
           break;
         default:
           jj_la1[3] = jj_gen;
@@ -442,8 +408,7 @@ public final class
                 }
                 break;
               default:
-                jj_la1[5] = jj_gen;
-                ;
+                jj_la1[5] = jj_gen;;
             }
             unit2 = powerExpr(unitDB);
             unit = unit.multiplyBy(unit2);
@@ -454,12 +419,14 @@ public final class
       }
     }
     {
-      if (true) return unit;
+      if (true)
+        return unit;
     }
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit powerExpr(UnitDB unitDB) throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
+  final public Unit powerExpr(UnitDB unitDB)
+      throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit;
     int exponent;
     unit = basicExpr(unitDB);
@@ -473,23 +440,23 @@ public final class
             jj_consume_token(RAISE);
             break;
           default:
-            jj_la1[7] = jj_gen;
-            ;
+            jj_la1[7] = jj_gen;;
         }
         exponent = integer();
         unit = unit.raiseTo(exponent);
         break;
       default:
-        jj_la1[8] = jj_gen;
-        ;
+        jj_la1[8] = jj_gen;;
     }
     {
-      if (true) return unit;
+      if (true)
+        return unit;
     }
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit basicExpr(UnitDB unitDB) throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
+  final public Unit basicExpr(UnitDB unitDB)
+      throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit;
     double number;
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -517,8 +484,7 @@ public final class
             jj_consume_token(SP);
             break;
           default:
-            jj_la1[9] = jj_gen;
-            ;
+            jj_la1[9] = jj_gen;;
         }
         unit = shiftExpr(unitDB);
         switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -526,8 +492,7 @@ public final class
             jj_consume_token(SP);
             break;
           default:
-            jj_la1[10] = jj_gen;
-            ;
+            jj_la1[10] = jj_gen;;
         }
         jj_consume_token(RPAREN);
         break;
@@ -537,12 +502,14 @@ public final class
         throw new ParseException();
     }
     {
-      if (true) return unit;
+      if (true)
+        return unit;
     }
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit logExpr(UnitDB unitDB) throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
+  final public Unit logExpr(UnitDB unitDB)
+      throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     double base;
     Unit ref;
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -569,12 +536,12 @@ public final class
         jj_consume_token(SP);
         break;
       default:
-        jj_la1[13] = jj_gen;
-        ;
+        jj_la1[13] = jj_gen;;
     }
     jj_consume_token(RPAREN);
     {
-      if (true) return ref.log(base);
+      if (true)
+        return ref.log(base);
     }
     throw new Error("Missing return statement in function");
   }
@@ -597,7 +564,8 @@ public final class
       }
     }
     {
-      if (true) return number;
+      if (true)
+        return number;
     }
     throw new Error("Missing return statement in function");
   }
@@ -612,8 +580,7 @@ public final class
         sign = sign();
         break;
       default:
-        jj_la1[15] = jj_gen;
-        ;
+        jj_la1[15] = jj_gen;;
     }
     if (jj_2_3(2)) {
       udecimal = unsignedDecimal();
@@ -622,8 +589,7 @@ public final class
           tenFactor = tenFactor();
           break;
         default:
-          jj_la1[16] = jj_gen;
-          ;
+          jj_la1[16] = jj_gen;;
       }
     } else {
       switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -638,7 +604,8 @@ public final class
       }
     }
     {
-      if (true) return sign * udecimal * tenFactor;
+      if (true)
+        return sign * udecimal * tenFactor;
     }
     throw new Error("Missing return statement in function");
   }
@@ -646,17 +613,17 @@ public final class
   final public int sign() throws ParseException {
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
       case PLUS:
-        jj_consume_token(PLUS);
-      {
-        if (true) return 1;
+        jj_consume_token(PLUS); {
+        if (true)
+          return 1;
       }
-      break;
+        break;
       case MINUS:
-        jj_consume_token(MINUS);
-      {
-        if (true) return -1;
+        jj_consume_token(MINUS); {
+        if (true)
+          return -1;
       }
-      break;
+        break;
       default:
         jj_la1[18] = jj_gen;
         jj_consume_token(-1);
@@ -675,8 +642,7 @@ public final class
           integer = unsignedInteger();
           break;
         default:
-          jj_la1[19] = jj_gen;
-          ;
+          jj_la1[19] = jj_gen;;
       }
       jj_consume_token(PERIOD);
       token = jj_consume_token(UINT);
@@ -694,7 +660,8 @@ public final class
       }
     }
     {
-      if (true) return integer + fraction;
+      if (true)
+        return integer + fraction;
     }
     throw new Error("Missing return statement in function");
   }
@@ -703,7 +670,8 @@ public final class
     Token token;
     token = jj_consume_token(REAL_EXP);
     {
-      if (true) return Double.valueOf("1" + token.image);
+      if (true)
+        return Double.valueOf("1" + token.image);
     }
     throw new Error("Missing return statement in function");
   }
@@ -717,12 +685,12 @@ public final class
         sign = sign();
         break;
       default:
-        jj_la1[21] = jj_gen;
-        ;
+        jj_la1[21] = jj_gen;;
     }
     magnitude = unsignedInteger();
     {
-      if (true) return sign * magnitude;
+      if (true)
+        return sign * magnitude;
     }
     throw new Error("Missing return statement in function");
   }
@@ -731,12 +699,14 @@ public final class
     Token token;
     token = jj_consume_token(UINT);
     {
-      if (true) return Integer.valueOf(token.image);
+      if (true)
+        return Integer.valueOf(token.image);
     }
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit unitIdentifier(UnitDB unitDB) throws ParseException, UnitDBException, UnitSystemException, PrefixDBException, OperationException {
+  final public Unit unitIdentifier(UnitDB unitDB)
+      throws ParseException, UnitDBException, UnitSystemException, PrefixDBException, OperationException {
     Token token;
     Unit unit;
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -757,9 +727,7 @@ public final class
     String string = token.image;
     double scale = 1;
 
-    for (unit = getUnit(unitDB, string);
-         unit == null;
-         unit = getUnit(unitDB, string)) {
+    for (unit = getUnit(unitDB, string); unit == null; unit = getUnit(unitDB, string)) {
       Prefix prefix = getPrefix(string);
       if (prefix == null) {
         try {
@@ -767,14 +735,15 @@ public final class
           unit = UnknownUnit.create(string);
           break;
         } catch (NameException e) {
-        }      // shouldn't happen
+        } // shouldn't happen
       }
       scale *= prefix.getValue();
       string = string.substring(prefix.length());
     }
     unit = unit.multiplyBy(scale);
     {
-      if (true) return unit;
+      if (true)
+        return unit;
     }
     throw new Error("Missing return statement in function");
   }
@@ -806,8 +775,7 @@ public final class
             jj_consume_token(SP);
             break;
           default:
-            jj_la1[24] = jj_gen;
-            ;
+            jj_la1[24] = jj_gen;;
         }
         zoneExpr(calendar);
       } else {
@@ -817,7 +785,8 @@ public final class
       ;
     }
     {
-      if (true) return calendar.getTime();
+      if (true)
+        return calendar.getTime();
     }
     throw new Error("Missing return statement in function");
   }
@@ -834,8 +803,7 @@ public final class
         sign = sign();
         break;
       default:
-        jj_la1[25] = jj_gen;
-        ;
+        jj_la1[25] = jj_gen;;
     }
     year = unsignedInteger();
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -849,13 +817,11 @@ public final class
             day = unsignedInteger();
             break;
           default:
-            jj_la1[26] = jj_gen;
-            ;
+            jj_la1[26] = jj_gen;;
         }
         break;
       default:
-        jj_la1[27] = jj_gen;
-        ;
+        jj_la1[27] = jj_gen;;
     }
     if (packed) {
       if (year >= 10000101) {
@@ -870,16 +836,19 @@ public final class
         year = -year;
     }
     if (month < 1 || month > 12) {
-      if (true) throw new ParseException("invalid month in timestamp");
+      if (true)
+        throw new ParseException("invalid month in timestamp");
     }
     if (day < 1 || day > 31) {
-      if (true) throw new ParseException("invalid day in timestamp");
+      if (true)
+        throw new ParseException("invalid day in timestamp");
     }
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     calendar.clear();
     calendar.set(year, month - 1, day);
     {
-      if (true) return calendar;
+      if (true)
+        return calendar;
     }
     throw new Error("Missing return statement in function");
   }
@@ -925,13 +894,11 @@ public final class
             }
             break;
           default:
-            jj_la1[30] = jj_gen;
-            ;
+            jj_la1[30] = jj_gen;;
         }
         break;
       default:
-        jj_la1[31] = jj_gen;
-        ;
+        jj_la1[31] = jj_gen;;
     }
     if (packed) {
       if (hour >= 100000) {
@@ -944,13 +911,16 @@ public final class
       }
     }
     if (hour < 0 || hour > 23) {
-      if (true) throw new ParseException("invalid hour in timestamp");
+      if (true)
+        throw new ParseException("invalid hour in timestamp");
     }
     if (minute < 0 || minute > 59) {
-      if (true) throw new ParseException("invalid minute in timestamp");
+      if (true)
+        throw new ParseException("invalid minute in timestamp");
     }
     if (seconds < 0 || seconds > 61) {
-      if (true) throw new ParseException("invalid seconds in timestamp");
+      if (true)
+        throw new ParseException("invalid seconds in timestamp");
     }
     calendar.set(Calendar.HOUR_OF_DAY, (int) Math.round(hour));
     calendar.set(Calendar.MINUTE, minute);
@@ -959,7 +929,8 @@ public final class
     int ms = (int) ((seconds - s) * 1000);
     calendar.set(Calendar.MILLISECOND, ms);
     {
-      if (true) return calendar;
+      if (true)
+        return calendar;
     }
     throw new Error("Missing return statement in function");
   }
@@ -980,8 +951,7 @@ public final class
             sign = sign();
             break;
           default:
-            jj_la1[32] = jj_gen;
-            ;
+            jj_la1[32] = jj_gen;;
         }
         zoneHour = unsignedInteger();
         switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -992,14 +962,12 @@ public final class
                 jj_consume_token(COLON);
                 break;
               default:
-                jj_la1[33] = jj_gen;
-                ;
+                jj_la1[33] = jj_gen;;
             }
             zoneMinute = unsignedInteger();
             break;
           default:
-            jj_la1[34] = jj_gen;
-            ;
+            jj_la1[34] = jj_gen;;
         }
         if (zoneHour >= 100) {
           zoneMinute += zoneHour % 100;
@@ -1007,7 +975,8 @@ public final class
         }
         if (zoneHour > 23 || zoneMinute > 59) {
           {
-            if (true) throw new ParseException("invalid time-zone in timestamp");
+            if (true)
+              throw new ParseException("invalid time-zone in timestamp");
           }
         }
         timeZone = TimeZone.getTimeZone("UTC");
@@ -1024,7 +993,8 @@ public final class
     }
     calendar.setTimeZone(timeZone);
     {
-      if (true) return calendar;
+      if (true)
+        return calendar;
     }
     throw new Error("Missing return statement in function");
   }
@@ -1126,48 +1096,58 @@ public final class
   }
 
   private boolean jj_3R_40() {
-    if (jj_scan_token(LG)) return true;
+    if (jj_scan_token(LG))
+      return true;
     return false;
   }
 
   private boolean jj_3R_33() {
-    if (jj_3R_24()) return true;
+    if (jj_3R_24())
+      return true;
     return false;
   }
 
   private boolean jj_3R_39() {
-    if (jj_scan_token(LN)) return true;
+    if (jj_scan_token(LN))
+      return true;
     return false;
   }
 
   private boolean jj_3R_41() {
-    if (jj_3R_3()) return true;
+    if (jj_3R_3())
+      return true;
     return false;
   }
 
   private boolean jj_3R_23() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_33()) jj_scanpos = xsp;
-    if (jj_3R_14()) return true;
+    if (jj_3R_33())
+      jj_scanpos = xsp;
+    if (jj_3R_14())
+      return true;
     return false;
   }
 
   private boolean jj_3R_38() {
-    if (jj_scan_token(LB)) return true;
+    if (jj_scan_token(LB))
+      return true;
     return false;
   }
 
   private boolean jj_3_8() {
-    if (jj_3R_5()) return true;
+    if (jj_3R_5())
+      return true;
     return false;
   }
 
   private boolean jj_3_5() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(1)) jj_scanpos = xsp;
-    if (jj_3R_7()) return true;
+    if (jj_scan_token(1))
+      jj_scanpos = xsp;
+    if (jj_3R_7())
+      return true;
     return false;
   }
 
@@ -1178,15 +1158,18 @@ public final class
       jj_scanpos = xsp;
       if (jj_3R_39()) {
         jj_scanpos = xsp;
-        if (jj_3R_40()) return true;
+        if (jj_3R_40())
+          return true;
       }
     }
-    if (jj_3R_41()) return true;
+    if (jj_3R_41())
+      return true;
     return false;
   }
 
   private boolean jj_3R_26() {
-    if (jj_scan_token(REAL_EXP)) return true;
+    if (jj_scan_token(REAL_EXP))
+      return true;
     return false;
   }
 
@@ -1195,73 +1178,91 @@ public final class
     xsp = jj_scanpos;
     if (jj_scan_token(17)) {
       jj_scanpos = xsp;
-      if (jj_scan_token(1)) return true;
+      if (jj_scan_token(1))
+        return true;
     }
-    if (jj_3R_8()) return true;
+    if (jj_3R_8())
+      return true;
     return false;
   }
 
   private boolean jj_3R_13() {
-    if (jj_3R_14()) return true;
-    if (jj_scan_token(PERIOD)) return true;
+    if (jj_3R_14())
+      return true;
+    if (jj_scan_token(PERIOD))
+      return true;
     return false;
   }
 
   private boolean jj_3R_22() {
-    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(LPAREN))
+      return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(1)) jj_scanpos = xsp;
-    if (jj_3R_32()) return true;
+    if (jj_scan_token(1))
+      jj_scanpos = xsp;
+    if (jj_3R_32())
+      return true;
     return false;
   }
 
   private boolean jj_3R_21() {
-    if (jj_3R_31()) return true;
+    if (jj_3R_31())
+      return true;
     return false;
   }
 
   private boolean jj_3R_20() {
-    if (jj_3R_30()) return true;
+    if (jj_3R_30())
+      return true;
     return false;
   }
 
   private boolean jj_3R_6() {
-    if (jj_3R_14()) return true;
+    if (jj_3R_14())
+      return true;
     return false;
   }
 
   private boolean jj_3_7() {
-    if (jj_3R_5()) return true;
+    if (jj_3R_5())
+      return true;
     return false;
   }
 
   private boolean jj_3_4() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_6()) jj_scanpos = xsp;
-    if (jj_scan_token(PERIOD)) return true;
-    if (jj_scan_token(UINT)) return true;
+    if (jj_3R_6())
+      jj_scanpos = xsp;
+    if (jj_scan_token(PERIOD))
+      return true;
+    if (jj_scan_token(UINT))
+      return true;
     return false;
   }
 
   private boolean jj_3R_19() {
-    if (jj_3R_29()) return true;
+    if (jj_3R_29())
+      return true;
     return false;
   }
 
   private boolean jj_3R_18() {
-    if (jj_3R_14()) return true;
+    if (jj_3R_14())
+      return true;
     return false;
   }
 
   private boolean jj_3R_32() {
-    if (jj_3R_41()) return true;
+    if (jj_3R_41())
+      return true;
     return false;
   }
 
   private boolean jj_3R_17() {
-    if (jj_3R_5()) return true;
+    if (jj_3R_5())
+      return true;
     return false;
   }
 
@@ -1270,7 +1271,8 @@ public final class
     xsp = jj_scanpos;
     if (jj_3_4()) {
       jj_scanpos = xsp;
-      if (jj_3R_13()) return true;
+      if (jj_3R_13())
+        return true;
     }
     return false;
   }
@@ -1284,7 +1286,8 @@ public final class
         jj_scanpos = xsp;
         if (jj_3R_21()) {
           jj_scanpos = xsp;
-          if (jj_3R_22()) return true;
+          if (jj_3R_22())
+            return true;
         }
       }
     }
@@ -1292,7 +1295,8 @@ public final class
   }
 
   private boolean jj_3R_35() {
-    if (jj_scan_token(MINUS)) return true;
+    if (jj_scan_token(MINUS))
+      return true;
     return false;
   }
 
@@ -1301,13 +1305,15 @@ public final class
     xsp = jj_scanpos;
     if (jj_3R_17()) {
       jj_scanpos = xsp;
-      if (jj_3R_18()) return true;
+      if (jj_3R_18())
+        return true;
     }
     return false;
   }
 
   private boolean jj_3R_34() {
-    if (jj_scan_token(PLUS)) return true;
+    if (jj_scan_token(PLUS))
+      return true;
     return false;
   }
 
@@ -1316,70 +1322,85 @@ public final class
     xsp = jj_scanpos;
     if (jj_3R_34()) {
       jj_scanpos = xsp;
-      if (jj_3R_35()) return true;
+      if (jj_3R_35())
+        return true;
     }
     return false;
   }
 
   private boolean jj_3R_12() {
-    if (jj_3R_14()) return true;
-    if (jj_3R_26()) return true;
+    if (jj_3R_14())
+      return true;
+    if (jj_3R_26())
+      return true;
     return false;
   }
 
   private boolean jj_3R_25() {
-    if (jj_3R_26()) return true;
+    if (jj_3R_26())
+      return true;
     return false;
   }
 
   private boolean jj_3R_16() {
-    if (jj_scan_token(NAME)) return true;
+    if (jj_scan_token(NAME))
+      return true;
     return false;
   }
 
   private boolean jj_3R_10() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(11)) jj_scanpos = xsp;
-    if (jj_3R_23()) return true;
+    if (jj_scan_token(11))
+      jj_scanpos = xsp;
+    if (jj_3R_23())
+      return true;
     return false;
   }
 
   private boolean jj_3_3() {
-    if (jj_3R_5()) return true;
+    if (jj_3R_5())
+      return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_25()) jj_scanpos = xsp;
+    if (jj_3R_25())
+      jj_scanpos = xsp;
     return false;
   }
 
   private boolean jj_3R_3() {
-    if (jj_3R_9()) return true;
+    if (jj_3R_9())
+      return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_10()) jj_scanpos = xsp;
+    if (jj_3R_10())
+      jj_scanpos = xsp;
     return false;
   }
 
   private boolean jj_3R_11() {
-    if (jj_3R_24()) return true;
+    if (jj_3R_24())
+      return true;
     return false;
   }
 
   private boolean jj_3R_4() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_11()) jj_scanpos = xsp;
+    if (jj_3R_11())
+      jj_scanpos = xsp;
     xsp = jj_scanpos;
     if (jj_3_3()) {
       jj_scanpos = xsp;
-      if (jj_3R_12()) return true;
+      if (jj_3R_12())
+        return true;
     }
     return false;
   }
 
   private boolean jj_3_2() {
-    if (jj_3R_4()) return true;
+    if (jj_3R_4())
+      return true;
     return false;
   }
 
@@ -1390,7 +1411,8 @@ public final class
       jj_scanpos = xsp;
       if (jj_scan_token(18)) {
         jj_scanpos = xsp;
-        if (jj_scan_token(16)) return true;
+        if (jj_scan_token(16))
+          return true;
       }
     }
     return false;
@@ -1399,28 +1421,35 @@ public final class
   private boolean jj_3R_28() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(4)) jj_scanpos = xsp;
-    if (jj_3R_14()) return true;
+    if (jj_scan_token(4))
+      jj_scanpos = xsp;
+    if (jj_3R_14())
+      return true;
     return false;
   }
 
   private boolean jj_3R_27() {
-    if (jj_3R_24()) return true;
+    if (jj_3R_24())
+      return true;
     return false;
   }
 
   private boolean jj_3R_15() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_27()) jj_scanpos = xsp;
-    if (jj_3R_14()) return true;
+    if (jj_3R_27())
+      jj_scanpos = xsp;
+    if (jj_3R_14())
+      return true;
     xsp = jj_scanpos;
-    if (jj_3R_28()) jj_scanpos = xsp;
+    if (jj_3R_28())
+      jj_scanpos = xsp;
     return false;
   }
 
   private boolean jj_3R_37() {
-    if (jj_3R_23()) return true;
+    if (jj_3R_23())
+      return true;
     return false;
   }
 
@@ -1431,22 +1460,26 @@ public final class
       jj_scanpos = xsp;
       if (jj_scan_token(13)) {
         jj_scanpos = xsp;
-        if (jj_scan_token(1)) return true;
+        if (jj_scan_token(1))
+          return true;
       }
     }
     return false;
   }
 
   private boolean jj_3R_36() {
-    if (jj_3R_4()) return true;
+    if (jj_3R_4())
+      return true;
     return false;
   }
 
   private boolean jj_3_1() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_2()) jj_scanpos = xsp;
-    if (jj_3R_3()) return true;
+    if (jj_3R_2())
+      jj_scanpos = xsp;
+    if (jj_3R_3())
+      return true;
     return false;
   }
 
@@ -1455,13 +1488,15 @@ public final class
     xsp = jj_scanpos;
     if (jj_3R_15()) {
       jj_scanpos = xsp;
-      if (jj_3R_16()) return true;
+      if (jj_3R_16())
+        return true;
     }
     return false;
   }
 
   private boolean jj_3R_14() {
-    if (jj_scan_token(UINT)) return true;
+    if (jj_scan_token(UINT))
+      return true;
     return false;
   }
 
@@ -1470,7 +1505,8 @@ public final class
     xsp = jj_scanpos;
     if (jj_3R_36()) {
       jj_scanpos = xsp;
-      if (jj_3R_37()) return true;
+      if (jj_3R_37())
+        return true;
     }
     return false;
   }
@@ -1500,7 +1536,9 @@ public final class
   }
 
   private static void jj_la1_init_0() {
-    jj_la1_0 = new int[]{0x3f112c, 0x102c, 0x8000, 0x3f712e, 0x3002, 0x3002, 0x4000, 0x800, 0x82c, 0x2, 0x2, 0x3f112c, 0x380000, 0x2, 0x2c, 0xc, 0x400, 0x20, 0xc, 0x20, 0x20, 0xc, 0x70000, 0x20002, 0x2, 0xc, 0x8, 0x8, 0x20, 0x20, 0x10, 0x10, 0xc, 0x10, 0x30, 0x4002c,};
+    jj_la1_0 = new int[] {0x3f112c, 0x102c, 0x8000, 0x3f712e, 0x3002, 0x3002, 0x4000, 0x800, 0x82c, 0x2, 0x2, 0x3f112c,
+        0x380000, 0x2, 0x2c, 0xc, 0x400, 0x20, 0xc, 0x20, 0x20, 0xc, 0x70000, 0x20002, 0x2, 0xc, 0x8, 0x8, 0x20, 0x20,
+        0x10, 0x10, 0xc, 0x10, 0x30, 0x4002c,};
   }
 
   final private JJCalls[] jj_2_rtns = new JJCalls[8];
@@ -1527,8 +1565,10 @@ public final class
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
-    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
+    for (int i = 0; i < 36; i++)
+      jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++)
+      jj_2_rtns[i] = new JJCalls();
   }
 
   /**
@@ -1551,8 +1591,10 @@ public final class
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
-    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
+    for (int i = 0; i < 36; i++)
+      jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++)
+      jj_2_rtns[i] = new JJCalls();
   }
 
   /**
@@ -1564,8 +1606,10 @@ public final class
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
-    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
+    for (int i = 0; i < 36; i++)
+      jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++)
+      jj_2_rtns[i] = new JJCalls();
   }
 
   /**
@@ -1577,8 +1621,10 @@ public final class
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
-    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
+    for (int i = 0; i < 36; i++)
+      jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++)
+      jj_2_rtns[i] = new JJCalls();
   }
 
   /**
@@ -1589,8 +1635,10 @@ public final class
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
-    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
+    for (int i = 0; i < 36; i++)
+      jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++)
+      jj_2_rtns[i] = new JJCalls();
   }
 
   /**
@@ -1601,14 +1649,18 @@ public final class
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
-    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
+    for (int i = 0; i < 36; i++)
+      jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++)
+      jj_2_rtns[i] = new JJCalls();
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
-    if ((oldToken = token).next != null) token = token.next;
-    else token = token.next = token_source.getNextToken();
+    if ((oldToken = token).next != null)
+      token = token.next;
+    else
+      token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     if (token.kind == kind) {
       jj_gen++;
@@ -1617,7 +1669,8 @@ public final class
         for (int i = 0; i < jj_2_rtns.length; i++) {
           JJCalls c = jj_2_rtns[i];
           while (c != null) {
-            if (c.gen < jj_gen) c.first = null;
+            if (c.gen < jj_gen)
+              c.first = null;
             c = c.next;
           }
         }
@@ -1652,10 +1705,13 @@ public final class
         i++;
         tok = tok.next;
       }
-      if (tok != null) jj_add_error_token(kind, i);
+      if (tok != null)
+        jj_add_error_token(kind, i);
     }
-    if (jj_scanpos.kind != kind) return true;
-    if (jj_la == 0 && jj_scanpos == jj_lastpos) throw jj_ls;
+    if (jj_scanpos.kind != kind)
+      return true;
+    if (jj_la == 0 && jj_scanpos == jj_lastpos)
+      throw jj_ls;
     return false;
   }
 
@@ -1664,8 +1720,10 @@ public final class
    * Get the next Token.
    */
   final public Token getNextToken() {
-    if (token.next != null) token = token.next;
-    else token = token.next = token_source.getNextToken();
+    if (token.next != null)
+      token = token.next;
+    else
+      token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
     return token;
@@ -1677,8 +1735,10 @@ public final class
   final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
-      if (t.next != null) t = t.next;
-      else t = t.next = token_source.getNextToken();
+      if (t.next != null)
+        t = t.next;
+      else
+        t = t.next = token_source.getNextToken();
     }
     return t;
   }
@@ -1697,7 +1757,8 @@ public final class
   private int jj_endpos;
 
   private void jj_add_error_token(int kind, int pos) {
-    if (pos >= 100) return;
+    if (pos >= 100)
+      return;
     if (pos == jj_endpos + 1) {
       jj_lasttokens[jj_endpos++] = kind;
     } else if (jj_endpos != 0) {
@@ -1705,8 +1766,7 @@ public final class
       for (int i = 0; i < jj_endpos; i++) {
         jj_expentry[i] = jj_lasttokens[i];
       }
-      jj_entries_loop:
-      for (java.util.Iterator it = jj_expentries.iterator(); it.hasNext(); ) {
+      jj_entries_loop: for (java.util.Iterator it = jj_expentries.iterator(); it.hasNext();) {
         int[] oldentry = (int[]) (it.next());
         if (oldentry.length == jj_expentry.length) {
           for (int i = 0; i < jj_expentry.length; i++) {
@@ -1718,7 +1778,8 @@ public final class
           break jj_entries_loop;
         }
       }
-      if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
+      if (pos != 0)
+        jj_lasttokens[(jj_endpos = pos) - 1] = kind;
     }
   }
 
@@ -1761,14 +1822,12 @@ public final class
   /**
    * Enable tracing.
    */
-  final public void enable_tracing() {
-  }
+  final public void enable_tracing() {}
 
   /**
    * Disable tracing.
    */
-  final public void disable_tracing() {
-  }
+  final public void disable_tracing() {}
 
   private void jj_rescan_token() {
     jj_rescan = true;

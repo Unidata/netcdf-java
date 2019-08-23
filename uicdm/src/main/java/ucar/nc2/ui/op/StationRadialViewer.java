@@ -17,7 +17,6 @@ import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -52,13 +51,14 @@ public class StationRadialViewer extends JPanel {
     this.prefs = prefs;
 
     chooser = new StationRegionDateChooser();
-    chooser.addPropertyChangeListener( new PropertyChangeListener() {
+    chooser.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
           Station selectedStation = (Station) e.getNewValue();
-          if (debugStationRegionSelect) System.out.println("selectedStation= "+selectedStation.getName());
+          if (debugStationRegionSelect)
+            System.out.println("selectedStation= " + selectedStation.getName());
           eventsOK = false;
-          stnTable.setSelectedBean( selectedStation);
+          stnTable.setSelectedBean(selectedStation);
           eventsOK = true;
         }
       }
@@ -67,10 +67,12 @@ public class StationRadialViewer extends JPanel {
     // station table
     stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
     stnTable.addListSelectionListener(e -> {
-        StationBean sb = (StationBean) stnTable.getSelectedBean();
-        setStation( sb);
-        if (debugStationRegionSelect) System.out.println("stnTable selected= "+sb.getName());
-        if (eventsOK) chooser.setSelectedStation( sb.getName());
+      StationBean sb = (StationBean) stnTable.getSelectedBean();
+      setStation(sb);
+      if (debugStationRegionSelect)
+        System.out.println("stnTable selected= " + sb.getName());
+      if (eventsOK)
+        chooser.setSelectedStation(sb.getName());
     });
 
     // the RadialDatasetTable
@@ -79,7 +81,7 @@ public class StationRadialViewer extends JPanel {
     // the info window
     TextHistoryPane infoTA = new TextHistoryPane();
     infoWindow = new IndependentDialog(null, true, "Station Information", infoTA);
-    infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // layout
     splitH = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, stnTable, chooser);
@@ -96,43 +98,47 @@ public class StationRadialViewer extends JPanel {
     this.sds = (StationRadialDataset) dataset;
 
     if (debugStationDatsets)
-      System.out.println("PointObsViewer open type "+dataset.getClass().getName());
+      System.out.println("PointObsViewer open type " + dataset.getClass().getName());
     CalendarDate startDate = dataset.getCalendarDateStart();
     CalendarDate endDate = dataset.getCalendarDateEnd();
     if ((startDate != null) && (endDate != null))
-      chooser.setDateRange( new DateRange( startDate.toDate(), endDate.toDate()));
+      chooser.setDateRange(new DateRange(startDate.toDate(), endDate.toDate()));
 
     List<StationBean> stationBeans = new ArrayList<>();
     List<Station> stations = sds.getStations();
-    if (stations == null) return;
+    if (stations == null)
+      return;
 
     for (Station station : stations)
       stationBeans.add(new StationBean(station));
 
-    stnTable.setBeans( stationBeans);
-    chooser.setStations( stationBeans);
+    stnTable.setBeans(stationBeans);
+    chooser.setStations(stationBeans);
     rdTable.clear();
   }
 
   public void setStation(StationBean sb) {
-    RadialDatasetSweep rsds = sds.getRadarDataset(sb.getName(), new Date()); // LOOK kludge - should show all possibilities
-    rdTable.setDataset( rsds);
+    RadialDatasetSweep rsds = sds.getRadarDataset(sb.getName(), new Date()); // LOOK kludge - should show all
+                                                                             // possibilities
+    rdTable.setDataset(rsds);
   }
 
-  public PreferencesExt getPrefs() { return prefs; }
+  public PreferencesExt getPrefs() {
+    return prefs;
+  }
 
   public void save() {
-   stnTable.saveState(false);
-   prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-   prefs.putInt("splitPos", splitV.getDividerLocation());
-   prefs.putInt("splitPosH", splitH.getDividerLocation());
-   //rdTable.saveState();
+    stnTable.saveState(false);
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putInt("splitPos", splitV.getDividerLocation());
+    prefs.putInt("splitPosH", splitH.getDividerLocation());
+    // rdTable.saveState();
   }
 
   public class StationBean implements Station {
     private Station s;
 
-    public StationBean( Station s) {
+    public StationBean(Station s) {
       this.s = s;
     }
 
@@ -172,7 +178,9 @@ public class StationRadialViewer extends JPanel {
       return getName().compareTo(so.getName());
     }
 
-    public int getNobs() { return -1; }
+    public int getNobs() {
+      return -1;
+    }
 
   }
 

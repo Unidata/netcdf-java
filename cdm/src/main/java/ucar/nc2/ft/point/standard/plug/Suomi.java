@@ -10,7 +10,6 @@ import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.PointConfigXML;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-
 import java.util.Formatter;
 import java.io.IOException;
 

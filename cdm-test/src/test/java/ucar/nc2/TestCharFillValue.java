@@ -4,10 +4,10 @@
  */
 
 /*
-The code that demonstrates the problem can be found below. The issue is due
-to the special checks we do for fill value in Nc4Iosp, specifically around
-line 2822 and line 2841. Thanks for taking a look!
-*/
+ * The code that demonstrates the problem can be found below. The issue is due
+ * to the special checks we do for fill value in Nc4Iosp, specifically around
+ * line 2822 and line 2841. Thanks for taking a look!
+ */
 
 package ucar.nc2;
 
@@ -24,15 +24,13 @@ import ucar.ma2.DataType;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.util.test.UnitTestCommon;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 public class TestCharFillValue extends UnitTestCommon {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final String fileName = "charAttr.nc4";
   private final String charVarName = "charVar";
@@ -48,26 +46,21 @@ public class TestCharFillValue extends UnitTestCommon {
   }
 
   @Test
-  public void
-  testCharFillValue() throws IOException {
+  public void testCharFillValue() throws IOException {
     logger.info("*** Test Non-Null Character Fill Value");
 
-    try (NetcdfFileWriter ncfw =
-        NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fileName);) {
+    try (NetcdfFileWriter ncfw = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fileName);) {
       Dimension charDim = ncfw.addDimension("charDim", 3);
-      Variable charVar = ncfw.addVariable(charVarName, DataType.CHAR,
-          charDim.getFullName());
+      Variable charVar = ncfw.addVariable(charVarName, DataType.CHAR, charDim.getFullName());
       // works
       Array charArray = ArrayChar.makeFromString(charFillValue, 1);
       Attribute charAttr = new Attribute("charAttrName", charArray);
       charVar.addAttribute(charAttr);
-      Array charArrayFillValue =
-          ArrayChar.makeFromString(charFillValue, 1);
+      Array charArrayFillValue = ArrayChar.makeFromString(charFillValue, 1);
       Attribute charAttrFillValue;
       // Try to do _FillValue two ways
       if (true) {
-        charAttrFillValue = new Attribute("_FillValue",
-            charArrayFillValue);
+        charAttrFillValue = new Attribute("_FillValue", charArrayFillValue);
       } else {
         charAttrFillValue = new Attribute("_FillValue", DataType.CHAR);
         charAttrFillValue.setValues(charArrayFillValue);
@@ -78,8 +71,7 @@ public class TestCharFillValue extends UnitTestCommon {
 
     try (NetcdfFile ncf = NetcdfFile.open(fileName)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
-      H5header.Vinfo h5 = (H5header.Vinfo)
-          charVarFromFile.getSPobject();
+      H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
       logger.debug("use fill value: {}", h5.useFillValue());
       // should be 3 charFillVal characters
       Array arr = charVarFromFile.read();
@@ -96,28 +88,22 @@ public class TestCharFillValue extends UnitTestCommon {
   // Re: https://github.com/Unidata/thredds/pull/1262
 
   @Test
-  public void
-  testNullCharFillValue() throws IOException {
+  public void testNullCharFillValue() throws IOException {
     logger.info("\n*** Test Null Character Fill Value");
 
-    try (NetcdfFileWriter ncfw =
-        NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fileName);) {
+    try (NetcdfFileWriter ncfw = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fileName);) {
       Dimension charDim = ncfw.addDimension("charDim", 3);
-      Variable charVar = ncfw.addVariable(charVarName, DataType.CHAR,
-          charDim.getFullName());
-      Array charArrayFillValue =
-          ArrayChar.makeFromString(charNullFillValue, 1);
+      Variable charVar = ncfw.addVariable(charVarName, DataType.CHAR, charDim.getFullName());
+      Array charArrayFillValue = ArrayChar.makeFromString(charNullFillValue, 1);
       Attribute charAttrFillValue;
-      charAttrFillValue = new Attribute("_FillValue",
-          charArrayFillValue);
+      charAttrFillValue = new Attribute("_FillValue", charArrayFillValue);
       charVar.addAttribute(charAttrFillValue);
       ncfw.create();
     }
 
     try (NetcdfFile ncf = NetcdfFile.open(fileName)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
-      H5header.Vinfo h5 = (H5header.Vinfo)
-          charVarFromFile.getSPobject();
+      H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
       logger.debug("use fill value: {}", h5.useFillValue());
       // should be 3 charFillVal characters
       Array arr = charVarFromFile.read();

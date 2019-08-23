@@ -10,7 +10,6 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -50,8 +49,8 @@ public class TestWrite {
     dims.add(latDim);
     dims.add(lonDim);
     Variable t = writer.addVariable(null, "temperature", DataType.DOUBLE, dims);
-    t.addAttribute(new Attribute("units", "K"));   // add a 1D attribute of length 3
-    Array data = Array.factory(DataType.INT, new int[]{3}, new int[]{1, 2, 3});
+    t.addAttribute(new Attribute("units", "K")); // add a 1D attribute of length 3
+    Array data = Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3});
     t.addAttribute(new Attribute("scale", data));
 
     // add a string-valued variable: char svar(80)
@@ -80,7 +79,7 @@ public class TestWrite {
 
     // test some errors
     try {
-      Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[]{1}, null);
+      Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[] {1}, null);
       writer.addGroupAttribute(null, new Attribute("versionB", bad));
       assert (false);
     } catch (IllegalArgumentException e) {
@@ -219,7 +218,8 @@ public class TestWrite {
       assert (false);
     }
 
-    if (show) System.out.println("ncfile = " + writer.getNetcdfFile());
+    if (show)
+      System.out.println("ncfile = " + writer.getNetcdfFile());
 
     try {
       writer.flush();
@@ -291,7 +291,7 @@ public class TestWrite {
     ArrayChar achar = (ArrayChar) tA;
     String sval = achar.getString(achar.getIndex());
     assert sval.equals("Testing 1-2-3") : sval;
-    //System.out.println( "val = "+ val);
+    // System.out.println( "val = "+ val);
 
     // read char variable 2
     Variable c2 = null;
@@ -478,7 +478,8 @@ public class TestWrite {
       assert (false);
     }
 
-    if (show) System.out.println("ncfile = " + writer.getNetcdfFile());
+    if (show)
+      System.out.println("ncfile = " + writer.getNetcdfFile());
 
     try {
       writer.flush();
@@ -552,7 +553,7 @@ public class TestWrite {
     ArrayChar achar = (ArrayChar) tA;
     String sval = achar.getString(achar.getIndex());
     assert sval.equals("Testing 1-2-3") : sval;
-    //System.out.println( "val = "+ val);
+    // System.out.println( "val = "+ val);
 
     // read char variable 2
     Variable c2 = null;
@@ -636,19 +637,19 @@ public class TestWrite {
       writer.create();
 
       // write out the non-record variables
-      writer.write(lat, Array.makeFromJavaArray(new float[]{41, 40, 39}, false));
-      writer.write(lon, Array.makeFromJavaArray(new float[]{-109, -107, -105, -103}, false));
+      writer.write(lat, Array.makeFromJavaArray(new float[] {41, 40, 39}, false));
+      writer.write(lon, Array.makeFromJavaArray(new float[] {-109, -107, -105, -103}, false));
 
       //// heres where we write the record variables
       // different ways to create the data arrays.
       // Note the outer dimension has shape 1, since we will write one record at a time
       ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength(), false);
       ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
-      Array timeData = Array.factory(DataType.INT, new int[]{1});
+      Array timeData = Array.factory(DataType.INT, new int[] {1});
       Index ima = rhData.getIndex();
 
-      int[] origin = new int[]{0, 0, 0};
-      int[] time_origin = new int[]{0};
+      int[] origin = new int[] {0, 0, 0};
+      int[] time_origin = new int[] {0};
 
       // loop over each record
       for (int timeIdx = 0; timeIdx < 10; timeIdx++) {
@@ -685,7 +686,7 @@ public class TestWrite {
       Variable tempVar = ncfile.addVariable("temperature", DataType.DOUBLE, "lat lon");
       ncfile.addVariableAttribute("temperature", "units", "K");
 
-      Array data = Array.factory(DataType.INT, new int[]{3}, new int[]{1, 2, 3});
+      Array data = Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3});
       ncfile.addVariableAttribute(tempVar, new Attribute("scale", data));
       ncfile.addVariableAttribute("temperature", "versionD", 1.2);
       ncfile.addVariableAttribute("temperature", "versionF", 1.2f);
@@ -722,7 +723,7 @@ public class TestWrite {
 
       // test some errors
       try {
-        Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[]{1}, null);
+        Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[] {1}, null);
         ncfile.addGroupAttribute(null, new Attribute("versionC", bad));
         assert (false);
       } catch (IllegalArgumentException e) {
@@ -730,7 +731,7 @@ public class TestWrite {
       }
       // test some errors
       try {
-        Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[]{1}, null);
+        Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[] {1}, null);
         ncfile.addGroupAttribute(null, new Attribute("versionC", bad));
         assert (false);
       } catch (IllegalArgumentException e) {
@@ -968,7 +969,7 @@ public class TestWrite {
       ArrayChar achar = (ArrayChar) tA;
       String sval = achar.getString(ac.getIndex());
       assert sval.equals("Testing 1-2-3") : sval;
-      //System.out.println( "val = "+ val);
+      // System.out.println( "val = "+ val);
 
       // read char variable 2
       Variable c2 = null;
@@ -1020,7 +1021,7 @@ public class TestWrite {
   public void testRecordSizeBug() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
     int size = 10;
-    Array timeDataAll = Array.factory(DataType.INT, new int[]{size});
+    Array timeDataAll = Array.factory(DataType.INT, new int[] {size});
 
     try (NetcdfFileWriter ncWriteable = NetcdfFileWriter.createNew(filename, false)) {
       Dimension timeDim = ncWriteable.addUnlimitedDimension("time");
@@ -1029,8 +1030,8 @@ public class TestWrite {
       ncWriteable.create();
 
       IndexIterator iter = timeDataAll.getIndexIterator();
-      Array timeData = Array.factory(DataType.INT, new int[]{1});
-      int[] time_origin = new int[]{0};
+      Array timeData = Array.factory(DataType.INT, new int[] {1});
+      int[] time_origin = new int[] {0};
 
       for (int time = 0; time < size; time++) {
         int val = time * 12;
