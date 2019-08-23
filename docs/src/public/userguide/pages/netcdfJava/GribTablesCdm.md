@@ -57,12 +57,12 @@ You can view all the standard tables used by the CDM in ToolsUI, using the <b>_I
 # resources\grib1\lookupTables.txt
 
 # cen sub version table
-  0:	-1:	   -1:	dss/WMO_GRIB1.xml
-  7:   -1:    -1:	wgrib/table2.htm
+  0:  -1:     -1:  dss/WMO_GRIB1.xml
+  7:   -1:    -1:  wgrib/table2.htm
   9:   -1:   128:  noaa_rfc/params9-128.tab
- 57:   -1:     2:	local/afwa.tab
- 58:   42:     2:	local/af_2.tab
- 60:   255:    2:	local/wrf_amps.wrf
+ 57:   -1:     2:  local/afwa.tab
+ 58:   42:     2:  local/af_2.tab
+ 60:   255:    2:  local/wrf_amps.wrf
 ~~~
 
 1. Each row contains the center, subcenter and table version, and the table filename, with a colon (:) separating the fields.
@@ -227,7 +227,7 @@ Derived from NCAR DSS format with additional "name" element.
       <xs:sequence>
         <xs:element name="title" type="xs:string"/>
         <xs:element name="source" type="xs:string"/>
-		   <xs:element maxOccurs="unbounded" ref="parameter"/>
+       <xs:element maxOccurs="unbounded" ref="parameter"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -271,7 +271,7 @@ Example:
     <description>Pressure</description>
     <units>Pa</units>
     <name>PRES</name>
-	   <CF>air_pressure</CF>
+     <CF>air_pressure</CF>
     <GCMD ifLevelType="1">EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Surface Pressure</GCMD>
     <GCMD ifLevelType="2">EARTH SCIENCE > Atmosphere > Clouds > Cloud Base Pressure</GCMD>
     <GCMD ifLevelType="3">EARTH SCIENCE > Atmosphere > Clouds > Cloud Top Pressure</GCMD>

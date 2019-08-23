@@ -33,7 +33,7 @@ public final class PrefixSymbol extends Prefix {
    * @return A negative value, zero, or a positive value
    *         depending on whether this PrefixSymbol is less
    *         than, equal to, or greater than <code>
-   *				obj</code>, respectively.
+   *        obj</code>, respectively.
    */
   public final int compareTo(Object obj) {
     String thatID = ((PrefixSymbol) obj).getID();
@@ -51,7 +51,7 @@ public final class PrefixSymbol extends Prefix {
    * @return A negative value, zero, or a positive value
    *         depending on whether this PrefixSymbol is less
    *         than, equal to, or greater than <code>
-   *				string</code>, respectively.
+   *        string</code>, respectively.
    */
   public final int compareTo(String string) {
     int comp = string.length() - getID().length();

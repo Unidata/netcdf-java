@@ -22,24 +22,24 @@ import java.lang.invoke.MethodHandles;
  * <pre>
  *  netcdf example {
  *  dimensions:
- *  	lat = 3 ;
- *  	lon = 4 ;
- *  	time = UNLIMITED ;
+ *    lat = 3 ;
+ *    lon = 4 ;
+ *    time = UNLIMITED ;
  *  variables:
- *  	int rh(time, lat, lon) ;
+ *    int rh(time, lat, lon) ;
  *              rh:long_name="relative humidity" ;
- *  		rh:units = "percent" ;
- *  	double T(time, lat, lon) ;
+ *      rh:units = "percent" ;
+ *    double T(time, lat, lon) ;
  *              T:long_name="surface temperature" ;
- *  		T:units = "degC" ;
- *  	float lat(lat) ;
- *  		lat:units = "degrees_north" ;
- *  	float lon(lon) ;
- *  		lon:units = "degrees_east" ;
- *  	int time(time) ;
- *  		time:units = "hours" ;
+ *      T:units = "degC" ;
+ *    float lat(lat) ;
+ *      lat:units = "degrees_north" ;
+ *    float lon(lon) ;
+ *      lon:units = "degrees_east" ;
+ *    int time(time) ;
+ *      time:units = "hours" ;
  *  // global attributes:
- *  		:title = "Example Data" ;
+ *      :title = "Example Data" ;
  *  data:
  *   rh =
  *     1, 2, 3, 4,

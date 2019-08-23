@@ -348,7 +348,7 @@ public final class LogarithmicUnit extends UnitImpl implements DerivableUnit {
    *        The object.
    * @return <code>true</code> if and only if this unit is semantically
    *         identical to <code>object
-   *				</code>.
+   *        </code>.
    */
   @Override
   public boolean equals(final Object object) {

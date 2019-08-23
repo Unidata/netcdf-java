@@ -76,10 +76,10 @@ public interface UnitDB {
    *        The name of the unit already in the database.
    * @param symbol
    *        The symbol of the alias. May be <code>null
-   *				</code>.
+   *        </code>.
    * @param plural
    *        The plural form of the alias. May be <code>
-   *				null</code> in which
+   *        null</code> in which
    *        case regular plural- forming rules are followed.
    * @throws NameException
    *         Bad unit name.
@@ -135,7 +135,7 @@ public interface UnitDB {
    * @param id
    *        The identifier for the unit.
    * @return The matching unit in the database or <code>
-   *				null</code> if no
+   *        null</code> if no
    *         matching unit could be found.
    * @throws UnitDBAccessException
    *         Problem accessing unit database.
@@ -148,7 +148,7 @@ public interface UnitDB {
    * @param name
    *        The name of the unit.
    * @return The matching unit in the database or <code>
-   *				null</code> if no
+   *        null</code> if no
    *         matching unit could be found.
    * @throws UnitDBAccessException
    *         Problem accessing unit database.
@@ -161,7 +161,7 @@ public interface UnitDB {
    * @param symbol
    *        The symbol for the unit.
    * @return The matching unit in the database or <code>
-   *				null</code> if no
+   *        null</code> if no
    *         matching unit could be found.
    * @throws UnitDBAccessException
    *         Problem accessing unit database.

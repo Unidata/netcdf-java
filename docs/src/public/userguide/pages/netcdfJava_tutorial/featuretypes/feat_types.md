@@ -177,27 +177,27 @@ void process(FeatureDatasetPoint fdpoint) {
   for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
 
     if (ftype == FeatureType.POINT) {
-  	assert (fc instanceof PointFeatureCollection);
+    assert (fc instanceof PointFeatureCollection);
       PointFeatureCollection pointCollection = (PointFeatureCollection) fc;
       ...
     } else if (ftype == FeatureType.STATION) {
-  	assert (fc instanceof StationTimeSeriesFeatureCollection);
+    assert (fc instanceof StationTimeSeriesFeatureCollection);
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) fc;
       ...
     } else if (ftype == FeatureType.PROFILE) {
-  	assert (fc instanceof ProfileFeatureCollection);
+    assert (fc instanceof ProfileFeatureCollection);
       ProfileFeatureCollection profileCollection = (ProfileFeatureCollection) fc;
       ...
     } else if (ftype == FeatureType.STATION_PROFILE) {
      assert (fc instanceof StationProfileFeatureCollection);
       StationProfileFeatureCollection stationProfileCollection = (StationProfileFeatureCollection) fc;
- 		...
+     ...
     } else if (ftype == FeatureType.TRAJECTORY) {
-  	assert (fc instanceof TrajectoryFeatureCollection);
+    assert (fc instanceof TrajectoryFeatureCollection);
       TrajectoryFeatureCollection trajectoryCollection = (TrajectoryFeatureCollection) fc;
       ...
     } else if (ftype == FeatureType.SECTION) {
-  	assert (fc instanceof SectionFeatureCollection);
+    assert (fc instanceof SectionFeatureCollection);
       SectionFeatureCollection sectiontCollection = (SectionFeatureCollection) fc;
       ...      
     }

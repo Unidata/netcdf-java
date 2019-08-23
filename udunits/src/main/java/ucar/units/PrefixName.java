@@ -33,7 +33,7 @@ public final class PrefixName extends Prefix {
    * @return A negative value, zero, or a positive value
    *         depending on whether this PrefixName is less
    *         than, equal to, or greater than <code>
-   *				obj</code>, respectively.
+   *        obj</code>, respectively.
    */
   public final int compareTo(Object obj) {
     return getID().compareToIgnoreCase(((PrefixName) obj).getID());
@@ -46,7 +46,7 @@ public final class PrefixName extends Prefix {
    * @return A negative value, zero, or a positive value
    *         depending on whether this PrefixName is less
    *         than, equal to, or greater than <code>
-   *				string</code>, respectively.
+   *        string</code>, respectively.
    */
   public final int compareTo(String string) {
     return getID().length() >= string.length() ? getID().compareToIgnoreCase(string)

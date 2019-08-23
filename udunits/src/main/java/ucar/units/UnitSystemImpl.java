@@ -84,7 +84,7 @@ public class UnitSystemImpl implements UnitSystem, Serializable {
    *        The base quantity.
    * @return The base unit corresponding to the base quantity in this system
    *         of units or <code>
-   *				null</code> if no such unit exists.
+   *        null</code> if no such unit exists.
    */
   public final BaseUnit getBaseUnit(final BaseQuantity quantity) {
     return quantityMap.get(quantity);

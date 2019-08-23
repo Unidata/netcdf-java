@@ -173,7 +173,7 @@ public class UnitDBImpl implements UnitDB, Serializable {
    *        The symbol to be added. May be null.
    * @param plural
    *        The plural form of the alias. If <code>null
-   *				</code>, then regular
+   *        </code>, then regular
    *        plural-forming rules are followed.
    * @throws NoSuchUnitException
    *         The unit is not in the database.
@@ -254,7 +254,7 @@ public class UnitDBImpl implements UnitDB, Serializable {
    * @param symbol
    *        The symbol to be matched.
    * @return The unit whose symbol matches or <code>null
-   *				</code> if no such unit was
+   *        </code> if no such unit was
    *         found.
    */
   public Unit getBySymbol(final String symbol) {

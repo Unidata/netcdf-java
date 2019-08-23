@@ -262,12 +262,12 @@ The Web Map Service Implementation Specification version 1.3.0 states:
 > 
 > Table 1 -- Reserved Characters in WMS Query String
 > 
-> Character	Reserved Usage
-> ?	Separator indicating start of query string.
-> &	Separator between parameters in query string.
-> =	Separator between name and value of parameter.
-> ,	Separator between individual values in list-oriented parameters (such as BBOX, LAYERS and STYLES in the GetMap request).
-> \+	Shorthand representation for a space character.
+> Character  Reserved Usage
+> ?  Separator indicating start of query string.
+> &  Separator between parameters in query string.
+> =  Separator between name and value of parameter.
+> ,  Separator between individual values in list-oriented parameters (such as BBOX, LAYERS and STYLES in the GetMap request).
+> \+  Shorthand representation for a space character.
 > 6.8.2 Parameter lists
 > 
 > Parameters consisting of lists (for example, BBOX, LAYERS and STYLES in WMS GetMap) shall use the comma (",") as the separator between items in the list. Additional white space shall not be used to delimit list items. If a list item value includes a space or comma, it shall be escaped using the URL encoding rules (6.3.2 and IETF RFC 2396).

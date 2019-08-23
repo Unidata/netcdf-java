@@ -43,14 +43,14 @@ public class BaseUnit extends DerivedUnitImpl implements Base {
    * 
    * @param id
    *        The identifiers for the base unit. <code>
-   *				id.getSymbol()</code>
+   *        id.getSymbol()</code>
    *        shall not return <code>
-   *				null</code>.
+   *        null</code>.
    * @param baseQuantity
    *        The base quantity of the base unit.
    * @throws NameException
    *         <code>id.getSymbol()</code> returned <code>
-   *				null</code>.
+   *        null</code>.
    */
   protected BaseUnit(final UnitName id, final BaseQuantity baseQuantity) throws NameException {
     super(id);
@@ -67,14 +67,14 @@ public class BaseUnit extends DerivedUnitImpl implements Base {
    * 
    * @param id
    *        The identifier for the base unit. <code>
-   *				id.getSymbol()</code>
+   *        id.getSymbol()</code>
    *        shall not return <code>
-   *				null</code>.
+   *        null</code>.
    * @param baseQuantity
    *        The base quantity of the base unit.
    * @throws NameException
    *         <code>id.getSymbol()</code> returned <code>
-   *				null</code>.
+   *        null</code>.
    * @throws UnitExistsException
    *         Attempt to incompatibly redefine an existing base unit.
    */

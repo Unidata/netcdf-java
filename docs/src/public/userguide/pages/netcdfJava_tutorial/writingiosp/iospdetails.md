@@ -255,7 +255,7 @@ The previous examples essentially assumed a single data Variable whose data star
 ~~~
  private class VarInfo {
    long filePos;
-   int	otherStuff;
+   int  otherStuff;
  } 
 ~~~
 
