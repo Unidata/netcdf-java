@@ -27,6 +27,7 @@ buildscript {
         classpath libraries["coveralls-gradle-plugin"]
         classpath libraries["sonarqube-gradle-plugin"]
         classpath libraries["license-gradle-plugin"]
+        classpath libraries["spotless"]
 
         classpath libraries["guava"]  // For various utility methods used in the build scripts.
     }
@@ -102,3 +103,6 @@ apply from: "$rootDir/gradle/any/coverage.gradle"    // Modifies Test task from 
                                                      // JacocoReport task from root/coverage.gradle
 apply from: "$rootDir/gradle/any/archiving.gradle"   // Modifies Jar tasks created in fatJars.gradle
 apply from: "$rootDir/gradle/any/publishing.gradle"  // Modifies pubs created in root/publishing.gradle
+apply from: "$rootDir/gradle/any/spotless.gradle"
+
+
