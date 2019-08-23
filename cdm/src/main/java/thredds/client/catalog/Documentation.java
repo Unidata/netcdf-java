@@ -6,7 +6,6 @@ package thredds.client.catalog;
 
 import java.util.Objects;
 import ucar.nc2.constants.CDM;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -27,10 +26,10 @@ public class Documentation {
   /**
    * Constructor.
    *
-   * @param href          : href of documentation, may be null.
-   * @param uri           : absolute URL, or null
-   * @param title         : Xlink title, may be null.
-   * @param type          : user-defined InvDocumentation type
+   * @param href : href of documentation, may be null.
+   * @param uri : absolute URL, or null
+   * @param title : Xlink title, may be null.
+   * @param type : user-defined InvDocumentation type
    * @param inlineContent : optional inline contents.
    */
   public Documentation(String href, URI uri, String title, String type, String inlineContent) {
@@ -93,11 +92,11 @@ public class Documentation {
    * @return inline content as a string, else null
    */
   public String readXlinkContent() throws java.io.IOException {
-    if (uri == null) return "";
+    if (uri == null)
+      return "";
 
     URL url = uri.toURL();
-    try (InputStream is = url.openStream();
-      ByteArrayOutputStream os = new ByteArrayOutputStream(is.available())) {
+    try (InputStream is = url.openStream(); ByteArrayOutputStream os = new ByteArrayOutputStream(is.available())) {
 
       // copy to string
       byte[] buffer = new byte[1024];
@@ -113,26 +112,27 @@ public class Documentation {
 
   @Override
   public String toString() {
-    return "Documentation{" +
-            "href='" + href + '\'' +
-            ", title='" + title + '\'' +
-            ", type='" + type + '\'' +
-            ", inlineContent='" + inlineContent + '\'' +
-            ", uri=" + uri +
-            '}';
+    return "Documentation{" + "href='" + href + '\'' + ", title='" + title + '\'' + ", type='" + type + '\''
+        + ", inlineContent='" + inlineContent + '\'' + ", uri=" + uri + '}';
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Documentation that = (Documentation) o;
 
-    if (!Objects.equals(href, that.href)) return false;
-    if (!Objects.equals(inlineContent, that.inlineContent)) return false;
-    if (!Objects.equals(title, that.title)) return false;
-    if (!Objects.equals(type, that.type)) return false;
+    if (!Objects.equals(href, that.href))
+      return false;
+    if (!Objects.equals(inlineContent, that.inlineContent))
+      return false;
+    if (!Objects.equals(title, that.title))
+      return false;
+    if (!Objects.equals(type, that.type))
+      return false;
     return Objects.equals(uri, that.uri);
 
   }
