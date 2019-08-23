@@ -1,20 +1,20 @@
-image::http://www.unidata.ucar.edu/images/logos/thredds_tds-150x150.png[THREDDS]
+image::https://www.unidata.ucar.edu/images/logos/cdm_netcdfjava-150x150.png[netcdf-java icon]
 
 = Welcome contributors!
 
 First off, thank you for your interest in contributing to the THREDDS project!
-This repository contains the code for both netCDF-Java and the THREDDS Data Server (TDS) projects.
-The other projects held under the THREDDS umbrella are link:https://github.com/unidata/rosetta[Rosetta] and the latest addition, link:https://github.com/unidata/siphon[Siphon] (a python interface to the TDS).
+This repository contains the code for netCDF-Java.
+The other three projects held under the THREDDS umbrella are the link:https://github.com/unidata/tds[THREDDS Data Server] (TDS), link:https://github.com/unidata/rosetta[Rosetta] and the latest addition, link:https://github.com/unidata/siphon[Siphon] (a python data access library, which includes an interface to the TDS).
 
 == Process Overview
 
  * link:#gh-setup[GitHub Setup]
  ** link:#gh-join[Join Github!]
- ** link:#gh-fork[Fork the Unidata THREDDS project]
- ** link:#gh-pull-ud-thredds[Pull down local copy of the Unidata THREDDS project]
- ** link:#gh-pull-personal-thredds[Add and pull down a local copy of your THREDDS project fork]
+ ** link:#gh-fork[Fork the Unidata netCDF-java project]
+ ** link:#gh-pull-ud-ncj[Pull down local copy of the Unidata netCDF-java project]
+ ** link:#gh-pull-personal-ncj[Add and pull down a local copy of your netCDF-java project fork]
  * link:#gh-contrib-workflow[Contribution workflow]
- ** link:#gh-sync-ud[Make sure you have the latest changes from Unidata THREDDS repository]
+ ** link:#gh-sync-ud[Make sure you have the latest changes from Unidata netCDF-java repository]
  ** link:#gh-branch[Make a new branch for your work and start hacking]
  ** link:#gh-style-guidelines[Follow these Java Style Guidelines]
  ** link:#gh-history-cleanup[Clean up your git commit history]
@@ -27,23 +27,23 @@ The other projects held under the THREDDS umbrella are link:https://github.com/u
 
 [[gh-join]
 === Join Github!
-To get started contributing to the THREDDS project, the first thing you should do is link:https://github.com/join[sign up for a free account on GitHub].
+To get started contributing to a THREDDS project, the first thing you should do is link:https://github.com/join[sign up for a free account on GitHub].
 
 [[gh-fork]
-=== Fork the Unidata THREDDS project
-Once you have an account, go ahead and link:https://github.com/unidata/thredds#fork-destination-box[fork] the THREDDS project.
-By forking the project, you will have a complete copy of the THREDDS project, history and all, under your personal account.
-This will allow you to make pull requests against the Unidata THREDDS repository, which is the primary mechanism used to add new code to the project (even Unidata developers do this!).
+=== Fork the Unidata netcdf-java project
+Once you have an account, go ahead and link:https://github.com/unidata/netcdf-java#fork-destination-box[fork] the netCDF-java project.
+By forking the project, you will have a complete copy of the netCDF-java project, history and all, under your personal account.
+This will allow you to make pull requests against the Unidata netCDF-java repository, which is the primary mechanism used to add new code to the project (even Unidata developers do this!).
 
-[[gh-pull-ud-thredds]
-=== Pull down local copy of the Unidata THREDDS project
+[[gh-pull-ud-ncj]
+=== Pull down local copy of the Unidata netCDF-java project
 After cloning the Unidata repository, you can pull down the source code to your local machine by using git:
 
-`git clone --origin unidata git@github.com:Unidata/thredds.git` (for ssh)
+`git clone --origin unidata git@github.com:Unidata/netcdf-java.git` (for ssh)
 
 or
 
-`git clone --origin unidata https://github.com/Unidata/thredds.git` (for http)
+`git clone --origin unidata https://github.com/Unidata/netcdf-java.git` (for http)
 
 Note that these commands reference the Unidata repository.
 
@@ -51,16 +51,16 @@ Normally in git, the remote repository you clone from is automatically named `or
 To help with any confusion when making pull requests, this commands above rename the remote repository to `unidata`.
 
 
-[[gh-pull-personal-thredds]
-=== Add and pull down a local copy of your THREDDS project fork
+[[gh-pull-personal-ncj]
+=== Add and pull down a local copy of your netCDF-java project fork
 
-Next, move into the source directory git has created, and add your personal fork of the THREDDS code as a remote"
+Next, move into the source directory git has created, and add your personal fork of the netCDF-java code as a remote"
 
-`git clone --origin me git@github.com:<my-github-user-name>/thredds.git` (for ssh)
+`git clone --origin me git@github.com:<my-github-user-name>/netcdf-java.git` (for ssh)
 
 or
 
-`git clone --origin me https://github.com/,my-github-user-name>/thredds.git` (for http)
+`git clone --origin me https://github.com/,my-github-user-name>/netcdf-java.git` (for http)
 
 Now you are all set!
 
@@ -68,8 +68,8 @@ Now you are all set!
 == Contribution workflow
 
 [[gh-sync-ud]]
-=== Make sure you have the latest changes from Unidata THREDDS repository
-First, make sure you have the most recent changes to the THREDDS code by using git pull:
+=== Make sure you have the latest changes from Unidata netCDF-java repository
+First, make sure you have the most recent changes to the netCDF-java code by using git pull:
 
 `git pull unidata master`
 
@@ -102,7 +102,7 @@ Once you are satisfied with your work, there is one last step to complete before
 We are using the
 link:https://google.github.io/styleguide/javaguide.html[Google Java Style Guide] with these exceptions and augmentations:
 
-1. The recommended line width is 140, not 100. Modern screens are much wider than tall, so having
+1. The recommended line width is 120, not 100. Modern screens are much wider than tall, so having
 wider lines allows more code to fit on a screen.
 
 2. As a rule, dont add empty javadoc that has no information that can't be seen directly in the
@@ -123,10 +123,19 @@ code. For example, do not do this:
 Better to not have any javadoc then to have empty javadoc. Of course, best is to
 put actual, useful comments to help others understand your API.
 
-Much of the code does not follow these guidelines, but we aspire to eventually clean it up
-to get there. The guidelines are voluntary, but if you dont follow them, you are giving someone
-else permission to change your code. We recommend that you follow them for new code
-submissions (and feel free to convert old code to it as time permits).
+To assist in following the style, we provide both IntelliJ and Eclipse style files.
+These files can be found in the root directory of the repository. If you are not using
+an IDE, you can check the style using:
+
+```bash
+./gradlew spotlessCheck
+```
+
+and you can apply the style using:
+
+```bash
+./gradlew spotlessApply
+```
 
 [[gh-history-cleanup]]
 === Clean up your git commit history
@@ -226,7 +235,7 @@ Once you have and exit, you will have a change to change the commit message for 
 
 ```bash
 
-Really cool feature or bug fix. Addresses the github issue Unidata/thredds#1
+Really cool feature or bug fix. Addresses the github issue Unidata/netcdf-java#1
 
 #Please enter the commit message for your changes. Lines starting
 # with '#' will be ignored, and an empty message aborts the commit.
@@ -251,11 +260,11 @@ commit 805b4723c4a2cbbed240354332cd7af57559a1b9
 Author: Sean Arms <sarms@ucar.edu>
 Date:   Thu Oct 15 09:59:23 2015 -0600
 
-    Really cool feature or bug fix. Addresses the github issue Unidata/thredds#1
+    Really cool feature or bug fix. Addresses the github issue Unidata/netcdf-java#1
 
 ```
 
-Note that the commit contains the text `Unidata/thredds#1`.
+Note that the commit contains the text `Unidata/netcdf-java#1`.
 This is a cool github trick that will allow you to reference GitHub issues within your commit messages.
 When viewed on github.com, this will be turned into a hyperlink to the issue.
 While not every contribution will address an issue, please use this feature if your contribution does!
@@ -272,19 +281,19 @@ However, the rebase has changed the history of your local branch, which means yo
 Finally, go to your personal remote repository on github.com and switch to your `mywork` branch.
 Once you are on your work branch, you will see a button that says "Pull request", which will allow you to make a pull request.
 
-The github pull request page will allow you to select which repository and branch you would like to submit the pull request to (the `base fork`, which should be `Unidata/thredds`, and `base`, which should be `master`), as well as the `head fork` and `compare` (which should be `<github-user-name/thredds>` and `mywork`, respectively).
+The github pull request page will allow you to select which repository and branch you would like to submit the pull request to (the `base fork`, which should be `Unidata/netcdf-java`, and `base`, which should be `master`), as well as the `head fork` and `compare` (which should be `<github-user-name/netcdf-java>` and `mywork`, respectively).
 Once this is setup, you can make the pull request.
 
 [[gh-now-what]]
 == Now what?
 
-The Unidata THREDDS project is setup such that automated testing for all pull requests is done via TravisCI.
+The Unidata netCDF-java project is setup such that automated testing for all pull requests is done via TravisCI.
 The status of the tests can be seen on the pull request page.
-For example, see link:https://github.com/Unidata/thredds/pull/231[Unidata/thredds#231] by selecting the `View Details` button.
-This pull request was tested on link:https://travis-ci.org/Unidata/thredds/builds/84433104[TravisCI] and passed on all versions of Java supported by the current master branch.
-We have setup the THREDDS repository such that changes that do not pass these tests cannot be merged.
+For example, see link:https://github.com/Unidata/netcdf-java/pull/31[Unidata/netcdf-java#31] by selecting the `View Details` button.
+This pull request was tested on link:https://travis-ci.com/Unidata/netcdf-java/jobs/220030076[TravisCI] and passed on all versions of Java supported by the current master branch.
+We have setup the netCDF-java repository such that changes that do not pass these tests cannot be merged.
 
-One of the Unidata THREDDS team members will work with you to make sure your work is ready for merging once the tests have passed on TravisCI.
+One of the Unidata netCDF-java team members will work with you to make sure your work is ready for merging once the tests have passed on TravisCI.
 Note that as changes to your pull request may be required, you can simply push those changes to your personal GitHub repository and the pull request will automatically be updated and new TravisCI tests will be initiated.
 
 If your pull request addresses a bug, we kindly ask that you include a test in your pull request.
