@@ -4,6 +4,10 @@ if [[ $TASK == "test-ncj" ]]
 then
     echo "Testing netCDF-Java PR"
     $TRAVIS_BUILD_DIR/gradlew --info --stacktrace testAll --refresh-dependencies
+elif [[ $TASK == "spotless" ]]
+then
+    echo "Checking code style with spotless"
+    $TRAVIS_BUILD_DIR/gradlew spotlessJavaCheck
 elif [[ $TASK == "test-tds" ]]
 then
     echo "Testing the THREDDS Data Server against the netCDF-Java PR"
