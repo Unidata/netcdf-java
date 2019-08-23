@@ -6,13 +6,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the University of Reading, nor the names of the
- *    authors or contributors may be used to endorse or promote products
- *    derived from this software without specific prior written permission.
+ * authors or contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -36,82 +36,83 @@ import org.joda.time.field.PreciseDurationDateTimeField;
 
 /**
  * A {@link DateTimeField} that represents the day in the month within a fixed-length
- * year.  This is a {@link PreciseDurationDateTimeField} because a day is a precise
+ * year. This is a {@link PreciseDurationDateTimeField} because a day is a precise
  * duration, even though a month is not.
+ * 
  * @author Jon
  */
 final class DayOfMonthOfFixedYearDateTimeField extends PreciseDurationDateTimeField {
-    
-    private final FixedYearVariableMonthChronology chron;
-    private final int[] daysInMonth;
-    private int maxValue;
-    
-    public DayOfMonthOfFixedYearDateTimeField(FixedYearVariableMonthChronology chron) {
-        super(DateTimeFieldType.dayOfMonth(), chron.days());
-        this.chron = chron;
 
-        this.daysInMonth = chron.getMonthLengths();
-        this.maxValue = daysInMonth[0];
-        for (int i = 1; i < daysInMonth.length; i++) {
-            this.maxValue = Math.max(this.maxValue, daysInMonth[i]);
-        }
-    }
+  private final FixedYearVariableMonthChronology chron;
+  private final int[] daysInMonth;
+  private int maxValue;
 
-    @Override
-    public int get(long instant) {
-        int dayOfYear = this.chron.dayOfYear().get(instant);
-        int monthOfYear = this.chron.monthOfYear().get(instant);
-        // Calculate the number of days in the completed months so far
-        int numCompletedMonths = monthOfYear - 1;
-        int daysInCompletedMonths = 0;
-        for (int i = 0; i < numCompletedMonths; i++) {
-            daysInCompletedMonths += this.daysInMonth[i];
-        }
-        return dayOfYear - daysInCompletedMonths;
-    }
+  public DayOfMonthOfFixedYearDateTimeField(FixedYearVariableMonthChronology chron) {
+    super(DateTimeFieldType.dayOfMonth(), chron.days());
+    this.chron = chron;
 
-    @Override
-    public int getMinimumValue() {
-        return 1;
+    this.daysInMonth = chron.getMonthLengths();
+    this.maxValue = daysInMonth[0];
+    for (int i = 1; i < daysInMonth.length; i++) {
+      this.maxValue = Math.max(this.maxValue, daysInMonth[i]);
     }
+  }
 
-    @Override
-    public int getMaximumValue() {
-        return this.maxValue;
+  @Override
+  public int get(long instant) {
+    int dayOfYear = this.chron.dayOfYear().get(instant);
+    int monthOfYear = this.chron.monthOfYear().get(instant);
+    // Calculate the number of days in the completed months so far
+    int numCompletedMonths = monthOfYear - 1;
+    int daysInCompletedMonths = 0;
+    for (int i = 0; i < numCompletedMonths; i++) {
+      daysInCompletedMonths += this.daysInMonth[i];
     }
+    return dayOfYear - daysInCompletedMonths;
+  }
 
-    @Override
-    public int getMaximumValue(long instant) {
-        int monthOfYear = this.chron.monthOfYear().get(instant);
-        return this.daysInMonth[monthOfYear - 1];
-    }
+  @Override
+  public int getMinimumValue() {
+    return 1;
+  }
 
-    // Adapted from the package-private BasicDayOfMonthDateTimeField
-    @Override
-    public int getMaximumValue(ReadablePartial partial) {
-        if (partial.isSupported(DateTimeFieldType.monthOfYear())) {
-            int month = partial.get(DateTimeFieldType.monthOfYear());
-            return this.daysInMonth[month - 1]; // Months are 1-based
-        }
-        return this.getMaximumValue();
-    }
+  @Override
+  public int getMaximumValue() {
+    return this.maxValue;
+  }
 
-    // Adapted from the package-private BasicDayOfMonthDateTimeField
-    @Override
-    public int getMaximumValue(ReadablePartial partial, int[] values) {
-        int size = partial.size();
-        for (int i = 0; i < size; i++) {
-            if (partial.getFieldType(i) == DateTimeFieldType.monthOfYear()) {
-                int month = values[i];
-                return this.daysInMonth[month - 1];
-            }
-        }
-        return this.getMaximumValue();
-    }
+  @Override
+  public int getMaximumValue(long instant) {
+    int monthOfYear = this.chron.monthOfYear().get(instant);
+    return this.daysInMonth[monthOfYear - 1];
+  }
 
-    @Override
-    public DurationField getRangeDurationField() {
-        return this.chron.months();
+  // Adapted from the package-private BasicDayOfMonthDateTimeField
+  @Override
+  public int getMaximumValue(ReadablePartial partial) {
+    if (partial.isSupported(DateTimeFieldType.monthOfYear())) {
+      int month = partial.get(DateTimeFieldType.monthOfYear());
+      return this.daysInMonth[month - 1]; // Months are 1-based
     }
+    return this.getMaximumValue();
+  }
+
+  // Adapted from the package-private BasicDayOfMonthDateTimeField
+  @Override
+  public int getMaximumValue(ReadablePartial partial, int[] values) {
+    int size = partial.size();
+    for (int i = 0; i < size; i++) {
+      if (partial.getFieldType(i) == DateTimeFieldType.monthOfYear()) {
+        int month = values[i];
+        return this.daysInMonth[month - 1];
+      }
+    }
+    return this.getMaximumValue();
+  }
+
+  @Override
+  public DurationField getRangeDurationField() {
+    return this.chron.months();
+  }
 
 }

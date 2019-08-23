@@ -12,7 +12,6 @@ import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -20,6 +19,7 @@ import javax.annotation.concurrent.Immutable;
  * A CalendarField is expressed as {integer x Field}.
  *
  * Design follows joda Period class.
+ * 
  * @author caron
  * @since 3/30/11
  */
@@ -27,17 +27,19 @@ import javax.annotation.concurrent.Immutable;
 public class CalendarPeriod {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
 
-  private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder()
-                .maximumSize(100)  // limit cache size....
-                .build();
+  private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder().maximumSize(100) // limit
+                                                                                                                // cache
+                                                                                                                // size....
+      .build();
 
   public static final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
 
   public enum Field {
-    Millisec(PeriodType.millis()), Second(PeriodType.seconds()), Minute(PeriodType.minutes()), Hour(PeriodType.hours()),
-    Day(PeriodType.days()), Month(PeriodType.months()), Year(PeriodType.years());
+    Millisec(PeriodType.millis()), Second(PeriodType.seconds()), Minute(PeriodType.minutes()), Hour(
+        PeriodType.hours()), Day(PeriodType.days()), Month(PeriodType.months()), Year(PeriodType.years());
 
     PeriodType p;
+
     Field(PeriodType p) {
       this.p = p;
     }
@@ -45,6 +47,7 @@ public class CalendarPeriod {
 
   /**
    * Convert a period string into a CalendarPeriod.Field.
+   * 
    * @param udunit period string
    * @return CalendarPeriod.Field enum
    * @throws IllegalArgumentException if not valid format
@@ -53,11 +56,14 @@ public class CalendarPeriod {
     udunit = udunit.trim();
     udunit = udunit.toLowerCase();
 
-    if (udunit.equals("s")) return Field.Second;
-    if (udunit.equals("ms")) return Field.Millisec;
+    if (udunit.equals("s"))
+      return Field.Second;
+    if (udunit.equals("ms"))
+      return Field.Millisec;
 
-      // eliminate plurals
-    if (udunit.endsWith("s")) udunit = udunit.substring(0, udunit.length()-1);
+    // eliminate plurals
+    if (udunit.endsWith("s"))
+      udunit = udunit.substring(0, udunit.length() - 1);
 
     switch (udunit) {
       case "second":
@@ -91,15 +97,18 @@ public class CalendarPeriod {
   // minimize memory use by interning. wacko shit in GribPartitionBuilder TimeCoordinate, whoduhthunk?
   public static CalendarPeriod of(int value, Field field) {
     CalendarPeriod want = new CalendarPeriod(value, field);
-    if (cache == null) return want;
+    if (cache == null)
+      return want;
     CalendarPeriod got = cache.getIfPresent(want);
-    if (got != null) return got;
+    if (got != null)
+      return got;
     cache.put(want, want);
     return want;
   }
 
   /**
    * Convert a udunit period string into a CalendarPeriod
+   * 
    * @param udunit period string : "[val] unit"
    * @return CalendarPeriod or null if illegal
    */
@@ -110,7 +119,7 @@ public class CalendarPeriod {
     String[] split = StringUtil2.splitString(udunit);
     if (split.length == 1) {
       value = 1;
-      units =  split[0];
+      units = split[0];
 
     } else if (split.length == 2) {
       try {
@@ -118,7 +127,7 @@ public class CalendarPeriod {
       } catch (Throwable t) {
         return null;
       }
-      units =  split[1];
+      units = split[1];
     } else
       return null;
 
@@ -129,7 +138,7 @@ public class CalendarPeriod {
 
   public static CalendarPeriod of(TimeDuration td) {
     CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(td.getTimeUnit().getUnitString());
-    return CalendarPeriod.of( (int) td.getValue(), unit);
+    return CalendarPeriod.of((int) td.getValue(), unit);
   }
 
   ////////////////////////
@@ -137,13 +146,14 @@ public class CalendarPeriod {
   private final int value;
   private final Field field;
 
-  private CalendarPeriod (int value, Field field) {
+  private CalendarPeriod(int value, Field field) {
     this.value = value;
     this.field = field;
   }
 
   /**
    * Multiply the period by an integer
+   * 
    * @param value multiply by this
    * @return new period
    */
@@ -162,9 +172,10 @@ public class CalendarPeriod {
   /**
    * Subtract two dates, return difference in units of this period.
    * If not even, will round down and log a warning
+   * 
    * @param start start date
-   * @param end   end date
-   * @return  difference in units of this period
+   * @param end end date
+   * @return difference in units of this period
    */
   public int subtract(CalendarDate start, CalendarDate end) {
     long diff = end.getDifferenceInMsecs(start);
@@ -176,6 +187,7 @@ public class CalendarPeriod {
 
   /**
    * Get the conversion factor of the other CalendarPeriod to this one
+   * 
    * @param from convert from this
    * @return conversion factor, so that getConvertFactor(from) * from = this
    */
@@ -188,44 +200,49 @@ public class CalendarPeriod {
   }
 
   /**
-   * Get the duration in milliseconds                                               -+
+   * Get the duration in milliseconds -+
+   * 
    * @return the duration in seconds
    * @deprecated dont use because these are fixed length and thus approximate.
    */
   public double getValueInMillisecs() {
-     if (field == CalendarPeriod.Field.Month)
-       return 30.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
-     else if (field == CalendarPeriod.Field.Year)
-       return 365.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
-     else return millisecs();
-   }
+    if (field == CalendarPeriod.Field.Month)
+      return 30.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
+    else if (field == CalendarPeriod.Field.Year)
+      return 365.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
+    else
+      return millisecs();
+  }
 
   private int millisecs() {
-     if (field == CalendarPeriod.Field.Millisec)
-       return value;
-     else if (field == CalendarPeriod.Field.Second)
-       return 1000 * value;
-     else if (field == CalendarPeriod.Field.Minute)
-       return 60 * 1000 * value;
-     else if (field == CalendarPeriod.Field.Hour)
-       return 60 * 60 * 1000 * value;
-     else if (field == CalendarPeriod.Field.Day)
-       return 24 * 60 * 60 * 1000 * value;
+    if (field == CalendarPeriod.Field.Millisec)
+      return value;
+    else if (field == CalendarPeriod.Field.Second)
+      return 1000 * value;
+    else if (field == CalendarPeriod.Field.Minute)
+      return 60 * 1000 * value;
+    else if (field == CalendarPeriod.Field.Hour)
+      return 60 * 60 * 1000 * value;
+    else if (field == CalendarPeriod.Field.Day)
+      return 24 * 60 * 60 * 1000 * value;
 
-     else throw new IllegalStateException("Illegal Field = "+field);
-   }
-
-   /* LOOK from old TimeCoord code, which is better ??
-  public static int getOffset(CalendarDate refDate, CalendarDate cd, CalendarPeriod timeUnit) {
-    long msecs = cd.getDifferenceInMsecs(refDate);
-    return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
+    else
+      throw new IllegalStateException("Illegal Field = " + field);
   }
-  */
+
+  /*
+   * LOOK from old TimeCoord code, which is better ??
+   * public static int getOffset(CalendarDate refDate, CalendarDate cd, CalendarPeriod timeUnit) {
+   * long msecs = cd.getDifferenceInMsecs(refDate);
+   * return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
+   * }
+   */
 
   // offset from start to end, in these units
   // start + offset = end
   public int getOffset(CalendarDate start, CalendarDate end) {
-    if (start.equals(end)) return 0;
+    if (start.equals(end))
+      return 0;
     long start_millis = start.getDateTime().getMillis();
     long end_millis = end.getDateTime().getMillis();
 
@@ -234,7 +251,7 @@ public class CalendarPeriod {
     if (start_millis < end_millis)
       p = new Period(start_millis, end_millis + 5000, getPeriodType());
     else
-      p = new Period(start_millis+5000, end_millis, getPeriodType());
+      p = new Period(start_millis + 5000, end_millis, getPeriodType());
 
     return p.get(getDurationFieldType());
   }
@@ -254,12 +271,15 @@ public class CalendarPeriod {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     CalendarPeriod that = (CalendarPeriod) o;
 
-    if (value != that.value) return false;
+    if (value != that.value)
+      return false;
     return field == that.field;
 
   }

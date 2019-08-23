@@ -17,12 +17,12 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.ArrayStructure;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
  * Test that nested structures get enhanced.
+ * 
  * @author caron
  * @since Jul 5, 2008
  */

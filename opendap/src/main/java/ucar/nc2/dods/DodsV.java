@@ -7,14 +7,12 @@ package ucar.nc2.dods;
 import opendap.dap.*;
 import opendap.dap.Attribute;
 import opendap.dap.parsers.ParseException;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.io.IOException;
 import java.io.PrintStream;
-
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
@@ -76,7 +74,7 @@ class DodsV implements Comparable {
    * 2) unravel DConstructors (DSequence, DStructure, DGrid)
    * 3) for Darray, we put Variable = elemType, and store the darray seperately, not in the heirarchy.
    *
-   * @param parent   of the tree
+   * @param parent of the tree
    * @param children list of BaseType
    */
   static private void parseVariables(DodsV parent, Enumeration children) {
@@ -100,9 +98,10 @@ class DodsV implements Comparable {
         DArray da = (DArray) bt;
 
         // Check to see if the array has any zero-length dimension; if so then ignore
-        for (Enumeration e = da.getDimensions(); e.hasMoreElements(); ) {
+        for (Enumeration e = da.getDimensions(); e.hasMoreElements();) {
           DArrayDimension dim = (DArrayDimension) e.nextElement();
-          if (dim.getSize() <= 0) return;
+          if (dim.getSize() <= 0)
+            return;
         }
 
         BaseType elemType = da.getPrimitiveVector().getTemplate();
@@ -152,7 +151,7 @@ class DodsV implements Comparable {
    * 2) unravel DConstructors (DSequence, DStructure, DGrid)
    * 3) for Darray, we put Variable = elemType, and store the darray seperately, not in the heirarchy.
    *
-   * @param parent   of the tree
+   * @param parent of the tree
    * @param children list of BaseType
    * @throws opendap.dap.NoSuchVariableException if children and parent are inconsistent
    */
@@ -231,7 +230,8 @@ class DodsV implements Comparable {
 
     dodsV.elemType = elemType;
 
-    if ((dodsV.elemType instanceof DGrid) || (dodsV.elemType instanceof DSequence) || (dodsV.elemType instanceof DList)) {
+    if ((dodsV.elemType instanceof DGrid) || (dodsV.elemType instanceof DSequence)
+        || (dodsV.elemType instanceof DList)) {
       String mess = "Arrays of type " + dodsV.bt.getClass().getName() + " are not supported.";
       logger.error(mess);
       throw new IllegalArgumentException(mess);
@@ -272,7 +272,8 @@ class DodsV implements Comparable {
     int count = 0;
     for (DArrayDimension dim : dimensionsAll) {
       String name = dim.getEncodedName() == null ? "" : dim.getEncodedName() + "=";
-      if (count > 0) out.print(",");
+      if (count > 0)
+        out.print(",");
       out.print(name + dim.getSize());
       count++;
     }
@@ -288,7 +289,7 @@ class DodsV implements Comparable {
     return bt.getLongName();
   }
 
-  //String getName() { return bt == null ? " root" : bt.getEncodedName(); }
+  // String getName() { return bt == null ? " root" : bt.getEncodedName(); }
 
   String getClearName() {
     return bt == null ? "root" : bt.getClearName();
@@ -347,7 +348,7 @@ class DodsV implements Comparable {
     if (bt instanceof DSequence) {
       DSequence dseq = (DSequence) bt;
       int seqlen = dseq.getRowCount();
-      return new int[]{seqlen};
+      return new int[] {seqlen};
     }
 
     int[] shape = new int[dimensionsAll.size()];
@@ -383,7 +384,8 @@ class DodsV implements Comparable {
 
   /**
    * Parse the DAS, assign attribute tables to the DodsV objects.
-   * Nested attribute tables are supposed to follow the tree we construct with dodsV, so its easy to assign to correct dodsV.
+   * Nested attribute tables are supposed to follow the tree we construct with dodsV, so its easy to assign to correct
+   * dodsV.
    *
    * @param das parse this DAS
    * @throws IOException on io error
@@ -410,7 +412,8 @@ class DodsV implements Comparable {
           if (dodsV != null) {
             addAttributeTable(dodsV, attTable, tableName, true);
           } else {
-            if (debugAttributes) System.out.println("DODSNetcdf getAttributes CANT find <" + tableName + "> add to globals");
+            if (debugAttributes)
+              System.out.println("DODSNetcdf getAttributes CANT find <" + tableName + "> add to globals");
             addAttributeTable(this, attTable, tableName, false);
           }
         }
@@ -419,7 +422,8 @@ class DodsV implements Comparable {
   }
 
   private void addAttributeTable(DodsV dodsV, AttributeTable attTable, String fullName, boolean match) {
-    if (attTable == null) return;
+    if (attTable == null)
+      return;
 
     java.util.Enumeration attNames = attTable.getNames();
     while (attNames.hasMoreElements()) {
@@ -434,13 +438,15 @@ class DodsV implements Comparable {
   }
 
   private void addAttribute(DodsV dodsV, opendap.dap.Attribute att, String fullName, boolean match) {
-    if (att == null) return;
+    if (att == null)
+      return;
     fullName = fullName + "." + att.getEncodedName();
 
     if (!att.isContainer()) {
       DODSAttribute ncatt = new DODSAttribute(match ? att.getEncodedName() : fullName, att);
       dodsV.addAttribute(ncatt);
-      if (debugAttributes) System.out.println(" addAttribute " + ncatt.getShortName() + " to " + dodsV.getFullName());
+      if (debugAttributes)
+        System.out.println(" addAttribute " + ncatt.getShortName() + " to " + dodsV.getFullName());
 
     } else if (att.getEncodedName() == null) {
       logger.info("DODS attribute name is null = " + att);
@@ -449,8 +455,10 @@ class DodsV implements Comparable {
       if (child != null) {
         addAttributeTable(child, att.getContainerN(), fullName, match);
       } else {
-        if (att.getEncodedName().equals("DODS")) return; // special case - DODS info
-        if (debugAttributes) System.out.println(" Cant find nested Variable " + att.getEncodedName() + " in " + dodsV.getFullName());
+        if (att.getEncodedName().equals("DODS"))
+          return; // special case - DODS info
+        if (debugAttributes)
+          System.out.println(" Cant find nested Variable " + att.getEncodedName() + " in " + dodsV.getFullName());
         addAttributeTable(this, att.getContainerN(), fullName, false);
       }
     }
@@ -459,13 +467,14 @@ class DodsV implements Comparable {
   /**
    * Search the immediate children for a BaseType with given name.
    *
-   * @param name    look for this name
+   * @param name look for this name
    * @param useDone
    * @return child that matches if found, else null
    */
   DodsV findDodsV(String name, boolean useDone) {
     for (DodsV dodsV : children) {
-      if (useDone && dodsV.isDone) continue; // LOOK useDone ??
+      if (useDone && dodsV.isDone)
+        continue; // LOOK useDone ??
       if ((name == null) || (dodsV == null) || (dodsV.bt == null)) {
         logger.warn("Corrupted structure");
         continue;
@@ -492,7 +501,8 @@ class DodsV implements Comparable {
 
     for (DodsV child : children) {
       DodsV d = child.findByDodsShortName(dodsname);
-      if (null != d) return d;
+      if (null != d)
+        return d;
     }
 
     return null;
@@ -509,10 +519,12 @@ class DodsV implements Comparable {
     }
 
     DodsV dataV = findDodsV(ddsV.bt.getEncodedName(), true);
-    /* if ((dataV == null) && (ddsV.bt instanceof DGrid)) { // when asking for the Grid array
-      DodsV gridArray = (DodsV) ddsV.children.get(0);
-      return findDodsV( gridArray.bt.getName(), dataVlist, true);
-    } */
+    /*
+     * if ((dataV == null) && (ddsV.bt instanceof DGrid)) { // when asking for the Grid array
+     * DodsV gridArray = (DodsV) ddsV.children.get(0);
+     * return findDodsV( gridArray.bt.getName(), dataVlist, true);
+     * }
+     */
     return dataV;
   }
 
@@ -522,7 +534,8 @@ class DodsV implements Comparable {
     while (toker.hasMoreTokens()) {
       String name = toker.nextToken();
       dodsV = dodsV.findDodsV(name, false);
-      if (dodsV == null) return null;
+      if (dodsV == null)
+        return null;
     }
     return dodsV;
   }
@@ -545,7 +558,8 @@ class DodsV implements Comparable {
    * @return index'th child or null if index is too large
    */
   DodsV findByIndex(int index) {
-    if (children.size() <= index) return null;
+    if (children.size() <= index)
+      return null;
     return children.get(index);
   }
 

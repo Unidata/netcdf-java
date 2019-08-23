@@ -10,16 +10,11 @@ import edu.wisc.ssec.mcidas.AreaFile;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
-
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-
 import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 
 
@@ -56,8 +51,8 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
   /**
    * Open the service provider for reading.
    *
-   * @param raf        file to read from
-   * @param ncfile     netCDF file we are writing to (memory)
+   * @param raf file to read from
+   * @param ncfile netCDF file we are writing to (memory)
    * @param cancelTask task for cancelling
    * @throws IOException problem reading file
    */
@@ -71,7 +66,7 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
       areaReader.init(raf.getLocation(), ncfile);
 
     } catch (Throwable e) {
-      close();              // try not to leak files
+      close(); // try not to leak files
       throw new IOException(e);
 
     } finally {
@@ -83,10 +78,10 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
   /**
    * Read the data for the variable
    *
-   * @param v2      Variable to read
+   * @param v2 Variable to read
    * @param section section information
    * @return Array of data
-   * @throws IOException           problem reading from file
+   * @throws IOException problem reading from file
    * @throws InvalidRangeException invalid Range
    */
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {

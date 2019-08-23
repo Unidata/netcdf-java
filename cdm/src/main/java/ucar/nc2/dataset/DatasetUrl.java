@@ -14,7 +14,6 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
-
 import java.io.*;
 import java.util.*;
 
@@ -30,10 +29,9 @@ public class DatasetUrl {
   static final protected String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   static final protected String slashalpha = "\\/" + alpha;
 
-  static final String[] FRAGPROTOCOLS =
-          {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
-  static final ServiceType[] FRAGPROTOSVCTYPE =
-          {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP, ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
+  static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
+  static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
+      ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
 
 
   /**
@@ -64,13 +62,14 @@ public class DatasetUrl {
     } else if (slashpos >= 0) {
       // Remove everything after the first slash
       buf.delete(slashpos + 1, buf.length());
-      for (; ; ) {
+      for (;;) {
         int index = buf.indexOf(":");
-        if (index < 0) break; // no more protocols
+        if (index < 0)
+          break; // no more protocols
         // Validate protocol
         if (!validateprotocol(url, 0, index))
           break;
-        String protocol = buf.substring(0, index);  // not including trailing ':'
+        String protocol = buf.substring(0, index); // not including trailing ':'
         allprotocols.add(protocol);
         buf.delete(0, index + 1); // remove the leading protocol
       }
@@ -80,11 +79,12 @@ public class DatasetUrl {
 
   static private boolean validateprotocol(String url, int startpos, int endpos) {
     int len = endpos - startpos;
-    if (len == 0) return false;
+    if (len == 0)
+      return false;
     char cs = url.charAt(startpos);
     char ce1 = url.charAt(endpos + 1);
-    if (len == 1 //=>|protocol| == 1
-            && alpha.indexOf(cs) >= 0 && "/\\".indexOf(ce1) >= 0)
+    if (len == 1 // =>|protocol| == 1
+        && alpha.indexOf(cs) >= 0 && "/\\".indexOf(ce1) >= 0)
       return false; // looks like windows drive letter
     // If trailing colon is not followed by alpha or /, then assume not url
     return slashalpha.indexOf(ce1) >= 0;
@@ -102,7 +102,7 @@ public class DatasetUrl {
     String trueurl = location;
     String leadprotocol;
     if (allprotocols.size() == 0) {
-      leadprotocol = "file";  // The location has no leading protocols, assume file:
+      leadprotocol = "file"; // The location has no leading protocols, assume file:
     } else {
       leadprotocol = allprotocols.get(0);
     }
@@ -138,14 +138,14 @@ public class DatasetUrl {
       svctype = searchPath(trueurl);
 
     if (svctype == null) {
-      //There are several possibilities at this point; all of which
+      // There are several possibilities at this point; all of which
       // require further info to disambiguate
-      //  - we have file://<path> or file:<path>; we need to see if
-      //    the extension can help, otherwise, start defaulting.
-      //  - we have a simple url: e.g. http://... ; contact the server
+      // - we have file://<path> or file:<path>; we need to see if
+      // the extension can help, otherwise, start defaulting.
+      // - we have a simple url: e.g. http://... ; contact the server
       if (leadprotocol.equals("file")) {
         svctype = decodePathExtension(trueurl); // look at the path extension
-        if(svctype == null && checkIfNcml(new File(location))) {
+        if (svctype == null && checkIfNcml(new File(location))) {
           svctype = ServiceType.NCML;
         }
       } else {
@@ -193,11 +193,15 @@ public class DatasetUrl {
     if (fragment.length() == 0)
       return null;
     Map<String, String> map = parseFragment(fragment);
-    if (map == null) return null;
+    if (map == null)
+      return null;
     String protocol = map.get("protocol");
-    if(protocol == null) {
-      for(String p: FRAGPROTOCOLS) {
-        if(map.get(p) != null) {protocol = p; break;}
+    if (protocol == null) {
+      for (String p : FRAGPROTOCOLS) {
+        if (map.get(p) != null) {
+          protocol = p;
+          break;
+        }
       }
     }
     if (protocol != null) {
@@ -222,7 +226,7 @@ public class DatasetUrl {
    *
    * @param fragment the fragment part of a url
    * @return a map of the name value pairs (possibly empty),
-   * or null if the fragment does not parse.
+   *         or null if the fragment does not parse.
    */
   static private Map<String, String> parseFragment(String fragment) {
     Map<String, String> map = new HashMap<>();
@@ -238,7 +242,7 @@ public class DatasetUrl {
             break;
           case 2:
             map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
-                    EscapeStrings.unescapeURL(pieces[1]).toLowerCase());
+                EscapeStrings.unescapeURL(pieces[1]).toLowerCase());
             break;
           default:
             return null; // does not parse
@@ -255,26 +259,26 @@ public class DatasetUrl {
    * @return The discovered ServiceType, or null
    */
   static private ServiceType searchPath(String url) {
-      if(false) { // Disable for now
-      if(url == null || url.length() == 0)
+    if (false) { // Disable for now
+      if (url == null || url.length() == 0)
         return null;
       url = url.toLowerCase(); // for matching purposes
-      for(int i=0; i<FRAGPROTOCOLS.length;i++) {
+      for (int i = 0; i < FRAGPROTOCOLS.length; i++) {
         String p = FRAGPROTOCOLS[i];
-        if(url.contains("/thredds/" + p.toLowerCase() + "/")) {
+        if (url.contains("/thredds/" + p.toLowerCase() + "/")) {
           return FRAGPROTOSVCTYPE[i];
         }
       }
-      }
-      return null;
     }
+    return null;
+  }
 
-    /**
-     * Check path extension; assumes no query or fragment
-     *
-     * @param path the path to examine for extension
-     * @return ServiceType inferred from the extension or null
-     */
+  /**
+   * Check path extension; assumes no query or fragment
+   *
+   * @param path the path to examine for extension
+   * @return ServiceType inferred from the extension or null
+   */
   static private ServiceType decodePathExtension(String path) {
     // Look at the path extensions
     if (path.endsWith(".dds") || path.endsWith(".das") || path.endsWith(".dods"))
@@ -290,17 +294,18 @@ public class DatasetUrl {
 
 
   /*
- * Attempt to map a leading url protocol url to a service type (see thredds.catalog.ServiceType).
- * Possible service types should include at least the following.
- * <ol>
- * <li> OPENDAP (DAP2 protocol)
- * <li> DAP4 (DAP4 protocol)
- * <li> CdmRemote (remote ncstream)
- * </ol>
- *
- * @param protocol The leading protocol
- * @return ServiceType indicating how to handle the url, or null.
- */
+   * Attempt to map a leading url protocol url to a service type (see thredds.catalog.ServiceType).
+   * Possible service types should include at least the following.
+   * <ol>
+   * <li> OPENDAP (DAP2 protocol)
+   * <li> DAP4 (DAP4 protocol)
+   * <li> CdmRemote (remote ncstream)
+   * </ol>
+   *
+   * @param protocol The leading protocol
+   * 
+   * @return ServiceType indicating how to handle the url, or null.
+   */
   @Urlencoded
   static private ServiceType decodeLeadProtocol(String protocol) {
     switch (protocol) {
@@ -313,7 +318,7 @@ public class DatasetUrl {
         return ServiceType.HTTPServer;
       case CdmRemote.PROTOCOL:
         return ServiceType.CdmRemote;
-      case DataFactory.PROTOCOL:  //thredds
+      case DataFactory.PROTOCOL: // thredds
         return ServiceType.THREDDS;
     }
 
@@ -340,18 +345,21 @@ public class DatasetUrl {
     // some TDS specific tests
     if (location.contains("cdmremote")) {
       ServiceType result = checkIfCdmr(location);
-      if (result != null) return result;
+      if (result != null)
+        return result;
       checkCdmr = true;
     }
     if (location.contains("dodsC")) {
       ServiceType result = checkIfDods(location);
-      if (result != null) return result;
+      if (result != null)
+        return result;
       checkDap2 = true;
     }
 
     if (location.contains("dap4")) {
       ServiceType result = checkIfDap4(location);
-      if (result != null) return result;
+      if (result != null)
+        return result;
       checkDap4 = true;
     }
 
@@ -409,9 +417,9 @@ public class DatasetUrl {
 
     // Opendap assumes that the caller has properly escaped the url
     try (
-            // For some reason, the head method is not using credentials
-            // method = session.newMethodHead(location + ".dds");
-            HTTPMethod method = HTTPFactory.Get(location + ".dds")) {
+        // For some reason, the head method is not using credentials
+        // method = session.newMethodHead(location + ".dds");
+        HTTPMethod method = HTTPFactory.Get(location + ".dds")) {
 
       int status = method.execute();
       if (status == 200) {
@@ -463,11 +471,12 @@ public class DatasetUrl {
 
   // The first 128 bytes should contain enough info to tell if this looks like an actual ncml file or not.
   // For example, here is an example 128 byte response:
-  // <?xml version="1.0" encoding="UTF-8"?>\n<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="dods://ma
+  // <?xml version="1.0" encoding="UTF-8"?>\n<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  // location="dods://ma
   private static int NUM_BYTES_TO_DETERMINE_NCML = 128;
 
   static private boolean checkIfRemoteNcml(String location) throws IOException {
-    if (decodePathExtension(location)==ServiceType.NCML) {
+    if (decodePathExtension(location) == ServiceType.NCML) {
       // just because location ends with ncml does not mean it's ncml
       // if the ncml file is being served up via http by a remote server,
       // we should be able to read the first bit of it and see if it even

@@ -7,7 +7,6 @@ package ucar.nc2.rewrite;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -28,8 +27,8 @@ public class Rewrite {
 
   public void rewrite() throws IOException, InvalidRangeException {
     Attribute attr = ncIn.getRootGroup().findAttribute("featureType");
-    if(attr.getStringValue().contains("RADIAL"))
-        isRadial = true;
+    if (attr.getStringValue().contains("RADIAL"))
+      isRadial = true;
     createGroup(null, ncIn.getRootGroup());
 
     ncOut.create();
@@ -40,6 +39,7 @@ public class Rewrite {
   }
 
   private int anon = 0;
+
   void createGroup(Group newParent, Group oldGroup) throws IOException, InvalidRangeException {
     Group newGroup = ncOut.addGroup(newParent, oldGroup.getShortName());
 
@@ -56,7 +56,7 @@ public class Rewrite {
       // all dimensions must be shared (!)
       for (Dimension dim : dims) {
         if (!dim.isShared()) {
-          dim.setName("anon"+anon);
+          dim.setName("anon" + anon);
           dim.setShared(true);
           anon++;
           ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), dim.isUnlimited(), dim.isVariableLength());
@@ -65,9 +65,9 @@ public class Rewrite {
 
       // LOOK need to set chunksize
       Variable nv;
-      if (!isRadial && v.getRank() >= 3) {  // make first dimension last
+      if (!isRadial && v.getRank() >= 3) { // make first dimension last
         StringBuilder sb = new StringBuilder();
-        for (int i=1; i<dims.size(); i++)
+        for (int i = 1; i < dims.size(); i++)
           sb.append(dims.get(i).getShortName()).append(" ");
         sb.append(dims.get(0).getShortName());
         nv = ncOut.addVariable(null, v.getShortName(), v.getDataType(), sb.toString());
@@ -92,21 +92,21 @@ public class Rewrite {
         invertOneVar(v);
 
       } else {
-        System.out.printf("write %s%n",v.getNameAndDimensions());
+        System.out.printf("write %s%n", v.getNameAndDimensions());
         Array data = v.read();
         Variable nv = ncOut.findVariable(v.getFullName());
-        ncOut.write(nv,  data);
+        ncOut.write(nv, data);
       }
     }
 
     // recurse
     for (Group g : oldGroup.getGroups())
-      transferData( g);
+      transferData(g);
   }
 
   // turn var(nt, any..) into newvar(any.., nt)
   void invertOneVar(Variable oldVar) throws IOException, InvalidRangeException {
-    System.out.printf("invertOneVar %s  ",oldVar.getNameAndDimensions());
+    System.out.printf("invertOneVar %s  ", oldVar.getNameAndDimensions());
     int rank = oldVar.getRank();
     int[] origin = new int[rank];
 
@@ -117,7 +117,7 @@ public class Rewrite {
 
     System.out.printf(" read slice");
     int nt = shape[0];
-    for (int k=0; k<nt; k++)  { // loop over outermost dimension
+    for (int k = 0; k < nt; k++) { // loop over outermost dimension
       shape[0] = 1;
       origin[0] = k;
 
@@ -137,15 +137,15 @@ public class Rewrite {
     Array result, work;
     int counter = 0;
 
-    Cache(int[] shape, int[] newshape, DataType dataType)  {
-      System.out.printf("shape = %d, ", new Section(shape).computeSize()/1000);
-      System.out.printf("newshape = %d, ", new Section(newshape).computeSize()/1000);
+    Cache(int[] shape, int[] newshape, DataType dataType) {
+      System.out.printf("shape = %d, ", new Section(shape).computeSize() / 1000);
+      System.out.printf("newshape = %d, ", new Section(newshape).computeSize() / 1000);
 
       this.nt = shape[0];
       Section s = new Section(shape);
       long totalSize = s.computeSize();
-      this.chunksize = (int)(totalSize / nt);
-      System.out.printf("chunksize = %d (Kb)%n", this.chunksize/1000);
+      this.chunksize = (int) (totalSize / nt);
+      System.out.printf("chunksize = %d (Kb)%n", this.chunksize / 1000);
 
       this.shape = shape;
       this.newshape = newshape;
@@ -173,7 +173,8 @@ public class Rewrite {
     void write(Variable newVar) throws IOException, InvalidRangeException {
       System.out.printf("  write slice (");
       int[] resultShape = result.getShape();
-      for (int k : resultShape) System.out.printf("%d,", k);
+      for (int k : resultShape)
+        System.out.printf("%d,", k);
       System.out.printf(")%n");
 
       ncOut.write(newVar, result);

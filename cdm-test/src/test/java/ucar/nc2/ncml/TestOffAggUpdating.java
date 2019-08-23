@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -47,7 +47,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -72,20 +71,14 @@ public class TestOffAggUpdating {
   File dirFile = new File(dir);
   String extraFile = dir + "/extra.nc";
 
-  String ncml =
-          "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                  "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-                  "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n" +
-                  "         <scan location='" + dir + "' suffix='*.nc' />\n" +
-                  "         <variable name='depth'>\n" +
-                  "           <attribute name='coordinates' value='lon lat'/>\n" +
-                  "         </variable>\n" +
-                  "         <variable name='wvh'>\n" +
-                  "           <attribute name='coordinates' value='lon lat'/>\n" +
-                  "         </variable>\n" +
-                  "       </aggregation>\n" +
-                  "       <attribute name='Conventions' type='String' value='CF-1.0'/>\n" +
-                  "</netcdf>";
+  String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+      + "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n" + "         <scan location='"
+      + dir + "' suffix='*.nc' />\n" + "         <variable name='depth'>\n"
+      + "           <attribute name='coordinates' value='lon lat'/>\n" + "         </variable>\n"
+      + "         <variable name='wvh'>\n" + "           <attribute name='coordinates' value='lon lat'/>\n"
+      + "         </variable>\n" + "       </aggregation>\n"
+      + "       <attribute name='Conventions' type='String' value='CF-1.0'/>\n" + "</netcdf>";
 
   @Before
   public void setup() {
@@ -96,14 +89,14 @@ public class TestOffAggUpdating {
 
   @Test
   public void testUpdateSync() throws IOException, InvalidRangeException, InterruptedException {
-     // make sure that the extra file is not in the agg
+    // make sure that the extra file is not in the agg
     move(extraFile);
 
     // open the agg
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
     check(ncfile, 12);
 
-    // now make sure that the extra file is  in the agg
+    // now make sure that the extra file is in the agg
     moveBack(extraFile);
 
     // reread
@@ -115,14 +108,14 @@ public class TestOffAggUpdating {
 
   @Test
   public void testUpdateLastModified() throws IOException, InvalidRangeException, InterruptedException {
-     // make sure that the extra file is not in the agg
+    // make sure that the extra file is not in the agg
     move(extraFile);
 
     // open the agg
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
     long start = ncfile.getLastModified();
 
-    // now make sure that the extra file is  in the agg
+    // now make sure that the extra file is in the agg
     moveBack(extraFile);
 
     // reread
@@ -138,7 +131,7 @@ public class TestOffAggUpdating {
 
   @Test
   public void testUpdateCache() throws IOException, InvalidRangeException, InterruptedException {
-     // make sure that the extra file is not in the agg
+    // make sure that the extra file is not in the agg
     move(extraFile);
 
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
@@ -172,23 +165,26 @@ public class TestOffAggUpdating {
   private class NcmlStringFileFactory implements ucar.nc2.util.cache.FileFactory {
 
     @Override
-    public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+    public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)
+        throws IOException {
       return NcMLReader.readNcML(new StringReader(ncml), durl.trueurl, null);
     }
   }
 
   public static boolean move(String filename) throws IOException {
     Path src = Paths.get(filename);
-    if (!Files.exists(src)) return false;
-    Path dest = Paths.get(filename+".save");
+    if (!Files.exists(src))
+      return false;
+    Path dest = Paths.get(filename + ".save");
     Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
     return true;
   }
 
 
   public static boolean moveBack(String filename) throws IOException {
-    Path src = Paths.get(filename+".save");
-    if (!Files.exists(src)) return false;
+    Path src = Paths.get(filename + ".save");
+    if (!Files.exists(src))
+      return false;
     Path dest = Paths.get(filename);
     Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
     return true;

@@ -6,7 +6,6 @@
 package ucar.ma2;
 
 import javax.annotation.concurrent.Immutable;
-
 import java.util.Iterator;
 
 /**
@@ -20,7 +19,9 @@ import java.util.Iterator;
  * Elements must be nonnegative and unique.
  * EMPTY is the empty Range.
  * VLEN is for variable length dimensions.
- * <p> Standard iteration is
+ * <p>
+ * Standard iteration is
+ * 
  * <pre>
  *  for (int idx : range) {
  *    ...
@@ -67,7 +68,7 @@ public class Range implements RangeIterator {
    * Create a range with unit stride.
    *
    * @param first first value in range
-   * @param last  last value in range, inclusive
+   * @param last last value in range, inclusive
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range(int first, int last) throws InvalidRangeException {
@@ -91,9 +92,9 @@ public class Range implements RangeIterator {
   /**
    * Create a named range with unit stride.
    *
-   * @param name  name of Range
+   * @param name name of Range
    * @param first first value in range
-   * @param last  last value in range, inclusive
+   * @param last last value in range, inclusive
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range(String name, int first, int last) throws InvalidRangeException {
@@ -103,8 +104,8 @@ public class Range implements RangeIterator {
   /**
    * Create a range with a specified values.
    *
-   * @param first  first value in range
-   * @param last   last value in range, inclusive
+   * @param first first value in range
+   * @param last last value in range, inclusive
    * @param stride stride between consecutive elements, must be > 0
    * @throws InvalidRangeException elements must be nonnegative: 0 <= first <= last, stride > 0
    */
@@ -115,9 +116,9 @@ public class Range implements RangeIterator {
   /**
    * Create a named range with a specified name and values.
    *
-   * @param name   name of Range
-   * @param first  first value in range
-   * @param last   last value in range, inclusive
+   * @param name name of Range
+   * @param first first value in range
+   * @param last last value in range, inclusive
    * @param stride stride between consecutive elements, must be > 0
    * @throws InvalidRangeException elements must be nonnegative: 0 <= first <= last, stride > 0
    */
@@ -162,7 +163,8 @@ public class Range implements RangeIterator {
 
   @Override
   public Range setName(String name) {
-    if (name.equals(this.getName())) return this;
+    if (name.equals(this.getName()))
+      return this;
     try {
       return new Range(name, first, last, stride, length);
     } catch (InvalidRangeException e) {
@@ -200,7 +202,7 @@ public class Range implements RangeIterator {
 
   /**
    * @return stride, must be >= 1 when evenly strided, -1 if not
-   * // * @deprecated use iterator(), dont assume evenly strided
+   *         // * @deprecated use iterator(), dont assume evenly strided
    */
   public int stride() {
     return stride;
@@ -219,7 +221,8 @@ public class Range implements RangeIterator {
       return false;
     if (want > last())
       return false;
-    if (stride == 1) return true;
+    if (stride == 1)
+      return true;
     return (want - first) % stride == 0;
   }
 
@@ -238,19 +241,21 @@ public class Range implements RangeIterator {
       return EMPTY;
     if (this == VLEN || r == VLEN)
       return VLEN;
-/* if(false) {// Original version
-    // Note that this version assumes that range r is
-    // correct with respect to this.
-    int first = element(r.first());
-    int stride = stride() * r.stride();
-    int last = element(r.last());
-    return new Range(name, first, last, stride);
-} else {//new version: handles versions all values of r. */
+    /*
+     * if(false) {// Original version
+     * // Note that this version assumes that range r is
+     * // correct with respect to this.
+     * int first = element(r.first());
+     * int stride = stride() * r.stride();
+     * int last = element(r.last());
+     * return new Range(name, first, last, stride);
+     * } else {//new version: handles versions all values of r.
+     */
     int sr_stride = this.stride * r.stride;
     int sr_first = element(r.first()); // MAP(this,i) == element(i)
     int lastx = element(r.last());
-    int sr_last = (last() < lastx ? last() : lastx); //min(last(),lastx)
-    //unused int sr_length = (sr_last + 1) - sr_first;
+    int sr_last = (last() < lastx ? last() : lastx); // min(last(),lastx)
+    // unused int sr_length = (sr_last + 1) - sr_first;
     return new Range(name, sr_first, sr_last, sr_stride);
   }
 
@@ -262,8 +267,9 @@ public class Range implements RangeIterator {
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range compact() throws InvalidRangeException {
-    if (stride == 1) return this;
-    int first = first() / stride;           // LOOK WTF ?
+    if (stride == 1)
+      return this;
+    int first = first() / stride; // LOOK WTF ?
     int last = first + length() - 1;
     return new Range(name, first, last, 1);
   }
@@ -318,7 +324,7 @@ public class Range implements RangeIterator {
     int resultStride = stride * r.stride();
 
     int useFirst;
-    if (resultStride == 1) {  // both strides are 1
+    if (resultStride == 1) { // both strides are 1
       useFirst = Math.max(this.first(), r.first());
 
     } else if (stride == 1) { // then r has a stride
@@ -328,7 +334,8 @@ public class Range implements RangeIterator {
       else {
         int incr = (first() - r.first()) / resultStride;
         useFirst = r.first() + incr * resultStride;
-        if (useFirst < first()) useFirst += resultStride;
+        if (useFirst < first())
+          useFirst += resultStride;
       }
 
     } else if (r.stride == 1) { // then this has a stride
@@ -338,7 +345,8 @@ public class Range implements RangeIterator {
       else {
         int incr = (r.first() - first()) / resultStride;
         useFirst = first() + incr * resultStride;
-        if (useFirst < r.first()) useFirst += resultStride;
+        if (useFirst < r.first())
+          useFirst += resultStride;
       }
 
     } else {
@@ -368,7 +376,7 @@ public class Range implements RangeIterator {
     int resultStride = stride * r.stride();
 
     int useFirst;
-    if (resultStride == 1) {   // both strides are 1
+    if (resultStride == 1) { // both strides are 1
       useFirst = Math.max(this.first(), r.first());
 
     } else if (stride == 1) { // then r has a stride
@@ -378,7 +386,8 @@ public class Range implements RangeIterator {
       else {
         int incr = (first() - r.first()) / resultStride;
         useFirst = r.first() + incr * resultStride;
-        if (useFirst < first()) useFirst += resultStride;
+        if (useFirst < first())
+          useFirst += resultStride;
       }
 
     } else if (r.stride() == 1) { // then this has a stride
@@ -388,7 +397,8 @@ public class Range implements RangeIterator {
       else {
         int incr = (r.first() - first()) / resultStride;
         useFirst = first() + incr * resultStride;
-        if (useFirst < r.first()) useFirst += resultStride;
+        if (useFirst < r.first())
+          useFirst += resultStride;
       }
 
     } else {
@@ -402,7 +412,7 @@ public class Range implements RangeIterator {
    * If this range is completely past the wanted range
    *
    * @param want desired range
-   * @return true if  first() > want.last()
+   * @return true if first() > want.last()
    */
   public boolean past(Range want) {
     return (first() > want.last());
@@ -448,7 +458,8 @@ public class Range implements RangeIterator {
 
   /**
    * Find the first element in a strided array after some index start.
-   * Return the smallest element k in the Range, such that <ul>
+   * Return the smallest element k in the Range, such that
+   * <ul>
    * <li>k >= first
    * <li>k >= start
    * <li>k <= last
@@ -459,9 +470,12 @@ public class Range implements RangeIterator {
    * @return first in interval, else -1 if there is no such element.
    */
   public int getFirstInInterval(int start) {
-    if (start > last()) return -1;
-    if (start <= first) return first;
-    if (stride == 1) return start;
+    if (start > last())
+      return -1;
+    if (start <= first)
+      return first;
+    if (stride == 1)
+      return start;
     int offset = start - first;
     int i = offset / stride;
     i = (offset % stride == 0) ? i : i + 1; // round up
@@ -470,9 +484,9 @@ public class Range implements RangeIterator {
 
   public String toString() {
     if (this.length == 0)
-      return ":";  // EMPTY
+      return ":"; // EMPTY
     else if (this.length < 0)
-      return ":";  // VLEN
+      return ":"; // VLEN
     else
       return first + ":" + last() + (stride > 1 ? ":" + stride : "");
   }
@@ -481,8 +495,10 @@ public class Range implements RangeIterator {
    * Range elements with same first, last, stride are equal.
    */
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Range)) return false;   // this catches nulls
+    if (this == o)
+      return true;
+    if (!(o instanceof Range))
+      return false; // this catches nulls
     Range or = (Range) o;
 
     if ((length == 0) && (or.length == 0)) // empty ranges are equal

@@ -14,7 +14,6 @@ import ucar.nc2.util.Indent;
 import ucar.nc2.*;
 import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.*;
 
 /**
@@ -41,7 +40,8 @@ public class BufrDataProcess {
     if (f.isDirectory()) {
       Counter gtotal = new Counter();
       int nmess = processAllInDir(f, os, ff, gtotal);
-      out.format("%nGrand Total nmess=%d count=%d miss=%d %f %% %n", nmess, gtotal.nvals, gtotal.nmiss, gtotal.percent());
+      out.format("%nGrand Total nmess=%d count=%d miss=%d %f %% %n", nmess, gtotal.nvals, gtotal.nmiss,
+          gtotal.percent());
     } else {
       processOneFile(f.getPath(), os, null);
     }
@@ -54,7 +54,7 @@ public class BufrDataProcess {
     File[] allFiles = dir.listFiles();
 
     if (allFiles == null)
-        throw new IOException("Error reading " + dir.getPath());
+      throw new IOException("Error reading " + dir.getPath());
 
     for (File f : allFiles) {
       if (f.isDirectory())
@@ -74,7 +74,8 @@ public class BufrDataProcess {
 
   int processOneFile(String filename, OutputStream os, Counter gtotal) throws IOException {
     out = new PrintStream(os, false, CDM.utf8Charset.name());
-    if (showFile) out.format("Process %s%n", filename);
+    if (showFile)
+      out.format("Process %s%n", filename);
     indent.setIndentLevel(0);
     int nmess;
 
@@ -83,7 +84,8 @@ public class BufrDataProcess {
       nmess = scanBufrFile(filename, total);
       if (showFile)
         out.format("%nTotal nmess=%d count=%d miss=%d %f %% %n", nmess, total.nvals, total.nmiss, total.percent());
-      if (gtotal != null) gtotal.add(total);
+      if (gtotal != null)
+        gtotal.add(total);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -103,13 +105,16 @@ public class BufrDataProcess {
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
         Message m = scan.next();
-        if (m == null) continue;
+        if (m == null)
+          continue;
         try {
-          if (showMess) out.format("%sMessage %d header=%s%n", indent, count, m.getHeader());
+          if (showMess)
+            out.format("%sMessage %d header=%s%n", indent, count, m.getHeader());
           count++;
           Counter counter = new Counter();
           processBufrMessageAsDataset(scan, m, counter);
-          if (showMess) out.format("%scount=%d miss=%d%n", indent, counter.nvals, counter.nmiss);
+          if (showMess)
+            out.format("%scount=%d miss=%d%n", indent, counter.nvals, counter.nmiss);
           total.add(counter);
 
         } catch (Exception e) {
@@ -138,7 +143,8 @@ public class BufrDataProcess {
     int count = 0;
     try {
       while (sdataIter.hasNext()) {
-        if (showData) out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
+        if (showData)
+          out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
         StructureData sdata = sdataIter.next();
         indent.incr();
 
@@ -174,18 +180,22 @@ public class BufrDataProcess {
     Attribute bwAtt = v.findAttribute("BUFR:bitWidth");
     int bitWidth = bwAtt == null ? 0 : bwAtt.getNumericValue().intValue();
 
-    if (showData) out.format("%svar='%s' units='%s' : ", indent, name, units);
+    if (showData)
+      out.format("%svar='%s' units='%s' : ", indent, name, units);
 
     mdata.resetLocalIterator();
     while (mdata.hasNext()) {
       count.nvals++;
       if (v.getDataType().isUnsigned()) {
-        if (isMissingUnsigned(v, mdata, bitWidth)) count.nmiss++;
+        if (isMissingUnsigned(v, mdata, bitWidth))
+          count.nmiss++;
       } else {
-        if (isMissing(v, mdata, bitWidth)) count.nmiss++;
+        if (isMissing(v, mdata, bitWidth))
+          count.nmiss++;
       }
     }
-    if (showData) out.format("%n");
+    if (showData)
+      out.format("%n");
   }
 
   private boolean isMissing(Variable v, Array mdata, int bitWidth) {
@@ -193,12 +203,14 @@ public class BufrDataProcess {
     if (v.getDataType().isNumeric()) {
       long val = mdata.nextLong();
       boolean result = BufrNumbers.isMissing(val, bitWidth);
-      if (showData) out.format("%d %s,", val, result ? "(miss)" : "");
+      if (showData)
+        out.format("%d %s,", val, result ? "(miss)" : "");
       return result;
     }
 
     Object s = mdata.next();
-    if (showData) out.format("%s,", s);
+    if (showData)
+      out.format("%s,", s);
     return false;
   }
 
@@ -222,7 +234,8 @@ public class BufrDataProcess {
     }
 
     boolean result = BufrNumbers.isMissing(val, bitWidth);
-    if (showData) out.format("%d %s,", val, result ? "(miss)" : "");
+    if (showData)
+      out.format("%d %s,", val, result ? "(miss)" : "");
     return result;
   }
 

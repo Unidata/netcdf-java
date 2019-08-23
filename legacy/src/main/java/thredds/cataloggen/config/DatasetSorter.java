@@ -15,8 +15,7 @@ import thredds.catalog.InvDatasetScan;
  * @author edavis
  * @since Apr 20, 2005 17:02:08 PM
  */
-public class DatasetSorter
-{
+public class DatasetSorter {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetSorter.class);
 
   // Location(s) in catalog heirarchy wher this sorter should be applied.
@@ -34,19 +33,16 @@ public class DatasetSorter
    *
    * @param increasingOrder if true, datasets are sorted into increasing order, otherwise decreasing order.
    */
-  public DatasetSorter( boolean increasingOrder )
-  {
+  public DatasetSorter(boolean increasingOrder) {
     this.increasingOrder = increasingOrder;
-    this.invDatasetComparator = new java.util.Comparator()
-    {
-      public int compare( Object obj1, Object obj2 )
-      {
+    this.invDatasetComparator = new java.util.Comparator() {
+      public int compare(Object obj1, Object obj2) {
         InvDataset ds1 = (InvDataset) obj1;
         InvDataset ds2 = (InvDataset) obj2;
 
-        int compareVal = ds1.getName().compareTo( ds2.getName() );
+        int compareVal = ds1.getName().compareTo(ds2.getName());
 
-        return ( DatasetSorter.this.increasingOrder ? compareVal : -compareVal );
+        return (DatasetSorter.this.increasingOrder ? compareVal : -compareVal);
       }
     };
   }
@@ -56,40 +52,34 @@ public class DatasetSorter
    *
    * @param invDatasetComparator a java.util.Comparator that compares InvDataset objects.
    */
-  public DatasetSorter( java.util.Comparator invDatasetComparator)
-  {
+  public DatasetSorter(java.util.Comparator invDatasetComparator) {
     this.invDatasetComparator = invDatasetComparator;
   }
 
-  public void sortDatasets( InvDataset collectionDs )
-  {
-    this.sortDatasets( collectionDs.getDatasets() );
+  public void sortDatasets(InvDataset collectionDs) {
+    this.sortDatasets(collectionDs.getDatasets());
   }
 
-  public void sortDatasets( java.util.List datasets)
-  {
-    java.util.Collections.sort( datasets, invDatasetComparator );
+  public void sortDatasets(java.util.List datasets) {
+    java.util.Collections.sort(datasets, invDatasetComparator);
   }
 
-  public void sortNestedDatasets( InvDataset collectionDs )
-  {
+  public void sortNestedDatasets(InvDataset collectionDs) {
     // Sort grand children datasets.
     InvDataset curDs = null;
-    for ( java.util.Iterator dsIter = collectionDs.getDatasets().iterator(); dsIter.hasNext(); )
-    {
+    for (java.util.Iterator dsIter = collectionDs.getDatasets().iterator(); dsIter.hasNext();) {
       curDs = (InvDataset) dsIter.next();
       // Do not dereference catalogRef or datasetScan.
-      if ( ! curDs.getClass().equals( InvCatalogRef.class )
-           && ! curDs.getClass().equals( InvDatasetScan.class))
-      // @todo Move this test into abstract InvDataset.remoteDataset()?? 
+      if (!curDs.getClass().equals(InvCatalogRef.class) && !curDs.getClass().equals(InvDatasetScan.class))
+      // @todo Move this test into abstract InvDataset.remoteDataset()??
       {
-        this.sortDatasets( curDs);
+        this.sortDatasets(curDs);
       }
     }
 
     // Sort child datasets.
-    logger.debug( "sortDatasets(): sort the datasets contained by dataset ({})", collectionDs.getName() );
-    this.sortDatasets( collectionDs.getDatasets());
+    logger.debug("sortDatasets(): sort the datasets contained by dataset ({})", collectionDs.getName());
+    this.sortDatasets(collectionDs.getDatasets());
 
     return;
   }

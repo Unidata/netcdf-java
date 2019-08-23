@@ -6,7 +6,6 @@
 package ucar.nc2.grib.collection;
 
 import ucar.nc2.grib.GdsHorizCoordSys;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -18,13 +17,13 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class GribHorizCoordSystem {
   private final GdsHorizCoordSys hcs;
-  private final byte[] rawGds;         // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
+  private final byte[] rawGds; // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
   private final Object gdsHash;
   private final String id, description;
-  private final int predefinedGridDefinition;  // grib1
+  private final int predefinedGridDefinition; // grib1
 
-  GribHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHash, String id,
-      String description, int predefinedGridDefinition) {
+  GribHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHash, String id, String description,
+      int predefinedGridDefinition) {
     this.hcs = hcs;
     this.rawGds = rawGds;
     this.gdsHash = gdsHash;

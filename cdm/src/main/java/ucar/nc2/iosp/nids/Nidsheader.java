@@ -6,7 +6,6 @@ package ucar.nc2.iosp.nids;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
-
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
@@ -18,7 +17,6 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
 import ucar.unidata.util.Parameter;
-
 import java.io.*;
 import java.nio.*;
 import java.util.*;
@@ -31,20 +29,20 @@ import java.util.zip.*;
  * @author caron
  */
 
-class Nidsheader{
+class Nidsheader {
   private static final boolean useStationDB = false; // use station db for loactions
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nidsheader.class);
 
   private static final Pattern PARAM_PATTERN =
-          Pattern.compile("([\\w*\\s*?]*)\\=([(\\<|\\{|\\[|\\()?\\w*\\s*?\\.?\\,?\\-?\\/?\\%?(\\>|\\}|\\]|\\))?]*)");
+      Pattern.compile("([\\w*\\s*?]*)\\=([(\\<|\\{|\\[|\\()?\\w*\\s*?\\.?\\,?\\-?\\/?\\%?(\\>|\\}|\\]|\\))?]*)");
 
   final static int NEXR_PID_READ = 100;
-  final static int DEF_NUM_ELEMS = 640;   /* default num of elements to send         */
-  final static int DEF_NUM_LINES = 480;   /* default num of lines to send            */
-  final static int NEXR_FILE_READ = -1;   /* # flag to read entire NIDS file         */
-  final static int NEXR_DIR_READ = 356;  /* just enough bytes for NIDS directory    */
-  final static int READ_BUFFER_SIZE = 1;   /* # of image lines to buffer on read      */
-  final static int ZLIB_BUF_LEN = 4000;   /* max size of an uncompressed ZLIB buffer */
+  final static int DEF_NUM_ELEMS = 640; /* default num of elements to send */
+  final static int DEF_NUM_LINES = 480; /* default num of lines to send */
+  final static int NEXR_FILE_READ = -1; /* # flag to read entire NIDS file */
+  final static int NEXR_DIR_READ = 356; /* just enough bytes for NIDS directory */
+  final static int READ_BUFFER_SIZE = 1; /* # of image lines to buffer on read */
+  final static int ZLIB_BUF_LEN = 4000; /* max size of an uncompressed ZLIB buffer */
   byte Z_DEFLATED = 8;
   byte DEF_WBITS = 15;
   final static int Other = 0;
@@ -143,7 +141,7 @@ class Nidsheader{
    * check if this file is a nids / tdwr file
    *
    * @param raf input file
-   * @return true  if valid
+   * @return true if valid
    */
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     try {
@@ -174,7 +172,7 @@ class Nidsheader{
    */
   int readWMO(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     int pos = 0;
-    //long     actualSize = 0;
+    // long actualSize = 0;
     raf.seek(pos);
     int readLen = 35;
 
@@ -191,15 +189,12 @@ class Nidsheader{
     int iarr2_16 = bytesToInt(b[30], b[31], false);
     int iarr2_10 = bytesToInt(b[18], b[19], false);
     int iarr2_7 = bytesToInt(b[12], b[13], false);
-    if ((iarr2_1 == iarr2_16) &&
-        ((iarr2_1 >= 16) && (iarr2_1 <= 299)) &&
-        (iarr2_10 == -1) &&
-        (iarr2_7 < 10000)) {
+    if ((iarr2_1 == iarr2_16) && ((iarr2_1 >= 16) && (iarr2_1 <= 299)) && (iarr2_10 == -1) && (iarr2_7 < 10000)) {
       noHeader = true;
       return 1;
 
     }
-    //Get product message header into a string for processing
+    // Get product message header into a string for processing
 
     String pib = new String(b, CDM.utf8Charset);
     if (pib.contains("SDUS")) {
@@ -209,8 +204,8 @@ class Nidsheader{
       noHeader = true;
       return 1;
       // } else if(checkMsgHeader(raf) == 1) {
-      //    noHeader = true;
-      //     return 1;
+      // noHeader = true;
+      // return 1;
     } else {
       return 0;
     }
@@ -235,12 +230,11 @@ class Nidsheader{
 
   ucar.unidata.io.RandomAccessFile raf;
   private ucar.nc2.NetcdfFile ncfile;
-  //private PrintStream out = System.out;
-  //private Vinfo myInfo;
+  // private PrintStream out = System.out;
+  // private Vinfo myInfo;
   private String cmemo, ctilt, ctitle, cunit, cname;
 
-  public void setProperty(String name, String value) {
-  }
+  public void setProperty(String name, String value) {}
 
   private int numX;
   private int numX0;
@@ -258,8 +252,8 @@ class Nidsheader{
 
   void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile) throws IOException {
 
-    int hedsiz;                  /* NEXRAD header size            */
-    int rc;                      /* function return status        */
+    int hedsiz; /* NEXRAD header size */
+    int rc; /* function return status */
     int hoff = 0;
     int type;
     int zlibed;
@@ -274,7 +268,7 @@ class Nidsheader{
     raf.seek(pos);
 
     // Read in the whole contents of the NEXRAD Level III product since
-    // some product require to go through the whole file to build the  struct of file.
+    // some product require to go through the whole file to build the struct of file.
 
     readLen = (int) actualSize;
 
@@ -285,7 +279,7 @@ class Nidsheader{
     }
 
     if (!noHeader) {
-      //Get product message header into a string for processing
+      // Get product message header into a string for processing
       String pib = new String(b, 0, 100, CDM.utf8Charset);
       type = 0;
       pos = pib.indexOf("\r\r\n");
@@ -341,7 +335,7 @@ class Nidsheader{
       if (zlibed == 1) {
         isZ = true;
         uncompdata = GetZlibedNexr(b, readLen, hoff);
-        //uncompdata = Nidsiosp.readCompData(hoff, 160) ;
+        // uncompdata = Nidsiosp.readCompData(hoff, 160) ;
         if (uncompdata == null) {
           log.warn("ReadNexrInfo: error uncompressing image " + raf.getLocation());
           uncompdata = new byte[b.length - hoff];
@@ -354,7 +348,7 @@ class Nidsheader{
     } else {
       uncompdata = new byte[b.length];
       System.arraycopy(b, 0, uncompdata, 0, b.length);
-      // stationId  = "YYY";
+      // stationId = "YYY";
     }
     byte[] b2 = new byte[2];
     ByteBuffer bos = ByteBuffer.wrap(uncompdata);
@@ -368,7 +362,7 @@ class Nidsheader{
     int prod_type = code_typelookup(pinfo.pcode);
     setProductInfo(prod_type, pinfo);
 
-    //int windb = 0;
+    // int windb = 0;
     int pcode1Number = 0;
     int pcode2Number = 0;
     int pcode8Number = 0;
@@ -412,8 +406,7 @@ class Nidsheader{
     int[] pkcode20Dlen = null;
     int[] pkcode20Doff = null;
     // Get product symbology header (needed to get image shape)
-    ifloop:
-    if (pinfo.offsetToSymbologyBlock != 0) {
+    ifloop: if (pinfo.offsetToSymbologyBlock != 0) {
 
       // Symbology header
       if (pinfo.p8 == 1) {
@@ -461,21 +454,21 @@ class Nidsheader{
           hedsiz += 2;
           boff += 2;
           switch (pkcode) {
-            case 18:  //  DPA
-            case 17: //   (pkcode == 0x11)   Digital Precipitation Array
+            case 18: // DPA
+            case 17: // (pkcode == 0x11) Digital Precipitation Array
               hedsiz += 8;
               plen = pcode_DPA(bos, boff, hoff, hedsiz, isZ, i, pkcode);
               break;
-            case 10:    //     (pkcode == 0xA)
+            case 10: // (pkcode == 0xA)
               if (pkcode10Doff == null) {
                 pkcode10Doff = new int[250];
                 pkcode10Dlen = new int[250];
               }
-              plen = bos.getShort();   // for unlinked Vector Packet the length of data block
+              plen = bos.getShort(); // for unlinked Vector Packet the length of data block
               pkcode10Doff[pcode10Number] = boff + 2;
               pkcode10Dlen[pcode10Number] = (plen - 2) / 8;
               pcode10Number++;
-              //pcode_10n7( bos, boff, hoff, isZ, pkcode );
+              // pcode_10n7( bos, boff, hoff, isZ, pkcode );
               break;
             case 1:
               if (pkcode1Doff == null) {
@@ -497,7 +490,7 @@ class Nidsheader{
               pkcode2Size[pcode2Number] = plen - 4;
               pcode2Number++;
               break;
-            case 8:       //text string
+            case 8: // text string
               if (pkcode8Doff == null) {
                 pkcode8Doff = new int[550];
                 pkcode8Size = new int[550];
@@ -587,7 +580,7 @@ class Nidsheader{
               pkcode20Dlen[pcode20Number] = plen / 8;
               pcode20Number++;
               break;
-            case 4:    // wind barb
+            case 4: // wind barb
               if (pkcode4Doff == null) {
                 pkcode4Doff = new int[1000];
               }
@@ -595,7 +588,7 @@ class Nidsheader{
               pkcode4Doff[pcode4Number] = boff + 2;
               pcode4Number++;
               break;
-            case 5:  //   Vector Arrow Data
+            case 5: // Vector Arrow Data
               if (pkcode5Doff == null) {
                 pkcode5Doff = new int[1000];
               }
@@ -641,9 +634,7 @@ class Nidsheader{
                     break;
                   default:
                     log.error("error reading pcode= " + pcode + " " + raf.getLocation());
-                    throw new IOException("error reading pcode, " +
-                        "unable to handle the packet with code "
-                        + pcode);
+                    throw new IOException("error reading pcode, " + "unable to handle the packet with code " + pcode);
                 }
                 poff = poff + len + 4;
                 // Need to advance the file's position
@@ -659,8 +650,7 @@ class Nidsheader{
               plen = 2;
               break;
             case 0x0E03:
-              log.warn(
-                  "Encountered unhandled packet code 0x0E03 (linked contours) -- reading past.");
+              log.warn("Encountered unhandled packet code 0x0E03 (linked contours) -- reading past.");
               Divlen_divider = bos.getShort(); // Start marker
               if (Divlen_divider != 0x8000) {
                 log.warn("Missing start marker!");
@@ -672,39 +662,36 @@ class Nidsheader{
               break;
 
             default:
-              if (pkcode == 0xAF1F
-                  || pkcode == 16) {              /* radial image                  */
+              if (pkcode == 0xAF1F || pkcode == 16) { /* radial image */
                 hedsiz += pcode_radial(bos, hoff, hedsiz, isZ, uncompdata, pinfo.threshold);
-                //myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
+                // myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
                 plen = Divlen_length;
                 break;
-              } else if (pkcode == 28) {              /* radial image                  */
+              } else if (pkcode == 28) { /* radial image */
                 hedsiz += pcode_generic(bos, hoff, hedsiz, isZ, uncompdata, pinfo.threshold);
-                //myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
+                // myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
                 plen = Divlen_length;
                 break;
-              } else if (pkcode == 0xBA0F
-                  || pkcode == 0xBA07) {      /* raster image                  */
+              } else if (pkcode == 0xBA0F || pkcode == 0xBA07) { /* raster image */
                 hedsiz += pcode_raster(bos, (short) pkcode, hoff, hedsiz, isZ, uncompdata);
-                //myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
+                // myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
                 plen = Divlen_length;
                 break;
               } else {
                 log.error("error reading pkcode equals " + pkcode + " " + raf.getLocation());
-                throw new IOException(
-                    "error reading pkcode, unable to handle the product with code " + pkcode);
+                throw new IOException("error reading pkcode, unable to handle the product with code " + pkcode);
               }
 
               // size and beginning data position in file
 
-          } //end of switch
+          } // end of switch
           icount = icount + plen + 4;
         }
 
         klayer = klayer + Divlen_length + 6;
       }
 
-      //int curDoff = hedsiz;
+      // int curDoff = hedsiz;
 
       if (pkcode8Doff != null) {
         pcode_128(pkcode8Doff, pkcode8Size, 8, hoff, pcode8Number, "textStruct_code8", "", isZ);
@@ -746,8 +733,7 @@ class Nidsheader{
         pcode_12n13n14(pkcode20Doff, pkcode20Dlen, hoff, pcode20Number, isZ, "mesocyclone", 20);
       }
     } else {
-      log.debug(
-          "GetNexrDirs:: no product symbology block found (no image data) " + raf.getLocation());
+      log.debug("GetNexrDirs:: no product symbology block found (no image data) " + raf.getLocation());
 
     }
 
@@ -786,8 +772,7 @@ class Nidsheader{
         ppage.setDataType(DataType.STRING);
         ppage.addAttribute(new Attribute(CDM.LONG_NAME, "Graphic Product Message"));
         ncfile.addVariable(null, ppage);
-        ppage.setSPobject(
-            new Vinfo(npage, 0, tblen, 0, hoff, ppos, isR, isZ, null, null, tab_bid, 0));
+        ppage.setSPobject(new Vinfo(npage, 0, tblen, 0, hoff, ppos, isR, isZ, null, null, tab_bid, 0));
       }
 
     }
@@ -821,7 +806,7 @@ class Nidsheader{
       int plen;
 
       while ((clen < blen) && (ipage < npage)) {
-        //  bos.position(ppos);
+        // bos.position(ppos);
         int ppos = bos.position();
         ipage = bos.getShort();
         lpage = bos.getShort();
@@ -855,7 +840,7 @@ class Nidsheader{
               gpkcode10Doff = new int[250];
               gpkcode10Dlen = new int[250];
             }
-            plen = bos.getShort();   // for unlinked Vector Packet the length of data block
+            plen = bos.getShort(); // for unlinked Vector Packet the length of data block
 
             gpkcode10Doff[gpcode10Number] = ppos + 4 + icnt;
             gpkcode10Dlen[gpcode10Number] = (plen - 2) / 8;
@@ -866,43 +851,40 @@ class Nidsheader{
             icnt += plen + 4;
           }
 
-          //  else {
-          //      out.println( "error reading pkcode equals " + pkcode);
-          //      throw new IOException("error reading pkcode in graphic alpha num block " + pkcode);
-          //  }
+          // else {
+          // out.println( "error reading pkcode equals " + pkcode);
+          // throw new IOException("error reading pkcode in graphic alpha num block " + pkcode);
+          // }
 
         }
         clen = clen + lpage + 4;
       }
 
       if (gpkcode8Doff != null) {
-        pcode_128(gpkcode8Doff, gpkcode8Size, 8, hoff, gpcode8Number, "textStruct_code8g", "g",
-            isZ);
+        pcode_128(gpkcode8Doff, gpkcode8Size, 8, hoff, gpcode8Number, "textStruct_code8g", "g", isZ);
       }
       if (gpkcode2Doff != null) {
-        pcode_128(gpkcode2Doff, gpkcode2Size, 2, hoff, gpcode8Number, "textStruct_code2g", "g",
-            isZ);
+        pcode_128(gpkcode2Doff, gpkcode2Size, 2, hoff, gpcode8Number, "textStruct_code2g", "g", isZ);
       }
       if (gpkcode1Doff != null) {
-        pcode_128(gpkcode1Doff, gpkcode1Size, 1, hoff, gpcode1Number, "textStruct_code1g", "g",
-            isZ);
+        pcode_128(gpkcode1Doff, gpkcode1Size, 1, hoff, gpcode1Number, "textStruct_code1g", "g", isZ);
       }
       if (gpkcode10Doff != null) {
         pcode_10n9(gpkcode10Doff, gpkcode10Dlen, hoff, gpcode10Number, isZ);
       }
-         /*
-         int ppos = bos.position();
-         ArrayList dims =  new ArrayList();
-         Dimension tbDim = new Dimension("pageNumber", npage, true);
-         ncfile.addDimension( null, tbDim);
-         dims.add( tbDim);
-         Variable ppage = new Variable(ncfile, null, null, "GraphicMessagePage");
-         ppage.setDimensions(dims);
-         ppage.setDataType(DataType.STRING);
-         ppage.addAttribute( new Attribute(CDM.LONG_NAME, "Graphic Product Message"));
-         ncfile.addVariable(null, ppage);
-         ppage.setSPobject( new Vinfo (npage, 0, tblen, 0, hoff, ppos, isR, isZ, null, null, graphic_bid));
-           */
+      /*
+       * int ppos = bos.position();
+       * ArrayList dims = new ArrayList();
+       * Dimension tbDim = new Dimension("pageNumber", npage, true);
+       * ncfile.addDimension( null, tbDim);
+       * dims.add( tbDim);
+       * Variable ppage = new Variable(ncfile, null, null, "GraphicMessagePage");
+       * ppage.setDimensions(dims);
+       * ppage.setDataType(DataType.STRING);
+       * ppage.addAttribute( new Attribute(CDM.LONG_NAME, "Graphic Product Message"));
+       * ncfile.addVariable(null, ppage);
+       * ppage.setSPobject( new Vinfo (npage, 0, tblen, 0, hoff, ppos, isR, isZ, null, null, graphic_bid));
+       */
     }
     // finish
     ncfile.finish();
@@ -914,9 +896,8 @@ class Nidsheader{
    * @param pos, dlen, hoff, len, isZ, structName, code
    * @return 1 if successful
    */
-  int pcode_12n13n14(int[] pos, int[] dlen, int hoff, int len, boolean isZ, String structName,
-      int code) {
-    //int vlen = len;
+  int pcode_12n13n14(int[] pos, int[] dlen, int hoff, int len, boolean isZ, String structName, int code) {
+    // int vlen = len;
 
     int vlen = 0;
     for (int i = 0; i < len; i++) {
@@ -1052,7 +1033,7 @@ class Nidsheader{
 
   int pcode_4(int[] pos, int hoff, int len, boolean isZ) {
     ArrayList<Dimension> dims = new ArrayList<>();
-    //int vlen =len;
+    // int vlen =len;
 
     Dimension sDim = new Dimension("windBarbSize", len);
     ncfile.addDimension(null, sDim);
@@ -1112,7 +1093,7 @@ class Nidsheader{
     raf.seek(pos);
 
     // Read in the whole contents of the NEXRAD Level III product since
-    // some product require to go through the whole file to build the  struct of file.
+    // some product require to go through the whole file to build the struct of file.
 
     readLen = (int) actualSize;
 
@@ -1135,7 +1116,7 @@ class Nidsheader{
 
   int pcode_5(int[] pos, int hoff, int len, boolean isZ) {
     ArrayList<Dimension> dims = new ArrayList<>();
-    //int vlen =len;
+    // int vlen =len;
 
     Dimension sDim = new Dimension("windBarbSize", len);
     ncfile.addDimension(null, sDim);
@@ -1186,9 +1167,8 @@ class Nidsheader{
    * @return 1 if successful
    */
 
-  int pcode_128(int[] pos, int[] size, int code, int hoff, int len, String structName, String abbre,
-      boolean isZ) {
-    //int vlen = len;
+  int pcode_128(int[] pos, int[] size, int code, int hoff, int len, String structName, String abbre, boolean isZ) {
+    // int vlen = len;
 
     ArrayList<Dimension> dims = new ArrayList<>();
     Dimension sDim = new Dimension("textStringSize" + abbre + code, len);
@@ -1295,8 +1275,8 @@ class Nidsheader{
     int soff;
     ArrayList<Dimension> dims = new ArrayList<>();
     bos.position(pos);
-    bos.get(b2, 0, 2);  // reserved
-    bos.get(b2, 0, 2);  // reserved
+    bos.get(b2, 0, 2); // reserved
+    bos.get(b2, 0, 2); // reserved
 
     bos.get(b2, 0, 2);
     short numBox = (short) getInt(b2, 2);
@@ -1320,15 +1300,14 @@ class Nidsheader{
       v.setDimensions(dims);
       ncfile.addVariable(null, v);
       v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle + " at Symbology Layer " + slayer));
-      v.setSPobject(
-          new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, code, 0));
+      v.setSPobject(new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, code, 0));
       v.addAttribute(new Attribute(CDM.UNITS, cunit));
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, 255));
     }
-    //else  if(slayer == 1) {
-    //  ncfile.addDimension( null, iDim);
-    //  ncfile.addDimension( null, jDim);
-    //}
+    // else if(slayer == 1) {
+    // ncfile.addDimension( null, iDim);
+    // ncfile.addDimension( null, jDim);
+    // }
 
     for (int row = 0; row < numRow; row++) {
 
@@ -1341,7 +1320,7 @@ class Nidsheader{
       } else {
         soff += runLen + 2;
       }
-    }   //end of for loop
+    } // end of for loop
 
     if (slayer == 0) {
       double ddx = code_reslookup(pcode);
@@ -1357,7 +1336,7 @@ class Nidsheader{
       for (int i = 0; i < numX; i++) {
         data1[i] = numX0 + i * ddx;
       }
-      Array dataA = Array.factory(DataType.DOUBLE, new int[]{numX}, data1);
+      Array dataA = Array.factory(DataType.DOUBLE, new int[] {numX}, data1);
       xaxis.setCachedData(dataA, false);
       ncfile.addVariable(null, xaxis);
 
@@ -1371,12 +1350,12 @@ class Nidsheader{
       for (int i = 0; i < numY; i++) {
         data1[i] = numY0 + i * ddx;
       }
-      dataA = Array.factory(DataType.DOUBLE, new int[]{numY}, data1);
+      dataA = Array.factory(DataType.DOUBLE, new int[] {numY}, data1);
       yaxis.setCachedData(dataA, false);
       ncfile.addVariable(null, yaxis);
 
       ProjectionImpl projection = new FlatEarth(lat_min, lon_max);
-      //ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
+      // ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
       // coordinate transform variable
       Variable ct = new Variable(ncfile, null, null, projection.getClassName());
       ct.setDataType(DataType.CHAR);
@@ -1389,7 +1368,7 @@ class Nidsheader{
       ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
       ct.addAttribute(new Attribute(_Coordinate.Axes, "x y"));
       // fake data
-      dataA = Array.factory(DataType.CHAR, new int[]{});
+      dataA = Array.factory(DataType.CHAR, new int[] {});
       dataA.setChar(dataA.getIndex(), ' ');
       ct.setCachedData(dataA, false);
 
@@ -1408,7 +1387,7 @@ class Nidsheader{
     byte[] b2 = new byte[2];
     int soff;
     ArrayList<Dimension> dims = new ArrayList<>();
-    int iscale = 1;                         /* data scale                    */
+    int iscale = 1; /* data scale */
     int ival;
 
     ival = convertShort2unsignedInt(threshold[0]);
@@ -1428,21 +1407,21 @@ class Nidsheader{
     bos.get(b2, 0, 2);
     rasp_code[2] = (short) getInt(b2, 2);
     bos.get(b2, 0, 2);
-//        short rasp_i = (short)getInt(b2, 2);
+    // short rasp_i = (short)getInt(b2, 2);
     bos.get(b2, 0, 2);
-//        short rasp_j = (short)getInt(b2, 2);
+    // short rasp_j = (short)getInt(b2, 2);
     bos.get(b2, 0, 2);
     short rasp_xscale = (short) getInt(b2, 2);
     bos.get(b2, 0, 2);
-//        short rasp_xscalefract = (short)getInt(b2, 2);
+    // short rasp_xscalefract = (short)getInt(b2, 2);
     bos.get(b2, 0, 2);
-//        short rasp_yscale = (short)getInt(b2, 2);
+    // short rasp_yscale = (short)getInt(b2, 2);
     bos.get(b2, 0, 2);
-//        short rasp_yscalefract = (short)getInt(b2, 2);
+    // short rasp_yscalefract = (short)getInt(b2, 2);
     bos.get(b2, 0, 2);
     short num_rows = (short) getInt(b2, 2);
     bos.get(b2, 0, 2);
-//        short packing = (short)getInt(b2, 2);
+    // short packing = (short)getInt(b2, 2);
     soff = 20;
     hedsiz = hedsiz + soff;
 
@@ -1450,10 +1429,11 @@ class Nidsheader{
     double ddx = code_reslookup(pcode);
     int[] levels = getLevels(nlevel, threshold);
 
-    //prod_info_size = (int) (num_rows * scale);
-    //out.println( "resp scale " + (int)rasp_xscale + " and " + (int)rasp_xscalefract+ " and " + (int)rasp_yscale+ " and " + (int)rasp_yscalefract );
-    numY0 = 0; //rasp_j;
-    numX0 = 0; //rasp_i;
+    // prod_info_size = (int) (num_rows * scale);
+    // out.println( "resp scale " + (int)rasp_xscale + " and " + (int)rasp_xscalefract+ " and " + (int)rasp_yscale+ "
+    // and " + (int)rasp_yscalefract );
+    numY0 = 0; // rasp_j;
+    numX0 = 0; // rasp_i;
     numX = num_rows;
     numY = num_rows;
     Dimension jDim = new Dimension("y", numY, true, false, false);
@@ -1462,17 +1442,17 @@ class Nidsheader{
     dims.add(iDim);
     ncfile.addDimension(null, iDim);
     ncfile.addDimension(null, jDim);
-    //ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
+    // ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
     if (cname.startsWith("Precip")) {
       ncfile.addAttribute(null, new Attribute("isRadial", 3));
       ddx = ddx * rasp_xscale;
     }
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-    //Variable dist = new Variable(ncfile, null, null, "distance");
-    //dist.setDataType(DataType.INT);
-    //dist.setDimensions(dims);
-    //ncfile.addVariable(null, dist);
-    //dist.setSPobject( new Vinfo ( numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, pkcode, 0));
+    // Variable dist = new Variable(ncfile, null, null, "distance");
+    // dist.setDataType(DataType.INT);
+    // dist.setDimensions(dims);
+    // ncfile.addVariable(null, dist);
+    // dist.setSPobject( new Vinfo ( numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, pkcode, 0));
 
     String coordinates = "x y time latitude longitude altitude";
 
@@ -1482,22 +1462,21 @@ class Nidsheader{
     ncfile.addVariable(null, v);
     v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
     v.addAttribute(new Attribute(CDM.UNITS, cunit));
-    v.setSPobject(
-        new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, pkcode, 0));
+    v.setSPobject(new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, pkcode, 0));
     v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
     if (cname.startsWith("VertLiquid")) {
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
     } else if (cname.startsWith("EchoTop")) {
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
     } else if (cname.startsWith("BaseReflectivityComp") || cname.startsWith("LayerCompReflect")) {
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
     } else if (cname.startsWith("Precip")) {
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
     }
 
     // create coordinate variables
@@ -1511,7 +1490,7 @@ class Nidsheader{
     for (int i = 0; i < numX; i++) {
       data1[i] = numX0 + i * ddx;
     }
-    Array dataA = Array.factory(DataType.DOUBLE, new int[]{numX}, data1);
+    Array dataA = Array.factory(DataType.DOUBLE, new int[] {numX}, data1);
     xaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, xaxis);
 
@@ -1525,12 +1504,12 @@ class Nidsheader{
     for (int i = 0; i < numY; i++) {
       data1[i] = numY0 + i * ddx;
     }
-    dataA = Array.factory(DataType.DOUBLE, new int[]{numY}, data1);
+    dataA = Array.factory(DataType.DOUBLE, new int[] {numY}, data1);
     yaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, yaxis);
 
     ProjectionImpl projection = new FlatEarth(lat_min, lon_max);
-    //ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
+    // ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
     // coordinate transform variable
     Variable ct = new Variable(ncfile, null, null, projection.getClassName());
     ct.setDataType(DataType.CHAR);
@@ -1543,7 +1522,7 @@ class Nidsheader{
     ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
     ct.addAttribute(new Attribute(_Coordinate.Axes, "x y"));
     // fake data
-    dataA = Array.factory(DataType.CHAR, new int[]{});
+    dataA = Array.factory(DataType.CHAR, new int[] {});
     dataA.setChar(dataA.getIndex(), ' ');
     ct.setCachedData(dataA, false);
 
@@ -1558,12 +1537,11 @@ class Nidsheader{
    * @param bos, hoff, hedsiz, isZ, data, threshold
    * @return soff -- not used
    */
-  int pcode_radial(ByteBuffer bos, int hoff, int hedsiz, boolean isZ, byte[] data,
-      short[] threshold) {
+  int pcode_radial(ByteBuffer bos, int hoff, int hedsiz, boolean isZ, byte[] data, short[] threshold) {
     byte[] b2 = new byte[2];
     int soff;
     ArrayList<Dimension> dims = new ArrayList<>();
-    int iscale = 1;                         /* data scale                    */
+    int iscale = 1; /* data scale */
     int ival;
 
     ival = convertShort2unsignedInt(threshold[0]);
@@ -1582,9 +1560,9 @@ class Nidsheader{
       num_bin = addBinSize(num_bin);
     }
     bos.get(b2, 0, 2);
-//        short radp_i = (short)getInt(b2, 2);
+    // short radp_i = (short)getInt(b2, 2);
     bos.get(b2, 0, 2);
-//        short radp_j = (short)getInt(b2, 2);
+    // short radp_j = (short)getInt(b2, 2);
     bos.get(b2, 0, 2);
     short radp_scale = (short) getInt(b2, 2);
     if (this.pcode == 134 || this.pcode == 135) {
@@ -1601,8 +1579,8 @@ class Nidsheader{
     int nlevel = code_levelslookup(pcode);
     int[] levels;
 
-    //prod_info_size = 2 * (int) (num_bin * scale + 0.5);
-    //dimensions: radial, bin
+    // prod_info_size = 2 * (int) (num_bin * scale + 0.5);
+    // dimensions: radial, bin
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
     Dimension radialDim = new Dimension("azimuth", num_radials);
     ncfile.addDimension(null, radialDim);
@@ -1624,23 +1602,22 @@ class Nidsheader{
     // aziVar.addAttribute( new Attribute(CDM.UNITS, "degrees"));
     // aziVar.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, 0));
 
-    // dims1 =  new ArrayList();
+    // dims1 = new ArrayList();
     // dims1.add(binDim);
-    //Variable gateV = new Variable(ncfile, null, null, "gate1");
-    //gateV.setDataType(DataType.FLOAT);
-    //gateV.setDimensions(dims2);
-    //ncfile.addVariable(null, gateV);
-    //gateV.addAttribute( new Attribute(CDM.LONG_NAME, "radial distance to start of gate"));
-    //gateV.addAttribute( new Attribute(CDM.UNITS, "m"));
-    //gateV.setSPobject( new Vinfo (numX, numX0, numY, radp_scale, hoff, hedsiz, isR, isZ, null, null, 0, 0));
+    // Variable gateV = new Variable(ncfile, null, null, "gate1");
+    // gateV.setDataType(DataType.FLOAT);
+    // gateV.setDimensions(dims2);
+    // ncfile.addVariable(null, gateV);
+    // gateV.addAttribute( new Attribute(CDM.LONG_NAME, "radial distance to start of gate"));
+    // gateV.addAttribute( new Attribute(CDM.UNITS, "m"));
+    // gateV.setSPobject( new Vinfo (numX, numX0, numY, radp_scale, hoff, hedsiz, isR, isZ, null, null, 0, 0));
     isR = true;
 
     // add elevation coordinate variable
     String vName = "elevation";
     String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
     Attribute att = new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString());
-    addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees", hoff, hedsiz, isZ,
-        p3);
+    addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees", hoff, hedsiz, isZ, p3);
 
     // add azimuth coordinate variable
     vName = "azimuth";
@@ -1652,8 +1629,7 @@ class Nidsheader{
     vName = "gate";
     lName = "Radial distance to the start of gate";
     att = new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString());
-    addParameter(vName, lName, ncfile, dims2, att, DataType.FLOAT, "meters", hoff, hedsiz, isZ,
-        radp_scale);
+    addParameter(vName, lName, ncfile, dims2, att, DataType.FLOAT, "meters", hoff, hedsiz, isZ, radp_scale);
 
     // add radial coordinate variable
 
@@ -1675,10 +1651,9 @@ class Nidsheader{
     vName = "rays_time";
     lName = "rays time";
     att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
-    addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE,
-        "milliseconds since 1970-01-01 00:00 UTC"
-        , hoff, hedsiz, isZ, 0);
-    //add RAW, BRIT variables for all radial variable
+    addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC", hoff,
+        hedsiz, isZ, 0);
+    // add RAW, BRIT variables for all radial variable
     if (pcode == 182 || pcode == 99) {
       levels = getTDWRLevels(nlevel, threshold);
       iscale = 10;
@@ -1697,10 +1672,8 @@ class Nidsheader{
     } else if (pcode == 134 || pcode == 135) {
       levels = getTDWRLevels2(nlevel, threshold);
       iscale = 1;
-    } else if (pcode == 159 || pcode == 161 || pcode == 163
-        || pcode == 170 || pcode == 172 || pcode == 173
-        || pcode == 174 || pcode == 175
-        || pcode == 165 || pcode == 177) {
+    } else if (pcode == 159 || pcode == 161 || pcode == 163 || pcode == 170 || pcode == 172 || pcode == 173
+        || pcode == 174 || pcode == 175 || pcode == 165 || pcode == 177) {
 
       levels = getDualpolLevels(threshold);
       iscale = 100;
@@ -1716,45 +1689,41 @@ class Nidsheader{
     String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
     v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
     // v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
-    v.setSPobject(
-        new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
+    v.setSPobject(new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
 
     // addVariable(cname + "_Brightness", ctitle + " Brightness", ncfile, dims, coordinates, DataType.FLOAT,
-    //                 cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+    // cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
     if (cname.startsWith("CorrelationCoefficient") || cname.startsWith("HydrometeorClassification")
-        ||
-        cname.startsWith("DifferentialReflectivity") || cname.startsWith("DifferentialPhase")
+        || cname.startsWith("DifferentialReflectivity") || cname.startsWith("DifferentialPhase")
         || cname.startsWith("HypridHydrometeorClassification")) {
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
-    } else if (cname.startsWith("OneHourAccumulation") || cname
-        .startsWith("DigitalAccumulationArray") ||
-        cname.startsWith("StormTotalAccumulation") || cname
-        .startsWith("DigitalStormTotalAccumulation") ||
-        cname.startsWith("Accumulation3Hour") || cname.startsWith("Accumulation24Hour") ||
-        cname.startsWith("Digital1HourDifferenceAccumulation") ||
-        cname.startsWith("DigitalInstantaneousPrecipitationRate") ||
-        cname.startsWith("DigitalTotalDifferenceAccumulation")) {
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
-    } else if (cname.startsWith("BaseReflectivity") || cname.endsWith("Reflectivity") ||
-        cname.startsWith("SpectrumWidth")) {
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
+    } else if (cname.startsWith("OneHourAccumulation") || cname.startsWith("DigitalAccumulationArray")
+        || cname.startsWith("StormTotalAccumulation") || cname.startsWith("DigitalStormTotalAccumulation")
+        || cname.startsWith("Accumulation3Hour") || cname.startsWith("Accumulation24Hour")
+        || cname.startsWith("Digital1HourDifferenceAccumulation")
+        || cname.startsWith("DigitalInstantaneousPrecipitationRate")
+        || cname.startsWith("DigitalTotalDifferenceAccumulation")) {
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
+    } else if (cname.startsWith("BaseReflectivity") || cname.endsWith("Reflectivity")
+        || cname.startsWith("SpectrumWidth")) {
 
-      //addVariable(cname + "_VIP", ctitle + " VIP Level", ncfile, dims, coordinates, DataType.FLOAT,
-      //             cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+      // addVariable(cname + "_VIP", ctitle + " VIP Level", ncfile, dims, coordinates, DataType.FLOAT,
+      // cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
 
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
-    } else if (cname.startsWith("RadialVelocity") || cname.startsWith("StormMeanVelocity") ||
-        cname.startsWith("BaseVelocity")) {
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
+    } else if (cname.startsWith("RadialVelocity") || cname.startsWith("StormMeanVelocity")
+        || cname.startsWith("BaseVelocity")) {
 
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
-    } else if (cname.startsWith("Precip") || cname.endsWith("Precip") ||
-        cname.startsWith("EnhancedEchoTop") || cname.startsWith("DigitalIntegLiquid")) {
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
+    } else if (cname.startsWith("Precip") || cname.endsWith("Precip") || cname.startsWith("EnhancedEchoTop")
+        || cname.startsWith("DigitalIntegLiquid")) {
 
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
     }
 
     return soff;
@@ -1790,7 +1759,7 @@ class Nidsheader{
     numRadials = datainput.getInt();
     dataOffset = datainput.position();
 
-    //getting numbin  by checking the first radial, but the data offset should be before this read
+    // getting numbin by checking the first radial, but the data offset should be before this read
     datainput.getFloat();
     datainput.getFloat();
     datainput.getFloat();
@@ -1801,21 +1770,23 @@ class Nidsheader{
     arraylist.add(rangeToFirstBin);
     arraylist.add(dataOffset);
 
-    //data = null;
-    /*    for(int k = 0; k < numRadials; k++)
-        {
-            angleData[k] = datainput.getFloat();
-            datainput.getFloat();
-            datainput.getFloat();
-            numBins = datainput.getInt();
-            readInString(datainput);
-            if(data == null)
-                data = new short[numRadials * numBins];
-            numBins = datainputstream.readInt();
-            for(int l = 0; l < numBins; l++)
-                data[k * numBins + l] = (short)datainputstream.getInt();
-
-        }  */
+    // data = null;
+    /*
+     * for(int k = 0; k < numRadials; k++)
+     * {
+     * angleData[k] = datainput.getFloat();
+     * datainput.getFloat();
+     * datainput.getFloat();
+     * numBins = datainput.getInt();
+     * readInString(datainput);
+     * if(data == null)
+     * data = new short[numRadials * numBins];
+     * numBins = datainputstream.readInt();
+     * for(int l = 0; l < numBins; l++)
+     * data[k * numBins + l] = (short)datainputstream.getInt();
+     * 
+     * }
+     */
     return arraylist;
   }
 
@@ -1832,14 +1803,14 @@ class Nidsheader{
       arraylist.add(hm);
     }
 
-        return arraylist;
-    }
+    return arraylist;
+  }
 
-    /** for level3 176 product */
-    private HashMap addAttributePairs(String s) {
-        HashMap attributes = new HashMap();
-        for(Matcher matcher = PARAM_PATTERN.matcher(s);
-            matcher.find(); attributes.put(matcher.group(1).trim(), matcher.group(2).trim()));
+  /** for level3 176 product */
+  private HashMap addAttributePairs(String s) {
+    HashMap attributes = new HashMap();
+    for (Matcher matcher = PARAM_PATTERN.matcher(s); matcher.find(); attributes.put(matcher.group(1).trim(),
+        matcher.group(2).trim()));
 
     return attributes;
   }
@@ -1867,12 +1838,12 @@ class Nidsheader{
   /**
    * construct a generic radial dataset for dualpol radial products;
    */
-  private int pcode_generic(ByteBuffer bos, int hoff, int hedsiz, boolean isZ, byte[] data,
-      short[] threshold) throws IOException {
+  private int pcode_generic(ByteBuffer bos, int hoff, int hedsiz, boolean isZ, byte[] data, short[] threshold)
+      throws IOException {
     byte[] b2 = new byte[2];
     int soff = 0;
     ArrayList<Dimension> dims = new ArrayList<>();
-    int iscale = 1;                         /* data scale                    */
+    int iscale = 1; /* data scale */
     bos.get(b2, 0, 2);
     bos.get(b2, 0, 2);
     bos.get(b2, 0, 2);
@@ -1901,8 +1872,8 @@ class Nidsheader{
     bos.getInt(); // eleNum
 
     bos.getDouble(); // skip 8 bytes
-    parseParameters(bos);   // aa - do nothing
-    List cc = parseComponents(bos);   // assuming only radial component
+    parseParameters(bos); // aa - do nothing
+    List cc = parseComponents(bos); // assuming only radial component
     if (cc == null) {
       throw new IOException("Error reading components for radial data");
     }
@@ -1912,14 +1883,14 @@ class Nidsheader{
     int dataOffset = (Integer) cc.get(3);
     numY0 = 0;
     numY = num_radials;
-    numX0 = (int) rangeToFirstBin; //first_bin;
+    numX0 = (int) rangeToFirstBin; // first_bin;
     numX = num_bin;
     int nlevel = code_levelslookup(pcode);
     int[] levels;
     short radp_scale = 1000;
     hedsiz = dataOffset;
-    //prod_info_size = 2 * (int) (num_bin * scale + 0.5);
-    //dimensions: radial, bin
+    // prod_info_size = 2 * (int) (num_bin * scale + 0.5);
+    // dimensions: radial, bin
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
     Dimension radialDim = new Dimension("azimuth", num_radials);
     ncfile.addDimension(null, radialDim);
@@ -1940,8 +1911,7 @@ class Nidsheader{
     String vName = "elevation";
     String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
     Attribute att = new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString());
-    addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees", hoff, hedsiz, isZ,
-        p3);
+    addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees", hoff, hedsiz, isZ, p3);
 
     // add azimuth coordinate variable
     vName = "azimuth";
@@ -1953,8 +1923,7 @@ class Nidsheader{
     vName = "gate";
     lName = "Radial distance to the start of gate";
     att = new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString());
-    addParameter(vName, lName, ncfile, dims2, att, DataType.FLOAT, "meters", hoff, hedsiz, isZ,
-        radp_scale);
+    addParameter(vName, lName, ncfile, dims2, att, DataType.FLOAT, "meters", hoff, hedsiz, isZ, radp_scale);
 
     // add radial coordinate variable
 
@@ -1976,9 +1945,8 @@ class Nidsheader{
     vName = "rays_time";
     lName = "rays time";
     att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
-    addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE,
-        "milliseconds since 1970-01-01 00:00 UTC"
-        , hoff, hedsiz, isZ, 0);
+    addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC", hoff,
+        hedsiz, isZ, 0);
 
     if (pcode == 176) {
       levels = getDualpolLevels(threshold);
@@ -1995,12 +1963,11 @@ class Nidsheader{
     String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
     v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
     // v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
-    v.setSPobject(
-        new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
+    v.setSPobject(new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
 
     if (cname.startsWith("DigitalInstantaneousPrecipitationRate")) {
-      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-          cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+      addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT, cunit, hoff, hedsiz, isZ, nlevel, levels,
+          iscale);
     }
 
     return soff;
@@ -2030,7 +1997,7 @@ class Nidsheader{
     int ival;
     int isign;
 
-    for (int i = 0; i < nlevel; i++) {    /* calibrated data values        */
+    for (int i = 0; i < nlevel; i++) { /* calibrated data values */
       ival = convertShort2unsignedInt(th[i]);
 
       if ((ival & 0x00008000) == 0) {
@@ -2051,11 +2018,11 @@ class Nidsheader{
    * Get the calibrate data values for TDWR data
    */
   private int[] getTDWRLevels(int nlevel, short[] th) {
-    int[] levels = new int[nlevel]; //th[2]+2 ];
+    int[] levels = new int[nlevel]; // th[2]+2 ];
     int inc = th[1];
     levels[0] = -9866;
     levels[1] = -9866;
-    for (int i = 2; i < nlevel; i++) {    /* calibrated data values        */
+    for (int i = 2; i < nlevel; i++) { /* calibrated data values */
       levels[i] = th[0] + (i - 2) * inc;
     }
 
@@ -2066,9 +2033,9 @@ class Nidsheader{
    * get the calibrate data values for TDWR data
    */
   private int[] getTDWRLevels1(int nlevel, short[] th) {
-    int[] levels = new int[nlevel]; //th[2] ];
+    int[] levels = new int[nlevel]; // th[2] ];
     int inc = th[1];
-    for (int i = 0; i < nlevel; i++) {    /* calibrated data values        */
+    for (int i = 0; i < nlevel; i++) { /* calibrated data values */
       levels[i] = th[0] + (i) * inc;
     }
 
@@ -2080,8 +2047,8 @@ class Nidsheader{
    */
   private int[] getDualpolLevels(short[] th) {
     int inc = th.length;
-    int[] levels = new int[inc]; //th[2] ];
-    for (int i = 0; i < inc; i++) {    /* calibrated data values        */
+    int[] levels = new int[inc]; // th[2] ];
+    for (int i = 0; i < inc; i++) { /* calibrated data values */
       levels[i] = th[i];
     }
 
@@ -2093,8 +2060,8 @@ class Nidsheader{
    */
   private int[] getTDWRLevels2(int nlevel, short[] th) {
     int inc = th.length;
-    int[] levels = new int[inc]; //th[2] ];
-    for (int i = 0; i < inc; i++) {    /* calibrated data values        */
+    int[] levels = new int[inc]; // th[2] ];
+    for (int i = 0; i < inc; i++) { /* calibrated data values */
       levels[i] = th[i];
     }
 
@@ -2118,10 +2085,8 @@ class Nidsheader{
    * @param levels calibrate levels
    * @param iscale is scale variable
    */
-  private void addVariable(String pName, String longName, NetcdfFile nc, ArrayList dims,
-      String coordinates,
-      DataType dtype, String ut, long hoff, long hedsiz, boolean isZ, int nlevel, int[] levels,
-      int iscale) {
+  private void addVariable(String pName, String longName, NetcdfFile nc, ArrayList dims, String coordinates,
+      DataType dtype, String ut, long hoff, long hedsiz, boolean isZ, int nlevel, int[] levels, int iscale) {
     Variable v = new Variable(nc, null, null, pName);
     v.setDataType(dtype);
     v.setDimensions(dims);
@@ -2129,8 +2094,7 @@ class Nidsheader{
     v.addAttribute(new Attribute(CDM.LONG_NAME, longName));
     v.addAttribute(new Attribute(CDM.UNITS, ut));
     v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
-    v.setSPobject(
-        new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, iscale, nlevel));
+    v.setSPobject(new Vinfo(numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, iscale, nlevel));
 
   }
 
@@ -2149,9 +2113,8 @@ class Nidsheader{
    * @param isZ is compressed file
    * @param y0 reserved
    */
-  private void addParameter(String pName, String longName, NetcdfFile nc, ArrayList dims,
-      Attribute att,
-      DataType dtype, String ut, long hoff, long doff, boolean isZ, int y0) {
+  private void addParameter(String pName, String longName, NetcdfFile nc, ArrayList dims, Attribute att, DataType dtype,
+      String ut, long hoff, long doff, boolean isZ, int y0) {
     String vName = pName;
     Variable vVar = new Variable(nc, null, null, vName);
     vVar.setDataType(dtype);
@@ -2200,13 +2163,13 @@ class Nidsheader{
    * @param pinfo product information
    */
   private void setProductInfo(int prod_type, Pinfo pinfo) {
-    /* memo field                */
-    String[] cmode = new String[]{"Maintenance", "Clear Air", "Precip Mode"};
+    /* memo field */
+    String[] cmode = new String[] {"Maintenance", "Clear Air", "Precip Mode"};
 
     short prod_max = pinfo.p4;
     short prod_min = 0;
     int prod_elevation = 0;
-    //int prod_info;
+    // int prod_info;
     int prod_top;
     int radial = 0;
     String summary = null;
@@ -2217,8 +2180,8 @@ class Nidsheader{
     double t2 = 230 / (111.26 * Math.cos(Math.toRadians(latitude)));
     lat_min = latitude - t1;
     lat_max = latitude + t1;
-    lon_min = longitude + t2; //* Math.cos(Math.toRadians(lat_min));
-    lon_max = longitude - t2; //* Math.cos(Math.toRadians(lat_min));
+    lon_min = longitude + t2; // * Math.cos(Math.toRadians(lat_min));
+    lon_max = longitude - t2; // * Math.cos(Math.toRadians(lat_min));
     startDate = getDate(volumeScanDate, volumeScanTime * 1000);
     endDate = getDate(volumeScanDate, volumeScanTime * 1000);
 
@@ -2232,18 +2195,16 @@ class Nidsheader{
       cunit = "Knots";
       cname = "SpectrumWidth";
       summary =
-          ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1)
-              + " and range 124 nm";
+          ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1) + " and range 124 nm";
       if (pcode == 28) {
         t1 = t1 * 0.25;
         t2 = t2 * 0.25;
         lat_min = latitude - t1;
         lat_max = latitude + t1;
-        lon_min = longitude + t2; //* Math.cos(Math.toRadians(lat_min));
-        lon_max = longitude - t2; //* Math.cos(Math.toRadians(lat_min));
+        lon_min = longitude + t2; // * Math.cos(Math.toRadians(lat_min));
+        lon_max = longitude - t2; // * Math.cos(Math.toRadians(lat_min));
         summary =
-            ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1)
-                + " and range 32 nm";
+            ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1) + " and range 32 nm";
       }
     } else if (prod_type == DigitalDifferentialReflectivity) {
       radial = 1;
@@ -2256,8 +2217,7 @@ class Nidsheader{
       ctitle = "Dualpol: Digital Differential Reflectivity";
       cunit = "dBz";
       cname = "DifferentialReflectivity";
-      summary = ctilt
-          + " is a radial image of dual pol differential reflectivity field and its range 162 nm";
+      summary = ctilt + " is a radial image of dual pol differential reflectivity field and its range 162 nm";
 
     } else if (prod_type == DigitalCorrelationCoefficient) {
       radial = 1;
@@ -2270,8 +2230,7 @@ class Nidsheader{
       ctitle = "Dualpol: Digital Correlation Coefficient";
       cunit = " ";
       cname = "CorrelationCoefficient";
-      summary = ctilt
-          + " is a radial image of dual pol Correlation Coefficient field and its range 162 nm";
+      summary = ctilt + " is a radial image of dual pol Correlation Coefficient field and its range 162 nm";
 
     } else if (prod_type == DigitalDifferentialPhase) {
       radial = 1;
@@ -2284,8 +2243,7 @@ class Nidsheader{
       ctitle = "Dualpol: Digital Differential Phase";
       cunit = "Degree/km";
       cname = "DifferentialPhase";
-      summary =
-          ctilt + " is a radial image of dual pol Differential Phase field and its range 162 nm";
+      summary = ctilt + " is a radial image of dual pol Differential Phase field and its range 162 nm";
 
     } else if (prod_type == HydrometeorClassification) {
       radial = 1;
@@ -2298,14 +2256,12 @@ class Nidsheader{
       ctitle = "Dualpol: Hydrometeor Classification";
       cunit = " ";
       cname = "HydrometeorClassification";
-      summary = ctilt
-          + " is a radial image of dual pol Hydrometeor Classification field and its range 162 nm";
+      summary = ctilt + " is a radial image of dual pol Hydrometeor Classification field and its range 162 nm";
 
     } else if (prod_type == HypridHydrometeorClassification) {
       radial = 1;
       prod_elevation = pinfo.p3;
-      cmemo = "Hyprid Hydrometeor Classification " + prod_elevation / 10 + " DEG "
-          + cmode[pinfo.opmode];
+      cmemo = "Hyprid Hydrometeor Classification " + prod_elevation / 10 + " DEG " + cmode[pinfo.opmode];
 
       int pLevel = getProductLevel(prod_elevation);
       ctilt = pname_lookup(18, pLevel);
@@ -2313,8 +2269,7 @@ class Nidsheader{
       ctitle = "Dualpol: Hyprid Hydrometeor Classification";
       cunit = " ";
       cname = "HypridHydrometeorClassification";
-      summary = ctilt
-          + " is a radial image of dual pol Hyprid Hydrometeor Classification field and its range 162 nm";
+      summary = ctilt + " is a radial image of dual pol Hyprid Hydrometeor Classification field and its range 162 nm";
 
     } else if (prod_type == OneHourAccumulation) {
       radial = 1;
@@ -2324,8 +2279,7 @@ class Nidsheader{
       ctitle = "Dualpol: One Hour Accumulation";
       cunit = "IN";
       cname = "OneHourAccumulation";
-      summary =
-          ctilt + " is a radial image of dual pol One Hour Accumulation field and its range 124 nm";
+      summary = ctilt + " is a radial image of dual pol One Hour Accumulation field and its range 124 nm";
     } else if (prod_type == DigitalAccumulationArray) {
       radial = 1;
       prod_elevation = pinfo.p3;
@@ -2334,8 +2288,7 @@ class Nidsheader{
       ctitle = "Dualpol: Digital Accumulation Array";
       cunit = "IN";
       cname = "DigitalAccumulationArray";
-      summary = ctilt
-          + " is a radial image of dual pol Digital Accumulation Array field and its range 124 nm";
+      summary = ctilt + " is a radial image of dual pol Digital Accumulation Array field and its range 124 nm";
     } else if (prod_type == StormTotalAccumulation) {
       radial = 1;
       prod_elevation = pinfo.p3;
@@ -2344,8 +2297,7 @@ class Nidsheader{
       ctitle = "Dualpol: Storm Total Accumulation";
       cunit = "IN";
       cname = "StormTotalAccumulation";
-      summary = ctilt
-          + " is a radial image of dual pol Storm Total Accumulation field and its range 124 nm";
+      summary = ctilt + " is a radial image of dual pol Storm Total Accumulation field and its range 124 nm";
     } else if (prod_type == DigitalStormTotalAccumulation) {
       radial = 1;
       prod_elevation = pinfo.p3;
@@ -2354,20 +2306,17 @@ class Nidsheader{
       ctitle = "Dualpol: Digital Storm Total Accumulation";
       cunit = "IN";
       cname = "DigitalStormTotalAccumulation";
-      summary = ctilt
-          + " is a radial image of dual pol Digital StormTotal Accumulation field and its range 124 nm";
+      summary = ctilt + " is a radial image of dual pol Digital StormTotal Accumulation field and its range 124 nm";
     } else if (prod_type == Accumulation3Hour) {
       radial = 1;
       prod_elevation = pinfo.p3;
-      cmemo = "Hyprid Hydrometeor Classification " + prod_elevation / 10 + " DEG "
-          + cmode[pinfo.opmode];
+      cmemo = "Hyprid Hydrometeor Classification " + prod_elevation / 10 + " DEG " + cmode[pinfo.opmode];
       int pLevel = getProductLevel(prod_elevation);
       ctilt = pname_lookup(18, pLevel);
       ctitle = "Dualpol: 3-hour Accumulation";
       cunit = "IN";
       cname = "Accumulation3Hour";
-      summary =
-          ctilt + " is a radial image of dual pol 3-hour Accumulation field and its range 124 nm";
+      summary = ctilt + " is a radial image of dual pol 3-hour Accumulation field and its range 124 nm";
 
     } else if (prod_type == Digital1HourDifferenceAccumulation) {
       radial = 1;
@@ -2377,8 +2326,8 @@ class Nidsheader{
       ctitle = "Dualpol: Digital One Hour Difference Accumulation";
       cunit = "IN";
       cname = "Digital1HourDifferenceAccumulation";
-      summary = ctilt
-          + " is a radial image of dual pol Digital One Hour Difference Accumulation field and its range 124 nm";
+      summary =
+          ctilt + " is a radial image of dual pol Digital One Hour Difference Accumulation field and its range 124 nm";
     } else if (prod_type == DigitalTotalDifferenceAccumulation) {
       radial = 1;
       prod_elevation = pinfo.p3;
@@ -2387,8 +2336,8 @@ class Nidsheader{
       ctitle = "Dualpol: Digital Total Difference Accumulation";
       cunit = "IN";
       cname = "DigitalTotalDifferenceAccumulation";
-      summary = ctilt
-          + " is a radial image of dual pol Digital Total Difference Accumulation field and its range 124 nm";
+      summary =
+          ctilt + " is a radial image of dual pol Digital Total Difference Accumulation field and its range 124 nm";
     } else if (prod_type == DigitalInstantaneousPrecipitationRate) {
       radial = 1;
       prod_elevation = pinfo.p3;
@@ -2397,8 +2346,8 @@ class Nidsheader{
       ctitle = "Dualpol: Digital Instantaneous Precipitation Rate";
       cunit = "IN/Hour";
       cname = "DigitalInstantaneousPrecipitationRate";
-      summary = ctilt
-          + " is a radial image of dual pol Digital Instantaneous Precipitation Rate field and its range 124 nm";
+      summary =
+          ctilt + " is a radial image of dual pol Digital Instantaneous Precipitation Rate field and its range 124 nm";
     } else if (prod_type == BaseReflectivityDR) {
       radial = 1;
       prod_elevation = pinfo.p3;
@@ -2434,8 +2383,7 @@ class Nidsheader{
       ctitle = "Digital: Vertical Integ Liquid";
       cunit = "kg/m^2";
       cname = "DigitalIntegLiquid";
-      summary =
-          ctilt + " is a radial image high resolution vertical integral liquid and range 248 nm";
+      summary = ctilt + " is a radial image high resolution vertical integral liquid and range 248 nm";
 
     } else if (prod_type == DigitalHybridReflect) {
       radial = 1;
@@ -2447,8 +2395,7 @@ class Nidsheader{
       cunit = "dBz";
       cname = "DigitalHybridReflectivity";
       summary =
-          ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1)
-              + " and range 124 nm";
+          ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1) + " and range 124 nm";
 
     } else if (prod_type == Base_Reflect || prod_type == Reflect1) {
       radial = 1;
@@ -2456,13 +2403,11 @@ class Nidsheader{
       cmemo = "Base Reflct " + prod_elevation / 10 + " DEG " + cmode[pinfo.opmode];
       if (prod_type == Reflect1) {
         ctilt = "R" + prod_elevation / 10;
-        summary =
-            ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1);
+        summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1);
       } else {
         ctilt = pname_lookup(19, prod_elevation / 10);
-        summary =
-            ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1)
-                + " and range 124 nm";
+        summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1)
+            + " and range 124 nm";
       }
       ctitle = "BREF: Base Reflectivity";
       cunit = "dBz";
@@ -2478,8 +2423,7 @@ class Nidsheader{
       cunit = "dBz";
       cname = "BaseReflectivity248";
       summary =
-          ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1)
-              + " and range 248 nm";
+          ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation / 10 + 1) + " and range 248 nm";
       t1 = 248.0 * 1.853 / 111.26;
       t2 = 460 / (111.26 * Math.cos(Math.toRadians(latitude)));
       lat_min = latitude - t1;
@@ -2504,8 +2448,7 @@ class Nidsheader{
       ctitle = "CREF Composite Reflectivity" + ctilt;
       cunit = "dBz";
       cname = "BaseReflectivityComp";
-    } else if (prod_type == Layer_Reflect_Avg ||
-        prod_type == Layer_Reflect_Max) {
+    } else if (prod_type == Layer_Reflect_Avg || prod_type == Layer_Reflect_Max) {
       radial = 3;
       prod_elevation = pinfo.p5;
       prod_top = pinfo.p6;
@@ -2588,7 +2531,7 @@ class Nidsheader{
     } else if (prod_type == DigitalStormTotalPrecip) {
       radial = 1;
       prod_elevation = -1;
-      //startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
+      // startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
       endDate = getDate(pinfo.p7, pinfo.p8 * 60 * 1000);
       summary = "DSP is a radial image of digital storm total rainfall";
       cmemo = "Digital Strm Total Precip [IN] " + cmode[pinfo.opmode];
@@ -2605,7 +2548,7 @@ class Nidsheader{
     } else if (prod_type == Precip_Accum) {
       radial = 1;
       prod_elevation = -1;
-      //startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
+      // startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
       endDate = getDate(pinfo.p7, pinfo.p8 * 60 * 1000);
       summary = "NTP is a raster image of storm total rainfall accumulation at range 124 nm";
       cmemo = "Strm Tot Rain [IN] " + cmode[pinfo.opmode];
@@ -2662,12 +2605,10 @@ class Nidsheader{
         lat_max = latitude + t1;
         lon_min = longitude + t2;
         lon_max = longitude - t2;
-        summary = ctilt + " is a radial image of base velocity" + (prod_elevation / 10 + 1)
-            + " and  range 32 nm";
+        summary = ctilt + " is a radial image of base velocity" + (prod_elevation / 10 + 1) + " and  range 32 nm";
         cunit = "m/s";
       } else {
-        summary =
-            ctilt + " is a radial image of base velocity at tilt " + (prod_elevation / 10 + 1);
+        summary = ctilt + " is a radial image of base velocity at tilt " + (prod_elevation / 10 + 1);
         cunit = "m/s";
       }
       cmemo = "Rad Vel " + prod_elevation / 10. + " DEG " + cmode[pinfo.opmode];
@@ -2679,8 +2620,8 @@ class Nidsheader{
       prod_min = pinfo.p4;
       prod_max = pinfo.p5;
       ctilt = pname_lookup(56, prod_elevation / 10);
-      summary = ctilt + " is a radial image of storm relative mean radial velocity at tilt " + (
-          prod_elevation / 10 + 1) + " and  range 124 nm";
+      summary = ctilt + " is a radial image of storm relative mean radial velocity at tilt " + (prod_elevation / 10 + 1)
+          + " and  range 124 nm";
       cmemo = "StrmRelMnVl " + prod_elevation / 10. + " DEG " + cmode[pinfo.opmode];
       ctitle = "SRMV: Storm Relative Mean Velocity";
       cunit = "KT";
@@ -2706,10 +2647,8 @@ class Nidsheader{
       cunit = "error";
       cname = "error";
     }
-    /* add geo global att  */
-    ncfile.addAttribute(null,
-        new Attribute("summary", "Nexrad level 3 data are WSR-88D radar products." +
-            summary));
+    /* add geo global att */
+    ncfile.addAttribute(null, new Attribute("summary", "Nexrad level 3 data are WSR-88D radar products." + summary));
     ncfile.addAttribute(null, new Attribute("keywords_vocabulary", ctilt));
     ncfile.addAttribute(null, new Attribute("conventions", _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", "Level3/NIDS"));
@@ -2752,7 +2691,7 @@ class Nidsheader{
 
     ByteArrayInputStream bis = new ByteArrayInputStream(bufc, 2, numCompBytes - 2);
 
-    //CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
+    // CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
     cbzip2.setStream(bis);
     int total = 0;
     int nread;
@@ -2807,23 +2746,17 @@ class Nidsheader{
     byte c = bytes[2];
     byte d = bytes[3];
     if (swapBytes) {
-      return ((a & 0xff)) +
-          ((b & 0xff) << 8) +
-          ((c & 0xff) << 16) +
-          ((d & 0xff) << 24);
+      return ((a & 0xff)) + ((b & 0xff) << 8) + ((c & 0xff) << 16) + ((d & 0xff) << 24);
     } else {
-      return ((a & 0xff) << 24) +
-          ((b & 0xff) << 16) +
-          ((c & 0xff) << 8) +
-          ((d & 0xff));
+      return ((a & 0xff) << 24) + ((b & 0xff) << 16) + ((c & 0xff) << 8) + ((d & 0xff));
     }
   }
 
 
   /*
-   ** Name:       read_dividlen
+   ** Name: read_dividlen
    **
-   ** Purpose:    Read divider ID header from NEXRAD Level III product
+   ** Purpose: Read divider ID header from NEXRAD Level III product
    **
    */
   private Sinfo read_dividlen(ByteBuffer buf, int offset) {
@@ -2884,16 +2817,15 @@ class Nidsheader{
     Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
     ppage.setDimensions(dims);
     ppage.setDataType(DataType.STRING);
-    ppage.addAttribute(
-        new Attribute(CDM.LONG_NAME, "Stand Alone Tabular Alphanumeric Product Message"));
+    ppage.addAttribute(new Attribute(CDM.LONG_NAME, "Stand Alone Tabular Alphanumeric Product Message"));
     ncfile.addVariable(null, ppage);
-    //ppage.setSPobject( new Vinfo (numPages, 0, tblen, 0, hoff, ppos, isR, false, null, null, 82, 0));
+    // ppage.setSPobject( new Vinfo (numPages, 0, tblen, 0, hoff, ppos, isR, false, null, null, 82, 0));
   }
 
   /*
-   ** Name:       read_msghead
+   ** Name: read_msghead
    **
-   ** Purpose:    Read message header from NEXRAD Level III product
+   ** Purpose: Read message header from NEXRAD Level III product
    **
    **
    */
@@ -2910,7 +2842,7 @@ class Nidsheader{
     buf.get(b4, 0, 4);
     mtime = getInt(b4, 4);
     buf.get(b4, 0, 4);
-    //out.println( "product date is " + dstring);
+    // out.println( "product date is " + dstring);
     mlength = getInt(b4, 4);
     buf.get(b2, 0, 2);
     msource = (short) getInt(b2, 2);
@@ -2993,9 +2925,10 @@ class Nidsheader{
   }
 
   /***
-   * Concatenate two bytes to a 32-bit int value.  <b>a</b> is the high order
+   * Concatenate two bytes to a 32-bit int value. <b>a</b> is the high order
    * byte in the resulting int representation, unless swapBytes is true, in
    * which <b>b</b> is the high order byte.
+   * 
    * @param a high order byte
    * @param b low order byte
    * @param swapBytes byte order swap flag
@@ -3034,9 +2967,9 @@ class Nidsheader{
   }
 
   /*
-   ** Name:       read_proddesc
+   ** Name: read_proddesc
    **
-   ** Purpose:    Read product description header from NEXRAD Level III product
+   ** Purpose: Read product description header from NEXRAD Level III product
    */
   Pinfo read_proddesc(ByteBuffer buf, int offset) {
     byte[] b2 = new byte[2];
@@ -3044,18 +2977,17 @@ class Nidsheader{
     int off = offset;
     Short tShort;
     Integer tInt;
-    //Double tDouble = null;
+    // Double tDouble = null;
 
     /* thredds global att */
     ncfile.addAttribute(null, new Attribute("title", "Nexrad Level 3 Data"));
     ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NIDS"));
     ncfile.addAttribute(null, new Attribute("creator_name", "NOAA/NWS"));
-    ncfile.addAttribute(null,
-        new Attribute("creator_url", "http://www.ncdc.noaa.gov/oa/radar/radarproducts.html"));
+    ncfile.addAttribute(null, new Attribute("creator_url", "http://www.ncdc.noaa.gov/oa/radar/radarproducts.html"));
     ncfile.addAttribute(null, new Attribute("naming_authority", "NOAA/NCDC"));
 
-    //      ncfile.addAttribute(null, new Attribute("keywords_vocabulary", cname));
-    //out.println( "offset of buffer is " + off);
+    // ncfile.addAttribute(null, new Attribute("keywords_vocabulary", cname));
+    // out.println( "offset of buffer is " + off);
     buf.position(offset);
     buf.get(b2, 0, 2);
     tShort = (Short) convert(b2, DataType.SHORT, -1);
@@ -3131,26 +3063,22 @@ class Nidsheader{
     buf.get(b2, 0, 2);
     p3 = (short) getInt(b2, 2);
     off += 40;
-    if (pcode == 182 || pcode == 186 || pcode == 32
-        || pcode == 94 || pcode == 99) {
+    if (pcode == 182 || pcode == 186 || pcode == 32 || pcode == 94 || pcode == 99) {
       for (int i = 0; i < 16; i++) {
         buf.get(b2, 0, 2);
         threshold[i] = (short) bytesToInt(b2[0], b2[1], false);
       }
-    } else if (pcode == 159 || pcode == 161 || pcode == 163
-        || pcode == 170 || pcode == 172 || pcode == 173
+    } else if (pcode == 159 || pcode == 161 || pcode == 163 || pcode == 170 || pcode == 172 || pcode == 173
         || pcode == 174 || pcode == 175) {
       // Scale hw 31 32
       buf.get(b4, 0, 4);
       byte[] b44 = {b4[3], b4[2], b4[1], b4[0]};
-      threshold[0] = (short) (
-          java.nio.ByteBuffer.wrap(b44).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat() * 100);
-      // offset  hw 33 34
+      threshold[0] = (short) (java.nio.ByteBuffer.wrap(b44).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat() * 100);
+      // offset hw 33 34
       buf.get(b4, 0, 4);
       byte[] b45 = {b4[3], b4[2], b4[1], b4[0]};
-      threshold[1] = (short) (
-          java.nio.ByteBuffer.wrap(b45).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat() * 100);
-      //  hw 35 reserve
+      threshold[1] = (short) (java.nio.ByteBuffer.wrap(b45).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat() * 100);
+      // hw 35 reserve
       buf.get(b2, 0, 2);
       threshold[2] = 0;
       // hw 36, 37, 38
@@ -3166,14 +3094,12 @@ class Nidsheader{
       // Scale hw 31 32
       buf.get(b4, 0, 4);
       byte[] b44 = {b4[3], b4[2], b4[1], b4[0]};
-      threshold[0] = (short) (java.nio.ByteBuffer.wrap(b44).order(java.nio.ByteOrder.LITTLE_ENDIAN)
-          .getFloat());
-      // offset  hw 33 34
+      threshold[0] = (short) (java.nio.ByteBuffer.wrap(b44).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat());
+      // offset hw 33 34
       buf.get(b4, 0, 4);
       byte[] b45 = {b4[3], b4[2], b4[1], b4[0]};
-      threshold[1] = (short) (java.nio.ByteBuffer.wrap(b45).order(java.nio.ByteOrder.LITTLE_ENDIAN)
-          .getFloat());
-      //  hw 35 reserve
+      threshold[1] = (short) (java.nio.ByteBuffer.wrap(b45).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat());
+      // hw 35 reserve
       buf.get(b2, 0, 2);
       threshold[2] = 0;
       // hw 36, 37, 38
@@ -3194,13 +3120,13 @@ class Nidsheader{
     off += 32;
     buf.get(b2, 0, 2);
     p4 = (short) getInt(b2, 2);
-    //int t1 = getUInt(b2, 2);
+    // int t1 = getUInt(b2, 2);
     buf.get(b2, 0, 2);
     p5 = (short) getInt(b2, 2);
-    //t1 = getUInt(b2, 2);
+    // t1 = getUInt(b2, 2);
     buf.get(b2, 0, 2);
     p6 = (short) getInt(b2, 2);
-    //t1 = getUInt(b2, 2);
+    // t1 = getUInt(b2, 2);
     buf.get(b2, 0, 2);
     p7 = (short) getInt(b2, 2);
     buf.get(b2, 0, 2);
@@ -3208,7 +3134,7 @@ class Nidsheader{
     buf.get(b2, 0, 2);
     p9 = (short) getInt(b2, 2);
     buf.get(b2, 0, 2);
-    p10 = (short) getUInt(b2, 2); //bytesToInt(b2[0], b2[1], true); //       getInt(b2, 2); //
+    p10 = (short) getUInt(b2, 2); // bytesToInt(b2[0], b2[1], true); // getInt(b2, 2); //
     off += 14;
 
     buf.get(b2, 0, 2);
@@ -3216,25 +3142,23 @@ class Nidsheader{
     ncfile.addAttribute(null, new Attribute("NumberOfMaps", numberOfMaps));
     off += 2;
     buf.get(b4, 0, 4);
-    //tInt = (Integer)convert(b4, DataType.INT, -1);
+    // tInt = (Integer)convert(b4, DataType.INT, -1);
     offsetToSymbologyBlock = getInt(b4, 4);
-    //ncfile.addAttribute(null, new Attribute("offset_symbology_block",new Integer(offsetToSymbologyBlock)));
+    // ncfile.addAttribute(null, new Attribute("offset_symbology_block",new Integer(offsetToSymbologyBlock)));
     off += 4;
     buf.get(b4, 0, 4);
-    //tInt = (Integer)convert(b4, DataType.INT, -1);
+    // tInt = (Integer)convert(b4, DataType.INT, -1);
     offsetToGraphicBlock = getInt(b4, 4);
-    //ncfile.addAttribute(null, new Attribute("offset_graphic_block",new Integer(offsetToGraphicBlock)));
+    // ncfile.addAttribute(null, new Attribute("offset_graphic_block",new Integer(offsetToGraphicBlock)));
     off += 4;
     buf.get(b4, 0, 4);
-    //tInt = (Integer)convert(b4, DataType.INT, -1);
+    // tInt = (Integer)convert(b4, DataType.INT, -1);
     offsetToTabularBlock = getInt(b4, 4);
-    //ncfile.addAttribute(null, new Attribute("offset_tabular_block",new Integer(offsetToTabularBlock)));
+    // ncfile.addAttribute(null, new Attribute("offset_tabular_block",new Integer(offsetToTabularBlock)));
 
-    return new Pinfo(divider, latitude, longitude, height, pcode, opmode, threshold,
-        sequenceNumber, volumeScanNumber, volumeScanDate, volumeScanTime,
-        productDate, productTime, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
-        elevationNumber, numberOfMaps, offsetToSymbologyBlock,
-        offsetToGraphicBlock, offsetToTabularBlock);
+    return new Pinfo(divider, latitude, longitude, height, pcode, opmode, threshold, sequenceNumber, volumeScanNumber,
+        volumeScanDate, volumeScanTime, productDate, productTime, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
+        elevationNumber, numberOfMaps, offsetToSymbologyBlock, offsetToGraphicBlock, offsetToTabularBlock);
   }
 
   /**
@@ -3253,8 +3177,7 @@ class Nidsheader{
     ByteBuffer bbuff = ByteBuffer.wrap(barray);
     if (byteOrder >= 0) {
       bbuff.order(
-          byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN
-              : ByteOrder.BIG_ENDIAN);
+          byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
     }
 
     if (dataType == DataType.SHORT) {
@@ -3301,8 +3224,7 @@ class Nidsheader{
     ByteBuffer bbuff = ByteBuffer.wrap(barray);
     if (byteOrder >= 0) {
       bbuff.order(
-          byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN
-              : ByteOrder.BIG_ENDIAN);
+          byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
     }
 
     if (dataType == DataType.SHORT) {
@@ -3349,9 +3271,9 @@ class Nidsheader{
   }
 
   /**
-   * Name:       IsZlibed
+   * Name: IsZlibed
    *
-   * Purpose:    Check a two-byte sequence to see if it indicates the start of a zlib-compressed
+   * Purpose: Check a two-byte sequence to see if it indicates the start of a zlib-compressed
    * buffer
    */
   int isZlibHed(byte[] buf) {
@@ -3371,10 +3293,10 @@ class Nidsheader{
   }
 
   /*
-   ** Name:       IsEncrypt
+   ** Name: IsEncrypt
    **
-   ** Purpose:    Check a two-byte sequence to see if it indicates the start of
-   **             an encrypted image.
+   ** Purpose: Check a two-byte sequence to see if it indicates the start of
+   ** an encrypted image.
    **
    */
   int IsEncrypt(byte[] buf) {
@@ -3391,17 +3313,17 @@ class Nidsheader{
 
 
   /*
-   ** Name:    GetZlibedNexr
+   ** Name: GetZlibedNexr
    **
    ** Purpose: Read bytes from a NEXRAD Level III product into a buffer
-   **          This routine reads compressed image data for Level III formatted file.
-   **          We referenced McIDAS GetNexrLine function
+   ** This routine reads compressed image data for Level III formatted file.
+   ** We referenced McIDAS GetNexrLine function
    */
   byte[] GetZlibedNexr(byte[] buf, int buflen, int hoff) throws IOException {
-    //byte[]  uncompr = new byte[ZLIB_BUF_LEN ]; /* decompression buffer          */
-    //long    uncomprLen = ZLIB_BUF_LEN;        /* length of decompress space    */
-    int doff;                   /* # bytes offset to image       */
-    int numin;                /* # input bytes processed       */
+    // byte[] uncompr = new byte[ZLIB_BUF_LEN ]; /* decompression buffer */
+    // long uncomprLen = ZLIB_BUF_LEN; /* length of decompress space */
+    int doff; /* # bytes offset to image */
+    int numin; /* # input bytes processed */
 
     numin = buflen - hoff;
 
@@ -3409,19 +3331,19 @@ class Nidsheader{
       log.warn(" No compressed data to inflate " + raf.getLocation());
       return null;
     }
-    //byte[]  compr = new byte[numin-4];  /* compressed portion */
+    // byte[] compr = new byte[numin-4]; /* compressed portion */
     /*
-     ** Uncompress first portion of the image.  This should include:
+     ** Uncompress first portion of the image. This should include:
      **
-     **     SHO\r\r\n             <--+
-     **     SEQ#\r\r\n               |  hoff bytes long
-     **     WMO header\r\r\n         |
-     **     PIL\r\r\n             <--+
+     ** SHO\r\r\n <--+
+     ** SEQ#\r\r\n | hoff bytes long
+     ** WMO header\r\r\n |
+     ** PIL\r\r\n <--+
      **
-     **  -> CCB
-     **     WMO header
-     **     PIL
-     **     portion of the image
+     ** -> CCB
+     ** WMO header
+     ** PIL
+     ** portion of the image
      **
      */
     /* a new copy of buff with only compressed bytes */
@@ -3433,7 +3355,7 @@ class Nidsheader{
     int result = 0;
     // byte[] inflateData = null;
     byte[] tmp;
-    int uncompLen = 24500;        /* length of decompress space    */
+    int uncompLen = 24500; /* length of decompress space */
     byte[] uncomp = new byte[uncompLen];
     Inflater inflater = new Inflater(false);
 
@@ -3445,8 +3367,8 @@ class Nidsheader{
       try {
         resultLength = inflater.inflate(uncomp, offset, 4000);
       } catch (DataFormatException ex) {
-        //System.out.println("ERROR on inflation "+ex.getMessage());
-        //ex.printStackTrace();
+        // System.out.println("ERROR on inflation "+ex.getMessage());
+        // ex.printStackTrace();
         log.error("nids Inflater", ex);
         throw new IOException(ex.getMessage(), ex);
       }
@@ -3484,13 +3406,13 @@ class Nidsheader{
 
     inflater.end();
     /*
-     ** Find out how long CCB is.  This is done by using the lower order
+     ** Find out how long CCB is. This is done by using the lower order
      ** 6 bits from the first uncompressed byte and all 8 bits of the
      ** second uncompressed byte.
      */
     doff = 2 * (((uncomp[0] & 0x3f) << 8) | (uncomp[1] & 0xFF));
 
-    for (int i = 0; i < 2; i++) {                         /* eat WMO and PIL */
+    for (int i = 0; i < 2; i++) { /* eat WMO and PIL */
       while ((doff < result) && (uncomp[doff] != '\n')) {
         doff++;
       }
@@ -3503,65 +3425,65 @@ class Nidsheader{
 
     //
     /*
-     ** Copy header bytes to decompression buffer.  The objective is to
+     ** Copy header bytes to decompression buffer. The objective is to
      ** create an output buffer that looks like an uncompressed NOAAPORT
      ** NEXRAD product:
      **
-     **   Section               Product               Example             End
-     **            +--------------------------------+
-     **            |                                |
-     **      1     |        start of product        | CTRL-A              \r\r\n
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **      2     |        sequence number         | 237                 \r\r\n
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **      3     |          WMO header            | SDUS53 KARX 062213  \r\r\n
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **      4     |             PIL                | N0RARX              \r\r\n
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **      5     |                                | AAO130006R2 CH-1
-     **            |                                | Interface Control
-     **            |             CCB                | Document (ICD)
-     **            |                                | for the NWS NWSTG
-     **            |                                | Figure 7-1 p 38
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **      6     |          WMO header            | SDUS53 KARX 062213  \r\r\n
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **      7     |             PIL                | N0RARX              \r\r\n
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **            |                                |
-     **            |                                |
-     **            |                                |
-     **      8     |            image               |
-     **            |                                |
-     **            |                                |
-     **            |                                |
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **      9     |            trailer             | \r\r\nETX
-     **            |                                |
-     **            +--------------------------------+
-     **            |                                |
-     **     10     |     Unidata floater trailer    | \0\0
-     **            |                                |
-     **            +--------------------------------+
+     ** Section Product Example End
+     ** +--------------------------------+
+     ** | |
+     ** 1 | start of product | CTRL-A \r\r\n
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** 2 | sequence number | 237 \r\r\n
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** 3 | WMO header | SDUS53 KARX 062213 \r\r\n
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** 4 | PIL | N0RARX \r\r\n
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** 5 | | AAO130006R2 CH-1
+     ** | | Interface Control
+     ** | CCB | Document (ICD)
+     ** | | for the NWS NWSTG
+     ** | | Figure 7-1 p 38
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** 6 | WMO header | SDUS53 KARX 062213 \r\r\n
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** 7 | PIL | N0RARX \r\r\n
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** | |
+     ** | |
+     ** | |
+     ** 8 | image |
+     ** | |
+     ** | |
+     ** | |
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** 9 | trailer | \r\r\nETX
+     ** | |
+     ** +--------------------------------+
+     ** | |
+     ** 10 | Unidata floater trailer | \0\0
+     ** | |
+     ** +--------------------------------+
      **
-     ** Sections 5-8 are zlib compressed.  They must be uncompressed and
-     ** read to find out where the image begins.  When this is done, sections
+     ** Sections 5-8 are zlib compressed. They must be uncompressed and
+     ** read to find out where the image begins. When this is done, sections
      ** 5-7 are thrown away and 8 is returned immediately following 4.
      ** Section 9 and, if it is there, section 10 are also thrown away.
      **
@@ -3573,57 +3495,48 @@ class Nidsheader{
 
 
   /*
-   ** Name:       code_lookup
+   ** Name: code_lookup
    **
-   ** Purpose:    Derive some derivable metadata
+   ** Purpose: Derive some derivable metadata
    **
    */
   static int code_typelookup(int code) {
     int type;
-    final int[] types = {
-        Other, Other, Other, Other, Other,                          /*   0-  9 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /*  10- 19 */
-        Other, Base_Reflect, Base_Reflect, Base_Reflect, Base_Reflect,
-        BaseReflect248, Base_Reflect, Velocity,                     /*  20- 29 */
-        Velocity, Velocity, Velocity, Velocity, Velocity, SPECTRUM, SPECTRUM,
-        SPECTRUM, Other, DigitalHybridReflect, Other, Other,        /*  30- 39 */
-        Comp_Reflect, Comp_Reflect, Comp_Reflect, Comp_Reflect, Other,
-        Other, Echo_Tops, Other, Other, Other,                      /*  40- 49 */
-        Other, Other, Other, VAD, Other,
-        Other, Other, Other, Other, Other,                          /*  50- 59 */
-        StrmRelMeanVel, StrmRelMeanVel, Vert_Liquid, Other, Other,
-        Other, Other, Other, Layer_Reflect_Avg,                     /*  60- 69 */
-        Layer_Reflect_Avg, Layer_Reflect_Max,
-        Layer_Reflect_Max, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /*  70- 79 */
-        Other, Other, Other, Precip_1, Precip_3,
-        Precip_Accum, Precip_Array, Other,                          /*  80- 89 */
-        Other, Other, Other, Other, Other, Other, Layer_Reflect_Avg,
-        Layer_Reflect_Max, Other, Other, Other,                     /*  90- 99 */
-        BaseReflectivityDR, Other, Other, Other, Other, BaseVelocityDV,
-        Other, Other, Other, Other, Other,                          /* 100-109 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /* 110-119 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /* 120-129 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, DigitalVert_Liquid,             /* 130-139 */
-        EnhancedEcho_Tops, Other, Other, DigitalStormTotalPrecip, Other,
-        Other, Other, Other, Other, Other,                          /* 140-149 */
-        Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /* 150-159 */
-        Other, Other, Other, Other, DigitalDifferentialReflectivity,
-        Other, DigitalCorrelationCoefficient, Other, DigitalDifferentialPhase, Other,
+    final int[] types = {Other, Other, Other, Other, Other, /* 0- 9 */
+        Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, /* 10- 19 */
+        Other, Base_Reflect, Base_Reflect, Base_Reflect, Base_Reflect, BaseReflect248, Base_Reflect, Velocity, /*
+                                                                                                                * 20- 29
+                                                                                                                */
+        Velocity, Velocity, Velocity, Velocity, Velocity, SPECTRUM, SPECTRUM, SPECTRUM, Other, DigitalHybridReflect,
+        Other, Other, /* 30- 39 */
+        Comp_Reflect, Comp_Reflect, Comp_Reflect, Comp_Reflect, Other, Other, Echo_Tops, Other, Other, Other, /*
+                                                                                                               * 40- 49
+                                                                                                               */
+        Other, Other, Other, VAD, Other, Other, Other, Other, Other, Other, /* 50- 59 */
+        StrmRelMeanVel, StrmRelMeanVel, Vert_Liquid, Other, Other, Other, Other, Other, Layer_Reflect_Avg, /* 60- 69 */
+        Layer_Reflect_Avg, Layer_Reflect_Max, Layer_Reflect_Max, Other, Other, Other, Other, Other, Other, Other,
+        Other, /* 70- 79 */
+        Other, Other, Other, Precip_1, Precip_3, Precip_Accum, Precip_Array, Other, /* 80- 89 */
+        Other, Other, Other, Other, Other, Other, Layer_Reflect_Avg, Layer_Reflect_Max, Other, Other, Other, /*
+                                                                                                              * 90- 99
+                                                                                                              */
+        BaseReflectivityDR, Other, Other, Other, Other, BaseVelocityDV, Other, Other, Other, Other, Other, /* 100-109 */
+        Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, /* 110-119 */
+        Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, /* 120-129 */
+        Other, Other, Other, Other, Other, Other, Other, Other, Other, DigitalVert_Liquid, /* 130-139 */
+        EnhancedEcho_Tops, Other, Other, DigitalStormTotalPrecip, Other, Other, Other, Other, Other, Other, /*
+                                                                                                             * 140-149
+                                                                                                             */
+        Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, /* 150-159 */
+        Other, Other, Other, Other, DigitalDifferentialReflectivity, Other, DigitalCorrelationCoefficient, Other,
+        DigitalDifferentialPhase, Other,
         /* 160-169 */
-        HydrometeorClassification, Other, Other, Other, OneHourAccumulation,
-        DigitalAccumulationArray, StormTotalAccumulation, DigitalStormTotalAccumulation,
-        Accumulation3Hour, Digital1HourDifferenceAccumulation,/* 170-179 */
-        DigitalTotalDifferenceAccumulation, DigitalInstantaneousPrecipitationRate,
-        HypridHydrometeorClassification, Other, Other,
-        Reflect1, Reflect1, Velocity1, Velocity1, Other,       /* 180-189 */
-        SPECTRUM1, Reflect1, Reflect1, Other, Other,
-    };
+        HydrometeorClassification, Other, Other, Other, OneHourAccumulation, DigitalAccumulationArray,
+        StormTotalAccumulation, DigitalStormTotalAccumulation, Accumulation3Hour,
+        Digital1HourDifferenceAccumulation, /* 170-179 */
+        DigitalTotalDifferenceAccumulation, DigitalInstantaneousPrecipitationRate, HypridHydrometeorClassification,
+        Other, Other, Reflect1, Reflect1, Velocity1, Velocity1, Other, /* 180-189 */
+        SPECTRUM1, Reflect1, Reflect1, Other, Other,};
 
     if (code < 0 || code > 189) {
       type = Other;
@@ -3637,8 +3550,11 @@ class Nidsheader{
 
   /*
    * product id table
+   * 
    * @param code
+   * 
    * @param elevation
+   * 
    * @return
    */
   static String pname_lookup(int code, int elevation) {
@@ -3796,33 +3712,34 @@ class Nidsheader{
 
   /*
    * product resolution
+   * 
    * @param code
+   * 
    * @return
    */
   static double code_reslookup(int code) {
 
     double data_res;
 
-    final double[] res = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /*   0-  9 */
-        0, 0, 0, 0, 0, 0, 1, 2, 4, 1,    /*  10- 19 */
-        2, 4, 0.25, 0.5, 1, 0.25, 0.5, 1, 0.25, 0,    /*  20- 29 */
-        1, 0, 1, 0, 0, 1, 4, 1, 4, 0,    /*  30- 39 */
-        0, 4, 0, 0, 0, 0, 0, 0, 0, 0,    /*  40- 49 */
-        0, 0, 0, 0, 0, 0.5, 1, 4, 0, 0,    /*  50- 59 */
-        0, 0, 0, 4, 4, 4, 4, 0, 0, 0,    /*  60- 69 */
-        0, 0, 0, 0, 0, 0, 0, 0, 1, 1,    /*  70- 79 */
-        1, 4, 0, 0, 0, 0, 0, 0, 0, 4,    /*  80- 89 */
-        4, 0, 0, 0, 1, 0, 0, 0, 0, 0.25,    /*  90- 99 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 100-109 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 110-119 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 120-129 */
-        0, 0, 0, 0, 1, 1, 0, 0, 1, 0,    /* 130-139 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 140-149 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0.25,    /* 150-159 */
-        0, 0.25, 0, 0.25, 0, 0.25, 0, 0, 0, 2,    /* 160-169 */
-        0.25, 2, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0, 0,    /* 170-179 */
-        0, 150.0, 150.0, 0, 0, 0, 300.0, 0, 0, 0,    /* 180-189 */
+    final double[] res = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0- 9 */
+        0, 0, 0, 0, 0, 0, 1, 2, 4, 1, /* 10- 19 */
+        2, 4, 0.25, 0.5, 1, 0.25, 0.5, 1, 0.25, 0, /* 20- 29 */
+        1, 0, 1, 0, 0, 1, 4, 1, 4, 0, /* 30- 39 */
+        0, 4, 0, 0, 0, 0, 0, 0, 0, 0, /* 40- 49 */
+        0, 0, 0, 0, 0, 0.5, 1, 4, 0, 0, /* 50- 59 */
+        0, 0, 0, 4, 4, 4, 4, 0, 0, 0, /* 60- 69 */
+        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, /* 70- 79 */
+        1, 4, 0, 0, 0, 0, 0, 0, 0, 4, /* 80- 89 */
+        4, 0, 0, 0, 1, 0, 0, 0, 0, 0.25, /* 90- 99 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 100-109 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 110-119 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 120-129 */
+        0, 0, 0, 0, 1, 1, 0, 0, 1, 0, /* 130-139 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 140-149 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0.25, /* 150-159 */
+        0, 0.25, 0, 0.25, 0, 0.25, 0, 0, 0, 2, /* 160-169 */
+        0.25, 2, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0, 0, /* 170-179 */
+        0, 150.0, 150.0, 0, 0, 0, 300.0, 0, 0, 0, /* 180-189 */
     };
 
     if (code < 0 || code > 189) {
@@ -3837,33 +3754,34 @@ class Nidsheader{
 
   /*
    * product level tabel
+   * 
    * @param code
+   * 
    * @return
    */
   static int code_levelslookup(int code) {
 
     int level;
 
-    final int[] levels = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /*   0-  9 */
-        0, 0, 0, 0, 0, 0, 8, 8, 8, 16,    /*  10- 19 */
-        16, 16, 8, 8, 8, 16, 16, 16, 8, 0,    /*  20- 29 */
-        8, 0, 256, 0, 0, 8, 8, 16, 16, 0,    /*  30- 39 */
-        0, 16, 0, 0, 0, 0, 0, 0, 0, 0,    /*  40- 49 */
-        0, 0, 0, 0, 0, 16, 16, 16, 0, 0,    /*  50- 59 */
-        0, 0, 0, 8, 8, 8, 8, 0, 0, 0,    /*  60- 69 */
-        0, 0, 0, 0, 0, 0, 0, 0, 16, 16,    /*  70- 79 */
-        16, 256, 0, 0, 0, 0, 0, 0, 0, 8,    /*  80- 89 */
-        8, 0, 0, 0, 256, 0, 0, 0, 0, 256,    /*  90- 99 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 100-109 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 110-119 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 120-129 */
-        0, 0, 0, 0, 256, 199, 0, 0, 256, 0,    /* 130-139 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    /* 140-149 */
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 256,    /* 150-159 */
-        0, 256, 0, 256, 0, 256, 0, 0, 0, 16,    /* 160-169 */
-        256, 16, 256, 256, 0, 0, 0, 16, 0, 0,    /* 170-179 */
-        0, 16, 256, 0, 0, 0, 256, 0, 0, 0,    /* 180-189 */
+    final int[] levels = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0- 9 */
+        0, 0, 0, 0, 0, 0, 8, 8, 8, 16, /* 10- 19 */
+        16, 16, 8, 8, 8, 16, 16, 16, 8, 0, /* 20- 29 */
+        8, 0, 256, 0, 0, 8, 8, 16, 16, 0, /* 30- 39 */
+        0, 16, 0, 0, 0, 0, 0, 0, 0, 0, /* 40- 49 */
+        0, 0, 0, 0, 0, 16, 16, 16, 0, 0, /* 50- 59 */
+        0, 0, 0, 8, 8, 8, 8, 0, 0, 0, /* 60- 69 */
+        0, 0, 0, 0, 0, 0, 0, 0, 16, 16, /* 70- 79 */
+        16, 256, 0, 0, 0, 0, 0, 0, 0, 8, /* 80- 89 */
+        8, 0, 0, 0, 256, 0, 0, 0, 0, 256, /* 90- 99 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 100-109 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 110-119 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 120-129 */
+        0, 0, 0, 0, 256, 199, 0, 0, 256, 0, /* 130-139 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 140-149 */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 256, /* 150-159 */
+        0, 256, 0, 256, 0, 256, 0, 0, 0, 16, /* 160-169 */
+        256, 16, 256, 256, 0, 0, 0, 16, 0, 0, /* 170-179 */
+        0, 16, 256, 0, 0, 0, 256, 0, 0, 0, /* 180-189 */
     };
 
     if (code < 0 || code > 189) {
@@ -3900,7 +3818,7 @@ class Nidsheader{
     int yt;
     int y0;
     boolean isRadial; // is it a radial variable?
-    long hoff;    // header offset
+    long hoff; // header offset
     long doff;
     boolean isZlibed;
     int[] pos;
@@ -3908,8 +3826,8 @@ class Nidsheader{
     int code;
     int level;
 
-    Vinfo(int xt, int x0, int yt, int y0, long hoff, long doff, boolean isRadial, boolean isZ,
-        int[] pos, int[] len, int code, int level) {
+    Vinfo(int xt, int x0, int yt, int y0, long hoff, long doff, boolean isRadial, boolean isZ, int[] pos, int[] len,
+        int code, int level) {
       this.xt = xt;
       this.yt = yt;
       this.x0 = x0;
@@ -3934,13 +3852,11 @@ class Nidsheader{
     int offsetToSymbologyBlock, offsetToGraphicBlock, offsetToTabularBlock;
     short[] threshold;
 
-    Pinfo(short divider, double latitude, double longitude, double height, short pcode,
-        short opmode, short[] threshold,
-        short sequenceNumber, short volumeScanNumber, short volumeScanDate, int volumeScanTime,
-        short productDate, int productTime, short p1, short p2, short p3, short p4, short p5,
-        short p6, short p7, short p8, short p9, short p10,
-        short elevationNumber, short numberOfMaps, int offsetToSymbologyBlock,
-        int offsetToGraphicBlock, int offsetToTabularBlock) {
+    Pinfo(short divider, double latitude, double longitude, double height, short pcode, short opmode, short[] threshold,
+        short sequenceNumber, short volumeScanNumber, short volumeScanDate, int volumeScanTime, short productDate,
+        int productTime, short p1, short p2, short p3, short p4, short p5, short p6, short p7, short p8, short p9,
+        short p10, short elevationNumber, short numberOfMaps, int offsetToSymbologyBlock, int offsetToGraphicBlock,
+        int offsetToTabularBlock) {
       this.divider = divider;
       this.height = height;
       this.pcode = pcode;

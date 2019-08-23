@@ -19,7 +19,6 @@ import ucar.nc2.wmo.CommonCodeTable;
 import ucar.nc2.wmo.Util;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -60,7 +59,8 @@ public class Grib1TablesViewer extends JPanel {
     varPopup.addAction("Show File contents", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         showFile(bean);
       }
     });
@@ -68,7 +68,8 @@ public class Grib1TablesViewer extends JPanel {
     varPopup.addAction("Compare to default WMO table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         initTableDialog();
 
         Grib1ParamTableReader wmo = new Grib1ParamTables().getParameterTable(0, 0, bean.getVersion());
@@ -87,7 +88,8 @@ public class Grib1TablesViewer extends JPanel {
     varPopup.addAction("Compare two tables", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         initTableDialog();
 
         List list = codeTable.getSelectedBeans();
@@ -104,7 +106,8 @@ public class Grib1TablesViewer extends JPanel {
     varPopup.addAction("Compare to all non-local tables", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         initTableDialog();
 
         compareTableDialog.setTable1(bean);
@@ -114,17 +117,20 @@ public class Grib1TablesViewer extends JPanel {
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    /* entryTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        entryTable.getSelectedBean();
-      }
-    }); */
+    /*
+     * entryTable.addListSelectionListener(new ListSelectionListener() {
+     * public void valueChanged(ListSelectionEvent e) {
+     * entryTable.getSelectedBean();
+     * }
+     * });
+     */
 
     varPopup = new PopupMenu(entryTable.getJTable(), "Options");
     varPopup.addAction("Show in all tables", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         EntryBean bean = (EntryBean) entryTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         showAll(bean);
       }
     });
@@ -143,11 +149,11 @@ public class Grib1TablesViewer extends JPanel {
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Table Used", false);
     infoButton.addActionListener(e -> {
-        if (showTableDialog == null) {
-          showTableDialog = new Grib1TableDialog((Frame) null);
-          showTableDialog.pack();
-        }
-        showTableDialog.setVisible(true);
+      if (showTableDialog == null) {
+        showTableDialog = new Grib1TableDialog((Frame) null);
+        showTableDialog.pack();
+      }
+      showTableDialog.setVisible(true);
     });
     buttPanel.add(infoButton);
 
@@ -157,7 +163,7 @@ public class Grib1TablesViewer extends JPanel {
       for (Grib1ParamTableReader t : tables) {
         beans.add(new TableBean(t));
       }
-      //Collections.sort(beans);
+      // Collections.sort(beans);
       codeTable.setBeans(beans);
 
     } catch (Exception e) {
@@ -179,9 +185,9 @@ public class Grib1TablesViewer extends JPanel {
     codeTable.saveState(false);
     entryTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
+    // prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
-    //prefs.putInt("splitPos2", split2.getDividerLocation());
+    // prefs.putInt("splitPos2", split2.getDividerLocation());
     // if (fileChooser != null) fileChooser.save();
   }
 
@@ -189,7 +195,7 @@ public class Grib1TablesViewer extends JPanel {
   public void setTable(String filename) throws IOException {
     Grib1ParamTableReader table = new Grib1ParamTableReader(filename);
     TableBean bean = new TableBean(table);
-    codeTable.addBean( bean);
+    codeTable.addBean(bean);
     codeTable.setSelectedBean(bean);
   }
 
@@ -203,7 +209,7 @@ public class Grib1TablesViewer extends JPanel {
     Collections.sort(params);
     java.util.List<EntryBean> beans = new ArrayList<>(params.size());
     for (Integer key : params) {
-      beans.add(new EntryBean( map.get(key)));
+      beans.add(new EntryBean(map.get(key)));
     }
     entryTable.setBeans(beans);
   }
@@ -213,9 +219,9 @@ public class Grib1TablesViewer extends JPanel {
   private void showFile(TableBean bean) {
     infoTA.setText("Table:" + bean.getPath() + "\n");
     try (InputStream is = GribResourceReader.getInputStream(bean.getPath())) {
-      infoTA.appendLine( IO.readContents(is));
+      infoTA.appendLine(IO.readContents(is));
       infoWindow.setVisible(true);
-      
+
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -227,7 +233,8 @@ public class Grib1TablesViewer extends JPanel {
     for (Object bean : codeTable.getBeans()) {
       TableBean tbean = (TableBean) bean;
       Grib1Parameter p = tbean.table.getLocalParameter(ebean.getNumber());
-      if (p != null) f.format(" %s from %s (%d)%n", p, tbean.table.getName(), tbean.table.getParameters().hashCode());
+      if (p != null)
+        f.format(" %s from %s (%d)%n", p, tbean.table.getName(), tbean.table.getParameters().hashCode());
     }
 
     infoTA.appendLine(f.toString());
@@ -236,7 +243,7 @@ public class Grib1TablesViewer extends JPanel {
 
   private void compareTables(Grib1TableCompareDialog.Data data) {
     Formatter f = new Formatter();
-    if ( data.table2bean == null)
+    if (data.table2bean == null)
       compareAll(data.table1bean.table, data, f);
     else
       compare(data.table1bean.table, data.table2bean.table, data, f);
@@ -246,7 +253,8 @@ public class Grib1TablesViewer extends JPanel {
     infoWindow.show();
   }
 
-  private void compare(Grib1ParamTableReader t1, Grib1ParamTableReader t2, Grib1TableCompareDialog.Data data, Formatter out) {
+  private void compare(Grib1ParamTableReader t1, Grib1ParamTableReader t2, Grib1TableCompareDialog.Data data,
+      Formatter out) {
     out.format("Compare%n %s%n %s%n", t1.toString(), t2.toString());
     Map<Integer, Grib1Parameter> h1 = t1.getParameters();
     Map<Integer, Grib1Parameter> h2 = t2.getParameters();
@@ -257,7 +265,8 @@ public class Grib1TablesViewer extends JPanel {
       Grib1Parameter d1 = h1.get(key);
       Grib1Parameter d2 = h2.get(key);
       if (d2 == null) {
-        if (data.showMissing) out.format("**No key %s (%s) in second table%n", key, d1);
+        if (data.showMissing)
+          out.format("**No key %s (%s) in second table%n", key, d1);
       } else {
         if (data.compareDesc) {
           if (!equiv(d1.getDescription(), d2.getDescription()))
@@ -272,20 +281,21 @@ public class Grib1TablesViewer extends JPanel {
             out.format(" %s units%n   %s%n   %s%n", d1.getNumber(), d1.getUnit(), d2.getUnit());
         }
         if (data.cleanUnits) {
-          String cu1 =  Util.cleanUnit(d1.getUnit());
-          String cu2 =  Util.cleanUnit(d2.getUnit());
-          if (!equiv(cu1, cu2)) out.format(" %s cleanUnits%n   %s%n   %s%n", d1.getNumber(), cu1, cu2);
+          String cu1 = Util.cleanUnit(d1.getUnit());
+          String cu2 = Util.cleanUnit(d2.getUnit());
+          if (!equiv(cu1, cu2))
+            out.format(" %s cleanUnits%n   %s%n   %s%n", d1.getNumber(), cu1, cu2);
         }
         if (data.udunits) {
-          String cu1 =  Util.cleanUnit(d1.getUnit());
-          String cu2 =  Util.cleanUnit(d2.getUnit());
-            try {
-              SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
-              if (!su1.isCompatible(cu2))
-                out.format(" %s udunits%n   %s%n   %s%n", d1.getNumber(), cu1, cu2);
-            } catch (Exception e) {
-              out.format(" %s udunits%n   cant parse = %s%n   %s%n", d1.getNumber(), cu1, cu2);
-            }
+          String cu1 = Util.cleanUnit(d1.getUnit());
+          String cu2 = Util.cleanUnit(d2.getUnit());
+          try {
+            SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
+            if (!su1.isCompatible(cu2))
+              out.format(" %s udunits%n   %s%n   %s%n", d1.getNumber(), cu1, cu2);
+          } catch (Exception e) {
+            out.format(" %s udunits%n   cant parse = %s%n   %s%n", d1.getNumber(), cu1, cu2);
+          }
         }
       }
     }
@@ -305,9 +315,12 @@ public class Grib1TablesViewer extends JPanel {
   }
 
   private boolean equiv(String org1, String org2) {
-    if (org1 == org2) return true;
-    if (org1 == null) return false;
-    if (org2 == null) return false;
+    if (org1 == org2)
+      return true;
+    if (org1 == null)
+      return false;
+    if (org2 == null)
+      return false;
     return org1.equalsIgnoreCase(org2);
   }
 
@@ -323,31 +336,32 @@ public class Grib1TablesViewer extends JPanel {
 
       for (Object bean : codeTable.getBeans()) {
         TableBean tbean = (TableBean) bean;
-        if (tbean.getVersion() > 127) continue;
+        if (tbean.getVersion() > 127)
+          continue;
 
         Grib1Parameter d2 = tbean.table.getLocalParameter(d1.getNumber());
         if (d2 != null) {
-          boolean descDiff = data.compareDesc &&  !equiv(d1.getDescription(), d2.getDescription());
-          boolean namesDiff = data.compareNames &&  !equiv(d1.getName(), d2.getName());
-          boolean unitsDiff = data.compareUnits &&  !equiv(d1.getUnit(), d2.getUnit());
-          boolean cunitsDiff = data.cleanUnits &&  !equiv(Util.cleanUnit(d1.getUnit()), Util.cleanUnit(d2.getUnit()));
+          boolean descDiff = data.compareDesc && !equiv(d1.getDescription(), d2.getDescription());
+          boolean namesDiff = data.compareNames && !equiv(d1.getName(), d2.getName());
+          boolean unitsDiff = data.compareUnits && !equiv(d1.getUnit(), d2.getUnit());
+          boolean cunitsDiff = data.cleanUnits && !equiv(Util.cleanUnit(d1.getUnit()), Util.cleanUnit(d2.getUnit()));
           boolean udunitsDiff = false;
           if (data.udunits) {
-            String cu1 =  Util.cleanUnit(d1.getUnit());
-            String cu2 =  Util.cleanUnit(d2.getUnit());
-              try {
-                SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
-                udunitsDiff = !su1.isCompatible(cu2);
-              } catch (Exception e) {
-                udunitsDiff = false;
-              }
+            String cu1 = Util.cleanUnit(d1.getUnit());
+            String cu2 = Util.cleanUnit(d2.getUnit());
+            try {
+              SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
+              udunitsDiff = !su1.isCompatible(cu2);
+            } catch (Exception e) {
+              udunitsDiff = false;
+            }
           }
 
           if (descDiff)
             out.format("    desc=%s from %s%n", d2.getDescription(), tbean.table.getPath());
           if (namesDiff)
             out.format("    name=%s from %s%n", d2.getName(), tbean.table.getPath());
-          if (unitsDiff || cunitsDiff || udunitsDiff )
+          if (unitsDiff || cunitsDiff || udunitsDiff)
             out.format("    units=%s from %s%n", d2.getUnit(), tbean.table.getPath());
         }
       }
@@ -360,8 +374,7 @@ public class Grib1TablesViewer extends JPanel {
 
     // no-arg constructor
 
-    public TableBean() {
-    }
+    public TableBean() {}
 
     // create from a dataset
 
@@ -408,7 +421,7 @@ public class Grib1TablesViewer extends JPanel {
         ret = getSubcenter_id() - o.getSubcenter_id();
       if (ret == 0)
         ret = getVersion() - o.getVersion();
-      return  ret;
+      return ret;
     }
   }
 
@@ -416,8 +429,7 @@ public class Grib1TablesViewer extends JPanel {
     Grib1Parameter param;
 
     // no-arg constructor
-    public EntryBean() {
-    }
+    public EntryBean() {}
 
     public EntryBean(Grib1Parameter param) {
       this.param = param;
@@ -450,13 +462,13 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getUdunit() {
-      String cu =  Util.cleanUnit(param.getUnit());
-         try {
-           SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu);
-           return (su1.isUnknownUnit()) ? "UNKNOWN" : su1.toString();
-         } catch (Exception e) {
-           return "FAIL "+e.getMessage();
-         }
+      String cu = Util.cleanUnit(param.getUnit());
+      try {
+        SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu);
+        return (su1.isUnknownUnit()) ? "UNKNOWN" : su1.toString();
+      } catch (Exception e) {
+        return "FAIL " + e.getMessage();
+      }
     }
 
     public int getNumber() {

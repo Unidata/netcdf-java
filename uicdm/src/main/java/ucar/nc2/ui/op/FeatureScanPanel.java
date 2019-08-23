@@ -11,7 +11,6 @@ import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.util.*;
@@ -20,6 +19,7 @@ import javax.swing.*;
 
 /**
  * Scan for Feature Datasets
+ * 
  * @author caron
  * @since Dec 30, 2008
  */
@@ -36,15 +36,16 @@ public class FeatureScanPanel extends JPanel {
 
     ftTable = new BeanTable(FeatureScan.Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
     ftTable.addListSelectionListener(e -> {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        setSelectedFeatureDataset(ftb);
+      FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+      setSelectedFeatureDataset(ftb);
     });
 
     PopupMenu varPopup = new PopupMenu(ftTable.getJTable(), "Options");
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         FeatureScanPanel.this.firePropertyChange("openNetcdfFile", null, ftb.f.getPath());
       }
     });
@@ -52,7 +53,8 @@ public class FeatureScanPanel extends JPanel {
     varPopup.addAction("Open in CoordSystems", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         FeatureScanPanel.this.firePropertyChange("openCoordSystems", null, ftb.f.getPath());
       }
     });
@@ -60,7 +62,8 @@ public class FeatureScanPanel extends JPanel {
     varPopup.addAction("Open as PointDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         FeatureScanPanel.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
       }
     });
@@ -68,7 +71,8 @@ public class FeatureScanPanel extends JPanel {
     varPopup.addAction("Open as NcML", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         FeatureScanPanel.this.firePropertyChange("openNcML", null, ftb.f.getPath());
       }
     });
@@ -76,7 +80,8 @@ public class FeatureScanPanel extends JPanel {
     varPopup.addAction("Open as GridDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         FeatureScanPanel.this.firePropertyChange("openGridDataset", null, ftb.f.getPath());
       }
     });
@@ -84,7 +89,8 @@ public class FeatureScanPanel extends JPanel {
     varPopup.addAction("Open as CoverageDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         FeatureScanPanel.this.firePropertyChange("openCoverageDataset", null, ftb.f.getPath());
       }
     });
@@ -92,7 +98,8 @@ public class FeatureScanPanel extends JPanel {
     varPopup.addAction("Open as RadialDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         FeatureScanPanel.this.firePropertyChange("openRadialDataset", null, ftb.f.getPath());
       }
     });
@@ -104,14 +111,15 @@ public class FeatureScanPanel extends JPanel {
         for (FeatureScan.Bean bean : selected) {
           bean.toString(f, false);
         }
-        dumpTA.setText(f.toString());          
+        dumpTA.setText(f.toString());
       }
     });
 
     varPopup.addAction("Run Coverage Classifier", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         dumpTA.setText(ftb.runClassifier());
       }
     });
@@ -146,17 +154,17 @@ public class FeatureScanPanel extends JPanel {
   public boolean setScanDirectory(String dirName) {
     clear();
 
-    //repaint();
+    // repaint();
     FeatureScan scanner = new FeatureScan(dirName, true);
     Formatter errlog = new Formatter();
     List<FeatureScan.Bean> beans = scanner.scan(errlog);
-    if (beans.size() == 0)  {
+    if (beans.size() == 0) {
       dumpTA.setText(errlog.toString());
       return false;
     }
 
     ftTable.setBeans(beans);
-    //repaint();
+    // repaint();
     return true;
   }
 

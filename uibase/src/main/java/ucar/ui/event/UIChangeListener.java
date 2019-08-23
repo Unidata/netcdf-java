@@ -4,9 +4,12 @@
  */
 
 package ucar.ui.event;
-/** Listeners for UIChangeEvents.
+
+/**
+ * Listeners for UIChangeEvents.
+ * 
  * @author John Caron
  */
 public interface UIChangeListener extends java.util.EventListener {
-    void processChange(UIChangeEvent e);
+  void processChange(UIChangeEvent e);
 }

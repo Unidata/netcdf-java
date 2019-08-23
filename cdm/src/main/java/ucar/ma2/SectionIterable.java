@@ -5,7 +5,6 @@
 package ucar.ma2;
 
 import javax.annotation.concurrent.Immutable;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +24,7 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
   private final int[] fullShape;
 
   public SectionIterable(List<RangeIterator> ranges, int[] fullShape) {
-    assert ranges.size() == fullShape.length : ranges.size() +" != "+ fullShape.length;
+    assert ranges.size() == fullShape.length : ranges.size() + " != " + fullShape.length;
     int count = 0;
     for (RangeIterator ri : ranges) {
       assert (ri.length() <= fullShape[count]);
@@ -37,7 +36,7 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
   }
 
   public SectionIterable(List<RangeIterator> ranges, List<Integer> fullShapeList) {
-    assert ranges.size() == fullShapeList.size() : ranges.size() +" != "+ fullShapeList.size();
+    assert ranges.size() == fullShapeList.size() : ranges.size() + " != " + fullShapeList.size();
     int count = 0;
     this.fullShape = new int[fullShapeList.size()];
     for (RangeIterator ri : ranges) {
@@ -64,7 +63,7 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
     int[] subFullRange = new int[n];
     System.arraycopy(fullShape, start, subFullRange, 0, n);
 
-    return new SectionIterable( ranges.subList(start, endExclusive), subFullRange);
+    return new SectionIterable(ranges.subList(start, endExclusive), subFullRange);
   }
 
   public RangeIterator getRange(int i) {
@@ -73,7 +72,7 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
 
   public int[] getShape() {
     int[] result = new int[getRank()];
-    for (int i=0; i<getRank(); i++)
+    for (int i = 0; i < getRank(); i++)
       result[i] = getRange(i).length();
     return result;
   }
@@ -106,14 +105,15 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
   }
 
   public class SectionIterator implements Iterator<java.lang.Integer> {
-    private int[] odo = new int[getRank()];  // odometer - the current element LOOK could use Index, but must upgrade to using Range
+    private int[] odo = new int[getRank()]; // odometer - the current element LOOK could use Index, but must upgrade to
+                                            // using Range
     private List<java.util.Iterator<Integer>> rangeIterList = new ArrayList<>();
     private int[] stride = new int[getRank()];
     private long done, total;
 
     SectionIterator() {
       int ss = 1;
-      for (int i = getRank() - 1; i >= 0; i--) {  // fastest varying last
+      for (int i = getRank() - 1; i >= 0; i--) { // fastest varying last
         stride[i] = ss;
         ss *= fullShape[i];
       }
@@ -135,7 +135,8 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
     public Integer next() {
       int next = currentElement();
       done++;
-      if (done < total) incr(); // increment for next call
+      if (done < total)
+        incr(); // increment for next call
       return next;
     }
 
@@ -151,7 +152,8 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
         System.arraycopy(odo, 0, index, 0, odo.length);
 
       done++;
-      if (done < total) incr(); // increment for next call
+      if (done < total)
+        incr(); // increment for next call
       return next;
     }
 

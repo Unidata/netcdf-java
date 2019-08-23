@@ -20,7 +20,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -36,13 +35,13 @@ public class TestN4problems {
 
   @AfterClass
   static public void after() {
-    H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
+    H5header.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 
   @Test
   public void testTiling2() throws IOException, InvalidRangeException {
     // java.lang.AssertionError: shape[2] (385) >= pt[2] (390)
-    String filename = TestN4reading.testDir+"UpperDeschutes_t4p10_swemelt.nc";
+    String filename = TestN4reading.testDir + "UpperDeschutes_t4p10_swemelt.nc";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       Variable v = ncfile.findVariable(null, "UpperDeschutes_t4p10_swemelt");
       Array data = v.read("8087, 150:155, 150:155");
@@ -56,8 +55,8 @@ public class TestN4problems {
   @Test
   public void testTiling() throws IOException {
     // Global Heap 1t 13059 runs out with no heap id = 0
-    String filename = TestN4reading.testDir+"tiling.nc4";
-    try( GridDataset gridDataset = GridDataset.open(filename)) {
+    String filename = TestN4reading.testDir + "tiling.nc4";
+    try (GridDataset gridDataset = GridDataset.open(filename)) {
       GridDatatype grid = gridDataset.findGridByName("Turbulence_SIGMET_AIRMET");
       System.out.printf("grid=%s%n", grid);
       Array data = grid.readDataSlice(4, 13, 176, 216); // FAILS
@@ -66,20 +65,20 @@ public class TestN4problems {
   }
 
 
-  //@Test
+  // @Test
   public void utestEnum() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = TestN4reading.testDir+"nc4/tst_enum_data.nc";
+    String filename = TestN4reading.testDir + "nc4/tst_enum_data.nc";
     NetcdfFile ncfile = NetcdfFile.open(filename);
     Variable v = ncfile.findVariable("primary_cloud");
     Array data = v.read();
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     logger.debug(NCdumpW.toString(data, "primary_cloud", null));
     ncfile.close();
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
   }
 
-  //  @Test
+  // @Test
   public void utestEnum2() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = NetcdfDataset.openFile("D:/netcdf4/tst_enum_data.nc", null);
     Variable v2 = ncfile.findVariable("primary_cloud");

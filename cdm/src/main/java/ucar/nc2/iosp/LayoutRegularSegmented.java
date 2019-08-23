@@ -26,7 +26,7 @@ public class LayoutRegularSegmented implements Layout {
   private IndexChunker.Chunk chunkOuter;
 
   // inner chunk = deal with segmentation
-  private IndexChunker.Chunk chunkInner = new IndexChunker.Chunk(0,0,0);
+  private IndexChunker.Chunk chunkInner = new IndexChunker.Chunk(0, 0, 0);
 
   private static final boolean debugNext = false;
 
@@ -35,12 +35,13 @@ public class LayoutRegularSegmented implements Layout {
    *
    * @param startPos starting address of the entire data array.
    * @param elemSize size of an element in bytes.
-   * @param recSize  size of outer stride in bytes
-   * @param srcShape    shape of the entire data array. must have rank > 0
+   * @param recSize size of outer stride in bytes
+   * @param srcShape shape of the entire data array. must have rank > 0
    * @param wantSection the wanted section of data
    * @throws ucar.ma2.InvalidRangeException if ranges are misformed
    */
-  public LayoutRegularSegmented(long startPos, int elemSize, long recSize, int[] srcShape, Section wantSection) throws InvalidRangeException {
+  public LayoutRegularSegmented(long startPos, int elemSize, long recSize, int[] srcShape, Section wantSection)
+      throws InvalidRangeException {
     assert startPos > 0;
     assert elemSize > 0;
     assert recSize > 0;
@@ -92,7 +93,7 @@ public class LayoutRegularSegmented implements Layout {
 
     } else {
       result = nextOuter();
-      int nelems = getMaxElem( result.getSrcElem());
+      int nelems = getMaxElem(result.getSrcElem());
       if (nelems < result.getNelems())
         result = nextInner(true, nelems);
     }
@@ -110,25 +111,25 @@ public class LayoutRegularSegmented implements Layout {
   private IndexChunker.Chunk nextInner(boolean first, int nelems) {
     if (first) {
       chunkInner.setNelems(nelems);
-      chunkInner.setDestElem( chunkOuter.getDestElem());
+      chunkInner.setDestElem(chunkOuter.getDestElem());
       needInner = chunkOuter.getNelems();
       doneInner = 0;
 
     } else {
-      chunkInner.incrDestElem( chunkInner.getNelems()); // increment using last chunks' value
-      nelems = getMaxElem( chunkOuter.getSrcElem() + doneInner);
+      chunkInner.incrDestElem(chunkInner.getNelems()); // increment using last chunks' value
+      nelems = getMaxElem(chunkOuter.getSrcElem() + doneInner);
       nelems = Math.min(nelems, needInner);
       chunkInner.setNelems(nelems); // set this chunk's value
     }
 
-    chunkInner.setSrcElem( chunkOuter.getSrcElem() + doneInner);
-    chunkInner.setSrcPos( getFilePos( chunkOuter.getSrcElem() + doneInner));
+    chunkInner.setSrcElem(chunkOuter.getSrcElem() + doneInner);
+    chunkInner.setSrcPos(getFilePos(chunkOuter.getSrcElem() + doneInner));
     return chunkInner;
   }
 
   public IndexChunker.Chunk nextOuter() {
     chunkOuter = chunker.next();
-    chunkOuter.setSrcPos( getFilePos( chunkOuter.getSrcElem()));
+    chunkOuter.setSrcPos(getFilePos(chunkOuter.getSrcElem()));
     return chunkOuter;
   }
 

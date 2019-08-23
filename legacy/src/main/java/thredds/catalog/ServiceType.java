@@ -20,43 +20,43 @@ public final class ServiceType {
   public final static ServiceType DODS = new ServiceType("DODS");
   public final static ServiceType OPENDAP = new ServiceType("OPENDAP");
   public final static ServiceType DAP4 = new ServiceType("DAP4");
-  public final static ServiceType OPENDAPG = new ServiceType( "OPENDAP-G" );
+  public final static ServiceType OPENDAPG = new ServiceType("OPENDAP-G");
 
-  public final static ServiceType HTTPServer = new ServiceType( "HTTPServer" );
-  public final static ServiceType FTP = new ServiceType( "FTP" );
-  public final static ServiceType GRIDFTP = new ServiceType( "GridFTP" );
-  public final static ServiceType FILE = new ServiceType( "File" );
+  public final static ServiceType HTTPServer = new ServiceType("HTTPServer");
+  public final static ServiceType FTP = new ServiceType("FTP");
+  public final static ServiceType GRIDFTP = new ServiceType("GridFTP");
+  public final static ServiceType FILE = new ServiceType("File");
 
-  public final static ServiceType LAS = new ServiceType( "LAS" );
-  public final static ServiceType WMS = new ServiceType( "WMS" );
-  public final static ServiceType WFS = new ServiceType( "WFS" );
-  public final static ServiceType WCS = new ServiceType( "WCS" );
-  public final static ServiceType WSDL = new ServiceType( "WSDL" );
+  public final static ServiceType LAS = new ServiceType("LAS");
+  public final static ServiceType WMS = new ServiceType("WMS");
+  public final static ServiceType WFS = new ServiceType("WFS");
+  public final static ServiceType WCS = new ServiceType("WCS");
+  public final static ServiceType WSDL = new ServiceType("WSDL");
 
-  //NGDC addition 5/10/2011
-  public final static ServiceType NCML = new ServiceType( "NCML" );
-  public final static ServiceType UDDC = new ServiceType( "UDDC" );
-  public final static ServiceType ISO = new ServiceType( "ISO" );
-  public final static ServiceType ncJSON  = new ServiceType( "ncJSON" );
-  public final static ServiceType H5Service = new ServiceType( "H5Service" );
+  // NGDC addition 5/10/2011
+  public final static ServiceType NCML = new ServiceType("NCML");
+  public final static ServiceType UDDC = new ServiceType("UDDC");
+  public final static ServiceType ISO = new ServiceType("ISO");
+  public final static ServiceType ncJSON = new ServiceType("ncJSON");
+  public final static ServiceType H5Service = new ServiceType("H5Service");
 
-  public final static ServiceType WebForm = new ServiceType( "WebForm" );
+  public final static ServiceType WebForm = new ServiceType("WebForm");
 
-  public final static ServiceType CATALOG = new ServiceType( "Catalog" );
-  public final static ServiceType QC = new ServiceType( "QueryCapability" );
-  public final static ServiceType RESOLVER = new ServiceType( "Resolver" );
-  public final static ServiceType COMPOUND = new ServiceType( "Compound" );
-  public final static ServiceType THREDDS = new ServiceType( "THREDDS" );
+  public final static ServiceType CATALOG = new ServiceType("Catalog");
+  public final static ServiceType QC = new ServiceType("QueryCapability");
+  public final static ServiceType RESOLVER = new ServiceType("Resolver");
+  public final static ServiceType COMPOUND = new ServiceType("Compound");
+  public final static ServiceType THREDDS = new ServiceType("THREDDS");
 
   // experimental
-  public final static ServiceType NetcdfSubset = new ServiceType( "NetcdfSubset" );
-  public final static ServiceType CdmRemote = new ServiceType( "CdmRemote" );
-  public final static ServiceType CdmrFeature = new ServiceType( "CdmrFeature" );
+  public final static ServiceType NetcdfSubset = new ServiceType("NetcdfSubset");
+  public final static ServiceType CdmRemote = new ServiceType("CdmRemote");
+  public final static ServiceType CdmrFeature = new ServiceType("CdmrFeature");
 
   // deprecated - do not use
-  public final static ServiceType NETCDF = new ServiceType( "NetCDF" ); // deprecated - use dataFormatType = NetCDF
-  public final static ServiceType HTTP = new ServiceType( "HTTP" ); // deprecated - use HTTPServer
-  public final static ServiceType NetcdfServer = new ServiceType( "NetcdfServer" ); // deprecated - use CdmRemote
+  public final static ServiceType NETCDF = new ServiceType("NetCDF"); // deprecated - use dataFormatType = NetCDF
+  public final static ServiceType HTTP = new ServiceType("HTTP"); // deprecated - use HTTPServer
+  public final static ServiceType NetcdfServer = new ServiceType("NetcdfServer"); // deprecated - use CdmRemote
 
   private String name;
 
@@ -64,8 +64,8 @@ public final class ServiceType {
     this.name = s;
     members.add(this);
   }
-  
-  private ServiceType( String name, boolean fake) {
+
+  private ServiceType(String name, boolean fake) {
     this.name = name;
   }
 
@@ -86,7 +86,8 @@ public final class ServiceType {
    * @return ServiceType or null if no match.
    */
   public static ServiceType findType(String name) {
-    if (name == null) return null;
+    if (name == null)
+      return null;
     for (ServiceType serviceType : members) {
       if (serviceType.name.equalsIgnoreCase(name))
         return serviceType;
@@ -102,9 +103,10 @@ public final class ServiceType {
    * @return the named ServiceType or null if given name is null.
    */
   public static ServiceType getType(String name) {
-    if (name == null) return null;
-    ServiceType type = findType( name );
-    return type != null ? type : new ServiceType( name, false );
+    if (name == null)
+      return null;
+    ServiceType type = findType(name);
+    return type != null ? type : new ServiceType(name, false);
   }
 
   /**

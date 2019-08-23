@@ -8,7 +8,6 @@ package ucar.nc2.grib.grib1;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -19,12 +18,12 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib1SectionIndicator {
-  static final byte[] MAGIC = new byte[]{'G','R','I','B'};
+  static final byte[] MAGIC = new byte[] {'G', 'R', 'I', 'B'};
 
   private final long messageLength;
   private final long startPos;
   private final int messageLengthNotFixed;
-  boolean isMessageLengthFixed=false;
+  boolean isMessageLengthFixed = false;
 
   /**
    * Read Grib2SectionIndicator from raf.
@@ -46,7 +45,7 @@ public class Grib1SectionIndicator {
     if (edition != 1)
       throw new IllegalArgumentException("Not a GRIB-1 record");
     messageLength = Grib1RecordScanner.getFixedTotalLengthEcmwfLargeGrib(raf, messageLengthNotFixed);
-    if(messageLength!=messageLengthNotFixed) {
+    if (messageLength != messageLengthNotFixed) {
       isMessageLengthFixed = true;
     }
   }
@@ -54,7 +53,7 @@ public class Grib1SectionIndicator {
   Grib1SectionIndicator(long startPos, long messageLength) {
     this.startPos = startPos;
     this.messageLength = messageLength;
-    this.messageLengthNotFixed = (int)messageLength;
+    this.messageLengthNotFixed = (int) messageLength;
     this.isMessageLengthFixed = false;
   }
 
@@ -69,19 +68,21 @@ public class Grib1SectionIndicator {
 
   /**
    * Starting position of the entire GRIB message: the 'G' in GRIB
+   * 
    * @return the starting position of the entire GRIB message
    */
   public long getStartPos() {
-   return startPos;
- }
+    return startPos;
+  }
 
   /**
    * Ending position of the entire GRIB message: startPos + messageLength
+   * 
    * @return the ending position of the entire GRIB message
    */
   public long getEndPos() {
-   return startPos + messageLength;
- }
+    return startPos + messageLength;
+  }
 
 }
 

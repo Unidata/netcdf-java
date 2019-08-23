@@ -8,7 +8,6 @@
 package thredds.catalog.dl;
 
 import ucar.nc2.constants.CDM;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -19,6 +18,7 @@ import java.io.InputStreamReader;
 
 /**
  * read in GRIB-1 to DIF csv file
+ * 
  * @author john
  */
 public class Grib1toDIF implements VocabTranslator {
@@ -39,23 +39,24 @@ public class Grib1toDIF implements VocabTranslator {
     String resourceName = "/resources/thredds/dl/GRIB-GCMD.csv";
     InputStream ios = c.getResourceAsStream(resourceName);
     if (ios == null)
-      throw new IOException("Cant find resource= "+resourceName);
+      throw new IOException("Cant find resource= " + resourceName);
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     while (count < maxLines) {
       String line = dataIS.readLine();
-      if (line == null) break;
+      if (line == null)
+        break;
 
-      StringTokenizer stoker = new StringTokenizer( line, ",");
+      StringTokenizer stoker = new StringTokenizer(line, ",");
       String category = stoker.nextToken().trim();
       String topic = stoker.nextToken().trim();
       String term = stoker.nextToken().trim();
       String var = stoker.nextToken().trim();
       String gribNo = stoker.nextToken().trim();
 
-      String difParam = category +" > " +topic +" > " + term +" > " + var;
-      hash.put( gribNo, difParam);
+      String difParam = category + " > " + topic + " > " + term + " > " + var;
+      hash.put(gribNo, difParam);
       count++;
     }
 
@@ -65,7 +66,7 @@ public class Grib1toDIF implements VocabTranslator {
 
   public String translate(String fromId) {
     int pos = fromId.lastIndexOf(","); // the last number is the
-    String paramNo = fromId.substring(pos+1).trim();
+    String paramNo = fromId.substring(pos + 1).trim();
     return hash.get(paramNo);
   }
 }

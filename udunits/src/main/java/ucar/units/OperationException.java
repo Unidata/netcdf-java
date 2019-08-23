@@ -10,34 +10,33 @@ package ucar.units;
  * @author Steven R. Emmerson
  */
 public abstract class OperationException extends UnitException {
-	private static final long	serialVersionUID	= 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs from nothing.
-	 */
-	public OperationException() {
-	}
+  /**
+   * Constructs from nothing.
+   */
+  public OperationException() {}
 
-	/**
-	 * Constructs from an error message.
-	 * 
-	 * @param message
-	 *            The error message.
-	 */
-	protected OperationException(final String message) {
-		super(message);
-	}
+  /**
+   * Constructs from an error message.
+   * 
+   * @param message
+   *        The error message.
+   */
+  protected OperationException(final String message) {
+    super(message);
+  }
 
-	/**
-	 * Constructs from an error message and the exception that caused the
-	 * problem.
-	 * 
-	 * @param message
-	 *            The error message.
-	 * @param e
-	 *            The exception that caused the problem.
-	 */
-	protected OperationException(final String message, final Exception e) {
-		super(message, e);
-	}
+  /**
+   * Constructs from an error message and the exception that caused the
+   * problem.
+   * 
+   * @param message
+   *        The error message.
+   * @param e
+   *        The exception that caused the problem.
+   */
+  protected OperationException(final String message, final Exception e) {
+    super(message, e);
+  }
 }

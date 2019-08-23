@@ -35,7 +35,6 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -117,7 +116,8 @@ public class GribCoordsMatchGbx {
 
   private boolean readCoverage(Coverage coverage) throws IOException {
     // if (!coverage.getName().startsWith("Total_pre")) return true;
-    if (showMissing) logger.debug("coverage {}", coverage.getName());
+    if (showMissing)
+      logger.debug("coverage {}", coverage.getName());
     this.cover = coverage;
     countReadsForVariable = 0;
 
@@ -156,9 +156,11 @@ public class GribCoordsMatchGbx {
   }
 
   Coverage cover;
+
   private void readCoverageData(Coverage cover, SubsetParams coords) throws IOException, InvalidRangeException {
     countReadsForVariable++;
-    if (MAX_READS > 0 && countReadsForVariable > MAX_READS) return;
+    if (MAX_READS > 0 && countReadsForVariable > MAX_READS)
+      return;
 
     GribDataReader.currentDataRecord = null;
     GeoReferencedArray geoArray = cover.readData(coords);
@@ -208,9 +210,11 @@ public class GribCoordsMatchGbx {
   }
 
   int countReadsForVariable;
+
   private boolean read(GridDatatype gdt) throws IOException {
     // if (!gdt.getName().startsWith("Total_pre")) return true;
-    if (showMissing) logger.debug("grid {}", gdt.getName());
+    if (showMissing)
+      logger.debug("grid {}", gdt.getName());
     countReadsForVariable = 0;
     gdc = gdt.getCoordinateSystem();
     grid = gdt;
@@ -314,7 +318,8 @@ public class GribCoordsMatchGbx {
 
   private void readAndTestGrib(GridDatatype gdt, int rtIndex, int tIndex, int zIndex) throws IOException {
     countReadsForVariable++;
-    if (MAX_READS > 0 && countReadsForVariable > MAX_READS) return;
+    if (MAX_READS > 0 && countReadsForVariable > MAX_READS)
+      return;
 
     GribDataReader.currentDataRecord = null;
     gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);
@@ -355,11 +360,13 @@ public class GribCoordsMatchGbx {
   private void readAndTestGrib1(String name, SubsetParams coords) throws IOException {
     GribCollectionImmutable.Record dr = GribDataReader.currentDataRecord;
     if (dr == null) {
-      if (showMissing) logger.debug("missing record= {}", coords);
+      if (showMissing)
+        logger.debug("missing record= {}", coords);
       counters.count(kind, "missing1");
       return;
     }
-    if (showMissing) logger.debug("found record= {}", coords);
+    if (showMissing)
+      logger.debug("found record= {}", coords);
     counters.count(kind, "found1");
 
     String filename = GribDataReader.currentDataRafFilename;
@@ -401,7 +408,7 @@ public class GribCoordsMatchGbx {
       if (!date_bounds[0].equals(gbxInv[0]) || !date_bounds[1].equals(gbxInv[1])) {
         tryAgain(coords);
         logger.debug("{} {} failed on time intv: coord=[{},{}] gbx =[{},{}]", kind, name, date_bounds[0],
-                date_bounds[1], gbxInv[0], gbxInv[1]);
+            date_bounds[1], gbxInv[0], gbxInv[1]);
       }
       Assert.assertArrayEquals(date_bounds, gbxInv);
 
@@ -421,21 +428,21 @@ public class GribCoordsMatchGbx {
     if (cust1.isLayer(plevel.getLevelType())) {
       double[] edge = coords.getVertCoordIntv();
       if (edge != null) {
-       // double low = Math.min(edge[0], edge[1]);
-        //double hi = Math.max(edge[0], edge[1]);
+        // double low = Math.min(edge[0], edge[1]);
+        // double hi = Math.max(edge[0], edge[1]);
         vertOk &= Misc.nearlyEquals(edge[0], plevel.getValue1(), maxRelDiff);
         vertOk &= Misc.nearlyEquals(edge[1], plevel.getValue2(), maxRelDiff);
         if (!vertOk) {
           tryAgain(coords);
-          logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, edge[0], edge[1],
-                  plevel.getValue1(), plevel.getValue2());
+          logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, edge[0], edge[1], plevel.getValue1(),
+              plevel.getValue2());
         }
       }
     } else if (vert_val != null) {
-      vertOk &= Misc.nearlyEquals(vert_val,  plevel.getValue1(), maxRelDiff);
+      vertOk &= Misc.nearlyEquals(vert_val, plevel.getValue1(), maxRelDiff);
       if (!vertOk) {
         tryAgain(coords);
-        logger.debug("{} {} failed on vert {} != {}", kind, name, vert_val,  plevel.getValue1());
+        logger.debug("{} {} failed on vert {} != {}", kind, name, vert_val, plevel.getValue1());
       }
     }
   }
@@ -455,9 +462,8 @@ public class GribCoordsMatchGbx {
     CalendarPeriod period = GribUtils.getCalendarPeriod(pds.getTimeUnit());
     CalendarDateUnit unit = CalendarDateUnit.of(null, period.getField(), pds.getReferenceDate());
     int[] intv = ptime.getInterval();
-    return new CalendarDate[]{
-            unit.makeCalendarDate(period.getValue() * intv[0]),
-            unit.makeCalendarDate(period.getValue() * intv[1])};
+    return new CalendarDate[] {unit.makeCalendarDate(period.getValue() * intv[0]),
+        unit.makeCalendarDate(period.getValue() * intv[1])};
   }
 
   //////////////////////////////////////////////////////////////
@@ -507,9 +513,9 @@ public class GribCoordsMatchGbx {
     Grib2RecordBean bean = new Grib2RecordBean(cust, grib2);
     boolean paramOk = true;
 
-    //paramOk &= var_desc.equals(bean.getName());
-    //paramOk &= var_param.equals(bean.getParamNo());
-    //paramOk &= var_level_type.equals(bean.getLevelName());
+    // paramOk &= var_desc.equals(bean.getName());
+    // paramOk &= var_param.equals(bean.getParamNo());
+    // paramOk &= var_level_type.equals(bean.getLevelName());
 
     CalendarDate rt_val = coords.getRunTime();
     boolean runtimeOk = true;
@@ -541,11 +547,11 @@ public class GribCoordsMatchGbx {
       if (!timeOk) {
         tryAgain(coords);
         logger.debug("{} {} failed on timeIntv [{},{}] != {}", kind, name, date_bounds[0], date_bounds[1],
-                bean.getTimeCoord());
+            bean.getTimeCoord());
       }
 
     } else if (time_val != null) {
-      // timeOk &= timeCoord == bean.getTimeCoordValue();   // true if GC
+      // timeOk &= timeCoord == bean.getTimeCoordValue(); // true if GC
       CalendarDate dateFromGribRecord = bean.getForecastDate();
       timeOk &= nearlyEquals(time_val, dateFromGribRecord);
       if (!timeOk) {
@@ -566,7 +572,7 @@ public class GribCoordsMatchGbx {
       if (!vertOk) {
         tryAgain(coords);
         logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, low, hi, bean.getLevelLowValue(),
-                bean.getLevelHighValue());
+            bean.getLevelHighValue());
       }
     } else if (vert_val != null) {
       vertOk &= Misc.nearlyEquals(vert_val, bean.getLevelValue1(), maxRelDiff);
@@ -606,8 +612,7 @@ public class GribCoordsMatchGbx {
     Grib2Pds pds;
     int discipline;
 
-    public Grib2RecordBean() {
-    }
+    public Grib2RecordBean() {}
 
     public Grib2RecordBean(Grib2Tables cust, Grib2Record gr) throws IOException {
       this.cust = cust;
@@ -659,9 +664,12 @@ public class GribCoordsMatchGbx {
     public String getLevel() {
       int v1 = pds.getLevelType1();
       int v2 = pds.getLevelType2();
-      if (v1 == 255) return "";
-      if (v2 == 255) return "" + pds.getLevelValue1();
-      if (v1 != v2) return pds.getLevelValue1() + "-" + pds.getLevelValue2() + " level2 type= " + v2;
+      if (v1 == 255)
+        return "";
+      if (v2 == 255)
+        return "" + pds.getLevelValue1();
+      if (v1 != v2)
+        return pds.getLevelValue1() + "-" + pds.getLevelValue2() + " level2 type= " + v2;
       return pds.getLevelValue1() + "-" + pds.getLevelValue2();
     }
 
@@ -708,14 +716,16 @@ public class GribCoordsMatchGbx {
     public int getPertN() {
       Grib2Pds.PdsEnsemble pdsi = (Grib2Pds.PdsEnsemble) pds;
       int v = pdsi.getPerturbationNumber();
-      if (v == GribNumbers.UNDEFINED) v = -1;
+      if (v == GribNumbers.UNDEFINED)
+        v = -1;
       return v;
     }
 
     public int getNForecastsInEns() {
       Grib2Pds.PdsEnsemble pdsi = (Grib2Pds.PdsEnsemble) pds;
       int v = pdsi.getNumberEnsembleForecasts();
-      if (v == GribNumbers.UNDEFINED) v = -1;
+      if (v == GribNumbers.UNDEFINED)
+        v = -1;
       return v;
     }
 
@@ -731,8 +741,10 @@ public class GribCoordsMatchGbx {
     public String getProbLimits() {
       Grib2Pds.PdsProbability pdsi = (Grib2Pds.PdsProbability) pds;
       double v = pdsi.getProbabilityLowerLimit();
-      if (v == GribNumbers.UNDEFINEDD) return "";
-      else return pdsi.getProbabilityLowerLimit() + "-" + pdsi.getProbabilityUpperLimit();
+      if (v == GribNumbers.UNDEFINEDD)
+        return "";
+      else
+        return pdsi.getProbabilityLowerLimit() + "-" + pdsi.getProbabilityUpperLimit();
     }
 
   }

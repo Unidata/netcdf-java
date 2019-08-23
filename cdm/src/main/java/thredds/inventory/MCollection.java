@@ -8,7 +8,6 @@ package thredds.inventory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
-
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 
@@ -22,6 +21,7 @@ public interface MCollection extends Closeable {
 
   /**
    * The name of the collection
+   * 
    * @return name of the collection
    */
   String getCollectionName();
@@ -44,12 +44,14 @@ public interface MCollection extends Closeable {
 
   /**
    * Does this CollectionManager have the ability to extract a date from the MFile ?
+   * 
    * @return true if CollectionManager has a DateExtractor
    */
   boolean hasDateExtractor();
 
   /**
    * The date to partition on, usually the starting date of the collection.
+   * 
    * @return partition date of the collection, or null if unknown
    */
   CalendarDate getPartitionDate();
@@ -61,6 +63,7 @@ public interface MCollection extends Closeable {
 
   /**
    * Choose Proto dataset as index from [0..n-1], based on configuration.
+   * 
    * @param n size to choose from
    * @return index within range [0..n-1]
    */
@@ -68,6 +71,7 @@ public interface MCollection extends Closeable {
 
   /**
    * last time this collection was modified
+   * 
    * @return msess since epoch
    */
   long getLastModified();
@@ -93,6 +97,7 @@ public interface MCollection extends Closeable {
   /**
    * The latest file in the collection.
    * Only call if hasDateExtractor() == true.
+   * 
    * @return latest file in the collection
    */
   MFile getLatestFile() throws IOException;
@@ -100,13 +105,15 @@ public interface MCollection extends Closeable {
   /**
    * Get the current collection of MFile, no guaranteed order.
    * May be faster than getFilesSorted() for large collections, use when order is not important.
+   * 
    * <pre>
-     try (CloseableIterator<MFile> iter = getFileIterator()) {
-      while (iter.hasNext()) {
-        MFile file = iter.next();
-      }
-    }
+   * try (CloseableIterator<MFile> iter = getFileIterator()) {
+   *   while (iter.hasNext()) {
+   *     MFile file = iter.next();
+   *   }
+   * }
    * </pre>
+   * 
    * @return current collection of MFile as an CloseableIterator.
    */
   CloseableIterator<MFile> getFileIterator() throws IOException;
@@ -116,6 +123,7 @@ public interface MCollection extends Closeable {
   // ability to pass arbitrary information to users of the mcollection .
 
   Object getAuxInfo(String key);
+
   void putAuxInfo(String key, Object value);
 
 }

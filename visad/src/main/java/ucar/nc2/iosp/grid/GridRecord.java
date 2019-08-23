@@ -8,8 +8,9 @@ package ucar.nc2.iosp.grid;
 import java.util.Date;
 
 /**
- * An interface for one 2D gridded data record (used by  GRIB, GEMPAK, McIDAS gridded data).
- * A collection of these records comprise a CDM variable, usually adding time and optionally vertical, and ensemble dimensions.
+ * An interface for one 2D gridded data record (used by GRIB, GEMPAK, McIDAS gridded data).
+ * A collection of these records comprise a CDM variable, usually adding time and optionally vertical, and ensemble
+ * dimensions.
  *
  * @author rkambic
  */

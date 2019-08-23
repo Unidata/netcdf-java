@@ -7,7 +7,6 @@ package thredds.client.catalog;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -16,33 +15,34 @@ import java.util.List;
 public class TestResolve {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  String base="http://www.unidata.ucar.edu/";
+  String base = "http://www.unidata.ucar.edu/";
   String urlString = "TestResolvURI.1.0.xml";
-  
+
   @Test
   public void testResolve() throws IOException {
     Catalog cat = ClientCatalogUtil.open(urlString);
     assert cat != null;
 
-    Service s = cat.findService( "ACD");
+    Service s = cat.findService("ACD");
     assert s != null;
     logger.debug("ACD service= {}", s);
 
     assert getAccessURL(cat, "nest11").equals("http://www.acd.ucar.edu/dods/testServer/flux/CO2.nc");
-    assert getAccessURL(cat, "nest12").equals(base+"netcdf/data/flux/NO2.nc") :
-      getAccessURL(cat, "nest12")+" != "+ClientCatalogUtil.makeFilepath()+"netcdf/data/flux/NO2.nc";
+    assert getAccessURL(cat, "nest12").equals(base + "netcdf/data/flux/NO2.nc") : getAccessURL(cat, "nest12") + " != "
+        + ClientCatalogUtil.makeFilepath() + "netcdf/data/flux/NO2.nc";
 
     assert getMetadataURL(cat, "nest1", "NETCDF").equals("any.xml");
     assert getMetadataURL(cat, "nest1", "ADN").equals("http://you/corrupt.xml");
 
-    String docUrl = getDocURL( cat, "nest1", "absolute");
+    String docUrl = getDocURL(cat, "nest1", "absolute");
     assert docUrl.equals("http://www.unidata.ucar.edu/") : docUrl;
 
     docUrl = getDocURL(cat, "nest1", "relative");
-    assert docUrl.equals(base+"any.xml") : docUrl;
+    assert docUrl.equals(base + "any.xml") : docUrl;
 
-    assert getCatref( cat.getDatasets(), "ETA data").equals("http://www.unidata.ucar.edu/projects/thredds/xml/InvCatalog5.part2.xml");
-    assert getCatref( cat.getDatasets(), "BETA data").equals("/xml/InvCatalog5.part2.xml");
+    assert getCatref(cat.getDatasets(), "ETA data")
+        .equals("http://www.unidata.ucar.edu/projects/thredds/xml/InvCatalog5.part2.xml");
+    assert getCatref(cat.getDatasets(), "BETA data").equals("/xml/InvCatalog5.part2.xml");
   }
 
   private String getAccessURL(Catalog cat, String name) {
@@ -82,7 +82,7 @@ public class TestResolve {
   }
 
   private String getCatref(List list, String name) {
-    for (int i=0; i<list.size(); i++) {
+    for (int i = 0; i < list.size(); i++) {
       Dataset elem = (Dataset) list.get(i);
       logger.debug("elemname = {}", elem.getName());
       if (elem.getName().equals(name)) {

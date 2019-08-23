@@ -3,10 +3,12 @@
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.geoloc;
+
 /**
  * Listeners for "Cursor Move" events.
+ * 
  * @author John Caron
  */
 public interface CursorMoveEventListener extends java.util.EventListener {
-    void actionPerformed(CursorMoveEvent e);
+  void actionPerformed(CursorMoveEvent e);
 }

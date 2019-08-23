@@ -8,7 +8,6 @@ import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
-
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 
@@ -40,15 +39,18 @@ public class TestCoordinateTime2DUnionizer {
     }
 
     f.format("%nResult%n");
-    if (result == null) f.format("not orthogonal");
-    else result.showInfo(f, new Indent(2));
+    if (result == null)
+      f.format("not orthogonal");
+    else
+      result.showInfo(f, new Indent(2));
 
     Assert.assertNull(result);
   }
 
   private CoordinateTime makeTimeCoordinate(CalendarDate refDate, int size, int spacing) {
     List<Integer> offsetSorted = new ArrayList<>();
-    for (int i = 0; i < size; i++) offsetSorted.add(i * spacing);
+    for (int i = 0; i < size; i++)
+      offsetSorted.add(i * spacing);
     return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
   }
 

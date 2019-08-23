@@ -13,7 +13,7 @@ import thredds.crawlabledataset.CrawlableDataset;
 public class RegExpMatchOnPathFilter extends RegExpMatchOnNameFilter {
 
   public RegExpMatchOnPathFilter(String regExpString) {
-    super( regExpString);
+    super(regExpString);
   }
 
   public boolean accept(CrawlableDataset dataset) {

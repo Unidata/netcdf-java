@@ -127,7 +127,8 @@ final public class BufrNumbers {
     int sgn, mant, exp;
 
     mant = b << 16 | c << 8 | d;
-    if (mant == 0) return 0.0f;
+    if (mant == 0)
+      return 0.0f;
 
     sgn = -(((a & 128) >> 6) - 1);
     exp = (a & 127) - 64;
@@ -146,6 +147,7 @@ final public class BufrNumbers {
     int g = raf.read();
     int h = raf.read();
 
-    return (1 - ((a & 128) >> 6)) * ((long)(a & 127) << 56 | (long) b << 48 | (long) c << 40 | (long) d << 32 | e << 24 | f << 16 | g << 8 | h);
-   }
+    return (1 - ((a & 128) >> 6))
+        * ((long) (a & 127) << 56 | (long) b << 48 | (long) c << 40 | (long) d << 32 | e << 24 | f << 16 | g << 8 | h);
+  }
 }

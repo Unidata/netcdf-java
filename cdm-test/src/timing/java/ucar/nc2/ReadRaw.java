@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -32,7 +32,6 @@
 package ucar.nc2;
 
 import ucar.nc2.util.IO;
-
 import java.io.*;
 import java.util.List;
 import java.util.Arrays;
@@ -60,11 +59,13 @@ public class ReadRaw {
   void test(String filename, Filter filter, MyClosure closure) throws IOException {
     File f = new File(filename);
     if (!f.exists()) {
-      if (show) System.out.println(filename + " does not exist");
+      if (show)
+        System.out.println(filename + " does not exist");
       return;
     }
     if (!filter.pass(filename)) {
-      if (show) System.out.println(filename + " does not pass filter");
+      if (show)
+        System.out.println(filename + " does not pass filter");
       return;
     }
     try {
@@ -103,8 +104,8 @@ public class ReadRaw {
     double secs = (stop - start) / nano;
     double rate = nbytes / Mbytes / secs;
 
-    out.format("%s %s buffersize= %d Nfiles = %d Mbytes = %f time = %f Rate = %f Mb/sec %n",
-        what, dir, buffersize, nfiles, nbytes / Mbytes, secs, rate);
+    out.format("%s %s buffersize= %d Nfiles = %d Mbytes = %f time = %f Rate = %f Mb/sec %n", what, dir, buffersize,
+        nfiles, nbytes / Mbytes, secs, rate);
   }
 
   ////////////////////////////
@@ -130,8 +131,9 @@ public class ReadRaw {
 
     MyClosure readInputStream = new MyClosure() {
       public void run(String filename) throws IOException {
-        if (show) out.format("read %s %n", filename);
-        InputStream is = new BufferedInputStream ( new FileInputStream(filename), buffersize);
+        if (show)
+          out.format("read %s %n", filename);
+        InputStream is = new BufferedInputStream(new FileInputStream(filename), buffersize);
         nbytes += IO.copy2null(is, buffersize);
         nfiles++;
         is.close();
@@ -142,7 +144,8 @@ public class ReadRaw {
 
     MyClosure readFileChannel = new MyClosure() {
       public void run(String filename) throws IOException {
-        if (show) out.format("read %s %n", filename);
+        if (show)
+          out.format("read %s %n", filename);
         FileInputStream fis = new FileInputStream(filename);
         FileChannel fc = fis.getChannel();
         nbytes += IO.copy2null(fc, buffersize);
@@ -154,10 +157,10 @@ public class ReadRaw {
     run("readFileChannel", new File(ssdName), netcdf, readFileChannel);
     run("readInputStream", new File(ssdName), netcdf, readInputStream);
     run("readFileChannel", new File(ssdName), netcdf, readFileChannel);
-    
+
   }
 
-   static public void main(String args[]) throws IOException {
-     new ReadRaw();
-   }
+  static public void main(String args[]) throws IOException {
+    new ReadRaw();
+  }
 }

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
-
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
@@ -101,12 +100,14 @@ public class CoverageAsPoint {
   private class CoverageAsFeatureDatasetPoint extends ucar.nc2.ft.point.PointDatasetImpl {
     protected CoverageAsFeatureDatasetPoint(FeatureType featureType) {
       super(featureType);
-      CoverageAsStationFeatureCollection fc = new CoverageAsStationFeatureCollection(gcd.getName() + " AsStationFeatureCollection", dateUnit, null);
+      CoverageAsStationFeatureCollection fc =
+          new CoverageAsStationFeatureCollection(gcd.getName() + " AsStationFeatureCollection", dateUnit, null);
       setPointFeatureCollection(fc);
 
       List<VariableSimpleIF> dataVars = new ArrayList<>();
-      for (VarData vd : varData) {                    // String name, String desc, String units, DataType dt
-        VariableSimpleIF simple = VariableSimpleImpl.makeScalar(vd.cov.getName(), vd.cov.getDescription(), vd.cov.getUnitsString(), vd.cov.getDataType());
+      for (VarData vd : varData) { // String name, String desc, String units, DataType dt
+        VariableSimpleIF simple = VariableSimpleImpl.makeScalar(vd.cov.getName(), vd.cov.getDescription(),
+            vd.cov.getUnitsString(), vd.cov.getDataType());
         dataVars.add(simple);
       }
       this.dataVariables = dataVars;
@@ -124,7 +125,8 @@ public class CoverageAsPoint {
       StationHelper helper = new StationHelper();
       String name = String.format("GridPointAt[%s]", latLonPoint.toString(3));
       name = StringUtil2.replace(name.trim(), ' ', "_");
-      helper.addStation(new MyStationFeature(name, name, null, latLonPoint.getLatitude(), latLonPoint.getLongitude(), 0.0, dateUnit, null, -1));
+      helper.addStation(new MyStationFeature(name, name, null, latLonPoint.getLatitude(), latLonPoint.getLongitude(),
+          0.0, dateUnit, null, -1));
       return helper;
     }
 
@@ -132,8 +134,10 @@ public class CoverageAsPoint {
 
   private class MyStationFeature extends StationTimeSeriesFeatureImpl {
 
-    public MyStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
-      // String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits, int npts
+    public MyStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt,
+        CalendarDateUnit timeUnit, String altUnits, int npts) {
+      // String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits,
+      // int npts
       super(name, desc, wmoId, lat, lon, alt, timeUnit, altUnits, npts, StructureData.EMPTY);
     }
 
@@ -170,21 +174,23 @@ public class CoverageAsPoint {
         varIters = new ArrayList<>();
         for (VarData vd : varData) {
           Array data = vd.array.getData();
-          if (debug) System.out.printf("%s shape=%s%n", vd.cov.getName(), Misc.showInts(data.getShape()));
+          if (debug)
+            System.out.printf("%s shape=%s%n", vd.cov.getName(), Misc.showInts(data.getShape()));
           varIters.add(new VarIter(vd.cov, vd.array, data.getIndexIterator()));
           nvalues = (int) data.getSize();
 
           if (timeAxis == null) { // assume they are all the same (!)
             CoverageCoordSys csys = vd.array.getCoordSysForData();
-            timeAxis = (CoverageCoordAxis1D) csys.getTimeAxis();   // LOOK may not be right
+            timeAxis = (CoverageCoordAxis1D) csys.getTimeAxis(); // LOOK may not be right
           }
         }
       }
 
       @Override
       public boolean hasNext() {
-        boolean more =  curr < nvalues;
-        if (!more) close();
+        boolean more = curr < nvalues;
+        if (!more)
+          close();
         return more;
       }
 
@@ -212,7 +218,8 @@ public class CoverageAsPoint {
       StationFeature stn;
       StructureData sdata;
 
-      public MyPointFeature(StationFeature stn, double obsTime, double nomTime, CalendarDateUnit timeUnit, StructureData sdata) {
+      public MyPointFeature(StationFeature stn, double obsTime, double nomTime, CalendarDateUnit timeUnit,
+          StructureData sdata) {
         super(MyStationFeature.this, stn, obsTime, nomTime, timeUnit);
         this.stn = stn;
         this.sdata = sdata;

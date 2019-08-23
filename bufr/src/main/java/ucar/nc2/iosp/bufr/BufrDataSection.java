@@ -7,7 +7,8 @@ package ucar.nc2.iosp.bufr;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Represents  Section 4 of a BUFR message.
+ * Represents Section 4 of a BUFR message.
+ * 
  * @author caron
  * @since May 10, 2008
  */
@@ -29,5 +30,5 @@ public class BufrDataSection {
     return dataLength;
   }
 
-  
+
 }

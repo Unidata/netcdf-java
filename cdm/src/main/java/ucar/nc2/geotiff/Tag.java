@@ -6,8 +6,10 @@ package ucar.nc2.geotiff;
 
 import java.util.*;
 
-/** Type-safe enumeration of Tiff Tags. Not complete, just the ones weve actually seen.
- *  *
+/**
+ * Type-safe enumeration of Tiff Tags. Not complete, just the ones weve actually seen.
+ * *
+ * 
  * @author caron
  */
 
@@ -44,7 +46,7 @@ class Tag implements Comparable<Tag> {
   static public final Tag SMinSampleValue = new Tag("SMinSampleValue", 340);
   static public final Tag SMaxSampleValue = new Tag("SMaxSampleValue", 341);
 
-   // tiff tags used for geotiff
+  // tiff tags used for geotiff
   static public final Tag ModelPixelScaleTag = new Tag("ModelPixelScaleTag", 33550);
   static public final Tag IntergraphMatrixTag = new Tag("IntergraphMatrixTag", 33920);
   static public final Tag ModelTiepointTag = new Tag("ModelTiepointTag", 33922);
@@ -58,37 +60,46 @@ class Tag implements Comparable<Tag> {
 
   /**
    * Get the Tag by number.
+   * 
    * @param code Tiff Tag number.
    * @return Tag or null if no match.
    */
-  static Tag get( int code) {
+  static Tag get(int code) {
     return map.get(code);
   }
 
   private String name;
   private int code;
 
-  private Tag( String  name, int code) {
+  private Tag(String name, int code) {
     this.name = name;
     this.code = code;
     map.put(code, this);
   }
 
   /** for unknown tags */
-  Tag( int code) {
+  Tag(int code) {
     this.code = code;
-    //map.put( new Integer(code), this);
+    // map.put( new Integer(code), this);
   }
 
   /** get the Tag name. may be null */
-  public String getName() { return name; }
+  public String getName() {
+    return name;
+  }
+
   /** get the Tag number */
-  public int getCode() { return code; }
+  public int getCode() {
+    return code;
+  }
+
   /* String representation */
-  public String toString() { return name == null ? code+" " : code+" ("+name+")"; }
+  public String toString() {
+    return name == null ? code + " " : code + " (" + name + ")";
+  }
 
   /** sort by number */
-  public int compareTo( Tag o) {
+  public int compareTo(Tag o) {
     return Integer.compare(code, o.getCode());
   }
 

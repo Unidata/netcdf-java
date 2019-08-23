@@ -16,21 +16,29 @@ import java.util.List;
  */
 public interface BufrField {
   String getName();
+
   String getDesc();
+
   String getUnits();
 
   short getFxy();
+
   String getFxyName();
 
   BufrCdmIndexProto.FldAction getAction();
-  BufrCdmIndexProto.FldType getType() ;
+
+  BufrCdmIndexProto.FldType getType();
 
   boolean isSeq();
+
   int getMin();
+
   int getMax();
 
   int getScale();
+
   int getReference();
+
   int getBitWidth();
 
   List<? extends BufrField> getChildren();

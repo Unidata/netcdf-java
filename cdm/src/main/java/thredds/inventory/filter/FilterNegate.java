@@ -16,7 +16,7 @@ import thredds.inventory.MFileFilter;
 public class FilterNegate implements MFileFilter {
   private MFileFilter f;
 
-  public FilterNegate (MFileFilter f) {
+  public FilterNegate(MFileFilter f) {
     this.f = f;
   }
 

@@ -18,7 +18,7 @@ public class Index0D extends Index {
     this.offset = 0;
   }
 
-  public Index0D( int[] shape) {
+  public Index0D(int[] shape) {
     super(shape);
   }
 
@@ -35,6 +35,6 @@ public class Index0D extends Index {
   }
 
   public Index set() {
-      return this;
+    return this;
   }
 }

@@ -10,9 +10,7 @@ package ucar.nc2.iosp.gempak;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.*;
-
 import java.util.List;
 
 
@@ -54,27 +52,24 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
   /**
    * Default ctor
    */
-  GempakSurfaceFileReader() {
-  }
+  GempakSurfaceFileReader() {}
 
   /**
    * Initialize the file, read in all the metadata (ala DM_OPEN)
    *
-   * @param raf       RandomAccessFile to read.
+   * @param raf RandomAccessFile to read.
    * @param fullCheck if true, check entire structure
    * @return A GempakSurfaceFileReader
    * @throws IOException problem reading file
    */
-  public static GempakSurfaceFileReader getInstance(RandomAccessFile raf,
-                                                    boolean fullCheck)
-          throws IOException {
+  public static GempakSurfaceFileReader getInstance(RandomAccessFile raf, boolean fullCheck) throws IOException {
     GempakSurfaceFileReader gsfr = new GempakSurfaceFileReader();
     gsfr.init(raf, fullCheck);
     return gsfr;
   }
 
   /**
-   * Initialize this reader.  Read all the metadata
+   * Initialize this reader. Read all the metadata
    *
    * @return true if successful
    * @throws IOException problem reading the data
@@ -84,7 +79,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
   }
 
   /**
-   * Initialize this reader.  Get the Grid specific info
+   * Initialize this reader. Get the Grid specific info
    *
    * @param fullCheck check to make sure there are grids we can handle
    * @return true if successful
@@ -102,9 +97,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
       return false;
     }
 
-    String partType = ((dmLabel.kfsrce == 100) && (dmLabel.kprt == 1))
-            ? SFTX
-            : SFDT;
+    String partType = ((dmLabel.kfsrce == 100) && (dmLabel.kprt == 1)) ? SFTX : SFDT;
 
     DMPart part = getPart(partType);
 
@@ -118,13 +111,14 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
       return false;
     }
     // since the reads are ob by ob, set buffer size small
-    if (subType.equals(STANDARD)) rf.setBufferSize(256);
+    if (subType.equals(STANDARD))
+      rf.setBufferSize(256);
     return true;
 
   }
 
   /**
-   * Make the list of dates.  Override superclass to make the
+   * Make the list of dates. Override superclass to make the
    * value based on the subtype
    *
    * @param uniqueTimes true to make a unique list
@@ -141,7 +135,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
     // determine file type
     Key key = findKey(GempakStation.SLAT);
     if (key == null)
-      throw new IllegalStateException("File does not have key="+GempakStation.SLAT);
+      throw new IllegalStateException("File does not have key=" + GempakStation.SLAT);
     String latType = key.type;
     Key dateKey = findKey(DATE);
     if (dateKey != null && !dateKey.type.equals(latType)) {
@@ -162,9 +156,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
    * @param col ob column
    */
   public void printOb(int row, int col) {
-    int stnIndex = (getFileSubType().equals(CLIMATE))
-            ? row
-            : col;
+    int stnIndex = (getFileSubType().equals(CLIMATE)) ? row : col;
     List<GempakStation> stations = getStations();
     if (stations.isEmpty() || stnIndex > stations.size()) {
       System.out.println("\nNo data available");

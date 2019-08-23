@@ -18,6 +18,7 @@ public interface MController {
 
   /**
    * Returns all leaves in collection, recursing into subdirectories.
+   * 
    * @param mc defines the collection to scan
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
@@ -26,6 +27,7 @@ public interface MController {
 
   /**
    * Returns all leaves in top collection, not recursing into subdirectories.
+   * 
    * @param mc defines the collection to scan
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
@@ -34,6 +36,7 @@ public interface MController {
 
   /**
    * Returns all subdirectories in top collection.
+   * 
    * @param mc defines the collection to scan
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist

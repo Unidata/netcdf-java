@@ -11,7 +11,6 @@ import ucar.nc2.ui.widget.TextGetPutPane;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
@@ -34,7 +33,7 @@ import java.util.Formatter;
  * <p>
  * Use Example:
  *
- *  <pre>
+ * <pre>
     // create widgets
     catalogChooser = new thredds.ui.CatalogChooser( prefs);
     catalogChooserDialog = catalogChooser.makeDialog(rootPaneContainer, "Open THREDDS dataset", true);
@@ -65,7 +64,7 @@ public class CatalogChooser extends JPanel {
 
   private String eventType = null;
 
-    // ui
+  // ui
   private ComboBox<String> catListBox;
   private CatalogTreeView tree;
   private HtmlBrowser htmlViewer;
@@ -81,23 +80,23 @@ public class CatalogChooser extends JPanel {
   private boolean catrefEvents = false;
   private String currentURL = "";
 
-  //private boolean catgenShow = true;
+  // private boolean catgenShow = true;
   private FileManager catgenFileChooser;
 
   private boolean debugEvents = false;
-  //private boolean debugTree = false;
+  // private boolean debugTree = false;
   private boolean showHTML = false;
 
   /**
    * Constructor, with control over whether a comboBox of previous catalogs is shown.
    *
-   * @param prefs           persistent storage, may be null.
+   * @param prefs persistent storage, may be null.
    * @param showComboChooser comboBox persists catalog URLs
-   * @param showOpenButton  show the "open" button.
+   * @param showOpenButton show the "open" button.
    * @param showFileChooser show a FileChooser (must have showComboChooser true)
    */
-  public CatalogChooser(PreferencesExt prefs, boolean showComboChooser,
-                        boolean showOpenButton, boolean showFileChooser) {
+  public CatalogChooser(PreferencesExt prefs, boolean showComboChooser, boolean showOpenButton,
+      boolean showFileChooser) {
     this.prefs = prefs;
 
     JPanel topPanel = null;
@@ -111,8 +110,8 @@ public class CatalogChooser extends JPanel {
       JButton connectButton = new JButton("Connect");
       connectButton.setToolTipText("read this catalog");
       connectButton.addActionListener(e -> {
-          String catalogURL = (String) catListBox.getSelectedItem();
-          tree.setCatalog(catalogURL.trim()); // will get "Catalog" property change event if ok
+        String catalogURL = (String) catListBox.getSelectedItem();
+        tree.setCatalog(catalogURL.trim()); // will get "Catalog" property change event if ok
       });
 
       JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
@@ -124,31 +123,33 @@ public class CatalogChooser extends JPanel {
       topPanel.add(topButtons, BorderLayout.EAST);
 
       if (showFileChooser) {
-         // add a file chooser
+        // add a file chooser
         PreferencesExt fcPrefs = (PreferencesExt) prefs.node("FileManager");
         FileFilter[] filters = new FileFilter[] {new FileManager.XMLExtFilter()};
         fileChooser = new FileManager(null, null, filters, fcPrefs);
 
-        AbstractAction fileAction =  new AbstractAction() {
+        AbstractAction fileAction = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
             String filename = fileChooser.chooseFilename();
-            if (filename == null) return;
-            tree.setCatalog("file:"+filename);
+            if (filename == null)
+              return;
+            tree.setCatalog("file:" + filename);
           }
         };
-        BAMutil.setActionProperties( fileAction, "FileChooser", "open Local catalog...", false, 'L', -1);
-        BAMutil.addActionToContainer( topButtons, fileAction);
+        BAMutil.setActionProperties(fileAction, "FileChooser", "open Local catalog...", false, 'L', -1);
+        BAMutil.addActionToContainer(topButtons, fileAction);
 
         // a file chooser used for catgen on a directory
         PreferencesExt catgenPrefs = (PreferencesExt) prefs.node("CatgenFileManager");
         catgenFileChooser = new FileManager(null, null, null, catgenPrefs);
-        catgenFileChooser.getFileChooser().setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
-        catgenFileChooser.getFileChooser().setDialogTitle( "Run CatGen on Directory");
+        catgenFileChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        catgenFileChooser.getFileChooser().setDialogTitle("Run CatGen on Directory");
 
         AbstractAction srcEditAction = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
             TextGetPutPane sourceEditor = new TextGetPutPane(null);
-            IndependentWindow sourceEditorWindow = new IndependentWindow( "Source", BAMutil.getImage("nj22/ThreddsIcon.png"), sourceEditor);
+            IndependentWindow sourceEditorWindow =
+                new IndependentWindow("Source", BAMutil.getImage("nj22/ThreddsIcon.png"), sourceEditor);
             sourceEditorWindow.setBounds(new Rectangle(50, 50, 725, 450));
             sourceEditorWindow.show();
           }
@@ -163,7 +164,7 @@ public class CatalogChooser extends JPanel {
     tree.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (debugEvents)
-          System.out.println("CatalogChooser propertyChange name=" +e.getPropertyName() + "=");
+          System.out.println("CatalogChooser propertyChange name=" + e.getPropertyName() + "=");
 
         if (e.getPropertyName().equals("Catalog")) {
           String catalogURL = (String) e.getNewValue();
@@ -178,7 +179,7 @@ public class CatalogChooser extends JPanel {
             return;
 
           if (ds instanceof Dataset)
-            showDatasetInfo((Dataset)ds);
+            showDatasetInfo((Dataset) ds);
 
           if (ds instanceof CatalogRef) {
             CatalogRef ref = (CatalogRef) ds;
@@ -191,8 +192,7 @@ public class CatalogChooser extends JPanel {
                 throw new RuntimeException(ee);
               }
             }
-          }
-          else if (ds.getParent() == null) { // top
+          } else if (ds.getParent() == null) { // top
             setCurrentURL(tree.getCatalogURL());
           }
 
@@ -210,9 +210,11 @@ public class CatalogChooser extends JPanel {
       public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("datasetURL")) {
           String datasetURL = (String) e.getNewValue();
-          if (debugEvents) System.out.println("***datasetURL= " + datasetURL);
+          if (debugEvents)
+            System.out.println("***datasetURL= " + datasetURL);
           DatasetNode node = tree.getSelectedDataset();
-          if (node == null) return;
+          if (node == null)
+            return;
           if (node instanceof Dataset) {
             Dataset dataset = (Dataset) node;
             Access access = dataset.findAccess(datasetURL);
@@ -220,7 +222,8 @@ public class CatalogChooser extends JPanel {
           }
         } else if (e.getPropertyName().equals("catrefURL")) {
           String urlString = (String) e.getNewValue();
-          if (debugEvents) System.out.println("***catrefURL= " + urlString);
+          if (debugEvents)
+            System.out.println("***catrefURL= " + urlString);
           tree.setCatalog(urlString.trim());
         }
       }
@@ -231,7 +234,7 @@ public class CatalogChooser extends JPanel {
     if (prefs != null)
       split.setDividerLocation(prefs.getInt(HDIVIDER, 400));
 
-      //status label
+    // status label
     JPanel statusPanel = new JPanel(new BorderLayout());
     statusLabel = new JLabel("not connected");
     sourceText = new JLabel();
@@ -243,43 +246,43 @@ public class CatalogChooser extends JPanel {
     JButton openfileButton = new JButton("Open File");
     buttPanel.add(openfileButton, null);
     openfileButton.addActionListener(e -> {
-        eventType = "File";
-        try {
-          tree.acceptSelected();
-        } catch (Throwable t) {
-          t.printStackTrace();
-          JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR "+t.getMessage());
-        } finally {
-          eventType = null;
-        }
+      eventType = "File";
+      try {
+        tree.acceptSelected();
+      } catch (Throwable t) {
+        t.printStackTrace();
+        JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR " + t.getMessage());
+      } finally {
+        eventType = null;
+      }
     });
 
     JButton openCoordButton = new JButton("Open CoordSys");
     buttPanel.add(openCoordButton, null);
     openCoordButton.addActionListener(e -> {
-        eventType = "CoordSys";
-        try {
-          tree.acceptSelected();
-        } catch (Throwable t) {
-          t.printStackTrace();
-          JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR "+t.getMessage());
-        } finally {
-          eventType = null;
-        }
+      eventType = "CoordSys";
+      try {
+        tree.acceptSelected();
+      } catch (Throwable t) {
+        t.printStackTrace();
+        JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR " + t.getMessage());
+      } finally {
+        eventType = null;
+      }
     });
 
     JButton acceptButton = new JButton("Open dataset");
     buttPanel.add(acceptButton, null);
     acceptButton.addActionListener(e -> {
-        eventType = "Dataset";
-        try {
-          tree.acceptSelected();
-        } catch (Throwable t) {
-          t.printStackTrace();
-          JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR "+t.getMessage());
-        } finally {
-          eventType = null;
-        }
+      eventType = "Dataset";
+      try {
+        tree.acceptSelected();
+      } catch (Throwable t) {
+        t.printStackTrace();
+        JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR " + t.getMessage());
+      } finally {
+        eventType = null;
+      }
     });
 
     // put it all together
@@ -298,7 +301,8 @@ public class CatalogChooser extends JPanel {
 
   private void makeSourceEditWindow() {
     TextGetPutPane sourceEditor = new TextGetPutPane(null);
-    IndependentWindow sourceEditorWindow = new IndependentWindow( "Source", BAMutil.getImage("nj22/ThreddsIcon.png"), sourceEditor);
+    IndependentWindow sourceEditorWindow =
+        new IndependentWindow("Source", BAMutil.getImage("nj22/ThreddsIcon.png"), sourceEditor);
     sourceEditorWindow.setBounds(new Rectangle(50, 50, 725, 450));
     sourceEditorWindow.show();
   }
@@ -307,7 +311,8 @@ public class CatalogChooser extends JPanel {
    * Save persistent state.
    */
   public void save() {
-    if (catListBox != null) catListBox.save();
+    if (catListBox != null)
+      catListBox.save();
 
     if (prefs != null) {
       if (fileChooser != null)
@@ -321,15 +326,16 @@ public class CatalogChooser extends JPanel {
   private void firePropertyChangeEvent(Dataset ds, String oldPropertyName) {
     String propertyName = (eventType != null) ? eventType : oldPropertyName;
     PropertyChangeEvent event = new PropertyChangeEvent(this, propertyName, null, ds);
-    firePropertyChangeEvent( event);
+    firePropertyChangeEvent(event);
   }
 
   /**
    * Fires a PropertyChangeEvent:
-   * <ul><li>  propertyName = "Catalog", getNewValue() = catalog URL string
-   * <li>  propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
-   * <li>  propertyName = "InvAccess" getNewValue() = InvAccess chosen.
-   * <li>  propertyName = "catrefURL", getNewValue() = catref URL was chosen.
+   * <ul>
+   * <li>propertyName = "Catalog", getNewValue() = catalog URL string
+   * <li>propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
+   * <li>propertyName = "InvAccess" getNewValue() = InvAccess chosen.
+   * <li>propertyName = "catrefURL", getNewValue() = catref URL was chosen.
    * </ul>
    */
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
@@ -338,50 +344,65 @@ public class CatalogChooser extends JPanel {
 
   /**
    * Add this button to the button panel.
+   * 
    * @param b button to add
    */
-  public void addButton( JButton b) {
+  public void addButton(JButton b) {
     buttPanel.add(b, null);
     buttPanel.revalidate();
   }
 
   // public void useDQCpopup( boolean use) { tree.useDQCpopup( use); }
 
-  /** Whether to throw events only if dataset has an Access.
-   *  @param accessOnly if true, throw events only if dataset has an Access
+  /**
+   * Whether to throw events only if dataset has an Access.
+   * 
+   * @param accessOnly if true, throw events only if dataset has an Access
    */
-  public void setAccessOnly( boolean accessOnly) { tree.setAccessOnly(accessOnly); }
+  public void setAccessOnly(boolean accessOnly) {
+    tree.setAccessOnly(accessOnly);
+  }
 
-  /** Whether to throw events if catref URL was chosen catref URL was chosen in HtmlViewer (default false).
+  /**
+   * Whether to throw events if catref URL was chosen catref URL was chosen in HtmlViewer (default false).
    */
-  public void setCatrefEvents( boolean catrefEvents) { this.catrefEvents = catrefEvents; }
+  public void setCatrefEvents(boolean catrefEvents) {
+    this.catrefEvents = catrefEvents;
+  }
 
-  /** Whether to throw events if dataset URL was chosen in HtmlViewer (default true).
+  /**
+   * Whether to throw events if dataset URL was chosen in HtmlViewer (default true).
    */
-  public void setDatasetEvents( boolean datasetEvents) { this.datasetEvents = datasetEvents; }
+  public void setDatasetEvents(boolean datasetEvents) {
+    this.datasetEvents = datasetEvents;
+  }
 
   /*
    * Set the factory to create catalogs.
    * If you do not set this, it will use the default factory.
+   * 
    * @param factory : read XML with this factory
    *
-  public void setCatalogFactory(InvCatalogFactory factory) { tree.setCatalogFactory(factory); } */
+   * public void setCatalogFactory(InvCatalogFactory factory) { tree.setCatalogFactory(factory); }
+   */
 
   /**
    * Set the string value in the combo box
+   * 
    * @param item to this item
    */
-  public void setSelectedItem( String item) {
+  public void setSelectedItem(String item) {
     if (catListBox != null)
-      catListBox.setSelectedItem( item);
+      catListBox.setSelectedItem(item);
   }
 
   /**
    * Set the currently selected InvDataset.
+   * 
    * @param ds select this InvDataset, must be already in the tree.
    */
   public void setSelectedDataset(Dataset ds) {
-    tree.setSelectedDataset( ds);
+    tree.setSelectedDataset(ds);
     showDatasetInfo(ds);
   }
 
@@ -391,25 +412,35 @@ public class CatalogChooser extends JPanel {
 
   /**
    * Get the current catalog being shown.
+   * 
    * @return current catalog, or null.
    */
-  public Catalog getCurrentCatalog() { return tree.getCatalog(); }
+  public Catalog getCurrentCatalog() {
+    return tree.getCatalog();
+  }
 
   /**
    * Get the TreeView component.
+   * 
    * @return the TreeView component.
    */
-  public CatalogTreeView getTreeView() { return tree; }
+  public CatalogTreeView getTreeView() {
+    return tree;
+  }
 
   /**
    * Get the current URL string. This may be the top catalog, or a catalogRef, depending on
-   *  what was last selected. Used to implement the " showSource" debugging tool.
+   * what was last selected. Used to implement the " showSource" debugging tool.
+   * 
    * @return current URL string
    */
-  public String getCurrentURL() { return currentURL; }
-  private void setCurrentURL( String currentURL) {
+  public String getCurrentURL() {
+    return currentURL;
+  }
+
+  private void setCurrentURL(String currentURL) {
     this.currentURL = currentURL;
-    sourceText.setText( currentURL);
+    sourceText.setText(currentURL);
     statusLabel.setText("Connected...");
   }
 
@@ -417,7 +448,7 @@ public class CatalogChooser extends JPanel {
    * Set the current catalog.
    */
   public void setCatalog(Catalog catalog) {
-    tree.setCatalog( catalog);
+    tree.setCatalog(catalog);
   }
 
   /**
@@ -429,23 +460,26 @@ public class CatalogChooser extends JPanel {
   }
 
   private void showDatasetInfo(Dataset ds) {
-    if (ds == null) return;
+    if (ds == null)
+      return;
     Formatter sbuff = new Formatter();
     DatasetHtmlWriter writer = new DatasetHtmlWriter();
     writer.writeHtmlDescription(sbuff, ds, true, false, datasetEvents, catrefEvents, true);
-    if (showHTML) System.out.println("HTML=\n"+sbuff);
-    htmlViewer.setContent( ds.getName(), sbuff.toString());
+    if (showHTML)
+      System.out.println("HTML=\n" + sbuff);
+    htmlViewer.setContent(ds.getName(), sbuff.toString());
   }
 
- /** Wrap this in a JDialog component.
+  /**
+   * Wrap this in a JDialog component.
    *
-   * @param parent      JFrame (application) or JApplet (applet) or null
-   * @param title       dialog window title
-   * @param modal     is modal
+   * @param parent JFrame (application) or JApplet (applet) or null
+   * @param title dialog window title
+   * @param modal is modal
    */
-  public JDialog makeDialog( RootPaneContainer parent, String title, boolean modal) {
+  public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {
     this.parent = parent;
-    return new Dialog( parent, title, modal);
+    return new Dialog(parent, title, modal);
   }
 
   private class Dialog extends JDialog {
@@ -454,10 +488,10 @@ public class CatalogChooser extends JPanel {
       super(parent instanceof Frame ? (Frame) parent : null, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener( new PropertyChangeListener() {
-        public void propertyChange( PropertyChangeEvent e) {
+      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI( CatalogChooser.Dialog.this);
+            SwingUtilities.updateComponentTreeUI(CatalogChooser.Dialog.this);
         }
       });
 
@@ -467,10 +501,10 @@ public class CatalogChooser extends JPanel {
 
       dismissButton.addActionListener(e -> setVisible(false));
 
-     // add it to contentPane
+      // add it to contentPane
       Container cp = getContentPane();
       cp.setLayout(new BorderLayout());
-      cp.add( CatalogChooser.this, BorderLayout.CENTER);
+      cp.add(CatalogChooser.this, BorderLayout.CENTER);
       pack();
     }
   }

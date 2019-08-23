@@ -33,7 +33,7 @@ public class ArrayStructureBBpos extends ArrayStructureBB {
   @Override
   protected int calcOffsetSetOrder(int recnum, StructureMembers.Member m) {
     if (null != m.getDataObject())
-      bbuffer.order( (ByteOrder) m.getDataObject());
+      bbuffer.order((ByteOrder) m.getDataObject());
     return positions[recnum] + m.getDataParam();
   }
 }

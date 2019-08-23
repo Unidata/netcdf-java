@@ -8,7 +8,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.collection.GribCollectionMutable;
 import ucar.nc2.grib.collection.PartitionCollectionMutable;
 import ucar.nc2.time.CalendarDate;
-
 import java.util.*;
 
 /**
@@ -20,7 +19,7 @@ import java.util.*;
  * This is a builder helper class, the result is obtained from List<Coordinate> finish().
  *
  * So if theres a lot of missing records in that cross-product, we may have the variable wrong (?),
- *  or our assumption that the data comprises a multidim array may be wrong
+ * or our assumption that the data comprises a multidim array may be wrong
  *
  * @author John
  * @since 12/10/13
@@ -33,7 +32,8 @@ public class CoordinatePartitionUnionizer {
   private final GribCollectionMutable.VariableIndex vi;
   private final Map<Long, PartitionCollectionMutable.Partition> timeMap;
 
-  public CoordinatePartitionUnionizer(GribCollectionMutable.VariableIndex vi, FeatureCollectionConfig.GribIntvFilter intvFilter, org.slf4j.Logger logger) {
+  public CoordinatePartitionUnionizer(GribCollectionMutable.VariableIndex vi,
+      FeatureCollectionConfig.GribIntvFilter intvFilter, org.slf4j.Logger logger) {
     this.vi = vi;
     this.intvFilter = intvFilter;
     this.logger = logger;
@@ -42,7 +42,7 @@ public class CoordinatePartitionUnionizer {
 
   List<Coordinate> unionCoords = new ArrayList<>();
 
-  CoordinateBuilder runtimeBuilder ;
+  CoordinateBuilder runtimeBuilder;
   CoordinateBuilder timeBuilder;
   CoordinateBuilder timeIntvBuilder;
   CoordinateBuilder vertBuilder;
@@ -57,7 +57,8 @@ public class CoordinatePartitionUnionizer {
       switch (coord.getType()) {
         case runtime:
           CoordinateRuntime rtime = (CoordinateRuntime) coord;
-          if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder2(rtime.getTimeUnits());
+          if (runtimeBuilder == null)
+            runtimeBuilder = new CoordinateRuntime.Builder2(rtime.getTimeUnits());
           runtimeBuilder.addAll(coord);
           runtime = coord;
           if (debugPartitionErrors && !duplicateRuntimeMessage && part != null)
@@ -66,19 +67,24 @@ public class CoordinatePartitionUnionizer {
 
         case time:
           CoordinateTime time = (CoordinateTime) coord;
-          if (timeBuilder == null) timeBuilder = new CoordinateTime.Builder2(coord.getCode(), time.getTimeUnit(), time.getRefDate());
+          if (timeBuilder == null)
+            timeBuilder = new CoordinateTime.Builder2(coord.getCode(), time.getTimeUnit(), time.getRefDate());
           timeBuilder.addAll(coord);
           break;
 
         case timeIntv:
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
-          if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder2(null, coord.getCode(), timeIntv.getTimeUnit(), timeIntv.getRefDate());
-          timeIntvBuilder.addAll(intervalFilter((CoordinateTimeIntv)coord));
+          if (timeIntvBuilder == null)
+            timeIntvBuilder =
+                new CoordinateTimeIntv.Builder2(null, coord.getCode(), timeIntv.getTimeUnit(), timeIntv.getRefDate());
+          timeIntvBuilder.addAll(intervalFilter((CoordinateTimeIntv) coord));
           break;
 
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
-          if (time2DBuilder == null) time2DBuilder = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), false, logger);
+          if (time2DBuilder == null)
+            time2DBuilder = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(),
+                coord.getCode(), false, logger);
           time2DBuilder.addAll(time2D);
           // debug
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
@@ -87,13 +93,15 @@ public class CoordinatePartitionUnionizer {
           break;
 
         case ens:
-          if (ensBuilder == null) ensBuilder = new CoordinateEns.Builder2(coord.getCode());
+          if (ensBuilder == null)
+            ensBuilder = new CoordinateEns.Builder2(coord.getCode());
           ensBuilder.addAll(coord);
           break;
 
         case vert:
           CoordinateVert vertCoord = (CoordinateVert) coord;
-          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode(), vertCoord.getVertUnit());
+          if (vertBuilder == null)
+            vertBuilder = new CoordinateVert.Builder2(coord.getCode(), vertCoord.getVertUnit());
           vertBuilder.addAll(coord);
           break;
       }
@@ -102,11 +110,12 @@ public class CoordinatePartitionUnionizer {
 
   private void testDuplicateRuntime(CoordinateRuntime runtime, PartitionCollectionMutable.Partition part) {
     PartitionCollectionMutable.Partition shownPrevPart = null;
-    for (int idx=0; idx<runtime.getNCoords(); idx++) {    // possible duplicate runtimes from different partitions
+    for (int idx = 0; idx < runtime.getNCoords(); idx++) { // possible duplicate runtimes from different partitions
       long time = runtime.getRuntime(idx);
       PartitionCollectionMutable.Partition prevPart = timeMap.get(time);
       if (prevPart != null && prevPart != part && prevPart != shownPrevPart) {
-        logger.warn("Variable {} Runtime {} in part {} and partition {}", vi.id(), CalendarDate.of(time), prevPart.getName(), part.getName());
+        logger.warn("Variable {} Runtime {} in part {} and partition {}", vi.id(), CalendarDate.of(time),
+            prevPart.getName(), part.getName());
         shownPrevPart = prevPart; // eliminate extra messages
         duplicateRuntimeMessage = true;
       }
@@ -115,7 +124,8 @@ public class CoordinatePartitionUnionizer {
   }
 
   private List<TimeCoordIntvValue> intervalFilter(CoordinateTimeIntv coord) {
-    if (intvFilter == null) return coord.getTimeIntervals();
+    if (intvFilter == null)
+      return coord.getTimeIntervals();
     List<TimeCoordIntvValue> result = new ArrayList<>();
     for (TimeCoordIntvValue tinv : coord.getTimeIntervals()) {
       if (!intvFilter.filter(vi.getVarid(), tinv.getBounds1(), tinv.getBounds2(), Integer.MIN_VALUE))
@@ -124,7 +134,7 @@ public class CoordinatePartitionUnionizer {
     return result;
   }
 
-   public List<Coordinate> finish() {
+  public List<Coordinate> finish() {
     if (runtimeBuilder != null)
       unionCoords.add(runtimeBuilder.finish());
     else
@@ -140,7 +150,7 @@ public class CoordinatePartitionUnionizer {
       logger.warn("HEY CoordinateUnionizer missing time");
 
     if (ensBuilder != null) // ens must come before vert to preserve order
-       unionCoords.add(ensBuilder.finish());
+      unionCoords.add(ensBuilder.finish());
     if (vertBuilder != null)
       unionCoords.add(vertBuilder.finish());
 

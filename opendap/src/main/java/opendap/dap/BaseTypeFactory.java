@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -59,242 +59,244 @@ package opendap.dap;
  */
 public interface BaseTypeFactory {
 
-    /**
-     * Construct a new BaseType with type as specified by the type string.
-     * @return the new BaseType
-     */
-//   public BaseType newBaseType(String typeString);
+  /**
+   * Construct a new BaseType with type as specified by the type string.
+   * 
+   * @return the new BaseType
+   */
+  // public BaseType newBaseType(String typeString);
 
-    /**
-     * Construct a new BaseType with name n and
-     * with type as specified by the typeString.
-     * @return the new BaseType
-     */
-//   public BaseType newBaseType(String typeString, String n);
-
-
-    //------------------------------------
-
-
-    /**
-     * Construct a new DByte.
-     *
-     * @return the new DByte
-     */
-    public DByte newDByte();
-
-    /**
-     * Construct a new DByte with name n.
-     *
-     * @param n the variable name
-     * @return the new DByte
-     */
-    public DByte newDByte(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DInt16.
-     *
-     * @return the new DInt16
-     */
-    public DInt16 newDInt16();
-
-    /**
-     * Construct a new DInt16 with name n.
-     *
-     * @param n the variable name
-     * @return the new DInt16
-     */
-    public DInt16 newDInt16(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DUInt16.
-     *
-     * @return the new DUInt16
-     */
-    public DUInt16 newDUInt16();
-
-    /**
-     * Construct a new DUInt16 with name n.
-     *
-     * @param n the variable name
-     * @return the new DUInt16
-     */
-    public DUInt16 newDUInt16(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DInt32.
-     *
-     * @return the new DInt32
-     */
-    public DInt32 newDInt32();
-
-    /**
-     * Construct a new DInt32 with name n.
-     *
-     * @param n the variable name
-     * @return the new DInt32
-     */
-    public DInt32 newDInt32(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DUInt32.
-     *
-     * @return the new DUInt32
-     */
-    public DUInt32 newDUInt32();
-
-    /**
-     * Construct a new DUInt32 with name n.
-     *
-     * @param n the variable name
-     * @return the new DUInt32
-     */
-    public DUInt32 newDUInt32(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DFloat32.
-     *
-     * @return the new DFloat32
-     */
-    public DFloat32 newDFloat32();
-
-    /**
-     * Construct a new DFloat32 with name n.
-     *
-     * @param n the variable name
-     * @return the new DFloat32
-     */
-    public DFloat32 newDFloat32(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DFloat64.
-     *
-     * @return the new DFloat64
-     */
-    public DFloat64 newDFloat64();
-
-    /**
-     * Construct a new DFloat64 with name n.
-     *
-     * @param n the variable name
-     * @return the new DFloat64
-     */
-    public DFloat64 newDFloat64(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DString.
-     *
-     * @return the new DString
-     */
-    public DString newDString();
-
-    /**
-     * Construct a new DString with name n.
-     *
-     * @param n the variable name
-     * @return the new DString
-     */
-    public DString newDString(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DURL.
-     *
-     * @return the new DURL
-     */
-    public DURL newDURL();
-
-    /**
-     * Construct a new DURL with name n.
-     *
-     * @param n the variable name
-     * @return the new DURL
-     */
-    public DURL newDURL(String n);
-
-    //------------------------------------
-
-    /**
-     * Construct a new DArray.
-     *
-     * @return the new DArray
-     */
-    public DArray newDArray();
-
-    /**
-     * Construct a new DArray with name n.
-     *
-     * @param n the variable name
-     * @return the new DArray
-     */
-    public DArray newDArray(String n);
-
-    //------------------------------------
+  /**
+   * Construct a new BaseType with name n and
+   * with type as specified by the typeString.
+   * 
+   * @return the new BaseType
+   */
+  // public BaseType newBaseType(String typeString, String n);
 
 
-    /**
-     * Construct a new DGrid.
-     *
-     * @return the new DGrid
-     */
-    public DGrid newDGrid();
+  // ------------------------------------
 
-    /**
-     * Construct a new DGrid with name n.
-     *
-     * @param n the variable name
-     * @return the new DGrid
-     */
-    public DGrid newDGrid(String n);
 
-    //------------------------------------
+  /**
+   * Construct a new DByte.
+   *
+   * @return the new DByte
+   */
+  public DByte newDByte();
 
-    /**
-     * Construct a new DStructure.
-     *
-     * @return the new DStructure
-     */
-    public DStructure newDStructure();
+  /**
+   * Construct a new DByte with name n.
+   *
+   * @param n the variable name
+   * @return the new DByte
+   */
+  public DByte newDByte(String n);
 
-    /**
-     * Construct a new DStructure with name n.
-     *
-     * @param n the variable name
-     * @return the new DStructure
-     */
-    public DStructure newDStructure(String n);
+  // ------------------------------------
 
-    //------------------------------------
+  /**
+   * Construct a new DInt16.
+   *
+   * @return the new DInt16
+   */
+  public DInt16 newDInt16();
 
-    /**
-     * Construct a new DSequence.
-     *
-     * @return the new DSequence
-     */
-    public DSequence newDSequence();
+  /**
+   * Construct a new DInt16 with name n.
+   *
+   * @param n the variable name
+   * @return the new DInt16
+   */
+  public DInt16 newDInt16(String n);
 
-    /**
-     * Construct a new DSequence with name n.
-     *
-     * @param n the variable name
-     * @return the new DSequence
-     */
-    public DSequence newDSequence(String n);
+  // ------------------------------------
+
+  /**
+   * Construct a new DUInt16.
+   *
+   * @return the new DUInt16
+   */
+  public DUInt16 newDUInt16();
+
+  /**
+   * Construct a new DUInt16 with name n.
+   *
+   * @param n the variable name
+   * @return the new DUInt16
+   */
+  public DUInt16 newDUInt16(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DInt32.
+   *
+   * @return the new DInt32
+   */
+  public DInt32 newDInt32();
+
+  /**
+   * Construct a new DInt32 with name n.
+   *
+   * @param n the variable name
+   * @return the new DInt32
+   */
+  public DInt32 newDInt32(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DUInt32.
+   *
+   * @return the new DUInt32
+   */
+  public DUInt32 newDUInt32();
+
+  /**
+   * Construct a new DUInt32 with name n.
+   *
+   * @param n the variable name
+   * @return the new DUInt32
+   */
+  public DUInt32 newDUInt32(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DFloat32.
+   *
+   * @return the new DFloat32
+   */
+  public DFloat32 newDFloat32();
+
+  /**
+   * Construct a new DFloat32 with name n.
+   *
+   * @param n the variable name
+   * @return the new DFloat32
+   */
+  public DFloat32 newDFloat32(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DFloat64.
+   *
+   * @return the new DFloat64
+   */
+  public DFloat64 newDFloat64();
+
+  /**
+   * Construct a new DFloat64 with name n.
+   *
+   * @param n the variable name
+   * @return the new DFloat64
+   */
+  public DFloat64 newDFloat64(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DString.
+   *
+   * @return the new DString
+   */
+  public DString newDString();
+
+  /**
+   * Construct a new DString with name n.
+   *
+   * @param n the variable name
+   * @return the new DString
+   */
+  public DString newDString(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DURL.
+   *
+   * @return the new DURL
+   */
+  public DURL newDURL();
+
+  /**
+   * Construct a new DURL with name n.
+   *
+   * @param n the variable name
+   * @return the new DURL
+   */
+  public DURL newDURL(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DArray.
+   *
+   * @return the new DArray
+   */
+  public DArray newDArray();
+
+  /**
+   * Construct a new DArray with name n.
+   *
+   * @param n the variable name
+   * @return the new DArray
+   */
+  public DArray newDArray(String n);
+
+  // ------------------------------------
+
+
+  /**
+   * Construct a new DGrid.
+   *
+   * @return the new DGrid
+   */
+  public DGrid newDGrid();
+
+  /**
+   * Construct a new DGrid with name n.
+   *
+   * @param n the variable name
+   * @return the new DGrid
+   */
+  public DGrid newDGrid(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DStructure.
+   *
+   * @return the new DStructure
+   */
+  public DStructure newDStructure();
+
+  /**
+   * Construct a new DStructure with name n.
+   *
+   * @param n the variable name
+   * @return the new DStructure
+   */
+  public DStructure newDStructure(String n);
+
+  // ------------------------------------
+
+  /**
+   * Construct a new DSequence.
+   *
+   * @return the new DSequence
+   */
+  public DSequence newDSequence();
+
+  /**
+   * Construct a new DSequence with name n.
+   *
+   * @param n the variable name
+   * @return the new DSequence
+   */
+  public DSequence newDSequence(String n);
 
 }
 

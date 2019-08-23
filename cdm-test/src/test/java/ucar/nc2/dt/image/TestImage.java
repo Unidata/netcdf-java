@@ -7,7 +7,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -38,11 +37,11 @@ public class TestImage {
         // 1 to 255 renders as (almost) white to black
         cmap[i] = 0xFF000000 | ((0xFF - i) * 0x010101);
       }
-      IndexColorModel colorModel = new IndexColorModel(8,
-              cmap.length, cmap, 0, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+      IndexColorModel colorModel =
+          new IndexColorModel(8, cmap.length, cmap, 0, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 
       int[] shape = array.getShape();
-      BufferedImage bi = new BufferedImage(shape[1], shape[0],BufferedImage.TYPE_BYTE_INDEXED, colorModel);
+      BufferedImage bi = new BufferedImage(shape[1], shape[0], BufferedImage.TYPE_BYTE_INDEXED, colorModel);
 
       Index index = array.getIndex();
       for (int y = 0; y < shape[0]; y++) {
@@ -52,11 +51,11 @@ public class TestImage {
           byte bval = array.getByte(index);
           double dval = v.getDataType().isUnsigned() ? (double) DataType.unsignedByteToShort(bval) : (double) bval;
 
-          //double dval = array.getDouble(index);
+          // double dval = array.getDouble(index);
           // Fix for NetCDF returning all values larger than 127 as (value - 256):
-          //if (dval < -1) {
-          //  dval += 256;
-          //}
+          // if (dval < -1) {
+          // dval += 256;
+          // }
           int pval = (int) Math.round(a * dval + b);
           pval = Math.min(Math.max(pval, 0), 255);
           bi.getRaster().setSample(x, y, 0, pval);

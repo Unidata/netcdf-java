@@ -15,7 +15,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
@@ -35,7 +34,8 @@ public class TestNetcdfFileCache {
   }
 
   static public class MyFileFactory implements FileFactory {
-    public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+    public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage)
+        throws IOException {
       return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
     }
   }
@@ -44,14 +44,15 @@ public class TestNetcdfFileCache {
 
   private void loadFilesIntoCache(File dir, FileCache cache) {
     File[] files = dir.listFiles();
-    if ( files == null) return;
+    if (files == null)
+      return;
 
     for (File f : files) {
       if (f.isDirectory())
         loadFilesIntoCache(f, cache);
 
       else if (f.getPath().endsWith(".nc") && f.length() > 0) {
-        //System.out.println(" open "+f.getPath());
+        // System.out.println(" open "+f.getPath());
         try {
           String want = StringUtil2.replace(f.getPath(), '\\', "/");
           DatasetUrl durl = new DatasetUrl(null, want);
@@ -80,7 +81,7 @@ public class TestNetcdfFileCache {
 
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      //System.out.println(" "+key+" == "+elem);
+      // System.out.println(" "+key+" == "+elem);
       Assert.assertEquals(1, elem.list.size());
     }
 
@@ -94,7 +95,7 @@ public class TestNetcdfFileCache {
 
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      //System.out.println(" "+key+" == "+elem);
+      // System.out.println(" "+key+" == "+elem);
       Assert.assertEquals(2, elem.list.size());
       checkAllSame(elem.list);
     }
@@ -159,7 +160,7 @@ public class TestNetcdfFileCache {
     FileCache.CacheElement.CacheFile first = null;
     for (FileCache.CacheElement.CacheFile file : list) {
       Assert.assertTrue(file.isLocked.get());
-      Assert.assertEquals(0, file.countAccessed);  // countAccessed not incremented until its closed, so == 0
+      Assert.assertEquals(0, file.countAccessed); // countAccessed not incremented until its closed, so == 0
       Assert.assertNotEquals(0, file.lastAccessed);
 
       if (first == null)
@@ -184,7 +185,7 @@ public class TestNetcdfFileCache {
     cache = new FileCache(5, 10, 60 * 60);
     testPeriodicCleanup(cache);
     map = cache.getCache();
-    assert map.values().size() == 5 : map.values().size(); 
+    assert map.values().size() == 5 : map.values().size();
   }
 
   private void testPeriodicCleanup(FileCache cache) throws IOException {
@@ -207,7 +208,7 @@ public class TestNetcdfFileCache {
       ncfile.close();
     }
 
-    cache.showCache(new Formatter(System.out));    
+    cache.showCache(new Formatter(System.out));
     cache.cleanup(10);
   }
 
@@ -271,14 +272,15 @@ public class TestNetcdfFileCache {
         FileCache.CacheElement elem = map.get(key);
         synchronized (elem) {
           for (FileCache.CacheElement.CacheFile file : elem.list)
-            if (file.isLocked.get()) locks++;
+            if (file.isLocked.get())
+              locks++;
         }
-        //System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
+        // System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
         total_locks += locks;
         total += elem.list.size();
       }
       System.out.println(" total=" + total + " total_locks=" + total_locks);
-//    assert total_locks == map.keySet().size();
+      // assert total_locks == map.keySet().size();
 
       cache.clearCache(false);
       format.format("after cleanup qsize= %4d%n", q.size());
@@ -287,8 +289,10 @@ public class TestNetcdfFileCache {
       cache.clearCache(true);
 
     } finally {
-      if (qexec != null) qexec.shutdownNow();
-      if (exec != null) exec.shutdownNow();
+      if (qexec != null)
+        qexec.shutdownNow();
+      if (exec != null)
+        exec.shutdownNow();
     }
   }
 
@@ -313,14 +317,15 @@ public class TestNetcdfFileCache {
     }
 
     void consume(Future x) throws ExecutionException, InterruptedException, IOException {
-      if (x == null) return;
+      if (x == null)
+        return;
 
       if (x.isDone()) {
         NetcdfFile ncfile = (NetcdfFile) x.get();
         ncfile.close();
-        //format.format("  closed qsize= %3d\n", queue.size());
+        // format.format(" closed qsize= %3d\n", queue.size());
       } else {
-        // format.format("  lost file= %3d\n", queue.size());
+        // format.format(" lost file= %3d\n", queue.size());
         queue.add(x); // put it back
       }
 

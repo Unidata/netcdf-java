@@ -33,7 +33,8 @@ public class CollectionList extends CollectionAbstract {
     String[] files = list.split(";");
     for (String s : files) {
       String filename = s.trim();
-      if (filename.length() == 0) continue;
+      if (filename.length() == 0)
+        continue;
       Path p = Paths.get(filename);
       if (Files.exists(p)) {
         MFileOS mfile = new MFileOS(filename);
@@ -68,6 +69,6 @@ public class CollectionList extends CollectionAbstract {
   }
 
   @Override
-  public void close() {  }
+  public void close() {}
 
 }

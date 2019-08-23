@@ -1,18 +1,18 @@
 /*
-Copyright 2006 Jerry Huxtable
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ * Copyright 2006 Jerry Huxtable
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /*
  * This file was semi-automatically converted from the public-domain USGS PROJ source.
@@ -20,7 +20,6 @@ limitations under the License.
 package ucar.unidata.geoloc.projection.proj4;
 
 import java.util.Objects;
-
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
@@ -57,7 +56,8 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
     this(90, 0, 0, 0, new Earth());
   }
 
-  public EquidistantAzimuthalProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth earth) {
+  public EquidistantAzimuthalProjection(double lat0, double lon0, double falseEasting, double falseNorthing,
+      Earth earth) {
     super("EquidistantAzimuthalProjection", false);
 
     Objects.requireNonNull(earth, "Azimuthal equidistant constructor requires non-null Earth");
@@ -194,7 +194,7 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
       switch (mode) {
         case NORTH_POLE:
           coslam = -coslam;
-          //coverity[missing_break]
+          // coverity[missing_break]
         case SOUTH_POLE:
           double x = (rho = Math.abs(Mp - MapMath.mlfn(phi, sinphi, cosphi, en))) * Math.sin(lam);
           double y = rho * coslam;
@@ -212,15 +212,11 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
           Az = Math.atan2(Math.sin(lam) * ct, cosphi0 * st - sinphi0 * coslam * ct);
           cA = Math.cos(Az);
           sA = Math.sin(Az);
-          s = MapMath.asin(Math.abs(sA) < TOL ?
-                  (cosphi0 * st - sinphi0 * coslam * ct) / cA :
-                  Math.sin(lam) * ct / sA);
+          s = MapMath.asin(Math.abs(sA) < TOL ? (cosphi0 * st - sinphi0 * coslam * ct) / cA : Math.sin(lam) * ct / sA);
           H = He * cA;
           H2 = H * H;
-          c = N1 * s * (1. + s * s * (-H2 * (1. - H2) / 6. +
-                  s * (G * H * (1. - 2. * H2 * H2) / 8. +
-                          s * ((H2 * (4. - 7. * H2) - 3. * G * G * (1. - 7. * H2)) /
-                                  120. - s * G * H / 48.))));
+          c = N1 * s * (1. + s * s * (-H2 * (1. - H2) / 6. + s * (G * H * (1. - 2. * H2 * H2) / 8.
+              + s * ((H2 * (4. - 7. * H2) - 3. * G * G * (1. - 7. * H2)) / 120. - s * G * H / 48.))));
           xy.setLocation(c * sA, c * cA);
           break;
       }
@@ -232,7 +228,7 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl lp) {
-    double x = (ppt.getX() - falseEasting) / totalScale;  // assumes cartesion coords in km
+    double x = (ppt.getX() - falseEasting) / totalScale; // assumes cartesion coords in km
     double y = (ppt.getY() - falseNorthing) / totalScale;
 
     if (earth.isSpherical()) {
@@ -320,17 +316,25 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     EquidistantAzimuthalProjection that = (EquidistantAzimuthalProjection) o;
 
-    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
-    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
-    if (Double.compare(that.projectionLatitude, projectionLatitude) != 0) return false;
-    if (Double.compare(that.projectionLongitude, projectionLongitude) != 0) return false;
-    if (earth != null ? !earth.equals(that.earth) : that.earth != null) return false;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    if (Double.compare(that.falseEasting, falseEasting) != 0)
+      return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0)
+      return false;
+    if (Double.compare(that.projectionLatitude, projectionLatitude) != 0)
+      return false;
+    if (Double.compare(that.projectionLongitude, projectionLongitude) != 0)
+      return false;
+    if (earth != null ? !earth.equals(that.earth) : that.earth != null)
+      return false;
+    if ((defaultMapArea == null) != (that.defaultMapArea == null))
+      return false; // common case is that these are null
     return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
   }

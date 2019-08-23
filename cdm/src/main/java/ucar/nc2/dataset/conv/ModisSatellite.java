@@ -12,7 +12,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayLong;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -30,7 +29,7 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
     if ((satName == null) || !(satName.equalsIgnoreCase("Aqua")))
       return false;
 
-    String instName = ncfile.findAttValueIgnoreCase(null, "INTRUMENT_NAME", null);    // LOOK "INTRUMENT_NAME" ??
+    String instName = ncfile.findAttValueIgnoreCase(null, "INTRUMENT_NAME", null); // LOOK "INTRUMENT_NAME" ??
     return !((instName == null) || !(instName.equalsIgnoreCase("modis")));
 
   }
@@ -39,15 +38,15 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
     this.conventionName = "ModisSatellite";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
-   for (Variable v : ds.getVariables())
-     checkIfAxis(v);
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
+    for (Variable v : ds.getVariables())
+      checkIfAxis(v);
 
     int year = ds.readAttributeInteger(null, "YEAR", -1);
     int doy = ds.readAttributeInteger(null, "DAY", -1);
     double time = ds.readAttributeDouble(null, "TIME", Double.NaN);
 
-    if ((year >0) && (doy > 0) && !Double.isNaN(time)) {
+    if ((year > 0) && (doy > 0) && !Double.isNaN(time)) {
       Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
       cal.clear();
       cal.set(Calendar.YEAR, year);
@@ -66,12 +65,12 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
       cal.set(Calendar.SECOND, (int) time);
 
       VariableDS var = new VariableDS(ds, null, null, "timeFromAtts", DataType.LONG, "",
-              "seconds since 1970-01-01 00:00", "time generated from global attributes");
+          "seconds since 1970-01-01 00:00", "time generated from global attributes");
       // LOOK : cant handle scalar coordinates yet
       // var.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
       ds.addVariable(null, var);
       ArrayLong.D0 data = new ArrayLong.D0(false);
-      data.set(cal.getTime().getTime()/1000);
+      data.set(cal.getTime().getTime() / 1000);
       var.setCachedData(data, true);
     }
 
@@ -81,9 +80,9 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
   private void checkIfAxis(Variable v) {
     String name = v.getShortName();
     if (name.equalsIgnoreCase("Longitude"))
-      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     else if (name.equalsIgnoreCase("Latitude"))
-      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
   }
 
 }

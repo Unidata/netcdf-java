@@ -6,7 +6,6 @@
 package thredds.catalog;
 
 import ucar.nc2.units.DateType;
-
 import java.util.*;
 import java.net.*;
 
@@ -45,9 +44,9 @@ public class InvCatalogImpl extends InvCatalog {
     datasets.add(topDataset);
 
     // parent lookups need to be local
-    //InvService service = dataset.getServiceDefault();
-    //if (service != null) LOOK
-    //  dataset.serviceName = service.getName();
+    // InvService service = dataset.getServiceDefault();
+    // if (service != null) LOOK
+    // dataset.serviceName = service.getName();
     dataset.dataType = dataset.getDataType();
 
     // all properties need to be local
@@ -65,37 +64,38 @@ public class InvCatalogImpl extends InvCatalog {
     finish();
   }
 
-//  /**
-//   * Return a catalog with a shallow copy of the given dataset as the top dataset.
-//   *
-//   * @param dataset the dataset to copy into a new catalog
-//   * @return A new catalog with a shallow copy of the given dataset as the top dataset.
-//   */
-//  public InvCatalogImpl subsetShallowCopy( InvDatasetImpl dataset)
-//  {
-//    InvCatalogImpl newCatalog = new InvCatalogImpl( null, "1.0.2", null);
-//    InvDatasetImpl newTopDataset = new InvDatasetImpl( null, dataset.getName());
-//    newTopDataset.transferMetadata( dataset );
-//    if (dataset.getAccess() != null && ! dataset.getAccess().isEmpty())
-//    {
-//      newTopDataset.addAccess( dataset.getAccess() );
-//    }
-//    dataset.getDatasets();
-//    dataset.getID();
-//    dataset.getServiceName();
-//    dataset.getServicesLocal();
-//    dataset.getUrlPath();
-//
-//    // ToDo LOOK Probably fine for throw away catalog that is only generated so that XML can be generated.
-//    dataset.finish();
-//
-//    newCatalog.addDataset( newTopDataset );
-//
-//    return newCatalog;
-//  }
+  // /**
+  // * Return a catalog with a shallow copy of the given dataset as the top dataset.
+  // *
+  // * @param dataset the dataset to copy into a new catalog
+  // * @return A new catalog with a shallow copy of the given dataset as the top dataset.
+  // */
+  // public InvCatalogImpl subsetShallowCopy( InvDatasetImpl dataset)
+  // {
+  // InvCatalogImpl newCatalog = new InvCatalogImpl( null, "1.0.2", null);
+  // InvDatasetImpl newTopDataset = new InvDatasetImpl( null, dataset.getName());
+  // newTopDataset.transferMetadata( dataset );
+  // if (dataset.getAccess() != null && ! dataset.getAccess().isEmpty())
+  // {
+  // newTopDataset.addAccess( dataset.getAccess() );
+  // }
+  // dataset.getDatasets();
+  // dataset.getID();
+  // dataset.getServiceName();
+  // dataset.getServicesLocal();
+  // dataset.getUrlPath();
+  //
+  // // ToDo LOOK Probably fine for throw away catalog that is only generated so that XML can be generated.
+  // dataset.finish();
+  //
+  // newCatalog.addDataset( newTopDataset );
+  //
+  // return newCatalog;
+  // }
 
   void findServices(List<InvService> result, InvDataset ds) {
-    if (ds instanceof InvCatalogRef) return;
+    if (ds instanceof InvCatalogRef)
+      return;
 
     // look for access elements with unresolved services
     for (InvAccess a : ds.getAccess()) {
@@ -136,7 +136,8 @@ public class InvCatalogImpl extends InvCatalog {
   private boolean mark(DatasetFilter filter, InvDatasetImpl ds) {
     if (ds instanceof InvCatalogRef) {
       InvCatalogRef catRef = (InvCatalogRef) ds;
-      if (!catRef.isRead()) return false;
+      if (!catRef.isRead())
+        return false;
     }
 
     // recurse into nested datasets first
@@ -144,14 +145,16 @@ public class InvCatalogImpl extends InvCatalog {
     for (InvDataset nested : ds.getDatasets()) {
       allMarked &= mark(filter, (InvDatasetImpl) nested);
     }
-    if (!allMarked) return false;
+    if (!allMarked)
+      return false;
 
     if (filter.accept(ds) >= 0)
       return false;
 
     // mark for deletion
     ds.setMark(true);
-    if (debugFilter) System.out.println(" mark " + ds.getName());
+    if (debugFilter)
+      System.out.println(" mark " + ds.getName());
     return true;
   }
 
@@ -161,7 +164,8 @@ public class InvCatalogImpl extends InvCatalog {
   private void delete(InvDatasetImpl ds) {
     if (ds instanceof InvCatalogRef) {
       InvCatalogRef catRef = (InvCatalogRef) ds;
-      if (!catRef.isRead()) return;
+      if (!catRef.isRead())
+        return;
     }
 
     Iterator iter = ds.getDatasets().iterator();
@@ -169,7 +173,8 @@ public class InvCatalogImpl extends InvCatalog {
       InvDatasetImpl nested = (InvDatasetImpl) iter.next();
       if (nested.getMark()) {
         iter.remove();
-        if (debugFilter) System.out.println(" remove " + nested.getName());
+        if (debugFilter)
+          System.out.println(" remove " + nested.getName());
       } else
         delete(nested);
     }
@@ -182,7 +187,7 @@ public class InvCatalogImpl extends InvCatalog {
    * Construct an InvCatalog.
    * You must call finish() after all objects are added.
    *
-   * @param name    : catalog name.
+   * @param name : catalog name.
    * @param version : catalog version.
    * @param baseURI : catalog base URI (external).
    */
@@ -194,10 +199,10 @@ public class InvCatalogImpl extends InvCatalog {
    * Construct an InvCatalog.
    * You must call finish() after all objects are added.
    *
-   * @param name    : catalog name.
+   * @param name : catalog name.
    * @param version : catalog version.
    * @param expires : date/time catalog expires.
-   * @param baseURI : catalog base URI  (external).
+   * @param baseURI : catalog base URI (external).
    */
   public InvCatalogImpl(String name, String version, DateType expires, URI baseURI) {
     this.name = name;
@@ -216,7 +221,7 @@ public class InvCatalogImpl extends InvCatalog {
   public boolean finish() {
 
     // make topDataset if needed
-    //if (topDataset == null) {
+    // if (topDataset == null) {
 
     if (datasets.size() == 1) { // already only one; make it top
       topDataset = (InvDatasetImpl) datasets.get(0);
@@ -227,7 +232,7 @@ public class InvCatalogImpl extends InvCatalog {
         topDataset.addDataset((InvDatasetImpl) dataset);
       topDataset.setServicesLocal(services);
     }
-    //}
+    // }
     topDataset.setCatalog(this);
 
     // build dataset hash table
@@ -241,8 +246,9 @@ public class InvCatalogImpl extends InvCatalog {
   private void addDatasetIds(InvDatasetImpl ds) {
     addDatasetByID(ds);
 
-    if (ds instanceof InvCatalogRef) return;
-    //if (ds instanceof InvDatasetFmrc) return;
+    if (ds instanceof InvCatalogRef)
+      return;
+    // if (ds instanceof InvDatasetFmrc) return;
 
     // recurse into nested
     for (InvDataset invDataset : ds.getDatasets()) {
@@ -258,8 +264,8 @@ public class InvCatalogImpl extends InvCatalog {
    * @see InvCatalog#findDatasetByID
    */
   public void addDatasetByID(InvDatasetImpl ds) {
-    //if (ds.getID() != null && ds.getID().startsWith("null"))
-    //  System.out.printf("HEY addDatasetByID %s%n", ds.getID());
+    // if (ds.getID() != null && ds.getID().startsWith("null"))
+    // System.out.printf("HEY addDatasetByID %s%n", ds.getID());
 
     if (ds.getID() != null)
       dsHash.put(ds.getID(), ds);
@@ -304,7 +310,7 @@ public class InvCatalogImpl extends InvCatalog {
    * Replace the given dataset if it is a nested dataset.
    *
    * @param remove - the dataset element to be removed
-   * @param add    - the dataset element to be added
+   * @param add - the dataset element to be added
    * @return true on success
    */
   public boolean replaceDataset(InvDatasetImpl remove, InvDatasetImpl add) {
@@ -388,6 +394,7 @@ public class InvCatalogImpl extends InvCatalog {
 
   /**
    * Set how the catalog was created, for debugging.
+   * 
    * @param createFrom how the catalog was created, for debugging
    */
   public void setCreateFrom(String createFrom) {
@@ -397,6 +404,7 @@ public class InvCatalogImpl extends InvCatalog {
   /**
    * Set the catalog base URI.
    * Its used to resolve reletive URLS.
+   * 
    * @param baseURI set to this
    */
   public void setBaseURI(URI baseURI) {
@@ -413,16 +421,17 @@ public class InvCatalogImpl extends InvCatalog {
   /*
    * @return DTD string
    *
-  public String getDTDid() {
-    return dtdID;
-  }
-
-  /*
+   * public String getDTDid() {
+   * return dtdID;
+   * }
+   * 
+   * /*
    * set DTD
    *
-  public void setDTDid(String dtdID) {
-    this.dtdID = dtdID;
-  } */
+   * public void setDTDid(String dtdID) {
+   * this.dtdID = dtdID;
+   * }
+   */
 
   /**
    * Set the expires date after which the catalog is no longer valid.
@@ -446,7 +455,7 @@ public class InvCatalogImpl extends InvCatalog {
    * Append an error message to the message log. Call check() to get the log when
    * everything is done.
    *
-   * @param message   append this message to log
+   * @param message append this message to log
    * @param isInvalid true if this is a fatal error.
    */
   public void appendErrorMessage(String message, boolean isInvalid) {
@@ -457,7 +466,7 @@ public class InvCatalogImpl extends InvCatalog {
   /**
    * Check internal data structures.
    *
-   * @param out  : print errors here
+   * @param out : print errors here
    * @param show : print messages for each object (debug)
    * @return true if no fatal consistency errors.
    */
@@ -468,10 +477,11 @@ public class InvCatalogImpl extends InvCatalog {
     if (log.length() > 0)
       out.append(log);
 
-    if (show) System.out.println(" catalog valid = " + isValid);
+    if (show)
+      System.out.println(" catalog valid = " + isValid);
 
-    //if (topDataset != null)
-    //  isValid &= topDataset.check( out, show);
+    // if (topDataset != null)
+    // isValid &= topDataset.check( out, show);
 
     for (InvDataset ds : datasets) {
       InvDatasetImpl dsi = (InvDatasetImpl) ds;
@@ -494,9 +504,8 @@ public class InvCatalogImpl extends InvCatalog {
     StringBuilder buff = new StringBuilder(1000);
     buff.setLength(0);
 
-    buff.append("Catalog <").append(getName())
-        .append("> <").append(getVersion())
-        .append("> <").append(getCreateFrom()).append(">\n");
+    buff.append("Catalog <").append(getName()).append("> <").append(getVersion()).append("> <").append(getCreateFrom())
+        .append(">\n");
     buff.append(topDataset.dump(2));
 
     return buff.toString();
@@ -507,36 +516,39 @@ public class InvCatalogImpl extends InvCatalog {
    * Throws a PropertyChangeEvent:
    * <ul><li>propertyName = "InvCatalogRefInit", getNewValue() = InvCatalogRef that was just initialized
    * </ul>
+   * 
    * @param l the listener
    *
-  public void addPropertyChangeListener(PropertyChangeListener l) {
-    if (listenerList == null) listenerList = new EventListenerList();
-    listenerList.add(PropertyChangeListener.class, l);
-  }
-
-  /**
+   * public void addPropertyChangeListener(PropertyChangeListener l) {
+   * if (listenerList == null) listenerList = new EventListenerList();
+   * listenerList.add(PropertyChangeListener.class, l);
+   * }
+   * 
+   * /**
    * Remove a PropertyChangeEvent Listener.
+   * 
    * @param l the listener
    *
-  public void removePropertyChangeListener(PropertyChangeListener l) {
-    listenerList.remove(PropertyChangeListener.class, l);
-  }
-
-  private EventListenerList listenerList = null;
-
-  // PropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue)
-  void firePropertyChangeEvent(PropertyChangeEvent event) {
-    // System.out.println("firePropertyChangeEvent "+event);
-    if (listenerList == null) return;
-
-    // Process the listeners last to first
-    Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener) listeners[i + 1]).propertyChange(event);
-      }
-    }
-  } */
+   * public void removePropertyChangeListener(PropertyChangeListener l) {
+   * listenerList.remove(PropertyChangeListener.class, l);
+   * }
+   * 
+   * private EventListenerList listenerList = null;
+   * 
+   * // PropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue)
+   * void firePropertyChangeEvent(PropertyChangeEvent event) {
+   * // System.out.println("firePropertyChangeEvent "+event);
+   * if (listenerList == null) return;
+   * 
+   * // Process the listeners last to first
+   * Object[] listeners = listenerList.getListenerList();
+   * for (int i = listeners.length - 2; i >= 0; i -= 2) {
+   * if (listeners[i] == PropertyChangeListener.class) {
+   * ((PropertyChangeListener) listeners[i + 1]).propertyChange(event);
+   * }
+   * }
+   * }
+   */
 
   /**
    * This finds the topmost catalog, even when its a InvCatalogRef.
@@ -555,34 +567,37 @@ public class InvCatalogImpl extends InvCatalog {
   private InvCatalogImpl top = null;
 
   ////////////////////////////////////////////
-  /* private InvCatalogFactory factory = null;
-  // private InvCatalogConvertIF converter = null;
-
-  // this is how catalogRefs read their catalogs
-  InvCatalogFactory getCatalogFactory() {
-    return factory;
-  }
-
-  void setCatalogFactory(InvCatalogFactory factory) {
-    this.factory = factory;
-  }
-
-  // track converter
-  InvCatalogConvertIF getCatalogConverter() {
-    return converter;
-  }
-
-  void setCatalogConverter(InvCatalogConvertIF converter) {
-    this.converter = converter;
-  } */
+  /*
+   * private InvCatalogFactory factory = null;
+   * // private InvCatalogConvertIF converter = null;
+   * 
+   * // this is how catalogRefs read their catalogs
+   * InvCatalogFactory getCatalogFactory() {
+   * return factory;
+   * }
+   * 
+   * void setCatalogFactory(InvCatalogFactory factory) {
+   * this.factory = factory;
+   * }
+   * 
+   * // track converter
+   * InvCatalogConvertIF getCatalogConverter() {
+   * return converter;
+   * }
+   * 
+   * void setCatalogConverter(InvCatalogConvertIF converter) {
+   * this.converter = converter;
+   * }
+   */
 
 
   /*
    * Set the connverter to 1.0, typically to write a 0.6 out to a 1.0
    *
-  public void setCatalogConverterToVersion1() {
-    setCatalogConverter(factory.getCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_10));
-  } */
+   * public void setCatalogConverterToVersion1() {
+   * setCatalogConverter(factory.getCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_10));
+   * }
+   */
 
   /**
    * Write the catalog as an XML document to the specified stream.
@@ -598,7 +613,7 @@ public class InvCatalogImpl extends InvCatalog {
   /**
    * Write the catalog as an XML document to the specified stream.
    *
-   * @param os  write to this OutputStream
+   * @param os write to this OutputStream
    * @param raw if true, write original (server) version, else write client version
    * @throws java.io.IOException on an error.
    */
@@ -619,7 +634,8 @@ public class InvCatalogImpl extends InvCatalog {
 
 
   /**
-   * Add Dataset Root, key = path,  value = location.
+   * Add Dataset Root, key = path, value = location.
+   * 
    * @param root add a dataset root
    */
   public void addDatasetRoot(DataRootConfig root) {
@@ -631,8 +647,10 @@ public class InvCatalogImpl extends InvCatalog {
    * InvCatalogImpl elements with same values are equal.
    */
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof InvCatalogImpl)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof InvCatalogImpl))
+      return false;
     return o.hashCode() == this.hashCode();
   }
 

@@ -28,7 +28,7 @@ class FieldType {
   static public final FieldType DOUBLE = new FieldType("DOUBLE", 12, 8);
 
 
-  static FieldType get( int code) {
+  static FieldType get(int code) {
     return types[code];
   }
 
@@ -36,12 +36,14 @@ class FieldType {
   int code;
   int size;
 
-  private FieldType( String  name, int code, int size) {
+  private FieldType(String name, int code, int size) {
     this.name = name;
     this.code = code;
     this.size = size;
     types[code] = this;
   }
 
-  public String toString() { return name; }
+  public String toString() {
+    return name;
+  }
 }

@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -40,7 +40,6 @@ import ucar.ma2.Array;
 import junit.framework.TestCase;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
@@ -60,7 +59,7 @@ public class TestStag3D extends TestCase {
     GeoGrid grid = dataset.findGridByName("u");
     assert null != grid;
     System.out.printf("u shape= %s%n", showShape(grid.getShape()));
-    
+
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
@@ -72,7 +71,7 @@ public class TestStag3D extends TestCase {
     dataset.close();
   }
 
-  private String showShape( int[] shape) {
+  private String showShape(int[] shape) {
     Formatter f = new Formatter();
     for (int s : shape)
       f.format(" %d", s);

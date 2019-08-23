@@ -16,7 +16,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -29,8 +28,9 @@ public class TestNexrad2HiResolution {
   public void testRead() throws IOException {
     long start = System.currentTimeMillis();
     TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/nexrad/newLevel2/testfiles", null, new MyAct(true));
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/nexrad/newLevel2/testfiles", new TestDir.FileFilterFromSuffixes(".bz2"), new MyAct(false));
-    //doDirectory("/upc/share/testdata2/radar/nexrad/newLevel2/testfiles", false);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/nexrad/newLevel2/testfiles",
+        new TestDir.FileFilterFromSuffixes(".bz2"), new MyAct(false));
+    // doDirectory("/upc/share/testdata2/radar/nexrad/newLevel2/testfiles", false);
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = " + took + " msec");
   }

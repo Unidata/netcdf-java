@@ -14,7 +14,6 @@ import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
@@ -55,14 +54,8 @@ public class TestMisc extends TestCase {
     try {
 
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-      Date[] dateList = new Date[]{
-              sdf.parse("2002-01-01"),
-              sdf.parse("2002-01-02"),
-              sdf.parse("2002-01-03"),
-              sdf.parse("2002-01-04"),
-              sdf.parse("2002-02-05"),
-              sdf.parse("2002-03-06")
-      };
+      Date[] dateList = new Date[] {sdf.parse("2002-01-01"), sdf.parse("2002-01-02"), sdf.parse("2002-01-03"),
+          sdf.parse("2002-01-04"), sdf.parse("2002-02-05"), sdf.parse("2002-03-06")};
 
       Arrays.sort(dateList, new DateComparator1());
 
@@ -85,7 +78,8 @@ public class TestMisc extends TestCase {
   // reverse sort - latest come first
   private class DateComparator1 implements Comparator<Date> {
     public int compare(Date f1, Date f2) {
-      System.out.print(f2 + "-" + f1 + " =" + f2.getTime() + "-" + f1.getTime() + " =  int: " + (int) (f2.getTime() - f1.getTime()));
+      System.out.print(
+          f2 + "-" + f1 + " =" + f2.getTime() + "-" + f1.getTime() + " =  int: " + (int) (f2.getTime() - f1.getTime()));
       System.out.println("  long: " + (f2.getTime() - f1.getTime()));
 
       return (int) (f2.getTime() - f1.getTime());
@@ -97,7 +91,8 @@ public class TestMisc extends TestCase {
     public int compare(Date f1, Date f2) {
       // return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 
-      if (f2.getTime() == f1.getTime()) return 0;
+      if (f2.getTime() == f1.getTime())
+        return 0;
       return (f2.getTime() > f1.getTime()) ? 1 : -1;
     }
   }

@@ -15,7 +15,7 @@ import ucar.nc2.wmo.Util;
  * ECMWF param tables read from resources/grib2/ecmwf/tables/<latest>.
  * EcmwfParamTableCompare is used to compare with WMO.
  * No significant differences.
-*/
+ */
 public class EcmwfParamTableCompare {
 
   private static boolean verbose = false;
@@ -60,8 +60,7 @@ public class EcmwfParamTableCompare {
             try {
               SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
               if (!su1.isCompatible(cu2)) {
-                f.format("  incompatible for %10s %s (%s) != %s (org %s)%n", p1.getId(), cu1, su1,
-                    cu2, p2.getUnit());
+                f.format("  incompatible for %10s %s (%s) != %s (org %s)%n", p1.getId(), cu1, su1, cu2, p2.getUnit());
                 udunits++;
               }
             } catch (Exception e) {
@@ -85,8 +84,7 @@ public class EcmwfParamTableCompare {
       }
     }
     if (conflict > 0 || udunits > 0 || missing > 0) {
-      f.format(" ***Conflicts=%d extra=%d udunits=%d missing=%s%n", conflict, extra, udunits,
-          missing);
+      f.format(" ***Conflicts=%d extra=%d udunits=%d missing=%s%n", conflict, extra, udunits, missing);
     }
   }
 
@@ -105,12 +103,14 @@ public class EcmwfParamTableCompare {
         System.out.printf("%s", out);
         latest = next;
       }
-      if (!verbose) break;
+      if (!verbose)
+        break;
     }
   }
 
   public static void main(String[] args) {
-    final String PATH = "/usr/local/google/home/jlcaron/github/thredds/grib/src/main/resources/resources/grib2/ecmwf/tables/21";
+    final String PATH =
+        "/usr/local/google/home/jlcaron/github/thredds/grib/src/main/resources/resources/grib2/ecmwf/tables/21";
     System.out.printf("EcmwfParamTableCompare on %s%n", CalendarDate.present());
     System.out.printf("  ECMWF = %s%n", PATH);
     System.out.printf("  WMO   = %s%n", WmoCodeFlagTables.standard.getResourceName());

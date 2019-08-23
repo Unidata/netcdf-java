@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -35,7 +35,6 @@ package ucar.nc2.iosp.bufr.tables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.StringUtil2;
-
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.TreeMap;
@@ -58,22 +57,23 @@ public class CompareCodeTables {
   class Feature {
     int fxy;
     String name;
-    Map<Integer,String> map = new HashMap<Integer,String>(10);
+    Map<Integer, String> map = new HashMap<Integer, String>(10);
 
     Feature(int x, int y) {
       this.fxy = (x << 8) + y;
     }
 
-  private void addValue(String valueS, String text) {
-    if (text.toLowerCase().contains("reserved")) return;
-    text = StringUtil2.remove(text, '"');
-    try {
-     int value = Integer.parseInt(valueS);
-     map.put(value,text);
-    } catch (Exception e) {
-      System.out.printf("%s cant parse %s text = %s%n", this, valueS, text);
+    private void addValue(String valueS, String text) {
+      if (text.toLowerCase().contains("reserved"))
+        return;
+      text = StringUtil2.remove(text, '"');
+      try {
+        int value = Integer.parseInt(valueS);
+        map.put(value, text);
+      } catch (Exception e) {
+        System.out.printf("%s cant parse %s text = %s%n", this, valueS, text);
+      }
     }
-  }
 
     public String toString() {
       return fxy(fxy);
@@ -92,7 +92,8 @@ public class CompareCodeTables {
   // Read WMO csv format
 
   void readWmoCsv(String filename, Map<Integer, Feature> wmoMap) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF-8")));
+    BufferedReader dataIS =
+        new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF-8")));
     int count = 0;
     int currSeqno = -1;
     Feature currSeq = null;
@@ -100,8 +101,10 @@ public class CompareCodeTables {
       String line = dataIS.readLine();
       count++;
 
-      if (line == null) break;
-      if (line.startsWith("#")) continue;
+      if (line == null)
+        break;
+      if (line.startsWith("#"))
+        continue;
 
       if (count == 1) {
         System.out.println("header line == " + line);
@@ -114,7 +117,8 @@ public class CompareCodeTables {
         int pos2 = line.indexOf('"', pos1 + 1);
         StringBuffer sb = new StringBuffer(line);
         for (int i = pos1; i < pos2; i++)
-          if (sb.charAt(i) == ',') sb.setCharAt(i, ' ');
+          if (sb.charAt(i) == ',')
+            sb.setCharAt(i, ' ');
         line = sb.toString();
       }
 
@@ -130,9 +134,11 @@ public class CompareCodeTables {
         int seq = Integer.parseInt(flds[fldidx++]);
         String codeFigure = flds[fldidx++];
         String desc1 = flds[fldidx++];
-        if  (flds.length > 4) desc1 += " & " + flds[fldidx++];
-        if  (flds.length > 5) desc1 += " & " + flds[fldidx++];
- 
+        if (flds.length > 4)
+          desc1 += " & " + flds[fldidx++];
+        if (flds.length > 5)
+          desc1 += " & " + flds[fldidx++];
+
         if (currSeqno != seq) {
           int y = seq % 1000;
           int w = seq / 1000;
@@ -170,7 +176,7 @@ public class CompareCodeTables {
         String name2 = tm.get(code);
         if (name2 == null)
           System.out.printf("   %s missing in ours (%s) %n", code, name);
-        else if (!equiv(name,name2))
+        else if (!equiv(name, name2))
           System.out.printf("   %s %s != %s %n", code, name, name2);
       }
 
@@ -201,6 +207,7 @@ public class CompareCodeTables {
 
   char[] remove = new char[] {'(', ')', ' ', '"', ',', '*', '-'};
   String[] replace = new String[] {"", "", "", "", "", "", ""};
+
   boolean equiv(String org1, String org2) {
     String s1 = StringUtil2.replace(org1, remove, replace).toLowerCase();
     String s2 = StringUtil2.replace(org2, remove, replace).toLowerCase();
@@ -208,7 +215,7 @@ public class CompareCodeTables {
   }
 
 
-  static public void main( String args[]) throws IOException {
+  static public void main(String args[]) throws IOException {
     Map<Integer, Feature> wmoMap = new TreeMap<Integer, Feature>();
     CompareCodeTables ct = new CompareCodeTables();
     ct.readWmoCsv("C:/docs/BC_CodeFlagTable.csv", wmoMap);

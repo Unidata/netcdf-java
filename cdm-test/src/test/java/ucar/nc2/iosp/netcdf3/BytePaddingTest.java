@@ -14,11 +14,9 @@ import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.TestFileDirUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import static org.junit.Assert.*;
 
 /**
@@ -30,18 +28,19 @@ import static org.junit.Assert.*;
 public class BytePaddingTest {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public final TemporaryFolder tempFolder = new TemporaryFolder();
   public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf3/";
 
   @Test
   public void checkReadOfFileWrittenWithIncorrectPaddingOfOneDimByteArrayOnlyRecordVar()
-          throws IOException, InvalidRangeException {
-    //File testDataDir = new File( TestDir.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3");
+      throws IOException, InvalidRangeException {
+    // File testDataDir = new File( TestDir.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3");
     File testFile = new File(TestDir.cdmLocalTestDataDir, "byteArrayRecordVarPaddingTest-bad.nc");
     assertTrue(testFile.exists());
     assertTrue(testFile.canRead());
 
-    try( NetcdfFile ncf = NetcdfFile.open(testFile.getPath())) {
+    try (NetcdfFile ncf = NetcdfFile.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("V");
       assertEquals(readVar.getDataType(), DataType.BYTE);
       assertEquals(1, readVar.getElementSize());
@@ -53,7 +52,7 @@ public class BytePaddingTest {
       Array byteData = readVar.read();
 
       // File was created with the following data
-      //     byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
+      // byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
       // But extra padding (see issue CDM-52) caused each byte to be padded out to 4 bytes.
       assertEquals(1, byteData.getByte(0));
       assertEquals(0, byteData.getByte(1));
@@ -87,12 +86,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimByteArrayOnlyRecordVar()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimByteArrayOnlyRecordVar() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try( NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension recDim = ncfWriteable.addUnlimitedDimension("v");
       Variable var = ncfWriteable.addVariable("v", DataType.BYTE, "v");
       assertEquals(1, var.getElementSize());
@@ -103,7 +101,7 @@ public class BytePaddingTest {
       assertEquals(1, vinfo.vsize);
 
       byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
-      Array dataArray = Array.factory(DataType.BYTE, new int[]{data.length}, data);
+      Array dataArray = Array.factory(DataType.BYTE, new int[] {data.length}, data);
       ncfWriteable.write(var.getFullNameEscaped(), dataArray);
       ncfWriteable.close();
 
@@ -124,12 +122,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimByteArrayOneOfTwoRecordVars()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimByteArrayOneOfTwoRecordVars() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try( NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension recDim = ncfWriteable.addUnlimitedDimension("v");
       Variable var = ncfWriteable.addVariable("v", DataType.BYTE, "v");
       assertEquals(1, var.getElementSize());
@@ -145,7 +142,7 @@ public class BytePaddingTest {
       assertEquals(4, vinfo.vsize);
 
       byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
-      Array dataArray = Array.factory(DataType.BYTE, new int[]{data.length}, data);
+      Array dataArray = Array.factory(DataType.BYTE, new int[] {data.length}, data);
       ncfWriteable.write(var.getFullNameEscaped(), dataArray);
       ncfWriteable.close();
 
@@ -174,12 +171,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadTwoDimByteArrayOnlyRecordVar()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadTwoDimByteArrayOnlyRecordVar() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try( NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension recDim = ncfWriteable.addUnlimitedDimension("v");
       Dimension secondDim = ncfWriteable.addDimension("s", 3);
       Variable var = ncfWriteable.addVariable("v", DataType.BYTE, "v s");
@@ -191,7 +187,7 @@ public class BytePaddingTest {
       assertEquals(3, vinfo.vsize);
 
       byte[] data = {1, 2, 3, 11, 12, 13, 21, 22, 23, -1, -2, -3};
-      Array dataArray = Array.factory(DataType.BYTE, new int[]{4, 3}, data);
+      Array dataArray = Array.factory(DataType.BYTE, new int[] {4, 3}, data);
       ncfWriteable.write(var.getFullNameEscaped(), dataArray);
       ncfWriteable.close();
 
@@ -212,12 +208,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadTwoDimByteArrayOneOfTwoRecordVars()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadTwoDimByteArrayOneOfTwoRecordVars() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try(NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension recDim = ncfWriteable.addUnlimitedDimension("v");
       Dimension secondDim = ncfWriteable.addDimension("s", 3);
       Variable var = ncfWriteable.addVariable("v", DataType.BYTE, "v s");
@@ -234,7 +229,7 @@ public class BytePaddingTest {
       assertEquals(4, vinfo.vsize);
 
       byte[] data = {1, 2, 3, 11, 12, 13, 21, 22, 23, -1, -2, -3};
-      Array dataArray = Array.factory(DataType.BYTE, new int[]{4, 3}, data);
+      Array dataArray = Array.factory(DataType.BYTE, new int[] {4, 3}, data);
       ncfWriteable.write(var.getFullNameEscaped(), dataArray);
       ncfWriteable.close();
 
@@ -262,12 +257,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimCharArrayOnlyRecordVar()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimCharArrayOnlyRecordVar() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try(NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension recDim = ncfWriteable.addUnlimitedDimension("v");
       Variable var = ncfWriteable.addVariable("v", DataType.CHAR, "v");
       assertEquals(1, var.getElementSize());
@@ -278,7 +272,7 @@ public class BytePaddingTest {
       assertEquals(1, vinfo.vsize);
 
       char[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50};
-      Array dataArray = Array.factory(DataType.CHAR, new int[]{data.length}, data);
+      Array dataArray = Array.factory(DataType.CHAR, new int[] {data.length}, data);
       ncfWriteable.write(var.getFullNameEscaped(), dataArray);
       ncfWriteable.close();
 
@@ -299,12 +293,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimCharArrayOneOfTwoRecordVars()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimCharArrayOneOfTwoRecordVars() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try(NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension recDim = ncfWriteable.addUnlimitedDimension("v");
       Dimension secondDim = ncfWriteable.addDimension("s", 3);
       Variable var = ncfWriteable.addVariable("v", DataType.CHAR, "v s");
@@ -322,7 +315,7 @@ public class BytePaddingTest {
       assertEquals(4, vinfo.vsize);
 
       char[] data = {1, 2, 3, 40, 41, 42, 50, 51, 52, 60, 61, 62};
-      Array dataArray = Array.factory(DataType.CHAR, new int[]{4, 3}, data);
+      Array dataArray = Array.factory(DataType.CHAR, new int[] {4, 3}, data);
       ncfWriteable.write(var.getFullNameEscaped(), dataArray);
       ncfWriteable.close();
 
@@ -351,12 +344,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimShortArrayOnlyRecordVar()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimShortArrayOnlyRecordVar() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try(NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension recDim = ncfWriteable.addUnlimitedDimension("v");
       Variable var = ncfWriteable.addVariable("v", DataType.SHORT, "v");
       assertEquals(2, var.getElementSize());
@@ -367,7 +359,7 @@ public class BytePaddingTest {
       assertEquals(2, vinfo.vsize);
 
       short[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
-      Array dataArray = Array.factory(DataType.SHORT, new int[]{data.length}, data);
+      Array dataArray = Array.factory(DataType.SHORT, new int[] {data.length}, data);
       ncfWriteable.write(var.getFullNameEscaped(), dataArray);
       ncfWriteable.close();
 
@@ -388,12 +380,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimShortArrayOneOfTwoRecordVars()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimShortArrayOneOfTwoRecordVars() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try(NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension recDim = ncfWriteable.addUnlimitedDimension("v");
       Dimension secondDim = ncfWriteable.addDimension("s", 3);
       Variable var = ncfWriteable.addVariable("v", DataType.SHORT, "v s");
@@ -411,7 +402,7 @@ public class BytePaddingTest {
       assertEquals(4, vinfo.vsize);
 
       short[] data = {1, 2, 3, 10, 11, 12, -1, -2, -3, -7, -8, -9};
-      Array dataArray = Array.factory(DataType.SHORT, new int[]{4, 3}, data);
+      Array dataArray = Array.factory(DataType.SHORT, new int[] {4, 3}, data);
       ncfWriteable.write(var.getFullNameEscaped(), dataArray);
       ncfWriteable.close();
 
@@ -440,12 +431,11 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOriginalByteArrayPaddingTest()
-          throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOriginalByteArrayPaddingTest() throws IOException, InvalidRangeException {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    try(NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
+    try (NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true)) {
       Dimension d0 = ncfWriteable.addDimension("X", 5);
       Dimension d = ncfWriteable.addUnlimitedDimension("D");
       Variable v0 = ncfWriteable.addVariable("X", DataType.DOUBLE, "X");
@@ -458,7 +448,7 @@ public class BytePaddingTest {
       assertEquals(1, vinfo.vsize);
 
       byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
-      Array arr = Array.factory(DataType.BYTE, new int[]{data.length}, data);
+      Array arr = Array.factory(DataType.BYTE, new int[] {data.length}, data);
       ncfWriteable.write(v.getFullNameEscaped(), arr);
       ncfWriteable.close();
 

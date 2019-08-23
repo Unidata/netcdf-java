@@ -11,7 +11,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +24,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 /**
  * Read Runtime Configuration
  * <p/>
+ * 
  * <pre>
  * <runtimeConfig>
  * <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
@@ -63,9 +63,7 @@ public class RuntimeConfigParser {
           try {
             NetcdfFile.registerIOProvider(className);
           } catch (ClassNotFoundException e) {
-            errlog
-                .append(
-                    "CoordSysBuilder class not found= " + className + "; check your classpath\n");
+            errlog.append("CoordSysBuilder class not found= " + className + "; check your classpath\n");
           } catch (Exception e) {
             errlog.append("IOServiceProvider " + className + " failed= " + e.getMessage() + "\n");
           }
@@ -79,9 +77,7 @@ public class RuntimeConfigParser {
           try {
             CoordSysBuilder.registerConvention(conventionName, className);
           } catch (ClassNotFoundException e) {
-            errlog
-                .append(
-                    "CoordSysBuilder class not found= " + className + "; check your classpath\n");
+            errlog.append("CoordSysBuilder class not found= " + className + "; check your classpath\n");
           } catch (Exception e) {
             errlog.append("CoordSysBuilder " + className + " failed= " + e.getMessage() + "\n");
           }
@@ -95,9 +91,7 @@ public class RuntimeConfigParser {
           try {
             CoordTransBuilder.registerTransform(transformName, className);
           } catch (ClassNotFoundException e) {
-            errlog
-                .append(
-                    "CoordSysBuilder class not found= " + className + "; check your classpath\n");
+            errlog.append("CoordSysBuilder class not found= " + className + "; check your classpath\n");
           } catch (Exception e) {
             errlog.append("CoordTransBuilder " + className + " failed= " + e.getMessage() + "\n");
           }
@@ -109,8 +103,7 @@ public class RuntimeConfigParser {
           String className = elem.getAttributeValue("class");
           FeatureType featureType = FeatureType.valueOf(typeName.toUpperCase());
           if (null == featureType) {
-            errlog.append(
-                "FeatureDatasetFactory " + className + " unknown datatype= " + typeName + "\n");
+            errlog.append("FeatureDatasetFactory " + className + " unknown datatype= " + typeName + "\n");
             continue;
           }
 
@@ -121,8 +114,7 @@ public class RuntimeConfigParser {
             }
 
           } catch (Exception e) {
-            errlog
-                .append("FeatureDatasetFactory " + className + " failed= " + e.getMessage() + "\n");
+            errlog.append("FeatureDatasetFactory " + className + " failed= " + e.getMessage() + "\n");
           }
 
           break;
@@ -145,11 +137,11 @@ public class RuntimeConfigParser {
             int subcenter = (subcenterS == null) ? -1 : Integer.parseInt(subcenterS);
             int version = Integer.parseInt(versionS);
 
-            // ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTable(int center, int subcenter, int tableVersion, String tableFilename)
-            Class c = RuntimeConfigParser.class.getClassLoader()
-                .loadClass("ucar.nc2.grib.grib1.tables.Grib1ParamTables");
-            Method m = c
-                .getMethod("addParameterTable", int.class, int.class, int.class, String.class);
+            // ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTable(int center, int subcenter, int
+            // tableVersion, String tableFilename)
+            Class c =
+                RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.grib.grib1.tables.Grib1ParamTables");
+            Method m = c.getMethod("addParameterTable", int.class, int.class, int.class, String.class);
             m.invoke(null, center, subcenter, version, filename);
 
           } catch (Exception e) {
@@ -160,8 +152,7 @@ public class RuntimeConfigParser {
           if (strictS != null) {
             boolean notStrict = strictS.equalsIgnoreCase("false");
             try {
-              Class c = RuntimeConfigParser.class.getClassLoader()
-                  .loadClass("ucar.grib.grib1.tables.Grib1ParamTables");
+              Class c = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.grib.grib1.tables.Grib1ParamTables");
               Method m = c.getMethod("setStrict", boolean.class);
               m.invoke(null, !notStrict);
 
@@ -181,8 +172,8 @@ public class RuntimeConfigParser {
 
           // ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTableLookup(String lookupFilename)
           try {
-            Class c = RuntimeConfigParser.class.getClassLoader()
-                .loadClass("ucar.nc2.grib.grib1.tables.Grib1ParamTables");
+            Class c =
+                RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.grib.grib1.tables.Grib1ParamTables");
             Method m = c.getMethod("addParameterTableLookup", String.class);
             m.invoke(null, filename);
 
@@ -205,20 +196,19 @@ public class RuntimeConfigParser {
               // ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup( filename);
               // use reflection instead to decouple from the grib package
               try {
-                Class c = RuntimeConfigParser.class.getClassLoader()
-                    .loadClass("ucar.grib.grib1.GribPDSParamTable");
+                Class c = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.grib.grib1.GribPDSParamTable");
                 Method m = c.getMethod("addParameterUserLookup", String.class);
                 m.invoke(null, filename);
 
-              } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+              } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
+                  | IllegalAccessException e) {
                 e.printStackTrace();
               }
 
             } else if (type.equalsIgnoreCase("GRIB2")) {
               // ucar.grib.grib2.ParameterTable.addParametersUser( filename);
               try {
-                Class c = RuntimeConfigParser.class.getClassLoader()
-                    .loadClass(" ucar.grib.grib2.ParameterTable");
+                Class c = RuntimeConfigParser.class.getClassLoader().loadClass(" ucar.grib.grib2.ParameterTable");
                 Method m = c.getMethod("addParametersUser", String.class);
                 m.invoke(null, filename);
 
@@ -248,8 +238,12 @@ public class RuntimeConfigParser {
           // reflection is used to decouple optional jars
           Class bufrTablesClass;
           try {
-            bufrTablesClass = RuntimeConfigParser.class.getClassLoader().loadClass(
-                "ucar.nc2.iosp.bufr.tables.BufrTables"); // only load if bufr.jar is present
+            bufrTablesClass =
+                RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.tables.BufrTables"); // only
+                                                                                                              // load if
+                                                                                                              // bufr.jar
+                                                                                                              // is
+                                                                                                              // present
             Class[] params = new Class[1];
             params[0] = String.class;
             Method method = bufrTablesClass.getMethod("addLookupFile", params);
@@ -259,8 +253,7 @@ public class RuntimeConfigParser {
 
           } catch (Throwable e) {
             if (e instanceof FileNotFoundException) {
-              errlog
-                  .append("bufrtable read failed on  " + filename + " = " + e.getMessage() + "\n");
+              errlog.append("bufrtable read failed on  " + filename + " = " + e.getMessage() + "\n");
             } else {
               errlog.append("bufr.jar is not on classpath\n");
             }
@@ -273,23 +266,21 @@ public class RuntimeConfigParser {
           // so we cannot refer to the Nc4Iosp.class object.
           String nc4IospClassName = "ucar.nc2.jni.netcdf.Nc4Iosp";
 
-        /*
-          <Netcdf4Clibrary>
-            <libraryPath>/usr/local/lib</libraryPath>
-            <libraryName>netcdf</libraryName>
-            <useForReading>false</useForReading>
-          </Netcdf4Clibrary>
-        */
+          /*
+           * <Netcdf4Clibrary>
+           * <libraryPath>/usr/local/lib</libraryPath>
+           * <libraryName>netcdf</libraryName>
+           * <useForReading>false</useForReading>
+           * </Netcdf4Clibrary>
+           */
           String path = elem.getChildText("libraryPath");
           String name = elem.getChildText("libraryName");
 
           if (path != null && name != null) {
             // reflection is used to decouple optional jars
             try {
-              Class nc4IospClass = RuntimeConfigParser.class.getClassLoader()
-                  .loadClass(nc4IospClassName);
-              Method method = nc4IospClass
-                  .getMethod("setLibraryAndPath", String.class, String.class);
+              Class nc4IospClass = RuntimeConfigParser.class.getClassLoader().loadClass(nc4IospClassName);
+              Method method = nc4IospClass.getMethod("setLibraryAndPath", String.class, String.class);
               method.invoke(null, path, name); // static method has null for object
             } catch (Throwable e) {
               errlog.append(nc4IospClassName + " is not on classpath\n");
@@ -303,8 +294,7 @@ public class RuntimeConfigParser {
               // Crucially, this means that we'll try to open a file with Nc4Iosp before we try it with H5iosp.
               NetcdfFile.registerIOProvider(nc4IospClassName);
             } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-              errlog.append(String
-                  .format("Could not register IOSP '%s': %s%n", nc4IospClassName, e.getMessage()));
+              errlog.append(String.format("Could not register IOSP '%s': %s%n", nc4IospClassName, e.getMessage()));
             }
           }
           break;

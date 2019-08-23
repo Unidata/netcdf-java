@@ -31,14 +31,16 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
   protected CalendarDateUnit timeUnit;
   protected Cursor cursor;
 
-  StandardPointFeatureIterator(PointCollectionImpl dsg, NestedTable ft, CalendarDateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) {
+  StandardPointFeatureIterator(PointCollectionImpl dsg, NestedTable ft, CalendarDateUnit timeUnit,
+      ucar.ma2.StructureDataIterator structIter, Cursor cursor) {
     super(structIter, null);
     this.collectionDsg = dsg;
     this.ft = ft;
     this.timeUnit = timeUnit;
     this.cursor = cursor;
     CollectionInfo info = dsg.getInfo();
-    if (!info.isComplete()) setCalculateBounds(info);
+    if (!info.isComplete())
+      setCalculateBounds(info);
   }
 
   @Override
@@ -48,9 +50,10 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     cursor.currentIndex = 0;
     ft.addParentJoin(cursor); // there may be parent joins
 
-    if (isMissing()) return null; // missing data
+    if (isMissing())
+      return null; // missing data
 
-    double obsTime = ft.getObsTime( this.cursor);
+    double obsTime = ft.getObsTime(this.cursor);
     // must send a copy, since sdata is changing each time, and StandardPointFeature may be stored
     return new StandardPointFeature(cursor.copy(), timeUnit, obsTime);
   }
@@ -68,21 +71,22 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
       cursor.currentIndex = 1; // LOOK ????
 
       this.obsTime = obsTime;
-      nomTime = ft.getNomTime( this.cursor);
-      if (Double.isNaN(nomTime)) nomTime = obsTime;
-      location = ft.getEarthLocation( this.cursor);
+      nomTime = ft.getNomTime(this.cursor);
+      if (Double.isNaN(nomTime))
+        nomTime = obsTime;
+      location = ft.getEarthLocation(this.cursor);
     }
 
     @Nonnull
     @Override
     public StructureData getFeatureData() {
-      return ft.makeObsStructureData( cursor, 0);
+      return ft.makeObsStructureData(cursor, 0);
     }
 
     @Nonnull
     @Override
     public StructureData getDataAll() {
-      return ft.makeObsStructureData( cursor);
+      return ft.makeObsStructureData(cursor);
     }
 
     @Nonnull
@@ -93,7 +97,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
 
     @Override
     public StationFeature getStation() {
-      return ft.makeStation(cursor.getParentStructure());  // LOOK is this always possible??
+      return ft.makeStation(cursor.getParentStructure()); // LOOK is this always possible??
     }
 
     @Override

@@ -41,8 +41,8 @@ public interface LatLonPoint {
    * Returns {@code true} if this point is nearly equal to {@code that}. The "near equality" of points is determined
    * using {@link Misc#nearlyEquals(double, double, double)}, with the specified maxRelDiff.
    *
-   * @param that    the other point to check.
-   * @param maxRelDiff  the maximum {@link Misc#relativeDifference relative difference} the two points may have.
+   * @param that the other point to check.
+   * @param maxRelDiff the maximum {@link Misc#relativeDifference relative difference} the two points may have.
    * @return {@code true} if this point is nearly equal to {@code that}.
    */
   boolean nearlyEquals(LatLonPoint that, double maxRelDiff);

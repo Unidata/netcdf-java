@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -31,13 +30,13 @@ public class Grib2SectionLocalUse {
 
     // octets 1-4 (Length of GDS)
     int length = GribNumbers.int4(raf);
-    int section = raf.read();  // This is section 2
+    int section = raf.read(); // This is section 2
 
-    if (section != 2) {  // no local use section
+    if (section != 2) { // no local use section
       raf.skipBytes(-5);
       rawData = null;
     } else {
-      rawData = new byte[length-5];
+      rawData = new byte[length - 5];
       raf.readFully(rawData);
     }
   }

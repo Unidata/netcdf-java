@@ -7,11 +7,9 @@ package thredds.inventory;
 
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateFromString;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MFile;
 
@@ -28,6 +26,7 @@ public class DateExtractorFromName implements DateExtractor {
 
   /**
    * Ctor
+   * 
    * @param dateFormatMark DemarkatedCount or DemarkatedMatch
    * @param useName use name if true, else use path
    */
@@ -64,10 +63,7 @@ public class DateExtractorFromName implements DateExtractor {
 
   @Override
   public String toString() {
-    return "DateExtractorFromName{" +
-            "dateFormatMark='" + dateFormatMark + '\'' +
-            ", useName=" + useName +
-            '}';
+    return "DateExtractorFromName{" + "dateFormatMark='" + dateFormatMark + '\'' + ", useName=" + useName + '}';
   }
 
 }

@@ -11,7 +11,6 @@ import ucar.nc2.Dimension;
 import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.unidata.util.Parameter;
-
 import java.util.List;
 import java.io.IOException;
 
@@ -21,7 +20,7 @@ import java.io.IOException;
  *
  * Theres a problem here, since its not 3D, we dont know what the 2D extent is.
  * DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
-
+ * 
  * @author caron
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
  * @since May 6, 2008
@@ -35,9 +34,9 @@ public class AtmosLnPressure extends VerticalTransformImpl {
   /**
    * Create a new vertical transform for Ocean S coordinates
    *
-   * @param ds      dataset
+   * @param ds dataset
    * @param timeDim time dimension
-   * @param params  list of transformation Parameters
+   * @param params list of transformation Parameters
    */
   public AtmosLnPressure(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
     super(timeDim);
@@ -48,8 +47,7 @@ public class AtmosLnPressure extends VerticalTransformImpl {
     try {
       p0 = p0var.readScalarDouble();
     } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosLnPressure failed to read "
-          + p0name + " err= " + e.getMessage());
+      throw new IllegalArgumentException("AtmosLnPressure failed to read " + p0name + " err= " + e.getMessage());
     }
 
     String levName = getParameterStringValue(params, LEV);
@@ -58,11 +56,11 @@ public class AtmosLnPressure extends VerticalTransformImpl {
     try {
       Array lev = levVar.read();
       assert lev.getRank() == 1;
-      pressure = new ArrayDouble.D1( (int) lev.getSize());
+      pressure = new ArrayDouble.D1((int) lev.getSize());
       IndexIterator ii = pressure.getIndexIterator();
       while (lev.hasNext()) {
         double result = p0 * Math.exp(-lev.nextDouble());
-        ii.setDoubleNext( result );
+        ii.setDoubleNext(result);
       }
 
     } catch (IOException e) {
@@ -104,13 +102,13 @@ public class AtmosLnPressure extends VerticalTransformImpl {
    * Get the 1D vertical coordinate array for this time step and point
    * 
    * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @param xIndex    the x index
-   * @param yIndex    the y index
+   * @param xIndex the x index
+   * @param yIndex the y index
    * @return vertical coordinate array
-   */  
+   */
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) {
-	  
-	  throw new UnsupportedOperationException("1D subsetting is not implemented yet for this vertical tranformation");
+
+    throw new UnsupportedOperationException("1D subsetting is not implemented yet for this vertical tranformation");
   }
 
 }

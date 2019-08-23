@@ -48,7 +48,8 @@ public class WmoFlagTable implements Grib2FlagTableInterface {
   @Override
   public Entry getEntry(int code) {
     ImmutableList<WmoEntry> entries = multimap.get(code);
-    if (entries == null) return null;
+    if (entries == null)
+      return null;
     return new WmoFlagEntry(code, entries);
   }
 

@@ -16,7 +16,8 @@ public class ScanMode {
   public static final ScanMode MODE_RHI = new ScanMode("RHI");
   /**
    * SUR (surveillance)
-   * <p>360 degree PPI
+   * <p>
+   * 360 degree PPI
    */
   public static final ScanMode MODE_SUR = new ScanMode("SUR");
   /**

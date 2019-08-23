@@ -11,7 +11,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.*;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -23,8 +22,8 @@ import java.util.*;
  * @since 5/26/2015
  */
 public class DtCoverageCS {
-  //static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DtCoverageCS.class);
-  //static private final boolean warnUnits = false;
+  // static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DtCoverageCS.class);
+  // static private final boolean warnUnits = false;
 
   /////////////////////////////////////////////////////////////////////////////
   protected DtCoverageCSBuilder builder;
@@ -71,7 +70,8 @@ public class DtCoverageCS {
 
   public CoordinateAxis findCoordAxis(String shortName) {
     for (CoordinateAxis axis : builder.allAxes) {
-      if (axis.getShortName().equals(shortName)) return axis;
+      if (axis.getShortName().equals(shortName))
+        return axis;
     }
     return null;
   }
@@ -131,8 +131,10 @@ public class DtCoverageCS {
    * @return true if isLatLon and longitude wraps
    */
   public boolean isGlobalLon() {
-    if (!isLatLon) return false;
-    if (!(getXHorizAxis() instanceof CoordinateAxis1D)) return false;
+    if (!isLatLon)
+      return false;
+    if (!(getXHorizAxis() instanceof CoordinateAxis1D))
+      return false;
     CoordinateAxis1D lon = (CoordinateAxis1D) getXHorizAxis();
     double first = lon.getCoordEdge(0);
     double last = lon.getCoordEdge((int) lon.getSize());
@@ -145,13 +147,16 @@ public class DtCoverageCS {
    * true if x and y axes are CoordinateAxis1D and are regular
    */
   public boolean isRegularSpatial() {
-    if (!isRegularSpatial(getXHorizAxis())) return false;
+    if (!isRegularSpatial(getXHorizAxis()))
+      return false;
     return isRegularSpatial(getYHorizAxis());
   }
 
   private boolean isRegularSpatial(CoordinateAxis axis) {
-    if (axis == null) return true;
-    if (!(axis instanceof CoordinateAxis1D)) return false;
+    if (axis == null)
+      return true;
+    if (!(axis instanceof CoordinateAxis1D))
+      return false;
     return ((CoordinateAxis1D) axis).isRegular();
   }
 
@@ -184,30 +189,31 @@ public class DtCoverageCS {
         CoordinateAxis2D xaxis2 = (CoordinateAxis2D) horizXaxis;
         CoordinateAxis2D yaxis2 = (CoordinateAxis2D) horizYaxis;
 
-        mapArea = null; // getBBfromCorners(xaxis2, yaxis2);  LOOK LOOK
+        mapArea = null; // getBBfromCorners(xaxis2, yaxis2); LOOK LOOK
 
         // mapArea = new ProjectionRect(horizXaxis.getMinValue(), horizYaxis.getMinValue(),
-        //         horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
+        // horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
 
       } else {
 
         CoordinateAxis1D xaxis1 = (CoordinateAxis1D) horizXaxis;
         CoordinateAxis1D yaxis1 = (CoordinateAxis1D) horizYaxis;
 
-        /* add one percent on each side if its a projection. WHY?
-        double dx = 0.0, dy = 0.0;
-        if (!isLatLon()) {
-          dx = .01 * (xaxis1.getCoordEdge((int) xaxis1.getSize()) - xaxis1.getCoordEdge(0));
-          dy = .01 * (yaxis1.getCoordEdge((int) yaxis1.getSize()) - yaxis1.getCoordEdge(0));
-        }
-
-        mapArea = new ProjectionRect(xaxis1.getCoordEdge(0) - dx, yaxis1.getCoordEdge(0) - dy,
-            xaxis1.getCoordEdge((int) xaxis1.getSize()) + dx,
-            yaxis1.getCoordEdge((int) yaxis1.getSize()) + dy); */
+        /*
+         * add one percent on each side if its a projection. WHY?
+         * double dx = 0.0, dy = 0.0;
+         * if (!isLatLon()) {
+         * dx = .01 * (xaxis1.getCoordEdge((int) xaxis1.getSize()) - xaxis1.getCoordEdge(0));
+         * dy = .01 * (yaxis1.getCoordEdge((int) yaxis1.getSize()) - yaxis1.getCoordEdge(0));
+         * }
+         * 
+         * mapArea = new ProjectionRect(xaxis1.getCoordEdge(0) - dx, yaxis1.getCoordEdge(0) - dy,
+         * xaxis1.getCoordEdge((int) xaxis1.getSize()) + dx,
+         * yaxis1.getCoordEdge((int) yaxis1.getSize()) + dy);
+         */
 
         mapArea = new ProjectionRect(xaxis1.getCoordEdge(0), yaxis1.getCoordEdge(0),
-                xaxis1.getCoordEdge((int) xaxis1.getSize()),
-                yaxis1.getCoordEdge((int) yaxis1.getSize()));
+            xaxis1.getCoordEdge((int) xaxis1.getSize()), yaxis1.getCoordEdge((int) yaxis1.getSize()));
       }
     }
 
@@ -287,54 +293,60 @@ public class DtCoverageCS {
 
     return llbb;
 
-      /*  // look at all 4 corners of the bounding box
-        LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
-        LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
-        LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
-        LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
-
-        // Check if grid contains poles.
-        boolean includesNorthPole = false;
-        int[] resultNP;
-        resultNP = findXYindexFromLatLon(90.0, 0, null);
-        if (resultNP[0] != -1 && resultNP[1] != -1)
-          includesNorthPole = true;
-        boolean includesSouthPole = false;
-        int[] resultSP;
-        resultSP = findXYindexFromLatLon(-90.0, 0, null);
-        if (resultSP[0] != -1 && resultSP[1] != -1)
-          includesSouthPole = true;
-
-        if (includesNorthPole && !includesSouthPole) {
-          llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
-          llbb.extend(lrpt);
-          llbb.extend(urpt);
-          llbb.extend(ulpt);
-          // OR
-          //llbb.extend( new LatLonRect( llpt, lrpt ));
-          //llbb.extend( new LatLonRect( lrpt, urpt ) );
-          //llbb.extend( new LatLonRect( urpt, ulpt ) );
-          //llbb.extend( new LatLonRect( ulpt, llpt ) );
-        } else if (includesSouthPole && !includesNorthPole) {
-          llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
-          llbb.extend(lrpt);
-          llbb.extend(urpt);
-          llbb.extend(ulpt);
-        } else {
-          double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-          double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
-
-          // longitude is a bit tricky as usual
-          double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-          double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
-
-          llpt.set(latMin, lonMin);
-          urpt.set(latMax, lonMax);
-
-          llbb = new LatLonRect(llpt, urpt);
-        }
-      }
-    }  */
+    /*
+     * // look at all 4 corners of the bounding box
+     * LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerLeftPoint(), new
+     * LatLonPointImpl());
+     * LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerRightPoint(), new
+     * LatLonPointImpl());
+     * LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperRightPoint(), new
+     * LatLonPointImpl());
+     * LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperLeftPoint(), new
+     * LatLonPointImpl());
+     * 
+     * // Check if grid contains poles.
+     * boolean includesNorthPole = false;
+     * int[] resultNP;
+     * resultNP = findXYindexFromLatLon(90.0, 0, null);
+     * if (resultNP[0] != -1 && resultNP[1] != -1)
+     * includesNorthPole = true;
+     * boolean includesSouthPole = false;
+     * int[] resultSP;
+     * resultSP = findXYindexFromLatLon(-90.0, 0, null);
+     * if (resultSP[0] != -1 && resultSP[1] != -1)
+     * includesSouthPole = true;
+     * 
+     * if (includesNorthPole && !includesSouthPole) {
+     * llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+     * llbb.extend(lrpt);
+     * llbb.extend(urpt);
+     * llbb.extend(ulpt);
+     * // OR
+     * //llbb.extend( new LatLonRect( llpt, lrpt ));
+     * //llbb.extend( new LatLonRect( lrpt, urpt ) );
+     * //llbb.extend( new LatLonRect( urpt, ulpt ) );
+     * //llbb.extend( new LatLonRect( ulpt, llpt ) );
+     * } else if (includesSouthPole && !includesNorthPole) {
+     * llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+     * llbb.extend(lrpt);
+     * llbb.extend(urpt);
+     * llbb.extend(ulpt);
+     * } else {
+     * double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
+     * double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
+     * 
+     * // longitude is a bit tricky as usual
+     * double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
+     * double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
+     * 
+     * llpt.set(latMin, lonMin);
+     * urpt.set(latMax, lonMax);
+     * 
+     * llbb = new LatLonRect(llpt, urpt);
+     * }
+     * }
+     * }
+     */
 
   }
 
@@ -360,9 +372,11 @@ public class DtCoverageCS {
   }
 
   private void showCoordinateAxis(CoordinateAxis axis, Formatter f, boolean showCoords) {
-    if (axis == null) return;
+    if (axis == null)
+      return;
     f.format(" rt=%s (%s)", axis.getNameAndDimensions(), axis.getClass().getName());
-    if (showCoords) showCoords(axis, f);
+    if (showCoords)
+      showCoords(axis, f);
     f.format("%n");
   }
 

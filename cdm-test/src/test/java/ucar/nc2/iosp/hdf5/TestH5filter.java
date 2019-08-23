@@ -13,7 +13,6 @@ import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -32,26 +31,26 @@ public class TestH5filter {
 
     // actually bogus - apparently all filters arre turned off
     // but its a test of filtered data with no filter actually applied
-   try ( NetcdfFile ncfile = TestH5.openH5("support/zip.h5")) {
-     Variable v = ncfile.findVariable("Data/Compressed_Data");
-     assert v != null;
-     Array data = v.read();
-     int[] shape = data.getShape();
-     assert shape[0] == 1000;
-     assert shape[1] == 20;
+    try (NetcdfFile ncfile = TestH5.openH5("support/zip.h5")) {
+      Variable v = ncfile.findVariable("Data/Compressed_Data");
+      assert v != null;
+      Array data = v.read();
+      int[] shape = data.getShape();
+      assert shape[0] == 1000;
+      assert shape[1] == 20;
 
-     Index ima = data.getIndex();
-     for (int i = 0; i < 1000; i++)
-       for (int j = 0; j < 20; j++) {
-         int val = data.getInt(ima.set(i, j));
-         assert val == i + j : val + " != " + (i + j);
-       }
-   }
+      Index ima = data.getIndex();
+      for (int i = 0; i < 1000; i++)
+        for (int j = 0; j < 20; j++) {
+          int val = data.getInt(ima.set(i, j));
+          assert val == i + j : val + " != " + (i + j);
+        }
+    }
   }
 
   @org.junit.Test
   public void test2() throws IOException {
-    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
 
     // probably bogus also, cant find any non-zero filtered variables
     try (NetcdfFile ncfile = TestH5.openH5("wrf/wrf_input_seq.h5")) {
@@ -67,7 +66,7 @@ public class TestH5filter {
 
   @org.junit.Test
   public void testDeflate() throws IOException {
-    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("msg/MSG1_8bit_HRV.H5")) {
 
       // picture looks ok in ToolsUI
@@ -82,7 +81,7 @@ public class TestH5filter {
 
   @org.junit.Test
   public void testMissing() throws IOException {
-    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS2-AFGL_b027_na.he5")) {
 
       // picture looks ok in ToolsUI

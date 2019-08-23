@@ -9,9 +9,7 @@ package ucar.nc2.iosp.mcidas;
 import edu.wisc.ssec.mcidas.GridDirectory;
 import edu.wisc.ssec.mcidas.McIDASException;
 import edu.wisc.ssec.mcidas.McIDASUtil;
-
 import ucar.nc2.iosp.grid.*;
-
 import java.util.Formatter;
 
 
@@ -25,7 +23,7 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
   /**
    * offset to header
    */
-  private int offsetToHeader;  // offset to header
+  private int offsetToHeader; // offset to header
 
   /**
    * grid definition
@@ -74,7 +72,7 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
    * @return level type
    */
   public int getLevelType1() {
-    // TODO:  flush this out
+    // TODO: flush this out
     int gribLevel = getDirBlock()[51];
     int levelType;
     if (!((gribLevel == McIDASUtil.MCMISSING) || (gribLevel == 0))) {

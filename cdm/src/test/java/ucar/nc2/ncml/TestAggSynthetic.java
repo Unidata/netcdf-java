@@ -5,13 +5,11 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.unidata.util.test.Assert2;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
@@ -118,17 +116,15 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testRename() throws IOException, InvalidRangeException {
-    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-        "  <variable name='Temperature' orgName='T' />\n" +
-        "  <aggregation  dimName='time' type='joinNew'>\n" +
-        "    <variableAgg name='T'/>\n" +
-        "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" +
-        "  </aggregation>\n" +
-        "</netcdf>";
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "  <variable name='Temperature' orgName='T' />\n" + "  <aggregation  dimName='time' type='joinNew'>\n"
+        + "    <variableAgg name='T'/>\n"
+        + "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" + "  </aggregation>\n"
+        + "</netcdf>";
 
     String filename = "file:./" + TestNcML.topDir + "aggSynRename.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML( new StringReader(xml), null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), null);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -139,18 +135,15 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testScan() throws IOException, InvalidRangeException {
-    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-        "  <variable name='time' type='int' shape='time'>\n" +
-        "    <attribute name='long_name' type='string' value='time coordinate' />\n" +
-        "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" +
-        "    <values start='0' increment='10' />\n" +
-        "  </variable>\n" +
-        "  <aggregation dimName='time' type='joinNew'>\n" +
-        "    <variableAgg name='T'/>\n" +
-        "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" +
-        "  </aggregation>\n" +
-        "</netcdf>";
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "  <variable name='time' type='int' shape='time'>\n"
+        + "    <attribute name='long_name' type='string' value='time coordinate' />\n"
+        + "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n"
+        + "    <values start='0' increment='10' />\n" + "  </variable>\n"
+        + "  <aggregation dimName='time' type='joinNew'>\n" + "    <variableAgg name='T'/>\n"
+        + "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" + "  </aggregation>\n"
+        + "</netcdf>";
 
     String filename = "file:./" + TestNcML.topDir + "aggSynScan.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), null);
@@ -204,13 +197,13 @@ public class TestAggSynthetic extends TestCase {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = lat.read();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
     assert data.getElementType() == float.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
@@ -226,9 +219,9 @@ public class TestAggSynthetic extends TestCase {
     assert time.getDataType() == DataType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
-  
+
     Array data = time.read();
-  
+
     assert (data instanceof ArrayDouble.D1) : data.getClass().getName();
     ArrayDouble.D1 dataD = (ArrayDouble.D1) data;
     assert dataD.get(0) == 0;
@@ -246,9 +239,9 @@ public class TestAggSynthetic extends TestCase {
     assert time.getDataType() == DataType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
-  
+
     Array data = time.read();
-  
+
     assert (data instanceof ArrayInt);
     IndexIterator dataI = data.getIndexIterator();
     assert dataI.getIntNext() == 0 : dataI.getIntCurrent();
@@ -291,7 +284,7 @@ public class TestAggSynthetic extends TestCase {
     assert (data instanceof ArrayInt);
     while (data.hasNext()) {
       int val = data.nextInt();
-      assert val == count * 10 : val + "!="+ count * 10;
+      assert val == count * 10 : val + "!=" + count * 10;
       count++;
     }
   }
@@ -306,9 +299,9 @@ public class TestAggSynthetic extends TestCase {
     assert time.getDataType() == DataType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
-  
+
     Array data = time.read();
-  
+
     assert (data instanceof ArrayInt.D1) : data.getClass().getName();
     ArrayInt.D1 dataI = (ArrayInt.D1) data;
     assert dataI.get(0) == 82932;
@@ -397,7 +390,8 @@ public class TestAggSynthetic extends TestCase {
 
   }
 
-  public void readSlice(NetcdfFile ncfile, int[] origin, int[] shape, String name) throws IOException, InvalidRangeException {
+  public void readSlice(NetcdfFile ncfile, int[] origin, int[] shape, String name)
+      throws IOException, InvalidRangeException {
 
     Variable v = ncfile.findVariable(name);
 
@@ -419,9 +413,9 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testReadSlice(NetcdfFile ncfile, String name) throws IOException, InvalidRangeException {
-    readSlice(ncfile, new int[]{0, 0, 0}, new int[]{3, 3, 4}, name);
-    readSlice(ncfile, new int[]{0, 0, 0}, new int[]{2, 3, 2}, name);
-    readSlice(ncfile, new int[]{2, 0, 0}, new int[]{1, 3, 4}, name);
-    readSlice(ncfile, new int[]{1, 0, 0}, new int[]{2, 2, 3}, name);
+    readSlice(ncfile, new int[] {0, 0, 0}, new int[] {3, 3, 4}, name);
+    readSlice(ncfile, new int[] {0, 0, 0}, new int[] {2, 3, 2}, name);
+    readSlice(ncfile, new int[] {2, 0, 0}, new int[] {1, 3, 4}, name);
+    readSlice(ncfile, new int[] {1, 0, 0}, new int[] {2, 2, 3}, name);
   }
 }

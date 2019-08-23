@@ -4,8 +4,10 @@
  */
 package ucar.nc2.dt;
 
-/** A collection of data in a time series.
+/**
+ * A collection of data in a time series.
  * Underlying data can be of any type.
+ * 
  * @deprecated use ucar.nc2.ft.*
  * @author caron
  */
@@ -20,9 +22,10 @@ public interface TimeSeriesCollection {
   /** get the time of the nth point. */
   public double getTime(int timePt);
 
-  /** Get the units of Calendar time.
-   *  To get a Date, from a time value, call DateUnit.getStandardDate(double value).
-   *  To get units as a String, call DateUnit.getUnitsString().
+  /**
+   * Get the units of Calendar time.
+   * To get a Date, from a time value, call DateUnit.getStandardDate(double value).
+   * To get units as a String, call DateUnit.getUnitsString().
    */
   public ucar.nc2.units.DateUnit getTimeUnits();
 

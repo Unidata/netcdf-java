@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Assert2;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -41,15 +40,15 @@ public class TestCoordinateND {
     reindexed.showInfo(f, counter);
     logger.debug("{}", f);
     logger.debug("reindexed {}", counter.show());
-  
+
     Assert2.assertNearlyEquals(curr.getSparseArray().getDensity(), 1.0f);
     Assert2.assertNearlyEquals(reindexed.getSparseArray().getDensity(), .826446f);
   }
 
   public static CoordinateND<Short> makeCoordinateND(int rank, int size) {
     List<Coordinate> coords = new ArrayList<>();
-    for (int i=0; i<rank; i++)
-      coords.add(new TestCoordinate(size*(i+1)));
+    for (int i = 0; i < rank; i++)
+      coords.add(new TestCoordinate(size * (i + 1)));
 
     int[] sizeArray = new int[coords.size()];
     for (int i = 0; i < coords.size(); i++)
@@ -58,11 +57,13 @@ public class TestCoordinateND {
 
     int n = builder.getTotalSize();
     int[] track = new int[n];
-    for (int i=0; i<n; i++) track[i] = i+1;
+    for (int i = 0; i < n; i++)
+      track[i] = i + 1;
     builder.setTrack(track);
 
     List<Short> content = new ArrayList<>(n);
-    for (int i=0; i<n; i++) content.add((short) (i*10));
+    for (int i = 0; i < n; i++)
+      content.add((short) (i * 10));
     builder.setContent(content);
 
     SparseArray<Short> sa = builder.finish();
@@ -79,15 +80,17 @@ public class TestCoordinateND {
     for (int i = 0; i < coords.size(); i++)
       sizeArray[i] = coords.get(i).getSize();
     SparseArray.Builder<Short> builder = new SparseArray.Builder<>(sizeArray);
- //   CoordinateND<Short> prev = new CoordinateND<>(coords, sa);
+    // CoordinateND<Short> prev = new CoordinateND<>(coords, sa);
 
     int n = builder.getTotalSize();
     int[] track = new int[n];
-    for (int i=0; i<n; i++) track[i] = i+1;
+    for (int i = 0; i < n; i++)
+      track[i] = i + 1;
     builder.setTrack(track);
 
     List<Short> content = new ArrayList<>(n);
-    for (int i=0; i<n; i++) content.add((short) (i*10));
+    for (int i = 0; i < n; i++)
+      content.add((short) (i * 10));
     builder.setContent(content);
 
     SparseArray<Short> sa = builder.finish();

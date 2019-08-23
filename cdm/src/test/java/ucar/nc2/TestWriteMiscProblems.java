@@ -15,7 +15,6 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -42,7 +41,7 @@ public class TestWriteMiscProblems {
       ArrayChar.D1 arrayCharD1 = new ArrayChar.D1(len);
       for (int i = 0; i < len; i++)
         arrayCharD1.set(i, '1');
-      ncfile.addGlobalAttribute( new Attribute("tooLongChar", arrayCharD1));
+      ncfile.addGlobalAttribute(new Attribute("tooLongChar", arrayCharD1));
 
       char[] carray = new char[len];
       for (int i = 0; i < len; i++)
@@ -64,7 +63,7 @@ public class TestWriteMiscProblems {
     String filename = tempFolder.newFile().getAbsolutePath();
     try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true)) {
       /* define dimensions */
-      Dimension Time_dim       = ncfile.addUnlimitedDimension("Time");
+      Dimension Time_dim = ncfile.addUnlimitedDimension("Time");
       Dimension DateStrLen_dim = ncfile.addDimension("DateStrLen", DateStrLen_len);
 
       /* define variables */
@@ -75,10 +74,10 @@ public class TestWriteMiscProblems {
       ncfile.create();
 
       /* assign variable data */
-      String        contents = "2005-04-11_12:00:002005-04-11_13:00:00";
-      ArrayChar     data     = new ArrayChar(new int[] { 2, 19 });
-      IndexIterator iter     = data.getIndexIterator();
-      int           count    = 0;
+      String contents = "2005-04-11_12:00:002005-04-11_13:00:00";
+      ArrayChar data = new ArrayChar(new int[] {2, 19});
+      IndexIterator iter = data.getIndexIterator();
+      int count = 0;
       while (iter.hasNext()) {
         iter.setCharNext(contents.charAt(count++));
       }
@@ -87,8 +86,8 @@ public class TestWriteMiscProblems {
     }
 
     try (NetcdfFile nc = NetcdfFile.open(filename, null)) {
-      Variable v        = nc.findVariable("Times");
-      Array    dataRead = v.read();
+      Variable v = nc.findVariable("Times");
+      Array dataRead = v.read();
       assert dataRead instanceof ArrayChar;
       ArrayChar dataC = (ArrayChar) dataRead;
 
@@ -125,7 +124,8 @@ public class TestWriteMiscProblems {
     String path = tempFolder.newFile().getAbsolutePath();
     File orgFile = new File(org);
     File newFile = new File(path);
-    if (newFile.exists()) newFile.delete();
+    if (newFile.exists())
+      newFile.delete();
     IO.copyFile(orgFile, newFile);
 
     try (NetcdfFileWriter ncfile = NetcdfFileWriter.openExisting(path)) {

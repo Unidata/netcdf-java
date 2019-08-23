@@ -35,10 +35,7 @@ package ucar.unidata.geoloc.projection;
 
 import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPoint;
-
 import ucar.unidata.geoloc.LatLonPointImpl;
-
-
 import java.lang.*;
 
 
@@ -56,10 +53,10 @@ import java.lang.*;
  *         <p/>
  *         modified JCaron 01/2005
  *         <ol>
- *         <li> turn static methods into object methods, to make thread-safe
- *         <li> rename methods to follow upper/lower case conventions
- *         <li> add convenience methods for ucar.unidata.geoloc.Projection
- *         <li> longitude must be in range +=180.
+ *         <li>turn static methods into object methods, to make thread-safe
+ *         <li>rename methods to follow upper/lower case conventions
+ *         <li>add convenience methods for ucar.unidata.geoloc.Projection
+ *         <li>longitude must be in range +=180.
  *         </ol>
  *         <p/>
  *         random testing shows:
@@ -85,9 +82,9 @@ class Utm_To_Gdc_Converter {
   /**
    * Constructor using a, f.
    *
-   * @param a                the semi-major axis (meters) for the ellipsoid
-   * @param f                the inverse flattening for the ellipsoid
-   * @param zone             the UTM zone number (1..60)
+   * @param a the semi-major axis (meters) for the ellipsoid
+   * @param f the inverse flattening for the ellipsoid
+   * @param zone the UTM zone number (1..60)
    * @param hemisphere_north true if the UTM coordinate is in the northern hemisphere
    */
   public Utm_To_Gdc_Converter(double a, double f, int zone, boolean hemisphere_north) {
@@ -97,26 +94,29 @@ class Utm_To_Gdc_Converter {
   /**
    * Default contructor uses WGS 84 ellipsoid
    *
-   * @param zone             the UTM zone number (1..60)
+   * @param zone the UTM zone number (1..60)
    * @param hemisphere_north true if the UTM coordinate is in the northern hemisphere
    */
   public Utm_To_Gdc_Converter(int zone, boolean hemisphere_north) {
-    this(EarthEllipsoid.WGS84, zone, hemisphere_north);  // default to wgs 84
+    this(EarthEllipsoid.WGS84, zone, hemisphere_north); // default to wgs 84
   }
 
   /*
-  * Constructor with ellipsoid.
-  * @param E an Ellipsoid instance for the ellipsoid, e.g. WE_Ellipsoid
-  * @param zone             the UTM zone number (1..60)
-  * @param hemisphere_north true if the UTM coordinate is in the northern hemisphere
-  */
+   * Constructor with ellipsoid.
+   * 
+   * @param E an Ellipsoid instance for the ellipsoid, e.g. WE_Ellipsoid
+   * 
+   * @param zone the UTM zone number (1..60)
+   * 
+   * @param hemisphere_north true if the UTM coordinate is in the northern hemisphere
+   */
 
   /**
    * Constructor using given ellipse
    *
-   * @param ellipse          use this ellipse.
-  * @param zone             the UTM zone number (1..60)
-  * @param hemisphere_north true if the UTM coordinate is in the northern hemisphere
+   * @param ellipse use this ellipse.
+   * @param zone the UTM zone number (1..60)
+   * @param hemisphere_north true if the UTM coordinate is in the northern hemisphere
    */
   public Utm_To_Gdc_Converter(EarthEllipsoid ellipse, int zone, boolean hemisphere_north) {
     init(ellipse.getMajor(), 1.0 / ellipse.getFlattening(), zone, hemisphere_north);
@@ -125,9 +125,9 @@ class Utm_To_Gdc_Converter {
   /**
    * initialize
    *
-   * @param a                major axis
-   * @param f                inverse flattening
-   * @param zone             UTM zone
+   * @param a major axis
+   * @param f inverse flattening
+   * @param zone UTM zone
    * @param hemisphere_north is in northern hemisphere
    */
   private void init(double a, double f, int zone, boolean hemisphere_north) {
@@ -136,7 +136,7 @@ class Utm_To_Gdc_Converter {
     this.zone = zone;
     this.hemisphere_north = hemisphere_north;
 
-    //  Create the ERM constants.
+    // Create the ERM constants.
     Eps2 = (F) * (2.0 - F);
     Eps25 = .25 * (Eps2);
     EF = F / (2.0 - F);
@@ -145,16 +145,14 @@ class Utm_To_Gdc_Converter {
     Con24 = 4 * .0416666666666667 / (1 - Eps2);
     Con120 = .00833333333333333;
     Con720 = 4 * .00138888888888888 / (1 - Eps2);
-    double polx1a = 1.0 - Eps2 / 4.0 - 3.0 / 64.0 * Math.pow(Eps2, 2)
-        - 5.0 / 256.0 * Math.pow(Eps2, 3)
+    double polx1a = 1.0 - Eps2 / 4.0 - 3.0 / 64.0 * Math.pow(Eps2, 2) - 5.0 / 256.0 * Math.pow(Eps2, 3)
         - 175.0 / 16384.0 * Math.pow(Eps2, 4);
 
     conap = A * polx1a;
 
     double polx2a = 3.0 / 2.0 * EF - 27.0 / 32.0 * Math.pow(EF, 3);
 
-    double polx4a = 21.0 / 16.0 * Math.pow(EF, 2)
-        - 55.0 / 32.0 * Math.pow(EF, 4);
+    double polx4a = 21.0 / 16.0 * Math.pow(EF, 2) - 55.0 / 32.0 * Math.pow(EF, 4);
 
     double polx6a = 151.0 / 96.0 * Math.pow(EF, 3);
 
@@ -184,18 +182,17 @@ class Utm_To_Gdc_Converter {
   }
 
   /**
-   * @param x      the UTM easting coordinate (meters)
-   * @param y      the UTM northing coordinate (meters)
+   * @param x the UTM easting coordinate (meters)
+   * @param y the UTM northing coordinate (meters)
    * @param latlon put result here
    * @return LatLonPoint
    */
   public LatLonPoint projToLatLon(double x, double y, LatLonPointImpl latlon) {
 
     double source_x, source_y, u, su, cu, su2, xlon0, temp, phi1;
-    double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1,
-        d2;
+    double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1, d2;
 
-    source_x = x * 1000.0;  // wants meters
+    source_x = x * 1000.0; // wants meters
     source_x = (source_x - 500000.0) / .9996;
 
     if (hemisphere_north) {
@@ -225,10 +222,9 @@ class Utm_To_Gdc_Converter {
 
     top = .25 - (sp2 * (Eps2 / 4));
 
-    /* inline sq root*/
-    rn = A / ((.25 - Eps25 * sp2 + .9999944354799 / 4)
-        + (.25 - Eps25 * sp2)
-        / (.25 - Eps25 * sp2 + .9999944354799 / 4));
+    /* inline sq root */
+    rn = A
+        / ((.25 - Eps25 * sp2 + .9999944354799 / 4) + (.25 - Eps25 * sp2) / (.25 - Eps25 * sp2 + .9999944354799 / 4));
 
     b3 = 1.0 + tp2 + tp2 + eta2;
     b4 = 5 + tp2 * (3 - 9 * eta2) + eta2 * (1 - 4 * eta2);
@@ -241,15 +237,8 @@ class Utm_To_Gdc_Converter {
     d1 = source_x / rn;
     d2 = d1 * d1;
 
-    double latitude = phi1
-        - tp * top
-        * (d2 * (Con2
-        + d2 * ((-Con24) * b4
-        + d2 * Con720 * b6)));
-    double longitude = xlon0
-        + d1 * (1.0
-        + d2 * (-Con6 * b3
-        + d2 * Con120 * b5)) / cp;
+    double latitude = phi1 - tp * top * (d2 * (Con2 + d2 * ((-Con24) * b4 + d2 * Con720 * b6)));
+    double longitude = xlon0 + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
 
     latlon.setLatitude(latitude * DEGREES_PER_RADIAN);
     latlon.setLongitude(longitude * DEGREES_PER_RADIAN);
@@ -260,19 +249,18 @@ class Utm_To_Gdc_Converter {
    * _more_
    *
    * @param from _more_
-   * @param to   _more_
+   * @param to _more_
    * @return _more_
    */
   public float[][] projToLatLon(float[][] from, float[][] to) {
 
     double source_x, source_y, u, su, cu, su2, temp, phi1;
-    double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1,
-        d2;
+    double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1, d2;
 
     double xlon0 = (6.0 * ((double) zone) - 183.0) / DEGREES_PER_RADIAN;
 
     for (int i = 0; i < from[0].length; i++) {
-      source_x = from[0][i] * 1000.0;  // wants meters
+      source_x = from[0][i] * 1000.0; // wants meters
       source_x = (source_x - 500000.0) / .9996;
 
       if (hemisphere_north) {
@@ -299,10 +287,9 @@ class Utm_To_Gdc_Converter {
 
       top = .25 - (sp2 * (Eps2 / 4));
 
-      /* inline sq root*/
-      rn = A / ((.25 - Eps25 * sp2 + .9999944354799 / 4)
-          + (.25 - Eps25 * sp2)
-          / (.25 - Eps25 * sp2 + .9999944354799 / 4));
+      /* inline sq root */
+      rn = A
+          / ((.25 - Eps25 * sp2 + .9999944354799 / 4) + (.25 - Eps25 * sp2) / (.25 - Eps25 * sp2 + .9999944354799 / 4));
 
       b3 = 1.0 + tp2 + tp2 + eta2;
       b4 = 5 + tp2 * (3 - 9 * eta2) + eta2 * (1 - 4 * eta2);
@@ -315,15 +302,8 @@ class Utm_To_Gdc_Converter {
       d1 = source_x / rn;
       d2 = d1 * d1;
 
-      double latitude = phi1
-          - tp * top
-          * (d2 * (Con2
-          + d2 * ((-Con24) * b4
-          + d2 * Con720 * b6)));
-      double longitude = xlon0
-          + d1 * (1.0
-          + d2 * (-Con6 * b3
-          + d2 * Con120 * b5)) / cp;
+      double latitude = phi1 - tp * top * (d2 * (Con2 + d2 * ((-Con24) * b4 + d2 * Con720 * b6)));
+      double longitude = xlon0 + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
 
       to[0][i] = (float) (latitude * DEGREES_PER_RADIAN);
       to[1][i] = (float) (longitude * DEGREES_PER_RADIAN);
@@ -336,19 +316,18 @@ class Utm_To_Gdc_Converter {
    * _more_
    *
    * @param from _more_
-   * @param to   _more_
+   * @param to _more_
    * @return _more_
    */
   public double[][] projToLatLon(double[][] from, double[][] to) {
 
     double source_x, source_y, u, su, cu, su2, temp, phi1;
-    double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1,
-        d2;
+    double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1, d2;
 
     double xlon0 = (6.0 * ((double) zone) - 183.0) / DEGREES_PER_RADIAN;
 
     for (int i = 0; i < from[0].length; i++) {
-      source_x = from[0][i] * 1000.0;  // wants meters
+      source_x = from[0][i] * 1000.0; // wants meters
       source_x = (source_x - 500000.0) / .9996;
 
       if (hemisphere_north) {
@@ -375,10 +354,9 @@ class Utm_To_Gdc_Converter {
 
       top = .25 - (sp2 * (Eps2 / 4));
 
-      /* inline sq root*/
-      rn = A / ((.25 - Eps25 * sp2 + .9999944354799 / 4)
-          + (.25 - Eps25 * sp2)
-          / (.25 - Eps25 * sp2 + .9999944354799 / 4));
+      /* inline sq root */
+      rn = A
+          / ((.25 - Eps25 * sp2 + .9999944354799 / 4) + (.25 - Eps25 * sp2) / (.25 - Eps25 * sp2 + .9999944354799 / 4));
 
       b3 = 1.0 + tp2 + tp2 + eta2;
       b4 = 5 + tp2 * (3 - 9 * eta2) + eta2 * (1 - 4 * eta2);
@@ -391,15 +369,8 @@ class Utm_To_Gdc_Converter {
       d1 = source_x / rn;
       d2 = d1 * d1;
 
-      double latitude = phi1
-          - tp * top
-          * (d2 * (Con2
-          + d2 * ((-Con24) * b4
-          + d2 * Con720 * b6)));
-      double longitude = xlon0
-          + d1 * (1.0
-          + d2 * (-Con6 * b3
-          + d2 * Con120 * b5)) / cp;
+      double latitude = phi1 - tp * top * (d2 * (Con2 + d2 * ((-Con24) * b4 + d2 * Con720 * b6)));
+      double longitude = xlon0 + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
 
       to[0][i] = (latitude * DEGREES_PER_RADIAN);
       to[1][i] = (longitude * DEGREES_PER_RADIAN);

@@ -6,7 +6,6 @@ package thredds.inventory.partition;
 
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,7 +21,8 @@ import java.util.List;
  */
 public class FilePartition extends DirectoryCollection implements PartitionManager {
 
-  public FilePartition(String topCollectionName, Path topDir, boolean isTop, String olderThan, org.slf4j.Logger logger) {
+  public FilePartition(String topCollectionName, Path topDir, boolean isTop, String olderThan,
+      org.slf4j.Logger logger) {
     super(topCollectionName, topDir, isTop, olderThan, logger);
   }
 
@@ -47,7 +47,8 @@ public class FilePartition extends DirectoryCollection implements PartitionManag
   private List<String> removed;
 
   public void removePartition(MCollection partition) {
-    if (removed == null) removed = new ArrayList<>();
+    if (removed == null)
+      removed = new ArrayList<>();
     removed.add(partition.getCollectionName());
   }
 

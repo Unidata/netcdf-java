@@ -25,13 +25,13 @@ public class TestPathMatcher {
     doit(m, "myworldly");
     doit(m, "/my");
     doit(m, "mysnot");
-    
+
     doit(m, "ncmodels/canonical");
   }
 
   // testing
-  private void doit( PathMatcher m , String s) {
-    System.out.println(s+" == "+m.match(s));
+  private void doit(PathMatcher m, String s) {
+    System.out.println(s + " == " + m.match(s));
   }
 
 }

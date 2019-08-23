@@ -15,23 +15,31 @@ import java.util.*;
 
 public class InvService {
   // standard TDS services
-  public static final InvService cdmremote = new InvService("cdmremote", ServiceType.CdmRemote.toString(), "/thredds/cdmremote/", "", "");
-  public static final InvService cdmrfeature = new InvService("cdmrfeature", ServiceType.CdmrFeature.toString(), "/thredds/cdmrfeature/", "", "");
-  public static final InvService fileServer = new InvService("fileServer", ServiceType.HTTPServer.toString(), "/thredds/fileServer/", "", "");
+  public static final InvService cdmremote =
+      new InvService("cdmremote", ServiceType.CdmRemote.toString(), "/thredds/cdmremote/", "", "");
+  public static final InvService cdmrfeature =
+      new InvService("cdmrfeature", ServiceType.CdmrFeature.toString(), "/thredds/cdmrfeature/", "", "");
+  public static final InvService fileServer =
+      new InvService("fileServer", ServiceType.HTTPServer.toString(), "/thredds/fileServer/", "", "");
   public static final InvService latest = new InvService("latest", ServiceType.RESOLVER.toString(), "", "", "");
-  public static final InvService ncssGrid = new InvService("ncssGrid", ServiceType.NetcdfSubset.toString(), "/thredds/ncss/grid/", "", "");
-  public static final InvService ncssPoint = new InvService("ncssPoint", ServiceType.NetcdfSubset.toString(), "/thredds/ncss/point/", "", "");
-  public static final InvService opendap = new InvService("opendap", ServiceType.OPENDAP.toString(), "/thredds/dodsC/", "", "");
+  public static final InvService ncssGrid =
+      new InvService("ncssGrid", ServiceType.NetcdfSubset.toString(), "/thredds/ncss/grid/", "", "");
+  public static final InvService ncssPoint =
+      new InvService("ncssPoint", ServiceType.NetcdfSubset.toString(), "/thredds/ncss/point/", "", "");
+  public static final InvService opendap =
+      new InvService("opendap", ServiceType.OPENDAP.toString(), "/thredds/dodsC/", "", "");
   public static final InvService dap4 = new InvService("dap4", ServiceType.DAP4.toString(), "/thredds/dap4/", "", "");
   public static final InvService wcs = new InvService("wcs", ServiceType.WCS.toString(), "/thredds/wcs/", "", "");
   public static final InvService wms = new InvService("wms", ServiceType.WMS.toString(), "/thredds/wms/", "", "");
 
-  //NGDC addition 5/10/2011
+  // NGDC addition 5/10/2011
   public static final InvService ncml = new InvService("ncml", ServiceType.NCML.toString(), "/thredds/ncml/", "", "");
   public static final InvService uddc = new InvService("uddc", ServiceType.UDDC.toString(), "/thredds/uddc/", "", "");
   public static final InvService iso = new InvService("iso", ServiceType.ISO.toString(), "/thredds/iso/", "", "");
-  public static final InvService ncJSON  = new InvService("ncjason", ServiceType.ncJSON.toString(), "/thredds/ncjason/", "", "");
-  public static final InvService h5Service  = new InvService("h5service", ServiceType.H5Service.toString(), "/thredds/h5service/", "", "");
+  public static final InvService ncJSON =
+      new InvService("ncjason", ServiceType.ncJSON.toString(), "/thredds/ncjason/", "", "");
+  public static final InvService h5Service =
+      new InvService("h5service", ServiceType.H5Service.toString(), "/thredds/h5service/", "", "");
 
   //////////////////////////////////
   private String name;
@@ -50,11 +58,11 @@ public class InvService {
   /**
    * Constructor.
    *
-   * @param name            : name to show to the user
+   * @param name : name to show to the user
    * @param serviceTypeName : ServiceType
-   * @param base            : base for forming URL
-   * @param suffix          : suffix for forming URL, may be null.
-   * @param desc            : human readable description, may be null.
+   * @param base : base for forming URL
+   * @param suffix : suffix for forming URL, may be null.
+   * @param desc : human readable description, may be null.
    */
   public InvService(String name, String serviceTypeName, String base, String suffix, String desc) {
     this.name = name;
@@ -65,7 +73,8 @@ public class InvService {
 
     // deal with strange service types
     if (type == null) {
-      log.append(" ** InvService: non-standard type =(").append(serviceTypeName).append(") for service (").append(name).append(")");
+      log.append(" ** InvService: non-standard type =(").append(serviceTypeName).append(") for service (").append(name)
+          .append(")");
       type = ServiceType.getType(serviceTypeName);
     }
 
@@ -77,6 +86,7 @@ public class InvService {
 
   /**
    * Get the service name: referenced by dataset and access elements.
+   * 
    * @return the service name
    */
   public String getName() {
@@ -85,6 +95,7 @@ public class InvService {
 
   /**
    * get the base URL for the service
+   * 
    * @return the base URL for the service
    */
   public String getBase() {
@@ -93,6 +104,7 @@ public class InvService {
 
   /**
    * get the Service Type
+   * 
    * @return the Service Type
    */
   public ServiceType getServiceType() {
@@ -101,6 +113,7 @@ public class InvService {
 
   /**
    * Get the suffix; may be null
+   * 
    * @return the suffix; may be null
    */
   public String getSuffix() {
@@ -109,6 +122,7 @@ public class InvService {
 
   /**
    * Get the "human readable" description; use ServiceType.toString() if not set
+   * 
    * @return the "human readable" description
    */
   public String getDescription() {
@@ -151,10 +165,12 @@ public class InvService {
 
   public InvService findNestedService(String name) {
     for (InvService s : nestedServices) {
-      if (s.getName().equals(name)) return s;
+      if (s.getName().equals(name))
+        return s;
       if (s.type == ServiceType.COMPOUND) {
         InvService result = s.findNestedService(name);
-        if (result != null) return result;
+        if (result != null)
+          return result;
       }
     }
     return null;
@@ -168,17 +184,25 @@ public class InvService {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     InvService that = (InvService) o;
 
-    if (!base.equals(that.base)) return false;
-    if (!name.equals(that.name)) return false;
-    if (nestedServices != null ? !nestedServices.equals(that.nestedServices) : that.nestedServices != null) return false;
-    if (properties != null ? !properties.equals(that.properties) : that.properties != null) return false;
-    if (suffix != null ? !suffix.equals(that.suffix) : that.suffix != null) return false;
-    if (!type.equals(that.type)) return false;
+    if (!base.equals(that.base))
+      return false;
+    if (!name.equals(that.name))
+      return false;
+    if (nestedServices != null ? !nestedServices.equals(that.nestedServices) : that.nestedServices != null)
+      return false;
+    if (properties != null ? !properties.equals(that.properties) : that.properties != null)
+      return false;
+    if (suffix != null ? !suffix.equals(that.suffix) : that.suffix != null)
+      return false;
+    if (!type.equals(that.type))
+      return false;
 
     return true;
   }
@@ -197,31 +221,32 @@ public class InvService {
   /**
    * InvServices with same values are equal
    *
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (!(o instanceof InvService))
-      return false;
-    return o.hashCode() == this.hashCode();
-  }
-
-  /**
+   * public boolean equals(Object o) {
+   * if (this == o)
+   * return true;
+   * if (!(o instanceof InvService))
+   * return false;
+   * return o.hashCode() == this.hashCode();
+   * }
+   * 
+   * /**
    * Override Object.hashCode() to implement equals.
    *
-  public int hashCode() {
-    if (hashCode == 0) {
-      int result = 17;
-      result = 37 * result + getName().hashCode();
-      result = 37 * result + getBase().hashCode();
-      result = 37 * result + getServiceType().hashCode();
-      if (null != getSuffix())
-        result = 37 * result + getSuffix().hashCode();
-      result = 37 * result + getProperties().hashCode();
-      result = 37 * result + nestedServices.hashCode();
-      hashCode = result;
-    }
-    return hashCode;
-  }  */
+   * public int hashCode() {
+   * if (hashCode == 0) {
+   * int result = 17;
+   * result = 37 * result + getName().hashCode();
+   * result = 37 * result + getBase().hashCode();
+   * result = 37 * result + getServiceType().hashCode();
+   * if (null != getSuffix())
+   * result = 37 * result + getSuffix().hashCode();
+   * result = 37 * result + getProperties().hashCode();
+   * result = 37 * result + nestedServices.hashCode();
+   * hashCode = result;
+   * }
+   * return hashCode;
+   * }
+   */
 
   // private volatile int hashCode = 0; // Bloch, item 8
 
@@ -238,8 +263,8 @@ public class InvService {
 
     buff.append(InvDatasetImpl.indent(n)).append("Service ").append(this).append("\n");
 
-      for (InvService s : getServices()) {
-        buff.append(s.dump(n + 2));
+    for (InvService s : getServices()) {
+      buff.append(s.dump(n + 2));
     }
 
     List<InvProperty> props = getProperties();
@@ -258,6 +283,7 @@ public class InvService {
   ////////////////////////////////////////////////////////////////////////////
   /**
    * Add a nested service to a service of type COMPOUND.
+   * 
    * @param service add this
    */
   public void addService(InvService service) {
@@ -266,6 +292,7 @@ public class InvService {
 
   /**
    * Add a property
+   * 
    * @param p add this
    */
   public void addProperty(InvProperty p) {
@@ -274,7 +301,7 @@ public class InvService {
 
 
   /**
-   * Add Dataset Root (1.0), key = path,  value = location.
+   * Add Dataset Root (1.0), key = path, value = location.
    *
    * @param root add this
    * @deprecated use InvCatalogImpl
@@ -316,7 +343,8 @@ public class InvService {
       }
     } else {
       if (getServices().size() > 0) {
-        out.append(" ** InvService(").append(getName()).append(") type ").append(getServiceType()).append(" may not have nested services\n");
+        out.append(" ** InvService(").append(getName()).append(") type ").append(getServiceType())
+            .append(" may not have nested services\n");
         isValid = false;
       }
     }
@@ -334,6 +362,7 @@ public class InvService {
 
   /**
    * See if the service Base is reletive
+   * 
    * @return true if the service Base is reletive
    */
   public boolean isRelativeBase() {

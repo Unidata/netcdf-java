@@ -16,7 +16,8 @@ import javax.annotation.Nonnull;
 
 /**
  * A factory for making deep copies of StationPointFeature, so all data is self contained.
- * A factory will use the first StationPointFeature to get the StructureMembers object, and the DateUnits, and uses that for all copies.
+ * A factory will use the first StationPointFeature to get the StructureMembers object, and the DateUnits, and uses that
+ * for all copies.
  * So all StationPointFeature must have the same StructureMembers and DateUnit.
  * It will keep a hashmap of Stations, and reuse the Station object.
  *
@@ -27,7 +28,7 @@ public class StationFeatureCopyFactory {
 
   static private final int POINTER_SIZE = 8; // assume 64 bit pointers could do better with -XX:+UseCompressedOops
   static private final int OBJECT_SIZE = 40; // overhead per object estimate
-  static private final int ARRAY_SIZE = 8;   // assume 64 bit pointers
+  static private final int ARRAY_SIZE = 8; // assume 64 bit pointers
 
   private final Map<String, StationFeatureImpl> stationMap;
   private final StructureMembers sm;
@@ -37,19 +38,20 @@ public class StationFeatureCopyFactory {
     stationMap = new HashMap<>();
     StructureData sdata = proto.getFeatureData();
     sm = new StructureMembers(sdata.getStructureMembers());
-    sizeInBytes =  OBJECT_SIZE + POINTER_SIZE +       // PointFeatureCopy - 1 pointer                                             48
-            2 * 8 + 2 * POINTER_SIZE +                // PointFeatureImpl - 2 doubles and 2 pointers                              32
-            OBJECT_SIZE + 3 * 8 +                     // Earth Location - 3 doubles                                               64
-            OBJECT_SIZE +                             // StructureDataDeep
-            4 + POINTER_SIZE +                        // StructureDataA  - 1 int and 1 pointer
-            OBJECT_SIZE + 4 + 2 * POINTER_SIZE +      // ArrayStructureBB - 1 int and 2 pointers (heap is optional)
-            2 * POINTER_SIZE + 4 +                    // ArrayStructure - 2 pointers and an int
-            OBJECT_SIZE + 8 * 4 + 8 + POINTER_SIZE +  // ByteBuffer - 8 ints, 1 long, 1 pointer
-            sm.getStructureSize();                    // LOOK vlens, Strings  (Heap Size)
+    sizeInBytes = OBJECT_SIZE + POINTER_SIZE + // PointFeatureCopy - 1 pointer 48
+        2 * 8 + 2 * POINTER_SIZE + // PointFeatureImpl - 2 doubles and 2 pointers 32
+        OBJECT_SIZE + 3 * 8 + // Earth Location - 3 doubles 64
+        OBJECT_SIZE + // StructureDataDeep
+        4 + POINTER_SIZE + // StructureDataA - 1 int and 1 pointer
+        OBJECT_SIZE + 4 + 2 * POINTER_SIZE + // ArrayStructureBB - 1 int and 2 pointers (heap is optional)
+        2 * POINTER_SIZE + 4 + // ArrayStructure - 2 pointers and an int
+        OBJECT_SIZE + 8 * 4 + 8 + POINTER_SIZE + // ByteBuffer - 8 ints, 1 long, 1 pointer
+        sm.getStructureSize(); // LOOK vlens, Strings (Heap Size)
   }
 
   /**
    * approx size of each copy
+   * 
    * @return approx size of each copy
    */
   public int getSizeInBytes() {
@@ -76,14 +78,14 @@ public class StationFeatureCopyFactory {
 
     StationPointFeatureCopy(StationFeature station, PointFeature pf) {
       super(pf.getFeatureCollection(), station, pf.getObservationTime(), pf.getNominalTime(),
-              pf.getFeatureCollection().getTimeUnit());
+          pf.getFeatureCollection().getTimeUnit());
       this.station = station;
     }
 
     @Nonnull
     @Override
     public StructureData getDataAll() {
-      return data;  // ??
+      return data; // ??
     }
 
     @Nonnull

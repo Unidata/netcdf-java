@@ -15,16 +15,16 @@ import java.util.Formatter;
 public class BitCounterCompressed implements BitCounter {
 
   private final DataDescriptor dkey; // the field to count
-  private final int nrows;           // number of (obs) in the compression
-  private final int bitOffset;       // starting position of the compressed data, reletive to start of data section
-  private int dataWidth;             // bitWidth of incremental values
-  private BitCounterCompressed[][] nested;     // used if the dkey is a structure = nested[innerRows][dkey.subkeys.size]
+  private final int nrows; // number of (obs) in the compression
+  private final int bitOffset; // starting position of the compressed data, reletive to start of data section
+  private int dataWidth; // bitWidth of incremental values
+  private BitCounterCompressed[][] nested; // used if the dkey is a structure = nested[innerRows][dkey.subkeys.size]
 
   /**
    * This counts the size of an array of Structures or Sequences, ie Structure(n)
    *
-   * @param dkey                 is a structure or a sequence - so has subKeys
-   * @param n                    numbers of rows in the table
+   * @param dkey is a structure or a sequence - so has subKeys
+   * @param n numbers of rows in the table
    * @param bitOffset number of bits taken up by the count variable (non-zero only for sequences)
    */
   public BitCounterCompressed(DataDescriptor dkey, int n, int bitOffset) {
@@ -33,7 +33,7 @@ public class BitCounterCompressed implements BitCounter {
     this.bitOffset = bitOffset;
   }
 
-  void setDataWidth( int dataWidth) {
+  void setDataWidth(int dataWidth) {
     this.dataWidth = dataWidth;
   }
 
@@ -51,9 +51,11 @@ public class BitCounterCompressed implements BitCounter {
     else {
       int totalBits = 0;
       for (BitCounterCompressed[] counters : nested) {
-        if (counters == null) continue;
+        if (counters == null)
+          continue;
         for (BitCounterCompressed counter : counters)
-          if (counter != null) totalBits += counter.getTotalBits();
+          if (counter != null)
+            totalBits += counter.getTotalBits();
       }
       if (dkey.replicationCountSize > 0)
         totalBits += dkey.replicationCountSize + 6; // 6 boit count, 6 bit extra
@@ -71,6 +73,7 @@ public class BitCounterCompressed implements BitCounter {
 
   /**
    * Number of nested fields
+   * 
    * @return 1 if no nested fields, otherwise count of nested fields
    */
   public int ncounters() {
@@ -79,22 +82,27 @@ public class BitCounterCompressed implements BitCounter {
     else {
       int ncounters = 0;
       for (BitCounterCompressed[] counters : nested) {
-        if (counters == null) continue;
+        if (counters == null)
+          continue;
         for (BitCounterCompressed counter : counters)
-          if (counter != null) ncounters += counter.ncounters();
+          if (counter != null)
+            ncounters += counter.ncounters();
       }
       return ncounters;
     }
   }
 
   public void show(Formatter out, int indent) {
-    for (int i=0; i<indent; i++) out.format(" ");
+    for (int i = 0; i < indent; i++)
+      out.format(" ");
     out.format("%8d %8d %4d %s %n", getTotalBits(), bitOffset, dataWidth, dkey.name);
     if (nested != null) {
       for (BitCounterCompressed[] counters : nested) {
-        if (counters == null) continue;
+        if (counters == null)
+          continue;
         for (BitCounterCompressed counter : counters)
-          if (counter != null) counter.show(out, indent+2);
+          if (counter != null)
+            counter.show(out, indent + 2);
       }
     }
   }

@@ -6,9 +6,7 @@
 package thredds.ui.monitor;
 
 import java.awt.*;
-
 import javax.swing.*;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
@@ -46,11 +44,7 @@ public class MultipleAxisChart extends JPanel {
     TimeSeriesCollection dataset1 = new TimeSeriesCollection();
     dataset1.addSeries(series1);
 
-    chart = ChartFactory.createTimeSeriesChart(title1, xaxis1, yaxis1, dataset1,
-            true,
-            true,
-            false
-    );
+    chart = ChartFactory.createTimeSeriesChart(title1, xaxis1, yaxis1, dataset1, true, true, false);
 
     // chart.addSubtitle(new TextTitle("Four datasets and four range axes."));
     XYPlot plot = (XYPlot) chart.getPlot();
@@ -62,6 +56,7 @@ public class MultipleAxisChart extends JPanel {
   }
 
   private int axisNum = 1;
+
   public void addSeries(String yaxisName, TimeSeries series) {
     NumberAxis axis2 = new NumberAxis(yaxisName);
     axis2.setFixedDimension(10.0);
@@ -82,15 +77,16 @@ public class MultipleAxisChart extends JPanel {
     axisNum++;
   }
 
-  private static final Color[] colors = new Color[] { Color.black, Color.red, Color.blue, Color.green};
+  private static final Color[] colors = new Color[] {Color.black, Color.red, Color.blue, Color.green};
 
   public void finish(java.awt.Dimension preferredSize) {
     ChartUtilities.applyCurrentTheme(chart);
 
     XYPlot plot = (XYPlot) chart.getPlot();
-    for (int i=0; i<axisNum; i++) {
+    for (int i = 0; i < axisNum; i++) {
       XYItemRenderer renderer = plot.getRenderer(i);
-      if (renderer == null) continue;
+      if (renderer == null)
+        continue;
 
       renderer.setSeriesPaint(0, colors[i]);
 
@@ -98,7 +94,7 @@ public class MultipleAxisChart extends JPanel {
       axis.setLabelPaint(colors[i]);
       axis.setTickLabelPaint(colors[i]);
     }
-    
+
     ChartPanel chartPanel = new ChartPanel(chart);
     chartPanel.setPreferredSize(preferredSize);
     chartPanel.setDomainZoomable(true);

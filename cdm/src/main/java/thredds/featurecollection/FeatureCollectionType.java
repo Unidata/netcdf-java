@@ -17,10 +17,14 @@ public enum FeatureCollectionType {
       case GRIB2:
       case GRID:
         return FeatureType.GRID;
-      case FMRC: return FeatureType.FMRC;
-      case Point: return FeatureType.POINT;
-      case Station: return FeatureType.STATION;
-      case Station_Profile: return FeatureType.STATION_PROFILE;
+      case FMRC:
+        return FeatureType.FMRC;
+      case Point:
+        return FeatureType.POINT;
+      case Station:
+        return FeatureType.STATION;
+      case Station_Profile:
+        return FeatureType.STATION_PROFILE;
     }
     return null;
   }

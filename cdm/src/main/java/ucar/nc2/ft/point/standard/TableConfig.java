@@ -8,20 +8,22 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
-
 import java.util.List;
 import java.util.ArrayList;
 
 /**
  * This encapsulates the info needed by NestedTable to handle point feature "nested table" datasets.
  * A TableAnalyzer creates these from a specific dataset convention.
- * <p> a TableConfig has a tree of TableConfigs, representing the join of parent and children tables.
+ * <p>
+ * a TableConfig has a tree of TableConfigs, representing the join of parent and children tables.
  *
  * @author caron
  * @since Apr 23, 2008
  */
 public class TableConfig {
-  public enum StructureType {Structure, PsuedoStructure, PsuedoStructure2D}
+  public enum StructureType {
+    Structure, PsuedoStructure, PsuedoStructure2D
+  }
 
   public Table.Type type;
   public String name;
@@ -34,9 +36,9 @@ public class TableConfig {
   public StructureType structureType = StructureType.Structure; // default
 
   // linked, contiguous list
-  public String start;  // name of variable - starting child index (in parent)
-  public String next;  // name of variable - next child index (in child)
-  public String numRecords;  // name of variable - number of children (in parent)
+  public String start; // name of variable - starting child index (in parent)
+  public String next; // name of variable - next child index (in child)
+  public String numRecords; // name of variable - number of children (in parent)
 
   // only the top featureType in the tree is used
   public FeatureType featureType;
@@ -55,7 +57,7 @@ public class TableConfig {
   public StructureData sdata;
 
   // Table.Type ParentIndex
-  public String parentIndex;  // name of variable - parent index (in parent)
+  public String parentIndex; // name of variable - parent index (in parent)
 
   // coordinate variable names
   public String lat, lon, elev, time, timeNominal, limit;
@@ -69,8 +71,9 @@ public class TableConfig {
 
   /**
    * Constructor
-   * @param type  type of join
-   * @param name  name of table
+   * 
+   * @param type type of join
+   * @param name name of table
    */
   public TableConfig(Table.Type type, String name) {
     this.type = type;
@@ -79,13 +82,15 @@ public class TableConfig {
   }
 
   public void addChild(TableConfig t) {
-    if (children == null) children = new ArrayList<>();
+    if (children == null)
+      children = new ArrayList<>();
     children.add(t);
     t.parent = this;
   }
 
   public void addJoin(Join extra) {
-    if (extraJoin == null) extraJoin = new ArrayList<>(3);
+    if (extraJoin == null)
+      extraJoin = new ArrayList<>(3);
     extraJoin.add(extra);
   }
 
@@ -162,14 +167,18 @@ public class TableConfig {
   }
 
   String getNumRecords() {
-    if (numRecords != null) return numRecords;
-    if (parent != null) return parent.getNumRecords();
+    if (numRecords != null)
+      return numRecords;
+    if (parent != null)
+      return parent.getNumRecords();
     return null;
   }
 
   String getStart() {
-    if (start != null) return start;
-    if (parent != null) return parent.getStart();
+    if (start != null)
+      return start;
+    if (parent != null)
+      return parent.getStart();
     return null;
   }
 

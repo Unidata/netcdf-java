@@ -16,14 +16,18 @@ public interface TimeInventory {
   String getName();
 
   int getTimeLength(FmrcInvLite.Gridset gridset);
+
   FmrcInvLite.ValueB getTimeCoords(FmrcInvLite.Gridset gridset);
+
   double[] getRunTimeCoords(FmrcInvLite.Gridset gridset);
+
   double[] getOffsetCoords(FmrcInvLite.Gridset gridset);
 
   Instance getInstance(FmrcInvLite.Gridset.Grid gridLite, int timeIdx);
 
   interface Instance {
     String getDatasetLocation();
+
     int getDatasetIndex();
   }
 

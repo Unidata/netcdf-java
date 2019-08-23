@@ -8,14 +8,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
-
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.util.test.category.NeedsExternalResource;
-
 import java.lang.invoke.MethodHandles;
 
 

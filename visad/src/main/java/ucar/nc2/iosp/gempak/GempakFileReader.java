@@ -9,9 +9,7 @@ package ucar.nc2.iosp.gempak;
 
 import com.google.common.base.MoreObjects;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.*;
-
 import java.util.*;
 
 
@@ -78,14 +76,13 @@ public class GempakFileReader implements GempakConstants {
   /**
    * masking pattern
    */
-  //private static int mskpat = 0xFFFF;
+  // private static int mskpat = 0xFFFF;
   private static int mskpat = ~0;
 
   /**
    * Bean ctor
    */
-  GempakFileReader() {
-  }
+  GempakFileReader() {}
 
   /**
    * Get a RandomAccessFile for the file location
@@ -101,7 +98,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Initialize the file, read in all the metadata (ala DM_OPEN)
    *
-   * @param raf       RandomAccessFile to read.
+   * @param raf RandomAccessFile to read.
    * @param fullCheck if true, check entire structure
    * @return a GempakFileReader
    * @throws IOException problem reading file
@@ -115,7 +112,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Initialize the file, read in all the metadata (ala DM_OPEN)
    *
-   * @param raf       RandomAccessFile to read.
+   * @param raf RandomAccessFile to read.
    * @param fullCheck if true, check entire structure
    * @throws IOException problem reading file
    */
@@ -129,7 +126,7 @@ public class GempakFileReader implements GempakConstants {
   }
 
   /**
-   * Initialize this reader.  Read all the metadata
+   * Initialize this reader. Read all the metadata
    *
    * @return true if successful
    * @throws IOException problem reading the data
@@ -158,7 +155,7 @@ public class GempakFileReader implements GempakConstants {
       return false;
     }
 
-    // Read the keys  (DM_RKEY)
+    // Read the keys (DM_RKEY)
     readKeys();
     if (keys == null) {
       logError("Couldn't read keys");
@@ -205,7 +202,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Get initial file size
    *
-   * @return the file size when init  was called.
+   * @return the file size when init was called.
    */
   public long getInitFileSize() {
     return fileSize;
@@ -227,8 +224,7 @@ public class GempakFileReader implements GempakConstants {
    * @return byte order
    */
   public int getByteOrder(int kmachn) {
-    if ((kmachn == MTVAX) || (kmachn == MTULTX) || (kmachn == MTALPH)
-            || (kmachn == MTLNUX) || (kmachn == MTIGPH)) {
+    if ((kmachn == MTVAX) || (kmachn == MTULTX) || (kmachn == MTALPH) || (kmachn == MTLNUX) || (kmachn == MTIGPH)) {
       return RandomAccessFile.LITTLE_ENDIAN;
     }
     return RandomAccessFile.BIG_ENDIAN;
@@ -242,11 +238,11 @@ public class GempakFileReader implements GempakConstants {
    */
   void setByteOrder() {
     String arch = System.getProperty("os.arch");
-    if (arch.equals("x86") ||                    // Windows, Linux
-            arch.equals("arm") ||                // Window CE
-            arch.equals("x86_64") ||         // Windows64, Mac OS-X
-            arch.equals("amd64") ||      // Linux64?
-            arch.equals("alpha")) {  // Utrix, VAX, DECOS
+    if (arch.equals("x86") || // Windows, Linux
+        arch.equals("arm") || // Window CE
+        arch.equals("x86_64") || // Windows64, Mac OS-X
+        arch.equals("amd64") || // Linux64?
+        arch.equals("alpha")) { // Utrix, VAX, DECOS
       MTMACH = RandomAccessFile.LITTLE_ENDIAN;
     } else {
       MTMACH = RandomAccessFile.BIG_ENDIAN;
@@ -317,16 +313,12 @@ public class GempakFileReader implements GempakConstants {
   /**
    * keys to swap
    */
-  private static String[] swapKeys = {
-          "STID", "STD2", "STAT", "COUN", "GPM1", "GVCD"
-  };
+  private static String[] swapKeys = {"STID", "STD2", "STAT", "COUN", "GPM1", "GVCD"};
 
   /**
-   * number  of words to swap
+   * number of words to swap
    */
-  private static int[] swapNum = {
-          1, 1, 1, 1, 3, 1
-  };
+  private static int[] swapNum = {1, 1, 1, 1, 3, 1};
 
   /**
    * Read the headers (DM_RHDA)
@@ -375,12 +367,8 @@ public class GempakFileReader implements GempakConstants {
       boolean haveCol = false;
       for (int i = 0; i < swapKeys.length; i++) {
         Key key = findKey(swapKeys[i]);
-        keyLoc[i] = (key != null)
-                ? key.loc + 1
-                : 0;
-        keyType[i] = (key != null)
-                ? key.type
-                : "";
+        keyLoc[i] = (key != null) ? key.loc + 1 : 0;
+        keyType[i] = (key != null) ? key.type : "";
         if (keyType[i].equals(ROW)) {
           haveRow = true;
         }
@@ -392,9 +380,7 @@ public class GempakFileReader implements GempakConstants {
         for (int[] toCheck : headers.rowHeaders) {
           for (int j = 0; j < swapKeys.length; j++) {
             if (keyType[j].equals(ROW)) {
-              if (swapKeys[j].equals("GVCD")
-                      && !(toCheck[keyLoc[j]]
-                      > GempakUtil.vertCoords.length)) {
+              if (swapKeys[j].equals("GVCD") && !(toCheck[keyLoc[j]] > GempakUtil.vertCoords.length)) {
                 continue;
               }
               GempakUtil.swp4(toCheck, keyLoc[j], swapNum[j]);
@@ -406,9 +392,7 @@ public class GempakFileReader implements GempakConstants {
         for (int[] toCheck : headers.colHeaders) {
           for (int j = 0; j < swapKeys.length; j++) {
             if (keyType[j].equals(COL)) {
-              if (swapKeys[j].equals("GVCD")
-                      && !(toCheck[keyLoc[j]]
-                      > GempakUtil.vertCoords.length)) {
+              if (swapKeys[j].equals("GVCD") && !(toCheck[keyLoc[j]] > GempakUtil.vertCoords.length)) {
                 continue;
               }
               GempakUtil.swp4(toCheck, keyLoc[j], swapNum[j]);
@@ -629,8 +613,7 @@ public class GempakFileReader implements GempakConstants {
     /**
      * Create a new DMLabel for the GempakFileReader
      */
-    public DMLabel() {
-    }
+    public DMLabel() {}
 
     /**
      * Read in all the info based on the block of integer words.
@@ -641,7 +624,8 @@ public class GempakFileReader implements GempakConstants {
      */
     boolean init() throws IOException {
       rf.order(RandomAccessFile.BIG_ENDIAN);
-      if (rf.length() < getOffset(31) + 4) return false;
+      if (rf.length() < getOffset(31) + 4)
+        return false;
 
       int mmmm = DM_RINT(26);
       if (mmmm > 100) {
@@ -650,12 +634,11 @@ public class GempakFileReader implements GempakConstants {
       }
       kmachn = mmmm;
       mvmst = (getByteOrder() == RandomAccessFile.BIG_ENDIAN);
-      kvmst = ((kmachn == MTVAX) || (kmachn == MTULTX)
-              || (kmachn == MTALPH) || (kmachn == MTLNUX)
-              || (kmachn == MTIGPH));
+      kvmst =
+          ((kmachn == MTVAX) || (kmachn == MTULTX) || (kmachn == MTALPH) || (kmachn == MTLNUX) || (kmachn == MTIGPH));
 
-      //      Set the file values of the missing data values to the current
-      //      system values so that random values will not be converted.
+      // Set the file values of the missing data values to the current
+      // system values so that random values will not be converted.
       kmissd = IMISSD;
       smissd = RMISSD;
 
@@ -684,7 +667,7 @@ public class GempakFileReader implements GempakConstants {
       kpdata = words[15];
       kftype = words[16];
       kfsrce = words[17];
-      //kmachn = words[18];  // set above
+      // kmachn = words[18]; // set above
       kmissd = words[19];
       smissd = DM_RFLT(31);
 
@@ -693,30 +676,11 @@ public class GempakFileReader implements GempakConstants {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("kversn", kversn)
-          .add("kfhdrs", kfhdrs)
-          .add("kpfile", kpfile)
-          .add("krow", krow)
-          .add("krkeys", krkeys)
-          .add("kprkey", kprkey)
-          .add("kprowh", kprowh)
-          .add("kcol", kcol)
-          .add("kckeys", kckeys)
-          .add("kpckey", kpckey)
-          .add("kpcolh", kpcolh)
-          .add("kprt", kprt)
-          .add("kppart", kppart)
-          .add("kpdmgt", kpdmgt)
-          .add("kldmgt", kldmgt)
-          .add("kpdata", kpdata)
-          .add("kftype", kftype)
-          .add("kfsrce", kfsrce)
-          .add("kmachn", kmachn)
-          .add("kmissd", kmissd)
-          .add("smissd", smissd)
-          .add("kvmst", kvmst)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("kversn", kversn).add("kfhdrs", kfhdrs).add("kpfile", kpfile)
+          .add("krow", krow).add("krkeys", krkeys).add("kprkey", kprkey).add("kprowh", kprowh).add("kcol", kcol)
+          .add("kckeys", kckeys).add("kpckey", kpckey).add("kpcolh", kpcolh).add("kprt", kprt).add("kppart", kppart)
+          .add("kpdmgt", kpdmgt).add("kldmgt", kldmgt).add("kpdata", kpdata).add("kftype", kftype).add("kfsrce", kfsrce)
+          .add("kmachn", kmachn).add("kmissd", kmissd).add("smissd", smissd).add("kvmst", kvmst).toString();
     }
 
   }
@@ -744,8 +708,7 @@ public class GempakFileReader implements GempakConstants {
     /**
      * Default ctor
      */
-    public DMFileHeaderInfo() {
-    }
+    public DMFileHeaderInfo() {}
 
     /**
      * Get a String representation of this object.
@@ -805,8 +768,7 @@ public class GempakFileReader implements GempakConstants {
     /**
      * Default ctor
      */
-    public DMPart() {
-    }
+    public DMPart() {}
 
     /**
      * Get a String representation of this object.
@@ -863,8 +825,7 @@ public class GempakFileReader implements GempakConstants {
     /**
      * Default ctor
      */
-    public DMParam() {
-    }
+    public DMParam() {}
 
     /**
      * Get a String representation of this object.
@@ -964,7 +925,7 @@ public class GempakFileReader implements GempakConstants {
      * Create a new key
      *
      * @param name the name
-     * @param loc  the location
+     * @param loc the location
      * @param type the type
      */
     public Key(String name, int loc, String type) {
@@ -992,8 +953,7 @@ public class GempakFileReader implements GempakConstants {
     /**
      * Default ctor
      */
-    public DMKeys() {
-    }
+    public DMKeys() {}
 
     /**
      * Get a String representation of this object.
@@ -1072,8 +1032,7 @@ public class GempakFileReader implements GempakConstants {
     /**
      * Default ctor
      */
-    public DMHeaders() {
-    }
+    public DMHeaders() {}
 
     /**
      * Get a String representation of this object.
@@ -1132,7 +1091,7 @@ public class GempakFileReader implements GempakConstants {
     if ((fh == null) || (fh.kfhtyp != MDREAL)) {
       return null;
     }
-    int knt = fileHeaderInfo.indexOf(fh);  // 0 based
+    int knt = fileHeaderInfo.indexOf(fh); // 0 based
     int iread = dmLabel.kpfile + 3 * dmLabel.kfhdrs;
     for (int i = 0; i < knt; i++) {
       DMFileHeaderInfo fhi = fileHeaderInfo.get(i);
@@ -1253,19 +1212,17 @@ public class GempakFileReader implements GempakConstants {
   }
 
   /**
-   * Get the pointer to the data.  Taken from DM_RDTR
+   * Get the pointer to the data. Taken from DM_RDTR
    *
-   * @param irow     row number
-   * @param icol     column number
+   * @param irow row number
+   * @param icol column number
    * @param partName name of the part
    * @return word (1 based) of start of data.
    */
   public int getDataPointer(int irow, int icol, String partName) {
     int ipoint = -1;
-    if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1)
-            || (icol > dmLabel.kcol)) {
-      System.out.println("bad row or column number: " + irow + "/"
-              + icol);
+    if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1) || (icol > dmLabel.kcol)) {
+      System.out.println("bad row or column number: " + irow + "/" + icol);
       return ipoint;
     }
     int iprt = getPartNumber(partName);
@@ -1276,14 +1233,12 @@ public class GempakFileReader implements GempakConstants {
     // gotta subtract 1 because parts are 1 but List is 0 based
     DMPart part = parts.get(iprt - 1);
     // check for valid data type
-    if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID)
-            && (part.ktyprt != MDRPCK)) {
+    if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID) && (part.ktyprt != MDRPCK)) {
       System.out.println("Not a valid type");
       return ipoint;
     }
     int ilenhd = part.klnhdr;
-    ipoint = dmLabel.kpdata + (irow - 1) * dmLabel.kcol * dmLabel.kprt
-            + (icol - 1) * dmLabel.kprt + (iprt - 1);
+    ipoint = dmLabel.kpdata + (irow - 1) * dmLabel.kcol * dmLabel.kprt + (icol - 1) * dmLabel.kprt + (iprt - 1);
     return ipoint;
   }
 
@@ -1304,10 +1259,10 @@ public class GempakFileReader implements GempakConstants {
     rf.seek(getOffset(word));
     // set the order
     if (needToSwap) {
-      //if ((dmLabel.kmachn != MTMACH) &&
-      //   ((dmLabel.kvmst && ! mvmst) ||
-      //   (mvmst && !dmLabel.kvmst))) {
-      rf.order(RandomAccessFile.LITTLE_ENDIAN);  // swap
+      // if ((dmLabel.kmachn != MTMACH) &&
+      // ((dmLabel.kvmst && ! mvmst) ||
+      // (mvmst && !dmLabel.kvmst))) {
+      rf.order(RandomAccessFile.LITTLE_ENDIAN); // swap
     } else {
       rf.order(RandomAccessFile.BIG_ENDIAN);
     }
@@ -1324,7 +1279,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Convenience method to fully read into an array of ints
    *
-   * @param word   word in file (1 based) to read
+   * @param word word in file (1 based) to read
    * @param iarray array to read into
    * @throws IOException problem reading file
    */
@@ -1335,19 +1290,17 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Read into an array of ints.
    *
-   * @param word   word in file (1 based) to read
+   * @param word word in file (1 based) to read
    * @param iarray array to read into
-   * @param start  starting word in the array (0 based)
-   * @param num    number of words to read
+   * @param start starting word in the array (0 based)
+   * @param num number of words to read
    * @throws IOException problem reading file
    */
-  public void DM_RINT(int word, int num, int[] iarray, int start)
-          throws IOException {
+  public void DM_RINT(int word, int num, int[] iarray, int start) throws IOException {
 
     for (int i = 0; i < num; i++) {
       if (start + i > iarray.length) {
-        throw new IOException(
-                "DM_RINT: start+num exceeds iarray length");
+        throw new IOException("DM_RINT: start+num exceeds iarray length");
       }
       iarray[start + i] = DM_RINT(word + i);
     }
@@ -1371,10 +1324,10 @@ public class GempakFileReader implements GempakConstants {
     rf.seek(getOffset(word));
     if (needToSwap) {
       // set the order
-      //if ((dmLabel.kmachn != MTMACH) &&
-      //   ((dmLabel.kvmst && ! mvmst) ||
-      //   (mvmst && !dmLabel.kvmst))) {
-      rf.order(RandomAccessFile.LITTLE_ENDIAN);  // swap
+      // if ((dmLabel.kmachn != MTMACH) &&
+      // ((dmLabel.kvmst && ! mvmst) ||
+      // (mvmst && !dmLabel.kvmst))) {
+      rf.order(RandomAccessFile.LITTLE_ENDIAN); // swap
     } else {
       rf.order(RandomAccessFile.BIG_ENDIAN);
     }
@@ -1392,7 +1345,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Convenience method to fully read into an array of floats
    *
-   * @param word   word in file (1 based) to read
+   * @param word word in file (1 based) to read
    * @param rarray array to read into
    * @throws IOException problem reading file
    */
@@ -1403,19 +1356,17 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Read into an array of ints.
    *
-   * @param word   word in file (1 based) to read
-   * @param num    number of words to read
+   * @param word word in file (1 based) to read
+   * @param num number of words to read
    * @param rarray array to read into
-   * @param start  starting word in the array (0 based)
+   * @param start starting word in the array (0 based)
    * @throws IOException problem reading file
    */
-  public void DM_RFLT(int word, int num, float[] rarray, int start)
-          throws IOException {
+  public void DM_RFLT(int word, int num, float[] rarray, int start) throws IOException {
 
     for (int i = 0; i < num; i++) {
       if (start + i > rarray.length) {
-        throw new IOException(
-                "DM_RFLT: start+num exceeds rarray length");
+        throw new IOException("DM_RFLT: start+num exceeds rarray length");
       }
       rarray[start + i] = DM_RFLT(word + i);
     }
@@ -1437,7 +1388,7 @@ public class GempakFileReader implements GempakConstants {
    * Read a String
    *
    * @param isword offset in file (1 based FORTRAN word)
-   * @param nchar  number of characters to read
+   * @param nchar number of characters to read
    * @return String read
    * @throws IOException problem reading file
    */
@@ -1453,38 +1404,34 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Read the data
    *
-   * @param irow     row to read
-   * @param icol     column to read
+   * @param irow row to read
+   * @param icol column to read
    * @param partName part name
-   * @return the header and data array  or null;
+   * @return the header and data array or null;
    * @throws IOException problem reading file
    */
-  public RData DM_RDTR(int irow, int icol, String partName)
-          throws IOException {
+  public RData DM_RDTR(int irow, int icol, String partName) throws IOException {
     return DM_RDTR(irow, icol, partName, 1);
   }
 
   /**
    * Read the real (float) data
    *
-   * @param irow         row to read
-   * @param icol         column to read
-   * @param partName     part name
+   * @param irow row to read
+   * @param icol column to read
+   * @param partName part name
    * @param decimalScale scaling factor (power of 10);
-   * @return the header and data array  or null;
+   * @return the header and data array or null;
    * @throws IOException problem reading file
    */
-  public RData DM_RDTR(int irow, int icol, String partName,
-                       int decimalScale)
-          throws IOException {
+  public RData DM_RDTR(int irow, int icol, String partName, int decimalScale) throws IOException {
 
     int ipoint;
-    if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1)
-            || (icol > dmLabel.kcol)) {
+    if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1) || (icol > dmLabel.kcol)) {
       System.out.println("bad row/column number " + irow + "/" + icol);
       return null;
     }
-    //System.out.println("reading row " + irow + ", column " + icol);
+    // System.out.println("reading row " + irow + ", column " + icol);
     int iprt = getPartNumber(partName);
     if (iprt == 0) {
       System.out.println("couldn't find part: " + partName);
@@ -1493,14 +1440,12 @@ public class GempakFileReader implements GempakConstants {
     // gotta subtract 1 because parts are 1 but List is 0 based
     DMPart part = parts.get(iprt - 1);
     // check for valid real data type
-    if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID)
-            && (part.ktyprt != MDRPCK)) {
+    if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID) && (part.ktyprt != MDRPCK)) {
       System.out.println("Not a valid type");
       return null;
     }
     int ilenhd = part.klnhdr;
-    ipoint = dmLabel.kpdata + (irow - 1) * dmLabel.kcol * dmLabel.kprt
-            + (icol - 1) * dmLabel.kprt + (iprt - 1);
+    ipoint = dmLabel.kpdata + (irow - 1) * dmLabel.kcol * dmLabel.kprt + (icol - 1) * dmLabel.kprt + (iprt - 1);
 
     float[] rdata;
     int[] header = null;
@@ -1513,12 +1458,12 @@ public class GempakFileReader implements GempakConstants {
       int length = DM_RINT(istart);
       int isword = istart + 1;
       if (length <= ilenhd) {
-        //System.out.println("length (" + length
-        //                   + ") is less than header length (" + ilenhd
-        //                   + ")");
+        // System.out.println("length (" + length
+        // + ") is less than header length (" + ilenhd
+        // + ")");
         return null;
       } else if (Math.abs(length) > 10000000) {
-        //System.out.println("length is huge");
+        // System.out.println("length is huge");
         return null;
       }
       header = new int[ilenhd];
@@ -1530,13 +1475,13 @@ public class GempakFileReader implements GempakConstants {
         DM_RFLT(isword, rdata);
       } else if (part.ktyprt == MDGRID) {
         rdata = DM_RPKG(isword, nword, decimalScale);
-      } else {  //  packed ints
+      } else { // packed ints
         int[] idata = new int[nword];
         DM_RINT(isword, idata);
         rdata = DM_UNPK(part, idata);
       }
     } catch (EOFException eof) {
-      //System.err.println("reading off end of file");
+      // System.err.println("reading off end of file");
       rdata = null;
     }
     RData rd = null;
@@ -1552,7 +1497,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Unpack an array of packed integers.
    *
-   * @param part   the part with packing info
+   * @param part the part with packing info
    * @param ibitst packed integer bit string
    * @return unpacked ints as floats
    */
@@ -1561,9 +1506,9 @@ public class GempakFileReader implements GempakConstants {
     int nwordp = part.kwordp;
     int npack = (ibitst.length - 1) / nwordp + 1;
     if (npack * nwordp != ibitst.length) {
-      //logError("number of packed records not correct");
+      // logError("number of packed records not correct");
       // System.out.println("number of packed records not correct: "
-      //                   + npack * nwordp + " vs. " + ibitst.length);
+      // + npack * nwordp + " vs. " + ibitst.length);
       return null;
     }
     float[] data = new float[nparms * npack];
@@ -1572,19 +1517,19 @@ public class GempakFileReader implements GempakConstants {
     int ii = 0;
     for (int pack = 0; pack < npack; pack++) {
       //
-      //  Move bitstring into internal words.  TODO: necessary?
+      // Move bitstring into internal words. TODO: necessary?
       //
       int[] jdata = new int[nwordp];
       System.arraycopy(ibitst, ii, jdata, 0, nwordp);
 
       //
-      //  Extract each data value.
+      // Extract each data value.
       //
       for (int idata = 0; idata < nparms; idata++) {
 
         //
-        //  Extract correct bits from words using shift and mask
-        //  operations.
+        // Extract correct bits from words using shift and mask
+        // operations.
         //
         int jbit = pkinf.nbitsc[idata];
         int jsbit = pkinf.isbitc[idata];
@@ -1603,14 +1548,13 @@ public class GempakFileReader implements GempakConstants {
           ifield = ifield | iword;
         }
         //
-        //  The integer data is now in ifield.  Use the scaling and
-        //  offset terms to convert to REAL data.
+        // The integer data is now in ifield. Use the scaling and
+        // offset terms to convert to REAL data.
         //
         if (ifield == pkinf.imissc[idata]) {
           data[ir + idata] = RMISSD;
         } else {
-          data[ir + idata] = (ifield + pkinf.koffst[idata])
-                  * (float) pkinf.scalec[idata];
+          data[ir + idata] = (ifield + pkinf.koffst[idata]) * (float) pkinf.scalec[idata];
         }
       }
       ir += nparms;
@@ -1644,14 +1588,13 @@ public class GempakFileReader implements GempakConstants {
   /**
    * subclass should implement
    *
-   * @param isword       starting word (1 based)
-   * @param nword        number of words to read
+   * @param isword starting word (1 based)
+   * @param nword number of words to read
    * @param decimalScale decimal scale
    * @return returns null unless subclass overrides
    * @throws IOException problem reading data
    */
-  public float[] DM_RPKG(int isword, int nword, int decimalScale)
-          throws IOException {
+  public float[] DM_RPKG(int isword, int nword, int decimalScale) throws IOException {
     return null;
   }
 
@@ -1676,7 +1619,7 @@ public class GempakFileReader implements GempakConstants {
      * Create a new holder for the header and data
      *
      * @param header the header
-     * @param data   the data
+     * @param data the data
      */
     public RData(int[] header, float[] data) {
       this.header = header;

@@ -21,7 +21,6 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +39,8 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   private final List<Integer> offsetSorted;
 
-  public CoordinateTime(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<Integer> offsetSorted, int[] time2runtime) {
+  public CoordinateTime(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<Integer> offsetSorted,
+      int[] time2runtime) {
     super(code, timeUnit, refDate, time2runtime);
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
   }
@@ -125,12 +125,15 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     CoordinateTime that = (CoordinateTime) o;
 
-    if (code != that.code) return false;
+    if (code != that.code)
+      return false;
     return offsetSorted.equals(that.offsetSorted);
 
   }
@@ -161,7 +164,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   //////////////////////////////////////////////////////
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
-    private final int code;  // pdsFirst.getTimeUnit()
+    private final int code; // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
     private final CalendarDate refDate;
 
@@ -188,7 +191,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       } else {
         CalendarPeriod period = Grib2Utils.getCalendarPeriod(tuInRecord);
         if (period == null) {
-          logger.warn("Cant find period for time unit="+tuInRecord);
+          logger.warn("Cant find period for time unit=" + tuInRecord);
           return offset;
         }
         CalendarDate validDate = refDate.add(period.multiply(offset));
@@ -199,7 +202,8 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<Integer> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add((Integer) val);
+      for (Object val : values)
+        offsetSorted.add((Integer) val);
       Collections.sort(offsetSorted);
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
     }
@@ -207,7 +211,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     final Grib1Customizer cust;
-    final int code;  // pdsFirst.getTimeUnit()
+    final int code; // pdsFirst.getTimeUnit()
     final CalendarPeriod timeUnit;
     final CalendarDate refDate;
 
@@ -238,7 +242,8 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<Integer> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add((Integer) val);
+      for (Object val : values)
+        offsetSorted.add((Integer) val);
       Collections.sort(offsetSorted);
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
     }

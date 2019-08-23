@@ -31,8 +31,7 @@ public class TestObjectEncode {
     private double d = 1.23;
     private String s = "default";
 
-    public TesterBean() {
-    }
+    public TesterBean() {}
 
     public TesterBean(boolean b, int i, short sh, long l, float f, double d, String s) {
       this.b = b;

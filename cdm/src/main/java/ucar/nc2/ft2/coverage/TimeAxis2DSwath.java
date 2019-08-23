@@ -10,7 +10,6 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
-
 import javax.annotation.Nonnull;
 import java.util.Formatter;
 
@@ -25,22 +24,24 @@ public class TimeAxis2DSwath extends CoverageCoordAxis {
 
   // can only be set once, needed for subsetting
   private int[] shape;
+
   public TimeAxis2DSwath(CoverageCoordAxisBuilder builder) {
     super(builder);
   }
 
   @Override
   protected void setDataset(CoordSysContainer dataset) {
-    if (shape != null) throw new RuntimeException("Cant change axis, once dataset is set");
+    if (shape != null)
+      throw new RuntimeException("Cant change axis, once dataset is set");
     shape = new int[2];
     assert dependsOn.size() == 2;
     CoverageCoordAxis axis1 = dataset.findCoordAxis(dependsOn.get(0));
     if (axis1 == null)
-      throw new IllegalStateException("TimeAxis2DSwath cant find axis with name "+dependsOn.get(0));
+      throw new IllegalStateException("TimeAxis2DSwath cant find axis with name " + dependsOn.get(0));
 
     CoverageCoordAxis axis2 = dataset.findCoordAxis(dependsOn.get(1));
     if (axis2 == null)
-      throw new IllegalStateException("TimeAxis2DSwath cant find axis with name "+dependsOn.get(1));
+      throw new IllegalStateException("TimeAxis2DSwath cant find axis with name " + dependsOn.get(1));
 
     shape[0] = axis1.getNcoords();
     shape[1] = axis2.getNcoords();
@@ -70,36 +71,40 @@ public class TimeAxis2DSwath extends CoverageCoordAxis {
     if (params == null)
       return Optional.of(new TimeAxis2DSwath(new CoverageCoordAxisBuilder(this)));
 
-    /* CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
-    boolean runtimeAll = (Boolean) params.get(SubsetParams.runtimeAll);
-    boolean latest = (rundate == null) && !runtimeAll; // default is latest
-
-    int run_index = -1;
-    if (latest) {
-      run_index = runCoord.getNcoords() - 1;
-
-    } else if (rundate != null){
-      double rundateTarget = runCoord.convert(rundate);
-      CoordAxisHelper helper = new CoordAxisHelper(runCoord);
-      run_index = helper.findCoordElement(rundateTarget, true);  // LOOK Bounded
-    }
-    if (run_index >= 0) {
-      CoverageCoordAxis1D time1D = getTimeAxisForRun(run_index);
-      return time1D.subset(params);
-    } */
+    /*
+     * CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
+     * boolean runtimeAll = (Boolean) params.get(SubsetParams.runtimeAll);
+     * boolean latest = (rundate == null) && !runtimeAll; // default is latest
+     * 
+     * int run_index = -1;
+     * if (latest) {
+     * run_index = runCoord.getNcoords() - 1;
+     * 
+     * } else if (rundate != null){
+     * double rundateTarget = runCoord.convert(rundate);
+     * CoordAxisHelper helper = new CoordAxisHelper(runCoord);
+     * run_index = helper.findCoordElement(rundateTarget, true); // LOOK Bounded
+     * }
+     * if (run_index >= 0) {
+     * CoverageCoordAxis1D time1D = getTimeAxisForRun(run_index);
+     * return time1D.subset(params);
+     * }
+     */
 
     // no subsetting needed
     return Optional.of(new TimeAxis2DSwath(new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented, maybe illegal ??
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented,
+                                                                                            // maybe illegal ??
     return Optional.of(new TimeAxis2DSwath(new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
   @Nonnull
-  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal ??
+  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal
+                                                                                 // ??
     throw new UnsupportedOperationException();
   }
 

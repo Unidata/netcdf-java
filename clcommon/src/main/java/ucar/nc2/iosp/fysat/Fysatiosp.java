@@ -9,7 +9,6 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.fysat.FysatHeader.Vinfo;
 import ucar.nc2.iosp.fysat.util.EndianByteBuffer;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-
 import java.io.*;
 import java.awt.image.*;
 import java.util.zip.Inflater;
@@ -46,7 +45,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
   // reading
 
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-                   ucar.nc2.util.CancelTask cancelTask) throws IOException {
+      ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
     super.open(raf, ncfile, cancelTask);
 
@@ -58,7 +57,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
     // subset
-    //  Range[] section = Range.toArray( sectionList);
+    // Range[] section = Range.toArray( sectionList);
     int[] origin = section.getOrigin();
     int[] shape = section.getShape();
     int[] stride = section.getStride();
@@ -76,7 +75,8 @@ public class Fysatiosp extends AbstractIOServiceProvider {
   }
 
   // all the work is here, so can be called recursively
-  private Array readData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
+  private Array readData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride)
+      throws IOException, InvalidRangeException {
 
     // long length = myRaf.length();
     raf.seek(dataPos);
@@ -92,9 +92,9 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     } else if (vi.classType == DataType.SHORT.getPrimitiveClassType()) {
       EndianByteBuffer byteBuff = new EndianByteBuffer(data, vi.byteOrder);
       short[] sdata = byteBuff.getShortArray();
-      //for(int i=0; i<sdata.length; i++){
-      //	System.out.println(sdata[i]);
-      //}
+      // for(int i=0; i<sdata.length; i++){
+      // System.out.println(sdata[i]);
+      // }
       array = Array.factory(DataType.SHORT, v2.getShape(), sdata);
     } else if (vi.classType == DataType.INT.getPrimitiveClassType()) {
       EndianByteBuffer byteBuff = new EndianByteBuffer(data, vi.byteOrder);
@@ -109,14 +109,17 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   }
 
-  public Array readDataOld(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException {
+  public Array readDataOld(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride)
+      throws IOException {
     int start_l, stride_l, stop_l;
     int start_p, stride_p, stop_p;
-    if (origin == null) origin = new int[v2.getRank()];
-    if (shape == null) shape = v2.getShape();
+    if (origin == null)
+      origin = new int[v2.getRank()];
+    if (shape == null)
+      shape = v2.getShape();
 
     FysatHeader.Vinfo vinfo = (FysatHeader.Vinfo) v2.getSPobject();
-    //ucar.ma2.DataType dataType = v2.getDataType();
+    // ucar.ma2.DataType dataType = v2.getDataType();
 
     int nx = vinfo.nx;
     int ny = vinfo.ny;
@@ -129,18 +132,18 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     stride_p = stride[1];
     stop_p = origin[1] + shape[1] - 1;
 
-    if (start_l + stop_l + stride_l == 0) { //default lines
+    if (start_l + stop_l + stride_l == 0) { // default lines
       start_l = 0;
       stride_l = 1;
       stop_l = ny - 1;
     }
-    if (start_p + stop_p + stride_p == 0) { //default pixels
+    if (start_p + stop_p + stride_p == 0) { // default pixels
       start_p = 0;
       stride_p = 1;
     }
 
     int Len = shape[1]; // length of pixels read each line
-    ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]}, false); // LOOK unsigned ??
+    ArrayByte adata = new ArrayByte(new int[] {shape[0], shape[1]}, false); // LOOK unsigned ??
     Index indx = adata.getIndex();
     long doff = dataPos + start_p;
     // initially no data conversion is needed.
@@ -159,7 +162,8 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   // for the compressed data read all out into a array and then parse into requested
 
-  public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
+  public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride)
+      throws IOException, InvalidRangeException {
 
     long length = raf.length();
 
@@ -186,13 +190,14 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     return null;
   }
 
-  public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
+  public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int[] origin, int[] shape,
+      int[] stride) throws IOException, InvalidRangeException {
 
     long length = raf.length();
 
     raf.seek(dataPos);
 
-    int data_size = (int) (length - dataPos);     //  or 5120 as read buffer size
+    int data_size = (int) (length - dataPos); // or 5120 as read buffer size
     byte[] data = new byte[data_size];
     raf.readFully(data);
 
@@ -200,7 +205,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     int resultLength;
     int result = 0;
     byte[] tmp;
-    int uncompLen;        /* length of decompress space    */
+    int uncompLen; /* length of decompress space */
     byte[] uncomp = new byte[nx * (ny + 1) + 4000];
     Inflater inflater = new Inflater(false);
 
@@ -253,45 +258,46 @@ public class Fysatiosp extends AbstractIOServiceProvider {
   }
 
   /*
-  ** Name:       GetGiniLine
-  **
-  ** Purpose:    Extract a line of data from a GINI image
-  **
-  ** Parameters:
-  **             buf     - buffer containing image data
-  **
-  ** Returns:
-  **             SUCCESS == 1
-  **             FAILURE == 0
-  **
-  **
-  */
+   ** Name: GetGiniLine
+   **
+   ** Purpose: Extract a line of data from a GINI image
+   **
+   ** Parameters:
+   ** buf - buffer containing image data
+   **
+   ** Returns:
+   ** SUCCESS == 1
+   ** FAILURE == 0
+   **
+   **
+   */
   private byte[] getGiniLine(int nx, int ny, long doff, int lineNumber, int len, int stride) throws IOException {
 
     byte[] data = new byte[len];
 
     /*
-    ** checking image file and set location of first line in file
-    */
+     ** checking image file and set location of first line in file
+     */
     raf.seek(doff);
 
     if (lineNumber >= ny)
-      throw new IOException("Try to access the file at line number= " + lineNumber + " larger then last line number = " + ny);
+      throw new IOException(
+          "Try to access the file at line number= " + lineNumber + " larger then last line number = " + ny);
 
     /*
-    ** Read in the requested line
-    */
+     ** Read in the requested line
+     */
 
     int offset = lineNumber * nx + (int) doff;
 
-    //myRaf.seek ( offset );
+    // myRaf.seek ( offset );
     for (int i = 0; i < len; i++) {
       raf.seek(offset);
       data[i] = raf.readByte();
       offset = offset + stride;
-      //myRaf.seek(offset);
+      // myRaf.seek(offset);
     }
-    //myRaf.read( data, 0, len);
+    // myRaf.read( data, 0, len);
 
     return data;
 

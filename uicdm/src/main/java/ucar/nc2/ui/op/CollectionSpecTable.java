@@ -13,7 +13,6 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.util.Misc;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.PrintWriter;
@@ -43,86 +42,88 @@ public class CollectionSpecTable extends JPanel {
     this.prefs = prefs;
 
     ftTable = new BeanTable(Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
-    /* ftTable.addListSelectionListener(e -> {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        setSelectedFeatureDataset(ftb);
-    });
-
-    /* PopupMenu varPopup = new ucar.ui.widget.PopupMenu(ftTable.getJTable(), "Options");
-    varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        FeatureCollectionTable.this.firePropertyChange("openNetcdfFile", null, ftb.f.getPath());
-      }
-    });
-
-    varPopup.addAction("Open in CoordSystems", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        FeatureCollectionTable.this.firePropertyChange("openCoordSystems", null, ftb.f.getPath());
-      }
-    });
-
-    varPopup.addAction("Open as PointDataset", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        FeatureCollectionTable.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
-      }
-    });
-
-    varPopup.addAction("Open as NcML", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        FeatureCollectionTable.this.firePropertyChange("openNcML", null, ftb.f.getPath());
-      }
-    });
-
-    varPopup.addAction("Open as GridDataset", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        FeatureCollectionTable.this.firePropertyChange("openGridDataset", null, ftb.f.getPath());
-      }
-    });
-
-    varPopup.addAction("Open as CoverageDataset", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        FeatureCollectionTable.this.firePropertyChange("openCoverageDataset", null, ftb.f.getPath());
-      }
-    });
-
-    varPopup.addAction("Open as RadialDataset", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        FeatureCollectionTable.this.firePropertyChange("openRadialDataset", null, ftb.f.getPath());
-      }
-    });
-
-    varPopup.addAction("Show Report on selected rows", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List<FeatureScan.Bean> selected = ftTable.getSelectedBeans();
-        Formatter f = new Formatter();
-        for (FeatureScan.Bean bean : selected) {
-          bean.toString(f, false);
-        }
-        dumpTA.setText(f.toString());
-      }
-    });
-
-    varPopup.addAction("Run Coverage Classifier", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        dumpTA.setText(ftb.runClassifier());
-      }
-    });   */
+    /*
+     * ftTable.addListSelectionListener(e -> {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * setSelectedFeatureDataset(ftb);
+     * });
+     * 
+     * /* PopupMenu varPopup = new ucar.ui.widget.PopupMenu(ftTable.getJTable(), "Options");
+     * varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * FeatureCollectionTable.this.firePropertyChange("openNetcdfFile", null, ftb.f.getPath());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Open in CoordSystems", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * FeatureCollectionTable.this.firePropertyChange("openCoordSystems", null, ftb.f.getPath());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Open as PointDataset", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * FeatureCollectionTable.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Open as NcML", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * FeatureCollectionTable.this.firePropertyChange("openNcML", null, ftb.f.getPath());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Open as GridDataset", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * FeatureCollectionTable.this.firePropertyChange("openGridDataset", null, ftb.f.getPath());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Open as CoverageDataset", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * FeatureCollectionTable.this.firePropertyChange("openCoverageDataset", null, ftb.f.getPath());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Open as RadialDataset", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * FeatureCollectionTable.this.firePropertyChange("openRadialDataset", null, ftb.f.getPath());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Show Report on selected rows", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * List<FeatureScan.Bean> selected = ftTable.getSelectedBeans();
+     * Formatter f = new Formatter();
+     * for (FeatureScan.Bean bean : selected) {
+     * bean.toString(f, false);
+     * }
+     * dumpTA.setText(f.toString());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Run Coverage Classifier", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * dumpTA.setText(ftb.runClassifier());
+     * }
+     * });
+     */
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -156,7 +157,7 @@ public class CollectionSpecTable extends JPanel {
     } else {
       CollectionSpecParser sp = new CollectionSpecParser(spec, f);
       f.format("spec='%s'%n", sp);
-      dcm = scanCollection(spec, f) ;
+      dcm = scanCollection(spec, f);
     }
     showCollection(f);
     dumpTA.setText(f.toString());
@@ -165,13 +166,14 @@ public class CollectionSpecTable extends JPanel {
 
   private static final String SPEC = "spec='";
   private static final String DFM = "dateFormatMark='";
+
   private MFileCollectionManager setCollectionElement(String elem, Formatter f) throws Exception {
     String spec = null;
     int pos1 = elem.indexOf(SPEC);
     if (pos1 > 0) {
-      int pos2 = elem.indexOf("'", pos1+SPEC.length());
+      int pos2 = elem.indexOf("'", pos1 + SPEC.length());
       if (pos2 > 0) {
-        spec = elem.substring(pos1+SPEC.length(), pos2);
+        spec = elem.substring(pos1 + SPEC.length(), pos2);
       }
     }
     if (spec == null) {
@@ -183,9 +185,9 @@ public class CollectionSpecTable extends JPanel {
     String dfm = null;
     pos1 = elem.indexOf(DFM);
     if (pos1 > 0) {
-      int pos2 = elem.indexOf("'", pos1+DFM.length());
+      int pos2 = elem.indexOf("'", pos1 + DFM.length());
       if (pos2 > 0) {
-        dfm = elem.substring(pos1+DFM.length(), pos2);
+        dfm = elem.substring(pos1 + DFM.length(), pos2);
       }
     }
 
@@ -198,7 +200,8 @@ public class CollectionSpecTable extends JPanel {
   }
 
   public void showCollection(Formatter f) throws Exception {
-    if (dcm == null) return;
+    if (dcm == null)
+      return;
 
     f.format("dcm = %s%n", dcm);
     for (MFile mfile : dcm.getFilesSorted()) {

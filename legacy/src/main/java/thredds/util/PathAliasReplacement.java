@@ -11,7 +11,9 @@ package thredds.util;
  * @since 4.0
  */
 public interface PathAliasReplacement {
-  boolean containsPathAlias( String path );
-  String replacePathAlias( String path );
-  String replaceIfMatch( String path );
+  boolean containsPathAlias(String path);
+
+  String replacePathAlias(String path);
+
+  String replaceIfMatch(String path);
 }

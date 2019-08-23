@@ -51,7 +51,7 @@ public class PolarStereographic extends AbstractTransformBuilder implements Hori
     } else {
       // given the scale, calculate stdpar
       // k0 = (1 +/- sin(stdpar))/2
-      // asin(2 * k0  - 1) =  stdpar)
+      // asin(2 * k0 - 1) = stdpar)
       double temp = 2 * scale - 1;
       latD = Math.toDegrees(Math.asin(temp));
     }
@@ -72,14 +72,13 @@ public class PolarStereographic extends AbstractTransformBuilder implements Hori
     ucar.unidata.geoloc.ProjectionImpl proj;
 
     // check for ellipsoidal earth
-    if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis)
-        || inverse_flattening != 0.0)) {
+    if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
       Earth earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
-      proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(lat0, lon0,
-          scale, latD, false_easting, false_northing, earth);
+      proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(lat0, lon0, scale, latD,
+          false_easting, false_northing, earth);
     } else {
-      proj = new ucar.unidata.geoloc.projection.Stereographic(lat0, lon0, scale, false_easting,
-          false_northing, earth_radius);
+      proj = new ucar.unidata.geoloc.projection.Stereographic(lat0, lon0, scale, false_easting, false_northing,
+          earth_radius);
     }
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }

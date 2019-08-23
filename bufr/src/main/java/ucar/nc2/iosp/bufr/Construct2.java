@@ -13,7 +13,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.ma2.*;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -37,14 +36,14 @@ class Construct2 {
   Construct2(Message proto, BufrConfig bufrConfig, ucar.nc2.NetcdfFile nc) throws IOException {
     this.ncfile = nc;
 
-    //dkeyRoot = dds.getDescriptorRoot();
-    //int nbits = dds.getTotalBits();
-    //int inputBytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
-    //int outputBytes = dds.getTotalBytes();
+    // dkeyRoot = dds.getDescriptorRoot();
+    // int nbits = dds.getTotalBits();
+    // int inputBytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
+    // int outputBytes = dds.getTotalBytes();
 
     // the category
-   // int cat = proto.ids.getCategory();
-    //int subcat = proto.ids.getSubCategory();
+    // int cat = proto.ids.getCategory();
+    // int subcat = proto.ids.getSubCategory();
 
     // global Attributes
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM BufrIosp2"));
@@ -60,7 +59,7 @@ class Construct2 {
     ncfile.addAttribute(null, new Attribute("BUFR:localSubCategory", proto.ids.getLocalSubCategory()));
     ncfile.addAttribute(null, new Attribute(BufrIosp2.centerId, proto.ids.getCenterId()));
     ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getSubCenterId()));
-    //ncfile.addAttribute(null, "BUFR:tableName", proto.ids.getMasterTableFilename()));
+    // ncfile.addAttribute(null, "BUFR:tableName", proto.ids.getMasterTableFilename()));
     ncfile.addAttribute(null, new Attribute("BUFR:table", proto.ids.getMasterTableId()));
     ncfile.addAttribute(null, new Attribute("BUFR:tableVersion", proto.ids.getMasterTableVersion()));
     ncfile.addAttribute(null, new Attribute("BUFR:localTableVersion", proto.ids.getLocalTableVersion()));
@@ -102,7 +101,7 @@ class Construct2 {
 
         List<BufrConfig.FieldConverter> subFlds = fld.flds;
         List<DataDescriptor> subKeys = dkey.subKeys;
-        if (subKeys.size() == 1) {  // only one member
+        if (subKeys.size() == 1) { // only one member
           DataDescriptor subDds = dkey.subKeys.get(0);
           BufrConfig.FieldConverter subFld = subFlds.get(0);
           if (subDds.dpi != null) {
@@ -130,10 +129,10 @@ class Construct2 {
     String uname = findUniqueName(parent, fld.getName(), "struct");
     dkey.name = uname; // name may need to be changed for uniqueness
 
-    //String structName = dataDesc.name != null ? dataDesc.name : "struct" + structNum++;
+    // String structName = dataDesc.name != null ? dataDesc.name : "struct" + structNum++;
     Structure struct = new Structure(ncfile, null, parent, uname);
     try {
-      struct.setDimensionsAnonymous(new int[]{count}); // anon vector
+      struct.setDimensionsAnonymous(new int[] {count}); // anon vector
     } catch (InvalidRangeException e) {
       log.error("illegal count= " + count + " for " + fld);
     }
@@ -153,8 +152,8 @@ class Construct2 {
     String uname = findUniqueName(parent, fld.getName(), "seq");
     dkey.name = uname; // name may need to be changed for uniqueness
 
-    //String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
-    //String seqName = dataDesc.name != null ? dataDesc.name : "seq" + seqNum++;
+    // String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
+    // String seqName = dataDesc.name != null ? dataDesc.name : "seq" + seqNum++;
 
     Sequence seq = new Sequence(ncfile, null, parent, uname);
     seq.setDimensions(""); // scalar
@@ -190,16 +189,17 @@ class Construct2 {
     }
   }
 
-  private void addDpiStructure(Structure parent, BufrConfig.FieldConverter parentFld, BufrConfig.FieldConverter dpiField) {
+  private void addDpiStructure(Structure parent, BufrConfig.FieldConverter parentFld,
+      BufrConfig.FieldConverter dpiField) {
     DataDescriptor dpiKey = dpiField.dds;
     String uname = findUniqueName(parent, dpiField.getName(), "struct");
     dpiKey.name = uname; // name may need to be changed for uniqueness
 
-    //String structName = findUnique(parent, dpiField.name);
+    // String structName = findUnique(parent, dpiField.name);
     Structure struct = new Structure(ncfile, null, parent, uname);
     int n = parentFld.dds.replication;
     try {
-      struct.setDimensionsAnonymous(new int[]{n}); // anon vector
+      struct.setDimensionsAnonymous(new int[] {n}); // anon vector
     } catch (InvalidRangeException e) {
       log.error("illegal count= " + 1 + " for " + dpiField);
     }
@@ -215,7 +215,7 @@ class Construct2 {
     struct.addMemberVariable(v);
 
     parent.addMemberVariable(struct);
-    struct.setSPobject(dpiField);  // ??
+    struct.setSPobject(dpiField); // ??
 
     dpiKey.refersTo = struct;
 
@@ -226,7 +226,7 @@ class Construct2 {
   private void addDpiSequence(Structure parent, BufrConfig.FieldConverter fld) {
     Structure struct = new Structure(ncfile, null, parent, "statistics");
     try {
-      struct.setDimensionsAnonymous(new int[]{fld.dds.replication}); // scalar
+      struct.setDimensionsAnonymous(new int[] {fld.dds.replication}); // scalar
     } catch (InvalidRangeException e) {
       e.printStackTrace();
     }
@@ -251,7 +251,7 @@ class Construct2 {
     Variable v = new Variable(ncfile, null, struct, uname);
     try {
       if (count > 1)
-        v.setDimensionsAnonymous(new int[]{count}); // anon vector
+        v.setDimensionsAnonymous(new int[] {count}); // anon vector
       else
         v.setDimensions(""); // scalar
     } catch (InvalidRangeException e) {
@@ -262,7 +262,8 @@ class Construct2 {
       v.addAttribute(new Attribute(CDM.LONG_NAME, fld.getDesc()));
 
     if (fld.getUnits() == null) {
-      if (warnUnits) log.warn("dataDesc.units == null for " + uname);
+      if (warnUnits)
+        log.warn("dataDesc.units == null for " + uname);
     } else {
       String units = fld.getUnits();
       if (units.equalsIgnoreCase("Code_Table") || units.equalsIgnoreCase("Code Table"))
@@ -278,12 +279,12 @@ class Construct2 {
       v.setDataType(DataType.CHAR);
       int size = dataDesc.bitWidth / 8;
       try {
-        v.setDimensionsAnonymous(new int[]{size});
+        v.setDimensionsAnonymous(new int[] {size});
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
 
-    } else if ((dataDesc.type == 2) && CodeFlagTables.hasTable(dataDesc.fxy)) {  // enum
+    } else if ((dataDesc.type == 2) && CodeFlagTables.hasTable(dataDesc.fxy)) { // enum
       int nbits = dataDesc.bitWidth;
       int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
 
@@ -295,7 +296,7 @@ class Construct2 {
       else if (nbytes == 4)
         v.setDataType(DataType.ENUM4);
 
-      //v.removeAttribute(CDM.UNITS);
+      // v.removeAttribute(CDM.UNITS);
       v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName() + " (" + dataDesc.getFxyName() + ")"));
 
       Group g = struct.getParentGroup();
@@ -344,7 +345,7 @@ class Construct2 {
       // (bpacked + refVal) / 10^scale = value
       // value = bpacked * 10^-scale + refVal * 10^-scale
       // scale_factor = 10^-scale
-      // add_ofset =  refVal * 10^-scale
+      // add_ofset = refVal * 10^-scale
       int scale10 = dataDesc.scale;
       double scale = (scale10 == 0) ? 1.0 : Math.pow(10.0, -scale10);
       if (scale10 != 0)
@@ -365,18 +366,22 @@ class Construct2 {
 
 
   private int tempNo = 1;
+
   private String findUniqueName(Structure struct, String want, String def) {
-    if (want == null) return def + tempNo++;
+    if (want == null)
+      return def + tempNo++;
 
     String vwant = NetcdfFile.makeValidCdmObjectName(want);
     Variable oldV = struct.findVariable(vwant);
-    if (oldV == null) return vwant;
+    if (oldV == null)
+      return vwant;
 
     int seq = 2;
     while (true) {
       String wantSeq = vwant + "-" + seq;
       oldV = struct.findVariable(wantSeq);
-      if (oldV == null) return wantSeq;
+      if (oldV == null)
+        return wantSeq;
       seq++;
     }
   }
@@ -384,25 +389,28 @@ class Construct2 {
   // force globally unique variable names, even when they are in different Structures.
   // this allows us to promote structure members without worrying about name collisions
   private Map<String, Integer> names = new HashMap<>(100);
+
   private String findGloballyUniqueName(String want, String def) {
-    if (want == null) return def + tempNo++;
+    if (want == null)
+      return def + tempNo++;
 
     String vwant = NetcdfFile.makeValidCdmObjectName(want);
     Integer have = names.get(vwant);
     if (have == null) {
-      names.put(vwant,1);
+      names.put(vwant, 1);
       return vwant;
     } else {
       have = have + 1;
       String wantSeq = vwant + "-" + have;
-      names.put(vwant,have);
+      names.put(vwant, have);
       return wantSeq;
     }
   }
 
 
   private void annotate(Variable v, BufrConfig.FieldConverter fld) {
-    if (fld.type == null) return;
+    if (fld.type == null)
+      return;
 
     switch (fld.type) {
       case lat:
@@ -436,7 +444,8 @@ class Construct2 {
   }
 
   private void annotateObs(Sequence recordStructure) {
-    StandardFields.StandardFieldsFromStructure extract = new StandardFields.StandardFieldsFromStructure(centerId, recordStructure);
+    StandardFields.StandardFieldsFromStructure extract =
+        new StandardFields.StandardFieldsFromStructure(centerId, recordStructure);
 
     try (Formatter f = new Formatter()) {
       String name = extract.getFieldName(BufrCdmIndexProto.FldType.lat);

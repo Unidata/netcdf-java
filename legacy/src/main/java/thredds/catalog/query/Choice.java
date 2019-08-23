@@ -16,5 +16,6 @@ package thredds.catalog.query;
 
 public interface Choice {
   public String toString(); // human display
+
   public String getValue(); // value for the query
 }

@@ -6,7 +6,6 @@ package ucar.nc2.ncml;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +23,12 @@ public class TestRemoteAggregation {
     System.out.printf(" testAggExisting: read %s%n%n%s", filename, IO.readFile(filename));
 
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
-    System.out.println(" testAggExisting.open "+ ncd);
+    System.out.println(" testAggExisting.open " + ncd);
 
     Variable sst_time = ncd.findVariable("sst_time");
     assert sst_time != null;
     assert sst_time.getRank() == 2;
-    int[] shape =  sst_time.getShape();
+    int[] shape = sst_time.getShape();
     assert shape[0] == 6;
     assert shape[1] == 1;
 

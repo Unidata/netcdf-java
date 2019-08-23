@@ -5,7 +5,6 @@
 package ucar.nc2.ft2.coverage.remote;
 
 import ucar.nc2.ft2.coverage.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +22,13 @@ class CoverageDataResponse implements CoordSysContainer {
 
   public List<GeoReferencedArray> arrayResponse;
 
-  public CoverageDataResponse(List<CoverageCoordAxis> axes, List<CoverageCoordSys> coordSys, List<CoverageTransform> transforms) {
+  public CoverageDataResponse(List<CoverageCoordAxis> axes, List<CoverageCoordSys> coordSys,
+      List<CoverageTransform> transforms) {
     this.axes = axes;
     this.coordSys = coordSys;
     this.transforms = transforms;
-    this.arrayResponse = new ArrayList<>(); // set after the constructor is done, because we need to put coordsys in geoArray
+    this.arrayResponse = new ArrayList<>(); // set after the constructor is done, because we need to put coordsys in
+                                            // geoArray
 
     for (CoverageCoordSys csys : coordSys) {
       csys.setDataset(this); // LOOK More that should be done ??
@@ -37,19 +38,22 @@ class CoverageDataResponse implements CoordSysContainer {
 
   public CoverageCoordSys findCoordSys(String csysName) {
     for (CoverageCoordSys csys : coordSys)
-      if (csys.getName().equalsIgnoreCase(csysName)) return csys;
+      if (csys.getName().equalsIgnoreCase(csysName))
+        return csys;
     return null;
   }
 
   public CoverageTransform findCoordTransform(String transformName) {
     for (CoverageTransform ct : transforms)
-      if (ct.getName().equalsIgnoreCase(transformName)) return ct;
+      if (ct.getName().equalsIgnoreCase(transformName))
+        return ct;
     return null;
   }
 
   public CoverageCoordAxis findCoordAxis(String axisName) {
     for (CoverageCoordAxis axis : axes) {
-      if (axis.getName().equalsIgnoreCase(axisName)) return axis;
+      if (axis.getName().equalsIgnoreCase(axisName))
+        return axis;
     }
     return null;
   }

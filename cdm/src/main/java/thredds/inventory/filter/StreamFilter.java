@@ -7,7 +7,6 @@ package thredds.inventory.filter;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.unidata.util.StringUtil2;
-
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 
@@ -29,7 +28,8 @@ public class StreamFilter implements DirectoryStream.Filter<Path> {
   @Override
   public boolean accept(Path entry) {
 
-    String matchOn = nameOnly ? entry.getName(entry.getNameCount()-1).toString() : StringUtil2.replace(entry.toString(), "\\", "/");
+    String matchOn = nameOnly ? entry.getName(entry.getNameCount() - 1).toString()
+        : StringUtil2.replace(entry.toString(), "\\", "/");
     Matcher matcher = this.pattern.matcher(matchOn);
     return matcher.matches();
   }

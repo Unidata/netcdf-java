@@ -12,7 +12,6 @@ import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.util.CancelTaskImpl;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -26,7 +25,7 @@ import java.util.List;
  * @since 3/9/2015
  */
 public class Nccopy {
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static class CommandLine {
     @Parameter(names = {"-i", "--input"}, description = "Input dataset.", required = true)
@@ -35,23 +34,24 @@ public class Nccopy {
     @Parameter(names = {"-o", "--output"}, description = "Output file.", required = true)
     public File outputFile;
 
-    @Parameter(names = {"-f", "--format"}, description = "Output file format. Allowed values = " +
-                    "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
+    @Parameter(names = {"-f", "--format"}, description = "Output file format. Allowed values = "
+        + "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
     public NetcdfFileWriter.Version format = NetcdfFileWriter.Version.netcdf3;
 
-    @Parameter(names = {"-st", "--strategy"}, description = "Chunking strategy. Only used in NetCDF 4. " +
-            "Allowed values = [standard, grib, none]")
+    @Parameter(names = {"-st", "--strategy"},
+        description = "Chunking strategy. Only used in NetCDF 4. " + "Allowed values = [standard, grib, none]")
     public Nc4Chunking.Strategy strategy = Nc4Chunking.Strategy.standard;
 
-    @Parameter(names = {"-isLargeFile", "--isLargeFile"}, description = "Write to large file format. Only used in NetCDF 3.")
+    @Parameter(names = {"-isLargeFile", "--isLargeFile"},
+        description = "Write to large file format. Only used in NetCDF 3.")
     public boolean isLargeFile = false;
 
-   @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. " +
-            "Allowed values = 0 (no compression, fast) to 9 (max compression, slow)")
+    @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. "
+        + "Allowed values = 0 (no compression, fast) to 9 (max compression, slow)")
     public int deflateLevel = 5;
 
-    @Parameter(names = {"-sh", "--shuffle"}, description = "Enable the shuffle filter, which may improve compression. " +
-            "Only used in NetCDF 4. This option is ignored unless a non-zero deflate level is specified.")
+    @Parameter(names = {"-sh", "--shuffle"}, description = "Enable the shuffle filter, which may improve compression. "
+        + "Only used in NetCDF 4. This option is ignored unless a non-zero deflate level is specified.")
     public boolean shuffle = true;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
@@ -60,8 +60,8 @@ public class Nccopy {
 
     private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
       // Display parameters in this order in the usage information.
-      private final List<String> orderedParamNames = Arrays.asList(
-              "--input", "--output", "--format", "--isLargeFile", "--strategy", "--deflateLevel", "--shuffle", "--help");
+      private final List<String> orderedParamNames = Arrays.asList("--input", "--output", "--format", "--isLargeFile",
+          "--strategy", "--deflateLevel", "--shuffle", "--help");
 
       @Override
       public int compare(ParameterDescription p0, ParameterDescription p1) {
@@ -77,8 +77,8 @@ public class Nccopy {
     private final JCommander jc;
 
     public CommandLine(String progName, String[] args) throws ParameterException {
-      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
-      jc.setProgramName(progName);           // Displayed in the usage information.
+      this.jc = new JCommander(this, args); // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName); // Displayed in the usage information.
 
       // Set the ordering of of parameters in the usage information.
       jc.setParameterDescriptionComparator(new ParameterDescriptionComparator());
@@ -111,13 +111,14 @@ public class Nccopy {
       Formatter errlog = new Formatter();
       System.out.printf("NetcdfDatataset read from %s write %s to %s ", datasetIn, cmdLine.format, datasetOut);
 
-      try ( NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel)){
+      try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel)) {
 
         FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, cmdLine.format, cmdLine.getNc4Chunking());
         writer.getNetcdfFileWriter().setLargeFile(cmdLine.isLargeFile);
         NetcdfFile ncfileOut = writer.write(cancel);
 
-        if (ncfileOut != null) ncfileOut.close();
+        if (ncfileOut != null)
+          ncfileOut.close();
         cancel.setDone(true);
         System.out.printf("%s%n", cancel);
 

@@ -1,6 +1,7 @@
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information.
-*/
+/*
+ * Copyright 2012, UCAR/Unidata.
+ * See the LICENSE file for more information.
+ */
 
 package dap4.core.util;
 
@@ -13,31 +14,28 @@ import java.util.Map;
  * because it is a String->String map.
  */
 
-public class DapContext extends java.util.HashMap<Object, Object>
-{
-    public DapContext()
-    {
-        super();
-    }
+public class DapContext extends java.util.HashMap<Object, Object> {
+  public DapContext() {
+    super();
+  }
 
-    public String
-    toString()
-    {
-        StringBuilder buf = new StringBuilder("DapContext{");
-        boolean first = true;
-        for(Map.Entry<Object,Object> entry: super.entrySet()) {
-            if(!first) buf.append(",");
-            buf.append("|");
-            buf.append(entry.getKey().toString());
-            buf.append("|");
-            buf.append("=");
-            buf.append("|");
-            buf.append(entry.getValue().toString());
-            buf.append("|");
-            first = false;
-        }
-        buf.append("}");
-        return buf.toString();
+  public String toString() {
+    StringBuilder buf = new StringBuilder("DapContext{");
+    boolean first = true;
+    for (Map.Entry<Object, Object> entry : super.entrySet()) {
+      if (!first)
+        buf.append(",");
+      buf.append("|");
+      buf.append(entry.getKey().toString());
+      buf.append("|");
+      buf.append("=");
+      buf.append("|");
+      buf.append(entry.getValue().toString());
+      buf.append("|");
+      first = false;
     }
+    buf.append("}");
+    return buf.toString();
+  }
 
 }

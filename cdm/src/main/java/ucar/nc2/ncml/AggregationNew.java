@@ -13,7 +13,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class AggregationNew extends AggregationOuterDimension {
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
 
-    // open a "typical"  nested dataset and copy it to newds
+    // open a "typical" nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(null);
     DatasetConstructor.transferDataset(typical, ncDataset, null);
@@ -42,7 +41,7 @@ public class AggregationNew extends AggregationOuterDimension {
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
 
-    promoteGlobalAttributes( (DatasetOuterDimension) typicalDataset);
+    promoteGlobalAttributes((DatasetOuterDimension) typicalDataset);
 
     List<String> aggVarNames = getAggVariableNames();
 
@@ -59,7 +58,8 @@ public class AggregationNew extends AggregationOuterDimension {
         joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
 
       // if speced externally, this variable will get replaced
-      CacheVar cv = new CoordValueVar(joinAggCoord.getFullName(), joinAggCoord.getDataType(), joinAggCoord.getUnitsString());
+      CacheVar cv =
+          new CoordValueVar(joinAggCoord.getFullName(), joinAggCoord.getDataType(), joinAggCoord.getUnitsString());
       joinAggCoord.setSPobject(cv);
       cacheList.add(cv);
     } else if (joinAggCoord.isScalar()) {
@@ -70,7 +70,8 @@ public class AggregationNew extends AggregationOuterDimension {
         aggVarNames.add(joinAggCoord.getShortName());
       }
     } else {
-      throw new IllegalArgumentException("Variable " + dimName + " already exists, but is not a scalar (suitable for aggregating as a coordinate).");
+      throw new IllegalArgumentException(
+          "Variable " + dimName + " already exists, but is not a scalar (suitable for aggregating as a coordinate).");
     }
 
     // if no names specified, add all "non-coordinate" variables.
@@ -93,10 +94,10 @@ public class AggregationNew extends AggregationOuterDimension {
       }
 
       // construct new variable, replace old one LOOK what about Structures?
-      Group newGroup =  DatasetConstructor.findGroup(ncDataset, aggVar.getParentGroup());
+      Group newGroup = DatasetConstructor.findGroup(ncDataset, aggVar.getParentGroup());
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
-      vagg.setProxyReader( this);
+      vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(aggVar, vagg);
 
       // _CoordinateAxes if it exists must be modified
@@ -106,15 +107,16 @@ public class AggregationNew extends AggregationOuterDimension {
         vagg.addAttribute(new Attribute(_Coordinate.Axes, axes));
       }
 
-      newGroup.removeVariable( aggVar.getShortName());
-      newGroup.addVariable( vagg);
+      newGroup.removeVariable(aggVar.getShortName());
+      newGroup.addVariable(vagg);
       aggVars.add(vagg);
 
-      if (cancelTask != null && cancelTask.isCancel()) return;
+      if (cancelTask != null && cancelTask.isCancel())
+        return;
     }
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
-    typicalDataset.close( typical); // close it because we use DatasetProxyReader to acquire
+    typicalDataset.close(typical); // close it because we use DatasetProxyReader to acquire
 
     if (isDate && timeUnitsChange) {
       readTimeCoordinates(ncDataset.findVariable(dimName), cancelTask);

@@ -14,7 +14,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.ma2.DataType;
-
 import java.util.Formatter;
 import java.util.List;
 import java.util.ArrayList;
@@ -30,7 +29,8 @@ public class FslRaob extends TableConfigurerImpl {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String title = ds.findAttValueIgnoreCase(null, "version", null);
-    return title != null && (title.startsWith("Forecast Systems Lab 1.3") || title.startsWith("Forecast Systems Lab 1.4"));
+    return title != null
+        && (title.startsWith("Forecast Systems Lab 1.3") || title.startsWith("Forecast Systems Lab 1.4"));
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
@@ -47,7 +47,8 @@ public class FslRaob extends TableConfigurerImpl {
     return tc;
   }
 
-  private void makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, TableConfig childTable, String outerDin, String innerDim) {
+  private void makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, TableConfig childTable, String outerDin,
+      String innerDim) {
     Dimension parentDim = ds.findDimension(outerDin);
     Dimension childDim = ds.findDimension(innerDim);
 
@@ -57,7 +58,8 @@ public class FslRaob extends TableConfigurerImpl {
     List<String> parentVars = new ArrayList<>(vars.size());
     obsVars = new ArrayList<>(vars.size());
     for (Variable orgV : vars) {
-      if (orgV instanceof Structure) continue;
+      if (orgV instanceof Structure)
+        continue;
 
       Dimension dim0 = orgV.getDimension(0);
       if ((dim0 != null) && dim0.equals(parentDim)) {

@@ -32,7 +32,6 @@ import ucar.nc2.dt.grid.*;
 import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
-
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -82,8 +81,8 @@ public class CoordSysTable extends JPanel {
 
     csTable = new BeanTable(CoordinateSystemBean.class, (PreferencesExt) prefs.node("CoordinateSystemBean"), false);
     csTable.addListSelectionListener(e -> {
-        CoordinateSystemBean csb = (CoordinateSystemBean) csTable.getSelectedBean();
-        setSelectedCoordinateAxes(csb.coordSys);
+      CoordinateSystemBean csb = (CoordinateSystemBean) csTable.getSelectedBean();
+      setSelectedCoordinateAxes(csb.coordSys);
     });
 
     axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);
@@ -93,7 +92,8 @@ public class CoordSysTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
         Variable v = ds.findVariable(vb.getName());
-        if (v == null) return;
+        if (v == null)
+          return;
         infoTA.clear();
         infoTA.appendLine(v.toString());
         infoTA.appendLine(showMissing(v));
@@ -106,7 +106,8 @@ public class CoordSysTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
         VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
-        if (v == null) return;
+        if (v == null)
+          return;
         infoTA.clear();
         infoTA.appendLine(tryGrid(v));
         infoTA.gotoTop();
@@ -118,7 +119,8 @@ public class CoordSysTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
         VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
-        if (v == null) return;
+        if (v == null)
+          return;
         infoTA.clear();
         infoTA.appendLine(tryCoverage(v));
         infoTA.gotoTop();
@@ -164,9 +166,11 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         VariableDS axis = (VariableDS) ds.findVariable(bean.getName());
-        if (axis == null) return;
+        if (axis == null)
+          return;
         infoTA.clear();
         infoTA.appendLine(axis.toString());
         infoTA.appendLine(showMissing(axis));
@@ -178,7 +182,8 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         infoTA.clear();
         showValues(bean.axis);
         infoTA.gotoTop();
@@ -188,7 +193,8 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Value Differences", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         infoTA.clear();
         showValueDiffs(bean.axis);
         infoTA.gotoTop();
@@ -199,7 +205,8 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values as Date", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         infoTA.clear();
         showValuesAsDates(bean.axis);
         infoTA.gotoTop();
@@ -223,7 +230,8 @@ public class CoordSysTable extends JPanel {
   }
 
   public void summaryInfo(Formatter f) {
-    if (ds == null) return;
+    if (ds == null)
+      return;
     f.format("%s%n", ds.getLocation());
     int ngrids = 0;
 
@@ -239,8 +247,10 @@ public class CoordSysTable extends JPanel {
   }
 
   private BeanTable attTable;
+
   public void showAtts() {
-    if (ds == null) return;
+    if (ds == null)
+      return;
     if (attTable == null) {
       // global attributes
       attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
@@ -255,8 +265,8 @@ public class CoordSysTable extends JPanel {
           }
         }
       });
-      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "nj22/NetcdfUI"), attTable);
-      attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
+      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage("nj22/NetcdfUI"), attTable);
+      attWindow.setBounds((Rectangle) prefs.getBean("AttWindowBounds", new Rectangle(300, 100, 500, 800)));
     }
 
     List<AttributeBean> attlist = new ArrayList<>();
@@ -324,11 +334,14 @@ public class CoordSysTable extends JPanel {
       IndexIterator boundsIter = bounds.getIndexIterator();
       while (coordIter.hasNext()) {
         double coordValue = coordIter.getDoubleNext();
-        if (!boundsIter.hasNext()) break;
+        if (!boundsIter.hasNext())
+          break;
         double bounds1 = boundsIter.getDoubleNext();
-        if (!boundsIter.hasNext()) break;
+        if (!boundsIter.hasNext())
+          break;
         double bounds2 = boundsIter.getDoubleNext();
-        f.format("%3d: %f (%f,%f) len=%f mid=%f%n", count, coordValue, bounds1, bounds2, bounds2 - bounds1, (bounds2 + bounds1)/2);
+        f.format("%3d: %f (%f,%f) len=%f mid=%f%n", count, coordValue, bounds1, bounds2, bounds2 - bounds1,
+            (bounds2 + bounds1) / 2);
         count++;
       }
 
@@ -346,7 +359,8 @@ public class CoordSysTable extends JPanel {
 
 
   private void showValueDiffs(CoordinateAxis axis) {
-    if (!axis.isNumeric()) return;
+    if (!axis.isNumeric())
+      return;
     try {
       if (axis instanceof CoordinateAxis1D) {
         CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
@@ -360,7 +374,7 @@ public class CoordSysTable extends JPanel {
         CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
         ArrayDouble.D2 mids = axis2D.getCoordValuesArray();
         int[] shape = mids.getShape();
-        ArrayDouble.D2 diffx = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[]{shape[0], shape[1] - 1});
+        ArrayDouble.D2 diffx = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[] {shape[0], shape[1] - 1});
         for (int j = 0; j < shape[0]; j++) {
           for (int i = 0; i < shape[1] - 1; i++) {
             double diff = mids.get(j, i + 1) - mids.get(j, i);
@@ -369,7 +383,7 @@ public class CoordSysTable extends JPanel {
         }
         infoTA.appendLine(NCdumpW.toString(diffx, "diff in x", null));
 
-        ArrayDouble.D2 diffy = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[]{shape[0] - 1, shape[1]});
+        ArrayDouble.D2 diffy = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[] {shape[0] - 1, shape[1]});
         for (int j = 0; j < shape[0] - 1; j++) {
           for (int i = 0; i < shape[1]; i++) {
             double diff = mids.get(j + 1, i) - mids.get(j, i);
@@ -400,7 +414,7 @@ public class CoordSysTable extends JPanel {
         if (axis instanceof CoordinateAxis2D) {
           showDates2D((CoordinateAxis2D) axis, cdu);
 
-        } else if (axis instanceof CoordinateAxis1D) {  // 1D
+        } else if (axis instanceof CoordinateAxis1D) { // 1D
           showDates1D((CoordinateAxis1D) axis, cdu);
 
         } else { // > 2D
@@ -452,13 +466,14 @@ public class CoordSysTable extends JPanel {
       IndexIterator boundsIter = bounds.getIndexIterator();
       while (coordIter.hasNext()) {
         double coordValue = coordIter.getDoubleNext();
-        if (!boundsIter.hasNext()) break;
+        if (!boundsIter.hasNext())
+          break;
         double bounds1 = boundsIter.getDoubleNext();
-        if (!boundsIter.hasNext()) break;
+        if (!boundsIter.hasNext())
+          break;
         double bounds2 = boundsIter.getDoubleNext();
         f.format("%3d: %s (%s,%s)%n", count++, makeCalendarDateStringOrMissing(cdu, coordValue),
-                makeCalendarDateStringOrMissing(cdu, bounds1),
-                makeCalendarDateStringOrMissing(cdu, bounds2));
+            makeCalendarDateStringOrMissing(cdu, bounds1), makeCalendarDateStringOrMissing(cdu, bounds2));
       }
 
     } else {
@@ -475,7 +490,8 @@ public class CoordSysTable extends JPanel {
   }
 
   private String makeCalendarDateStringOrMissing(CalendarDateUnit cdu, double value) {
-    if (Double.isNaN(value)) return "missing";
+    if (Double.isNaN(value))
+      return "missing";
     return cdu.makeCalendarDate(value).toString();
   }
 
@@ -487,8 +503,10 @@ public class CoordSysTable extends JPanel {
   private void showDates1D(CoordinateAxis1D axis1D, CalendarDateUnit cdu) {
     if (!axis1D.isInterval()) {
       for (double val : axis1D.getCoordValues()) {
-        if (Double.isNaN(val)) infoTA.appendLine(" N/A");
-        else infoTA.appendLine(" " + cdu.makeCalendarDate(val));
+        if (Double.isNaN(val))
+          infoTA.appendLine(" N/A");
+        else
+          infoTA.appendLine(" " + cdu.makeCalendarDate(val));
       }
     } else { // is interval
       Formatter f = new Formatter();
@@ -513,7 +531,7 @@ public class CoordSysTable extends JPanel {
   private void printArrays(String title, double[] vals, double[] vals2) {
     Formatter sbuff = new Formatter();
     sbuff.format(" %s%n", title);
-    for (int i=0; i<vals.length; i++) {
+    for (int i = 0; i < vals.length; i++) {
       sbuff.format(" %3d: %10.2f  %10.2f%n", i, vals[i], vals2[i]);
     }
     sbuff.format("%n");
@@ -532,7 +550,8 @@ public class CoordSysTable extends JPanel {
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
+    if (attWindow != null)
+      prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
   }
 
   public void clear() {
@@ -556,7 +575,8 @@ public class CoordSysTable extends JPanel {
     csTable.setBeans(csList);
   }
 
-  private void setVariables(List<Variable> varList, List<AxisBean> axisList, List<VariableBean> beanList, List<CoordinateSystemBean> csList) {
+  private void setVariables(List<Variable> varList, List<AxisBean> axisList, List<VariableBean> beanList,
+      List<CoordinateSystemBean> csList) {
     for (Variable aVarList : varList) {
       VariableEnhanced v = (VariableEnhanced) aVarList;
       if (v instanceof CoordinateAxis)
@@ -581,7 +601,8 @@ public class CoordSysTable extends JPanel {
 
   private void setSelectedCoordinateAxes(CoordinateSystem cs) {
     List axesList = cs.getCoordinateAxes();
-    if (axesList.size() == 0) return;
+    if (axesList.size() == 0)
+      return;
     CoordinateAxis axis = (CoordinateAxis) axesList.get(0);
 
     List beans = axisTable.getBeans();
@@ -632,7 +653,8 @@ public class CoordSysTable extends JPanel {
   }
 
   private String showMissing(Variable v) {
-    if (!(v instanceof VariableDS)) return "";
+    if (!(v instanceof VariableDS))
+      return "";
     VariableDS ve = (VariableDS) v;
     Formatter buff = new Formatter();
     buff.format("%s:", v.getFullName());
@@ -651,8 +673,7 @@ public class CoordSysTable extends JPanel {
 
     // no-arg constructor
 
-    public VariableBean() {
-    }
+    public VariableBean() {}
 
     // create from a dataset
 
@@ -680,13 +701,14 @@ public class CoordSysTable extends JPanel {
       dims = names.toString();
       shape = lens.toString();
 
-          // sort by largest size first
+      // sort by largest size first
       if (v.getCoordinateSystems().size() > 0) {
         List<CoordinateSystem> css = new ArrayList<>(v.getCoordinateSystems());
         css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
         CoordinateSystem cs = css.get(0);
         for (CoordinateSystemBean csBean : csList)
-          if (cs == csBean.coordSys) coordSysBean = csBean;
+          if (cs == csBean.coordSys)
+            coordSysBean = csBean;
       }
     }
 
@@ -727,9 +749,10 @@ public class CoordSysTable extends JPanel {
 
 
     public String getCoverage() {
-      if (coordSysBean == null) return "";
+      if (coordSysBean == null)
+        return "";
       boolean complete = coordSysBean.coordSys.isComplete(ve);
-      return complete ? coordSysBean.getCoverage() : "Incomplete "+ coordSysBean.getCoverage();
+      return complete ? coordSysBean.getCoverage() : "Incomplete " + coordSysBean.getCoverage();
     }
 
   }
@@ -744,8 +767,7 @@ public class CoordSysTable extends JPanel {
 
     // no-arg constructor
 
-    public CoordinateSystemBean() {
-    }
+    public CoordinateSystemBean() {}
 
     public CoordinateSystemBean(CoordinateSystem cs) {
       this.coordSys = cs;
@@ -772,7 +794,8 @@ public class CoordSysTable extends JPanel {
       List ctList = cs.getCoordinateTransforms();
       for (int i = 0; i < ctList.size(); i++) {
         CoordinateTransform ct = (CoordinateTransform) ctList.get(i);
-        if (i > 0) buff.append(" ");
+        if (i > 0)
+          buff.append(" ");
         buff.append(ct.getTransformType());
         if (ct instanceof VerticalCT)
           buff.append("(").append(((VerticalCT) ct).getVerticalTransformType()).append(")");
@@ -871,8 +894,7 @@ public class CoordSysTable extends JPanel {
     private Attribute att;
 
     // no-arg constructor
-    public AttributeBean() {
-    }
+    public AttributeBean() {}
 
     // create from a dataset
     public AttributeBean(Attribute att) {
@@ -903,8 +925,7 @@ public class CoordSysTable extends JPanel {
 
     // no-arg constructor
 
-    public AxisBean() {
-    }
+    public AxisBean() {}
 
     // create from a dataset
 
@@ -942,7 +963,8 @@ public class CoordSysTable extends JPanel {
 
       if (v instanceof CoordinateAxis1D) {
         CoordinateAxis1D v1 = (CoordinateAxis1D) v;
-        if (v1.isRegular()) setRegular(Double.toString(v1.getIncrement()));
+        if (v1.isRegular())
+          setRegular(Double.toString(v1.getIncrement()));
       }
       isLayer = (null != axis.findAttribute(_Coordinate.ZisLayer));
       isInterval = axis.isInterval();
@@ -968,9 +990,11 @@ public class CoordSysTable extends JPanel {
       return axis.isContiguous();
     }
 
-    /* public boolean isLayer() {
-      return isLayer;
-    } */
+    /*
+     * public boolean isLayer() {
+     * return isLayer;
+     * }
+     */
 
     public boolean isInterval() {
       return isInterval;

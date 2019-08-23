@@ -12,24 +12,24 @@ import ucar.nc2.ft.PointFeature;
  * Created by cwardgar on 2014/03/06.
  */
 public abstract class NcMeasureType {
-    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/
-    //         wml2:MeasurementTVP/wml2:value
-    public static MeasureType initValue(MeasureType value, PointFeature pointFeat, VariableSimpleIF dataVar)
-            throws IOException {
-        // TEXT
-        StructureMembers.Member firstDataMember = pointFeat.getDataAll().findMember(dataVar.getShortName());
-        assert firstDataMember != null : String.format(
-                "%s appeared in the list of data variables but not in the StructureData.", dataVar.getShortName());
+  // wml2:Collection/wml2:observationMember/om:OM_Observation/om:result/wml2:MeasurementTimeseries/wml2:point/
+  // wml2:MeasurementTVP/wml2:value
+  public static MeasureType initValue(MeasureType value, PointFeature pointFeat, VariableSimpleIF dataVar)
+      throws IOException {
+    // TEXT
+    StructureMembers.Member firstDataMember = pointFeat.getDataAll().findMember(dataVar.getShortName());
+    assert firstDataMember != null : String
+        .format("%s appeared in the list of data variables but not in the StructureData.", dataVar.getShortName());
 
-        Array dataArray = pointFeat.getDataAll().getArray(firstDataMember);
-        assert dataArray.getSize() == 1 : String.format("Expected array to be scalar, but its shape was %s.",
-                Arrays.toString(dataArray.getShape()));
+    Array dataArray = pointFeat.getDataAll().getArray(firstDataMember);
+    assert dataArray.getSize() == 1 : String.format("Expected array to be scalar, but its shape was %s.",
+        Arrays.toString(dataArray.getShape()));
 
-        double dataVal = dataArray.getDouble(0);
-        value.setDoubleValue(dataVal);
+    double dataVal = dataArray.getDouble(0);
+    value.setDoubleValue(dataVal);
 
-        return value;
-    }
+    return value;
+  }
 
-    private NcMeasureType() { }
+  private NcMeasureType() {}
 }

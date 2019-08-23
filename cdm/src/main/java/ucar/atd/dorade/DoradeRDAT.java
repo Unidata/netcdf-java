@@ -6,7 +6,6 @@
 package ucar.atd.dorade;
 
 import ucar.nc2.constants.CDM;
-
 import java.io.RandomAccessFile;
 
 class DoradeRDAT extends DoradeDescriptor {
@@ -46,7 +45,8 @@ class DoradeRDAT extends DoradeDescriptor {
     return paramData;
   }
 
-  public static DoradeRDAT getNextOf(DoradePARM parm, RandomAccessFile file, boolean littleEndianData) throws DescriptorException {
+  public static DoradeRDAT getNextOf(DoradePARM parm, RandomAccessFile file, boolean littleEndianData)
+      throws DescriptorException {
     while (true) {
       long pos = findNextWithName("RDAT", file, littleEndianData);
       if (peekParamName(file).equals(parm.getName()))

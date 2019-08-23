@@ -11,5 +11,5 @@ package thredds.catalog.dl;
  * @author john
  */
 public interface VocabTranslator {
-  public String translate( String from);
+  public String translate(String from);
 }

@@ -25,8 +25,8 @@ public final class StandardPrefixDB extends PrefixDBImpl {
    */
   private StandardPrefixDB() throws PrefixExistsException {
     /*
-		 * SI prefixes:
-		 */
+     * SI prefixes:
+     */
     add("yotta", "Y", 1e24);
     add("zetta", "Z", 1e21);
     add("exa", "E", 1e18);
@@ -75,8 +75,7 @@ public final class StandardPrefixDB extends PrefixDBImpl {
       try {
         instance = new StandardPrefixDB();
       } catch (final Exception e) {
-        throw new PrefixDBException(
-                "Couldn't create standard prefix-database", e);
+        throw new PrefixDBException("Couldn't create standard prefix-database", e);
       }
     }
     return instance;
@@ -85,13 +84,12 @@ public final class StandardPrefixDB extends PrefixDBImpl {
   /**
    * Adds a prefix to the database.
    *
-   * @param name       The name of the prefix.
-   * @param symbol     The symbol for the prefix.
+   * @param name The name of the prefix.
+   * @param symbol The symbol for the prefix.
    * @param definition The numeric value of the prefix.
    * @throws PrefixExistsException Attempt to redefine an existing prefix.
    */
-  private void add(final String name, final String symbol,
-                   final double definition) throws PrefixExistsException {
+  private void add(final String name, final String symbol, final double definition) throws PrefixExistsException {
     addName(name, definition);
     addSymbol(symbol, definition);
   }

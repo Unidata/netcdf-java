@@ -10,28 +10,27 @@ package ucar.units;
  * @author Steven R. Emmerson
  */
 public final class DivideException extends OperationException {
-	private static final long	serialVersionUID	= 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs from a unit that can't be divided.
-	 * 
-	 * @param unit
-	 *            The unit that can't be divided.
-	 */
-	public DivideException(final Unit unit) {
-		super("Can't divide unit \"" + unit + "\"");
-	}
+  /**
+   * Constructs from a unit that can't be divided.
+   * 
+   * @param unit
+   *        The unit that can't be divided.
+   */
+  public DivideException(final Unit unit) {
+    super("Can't divide unit \"" + unit + "\"");
+  }
 
-	/**
-	 * Constructs from dividend and divisor units.
-	 * 
-	 * @param numerator
-	 *            The unit attempting to be divided.
-	 * @param denominator
-	 *            The unit attempting to divide.
-	 */
-	public DivideException(final Unit numerator, final Unit denominator) {
-		super("Can't divide unit \"" + numerator + "\" by unit \""
-				+ denominator + "\"");
-	}
+  /**
+   * Constructs from dividend and divisor units.
+   * 
+   * @param numerator
+   *        The unit attempting to be divided.
+   * @param denominator
+   *        The unit attempting to divide.
+   */
+  public DivideException(final Unit numerator, final Unit denominator) {
+    super("Can't divide unit \"" + numerator + "\" by unit \"" + denominator + "\"");
+  }
 }

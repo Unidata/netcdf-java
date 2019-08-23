@@ -8,7 +8,6 @@ package ucar.nc2.grib.grib1;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -22,15 +21,16 @@ public class Grib1SectionBinaryData {
   private final int length;
   private final long startingPosition;
 
-  /*   FM 92-XI EXT. GRIB EDITION 1
-  Section 4 – Binary data section
-  Octet   Contents
-  1–3     Length of section
-  4       Flag (see Code table 11) (first 4 bits). Number of unused bits at end of Section 4 (last 4 bits)
-  5–6     Scale factor (E)
-  7–10    Reference value (minimum of packed values)
-  11      Number of bits containing each packed value
-  12–     depending on the flag value in octet 4
+  /*
+   * FM 92-XI EXT. GRIB EDITION 1
+   * Section 4 – Binary data section
+   * Octet Contents
+   * 1–3 Length of section
+   * 4 Flag (see Code table 11) (first 4 bits). Number of unused bits at end of Section 4 (last 4 bits)
+   * 5–6 Scale factor (E)
+   * 7–10 Reference value (minimum of packed values)
+   * 11 Number of bits containing each packed value
+   * 12– depending on the flag value in octet 4
    */
 
   Grib1SectionBinaryData(RandomAccessFile raf) throws IOException {
@@ -38,8 +38,8 @@ public class Grib1SectionBinaryData {
 
     // octets 1-3 (Length of section)
     length = GribNumbers.uint3(raf);
-    //if (length < 0)
-    //  throw new IllegalStateException("GRIB record has bad length, pos = " + startingPosition);
+    // if (length < 0)
+    // throw new IllegalStateException("GRIB record has bad length, pos = " + startingPosition);
     raf.seek(startingPosition + length);
   }
 
@@ -51,6 +51,7 @@ public class Grib1SectionBinaryData {
   public long getStartingPosition() {
     return startingPosition;
   }
+
   public int getLength() {
     return length;
   }
@@ -64,17 +65,17 @@ public class Grib1SectionBinaryData {
     return data;
   }
 
-    // for debugging
-    GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
-      return getBinaryDataInfo(raf, startingPosition);
-    }
+  // for debugging
+  GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+    return getBinaryDataInfo(raf, startingPosition);
+  }
 
   public static GribData.Info getBinaryDataInfo(RandomAccessFile raf, long start) throws IOException {
     raf.seek(start); // go to the data section
 
     GribData.Info info = new GribData.Info();
 
-    info.dataLength = GribNumbers.uint3(raf);    // // octets 1-3 (section length)
+    info.dataLength = GribNumbers.uint3(raf); // // octets 1-3 (section length)
 
     // octet 4, 1st half (packing flag)
     info.flag = raf.read();
@@ -91,7 +92,6 @@ public class Grib1SectionBinaryData {
 
     return info;
   }
-
 
 
 

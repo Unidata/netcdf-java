@@ -11,12 +11,13 @@ import ucar.nc2.util.IOIterator;
 /**
  * An iterator over PointFeatureCollections.
  * Use try-with-resource to make sure resources are released:
+ * 
  * <pre>
-  try (PointFeatureCollectionIterator iter = getIter()) {
-    while (iter.hasNext())
-      process(iter.next());
-  }
-  </pre>
+ * try (PointFeatureCollectionIterator iter = getIter()) {
+ *   while (iter.hasNext())
+ *     process(iter.next());
+ * }
+ * </pre>
  *
  * @author caron
  */
@@ -24,6 +25,7 @@ public interface PointFeatureCollectionIterator extends Closeable, IOIterator<Po
 
   /**
    * true if another PointFeatureCollection is available
+   * 
    * @return true if another PointFeatureCollection is available
    * @throws java.io.IOException on i/o error
    */
@@ -32,7 +34,8 @@ public interface PointFeatureCollectionIterator extends Closeable, IOIterator<Po
   /**
    * Returns the next PointFeatureCollection
    * You must call hasNext() before calling next(), even if you know it will return true.
-   * @return the next PointFeatureCollection 
+   * 
+   * @return the next PointFeatureCollection
    * @throws java.io.IOException on i/o error
    */
   PointFeatureCollection next() throws java.io.IOException;
@@ -42,7 +45,7 @@ public interface PointFeatureCollectionIterator extends Closeable, IOIterator<Po
    * You must complete the iteration (until hasNext() returns false) or call close().
    * may be called more than once.
    */
-  default void close()  {
+  default void close() {
     // doan do nuthin
   }
 
@@ -57,8 +60,9 @@ public interface PointFeatureCollectionIterator extends Closeable, IOIterator<Po
    * A filter on PointFeatureCollection.
    */
   interface Filter {
-   /**
+    /**
      * Filter collections.
+     * 
      * @param pointFeatureCollection check this collection
      * @return true if the collection passes the filter
      */

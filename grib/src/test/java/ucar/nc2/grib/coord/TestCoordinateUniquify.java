@@ -3,7 +3,6 @@ package ucar.nc2.grib.coord;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -30,7 +29,7 @@ public class TestCoordinateUniquify {
     for (CoordinateND coordND : coordNDs) {
       unionizer.addCoordinates(coordND.getCoordinates());
     }
-    List<Coordinate> shared =  unionizer.finish();
+    List<Coordinate> shared = unionizer.finish();
 
     Formatter f = new Formatter();
     f.format("Original%n");

@@ -13,7 +13,6 @@ import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Assert2;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.prefs.BackingStoreException;
@@ -31,39 +30,39 @@ public class TestJavaUtilPreferences {
 
     // this makes PreferencesExt the SPI
     Preferences userRoot = Preferences.userRoot();
-    assert userRoot instanceof PreferencesExt : "Factory not set = " +
-            userRoot.getClass().getName() + " Property: " + System.getProperty("java.util.prefs.PreferencesFactory");
+    assert userRoot instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName() + " Property: "
+        + System.getProperty("java.util.prefs.PreferencesFactory");
   }
 
   @Test
   public void testPutGet() {
     Preferences userRoot = Preferences.userRoot();
     assert userRoot instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
-  
+
     userRoot.putDouble("testD", 3.14157);
     double d = userRoot.getDouble("testD", 0.0);
     Assert2.assertNearlyEquals(d, 3.14157);
-  
+
     userRoot.putFloat("testF", 1.23456F);
     float f = userRoot.getFloat("testF", 0.0F);
     Assert2.assertNearlyEquals(f, 1.23456F);
-  
+
     userRoot.putLong("testL", 12345678900L);
     long ll = userRoot.getLong("testL", 0);
     assert ll == 12345678900L : "long failed";
-  
+
     userRoot.putInt("testI", 123456789);
     int ii = userRoot.getInt("testI", 0);
     assert ii == 123456789 : "int failed";
-  
+
     userRoot.put("testS", "youdBeDeadbyNow");
     String s = userRoot.get("testS", "");
     assert s.equals("youdBeDeadbyNow") : "String failed";
-  
+
     userRoot.putBoolean("testB", true);
     boolean b = userRoot.getBoolean("testB", false);
     assert b : "boolean failed";
-  
+
     byte[] barr = new byte[3];
     byte[] barr2 = new byte[3];
     barr[0] = 1;
@@ -80,28 +79,28 @@ public class TestJavaUtilPreferences {
     Preferences userRoot = Preferences.userRoot();
     Preferences subNode = userRoot.node("SemperUbi");
     assert subNode instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
-  
+
     String[] keys = userRoot.keys();
     for (String key : keys) {
       String value = userRoot.get(key, "failed");
       subNode.put(key, value);
     }
-  
+
     float f = subNode.getFloat("testF", 0.0F);
     Assert2.assertNearlyEquals(f, 1.23456F);
-  
+
     long ll = subNode.getLong("testL", 0);
     assert ll == 12345678900L : "long failed";
-  
+
     int ii = subNode.getInt("testI", 0);
     assert ii == 123456789 : "int failed";
-  
+
     String s = subNode.get("testS", "");
     assert s.equals("youdBeDeadbyNow") : "String failed";
-  
+
     boolean b = subNode.getBoolean("testB", false);
     assert b : "boolean failed";
-  
+
     byte[] barr = new byte[3];
     byte[] barr2 = new byte[3];
     barr[0] = 1;
@@ -111,14 +110,14 @@ public class TestJavaUtilPreferences {
     for (int i = 0; i < 3; i++)
       assert ba[i] == barr[i] : "BA failed";
   }
-  
+
   @Test
   // @Ignore("This doesn't actually assert that the substitute and export features work.")
   public void testExport() throws IOException, BackingStoreException, InvalidPreferencesFormatException {
     Preferences userRoot = Preferences.userRoot();
     Preferences fromNode = userRoot.node("SemperUbi");
     assert fromNode instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
-  
+
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     fromNode.exportNode(os);
     String xml = new String(os.toByteArray());
@@ -171,8 +170,8 @@ public class TestJavaUtilPreferences {
    * Find all occurrences of the "match" in original, and substitute the "subst" string
    *
    * @param original: starting string
-   * @param match:    string to match
-   * @param subst:    string to substitute
+   * @param match: string to match
+   * @param subst: string to substitute
    * @return a new string with substitutions
    */
   String substitute(String original, String match, String subst) {

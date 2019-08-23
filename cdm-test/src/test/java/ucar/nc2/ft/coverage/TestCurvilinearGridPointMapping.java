@@ -15,7 +15,6 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -38,13 +37,13 @@ public class TestCurvilinearGridPointMapping {
   /**
    * Test CoverageCoordSys.HorizCoordSys.getLatLon()
    *
-   * @throws IOException           if ...
+   * @throws IOException if ...
    * @throws InvalidRangeException if ...
    */
   @Test
   public void checkGridCoordSystem_getLatLon() throws IOException, InvalidRangeException {
-    int[] origin = new int[]{j, i};
-    int[] shape = new int[]{1, 1};
+    int[] origin = new int[] {j, i};
+    int[] shape = new int[] {1, 1};
 
     NetcdfFile ncf = NetcdfFile.open(datasetLocation);
     Variable latVar = ncf.findVariable("lat");

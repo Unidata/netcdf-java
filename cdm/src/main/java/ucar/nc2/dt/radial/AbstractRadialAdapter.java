@@ -17,7 +17,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.DataType;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -38,8 +37,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   protected ucar.nc2.time.CalendarDateUnit calDateUnits;
   protected FileCacheIF fileCache;
 
-  public AbstractRadialAdapter() {
-  }
+  public AbstractRadialAdapter() {}
 
   public AbstractRadialAdapter(NetcdfDataset ds) {
     this.netcdfDataset = ds;
@@ -59,10 +57,15 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   }
 
   protected abstract void addRadialVariable(NetcdfDataset ds, Variable var);
+
   protected abstract RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0);
+
   protected abstract void setTimeUnits() throws Exception; // reminder for subclasses to set this
+
   protected abstract void setEarthLocation(); // reminder for subclasses to set this
+
   protected abstract void setStartDate(); // reminder for subclasses to set this
+
   protected abstract void setEndDate(); // reminder for subclasses to set this
 
   public void setTitle(String title) {
@@ -135,7 +138,8 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   public VariableSimpleIF getDataVariable(String shortName) {
     for (VariableSimpleIF s : dataVariables) {
       String ss = s.getShortName();
-      if (shortName.equals(ss)) return s;
+      if (shortName.equals(ss))
+        return s;
     }
     return null;
   }
@@ -162,7 +166,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   // FeatureDatasetFactory
 
   public FeatureType[] getFeatureTypes() {
-    return new FeatureType[]{FeatureType.RADIAL};
+    return new FeatureType[] {FeatureType.RADIAL};
   }
 
   // FeatureDataset
@@ -195,7 +199,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   }
 
   //////////////////////////////////////////////////
-  //  FileCacheable
+  // FileCacheable
 
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
@@ -205,11 +209,13 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   @Override
   public synchronized void close() throws java.io.IOException {
     if (fileCache != null) {
-      if (fileCache.release(this)) return;
+      if (fileCache.release(this))
+        return;
     }
 
     try {
-      if (netcdfDataset != null) netcdfDataset.close();
+      if (netcdfDataset != null)
+        netcdfDataset.close();
     } finally {
       netcdfDataset = null;
     }
@@ -217,12 +223,14 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
   // release any resources like file handles
   public void release() throws IOException {
-    if (netcdfDataset != null) netcdfDataset.release();
+    if (netcdfDataset != null)
+      netcdfDataset.release();
   }
 
   // reacquire any resources like file handles
   public void reacquire() throws IOException {
-    if (netcdfDataset != null) netcdfDataset.reacquire();
+    if (netcdfDataset != null)
+      netcdfDataset.reacquire();
   }
 
   @Override
@@ -253,12 +261,14 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   }
 
   public List<Attribute> getGlobalAttributes() {
-    if (netcdfDataset == null) return new ArrayList<>();
+    if (netcdfDataset == null)
+      return new ArrayList<>();
     return netcdfDataset.getGlobalAttributes();
   }
 
   public Attribute findGlobalAttributeIgnoreCase(String name) {
-    if (netcdfDataset == null) return null;
+    if (netcdfDataset == null)
+      return null;
     return netcdfDataset.findGlobalAttributeIgnoreCase(name);
   }
 
@@ -274,7 +284,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     if (dt != null)
       sbuff.append(" Date Unit = " + dt + "\n");
     sbuff.append(" isStationary = " + isStationary() + "\n");
-    //sbuff.append(" isRadial = "+isRadial()+"\n");
+    // sbuff.append(" isRadial = "+isRadial()+"\n");
     sbuff.append(" isVolume = " + isVolume() + "\n");
     sbuff.append("\n");
 
@@ -299,7 +309,8 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     List<VariableSimpleIF> vars = getDataVariables();
     sbuff.append("  Variables (").append(vars.size()).append(")\n");
     for (VariableSimpleIF v : vars) {
-      sbuff.append("    name='").append(v.getShortName()).append("' desc='").append(v.getDescription()).append("' units='").append(v.getUnitsString()).append("' type=").append(v.getDataType()).append("\n");
+      sbuff.append("    name='").append(v.getShortName()).append("' desc='").append(v.getDescription())
+          .append("' units='").append(v.getUnitsString()).append("' type=").append(v.getDataType()).append("\n");
     }
 
     sbuff.append("\nparseInfo=\n");
@@ -321,7 +332,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     public MyRadialVariableAdapter(String vName, List<Attribute> atts) {
       super();
       rank = 1;
-      shape = new int[]{1};
+      shape = new int[] {1};
       name = vName;
       desp = "A radial variable holding a list of radial sweeps";
       attributes = atts;

@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface OpenRAFMonitor {
   boolean getDebugLeaks();
+
   void setDebugLeaks(boolean b);
+
   List<String> getOpenFiles();
 }

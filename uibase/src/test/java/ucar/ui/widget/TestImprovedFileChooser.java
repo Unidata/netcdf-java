@@ -9,11 +9,11 @@ import org.junit.Test;
 public class TestImprovedFileChooser {
 
   @Test
-  public void testStuff() throws ClassNotFoundException, UnsupportedLookAndFeelException,
-      InstantiationException, IllegalAccessException {
+  public void testStuff()
+      throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
     try {
       if (ImprovedFileChooser.isMacOs) {
-        System.setProperty ("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
       } else {
         for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
           if ("Nimbus".equals(info.getName())) {

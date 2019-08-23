@@ -7,7 +7,6 @@ package ucar.nc2.geotiff;
 
 import java.io.Closeable;
 import java.io.IOException;
-
 import ucar.ma2.Array;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayFloat;
@@ -61,9 +60,9 @@ public class GeotiffWriter implements Closeable {
   /**
    * Write GridDatatype data to the geotiff file.
    *
-   * @param dataset   grid in contained in this dataset
-   * @param grid      data is in this grid
-   * @param data      2D array in YX order
+   * @param dataset grid in contained in this dataset
+   * @param grid data is in this grid
+   * @param data 2D array in YX order
    * @param greyScale if true, write greyScale image, else dataSample.
    * @throws IOException on i/o error
    */
@@ -109,36 +108,34 @@ public class GeotiffWriter implements Closeable {
    * Write Grid data to the geotiff file.
    * Grid currently must:
    * <ol>
-   * <li> have a 1D X and Y coordinate axes.
-   * <li> be lat/lon or Lambert Conformal Projection
-   * <li> be equally spaced
+   * <li>have a 1D X and Y coordinate axes.
+   * <li>be lat/lon or Lambert Conformal Projection
+   * <li>be equally spaced
    * </ol>
    *
-   * @param grid        original grid
-   * @param data        2D array in YX order
-   * @param greyScale   if true, write greyScale image, else dataSample.
-   * @param xStart      starting x coord
-   * @param yStart      starting y coord
-   * @param xInc        increment x coord
-   * @param yInc        increment y coord
+   * @param grid original grid
+   * @param data 2D array in YX order
+   * @param greyScale if true, write greyScale image, else dataSample.
+   * @param xStart starting x coord
+   * @param yStart starting y coord
+   * @param xInc increment x coord
+   * @param yInc increment y coord
    * @param imageNumber used to write multiple images
    * @throws IOException on i/o error
-   * @throws IllegalArgumentException if above assumptions not valid   *
+   * @throws IllegalArgumentException if above assumptions not valid *
    */
   void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
-                        double yInc, int imageNumber) throws IOException {
+      double yInc, int imageNumber) throws IOException {
 
     int nextStart;
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
     // get rid of this when all projections are implemented
-    if (!gcs.isLatLon()
-            && !(gcs.getProjection() instanceof LambertConformal)
-            && !(gcs.getProjection() instanceof Stereographic)
-            && !(gcs.getProjection() instanceof Mercator)
-            //  && !(gcs.getProjection() instanceof TransverseMercator)   LOOK broken ??
-            && !(gcs.getProjection() instanceof AlbersEqualAreaEllipse)
-            && !(gcs.getProjection() instanceof AlbersEqualArea)) {
+    if (!gcs.isLatLon() && !(gcs.getProjection() instanceof LambertConformal)
+        && !(gcs.getProjection() instanceof Stereographic) && !(gcs.getProjection() instanceof Mercator)
+        // && !(gcs.getProjection() instanceof TransverseMercator) LOOK broken ??
+        && !(gcs.getProjection() instanceof AlbersEqualAreaEllipse)
+        && !(gcs.getProjection() instanceof AlbersEqualArea)) {
       throw new IllegalArgumentException("Unsupported projection = " + gcs.getProjection().getClass().getName());
     }
 
@@ -153,14 +150,15 @@ public class GeotiffWriter implements Closeable {
     }
 
     // set the width and the height
-    int height = data.getShape()[0];         // Y
-    int width = data.getShape()[1];         // X
+    int height = data.getShape()[0]; // Y
+    int width = data.getShape()[1]; // X
 
-    writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, imageNumber, nextStart, dataMinMax, gcs.getProjection());
+    writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, imageNumber, nextStart, dataMinMax,
+        gcs.getProjection());
   }
 
-  private void writeMetadata(boolean greyScale, double xStart, double yStart, double xInc, double yInc, int height, int width, int imageNumber, int nextStart,
-                     MAMath.MinMax dataMinMax, Projection proj) throws IOException {
+  private void writeMetadata(boolean greyScale, double xStart, double yStart, double xInc, double yInc, int height,
+      int width, int imageNumber, int nextStart, MAMath.MinMax dataMinMax, Projection proj) throws IOException {
 
     geotiff.addTag(new IFDEntry(Tag.ImageWidth, FieldType.SHORT).setValue(width));
     geotiff.addTag(new IFDEntry(Tag.ImageLength, FieldType.SHORT).setValue(height));
@@ -172,17 +170,17 @@ public class GeotiffWriter implements Closeable {
     geotiff.addTag(new IFDEntry(Tag.PageNumber, FieldType.SHORT).setValue(page, 2));
 
     // just make it all one big "row"
-    geotiff.addTag(new IFDEntry(Tag.RowsPerStrip, FieldType.SHORT).setValue(1));  //height));
+    geotiff.addTag(new IFDEntry(Tag.RowsPerStrip, FieldType.SHORT).setValue(1)); // height));
     // the following changes to make it viewable in ARCMAP
-        /*
-        int size = elemSize * height * width;  // size in bytes
-        geotiff.addTag( new IFDEntry(Tag.StripByteCounts, FieldType.LONG).setValue( size));
-        // data starts here, header is written at the end
-        if( imageNumber == 1 )
-          geotiff.addTag( new IFDEntry(Tag.StripOffsets, FieldType.LONG).setValue( 8));
-        else
-          geotiff.addTag( new IFDEntry(Tag.StripOffsets, FieldType.LONG).setValue(nextStart));
-        */
+    /*
+     * int size = elemSize * height * width; // size in bytes
+     * geotiff.addTag( new IFDEntry(Tag.StripByteCounts, FieldType.LONG).setValue( size));
+     * // data starts here, header is written at the end
+     * if( imageNumber == 1 )
+     * geotiff.addTag( new IFDEntry(Tag.StripOffsets, FieldType.LONG).setValue( 8));
+     * else
+     * geotiff.addTag( new IFDEntry(Tag.StripOffsets, FieldType.LONG).setValue(nextStart));
+     */
 
     int elemSize = greyScale ? 1 : 4;
 
@@ -202,14 +200,15 @@ public class GeotiffWriter implements Closeable {
     geotiff.addTag(new IFDEntry(Tag.StripOffsets, FieldType.LONG, width).setValue(soffset));
     // standard tags
     geotiff.addTag(new IFDEntry(Tag.Orientation, FieldType.SHORT).setValue(1));
-    geotiff.addTag(new IFDEntry(Tag.Compression, FieldType.SHORT).setValue(1));  // no compression
+    geotiff.addTag(new IFDEntry(Tag.Compression, FieldType.SHORT).setValue(1)); // no compression
     geotiff.addTag(new IFDEntry(Tag.Software, FieldType.ASCII).setValue("nc2geotiff"));
-    geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1));  // black is zero : not used?
+    geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero : not
+                                                                                              // used?
     geotiff.addTag(new IFDEntry(Tag.PlanarConfiguration, FieldType.SHORT).setValue(1));
 
     if (greyScale) {
       // standard tags for Greyscale images ( see TIFF spec, section 4)
-      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(8));  // 8 bits per sample
+      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(8)); // 8 bits per sample
       geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
 
       geotiff.addTag(new IFDEntry(Tag.XResolution, FieldType.RATIONAL).setValue(1, 1));
@@ -218,8 +217,8 @@ public class GeotiffWriter implements Closeable {
 
     } else {
       // standard tags for SampleFormat ( see TIFF spec, section 19)
-      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(32));  // 32 bits per sample
-      geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3));  // Sample Format
+      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(32)); // 32 bits per sample
+      geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3)); // Sample Format
       geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
       float min = (float) (dataMinMax.min);
       float max = (float) (dataMinMax.max);
@@ -228,16 +227,16 @@ public class GeotiffWriter implements Closeable {
       geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.FLOAT).setValue(min - 1.f));
     }
 
-        /*
-              geotiff.addTag( new IFDEntry(Tag.Geo_ModelPixelScale, FieldType.DOUBLE).setValue(
-                new double[] {5.0, 2.5, 0.0} ));
-              geotiff.addTag( new IFDEntry(Tag.Geo_ModelTiepoint, FieldType.DOUBLE).setValue(
-                new double[] {0.0, 0.0, 0.0, -180.0, 90.0, 0.0 } ));
-              //  new double[] {0.0, 0.0, 0.0, 183.0, 90.0, 0.0} ));
-              IFDEntry ifd = new IFDEntry(Tag.Geo_KeyDirectory, FieldType.SHORT).setValue(
-                new int[] {1, 1, 0, 4, 1024, 0, 1, 2, 1025, 0, 1, 1, 2048, 0, 1, 4326, 2054, 0, 1, 9102} );
-              geotiff.addTag( ifd);
-        */
+    /*
+     * geotiff.addTag( new IFDEntry(Tag.Geo_ModelPixelScale, FieldType.DOUBLE).setValue(
+     * new double[] {5.0, 2.5, 0.0} ));
+     * geotiff.addTag( new IFDEntry(Tag.Geo_ModelTiepoint, FieldType.DOUBLE).setValue(
+     * new double[] {0.0, 0.0, 0.0, -180.0, 90.0, 0.0 } ));
+     * // new double[] {0.0, 0.0, 0.0, 183.0, 90.0, 0.0} ));
+     * IFDEntry ifd = new IFDEntry(Tag.Geo_KeyDirectory, FieldType.SHORT).setValue(
+     * new int[] {1, 1, 0, 4, 1024, 0, 1, 2, 1025, 0, 1, 1, 2048, 0, 1, 4326, 2054, 0, 1, 9102} );
+     * geotiff.addTag( ifd);
+     */
 
     // set the transformation from projection to pixel, add tie point tag
     geotiff.setTransform(xStart, yStart, xInc, yInc);
@@ -317,10 +316,8 @@ public class GeotiffWriter implements Closeable {
   }
 
   private void addLatLonTags1() {
-    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTModelTypeGeoKey,
-            GeoKey.TagValue.ModelType_Geographic));
-    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeogGeodeticDatumGeoKey,
-            GeoKey.TagValue.GeogGeodeticDatum6267));
+    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTModelTypeGeoKey, GeoKey.TagValue.ModelType_Geographic));
+    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeogGeodeticDatumGeoKey, GeoKey.TagValue.GeogGeodeticDatum6267));
   }
 
   private void addLatLonTags() {
@@ -338,21 +335,21 @@ public class GeotiffWriter implements Closeable {
 
     // define the "geographic Coordinate System"
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeographicTypeGeoKey, GeoKey.TagValue.GeographicType_WGS_84));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogPrimeMeridianGeoKey, GeoKey.TagValue.GeogPrimeMeridian_GREENWICH));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogAngularUnitsGeoKey, GeoKey.TagValue.GeogAngularUnits_DEGREE));
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogPrimeMeridianGeoKey, GeoKey.TagValue.GeogPrimeMeridian_GREENWICH));
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogAngularUnitsGeoKey, GeoKey.TagValue.GeogAngularUnits_DEGREE));
 
     // define the "coordinate transformation"
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectedCSTypeGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Snyder"));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
 
     // the specifics for Polar Stereographic
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_Stereographic));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCenterLongGeoKey, 0.0));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey, 90.0));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjNatOriginLongGeoKey, proj.getTangentLon()));
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjNatOriginLongGeoKey, proj.getTangentLon()));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjScaleAtNatOriginGeoKey, 1.0));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseEastingGeoKey, 0.0));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseNorthingGeoKey, 0.0));
@@ -364,15 +361,15 @@ public class GeotiffWriter implements Closeable {
 
     // define the "geographic Coordinate System"
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeographicTypeGeoKey, GeoKey.TagValue.GeographicType_WGS_84));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogPrimeMeridianGeoKey, GeoKey.TagValue.GeogPrimeMeridian_GREENWICH));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogAngularUnitsGeoKey, GeoKey.TagValue.GeogAngularUnits_DEGREE));
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogPrimeMeridianGeoKey, GeoKey.TagValue.GeogPrimeMeridian_GREENWICH));
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogAngularUnitsGeoKey, GeoKey.TagValue.GeogAngularUnits_DEGREE));
 
     // define the "coordinate transformation"
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectedCSTypeGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Snyder"));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
 
     // the specifics for lambert conformal
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_LambertConfConic_2SP));
@@ -382,7 +379,7 @@ public class GeotiffWriter implements Closeable {
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey, proj.getOriginLat()));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLongGeoKey, proj.getOriginLon()));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjScaleAtNatOriginGeoKey, 1.0));
-    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseEastingGeoKey, 0.0));  // LOOK why not FalseNorthing ??
+    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseEastingGeoKey, 0.0)); // LOOK why not FalseNorthing ??
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseNorthingGeoKey, 0.0));
   }
 
@@ -400,14 +397,14 @@ public class GeotiffWriter implements Closeable {
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Mercator"));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
 
     // the specifics for mercator
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_Mercator));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLongGeoKey, proj.getOriginLon()));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey, proj.getParallel()));
-    //    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel1GeoKey, proj.getParallel()));
-    //   geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjScaleAtNatOriginGeoKey, 1));
+    // geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel1GeoKey, proj.getParallel()));
+    // geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjScaleAtNatOriginGeoKey, 1));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseEastingGeoKey, 0.0));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseNorthingGeoKey, 0.0));
   }
@@ -426,7 +423,7 @@ public class GeotiffWriter implements Closeable {
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Transvers Mercator"));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
 
     // the specifics for mercator
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_TransverseMercator));
@@ -456,10 +453,11 @@ public class GeotiffWriter implements Closeable {
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Albers Conial Equal Area"));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
 
     // the specifics for mercator
-    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_AlbersEqualAreaEllipse));
+    geotiff
+        .addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_AlbersEqualAreaEllipse));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey, proj.getOriginLat()));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLongGeoKey, proj.getOriginLon()));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel1GeoKey, proj.getParallelOne()));
@@ -482,10 +480,11 @@ public class GeotiffWriter implements Closeable {
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Albers Conial Equal Area"));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
-    //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+    // geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
 
     // the specifics for mercator
-    geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_AlbersConicalEqualArea));
+    geotiff
+        .addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_AlbersConicalEqualArea));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey, proj.getOriginLat()));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLongGeoKey, proj.getOriginLon()));
     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel1GeoKey, proj.getParallelOne()));
@@ -534,7 +533,7 @@ public class GeotiffWriter implements Closeable {
   /**
    * Write GridCoverage data to the geotiff file.
    *
-   * @param array      GeoReferencedArray array in YX order
+   * @param array GeoReferencedArray array in YX order
    * @param greyScale if true, write greyScale image, else dataSample.
    * @throws IOException on i/o error
    */
@@ -563,13 +562,15 @@ public class GeotiffWriter implements Closeable {
       yStart = yaxis.getCoordEdgeLast();
     }
 
-    /*  remove - i think unneeded, monotonic lon handled in CoordinateAxis1D. JC 3/18/2013
-     if (gcs.isLatLon()) {
-      Array lon = xaxis.read();
-      data = geoShiftDataAtLon(data, lon);
-      xStart = geoShiftGetXstart(lon, xInc);
-      //xStart = -180.0;
-    }  */
+    /*
+     * remove - i think unneeded, monotonic lon handled in CoordinateAxis1D. JC 3/18/2013
+     * if (gcs.isLatLon()) {
+     * Array lon = xaxis.read();
+     * data = geoShiftDataAtLon(data, lon);
+     * xStart = geoShiftGetXstart(lon, xInc);
+     * //xStart = -180.0;
+     * }
+     */
 
     if (pageNumber > 1) {
       geotiff.initTags();
@@ -587,8 +588,8 @@ public class GeotiffWriter implements Closeable {
     }
 
     // set the width and the height
-    int height = data.getShape()[0];         // Y
-    int width = data.getShape()[1];         // X
+    int height = data.getShape()[0]; // Y
+    int width = data.getShape()[1]; // X
 
     writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, pageNumber, nextStart, dataMinMax, proj);
     pageNumber++;

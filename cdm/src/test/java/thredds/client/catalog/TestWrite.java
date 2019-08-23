@@ -11,7 +11,6 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.tools.CatalogXmlWriter;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
@@ -20,7 +19,8 @@ import java.util.List;
 public class TestWrite {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
   static boolean debugCompare = true, debugCompareList = true;
 
   @Test
@@ -30,7 +30,7 @@ public class TestWrite {
     assert cat != null;
 
     File tmpFile = tempFolder.newFile();
-    System.out.println(" output filename= "+tmpFile.getPath());
+    System.out.println(" output filename= " + tmpFile.getPath());
 
     try {
       OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpFile));
@@ -46,7 +46,7 @@ public class TestWrite {
     Catalog catR = ClientCatalogUtil.open("file:" + tmpFile.getPath());
     assert catR != null;
 
-    compare( cat, catR);
+    compare(cat, catR);
   }
 
   private void compare(Catalog cat, Catalog catR) {
@@ -56,24 +56,25 @@ public class TestWrite {
     Assert.assertEquals("different number of datasets", datasets.size(), datasetsR.size());
 
     int n = Math.min(datasets.size(), datasetsR.size());
-    for (int i=0; i<n; i++) {
-      compareDatasets( datasets.get(i),  datasetsR.get(i));
+    for (int i = 0; i < n; i++) {
+      compareDatasets(datasets.get(i), datasetsR.get(i));
     }
   }
 
   private void compareDatasets(Dataset d, Dataset dR) {
-    if (debugCompare) System.out.println(" compare datasets ("+d.getName()+") and ("+dR.getName()+")");
-    compareList( d.getDocumentation(), dR.getDocumentation());
-    compareList( d.getAccess(), dR.getAccess());
+    if (debugCompare)
+      System.out.println(" compare datasets (" + d.getName() + ") and (" + dR.getName() + ")");
+    compareList(d.getDocumentation(), dR.getDocumentation());
+    compareList(d.getAccess(), dR.getAccess());
     // compareList( d.getMetadataOther(), dR.getMetadataOther());
-    compareListVariables( d.getVariables(), dR.getVariables());
-    compareListVariables( dR.getVariables(), d.getVariables());
+    compareListVariables(d.getVariables(), dR.getVariables());
+    compareListVariables(dR.getVariables(), d.getVariables());
 
     List<Dataset> datasets = d.getDatasets();
     List<Dataset> datasetsR = dR.getDatasets();
 
-    for (int i=0; i<datasets.size(); i++) {
-      compareDatasets( datasets.get(i), datasetsR.get(i));
+    for (int i = 0; i < datasets.size(); i++) {
+      compareDatasets(datasets.get(i), datasetsR.get(i));
     }
 
   }
@@ -83,21 +84,23 @@ public class TestWrite {
     Iterator iter = d.iterator();
     while (iter.hasNext()) {
       Object item = iter.next();
-      int index = dR.indexOf( item);
-      if ( index < 0) {
-        System.out.println("   cant find "+item.getClass().getName()+" "+item +" in output ");
+      int index = dR.indexOf(item);
+      if (index < 0) {
+        System.out.println("   cant find " + item.getClass().getName() + " " + item + " in output ");
         ok = false;
-      } else if (debugCompareList) System.out.println("   item ok = ("+item+")");
+      } else if (debugCompareList)
+        System.out.println("   item ok = (" + item + ")");
     }
 
     iter = dR.iterator();
     while (iter.hasNext()) {
       Object item = iter.next();
-      int index = d.indexOf( item);
-      if( index < 0) {
-        System.out.println("   cant find "+item.getClass().getName()+" "+item +" in input ");
+      int index = d.indexOf(item);
+      if (index < 0) {
+        System.out.println("   cant find " + item.getClass().getName() + " " + item + " in input ");
         ok = false;
-      } else if (debugCompareList) System.out.println("   itemR ok = ("+item+")");
+      } else if (debugCompareList)
+        System.out.println("   itemR ok = (" + item + ")");
     }
 
     assert ok;
@@ -110,8 +113,7 @@ public class TestWrite {
       if (index < 0) {
         System.out.println("   cant find " + item.getClass().getName() + " " + item + " in output ");
         ok = false;
-      }
-      else if (debugCompareList) {
+      } else if (debugCompareList) {
         ThreddsMetadata.VariableGroup item2 = dR.get(index);
         System.out.println("   Variables ok = (" + item + ") == (" + item2 + ")");
       }

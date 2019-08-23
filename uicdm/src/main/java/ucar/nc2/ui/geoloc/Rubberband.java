@@ -10,62 +10,86 @@ import java.io.Serializable;
 
 /**
  * Implements XOR rubberbanding.
+ * 
  * @author David M. Geary
  * @author John Caron
  */
 public abstract class Rubberband implements Serializable {
-  protected Point anchorPt    = new Point(0,0);
-  protected Point stretchedPt = new Point(0,0);
-  protected Point lastPt      = new Point(0,0);
-  protected Point endPt       = new Point(0,0);
+  protected Point anchorPt = new Point(0, 0);
+  protected Point stretchedPt = new Point(0, 0);
+  protected Point lastPt = new Point(0, 0);
+  protected Point endPt = new Point(0, 0);
 
   protected Component component;
-  protected boolean   firstStretch = true;
-  private boolean   active = false;
+  protected boolean firstStretch = true;
+  private boolean active = false;
 
   // actual drawing done by subclass.
   public abstract void drawLast(Graphics2D g);
+
   public abstract void drawNext(Graphics2D g);
 
   /**
    * Constructor. use if you want Rubberband to do the event listening.
+   * 
    * @param c draw on top of this Component.
    */
   public Rubberband(Component c, boolean listen) {
-     component = c;
-     if (listen) setListeners();
+    component = c;
+    if (listen)
+      setListeners();
   }
 
   /**
    * Set whether its in active mode. In active mode it listens for mouse drags and XOR draws.
+   * 
    * @param b true if in active mode.
    */
-  public void setActive(boolean b) { active = b; }
-  public boolean isActive    () { return active;      }
+  public void setActive(boolean b) {
+    active = b;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
 
   private void setListeners() {
     component.addMouseListener(new MouseAdapter() {
-       public void mousePressed(MouseEvent event) {
+      public void mousePressed(MouseEvent event) {
         anchor(event.getPoint());
         setActive(true);
       }
+
       public void mouseReleased(MouseEvent event) {
-        if (isActive()) end(event.getPoint());
+        if (isActive())
+          end(event.getPoint());
         setActive(false);
       }
     });
 
-    component.addMouseMotionListener( new MouseMotionAdapter() {
+    component.addMouseMotionListener(new MouseMotionAdapter() {
       public void mouseDragged(MouseEvent event) {
-        if (isActive()) stretch(event.getPoint());
+        if (isActive())
+          stretch(event.getPoint());
       }
     });
   }
 
-  public Point   getAnchor   () { return anchorPt;    }
-  public Point   getStretched() { return stretchedPt; }
-  public Point   getLast     () { return lastPt;      }
-  public Point   getEnd      () { return endPt;       }
+  public Point getAnchor() {
+    return anchorPt;
+  }
+
+  public Point getStretched() {
+    return stretchedPt;
+  }
+
+  public Point getLast() {
+    return lastPt;
+  }
+
+  public Point getEnd() {
+    return endPt;
+  }
 
   /**
    * Set the anchor point.
@@ -85,24 +109,23 @@ public abstract class Rubberband implements Serializable {
    * Erase the last rectangle and draw a new one from the anchor point to this point.
    */
   public void stretch(Point p) {
-    lastPt.x      = stretchedPt.x;
-    lastPt.y      = stretchedPt.y;
+    lastPt.x = stretchedPt.x;
+    lastPt.y = stretchedPt.y;
     stretchedPt.x = p.x;
     stretchedPt.y = p.y;
 
     Graphics2D g = (Graphics2D) component.getGraphics();
-    if(g != null) {
-     try {
-       g.setXORMode(component.getBackground());
-       if(firstStretch)
-         firstStretch = false;
-       else
-         drawLast(g);
-       drawNext(g);
-     }
-     finally {
-       g.dispose();
-     } // try
+    if (g != null) {
+      try {
+        g.setXORMode(component.getBackground());
+        if (firstStretch)
+          firstStretch = false;
+        else
+          drawLast(g);
+        drawNext(g);
+      } finally {
+        g.dispose();
+      } // try
     } // if
   }
 
@@ -114,14 +137,13 @@ public abstract class Rubberband implements Serializable {
     lastPt.y = endPt.y = p.y;
 
     Graphics2D g = (Graphics2D) component.getGraphics();
-    if(g != null) {
-     try {
-       g.setXORMode(component.getBackground());
-       drawLast(g);
-     }
-     finally {
-       g.dispose();
-     }
+    if (g != null) {
+      try {
+        g.setXORMode(component.getBackground());
+        drawLast(g);
+      } finally {
+        g.dispose();
+      }
     }
   }
 
@@ -130,33 +152,26 @@ public abstract class Rubberband implements Serializable {
    */
   public void done() {
     Graphics2D g = (Graphics2D) component.getGraphics();
-    if(g != null) {
-     try {
-       g.setXORMode(component.getBackground());
-       drawLast(g);
-     }
-     finally {
-       g.dispose();
-     }
+    if (g != null) {
+      try {
+        g.setXORMode(component.getBackground());
+        drawLast(g);
+      } finally {
+        g.dispose();
+      }
     }
   }
 
   /** Get current Bounds */
   public Rectangle getBounds() {
-    return new Rectangle(stretchedPt.x < anchorPt.x ?
-                         stretchedPt.x : anchorPt.x,
-                         stretchedPt.y < anchorPt.y ?
-                         stretchedPt.y : anchorPt.y,
-                         Math.abs(stretchedPt.x - anchorPt.x),
-                         Math.abs(stretchedPt.y - anchorPt.y));
+    return new Rectangle(stretchedPt.x < anchorPt.x ? stretchedPt.x : anchorPt.x,
+        stretchedPt.y < anchorPt.y ? stretchedPt.y : anchorPt.y, Math.abs(stretchedPt.x - anchorPt.x),
+        Math.abs(stretchedPt.y - anchorPt.y));
   }
 
   /** Get previous Bounds */
   public Rectangle lastBounds() {
-    return new Rectangle(
-                lastPt.x < anchorPt.x ? lastPt.x : anchorPt.x,
-                lastPt.y < anchorPt.y ? lastPt.y : anchorPt.y,
-                Math.abs(lastPt.x - anchorPt.x),
-                Math.abs(lastPt.y - anchorPt.y));
+    return new Rectangle(lastPt.x < anchorPt.x ? lastPt.x : anchorPt.x, lastPt.y < anchorPt.y ? lastPt.y : anchorPt.y,
+        Math.abs(lastPt.x - anchorPt.x), Math.abs(lastPt.y - anchorPt.y));
   }
 }

@@ -3,7 +3,6 @@ package ucar.ui.prefs;
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import org.junit.Before;
@@ -18,7 +17,8 @@ import ucar.util.prefs.PreferencesExt;
 
 @RunWith(JUnit4.class)
 public class TestComboBox {
-  @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+  @Rule
+  public MockitoRule mockitoRule = MockitoJUnit.rule();
 
   @Mock
   PreferencesExt prefs;
@@ -35,16 +35,16 @@ public class TestComboBox {
   public void testSelection() throws IOException {
     final CC vv = new CC();
 
-    ComboBox<String> cb = new ComboBox<>( prefs);
+    ComboBox<String> cb = new ComboBox<>(prefs);
     cb.addChangeListener(e -> {
       System.out.printf(" event %s %s %d [", e.getActionCommand(), cb.getSelectedItem(), cb.getSelectedIndex());
-      for (int i=0; i<cb.getItemCount(); i++) {
+      for (int i = 0; i < cb.getItemCount(); i++) {
         System.out.printf("%s,", cb.getItemAt(i));
       }
       System.out.printf("]%n");
-      cb.addItem( (String) cb.getSelectedItem());
+      cb.addItem((String) cb.getSelectedItem());
       System.out.printf(" -> addItem %s %d [", cb.getSelectedItem(), cb.getSelectedIndex());
-      for (int i=0; i<cb.getItemCount(); i++) {
+      for (int i = 0; i < cb.getItemCount(); i++) {
         System.out.printf("%s,", cb.getItemAt(i));
       }
       System.out.printf("]%n");
@@ -63,16 +63,16 @@ public class TestComboBox {
   public void testAddChangeListener() throws IOException {
     final CC vv = new CC();
 
-    ComboBox<String> cb = new ComboBox<>( null);
+    ComboBox<String> cb = new ComboBox<>(null);
     cb.addChangeListener(e -> {
       System.out.printf(" event %s %s %d [", e.getActionCommand(), cb.getSelectedItem(), cb.getSelectedIndex());
-      for (int i=0; i<cb.getItemCount(); i++) {
+      for (int i = 0; i < cb.getItemCount(); i++) {
         System.out.printf("%s,", cb.getItemAt(i));
       }
       System.out.printf("]%n");
-      cb.addItem( (String) cb.getSelectedItem());
+      cb.addItem((String) cb.getSelectedItem());
       System.out.printf(" -> addItem %s %d [", cb.getSelectedItem(), cb.getSelectedIndex());
-      for (int i=0; i<cb.getItemCount(); i++) {
+      for (int i = 0; i < cb.getItemCount(); i++) {
         System.out.printf("%s,", cb.getItemAt(i));
       }
       System.out.printf("]%n");

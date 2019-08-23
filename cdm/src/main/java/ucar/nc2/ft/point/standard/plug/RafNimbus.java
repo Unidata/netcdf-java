@@ -11,7 +11,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.Dimension;
-
 import java.util.Formatter;
 
 /**
@@ -41,7 +40,8 @@ public class RafNimbus extends TableConfigurerImpl {
     obsTable.dimName = innerDim.getShortName();
     obsTable.time = coordAxis.getFullName();
     obsTable.structName = obsIsStruct ? "record" : innerDim.getShortName();
-    obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+    obsTable.structureType =
+        obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
     CoordSysEvaluator.findCoords(obsTable, ds, axis -> innerDim.equals(axis.getDimension(0)));
 
     topTable.addChild(obsTable);

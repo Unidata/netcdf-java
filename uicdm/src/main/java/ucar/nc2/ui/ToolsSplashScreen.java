@@ -6,7 +6,6 @@
 package ucar.nc2.ui;
 
 import ucar.ui.util.Resource;
-
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -26,65 +25,63 @@ import javax.swing.JWindow;
  *
  */
 public class ToolsSplashScreen extends JWindow {
-    private static final org.slf4j.Logger logger
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static ToolsSplashScreen instance;
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static ToolsSplashScreen instance;
 
-/**
- *
- */
-    public static ToolsSplashScreen getSharedInstance()
-    {
-        if (instance == null) { instance = new ToolsSplashScreen(); }
-
-        return instance;
+  /**
+   *
+   */
+  public static ToolsSplashScreen getSharedInstance() {
+    if (instance == null) {
+      instance = new ToolsSplashScreen();
     }
 
-/**
- *
- */
-    private ToolsSplashScreen() {
-        final Image image = Resource.getImage("/resources/ui/pix/ring2.jpg");
+    return instance;
+  }
 
-        if (image != null) {
-            final ImageIcon icon = new ImageIcon(image);
-            final JLabel iconLabel = new JLabel(icon);
+  /**
+   *
+   */
+  private ToolsSplashScreen() {
+    final Image image = Resource.getImage("/resources/ui/pix/ring2.jpg");
 
-            getContentPane().add(iconLabel);
+    if (image != null) {
+      final ImageIcon icon = new ImageIcon(image);
+      final JLabel iconLabel = new JLabel(icon);
 
-            pack();
+      getContentPane().add(iconLabel);
 
-            final int width  = icon.getIconWidth();
-            final int height = icon.getIconHeight();
+      pack();
 
-            final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment ( );
-            final GraphicsDevice gd = ge.getDefaultScreenDevice ( );
-            final GraphicsConfiguration gc = gd.getDefaultConfiguration ( );
+      final int width = icon.getIconWidth();
+      final int height = icon.getIconHeight();
 
-            Point location;
+      final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      final GraphicsDevice gd = ge.getDefaultScreenDevice();
+      final GraphicsConfiguration gc = gd.getDefaultConfiguration();
 
-            if (gc != null) {
-                final Rectangle gcrect = gc.getBounds();
+      Point location;
 
-                location = new Point(gcrect.x + gcrect.width  / 2 - (width  / 2),
-                                     gcrect.y + gcrect.height / 2 - (height / 2));
-            }
-            else {
-                final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      if (gc != null) {
+        final Rectangle gcrect = gc.getBounds();
 
-                location = new Point(screenSize.width  / 2 - (width  / 2),
-                                     screenSize.height / 2 - (height / 2));
-            }
+        location = new Point(gcrect.x + gcrect.width / 2 - (width / 2), gcrect.y + gcrect.height / 2 - (height / 2));
+      } else {
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-            setLocation(location);
+        location = new Point(screenSize.width / 2 - (width / 2), screenSize.height / 2 - (height / 2));
+      }
 
-            // Any click on the window hides it.
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    setVisible(false);
-                }
-            });
+      setLocation(location);
+
+      // Any click on the window hides it.
+      addMouseListener(new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+          setVisible(false);
         }
+      });
     }
+  }
 }

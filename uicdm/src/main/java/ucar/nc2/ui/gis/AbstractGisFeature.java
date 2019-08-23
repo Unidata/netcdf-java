@@ -5,7 +5,6 @@
 package ucar.nc2.ui.gis;
 
 import ucar.unidata.geoloc.*;
-
 import java.awt.geom.GeneralPath;
 import java.awt.Shape;
 
@@ -20,7 +19,7 @@ import java.awt.Shape;
 public abstract class AbstractGisFeature implements GisFeature {
 
   // subclasses must implement these methods
-  public abstract java.awt.geom.Rectangle2D getBounds2D();  // may be null
+  public abstract java.awt.geom.Rectangle2D getBounds2D(); // may be null
 
   public abstract int getNumPoints();
 
@@ -81,8 +80,10 @@ public abstract class AbstractGisFeature implements GisFeature {
         ProjectionPoint pt = displayProject.latLonToProj(workL);
 
         if (showPts) {
-          System.out.println("AbstractGisFeature getProjectedShape 1 " + xx[i] + " " + yy[i] + " === " + pt.getX() + " " + pt.getY());
-          if (displayProject.crossSeam(pt, lastW)) System.out.println("***cross seam");
+          System.out.println(
+              "AbstractGisFeature getProjectedShape 1 " + xx[i] + " " + yy[i] + " === " + pt.getX() + " " + pt.getY());
+          if (displayProject.crossSeam(pt, lastW))
+            System.out.println("***cross seam");
         }
 
         // deal with possible NaNs
@@ -111,7 +112,7 @@ public abstract class AbstractGisFeature implements GisFeature {
    * displayProject. So:
    * displayProject.latLonToProj( dataProject.projToLatLon(gisFeature(x,y))) -> screen(x,y).
    *
-   * @param dataProject    data Projection to use.
+   * @param dataProject data Projection to use.
    * @param displayProject display Projection to use.
    * @return shape corresponding to this feature
    */
@@ -135,15 +136,17 @@ public abstract class AbstractGisFeature implements GisFeature {
         ProjectionPoint pt2 = displayProject.latLonToProj(llpt);
 
         if (showPts) {
-          System.out.println("AbstractGisFeature getProjectedShape 2 " + xx[i] + " " + yy[i] + " === " + pt2.getX() + " " + pt2.getY());
-          if (displayProject.crossSeam(pt2, lastW)) System.out.println("***cross seam");
+          System.out.println("AbstractGisFeature getProjectedShape 2 " + xx[i] + " " + yy[i] + " === " + pt2.getX()
+              + " " + pt2.getY());
+          if (displayProject.crossSeam(pt2, lastW))
+            System.out.println("***cross seam");
         }
 
         // deal with possible NaNs
-         if (Double.isNaN(pt2.getX()) || Double.isNaN(pt2.getY())) {
-           skipPrev = true;
-           continue;
-         }
+        if (Double.isNaN(pt2.getX()) || Double.isNaN(pt2.getY())) {
+          skipPrev = true;
+          continue;
+        }
 
         if ((count == 0) || skipPrev || displayProject.crossSeam(pt2, lastW))
           path.moveTo((float) pt2.getX(), (float) pt2.getY());

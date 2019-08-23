@@ -13,11 +13,9 @@ import thredds.catalog.DataFormatType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -36,6 +34,7 @@ public class MetadataExtractor {
 
   /**
    * Extract the lat/lon/alt bounding boxes from the dataset.
+   * 
    * @param threddsDataset open this dataset
    * @return ThreddsMetadata.GeospatialCoverage, or null if unable.
    * @throws IOException on read error
@@ -53,7 +52,7 @@ public class MetadataExtractor {
       if (result.featureType == FeatureType.GRID) {
         System.out.println(" GRID=" + result.location);
         GridDataset gridDataset = (GridDataset) result.featureDataset;
-        return extractGeospatial( gridDataset);
+        return extractGeospatial(gridDataset);
 
       } else if (result.featureType == FeatureType.POINT) {
         PointObsDataset pobsDataset = (PointObsDataset) result.featureDataset;
@@ -78,7 +77,7 @@ public class MetadataExtractor {
         if ((result != null) && (result.featureDataset != null))
           result.featureDataset.close();
       } catch (IOException ioe) {
-        logger.error("Closing dataset "+result.featureDataset, ioe);
+        logger.error("Closing dataset " + result.featureDataset, ioe);
       }
     }
 
@@ -90,7 +89,7 @@ public class MetadataExtractor {
     LatLonRect llbb = null;
     CoordinateAxis1D vaxis = null;
 
-    for(GridDataset.Gridset gridset : gridDataset.getGridsets()) {
+    for (GridDataset.Gridset gridset : gridDataset.getGridsets()) {
       GridCoordSystem gsys = gridset.getGeoCoordSystem();
       if (llbb == null)
         llbb = gsys.getLatLonBoundingBox();
@@ -111,6 +110,7 @@ public class MetadataExtractor {
 
   /**
    * Extract a list of data variables (and their canonical names if possible) from the dataset.
+   * 
    * @param threddsDataset open this dataset
    * @return ThreddsMetadata.Variables, or null if unable.
    * @throws IOException on read error
@@ -133,13 +133,13 @@ public class MetadataExtractor {
       } else if ((result.featureType == FeatureType.STATION) || (result.featureType == FeatureType.POINT)) {
         PointObsDataset pobsDataset = (PointObsDataset) result.featureDataset;
         ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
-        for (VariableSimpleIF vs  : pobsDataset.getDataVariables()) {
+        for (VariableSimpleIF vs : pobsDataset.getDataVariables()) {
           ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
-          vars.addVariable( v);
+          vars.addVariable(v);
 
-          v.setName( vs.getShortName());
-          v.setDescription( vs.getDescription());
-          v.setUnits( vs.getUnitsString());
+          v.setName(vs.getShortName());
+          v.setDescription(vs.getDescription());
+          v.setUnits(vs.getUnitsString());
 
           ucar.nc2.Attribute att = vs.findAttributeIgnoreCase("standard_name");
           if (att != null)
@@ -154,7 +154,7 @@ public class MetadataExtractor {
         if ((result != null) && (result.featureDataset != null))
           result.featureDataset.close();
       } catch (IOException ioe) {
-        logger.error("Closing dataset "+result.featureDataset, ioe);
+        logger.error("Closing dataset " + result.featureDataset, ioe);
       }
     }
 
@@ -162,10 +162,11 @@ public class MetadataExtractor {
   }
 
   static public ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset, GridDataset gridDataset) {
-    return extractVariables( threddsDataset.getDataFormatType(), gridDataset);
+    return extractVariables(threddsDataset.getDataFormatType(), gridDataset);
   }
 
-  static public ThreddsMetadata.Variables extractVariables(thredds.catalog.DataFormatType fileFormat, GridDataset gridDataset) {
+  static public ThreddsMetadata.Variables extractVariables(thredds.catalog.DataFormatType fileFormat,
+      GridDataset gridDataset) {
     if ((fileFormat != null) && (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2))) {
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat.toString());
       for (GridDatatype grid : gridDataset.getGrids()) {
@@ -221,14 +222,14 @@ public class MetadataExtractor {
         CoordinateAxis time = gsys.getTimeAxis();
         if (time == null)
           continue;
-        
+
         try {
-          DateUnit du = new DateUnit( time.getUnitsString());
+          DateUnit du = new DateUnit(time.getUnitsString());
           Date minDate = du.makeDate(time.getMinValue());
           Date maxDate = du.makeDate(time.getMaxValue());
-          dateRange = CalendarDateRange.of( minDate, maxDate);
+          dateRange = CalendarDateRange.of(minDate, maxDate);
         } catch (Exception e) {
-          logger.warn("Illegal Date Unit "+time.getUnitsString());
+          logger.warn("Illegal Date Unit " + time.getUnitsString());
           continue;
         }
       }
@@ -236,7 +237,7 @@ public class MetadataExtractor {
       if (maxDateRange == null)
         maxDateRange = dateRange;
       else
-        maxDateRange = maxDateRange.extend( dateRange);
+        maxDateRange = maxDateRange.extend(dateRange);
     }
 
     return maxDateRange;
@@ -245,7 +246,7 @@ public class MetadataExtractor {
   ///////////////////////////////////////////////////////////////////////////////
   static public ThreddsMetadata.Variables extractVariables(FeatureDatasetPoint fd) {
     ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.5");
-    List<VariableSimpleIF> dataVars =  fd.getDataVariables();
+    List<VariableSimpleIF> dataVars = fd.getDataVariables();
     if (dataVars == null)
       return vars;
 
@@ -259,7 +260,7 @@ public class MetadataExtractor {
 
       ucar.nc2.Attribute att = v.findAttributeIgnoreCase("standard_name");
       if (att != null)
-         tv.setVocabularyName(att.getStringValue());
+        tv.setVocabularyName(att.getStringValue());
     }
     vars.sort();
     return vars;

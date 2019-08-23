@@ -14,7 +14,6 @@ import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.ma2.*;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -32,10 +31,10 @@ import java.io.IOException;
  * @since Nov 23, 2010
  */
 public class WriterCFPointCollection extends CFPointWriter {
-  //private Map<String, Variable> varMap  = new HashMap<>();
+  // private Map<String, Variable> varMap = new HashMap<>();
 
   public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
-                                 CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+      CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
     writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Point Data, H.1"));
@@ -44,14 +43,14 @@ public class WriterCFPointCollection extends CFPointWriter {
   public void writeHeader(PointFeature pf) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
-            .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
+        .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
 
-    coords.add(VariableSimpleImpl.makeScalar(latName,  "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE));
-    coords.add(VariableSimpleImpl.makeScalar(lonName,  "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE));
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (altUnits != null) {
-      coords.add( VariableSimpleImpl.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
-                      .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+      coords.add(VariableSimpleImpl.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
+          .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
       coordNames.format(" %s", altName);
     }
 
@@ -70,14 +69,17 @@ public class WriterCFPointCollection extends CFPointWriter {
   }
 
   private int obsRecno = 0;
-  public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
+
+  public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata)
+      throws IOException {
     trackBB(loc.getLatLon(), obsDate);
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
     coords.addMember(timeName, null, null, DataType.DOUBLE, timeCoordValue);
-    coords.addMember(latName,  null, null, DataType.DOUBLE, loc.getLatitude());
-    coords.addMember(lonName,  null, null, DataType.DOUBLE, loc.getLongitude());
-    if (altUnits != null) coords.addMember(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+    coords.addMember(latName, null, null, DataType.DOUBLE, loc.getLatitude());
+    coords.addMember(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
+    if (altUnits != null)
+      coords.addMember(altName, null, null, DataType.DOUBLE, loc.getAltitude());
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(coords); // coords first so it takes precedence

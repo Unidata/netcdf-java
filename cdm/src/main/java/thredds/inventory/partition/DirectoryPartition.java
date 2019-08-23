@@ -7,7 +7,6 @@ package thredds.inventory.partition;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -23,13 +22,14 @@ import java.util.*;
 public class DirectoryPartition extends CollectionAbstract implements PartitionManager {
 
   private final FeatureCollectionConfig config;
-  private final Path collectionDir;              // directory for this collection
-  private final String topCollection;            // config collection name,
-  private final boolean isTop;                   // is this the top of the tree ?
+  private final Path collectionDir; // directory for this collection
+  private final String topCollection; // config collection name,
+  private final boolean isTop; // is this the top of the tree ?
   private final IndexReader indexReader;
   private final String suffix;
 
-  public DirectoryPartition(FeatureCollectionConfig config, Path collectionDir, boolean isTop, IndexReader indexReader, String suffix, org.slf4j.Logger logger) {
+  public DirectoryPartition(FeatureCollectionConfig config, Path collectionDir, boolean isTop, IndexReader indexReader,
+      String suffix, org.slf4j.Logger logger) {
     super(null, logger);
     this.config = config;
     this.collectionDir = collectionDir;
@@ -38,12 +38,14 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     this.suffix = suffix;
 
     this.topCollection = cleanName(config.collectionName);
-    this.collectionName = isTop ? this.topCollection : DirectoryCollection.makeCollectionName(topCollection, collectionDir);
+    this.collectionName =
+        isTop ? this.topCollection : DirectoryCollection.makeCollectionName(topCollection, collectionDir);
   }
 
   @Override
   public String getIndexFilename(String suffix) {
-    if (isTop) return super.getIndexFilename(suffix);
+    if (isTop)
+      return super.getIndexFilename(suffix);
     Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir, suffix);
     return indexPath.toString();
   }
@@ -60,14 +62,17 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     for (DirectoryBuilder child : builder.getChildren()) {
       MCollection dc = null;
       try {
-        dc = DirectoryBuilder.factory(config, child.getDir(), false, indexReader, suffix, logger);  // DirectoryPartitions or DirectoryCollections
-        if (!wasRemoved( dc))
+        dc = DirectoryBuilder.factory(config, child.getDir(), false, indexReader, suffix, logger); // DirectoryPartitions
+                                                                                                   // or
+                                                                                                   // DirectoryCollections
+        if (!wasRemoved(dc))
           result.add(dc);
         lastModified = Math.max(lastModified, dc.getLastModified());
 
       } catch (Throwable ioe) {
-        logger.warn("DirectoryBuilder on "+child.getDir()+" failed: skipping", ioe);
-        if (dc != null) dc.close();
+        logger.warn("DirectoryBuilder on " + child.getDir() + " failed: skipping", ioe);
+        if (dc != null)
+          dc.close();
       }
     }
 
@@ -101,7 +106,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
 
   @Override
   public CloseableIterator<MFile> getFileIterator() {
-    return new MFileIterator( getFilesSorted().iterator(), null);
+    return new MFileIterator(getFilesSorted().iterator(), null);
   }
 
   @Override
@@ -113,8 +118,9 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   // partitions can be removed (!)
   private List<String> removed;
 
-  public void removePartition( MCollection partition) {
-    if (removed == null) removed = new ArrayList<>();
+  public void removePartition(MCollection partition) {
+    if (removed == null)
+      removed = new ArrayList<>();
     removed.add(partition.getCollectionName());
   }
 

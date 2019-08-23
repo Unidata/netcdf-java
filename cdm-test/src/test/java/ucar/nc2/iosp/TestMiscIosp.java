@@ -21,7 +21,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
@@ -41,7 +40,7 @@ public class TestMiscIosp {
   static public void startup() {
     RandomAccessFile.setDebugLeaks(true);
     RandomAccessFile.enableDefaultGlobalFileCache();
-    leaks =  RandomAccessFile.getOpenFiles().size();
+    leaks = RandomAccessFile.getOpenFiles().size();
   }
 
   @AfterClass
@@ -54,23 +53,23 @@ public class TestMiscIosp {
 
   @Test
   public void testFyiosp() throws IOException {
-     String fileIn =  TestDir.cdmUnitTestDir + "formats/fysat/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010115.AWX";
-     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
-       logger.debug("open {}", ncf.getLocation());
+    String fileIn = TestDir.cdmUnitTestDir + "formats/fysat/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010115.AWX";
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+      logger.debug("open {}", ncf.getLocation());
 
-       String val = ncf.findAttValueIgnoreCase(null, "version", null);
-       assert val != null;
-       assert val.equals("SAT2004");
+      String val = ncf.findAttValueIgnoreCase(null, "version", null);
+      assert val != null;
+      assert val.equals("SAT2004");
 
-       Variable v = ncf.findVariable("snow");
-       assert v != null;
-       assert v.getDataType() == DataType.USHORT;
+      Variable v = ncf.findVariable("snow");
+      assert v != null;
+      assert v.getDataType() == DataType.USHORT;
 
-       Array data = v.read();
-       assert Arrays.equals(data.getShape(), new int[]{1, 91, 181});
-     }
+      Array data = v.read();
+      assert Arrays.equals(data.getShape(), new int[] {1, 91, 181});
+    }
 
-   }
+  }
 
   @Test
   public void testUamiv() throws IOException {
@@ -81,7 +80,7 @@ public class TestMiscIosp {
       assert v.getDataType() == DataType.FLOAT;
 
       Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[]{12, 5, 7, 6});
+      assert Arrays.equals(data.getShape(), new int[] {12, 5, 7, 6});
     }
   }
 
@@ -96,7 +95,7 @@ public class TestMiscIosp {
       assert v.getDataType() == DataType.FLOAT;
 
       Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[]{1, 3000, 4736});
+      assert Arrays.equals(data.getShape(), new int[] {1, 3000, 4736});
     }
   }
 
@@ -116,7 +115,7 @@ public class TestMiscIosp {
       Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
+      assert Arrays.equals(data.getShape(), new int[] {1, 1, 180, 360});
     }
   }
 
@@ -135,7 +134,7 @@ public class TestMiscIosp {
       Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
+      assert Arrays.equals(data.getShape(), new int[] {1, 1, 180, 360});
     }
   }
 
@@ -155,7 +154,7 @@ public class TestMiscIosp {
       Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
+      assert Arrays.equals(data.getShape(), new int[] {1, 1, 180, 360});
     }
   }
 

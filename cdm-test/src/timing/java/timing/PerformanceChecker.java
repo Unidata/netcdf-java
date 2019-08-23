@@ -8,10 +8,10 @@ import java.util.*;
 
 /**
  * The PerformanceChecker tries to run the task as often as possible
- * in the allotted time.  It then returns the number of times that
- * the task was called.  To make sure that the timer stops the test
+ * in the allotted time. It then returns the number of times that
+ * the task was called. To make sure that the timer stops the test
  * timeously, we check that the difference between start and end
- * time is less than EPSILON.  After it has tried unsuccessfully for
+ * time is less than EPSILON. After it has tried unsuccessfully for
  * MAXIMUM_ATTEMPTS times, it throws an exception.
  *
  * @author Heinz Kabutz
@@ -19,8 +19,8 @@ import java.util.*;
  */
 public class PerformanceChecker {
   /**
-   * Whether the test should continue running.  Will expire after
-   * some time specified in testTime.  Needs to be volatile for
+   * Whether the test should continue running. Will expire after
+   * some time specified in testTime. Needs to be volatile for
    * visibility.
    */
 
@@ -34,8 +34,8 @@ public class PerformanceChecker {
    */
   private final Runnable task;
   /**
-   * Accuracy of test.  It must finish within 20ms of the testTime
-   * otherwise we retry the test.  This could be configurable.
+   * Accuracy of test. It must finish within 20ms of the testTime
+   * otherwise we retry the test. This could be configurable.
    */
 
   public static final int EPSILON = 20;
@@ -46,18 +46,18 @@ public class PerformanceChecker {
 
   /**
    * Set up the number of milliseconds that the test should run, and
-   * the task that should be executed during that time.  The task
+   * the task that should be executed during that time. The task
    * should ideally run for less than 10ms at most, otherwise you
    * will get too many retry attempts.
    *
    * @param testTime the number of milliseconds that the test should
-   *                 execute.
-   * @param task     the task that should be executed repeatedly
-   *                 until the time is used up.
+   *        execute.
+   * @param task the task that should be executed repeatedly
+   *        until the time is used up.
    */
   public PerformanceChecker(long testTime, Runnable task) {
-    this .testTime = testTime;
-    this .task = task;
+    this.testTime = testTime;
+    this.task = task;
   }
 
   /**
@@ -78,12 +78,11 @@ public class PerformanceChecker {
       start = System.currentTimeMillis();
       numberOfLoops = 0;
       Timer timer = new Timer();
-      timer.schedule(
-        new TimerTask() {
-          public void run() {
-            expired = true;
-          }
-        }, testTime);
+      timer.schedule(new TimerTask() {
+        public void run() {
+          expired = true;
+        }
+      }, testTime);
 
       while (!expired) {
         task.run();
@@ -115,4 +114,4 @@ public class PerformanceChecker {
     }
   }
 }
-  
+

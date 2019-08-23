@@ -7,7 +7,6 @@ package thredds.cataloggen.config;
 
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDataset;
-
 import java.util.List;
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -77,9 +76,7 @@ public class DatasetFilter {
    * @param type
    * @param matchPattern
    */
-  public DatasetFilter(DatasetSource parentDsSource, String name,
-                       DatasetFilter.Type type,
-                       String matchPattern) {
+  public DatasetFilter(DatasetSource parentDsSource, String name, DatasetFilter.Type type, String matchPattern) {
     // Check that given type is not null.
     if (type == null) {
       isValid = false;
@@ -96,17 +93,15 @@ public class DatasetFilter {
       this.matchPattern = matchPattern;
       try {
         this.regExpPattern = java.util.regex.Pattern.compile(this.matchPattern);
-      }
-      catch (PatternSyntaxException e) {
+      } catch (PatternSyntaxException e) {
         isValid = false;
         log.append(" ** DatasetFilter (3): invalid matchPattern [" + this.matchPattern + "].");
       }
     }
   }
 
-  public DatasetFilter(DatasetSource parentDsSource, String name, DatasetFilter.Type type,
-                       String matchPattern, boolean applyToCollectionDatasets,
-                       boolean applyToAtomicDatasets, boolean rejectMatchingDatasets) {
+  public DatasetFilter(DatasetSource parentDsSource, String name, DatasetFilter.Type type, String matchPattern,
+      boolean applyToCollectionDatasets, boolean applyToAtomicDatasets, boolean rejectMatchingDatasets) {
     this(parentDsSource, name, type, matchPattern);
     this.applyToCollectionDatasets = applyToCollectionDatasets;
     this.applyToAtomicDatasets = applyToAtomicDatasets;
@@ -212,17 +207,14 @@ public class DatasetFilter {
 
     // Validity check: 'matchPattern' must be null if 'type' value
     // is not 'RegExp'.
-    if (this.type == DatasetFilter.Type.REGULAR_EXPRESSION &&
-            this.matchPattern == null) {
+    if (this.type == DatasetFilter.Type.REGULAR_EXPRESSION && this.matchPattern == null) {
       isValid = false;
       out.append(" ** DatasetFilter (6): null value for matchPattern not valid when type is 'RegExp'.");
     }
-    if (this.type != DatasetFilter.Type.REGULAR_EXPRESSION &&
-            this.type != null &&
-            this.matchPattern != null) {
+    if (this.type != DatasetFilter.Type.REGULAR_EXPRESSION && this.type != null && this.matchPattern != null) {
       isValid = false;
-      out.append(" ** DatasetFilter (7): matchPattern value (" + this.matchPattern +
-              ") must be null if type is not 'RegExp'.");
+      out.append(" ** DatasetFilter (7): matchPattern value (" + this.matchPattern
+          + ") must be null if type is not 'RegExp'.");
     }
 
     return (this.isValid);
@@ -233,9 +225,8 @@ public class DatasetFilter {
    */
   public String toString() {
     StringBuffer tmp = new StringBuffer();
-    tmp.append("DatasetFilter[name:<" + this.getName() +
-            "> type:<" + this.getType() +
-            "> matchPattern:<" + this.getMatchPattern() + ">");
+    tmp.append("DatasetFilter[name:<" + this.getName() + "> type:<" + this.getType() + "> matchPattern:<"
+        + this.getMatchPattern() + ">");
 
     return (tmp.toString());
   }
@@ -268,11 +259,9 @@ public class DatasetFilter {
 
   protected boolean appliesToDataset(InvDataset dataset) {
     // Check whether this filter applies to the given dataset.
-    if (this.getParentDatasetSource().isCollection(dataset)
-            && !this.applyToCollectionDatasets)
+    if (this.getParentDatasetSource().isCollection(dataset) && !this.applyToCollectionDatasets)
       return (false);
-    if ((!this.getParentDatasetSource().isCollection(dataset))
-            && !this.applyToAtomicDatasets)
+    if ((!this.getParentDatasetSource().isCollection(dataset)) && !this.applyToAtomicDatasets)
       return (false);
     return (true);
   }
@@ -312,25 +301,24 @@ public class DatasetFilter {
         isMatch = false;
       }
 
-//      // Invert the meaning of a match (accept things that don't match).
-//      if ( this.isRejectMatchingDatasets())
-//      {
-//        // If match, return false.
-//        return( regExpMatch == null ? true : false );
-//      }
-//      // Don't invert (a match is a match).
-//      else
-//      {
+      // // Invert the meaning of a match (accept things that don't match).
+      // if ( this.isRejectMatchingDatasets())
+      // {
+      // // If match, return false.
+      // return( regExpMatch == null ? true : false );
+      // }
+      // // Don't invert (a match is a match).
+      // else
+      // {
       // If match, return true.
       return (isMatch);
-//      }
+      // }
     } else {
-      System.err.println("WARNING -- DatasetFilter.accept(): unsupported type" +
-              " <" + this.type.toString() + ">.");
+      System.err.println("WARNING -- DatasetFilter.accept(): unsupported type" + " <" + this.type.toString() + ">.");
       return (false);
       // @todo think about exceptions.
-      //throw new java.lang.Exception( "DatasetFilter.accept():" +
-      //  " unsupported type <" + this.type.toString() + ">.");
+      // throw new java.lang.Exception( "DatasetFilter.accept():" +
+      // " unsupported type <" + this.type.toString() + ">.");
     }
 
   }
@@ -349,15 +337,17 @@ public class DatasetFilter {
    * <p/>
    * If the filter group is empty, the dataset will be accepted.
    *
-   * @param filters             - the group of filters to apply to the dataset.
-   * @param dataset             - the dataset on which to apply the filter group.
+   * @param filters - the group of filters to apply to the dataset.
+   * @param dataset - the dataset on which to apply the filter group.
    * @param isCollectionDataset
    * @return true if the group of filters indicates that the dataset should be accepted, false otherwise.
    * @throws NullPointerException if the filter list or the dataset is null.
    */
   public static boolean acceptDatasetByFilterGroup(List filters, InvDataset dataset, boolean isCollectionDataset) {
-    if (filters == null) throw new NullPointerException("Given null list of filters.");
-    if (dataset == null) throw new NullPointerException("Given null dataset.");
+    if (filters == null)
+      throw new NullPointerException("Given null list of filters.");
+    if (dataset == null)
+      throw new NullPointerException("Given null dataset.");
 
     // If not filters, accept all datasets.
     if (filters.isEmpty())
@@ -386,13 +376,16 @@ public class DatasetFilter {
     }
 
     // At least one filter accepted (and none rejected), so accept.
-    if (accept) return (true);
+    if (accept)
+      return (true);
 
     // Check if any filters apply to dataset. If none apply, accept the dataset.
     if (isCollectionDataset) {
-      if (!anyApplyToCollection) return (true); // Collection ds, no collection filters.
+      if (!anyApplyToCollection)
+        return (true); // Collection ds, no collection filters.
     } else {
-      if (!anyApplyToAtomic) return (true); // Atomic ds, no atomic filters.
+      if (!anyApplyToAtomic)
+        return (true); // Atomic ds, no atomic filters.
     }
 
     // Dataset not accepted or rejected by any DatasetFilter (so reject).

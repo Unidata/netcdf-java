@@ -8,12 +8,11 @@ package ucar.util.prefs;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
 import java.util.prefs.*;
 import java.io.*;
 
 @RunWith(JUnit4.class)
-public class TestStandardPrefs  {
+public class TestStandardPrefs {
   // Preference keys for this package
   private static final String NUM_ROWS = "num_rows";
   private static final String NUM_COLS = "num_cols";

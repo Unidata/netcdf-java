@@ -4,7 +4,9 @@
  */
 package ucar.ui.event;
 
-/** Extend ActionEvent to contain a String value.
+/**
+ * Extend ActionEvent to contain a String value.
+ * 
  * @author John Caron
  * @version $Id: ActionValueEvent.java 50 2006-07-12 16:30:06Z caron $
  */
@@ -16,6 +18,11 @@ public class ActionValueEvent extends java.awt.event.ActionEvent {
     this.value = value;
   }
 
-  public Object getValue() { return value; }
-  public String toString() { return "ActionValueEvent "+getActionCommand()+" "+value; }
+  public Object getValue() {
+    return value;
+  }
+
+  public String toString() {
+    return "ActionValueEvent " + getActionCommand() + " " + value;
+  }
 }

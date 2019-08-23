@@ -7,7 +7,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class AggregationUnion extends Aggregation {
       DatasetConstructor.transferDataset(ncfile, ncDataset, null);
 
       setDatasetAcquireProxy(vnested, ncDataset);
-      vnested.close( ncfile);  // close it because we use DatasetProxyReader to acquire
+      vnested.close(ncfile); // close it because we use DatasetProxyReader to acquire
     }
 
     ncDataset.finish();
@@ -42,6 +41,6 @@ public class AggregationUnion extends Aggregation {
   @Override
   protected void rebuildDataset() throws IOException {
     ncDataset.empty();
-    buildNetcdfDataset( null);
+    buildNetcdfDataset(null);
   }
 }

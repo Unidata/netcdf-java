@@ -6,7 +6,6 @@ package ucar.nc2.ft2.coverage;
 
 import java.io.Closeable;
 import java.io.IOException;
-
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -20,7 +19,8 @@ public interface CoverageReader extends Closeable {
 
   String getLocation();
 
-  GeoReferencedArray readData(Coverage coverage, SubsetParams subset, boolean canonicalOrder) throws IOException, InvalidRangeException;
+  GeoReferencedArray readData(Coverage coverage, SubsetParams subset, boolean canonicalOrder)
+      throws IOException, InvalidRangeException;
 
   // List<ArrayWithCoordinates> readData(List<Coverage> coverage, SubsetParams subset) throws IOException;
 

@@ -37,7 +37,6 @@ import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.Closeable;
 import java.io.File;
@@ -51,7 +50,8 @@ import java.util.*;
 
 /**
  * An Immutable GribCollection, corresponds to one index (ncx) file.
- * The index file has already been read; it is opened and the closed when a variable is first accessed to read in the record array (sa).
+ * The index file has already been read; it is opened and the closed when a variable is first accessed to read in the
+ * record array (sa).
  * <p>
  * Could use the Proto equivalents, and eliminate GribCollectionMutable ?
  *
@@ -63,17 +63,17 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   private static final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
   public static int countGC; // debug
 
-  public enum Type {    // must match with GribCollectionProto.Dataset.Type
-    SRC,               // GC: Single Runtime Collection                [ntimes]
-    MRC,              // GC: Multiple Runtime Collection              [nruns, ntimes]
-    // MRSTC,             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
-    MRUTC,             // GC: Multiple Runtime Unique Time Collection  [ntimes]
+  public enum Type { // must match with GribCollectionProto.Dataset.Type
+    SRC, // GC: Single Runtime Collection [ntimes]
+    MRC, // GC: Multiple Runtime Collection [nruns, ntimes]
+    // MRSTC, // GC: Multiple Runtime Single Time Collection [nruns, 1]
+    MRUTC, // GC: Multiple Runtime Unique Time Collection [ntimes]
 
-    // MRSTP,            // PC: Multiple Runtime Single Time Partition   [nruns, 1]
-    TwoD,            // PC: TwoD time partition                      [nruns, ntimes]
-    Best,             // PC: Best time partition                      [ntimes]
-    BestComplete,     // PC: Best complete time partition (not done)  [ntimes]
-    MRUTP;            // PC: Multiple Runtime Unique Time Partition   [ntimes]
+    // MRSTP, // PC: Multiple Runtime Single Time Partition [nruns, 1]
+    TwoD, // PC: TwoD time partition [nruns, ntimes]
+    Best, // PC: Best time partition [ntimes]
+    BestComplete, // PC: Best complete time partition (not done) [ntimes]
+    MRUTP; // PC: Multiple Runtime Unique Time Partition [ntimes]
 
     public boolean isSingleRuntime() {
       return this == SRC;
@@ -99,11 +99,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   protected final CoordinateRuntime masterRuntime;
   protected final CalendarDateRange dateRange;
 
-  protected final Map<Integer, MFile> fileMap; // all the files used in the GC; key is the index in original collection, GC has subset of them
+  protected final Map<Integer, MFile> fileMap; // all the files used in the GC; key is the index in original collection,
+                                               // GC has subset of them
   protected final GribTables cust;
-  protected final String indexFilename;       // full path of index Filename
+  protected final String indexFilename; // full path of index Filename
 
-  private FileCacheIF objCache = null;  // optional object cache - used in the TDS
+  private FileCacheIF objCache = null; // optional object cache - used in the TDS
 
   GribCollectionImmutable(GribCollectionMutable gc) {
     countGC++;
@@ -153,7 +154,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   public Dataset getDatasetCanonical() {
     for (Dataset ds : datasets) {
-      if (ds.gctype != GribCollectionImmutable.Type.Best) return ds;
+      if (ds.gctype != GribCollectionImmutable.Type.Best)
+        return ds;
     }
     throw new IllegalStateException("GC.getDatasetCanonical failed on=" + name);
   }
@@ -207,18 +209,21 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   }
 
   /*
-    String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
-    ncfile.addAttribute(null, new Attribute(GribUtils.CENTER, val == null ? Integer.toString(gribCollection.getCenter()) : val));
-    val = gribTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
-    ncfile.addAttribute(null, new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
-    ncfile.addAttribute(null, new Attribute(GribUtils.TABLE_VERSION, gribCollection.getMaster() + "," + gribCollection.getLocal())); // LOOK
-
-    addGlobalAttributes(ncfile);
-
-    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
-    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
-    ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
-    ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
+   * String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
+   * ncfile.addAttribute(null, new Attribute(GribUtils.CENTER, val == null ?
+   * Integer.toString(gribCollection.getCenter()) : val));
+   * val = gribTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+   * ncfile.addAttribute(null, new Attribute(GribUtils.SUBCENTER, val == null ?
+   * Integer.toString(gribCollection.getSubcenter()) : val));
+   * ncfile.addAttribute(null, new Attribute(GribUtils.TABLE_VERSION, gribCollection.getMaster() + "," +
+   * gribCollection.getLocal())); // LOOK
+   * 
+   * addGlobalAttributes(ncfile);
+   * 
+   * ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
+   * ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
+   * ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
+   * ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
    */
 
   public AttributeContainerHelper getGlobalAttributes() {
@@ -229,7 +234,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     result.addAttribute(new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(getSubcenter()) : val));
     result.addAttribute(new Attribute(GribUtils.TABLE_VERSION, getMaster() + "," + getLocal())); // LOOK
 
-    addGlobalAttributes(result);  // add subclass atts
+    addGlobalAttributes(result); // add subclass atts
 
     result.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     result.addAttribute(new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
@@ -246,10 +251,11 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   static class Info {
     final int version; // the ncx version
-    final int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
+    final int center, subcenter, master, local; // GRIB 1 uses "local" for table version
     final int genProcessType, genProcessId, backProcessId;
 
-    Info(int version, int center, int subcenter, int master, int local, int genProcessType, int genProcessId, int backProcessId) {
+    Info(int version, int center, int subcenter, int master, int local, int genProcessType, int genProcessId,
+        int backProcessId) {
       this.version = version;
       this.center = center;
       this.subcenter = subcenter;
@@ -273,23 +279,16 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     @Override
     public String toString() {
-      return "Info{" +
-          "version=" + version +
-          ", center=" + center +
-          ", subcenter=" + subcenter +
-          ", master=" + master +
-          ", local=" + local +
-          ", genProcessType=" + genProcessType +
-          ", genProcessId=" + genProcessId +
-          ", backProcessId=" + backProcessId +
-          '}';
+      return "Info{" + "version=" + version + ", center=" + center + ", subcenter=" + subcenter + ", master=" + master
+          + ", local=" + local + ", genProcessType=" + genProcessType + ", genProcessId=" + genProcessId
+          + ", backProcessId=" + backProcessId + '}';
     }
   }
 
   @Immutable
   public class Dataset {
     final Type gctype;
-    final List<GroupGC> groups;  // must be kept in order, because PartitionForVariable2D has index into it
+    final List<GroupGC> groups; // must be kept in order, because PartitionForVariable2D has index into it
 
     public Dataset(Type gctype, List<GribCollectionMutable.GroupGC> groups) {
       this.gctype = gctype;
@@ -331,8 +330,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final Dataset ds;
     public final GribHorizCoordSystem horizCoordSys;
     final List<VariableIndex> variList;
-    final List<Coordinate> coords;      // shared coordinates
-    final int[] filenose;               // key for GC.fileMap
+    final List<Coordinate> coords; // shared coordinates
+    final int[] filenose; // key for GC.fileMap
     private final Map<VariableIndex, VariableIndex> varMap;
 
     public GroupGC(Dataset ds, GribCollectionMutable.GroupGC gc) {
@@ -402,13 +401,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public int getNFiles() {
-      if (filenose == null) return 0;
+      if (filenose == null)
+        return 0;
       return filenose.length;
     }
 
     public List<MFile> getFiles() {
       List<MFile> result = new ArrayList<>();
-      if (filenose == null) return result;
+      if (filenose == null)
+        return result;
       for (int fileno : filenose)
         result.add(fileMap.get(fileno));
       Collections.sort(result);
@@ -424,8 +425,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           case time2D:
             CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
             CalendarDateRange range = time.makeCalendarDateRange(null);
-            if (result == null) result = range;
-            else result = result.extend(range);
+            if (result == null)
+              result = range;
+            else
+              result = result.extend(range);
         }
       }
 
@@ -434,9 +437,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("horizCoordSys", horizCoordSys.getDescription())
-          .toString();
+      return MoreObjects.toStringHelper(this).add("horizCoordSys", horizCoordSys.getDescription()).toString();
     }
 
     public void show(Formatter f) {
@@ -446,21 +447,21 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
   }
 
-  @Immutable      // except for sa
+  @Immutable // except for sa
   public class VariableIndex {
-    final GroupGC group;     // belongs to this group
+    final GroupGC group; // belongs to this group
     final VariableIndex.Info info;
     final Object gribVariable;
 
-    final List<Integer> coordIndex;  // indexes into group.coords
-    final long recordsPos;    // where the records array is stored in the index. 0 means no records
+    final List<Integer> coordIndex; // indexes into group.coords
+    final long recordsPos; // where the records array is stored in the index. 0 means no records
     final int recordsLen;
 
     // stats
     final int ndups, nrecords, nmissing;
 
     // read in on demand
-    private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
+    private SparseArray<Record> sa; // for GC only; lazily read; same array shape as variable, minus x and y
 
     protected VariableIndex(GroupGC g, GribCollectionMutable.VariableIndex gcVar) {
       this.group = g;
@@ -477,7 +478,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public synchronized void readRecords() throws IOException {
-      if (this.sa != null) return;
+      if (this.sa != null)
+        return;
 
       if (recordsLen == 0)
         return;
@@ -489,13 +491,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         indexRaf.readFully(b);
 
         /*
-        message SparseArray {
-          repeated uint32 size = 2 [packed=true];     // multidim sizes = shape[]
-          repeated uint32 track = 3 [packed=true];    // 1-based index into record list, 0 == missing
-          repeated Record records = 4;                // List<Record>
-          uint32 ndups = 5;                           // duplicates found when creating
-        }
-       */
+         * message SparseArray {
+         * repeated uint32 size = 2 [packed=true]; // multidim sizes = shape[]
+         * repeated uint32 track = 3 [packed=true]; // 1-based index into record list, 0 == missing
+         * repeated Record records = 4; // List<Record>
+         * uint32 ndups = 5; // duplicates found when creating
+         * }
+         */
         GribCollectionProto.SparseArray proto = GribCollectionProto.SparseArray.parseFrom(b);
 
         int nsizes = proto.getSizeCount();
@@ -562,7 +564,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
             timeIntv = coords.getTimeOffsetIntv();
             if (timeIntv != null) {
               TimeCoordIntvValue coordTinv = new TimeCoordIntvValue((int) timeIntv[0], (int) timeIntv[1]);
-              idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordTinv); // LOOK can only use if orthogonal
+              idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordTinv); // LOOK can only use if
+                                                                                        // orthogonal
               break;
             }
             Double timeCoord = coords.getTimeOffset();
@@ -572,13 +575,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
               break;
             }
 
-          // the OneTime case
-          CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-          if (coord2D.getNtimes() == 1) {
-            idx = 0;
-            break;
-          }
-          throw new IllegalStateException("time2D must have timeOffset ot timeOffsetIntv coordinare");
+            // the OneTime case
+            CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+            if (coord2D.getNtimes() == 1) {
+              idx = 0;
+              break;
+            }
+            throw new IllegalStateException("time2D must have timeOffset ot timeOffsetIntv coordinare");
 
           case vert:
             double[] vertIntv = coords.getVertCoordIntv();
@@ -739,9 +742,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("info", info)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("info", info).toString();
     }
 
     public int getRank() {
@@ -762,8 +763,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       VariableIndex that = (VariableIndex) o;
       return gribVariable.equals(that.gribVariable);
@@ -778,7 +781,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       if (isGrib1)
         return ((Grib1Variable) gribVariable).makeVariableName(config.gribConfig);
       else
-        return Grib2Iosp.makeVariableNameFromTable((Grib2Tables) cust, GribCollectionImmutable.this, this, config.gribConfig.useGenType);
+        return Grib2Iosp.makeVariableNameFromTable((Grib2Tables) cust, GribCollectionImmutable.this, this,
+            config.gribConfig.useGenType);
     }
 
     public String makeVariableUnits() {
@@ -790,8 +794,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public String makeVariableDescription() {
       if (isGrib1)
-        return Grib1Iosp.makeVariableLongName((Grib1Customizer) cust, getCenter(), getSubcenter(), getTableVersion(), getParameter(),
-                getLevelType(), isLayer(), getIntvType(), getIntvName(), getProbabilityName());
+        return Grib1Iosp.makeVariableLongName((Grib1Customizer) cust, getCenter(), getSubcenter(), getTableVersion(),
+            getParameter(), getLevelType(), isLayer(), getIntvType(), getIntvName(), getProbabilityName());
       else
         return Grib2Iosp.makeVariableLongName((Grib2Tables) cust, this, config.gribConfig.useGenType);
     }
@@ -809,12 +813,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     @Immutable
     public final class Info {
-      final int tableVersion;   // grib1 only : can vary by variable
-      final int discipline;     // grib2 only
+      final int tableVersion; // grib1 only : can vary by variable
+      final int discipline; // grib2 only
 
       // derived from pds
       final int category, parameter, levelType, intvType, ensDerivedType, probType;
-      @Nullable final String intvName;  // eg "mixed intervals, 3 Hour, etc"
+      @Nullable
+      final String intvName; // eg "mixed intervals, 3 Hour, etc"
       final String probabilityName;
       final boolean isLayer, isEnsemble;
       final int genProcessType;
@@ -839,11 +844,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
       @Override
       public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("discipline", discipline)
-            .add("category", category)
-            .add("parameter", parameter)
-            .toString();
+        return MoreObjects.toStringHelper(this).add("discipline", discipline).add("category", category)
+            .add("parameter", parameter).toString();
       }
     }
 
@@ -851,10 +853,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   @Immutable
   public static class Record {
-    public final int fileno;    // which file
-    public final long pos;      // offset on file where message starts
-    public final int bmsOffset;   // if non-zero, offset where bms starts (grib2)
-    public final int drsOffset;   // if non-zero, offset where drs starts  (grib2)
+    public final int fileno; // which file
+    public final long pos; // offset on file where message starts
+    public final int bmsOffset; // if non-zero, offset where bms starts (grib2)
+    public final int drsOffset; // if non-zero, offset where drs starts (grib2)
 
     public Record(int fileno, long pos, int bmsOffset, int drsOffset) { // }, int scanMode) {
       this.fileno = fileno;
@@ -865,12 +867,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     @Override
     public String toString() {
-      return "Record{" +
-          "fileno=" + fileno +
-          ", pos=" + pos +
-          ", bmsOffset=" + bmsOffset +
-          ", drsOffset=" + drsOffset +
-          '}';
+      return "Record{" + "fileno=" + fileno + ", pos=" + pos + ", bmsOffset=" + bmsOffset + ", drsOffset=" + drsOffset
+          + '}';
     }
   }
 
@@ -884,12 +882,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   }
 
   // release any resources like file handles
-  public void release() {
-  }
+  public void release() {}
 
   // reacquire any resources like file handles
-  public void reacquire() {
-  }
+  public void reacquire() {}
 
   @Override
   public String getLocation() {
@@ -935,10 +931,14 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
         int nruntimes = 0, ntimes = 0, ntimes2D = 0, ntimeIntvs = 0;
         for (Coordinate coord : g.getCoordinates()) {
-          if (coord.getType() == Coordinate.Type.runtime) nruntimes++;
-          if (coord.getType() == Coordinate.Type.time) ntimes++;
-          if (coord.getType() == Coordinate.Type.timeIntv) ntimeIntvs++;
-          if (coord.getType() == Coordinate.Type.time2D) ntimes2D++;
+          if (coord.getType() == Coordinate.Type.runtime)
+            nruntimes++;
+          if (coord.getType() == Coordinate.Type.time)
+            ntimes++;
+          if (coord.getType() == Coordinate.Type.timeIntv)
+            ntimeIntvs++;
+          if (coord.getType() == Coordinate.Type.time2D)
+            ntimes2D++;
         }
         f.format(" Group nruntimes=%d ntimes=%d ntimeIntvs=%d ntimes2D=%d%n", nruntimes, ntimes, ntimeIntvs, ntimes2D);
       }
@@ -955,7 +955,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   public void showStatusSummary(Formatter f, String type) {
     Dataset ds = getDatasetCanonical();
-    if (ds == null) return;
+    if (ds == null)
+      return;
 
     if (type.equalsIgnoreCase("csv")) {
       for (GroupGC g : ds.groups) {
@@ -965,8 +966,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           ndups += v.ndups;
           nmissing += v.nmissing;
         }
-        if (nrecords == 0) nrecords = 1;
-        f.format("%s, %s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, ds.getType(), g.getDescription(), nrecords, ndups, ((float) ndups / nrecords), nmissing, ((float) nmissing / nrecords));
+        if (nrecords == 0)
+          nrecords = 1;
+        f.format("%s, %s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, ds.getType(), g.getDescription(), nrecords,
+            ndups, ((float) ndups / nrecords), nmissing, ((float) nmissing / nrecords));
       }
     } else {
       for (GroupGC g : ds.groups) {
@@ -977,7 +980,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           nmissing += v.nmissing;
         }
         f.format(" Group %s (%s) total nrecords=%d", g.getDescription(), ds.getType(), nrecords);
-        if (nrecords == 0) nrecords = 1;
+        if (nrecords == 0)
+          nrecords = 1;
         f.format(", ndups=%d (%f)", ndups, ((float) ndups / nrecords));
         f.format(", nmiss=%d (%f)%n", nmissing, ((float) nmissing / nrecords));
       }
@@ -986,12 +990,14 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   }
 
   private void showIndexFile(Formatter f) {
-    if (indexFilename == null) return;
+    if (indexFilename == null)
+      return;
     f.format("indexFile=%s%n", indexFilename);
     try {
       Path indexFile = Paths.get(indexFilename);
       BasicFileAttributes attr = Files.readAttributes(indexFile, BasicFileAttributes.class);
-      f.format("  size=%d lastModifiedTime=%s lastAccessTime=%s creationTime=%s%n", attr.size(), attr.lastModifiedTime(), attr.lastAccessTime(), attr.creationTime());
+      f.format("  size=%d lastModifiedTime=%s lastAccessTime=%s creationTime=%s%n", attr.size(),
+          attr.lastModifiedTime(), attr.lastAccessTime(), attr.creationTime());
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -1029,19 +1035,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   @Override
   public String toString() {
-    return "GribCollectionImmutable{" +
-        "name='" + name + '\'' +
-        ", directory=" + directory +
-        ", config=" + config +
-        ", isGrib1=" + isGrib1 +
-        ", info=" + info +
-        ", masterRuntime=" + masterRuntime.getName() +
-        ", dateRange=" + dateRange +
-        ", indexFilename='" + indexFilename + '\'' +
-        '}';
+    return "GribCollectionImmutable{" + "name='" + name + '\'' + ", directory=" + directory + ", config=" + config
+        + ", isGrib1=" + isGrib1 + ", info=" + info + ", masterRuntime=" + masterRuntime.getName() + ", dateRange="
+        + dateRange + ", indexFilename='" + indexFilename + '\'' + '}';
   }
 
-////////////////////////////////////////
+  ////////////////////////////////////////
 
   public long getIndexFileSize() {
     File indexFile = new File(indexFilename);
@@ -1103,15 +1102,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   // stuff needed by InvDatasetFcGrib
   @Nullable
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
-                                                                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
   @Nullable
   public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
-                                                              FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
   @Nullable
   public abstract CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
-                                                     FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
 
 }

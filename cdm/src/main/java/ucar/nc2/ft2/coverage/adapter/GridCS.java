@@ -45,18 +45,18 @@ public class GridCS extends DtCoverageCS {
   }
 
   /*
-   @Override
- public List<CalendarDate> getCalendarDates() {
-    if (getTimeAxis() != null)
-      return getTimeAxis().getCalendarDates();
-
-    else if (getRunTimeAxis() != null)
-      return getRunTimeAxis().getCalendarDates();
-
-    else
-      return new ArrayList<>();
-  }
-  */
+   * @Override
+   * public List<CalendarDate> getCalendarDates() {
+   * if (getTimeAxis() != null)
+   * return getTimeAxis().getCalendarDates();
+   * 
+   * else if (getRunTimeAxis() != null)
+   * return getRunTimeAxis().getCalendarDates();
+   * 
+   * else
+   * return new ArrayList<>();
+   * }
+   */
 
   @Override
   public CalendarDateRange getCalendarDateRange() {

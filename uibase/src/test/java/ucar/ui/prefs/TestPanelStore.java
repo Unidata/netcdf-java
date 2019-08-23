@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
-
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -27,7 +26,8 @@ import java.util.Date;
 public class TestPanelStore {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
+  @ClassRule
+  public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static PreferencesExt store;
   private static XMLStore xstore;
@@ -38,8 +38,8 @@ public class TestPanelStore {
 
     xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
     store = xstore.getPreferences();
-    //store = new PreferencesExt(null,"");
-    Debug.setStore( store.node("Debug"));
+    // store = new PreferencesExt(null,"");
+    Debug.setStore(store.node("Debug"));
   }
 
   @Test
@@ -48,7 +48,7 @@ public class TestPanelStore {
   }
 
   private PrefPanel makePP() {
-    PrefPanel pp2 = new PrefPanel( "TestPanelStoreName", (PreferencesExt) store.node("TestPanelStoreNode"));
+    PrefPanel pp2 = new PrefPanel("TestPanelStoreName", (PreferencesExt) store.node("TestPanelStoreNode"));
     pp2.addHeading("Some Input Fileds");
     pp2.addTextField("text1", "text1", "text1");
     pp2.addTextField("nullDefault", "nullDefault", null);
@@ -84,7 +84,9 @@ public class TestPanelStore {
           try {
             xstore.save();
             System.out.println("write xstore");
-          } catch (java.io.IOException ioe) { ioe.printStackTrace(); }
+          } catch (java.io.IOException ioe) {
+            ioe.printStackTrace();
+          }
           System.exit(0);
         }
       });

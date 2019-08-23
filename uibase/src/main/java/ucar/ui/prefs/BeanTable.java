@@ -14,7 +14,6 @@ import ucar.ui.table.TableAppearanceAction;
 import ucar.ui.table.UndoableRowSorter;
 import ucar.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
-
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionListener;
@@ -33,24 +32,40 @@ import java.util.List;
  * <p/>
  * The properties may be editable if they have type primitive or String. and you list
  * the editable properties in a static method editableProperties() in the bean, eg :
+ * 
  * <pre>
- *     static public String editableProperties() { return "ID serverName active writeDirectory"; }
+ * static public String editableProperties() {
+ *   return "ID serverName active writeDirectory";
+ * }
  * </pre>
+ * 
  * or as an instance method with a no parameter constructor
+ * 
  * <pre>
- *   MyClass() {}
- *   public String editableProperties() { return "ID serverName active writeDirectory"; }
+ * MyClass() {}
+ * 
+ * public String editableProperties() {
+ *   return "ID serverName active writeDirectory";
+ * }
  * </pre>
  * <p/>
  * You may hide properties by listing them in a static method hiddenProperties() in the bean, eg :
+ * 
  * <pre>
- *   static public String hiddenProperties() { return "hideThisProperty DDDirectory"; }
+ * static public String hiddenProperties() {
+ *   return "hideThisProperty DDDirectory";
+ * }
  * </pre>
+ * 
  * * or as an instance method with a no parameter constructor
-  * <pre>
-  *   MyClass() {}
-  *   public String hiddenProperties() { return "ID serverName active writeDirectory"; }
-  * </pre>
+ * 
+ * <pre>
+ * MyClass() {}
+ * 
+ * public String hiddenProperties() {
+ *   return "ID serverName active writeDirectory";
+ * }
+ * </pre>
  * <p/>
  * The data can be made persistent through a PreferencesExt store.
  * The width and order of the columns is persistent.
@@ -89,12 +104,12 @@ public class BeanTable<T> extends JPanel {
   /**
    * Constructor.
    *
-   * @param bc           JavaBean class
-   * @param pstore       store data in this PreferencesExt store.
+   * @param bc JavaBean class
+   * @param pstore store data in this PreferencesExt store.
    * @param canAddDelete allow changes to the jtable - adds a New and Delete button to bottom panel
-   * @param header       optional header label
-   * @param tooltip      optional tooltip label
-   * @param bean         needed for inner classes to call reflected methods on
+   * @param header optional header label
+   * @param tooltip optional tooltip label
+   * @param bean needed for inner classes to call reflected methods on
    */
   public BeanTable(Class<T> bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, T bean) {
     this.beanClass = bc;
@@ -117,23 +132,23 @@ public class BeanTable<T> extends JPanel {
 
       // button listeners
       newButton.addActionListener(e -> {
-          try {
-            T newbean = beanClass.newInstance();
-            addBean(newbean);
-          } catch (Exception exc) {
-            exc.printStackTrace();
-          }
+        try {
+          T newbean = beanClass.newInstance();
+          addBean(newbean);
+        } catch (Exception exc) {
+          exc.printStackTrace();
+        }
       });
 
       deleteButton.addActionListener(e -> {
-          if (JOptionPane.showConfirmDialog(null, "Do you want to delete all selected records",
-                  "Delete Records", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
-            return;
+        if (JOptionPane.showConfirmDialog(null, "Do you want to delete all selected records", "Delete Records",
+            JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+          return;
 
-          for (T o : getSelectedBeans()) {
-            beans.remove(o);
-          }
-          model.fireTableDataChanged();
+        for (T o : getSelectedBeans()) {
+          beans.remove(o);
+        }
+        model.fireTableDataChanged();
       });
     }
   }
@@ -143,12 +158,13 @@ public class BeanTable<T> extends JPanel {
   }
 
   private JLabel headerLabel = null;
+
   private void init(String header, String tooltip) {
     TableColumnModel tcm = new HidableTableColumnModel(model);
     jtable = new JTable(model, tcm);
     jtable.setRowSorter(new UndoableRowSorter<>(model));
 
-    //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
+    // jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
     jtable.setDefaultRenderer(java.util.Date.class, new DateRenderer());
 
     ToolTipManager.sharedInstance().registerComponent(jtable);
@@ -204,11 +220,13 @@ public class BeanTable<T> extends JPanel {
 
     ListSelectionModel rowSM = jtable.getSelectionModel();
     rowSM.addListSelectionListener(e -> {
-        if (e.getValueIsAdjusting()) { return; } //Ignore extra messages.
-        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-        if (!lsm.isSelectionEmpty()) {
-          fireEvent(e);
-        }
+      if (e.getValueIsAdjusting()) {
+        return;
+      } // Ignore extra messages.
+      ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+      if (!lsm.isSelectionEmpty()) {
+        fireEvent(e);
+      }
     });
 
   }
@@ -279,7 +297,8 @@ public class BeanTable<T> extends JPanel {
     for (int viewRowIndex : viewRowIndices) {
       int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
       list.add(beans.get(modelRowIndex));
-      if (debugSelected) System.out.println(" bean selected= " + modelRowIndex + " " + beans.get(modelRowIndex));
+      if (debugSelected)
+        System.out.println(" bean selected= " + modelRowIndex + " " + beans.get(modelRowIndex));
     }
     return list;
   }
@@ -343,7 +362,7 @@ public class BeanTable<T> extends JPanel {
   public void setBeans(List<T> beans) {
     this.beans = (beans == null) ? new ArrayList<>() : new ArrayList<>(beans);
     model.fireTableDataChanged(); // this should make the jtable update
-    revalidate();  // LOOK sometimes it doesnt, try this
+    revalidate(); // LOOK sometimes it doesnt, try this
   }
 
   public void clearBeans() {
@@ -378,7 +397,8 @@ public class BeanTable<T> extends JPanel {
    * @param bean select this one; must be in the list.
    */
   public void setSelectedBean(T bean) {
-    if (bean == null) return;
+    if (bean == null)
+      return;
     int modelRowIndex = beans.indexOf(bean);
     int viewRowIndex = jtable.convertRowIndexToView(modelRowIndex);
 
@@ -411,7 +431,8 @@ public class BeanTable<T> extends JPanel {
 
   private void makeRowVisible(int viewRowIndex) {
     Rectangle visibleRect = jtable.getCellRect(viewRowIndex, 0, true);
-    if (debugSelected) System.out.println("----ensureRowIsVisible = " + visibleRect);
+    if (debugSelected)
+      System.out.println("----ensureRowIsVisible = " + visibleRect);
     visibleRect.x = scrollPane.getViewport().getViewPosition().x;
     jtable.scrollRectToVisible(visibleRect);
     jtable.repaint();
@@ -462,18 +483,18 @@ public class BeanTable<T> extends JPanel {
     store.putBeanCollection("propertyCol", propCols);
   }
 
-    /**
-     * Notifies the TableModel that the data in the specified bean has changed.
-     * The TableModel will then fire an event of its own, which its listeners will hear (usually a JTable).
-     *
-     * @param bean  a bean that has changed.
-     */
-    public void fireBeanDataChanged(T bean) {
-        int row = beans.indexOf(bean);
-        if (row >= 0) {
-            model.fireTableRowsUpdated(row, row);
-        }
+  /**
+   * Notifies the TableModel that the data in the specified bean has changed.
+   * The TableModel will then fire an event of its own, which its listeners will hear (usually a JTable).
+   *
+   * @param bean a bean that has changed.
+   */
+  public void fireBeanDataChanged(T bean) {
+    int row = beans.indexOf(bean);
+    if (row >= 0) {
+      model.fireTableRowsUpdated(row, row);
     }
+  }
 
   /**
    * Restore state from PreferencesExt
@@ -490,7 +511,7 @@ public class BeanTable<T> extends JPanel {
     for (Object propColObj : propColObjs) {
       PropertyCol propCol = (PropertyCol) propColObj;
       try {
-        int currentViewIndex = tableColumnModel.getColumnIndex(propCol.getName());  // May throw IAE.
+        int currentViewIndex = tableColumnModel.getColumnIndex(propCol.getName()); // May throw IAE.
 
         TableColumn column = tableColumnModel.getColumn(currentViewIndex);
         column.setPreferredWidth(propCol.getWidth());
@@ -501,11 +522,11 @@ public class BeanTable<T> extends JPanel {
         // We must do this last, since moveColumn() only works on visible columns.
         tableColumnModel.setColumnVisible(column, propCol.isVisible());
         if (propCol.isVisible()) {
-          ++newViewIndex;  // Don't increment for hidden columns.
+          ++newViewIndex; // Don't increment for hidden columns.
         }
       } catch (IllegalArgumentException e) {
-        logger.debug(String.format(
-                "Column named \"%s\" was present in the preferences file but not the dataset.", propCol.getName()), e);
+        logger.debug(String.format("Column named \"%s\" was present in the preferences file but not the dataset.",
+            propCol.getName()), e);
       }
     }
   }
@@ -518,8 +539,7 @@ public class BeanTable<T> extends JPanel {
     private int width;
     private boolean visible = true;
 
-    public PropertyCol() {
-    }
+    public PropertyCol() {}
 
     public String getName() {
       return name;
@@ -583,8 +603,7 @@ public class BeanTable<T> extends JPanel {
   protected class TableBeanModel extends AbstractTableModel {
     protected List<PropertyDescriptor> properties = new ArrayList<>();
 
-    protected TableBeanModel() {
-    }
+    protected TableBeanModel() {}
 
     protected TableBeanModel(Class beanClass) {
 
@@ -594,7 +613,7 @@ public class BeanTable<T> extends JPanel {
         if (!beanClass.isInterface())
           info = Introspector.getBeanInfo(beanClass, Object.class);
         else
-          info = Introspector.getBeanInfo(beanClass);  // allows interfaces to be beans
+          info = Introspector.getBeanInfo(beanClass); // allows interfaces to be beans
       } catch (IntrospectionException e) {
         e.printStackTrace();
         return;
@@ -613,14 +632,16 @@ public class BeanTable<T> extends JPanel {
         Method m = md.getMethod();
         if (m != null && m.getName().equals("editableProperties")) {
           try {
-            editableProperties = (String) m.invoke(null, (Object[]) null);  // try static
-            if (debugBean) System.out.println(" static editableProperties: " + editableProperties);
+            editableProperties = (String) m.invoke(null, (Object[]) null); // try static
+            if (debugBean)
+              System.out.println(" static editableProperties: " + editableProperties);
           } catch (Exception ee) {
 
             if (innerbean != null) {
               try {
-                editableProperties = (String) m.invoke(innerbean, (Object[]) null);  // try non static
-                if (debugBean) System.out.println(" editableProperties: " + editableProperties);
+                editableProperties = (String) m.invoke(innerbean, (Object[]) null); // try non static
+                if (debugBean)
+                  System.out.println(" editableProperties: " + editableProperties);
               } catch (Exception e2) {
                 e2.printStackTrace();
               }
@@ -641,13 +662,15 @@ public class BeanTable<T> extends JPanel {
         if (m.getName().equals("hiddenProperties")) {
           try {
             hiddenProperties = (String) m.invoke(null, (Object[]) null);
-            if (debugBean) System.out.println(" hiddenProperties: " + hiddenProperties);
+            if (debugBean)
+              System.out.println(" hiddenProperties: " + hiddenProperties);
 
           } catch (Exception ee) {
             if (innerbean != null) {
               try {
-                hiddenProperties = (String) m.invoke(innerbean, (Object[]) null);  // try non static
-                if (debugBean) System.out.println(" hiddenProperties: " + hiddenProperties);
+                hiddenProperties = (String) m.invoke(innerbean, (Object[]) null); // try non static
+                if (debugBean)
+                  System.out.println(" hiddenProperties: " + hiddenProperties);
               } catch (Exception e2) {
                 e2.printStackTrace();
               }
@@ -679,7 +702,8 @@ public class BeanTable<T> extends JPanel {
           Class type = pd.getPropertyType();
           Method rm = pd.getReadMethod();
           Method wm = pd.getWriteMethod();
-          System.out.println("  " + displayName + " " + name + " " + type.getName() + " " + rm + " " + wm + " " + pd.isPreferred());
+          System.out.println(
+              "  " + displayName + " " + name + " " + type.getName() + " " + rm + " " + wm + " " + pd.isPreferred());
         }
       }
     }
@@ -692,18 +716,19 @@ public class BeanTable<T> extends JPanel {
         if (displayName != null) {
           pd.setDisplayName(displayName);
           JLabel hl = (JLabel) pd.getValue("Header");
-          if (hl != null) hl.setText(displayName);
-          //System.out.println("setDisplayName <"+displayName+"> on "+propertyName);
+          if (hl != null)
+            hl.setText(displayName);
+          // System.out.println("setDisplayName <"+displayName+"> on "+propertyName);
         }
         if (toolTipText != null) {
           pd.setShortDescription(toolTipText);
           JComponent jc = (JComponent) pd.getValue("ToolTipComp");
-          if (jc != null) jc.setToolTipText(toolTipText);
-          //System.out.println("setToolTipText <"+toolTipText+"> on "+propertyName);
+          if (jc != null)
+            jc.setToolTipText(toolTipText);
+          // System.out.println("setToolTipText <"+toolTipText+"> on "+propertyName);
         }
       } else
-        System.out.println("BeanTable.setProperty " + beanClass.getName() + " no property named " +
-                propertyName);
+        System.out.println("BeanTable.setProperty " + beanClass.getName() + " no property named " + propertyName);
     }
 
 
@@ -728,7 +753,8 @@ public class BeanTable<T> extends JPanel {
         Method m = pd.getReadMethod();
         value = m.invoke(bean, (Object[]) null);
       } catch (Exception ee) {
-        System.out.println("BeanTable: Bad getReadMethod " + row + " " + col + " " + beanClass.getName() + " " + pd.getDisplayName());
+        System.out.println(
+            "BeanTable: Bad getReadMethod " + row + " " + col + " " + beanClass.getName() + " " + pd.getDisplayName());
         ee.printStackTrace();
       }
 
@@ -756,7 +782,8 @@ public class BeanTable<T> extends JPanel {
 
     public boolean isCellEditable(int row, int col) {
       PropertyDescriptor pd = properties.get(col);
-      if (!pd.isPreferred()) return false;
+      if (!pd.isPreferred())
+        return false;
       Class type = pd.getPropertyType();
       return type.isPrimitive() || (type == String.class);
     }
@@ -779,26 +806,42 @@ public class BeanTable<T> extends JPanel {
     // extra stuff
 
     protected Class wrapPrimitives(Class c) {
-      if (c == boolean.class) return Boolean.class;
-      else if (c == int.class) return Integer.class;
-      else if (c == float.class) return Float.class;
-      else if (c == double.class) return Double.class;
-      else if (c == short.class) return Short.class;
-      else if (c == long.class) return Long.class;
-      else if (c == byte.class) return Byte.class;
-      else return c;
+      if (c == boolean.class)
+        return Boolean.class;
+      else if (c == int.class)
+        return Integer.class;
+      else if (c == float.class)
+        return Float.class;
+      else if (c == double.class)
+        return Double.class;
+      else if (c == short.class)
+        return Short.class;
+      else if (c == long.class)
+        return Long.class;
+      else if (c == byte.class)
+        return Byte.class;
+      else
+        return c;
     }
 
     @Nullable
     protected Object zeroValue(Class c) {
-      if (c == Boolean.class) return Boolean.FALSE;
-      else if (c == Integer.class) return 0;
-      else if (c == Float.class) return (float) 0.0;
-      else if (c == Double.class) return 0.0;
-      else if (c == Short.class) return (short) 0;
-      else if (c == Long.class) return 0L;
-      else if (c == Byte.class) return (byte) 0;
-      else return null;
+      if (c == Boolean.class)
+        return Boolean.FALSE;
+      else if (c == Integer.class)
+        return 0;
+      else if (c == Float.class)
+        return (float) 0.0;
+      else if (c == Double.class)
+        return 0.0;
+      else if (c == Short.class)
+        return (short) 0;
+      else if (c == Long.class)
+        return 0L;
+      else if (c == Byte.class)
+        return (byte) 0;
+      else
+        return null;
     }
 
     // return PropertyDescriptor with this property name, return null if not exists

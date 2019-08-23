@@ -84,7 +84,8 @@ public class Index implements Cloneable {
   static public long computeSize(int[] shape) {
     long product = 1;
     for (int aShape : shape) {
-      if (aShape < 0) break; // stop at vlen
+      if (aShape < 0)
+        break; // stop at vlen
       product *= aShape;
     }
     return product;
@@ -94,7 +95,7 @@ public class Index implements Cloneable {
    * Compute standard strides based on array's shape.
    * Ignore vlen
    *
-   * @param shape  length of array in each dimension.
+   * @param shape length of array in each dimension.
    * @param stride put result here
    * @return standard strides based on array's shape.
    */
@@ -142,7 +143,7 @@ public class Index implements Cloneable {
    * @param _shape describes an index section: slowest varying comes first (row major)
    */
   protected Index(int[] _shape) {
-    this.shape = new int[_shape.length];  // optimization over clone
+    this.shape = new int[_shape.length]; // optimization over clone
     System.arraycopy(_shape, 0, this.shape, 0, _shape.length);
 
     rank = shape.length;
@@ -157,14 +158,14 @@ public class Index implements Cloneable {
    * Constructor that lets you set the strides yourself.
    * This is used as a counter, not a description of an index section.
    *
-   * @param _shape  Index shape
+   * @param _shape Index shape
    * @param _stride Index stride
    */
   public Index(int[] _shape, int[] _stride) {
-    this.shape = new int[_shape.length];  // optimization over clone
+    this.shape = new int[_shape.length]; // optimization over clone
     System.arraycopy(_shape, 0, this.shape, 0, _shape.length);
 
-    this.stride = new int[_stride.length];  // optimization over clone
+    this.stride = new int[_stride.length]; // optimization over clone
     System.arraycopy(_stride, 0, this.stride, 0, _stride.length);
 
     rank = shape.length;
@@ -177,8 +178,7 @@ public class Index implements Cloneable {
   /**
    * subclass specialization/optimization calculations
    */
-  protected void precalc() {
-  }
+  protected void precalc() {}
 
   /**
    * Create a new Index based on current one, except
@@ -207,8 +207,8 @@ public class Index implements Cloneable {
    * dimension length == 1.
    *
    * @param ranges array of Ranges that specify the array subset.
-   *               Must be same rank as original Array.
-   *               A particular Range: 1) may be a subset; 2) may be null, meaning use entire Range.
+   *        Must be same rank as original Array.
+   *        A particular Range: 1) may be a subset; 2) may be null, meaning use entire Range.
    * @return new Index, with same or smaller rank as original.
    * @throws InvalidRangeException if ranges dont match current shape
    */
@@ -242,23 +242,24 @@ public class Index implements Cloneable {
     int newDim = 0;
     for (int ii = 0; ii < rank; ii++) {
       Range r = ranges.get(ii);
-      if (r == null) {          // null range means use the whole original dimension
+      if (r == null) { // null range means use the whole original dimension
         newindex.shape[newDim] = shape[ii];
         newindex.stride[newDim] = stride[ii];
-        //if (name != null) newindex.name[newDim] = name[ii];
+        // if (name != null) newindex.name[newDim] = name[ii];
         newDim++;
       } else if (r.length() != 1) {
         newindex.shape[newDim] = r.length();
         newindex.stride[newDim] = stride[ii] * r.stride();
         newindex.offset += stride[ii] * r.first();
-        //if (name != null) newindex.name[newDim] = name[ii];
+        // if (name != null) newindex.name[newDim] = name[ii];
         newDim++;
       } else {
-        newindex.offset += stride[ii] * r.first();   // constant due to rank reduction
+        newindex.offset += stride[ii] * r.first(); // constant due to rank reduction
       }
     }
     newindex.size = computeSize(newindex.shape);
-    newindex.fastIterator = fastIterator && (newindex.size == size); // if equal, then its not a real subset, so can still use fastIterator
+    newindex.fastIterator = fastIterator && (newindex.size == size); // if equal, then its not a real subset, so can
+                                                                     // still use fastIterator
     newindex.precalc(); // any subclass-specific optimizations
     return newindex;
   }
@@ -267,8 +268,8 @@ public class Index implements Cloneable {
    * create a new Index based on a subsection of this one, without rank reduction.
    *
    * @param ranges list of Ranges that specify the array subset.
-   *               Must be same rank as original Array.
-   *               A particular Range: 1) may be a subset; 2) may be null, meaning use entire Range.
+   *        Must be same rank as original Array.
+   *        A particular Range: 1) may be a subset; 2) may be null, meaning use entire Range.
    * @return new Index, with same rank as original.
    * @throws InvalidRangeException if ranges dont match current shape
    */
@@ -297,7 +298,7 @@ public class Index implements Cloneable {
     // calc strides into original (backing) store
     for (int ii = 0; ii < rank; ii++) {
       Range r = ranges.get(ii);
-      if (r == null) {          // null range means use the whole original dimension
+      if (r == null) { // null range means use the whole original dimension
         newindex.shape[ii] = shape[ii];
         newindex.stride[ii] = stride[ii];
       } else {
@@ -305,10 +306,11 @@ public class Index implements Cloneable {
         newindex.stride[ii] = stride[ii] * r.stride();
         newindex.offset += stride[ii] * r.first();
       }
-      //if (name != null) newindex.name[ii] = name[ii];
+      // if (name != null) newindex.name[ii] = name[ii];
     }
     newindex.size = computeSize(newindex.shape);
-    newindex.fastIterator = fastIterator && (newindex.size == size); // if equal, then its not a real subset, so can still use fastIterator
+    newindex.fastIterator = fastIterator && (newindex.size == size); // if equal, then its not a real subset, so can
+                                                                     // still use fastIterator
     newindex.precalc(); // any subclass-specific optimizations
     return newindex;
   }
@@ -322,9 +324,9 @@ public class Index implements Cloneable {
   Index reduce() {
     Index c = this;
     for (int ii = 0; ii < rank; ii++)
-      if (shape[ii] == 1) {  // do this on the first one you find
+      if (shape[ii] == 1) { // do this on the first one you find
         Index newc = c.reduce(ii);
-        return newc.reduce();  // any more to do?
+        return newc.reduce(); // any more to do?
       }
     return c;
   }
@@ -349,14 +351,14 @@ public class Index implements Cloneable {
       if (ii != dim) {
         newindex.shape[count] = shape[ii];
         newindex.stride[count] = stride[ii];
-        //if (name != null) newindex.name[count] = name[ii];
+        // if (name != null) newindex.name[count] = name[ii];
 
         count++;
       }
     }
     newindex.size = computeSize(newindex.shape);
     newindex.fastIterator = fastIterator;
-    newindex.precalc();         // any subclass-specific optimizations
+    newindex.precalc(); // any subclass-specific optimizations
     return newindex;
   }
 
@@ -379,10 +381,12 @@ public class Index implements Cloneable {
     newIndex.stride[index2] = stride[index1];
     newIndex.shape[index1] = shape[index2];
     newIndex.shape[index2] = shape[index1];
-    /* if (name != null) {
-      newIndex.name[index1] = name[index2];
-      newIndex.name[index2] = name[index1];
-    } */
+    /*
+     * if (name != null) {
+     * newIndex.name[index1] = name[index2];
+     * newIndex.name[index2] = name[index1];
+     * }
+     */
 
     newIndex.fastIterator = false;
     newIndex.precalc(); // any subclass-specific optimizations
@@ -407,8 +411,9 @@ public class Index implements Cloneable {
     for (int i = 0; i < dims.length; i++) {
       newIndex.stride[i] = stride[dims[i]];
       newIndex.shape[i] = shape[dims[i]];
-      //if (name != null) newIndex.name[i] = name[dims[i]];
-      if (i != dims[i]) isPermuted = true;
+      // if (name != null) newIndex.name[i] = name[dims[i]];
+      if (i != dims[i])
+        isPermuted = true;
     }
 
     newIndex.fastIterator = fastIterator && !isPermuted; // useful optimization
@@ -432,7 +437,7 @@ public class Index implements Cloneable {
    * @return the shape
    */
   public int[] getShape() {
-    int[] result = new int[shape.length];  // optimization over clone
+    int[] result = new int[shape.length]; // optimization over clone
     System.arraycopy(shape, 0, result, 0, shape.length);
     return result;
   }
@@ -490,9 +495,10 @@ public class Index implements Cloneable {
    * @return the current element's index into the 1D backing array.
    */
   public int currentElement() {
-    int value = offset;                 // NB: dont have to check each index again
+    int value = offset; // NB: dont have to check each index again
     for (int ii = 0; ii < rank; ii++) { // general rank
-      if (shape[ii] < 0) break;//vlen
+      if (shape[ii] < 0)
+        break;// vlen
       value += current[ii] * stride[ii];
     }
     return value;
@@ -544,8 +550,8 @@ public class Index implements Cloneable {
       } // do not increment vlen
       current[digit]++;
       if (current[digit] < shape[digit])
-        break;                        // normal exit
-      current[digit] = 0;               // else, carry
+        break; // normal exit
+      current[digit] = 0; // else, carry
       digit--;
     }
     return currentElement();
@@ -562,10 +568,12 @@ public class Index implements Cloneable {
   public Index set(int[] index) {
     if (index.length != rank)
       throw new ArrayIndexOutOfBoundsException();
-    if (rank == 0) return this;
+    if (rank == 0)
+      return this;
     int prefixrank = (hasvlen ? rank : rank - 1);
     System.arraycopy(index, 0, current, 0, prefixrank);
-    if (hasvlen) current[prefixrank] = -1;
+    if (hasvlen)
+      current[prefixrank] = -1;
     return this;
   }
 
@@ -573,13 +581,13 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension dim to v
    *
-   * @param dim   set this dimension
+   * @param dim set this dimension
    * @param value to this value
    */
   public void setDim(int dim, int value) {
-    if (value < 0 || value >= shape[dim])  // check index here
+    if (value < 0 || value >= shape[dim]) // check index here
       throw new ArrayIndexOutOfBoundsException();
-    if (shape[dim] >= 0) //!vlen
+    if (shape[dim] >= 0) // !vlen
       current[dim] = value;
   }
 
@@ -801,13 +809,15 @@ public class Index implements Cloneable {
       sbuff.append(" ");
     }
 
-    /* if (name != null) {
-      sbuff.append(" names= ");
-      for (int ii = 0; ii < rank; ii++) {
-        sbuff.append(name[ii]);
-        sbuff.append(" ");
-      }
-    } */
+    /*
+     * if (name != null) {
+     * sbuff.append(" names= ");
+     * for (int ii = 0; ii < rank; ii++) {
+     * sbuff.append(name[ii]);
+     * sbuff.append(" ");
+     * }
+     * }
+     */
 
     sbuff.append(" offset= ").append(offset);
     sbuff.append(" rank= ").append(rank);
@@ -826,7 +836,8 @@ public class Index implements Cloneable {
     StringBuilder sbuff = new StringBuilder(100);
     sbuff.setLength(0);
     for (int ii = 0; ii < rank; ii++) {
-      if (ii > 0) sbuff.append(",");
+      if (ii > 0)
+        sbuff.append(",");
       sbuff.append(current[ii]);
     }
     return sbuff.toString();
@@ -841,7 +852,7 @@ public class Index implements Cloneable {
     }
     i.stride = stride.clone();
     i.shape = shape.clone();
-    i.current = new int[rank];  // want zeros
+    i.current = new int[rank]; // want zeros
 
     // if (name != null) i.name = name.clone();
 
@@ -852,24 +863,27 @@ public class Index implements Cloneable {
   /*
    * Set the name of one of the indices.
    *
-   * @param dim       which index?
+   * @param dim which index?
+   * 
    * @param indexName name of index
    *
-  public void setIndexName(int dim, String indexName) {
-    if (name == null) name = new String[rank];
-    name[dim] = indexName;
-  }
-
-  /*
+   * public void setIndexName(int dim, String indexName) {
+   * if (name == null) name = new String[rank];
+   * name[dim] = indexName;
+   * }
+   * 
+   * /*
    * Get the name of one of the indices.
    *
    * @param dim which index?
+   * 
    * @return name of index, or null if none.
    *
-  public String getIndexName(int dim) {
-    if (name == null) return null;
-    return name[dim];
-  } */
+   * public String getIndexName(int dim) {
+   * if (name == null) return null;
+   * return name[dim];
+   * }
+   */
 
   private class IteratorImpl implements IndexIterator {
     private int count = 0;
@@ -879,11 +893,11 @@ public class Index implements Cloneable {
 
     private IteratorImpl(Array maa) {
       this.maa = maa;
-      counter = (Index) Index.this.clone();  // could be subtype of Index
+      counter = (Index) Index.this.clone(); // could be subtype of Index
       if (rank > 0)
-        counter.current[rank - 1] = -1;                  // avoid "if first" on every incr.
+        counter.current[rank - 1] = -1; // avoid "if first" on every incr.
       counter.precalc();
-      //System.out.println("IteratorSlow");
+      // System.out.println("IteratorSlow");
     }
 
     public boolean hasNext() {

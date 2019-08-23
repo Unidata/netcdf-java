@@ -6,10 +6,8 @@ package ucar.nc2.ncml;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -34,7 +32,7 @@ public class TestAggUnsignedByte {
    */
   @Before
   public void prepAggDataset() {
-    String filename = "file:./"+TestNcML.topDir + AGG_FILENAME;
+    String filename = "file:./" + TestNcML.topDir + AGG_FILENAME;
     try {
       ncfile = NcMLReader.readNcML(filename, null);
       v = ncfile.findVariable(UBYTE_VAR_NAME);
@@ -51,7 +49,7 @@ public class TestAggUnsignedByte {
   @Test
   public void testIsUnsignedRead() throws IOException {
     // this worked as of 4.6.7, so no bug here...
-   // assert v.isUnsigned();
+    // assert v.isUnsigned();
 
     Array data = v.read();
     // this is the failure for https://github.com/Unidata/thredds/issues/695
@@ -60,13 +58,14 @@ public class TestAggUnsignedByte {
 
   /**
    * Test reading a section of data from an unsigned variable
+   * 
    * @throws IOException
    * @throws InvalidRangeException
    */
   @Test
   public void testIsUnsignedReadSection() throws IOException, InvalidRangeException {
     // this worked as of 4.6.7, so no bug here...
-    //assert v.isUnsigned();
+    // assert v.isUnsigned();
 
     int[] shape = new int[] {1, 10, 20};
     Section section = new Section(shape);

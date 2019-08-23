@@ -22,9 +22,9 @@ public class Stereographic extends AbstractTransformBuilder implements HorizTran
   }
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double scale = readAttributeDouble( ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, 1.0);
-    double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, 90.0);
+    double lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double scale = readAttributeDouble(ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, 1.0);
+    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, 90.0);
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
 
@@ -44,9 +44,11 @@ public class Stereographic extends AbstractTransformBuilder implements HorizTran
     // check for ellipsoidal earth
     if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
       Earth earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
-      proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(lat0, lon0, scale, 90., false_easting, false_northing, earth);
+      proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(lat0, lon0, scale, 90.,
+          false_easting, false_northing, earth);
     } else {
-      proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale, false_easting, false_northing, earth_radius);
+      proj = new ucar.unidata.geoloc.projection.Stereographic(lat0, lon0, scale, false_easting, false_northing,
+          earth_radius);
     }
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }

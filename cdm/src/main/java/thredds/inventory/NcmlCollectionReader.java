@@ -10,12 +10,10 @@ import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
-
 import thredds.client.catalog.Catalog;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.URLnaming;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -32,14 +30,14 @@ public class NcmlCollectionReader {
   // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
 
   private static final boolean debugURL = false, debugXML = false, showParsedXML = false;
-  //private static final boolean validate = false;
+  // private static final boolean validate = false;
 
   static private final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
   static private final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
 
   private Namespace ncmlNS;
-  
+
   /**
    * Read an NcML file from a String, and construct a NcmlCollectionReader from its scan or scanFmrc element.
    *
@@ -49,19 +47,21 @@ public class NcmlCollectionReader {
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
   static public NcmlCollectionReader readNcML(String ncmlString, Formatter errlog) throws IOException {
-      StringReader reader = new StringReader(ncmlString);
-      
-      org.jdom2.Document doc;
-      try {
-        SAXBuilder builder = new SAXBuilder();
-        if (debugURL) System.out.println(" NetcdfDataset NcML String = <" + ncmlString + ">");
-        doc = builder.build(new StringReader(ncmlString));
-      } catch (JDOMException e) {
-        throw new IOException(e.getMessage());
-      }
-      if (debugXML) System.out.println(" SAXBuilder done");
+    StringReader reader = new StringReader(ncmlString);
 
-      return readXML(doc, errlog, null);
+    org.jdom2.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      if (debugURL)
+        System.out.println(" NetcdfDataset NcML String = <" + ncmlString + ">");
+      doc = builder.build(new StringReader(ncmlString));
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+    if (debugXML)
+      System.out.println(" SAXBuilder done");
+
+    return readXML(doc, errlog, null);
   }
 
   /**
@@ -75,22 +75,24 @@ public class NcmlCollectionReader {
   static public NcmlCollectionReader open(String ncmlLocation, Formatter errlog) throws IOException {
     if (!ncmlLocation.startsWith("http:") && !ncmlLocation.startsWith("file:"))
       ncmlLocation = "file:" + ncmlLocation;
-    
+
     URL url = new URL(ncmlLocation);
 
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
-      if (debugURL) System.out.println(" NetcdfDataset URL = <" + url + ">");
+      if (debugURL)
+        System.out.println(" NetcdfDataset URL = <" + url + ">");
       doc = builder.build(url);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
     }
-    if (debugXML) System.out.println(" SAXBuilder done");
+    if (debugXML)
+      System.out.println(" SAXBuilder done");
 
     return readXML(doc, errlog, ncmlLocation);
   }
-  
+
   static private NcmlCollectionReader readXML(org.jdom2.Document doc, Formatter errlog, String ncmlLocation) {
     if (showParsedXML) {
       XMLOutputter xmlOut = new XMLOutputter();
@@ -102,7 +104,7 @@ public class NcmlCollectionReader {
 
     if (!myNS.equals(Catalog.ncmlNS) && !myNS.equals(Catalog.ncmlNSHttps)) {
       errlog.format("Incorrect namespace specified in NcML= %s must be %s%n or %s%n", myNS.getURI(),
-              Catalog.ncmlNS.getURI(), Catalog.ncmlNSHttps.getURI());
+          Catalog.ncmlNS.getURI(), Catalog.ncmlNSHttps.getURI());
       return null;
     }
 
@@ -113,12 +115,12 @@ public class NcmlCollectionReader {
     }
 
     String type = aggElem.getAttributeValue("type");
-    if (!type.equals("forecastModelRunCollection") && !type.equals("forecastModelRunSingleCollection") &&
-        !type.equals("fmrc")) {
-       errlog.format("NcML aggregation must be of type fmrc");
+    if (!type.equals("forecastModelRunCollection") && !type.equals("forecastModelRunSingleCollection")
+        && !type.equals("fmrc")) {
+      errlog.format("NcML aggregation must be of type fmrc");
       return null;
     }
-    
+
     return new NcmlCollectionReader(ncmlLocation, netcdfElem);
   }
 
@@ -139,7 +141,8 @@ public class NcmlCollectionReader {
 
     // get the aggregation/scan element
     Element scanElem = aggElem.getChild("scan", ncmlNS);
-    if (scanElem == null) scanElem = aggElem.getChild("scanFmrc", ncmlNS);
+    if (scanElem == null)
+      scanElem = aggElem.getChild("scanFmrc", ncmlNS);
 
     if (scanElem == null) {
       // no directory scan going on here - look for explicitly named datasets
@@ -206,10 +209,14 @@ public class NcmlCollectionReader {
   }
 
   private boolean hasMods(Element elem) {
-    if (elem.getChildren("attribute", ncmlNS).size() > 0) return true;
-    if (elem.getChildren("variable", ncmlNS).size() > 0) return true;
-    if (elem.getChildren("dimension", ncmlNS).size() > 0) return true;
-    if (elem.getChildren("group", ncmlNS).size() > 0) return true;
+    if (elem.getChildren("attribute", ncmlNS).size() > 0)
+      return true;
+    if (elem.getChildren("variable", ncmlNS).size() > 0)
+      return true;
+    if (elem.getChildren("dimension", ncmlNS).size() > 0)
+      return true;
+    if (elem.getChildren("group", ncmlNS).size() > 0)
+      return true;
     return elem.getChildren("remove", ncmlNS).size() > 0;
   }
 

@@ -5,12 +5,12 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
-
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 
 /**
  * Filter a PointFeatureCollectionIterator
+ * 
  * @author caron
  * @since Mar 20, 2008
  */
@@ -22,14 +22,16 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
   private PointFeatureCollection pointFeatureCollection;
   private boolean done = false;
 
-  public PointCollectionIteratorFiltered(PointFeatureCollectionIterator pfciter, PointFeatureCollectionIterator.Filter filter) {
+  public PointCollectionIteratorFiltered(PointFeatureCollectionIterator pfciter,
+      PointFeatureCollectionIterator.Filter filter) {
     this.pfciter = pfciter;
     this.filter = filter;
   }
 
   @Override
   public boolean hasNext() throws IOException {
-    if (done) return false;
+    if (done)
+      return false;
 
     pointFeatureCollection = nextFilteredPointFeatureCollection();
     return (pointFeatureCollection != null);
@@ -50,7 +52,7 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
   }
 
   private PointFeatureCollection nextFilteredPointFeatureCollection() throws IOException {
-    //if ( pfciter == null) return null;
+    // if ( pfciter == null) return null;
     if (!pfciter.hasNext()) {
       pfciter.close();
       return null;

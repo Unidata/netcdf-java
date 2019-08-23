@@ -18,13 +18,14 @@ import ucar.nc2.dt.StationObsDatatype;
 public abstract class StationObsDatatypeImpl extends PointObsDatatypeImpl implements StationObsDatatype {
   protected ucar.unidata.geoloc.Station station;
 
-  public StationObsDatatypeImpl() {
-  }
+  public StationObsDatatypeImpl() {}
 
-  public StationObsDatatypeImpl( ucar.unidata.geoloc.Station station, double obsTime, double nomTime) {
-    super(station, obsTime,  nomTime);
+  public StationObsDatatypeImpl(ucar.unidata.geoloc.Station station, double obsTime, double nomTime) {
+    super(station, obsTime, nomTime);
     this.station = station;
   }
 
-  public ucar.unidata.geoloc.Station getStation() { return station; }
+  public ucar.unidata.geoloc.Station getStation() {
+    return station;
+  }
 }

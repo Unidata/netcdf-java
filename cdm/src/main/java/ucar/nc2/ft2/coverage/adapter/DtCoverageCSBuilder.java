@@ -12,7 +12,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.RotatedPole;
-
 import java.util.*;
 
 /**
@@ -25,7 +24,8 @@ public class DtCoverageCSBuilder {
 
   // classify based on largest coordinate system
   public static DtCoverageCSBuilder classify(NetcdfDataset ds, Formatter errlog) {
-    if (errlog != null) errlog.format("CoverageFactory for '%s'%n", ds.getLocation());
+    if (errlog != null)
+      errlog.format("CoverageFactory for '%s'%n", ds.getLocation());
 
     // sort by largest size first
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
@@ -34,10 +34,13 @@ public class DtCoverageCSBuilder {
     DtCoverageCSBuilder builder = null;
     for (CoordinateSystem cs : css) {
       builder = new DtCoverageCSBuilder(ds, cs, errlog);
-      if (builder.type != null) break;
+      if (builder.type != null)
+        break;
     }
-    if (builder == null) return null;
-    if (errlog != null) errlog.format("coverage = %s%n", builder.type);
+    if (builder == null)
+      return null;
+    if (errlog != null)
+      errlog.format("coverage = %s%n", builder.type);
     return builder;
   }
 
@@ -68,7 +71,8 @@ public class DtCoverageCSBuilder {
 
     // must be at least 2 dimensions
     if (cs.getRankDomain() < 2) {
-      if (errlog != null) errlog.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
+      if (errlog != null)
+        errlog.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
       return;
     }
 
@@ -78,11 +82,13 @@ public class DtCoverageCSBuilder {
     if (!cs.isLatLon()) {
       // do check for GeoXY
       if ((cs.getXaxis() == null) || (cs.getYaxis() == null)) {
-        if (errlog != null) errlog.format("%s: NO Lat,Lon or X,Y axis%n", cs.getName());
+        if (errlog != null)
+          errlog.format("%s: NO Lat,Lon or X,Y axis%n", cs.getName());
         return;
       }
       if (null == cs.getProjection()) {
-        if (errlog != null) errlog.format("%s: NO projection found%n", cs.getName());
+        if (errlog != null)
+          errlog.format("%s: NO projection found%n", cs.getName());
         return;
       }
     }
@@ -95,12 +101,14 @@ public class DtCoverageCSBuilder {
       ProjectionImpl p = cs.getProjection();
       if (!(p instanceof RotatedPole)) {
         if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
-          if (errlog != null) errlog.format("%s: X axis units are not convertible to km%n", cs.getName());
-          //return false;
+          if (errlog != null)
+            errlog.format("%s: X axis units are not convertible to km%n", cs.getName());
+          // return false;
         }
         if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
-          if (errlog != null) errlog.format("%s: Y axis units are not convertible to km%n", cs.getName());
-          //return false;
+          if (errlog != null)
+            errlog.format("%s: Y axis units are not convertible to km%n", cs.getName());
+          // return false;
         }
       }
     } else {
@@ -111,20 +119,23 @@ public class DtCoverageCSBuilder {
 
     // check x,y rank <= 2
     if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
-      if (errlog != null) errlog.format("%s: X and Y axis rank must be <= 2%n", cs.getName());
+      if (errlog != null)
+        errlog.format("%s: X and Y axis rank must be <= 2%n", cs.getName());
       return;
     }
 
     // check x,y with size 1
     if ((xaxis.getSize() < 2) || (yaxis.getSize() < 2)) {
-      if (errlog != null) errlog.format("%s: X and Y axis size must be >= 2%n", cs.getName());
+      if (errlog != null)
+        errlog.format("%s: X and Y axis size must be >= 2%n", cs.getName());
       return;
     }
 
     // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
-    int xyDomainSize = CoordinateSystem.countDomain(new CoordinateAxis[]{xaxis, yaxis});
+    int xyDomainSize = CoordinateSystem.countDomain(new CoordinateAxis[] {xaxis, yaxis});
     if (xyDomainSize < 2) {
-      if (errlog != null) errlog.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
+      if (errlog != null)
+        errlog.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
       return;
     }
 
@@ -135,9 +146,12 @@ public class DtCoverageCSBuilder {
     otherAxes = new ArrayList<>();
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
       // skip x,y if no projection
-      if ((axis.getAxisType() == AxisType.GeoX || axis.getAxisType() == AxisType.GeoY) && isLatLon) continue;
-      if (axis.isIndependentCoordinate()) independentAxes.add(axis);
-      else otherAxes.add(axis);
+      if ((axis.getAxisType() == AxisType.GeoX || axis.getAxisType() == AxisType.GeoY) && isLatLon)
+        continue;
+      if (axis.isIndependentCoordinate())
+        independentAxes.add(axis);
+      else
+        otherAxes.add(axis);
     }
     independentAxes.sort((o1, o2) -> {
       AxisType t1 = o1.getAxisType();
@@ -151,10 +165,12 @@ public class DtCoverageCSBuilder {
     // vert
     CoordinateAxis zAxis = cs.getHeightAxis();
     if ((zAxis == null) || (zAxis.getRank() > 1)) {
-      if (cs.getPressureAxis() != null) zAxis = cs.getPressureAxis();
+      if (cs.getPressureAxis() != null)
+        zAxis = cs.getPressureAxis();
     }
     if ((zAxis == null) || (zAxis.getRank() > 1)) {
-      if (cs.getZaxis() != null) zAxis = cs.getZaxis();
+      if (cs.getZaxis() != null)
+        zAxis = cs.getZaxis();
     }
     if (zAxis != null) {
       if (zAxis instanceof CoordinateAxis1D)
@@ -165,18 +181,20 @@ public class DtCoverageCSBuilder {
     // time
     CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
     if (rt != null) {
-      if (!rt.isScalar() && !(rt instanceof CoordinateAxis1D)) {   // A runtime axis must be scalar or one-dimensional
-        if (errlog != null) errlog.format("%s: RunTime axis must be 1D or scalar%n", cs.getName());
+      if (!rt.isScalar() && !(rt instanceof CoordinateAxis1D)) { // A runtime axis must be scalar or one-dimensional
+        if (errlog != null)
+          errlog.format("%s: RunTime axis must be 1D or scalar%n", cs.getName());
         return;
       }
-      if (!(rt instanceof CoordinateAxis1DTime)) {    // convert to CoordinateAxis1DTime
+      if (!(rt instanceof CoordinateAxis1DTime)) { // convert to CoordinateAxis1DTime
         try {
           rtAxis = CoordinateAxis1DTime.factory(ds, rt, errlog);
           int index = allAxes.indexOf(rt); // replace
           allAxes.set(index, rtAxis);
         } catch (Exception e) {
           if (errlog != null)
-            errlog.format("%s: Error reading runtime coord= %s err= %s%n", rt.getDatasetLocation(), rt.getFullName(), e.getMessage());
+            errlog.format("%s: Error reading runtime coord= %s err= %s%n", rt.getDatasetLocation(), rt.getFullName(),
+                e.getMessage());
           return;
         }
       } else {
@@ -185,25 +203,28 @@ public class DtCoverageCSBuilder {
     }
 
     CoordinateAxis t = cs.getTaxis();
-    if ((t != null) && t.getRank() > 1) {  // If time axis is two-dimensional...
+    if ((t != null) && t.getRank() > 1) { // If time axis is two-dimensional...
       if (rtAxis != null && rtAxis.getRank() == 1) {
         // time first dimension must agree with runtime
         if (!rtAxis.getDimension(0).equals(t.getDimension(0))) {
-          if (errlog != null) errlog.format("%s: 2D Time axis first dimension must be runtime%n", cs.getName());
+          if (errlog != null)
+            errlog.format("%s: 2D Time axis first dimension must be runtime%n", cs.getName());
           return;
         }
       }
     }
 
     if (t != null) {
-      if (t instanceof CoordinateAxis1D && !(t instanceof CoordinateAxis1DTime)) {  // convert time axis into CoordinateAxis1DTime if possible
+      if (t instanceof CoordinateAxis1D && !(t instanceof CoordinateAxis1DTime)) { // convert time axis into
+                                                                                   // CoordinateAxis1DTime if possible
         try {
           timeAxis = CoordinateAxis1DTime.factory(ds, t, errlog);
           int index = allAxes.indexOf(t); // replace
           allAxes.set(index, timeAxis);
         } catch (Exception e) {
           if (errlog != null)
-            errlog.format("%s: Error reading time coord= %s err= %s%n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
+            errlog.format("%s: Error reading time coord= %s err= %s%n", t.getDatasetLocation(), t.getFullName(),
+                e.getMessage());
           return;
         }
       } else {
@@ -232,19 +253,19 @@ public class DtCoverageCSBuilder {
     this.orgProj = cs.getProjection();
   }
 
-  private FeatureType classify () {
+  private FeatureType classify() {
 
     // now to classify
     boolean is2Dtime = (rtAxis != null) && (timeOffsetAxis != null || (timeAxis != null && timeAxis.getRank() == 2));
     if (is2Dtime) {
-      return FeatureType.FMRC;   // LOOK this would allow 2d horiz
+      return FeatureType.FMRC; // LOOK this would allow 2d horiz
     }
 
     boolean is2Dhoriz = isLatLon && (xaxis.getRank() == 2) && (yaxis.getRank() == 2);
     if (is2Dhoriz) {
       Set<Dimension> xyDomain = CoordinateSystem.makeDomain(Lists.newArrayList(xaxis, yaxis));
       if (timeAxis != null && CoordinateSystem.isSubset(timeAxis.getDimensionsAll(), xyDomain))
-        return FeatureType.SWATH;   // LOOK prob not exactly right
+        return FeatureType.SWATH; // LOOK prob not exactly right
       else
         return FeatureType.CURVILINEAR;
     }
@@ -266,7 +287,8 @@ public class DtCoverageCSBuilder {
   }
 
   public DtCoverageCS makeCoordSys() {
-    if (type == null) return null;
+    if (type == null)
+      return null;
 
     switch (type) {
       case GRID:
@@ -292,7 +314,8 @@ public class DtCoverageCSBuilder {
     f2.format("%n rtAxis= %s", rtAxis == null ? "" : rtAxis.getNameAndDimensions());
     f2.format("%n toAxis= %s", timeOffsetAxis == null ? "" : timeOffsetAxis.getNameAndDimensions());
     f2.format("%n ensAxis=%s", ensAxis == null ? "" : ensAxis.getNameAndDimensions());
-    if (type == null) return f2.toString();
+    if (type == null)
+      return f2.toString();
 
     f2.format("%n%n independentAxes=(");
     for (CoordinateAxis axis : independentAxes)
@@ -320,7 +343,8 @@ public class DtCoverageCSBuilder {
   }
 
   public String showSummary() {
-    if (type == null) return "";
+    if (type == null)
+      return "";
 
     Formatter f2 = new Formatter();
     f2.format("%s", type.toString());
@@ -328,7 +352,8 @@ public class DtCoverageCSBuilder {
     f2.format("(");
     int count = 0;
     for (CoordinateAxis axis : independentAxes) {
-      if (count++ > 0) f2.format(",");
+      if (count++ > 0)
+        f2.format(",");
       f2.format("%s", axis.getAxisType() == null ? axis.getShortName() : axis.getAxisType().getCFAxisName());
     }
     f2.format(")");
@@ -337,7 +362,8 @@ public class DtCoverageCSBuilder {
       f2.format(": ");
       count = 0;
       for (CoordinateAxis axis : otherAxes) {
-        if (count++ > 0) f2.format(",");
+        if (count++ > 0)
+          f2.format(",");
         f2.format("%s", axis.getShortName());
       }
     }

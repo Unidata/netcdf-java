@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -43,128 +43,126 @@ package opendap.servlet.ascii;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import opendap.dap.*;
 
 /**
  */
 public class asciiSeq extends DSequence implements toASCII {
 
-    private static boolean _Debug = false;
+  private static boolean _Debug = false;
 
-    /**
-     * Constructs a new <code>asciiSeq</code>.
+  /**
+   * Constructs a new <code>asciiSeq</code>.
+   */
+  public asciiSeq() {
+    this(null);
+  }
+
+  /**
+   * Constructs a new <code>asciiSeq</code> with name <code>n</code>.
+   *
+   * @param n the name of the variable.
+   */
+  public asciiSeq(String n) {
+    super(n);
+  }
+
+
+  /**
+   * Returns a string representation of the variables value. This
+   * is really foreshadowing functionality for Server types, but
+   * as it may come in useful for clients it is added here. Simple
+   * types (example: DFloat32) will return a single value. DConstuctor
+   * and DVector types will be flattened. DStrings and DURL's will
+   * have double quotes around them.
+   *
+   * @param addName is a flag indicating if the variable name should
+   *        appear at the begining of the returned string.
+   */
+  public void toASCII(PrintWriter pw, boolean addName, String rootName, boolean newLine) {
+
+    if (_Debug)
+      System.out.println("asciiSeq.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getEncodedName());
+    // System.out.println("this: " + this + " Has "+allValues.size() + " elements.");
+
+    if (rootName != null)
+      rootName += "." + getEncodedName();
+    else
+      rootName = getEncodedName();
+
+    pw.print(toASCIIFlatName(rootName));
+
+    /*
+     * for(Enumeration e1 = allValues.elements(); e1.hasMoreElements(); ) {
+     * // get next instance vector
+     * Vector v = (Vector)e1.nextElement();
+     * for(Enumeration e2 = v.elements(); e2.hasMoreElements(); ) {
+     * // get next instance variable
+     * BaseType bt = (BaseType)e2.nextElement();
+     * 
+     * pw.print(bt.toASCIIFlatName(rootName)+",");
+     * }
+     * break;
+     * }
      */
-    public asciiSeq() {
-        this(null);
-    }
 
-    /**
-     * Constructs a new <code>asciiSeq</code> with name <code>n</code>.
-     *
-     * @param n the name of the variable.
-     */
-    public asciiSeq(String n) {
-        super(n);
-    }
+    pw.println("");
 
+    int i = 0;
+    for (Enumeration e1 = allValues.elements(); e1.hasMoreElements();) {
 
-    /**
-     * Returns a string representation of the variables value. This
-     * is really foreshadowing functionality for Server types, but
-     * as it may come in useful for clients it is added here. Simple
-     * types (example: DFloat32) will return a single value. DConstuctor
-     * and DVector types will be flattened. DStrings and DURL's will
-     * have double quotes around them.
-     *
-     * @param addName is a flag indicating if the variable name should
-     *                appear at the begining of the returned string.
-     */
-    public void toASCII(PrintWriter pw,
-                        boolean addName,
-                        String rootName,
-                        boolean newLine) {
+      int j = 0;
+      // get next instance vector
+      Vector v = (Vector) e1.nextElement();
+      for (Enumeration e2 = v.elements(); e2.hasMoreElements();) {
+        // get next instance variable
+        toASCII ta = (toASCII) e2.nextElement();
 
-        if (_Debug) System.out.println("asciiSeq.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getEncodedName());
-        //System.out.println("this: " + this + " Has "+allValues.size() + " elements.");
-
-        if (rootName != null)
-            rootName += "." + getEncodedName();
-        else
-            rootName = getEncodedName();
-
-        pw.print(toASCIIFlatName(rootName));
-
-/*
-        for(Enumeration e1 = allValues.elements(); e1.hasMoreElements(); ) {
-            // get next instance vector
-            Vector v = (Vector)e1.nextElement();
-            for(Enumeration e2 = v.elements(); e2.hasMoreElements(); ) {
-                // get next instance variable
-                BaseType bt = (BaseType)e2.nextElement();
-
-        pw.print(bt.toASCIIFlatName(rootName)+",");
-            }
-        break;
-        }
-*/
-
-        pw.println("");
-
-        int i = 0;
-        for (Enumeration e1 = allValues.elements(); e1.hasMoreElements();) {
-
-            int j = 0;
-            // get next instance vector
-            Vector v = (Vector) e1.nextElement();
-            for (Enumeration e2 = v.elements(); e2.hasMoreElements();) {
-                // get next instance variable
-                toASCII ta = (toASCII) e2.nextElement();
-
-                if (j > 0) pw.print(", ");
-                ta.toASCII(pw, false, rootName, false);
-                j++;
-            }
-            pw.println("");
-        }
-
-
-        if (newLine)
-            pw.print("\n");
-
+        if (j > 0)
+          pw.print(", ");
+        ta.toASCII(pw, false, rootName, false);
+        j++;
+      }
+      pw.println("");
     }
 
 
-    public String toASCIIAddRootName(PrintWriter pw, boolean addName, String rootName) {
+    if (newLine)
+      pw.print("\n");
 
-        if (addName) {
-            rootName = toASCIIFlatName(rootName);
-            pw.print(rootName);
-        }
-        return (rootName);
+  }
 
+
+  public String toASCIIAddRootName(PrintWriter pw, boolean addName, String rootName) {
+
+    if (addName) {
+      rootName = toASCIIFlatName(rootName);
+      pw.print(rootName);
     }
+    return (rootName);
+
+  }
 
 
-    public String toASCIIFlatName(String rootName) {
+  public String toASCIIFlatName(String rootName) {
 
-        StringBuilder s = new StringBuilder();
-        boolean firstPass = true;
-        for (Enumeration e1 = allValues.elements(); e1.hasMoreElements();) {
-            // get next instance vector
-            Vector v = (Vector) e1.nextElement();
-            for (Enumeration e2 = v.elements(); e2.hasMoreElements();) {
-                // get next instance variable
-                toASCII ta = (toASCII) e2.nextElement();
-                if (!firstPass)
-                    s.append(", ");
-                s.append(ta.toASCIIFlatName(rootName));
-                firstPass = false;
-            }
-            break;
-        }
-        return s.toString();
+    StringBuilder s = new StringBuilder();
+    boolean firstPass = true;
+    for (Enumeration e1 = allValues.elements(); e1.hasMoreElements();) {
+      // get next instance vector
+      Vector v = (Vector) e1.nextElement();
+      for (Enumeration e2 = v.elements(); e2.hasMoreElements();) {
+        // get next instance variable
+        toASCII ta = (toASCII) e2.nextElement();
+        if (!firstPass)
+          s.append(", ");
+        s.append(ta.toASCIIFlatName(rootName));
+        firstPass = false;
+      }
+      break;
     }
+    return s.toString();
+  }
 
 }
 

@@ -5,12 +5,10 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -19,21 +17,21 @@ import java.lang.invoke.MethodHandles;
 public class TestNcMLRead extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestNcMLRead( String name) {
+  public TestNcMLRead(String name) {
     super(name);
   }
 
   NetcdfFile ncfile = null;
-  String location = "file:"+TestNcML.topDir + "testRead.xml";
+  String location = "file:" + TestNcML.topDir + "testRead.xml";
 
   public void setUp() {
     try {
       ncfile = NcMLReader.readNcML(location, null);
-      //System.out.println("ncfile opened = "+location);
+      // System.out.println("ncfile opened = "+location);
     } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = "+e);
+      System.out.println("bad URL error = " + e);
     } catch (IOException e) {
-      System.out.println("IO error = "+e);
+      System.out.println("IO error = " + e);
       e.printStackTrace();
     }
   }
@@ -43,7 +41,7 @@ public class TestNcMLRead extends TestCase {
   }
 
   public void testStructure() {
-    System.out.println("ncfile opened = "+location+"\n"+ncfile);
+    System.out.println("ncfile opened = " + location + "\n" + ncfile);
 
     Attribute att = ncfile.findGlobalAttribute("title");
     assert null != att;
@@ -110,7 +108,8 @@ public class TestNcMLRead extends TestCase {
       assert close(dataI.getDoubleNext(), 41.0);
       assert close(dataI.getDoubleNext(), 40.0);
       assert close(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
 
   }
 
@@ -164,21 +163,21 @@ public class TestNcMLRead extends TestCase {
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
 
-      Array data = v.read(origin, shape);
-      assert data.getRank() == 3;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 1;
-      assert data.getElementType() == int.class;
+    Array data = v.read(origin, shape);
+    assert data.getRank() == 3;
+    assert data.getSize() == 6;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 1;
+    assert data.getElementType() == int.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 5;
-      assert dataI.getIntNext() == 9;
-      assert dataI.getIntNext() == 21;
-      assert dataI.getIntNext() == 25;
-      assert dataI.getIntNext() == 29;
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 1;
+    assert dataI.getIntNext() == 5;
+    assert dataI.getIntNext() == 9;
+    assert dataI.getIntNext() == 21;
+    assert dataI.getIntNext() == 25;
+    assert dataI.getIntNext() == 29;
   }
 
   public void testReadSlice2() throws Exception {
@@ -187,20 +186,20 @@ public class TestNcMLRead extends TestCase {
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
 
-      Array data = v.read(origin, shape).reduce();
-      assert data.getRank() == 2;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getElementType() == int.class;
+    Array data = v.read(origin, shape).reduce();
+    assert data.getRank() == 2;
+    assert data.getSize() == 6;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getElementType() == int.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 2;
-      assert dataI.getIntNext() == 3;
-      assert dataI.getIntNext() == 21;
-      assert dataI.getIntNext() == 22;
-      assert dataI.getIntNext() == 23;
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 1;
+    assert dataI.getIntNext() == 2;
+    assert dataI.getIntNext() == 3;
+    assert dataI.getIntNext() == 21;
+    assert dataI.getIntNext() == 22;
+    assert dataI.getIntNext() == 23;
 
   }
 
@@ -232,44 +231,44 @@ public class TestNcMLRead extends TestCase {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-      Array data = v.read();
-      assert data.getRank() == 3;
-      assert data.getSize() == 24;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 4;
-      assert data.getElementType() == double.class;
+    Array data = v.read();
+    assert data.getRank() == 3;
+    assert data.getSize() == 24;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 4;
+    assert data.getElementType() == double.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert close( dataI.getDoubleNext(),1.0);
-      assert close( dataI.getDoubleNext(),2.0);
-      assert close( dataI.getDoubleNext(),3.0);
-      assert close( dataI.getDoubleNext(),4.0);
-      assert close( dataI.getDoubleNext(),2.0);
+    IndexIterator dataI = data.getIndexIterator();
+    assert close(dataI.getDoubleNext(), 1.0);
+    assert close(dataI.getDoubleNext(), 2.0);
+    assert close(dataI.getDoubleNext(), 3.0);
+    assert close(dataI.getDoubleNext(), 4.0);
+    assert close(dataI.getDoubleNext(), 2.0);
   }
 
-  boolean close( double d1, double d2) {
-    //System.out.println(d1+" "+d2);
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
+  boolean close(double d1, double d2) {
+    // System.out.println(d1+" "+d2);
+    return Math.abs((d1 - d2) / d1) < 1.0e-5;
   }
 
   static public class TestRead2 extends TestNcMLRead {
 
     // equivalent dataset using "readMetadata"
-    public TestRead2( String name) {
+    public TestRead2(String name) {
       super(name);
       ncfile = null;
-      location = "file:"+TestNcML.topDir + "readMetadata.xml";
+      location = "file:" + TestNcML.topDir + "readMetadata.xml";
     }
   }
 
   static public class TestReadHttps extends TestNcMLRead {
 
     // equivalent dataset using "readMetadata"
-    public TestReadHttps( String name) {
+    public TestReadHttps(String name) {
       super(name);
       ncfile = null;
-      location = "file:"+TestNcML.topDir + "testReadHttps.xml";
+      location = "file:" + TestNcML.topDir + "testReadHttps.xml";
     }
   }
 

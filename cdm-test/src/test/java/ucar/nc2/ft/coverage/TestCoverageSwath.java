@@ -19,7 +19,6 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -32,7 +31,7 @@ import java.lang.invoke.MethodHandles;
 @Category(NeedsCdmUnitTest.class)
 public class TestCoverageSwath {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  
+
   @Test
   public void TestCoverageSize() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "formats/dmsp/F14200307192230.s.OIS";
@@ -51,7 +50,7 @@ public class TestCoverageSwath {
 
       int[] shape = cover.getShape();
       logger.debug("{}", Misc.showInts(shape));
-      Assert.assertArrayEquals(new int[]{1631, 1465}, shape);
+      Assert.assertArrayEquals(new int[] {1631, 1465}, shape);
 
       long size = cover.getSizeInBytes();
       Assert.assertEquals(1631 * 1465 * DataType.USHORT.getSize(), size);

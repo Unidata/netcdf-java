@@ -32,7 +32,7 @@ public class Orthographic extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result =  new Orthographic(getOriginLat(), getOriginLon(), R);
+    ProjectionImpl result = new Orthographic(getOriginLat(), getOriginLon(), R);
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -58,8 +58,8 @@ public class Orthographic extends ProjectionImpl {
   /**
    * Construct a Orthographic Projection, specify earth radius
    *
-   * @param lat0        lat origin of the coord. system on the projection plane
-   * @param lon0        lon origin of the coord. system on the projection plane
+   * @param lat0 lat origin of the coord. system on the projection plane
+   * @param lon0 lon origin of the coord. system on the projection plane
    * @param earthRadius radius of the earth
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
@@ -91,15 +91,21 @@ public class Orthographic extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Orthographic that = (Orthographic) o;
 
-    if (Double.compare(that.R, R) != 0) return false;
-    if (Double.compare(that.lat0, lat0) != 0) return false;
-    if (Double.compare(that.lon0, lon0) != 0) return false;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    if (Double.compare(that.R, R) != 0)
+      return false;
+    if (Double.compare(that.lat0, lat0) != 0)
+      return false;
+    if (Double.compare(that.lon0, lon0) != 0)
+      return false;
+    if ((defaultMapArea == null) != (that.defaultMapArea == null))
+      return false; // common case is that these are null
     return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
   }
@@ -117,7 +123,7 @@ public class Orthographic extends ProjectionImpl {
     return result;
   }
 
-// bean properties
+  // bean properties
 
   /**
    * Get the origin longitude in degrees
@@ -142,21 +148,22 @@ public class Orthographic extends ProjectionImpl {
 
   /**
    * Set the origin longitude.
-   * @param lon   the origin longitude.
+   * 
+   * @param lon the origin longitude.
    */
   public void setOriginLon(double lon) {
-      lon0 = Math.toRadians(lon);
-      precalculate();
+    lon0 = Math.toRadians(lon);
+    precalculate();
   }
 
   /**
    * Set the origin latitude.
    *
-   * @param lat   the origin latitude.
+   * @param lat the origin latitude.
    */
   public void setOriginLat(double lat) {
-      lat0 = Math.toRadians(lat);
-      precalculate();
+    lat0 = Math.toRadians(lat);
+    precalculate();
   }
 
   //////////////////////////////////////////////
@@ -181,11 +188,7 @@ public class Orthographic extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "Orthographic{" +
-            "lat0=" + lat0 +
-            ", lon0=" + lon0 +
-            ", R=" + R +
-            '}';
+    return "Orthographic{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", R=" + R + '}';
   }
 
   /**
@@ -206,63 +209,65 @@ public class Orthographic extends ProjectionImpl {
   }
 
 
-  /*MACROBODY
-    latLonToProj {} {
-      fromLat = Math.toRadians(fromLat);
-      double lonDiff =
-          Math.toRadians(LatLonPointImpl.lonNormal(fromLon-lon0Degrees));
-      double cosc = sinLat0*Math.sin(fromLat) + cosLat0*Math.cos(fromLat)*Math.cos(lonDiff);
-      if (cosc >= 0) {
-          toX = R*Math.cos(fromLat)*Math.sin(lonDiff);
-          toY = R*(cosLat0*Math.sin(fromLat) - sinLat0*Math.cos(fromLat)*Math.cos(lonDiff));
-      } else {
-          toX = Double.POSITIVE_INFINITY;
-          toY = Double.POSITIVE_INFINITY;
-      }
-    }
+  /*
+   * MACROBODY
+   * latLonToProj {} {
+   * fromLat = Math.toRadians(fromLat);
+   * double lonDiff =
+   * Math.toRadians(LatLonPointImpl.lonNormal(fromLon-lon0Degrees));
+   * double cosc = sinLat0*Math.sin(fromLat) + cosLat0*Math.cos(fromLat)*Math.cos(lonDiff);
+   * if (cosc >= 0) {
+   * toX = R*Math.cos(fromLat)*Math.sin(lonDiff);
+   * toY = R*(cosLat0*Math.sin(fromLat) - sinLat0*Math.cos(fromLat)*Math.cos(lonDiff));
+   * } else {
+   * toX = Double.POSITIVE_INFINITY;
+   * toY = Double.POSITIVE_INFINITY;
+   * }
+   * }
+   * 
+   * projToLatLon {} {
+   * 
+   * fromX = fromX;
+   * fromY = fromY;
+   * double rho = Math.sqrt(fromX*fromX + fromY*fromY);
+   * double c = Math.asin(rho/R);
+   * 
+   * toLon = lon0;
+   * double temp = 0;
+   * if (Math.abs(rho) > TOLERANCE) {
+   * toLat = Math.asin(Math.cos(c)*sinLat0 + (fromY*Math.sin(c)*cosLat0/rho));
+   * if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
+   * temp = rho*cosLat0*Math.cos(c) - fromY*sinLat0*Math.sin(c);
+   * toLon = lon0 + Math.atan(fromX*Math.sin(c)/temp);
+   * } else if (lat0 == PI_OVER_4) {
+   * toLon = lon0 + Math.atan(fromX/-fromY);
+   * temp = -fromY;
+   * } else {
+   * toLon = lon0 + Math.atan(fromX/fromY);
+   * temp = fromY;
+   * }
+   * } else {
+   * toLat = lat0;
+   * }
+   * toLat= Math.toDegrees(toLat);
+   * toLon= Math.toDegrees(toLon);
+   * if (temp < 0) toLon += 180;
+   * toLon= LatLonPointImpl.lonNormal(toLon);
+   * }
+   * 
+   * 
+   * MACROBODY
+   */
 
-    projToLatLon {} {
-
-      fromX = fromX;
-      fromY = fromY;
-      double rho = Math.sqrt(fromX*fromX + fromY*fromY);
-      double c = Math.asin(rho/R);
-
-      toLon = lon0;
-      double temp = 0;
-      if (Math.abs(rho) > TOLERANCE) {
-        toLat = Math.asin(Math.cos(c)*sinLat0 + (fromY*Math.sin(c)*cosLat0/rho));
-        if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
-          temp = rho*cosLat0*Math.cos(c) - fromY*sinLat0*Math.sin(c);
-          toLon = lon0 + Math.atan(fromX*Math.sin(c)/temp);
-        } else if (lat0 == PI_OVER_4) {
-          toLon = lon0 + Math.atan(fromX/-fromY);
-          temp = -fromY;
-        } else {
-          toLon = lon0 + Math.atan(fromX/fromY);
-          temp = fromY;
-        }
-      } else {
-        toLat = lat0;
-      }
-      toLat= Math.toDegrees(toLat);
-      toLon= Math.toDegrees(toLon);
-      if (temp < 0) toLon += 180;
-      toLon= LatLonPointImpl.lonNormal(toLon);
-    }
-
-
-  MACROBODY*/
-
-  /*BEGINGENERATED*/
+  /* BEGINGENERATED */
 
   /*
-  Note this section has been generated using the convert.tcl script.
-  This script, run as:
-  tcl convert.tcl Orthographic.java
-  takes the actual projection conversion code defined in the MACROBODY
-  section above and generates the following 6 methods
-  */
+   * Note this section has been generated using the convert.tcl script.
+   * This script, run as:
+   * tcl convert.tcl Orthographic.java
+   * takes the actual projection conversion code defined in the MACROBODY
+   * section above and generates the following 6 methods
+   */
 
 
   /**
@@ -272,8 +277,7 @@ public class Orthographic extends ProjectionImpl {
    * @param result the object to write to
    * @return the given result
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon,
-                                      ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
@@ -298,7 +302,7 @@ public class Orthographic extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
@@ -313,11 +317,9 @@ public class Orthographic extends ProjectionImpl {
     toLon = lon0;
     double temp = 0;
     if (Math.abs(rho) > TOLERANCE) {
-      toLat = Math.asin(Math.cos(c) * sinLat0
-              + (fromY * Math.sin(c) * cosLat0 / rho));
-      if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) {  // not 90 or -90
-        temp = rho * cosLat0 * Math.cos(c)
-                - fromY * sinLat0 * Math.sin(c);
+      toLat = Math.asin(Math.cos(c) * sinLat0 + (fromY * Math.sin(c) * cosLat0 / rho));
+      if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
+        temp = rho * cosLat0 * Math.cos(c) - fromY * sinLat0 * Math.sin(c);
         toLon = lon0 + Math.atan(fromX * Math.sin(c) / temp);
       } else if (Double.compare(lat0, PI_OVER_4) == 0) {
         toLon = lon0 + Math.atan(fromX / -fromY);
@@ -344,18 +346,17 @@ public class Orthographic extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
    */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
-                                int lonIndex) {
+  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     float[] fromLatA = from[latIndex];
     float[] fromLonA = from[lonIndex];
@@ -368,14 +369,11 @@ public class Orthographic extends ProjectionImpl {
       double fromLon = fromLonA[i];
 
       fromLat = Math.toRadians(fromLat);
-      double lonDiff = Math.toRadians(LatLonPointImpl.lonNormal(fromLon
-              - lon0Degrees));
-      double cosc = sinLat0 * Math.sin(fromLat)
-              + cosLat0 * Math.cos(fromLat) * Math.cos(lonDiff);
+      double lonDiff = Math.toRadians(LatLonPointImpl.lonNormal(fromLon - lon0Degrees));
+      double cosc = sinLat0 * Math.sin(fromLat) + cosLat0 * Math.cos(fromLat) * Math.cos(lonDiff);
       if (cosc >= 0) {
         toX = R * Math.cos(fromLat) * Math.sin(lonDiff);
-        toY = R * (cosLat0 * Math.sin(fromLat)
-                - sinLat0 * Math.cos(fromLat) * Math.cos(lonDiff));
+        toY = R * (cosLat0 * Math.sin(fromLat) - sinLat0 * Math.cos(fromLat) * Math.cos(lonDiff));
       } else {
         toX = Double.POSITIVE_INFINITY;
         toY = Double.POSITIVE_INFINITY;
@@ -391,11 +389,11 @@ public class Orthographic extends ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
   public float[][] projToLatLon(float[][] from, float[][] to) {
@@ -416,11 +414,9 @@ public class Orthographic extends ProjectionImpl {
       toLon = lon0;
       double temp = 0;
       if (Math.abs(rho) > TOLERANCE) {
-        toLat = Math.asin(Math.cos(c) * sinLat0
-                + (fromY * Math.sin(c) * cosLat0 / rho));
-        if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) {  // not 90 or -90
-          temp = rho * cosLat0 * Math.cos(c)
-                  - fromY * sinLat0 * Math.sin(c);
+        toLat = Math.asin(Math.cos(c) * sinLat0 + (fromY * Math.sin(c) * cosLat0 / rho));
+        if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
+          temp = rho * cosLat0 * Math.cos(c) - fromY * sinLat0 * Math.sin(c);
           toLon = lon0 + Math.atan(fromX * Math.sin(c) / temp);
         } else if (Double.compare(lat0, PI_OVER_4) == 0) {
           toLon = lon0 + Math.atan(fromX / -fromY);
@@ -448,18 +444,17 @@ public class Orthographic extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
    */
-  public double[][] latLonToProj(double[][] from, double[][] to,
-                                 int latIndex, int lonIndex) {
+  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     double[] fromLatA = from[latIndex];
     double[] fromLonA = from[lonIndex];
@@ -472,14 +467,11 @@ public class Orthographic extends ProjectionImpl {
       double fromLon = fromLonA[i];
 
       fromLat = Math.toRadians(fromLat);
-      double lonDiff = Math.toRadians(LatLonPointImpl.lonNormal(fromLon
-              - lon0Degrees));
-      double cosc = sinLat0 * Math.sin(fromLat)
-              + cosLat0 * Math.cos(fromLat) * Math.cos(lonDiff);
+      double lonDiff = Math.toRadians(LatLonPointImpl.lonNormal(fromLon - lon0Degrees));
+      double cosc = sinLat0 * Math.sin(fromLat) + cosLat0 * Math.cos(fromLat) * Math.cos(lonDiff);
       if (cosc >= 0) {
         toX = R * Math.cos(fromLat) * Math.sin(lonDiff);
-        toY = R * (cosLat0 * Math.sin(fromLat)
-                - sinLat0 * Math.cos(fromLat) * Math.cos(lonDiff));
+        toY = R * (cosLat0 * Math.sin(fromLat) - sinLat0 * Math.cos(fromLat) * Math.cos(lonDiff));
       } else {
         toX = Double.POSITIVE_INFINITY;
         toY = Double.POSITIVE_INFINITY;
@@ -495,11 +487,11 @@ public class Orthographic extends ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
   public double[][] projToLatLon(double[][] from, double[][] to) {
@@ -520,11 +512,9 @@ public class Orthographic extends ProjectionImpl {
       toLon = lon0;
       double temp = 0;
       if (Math.abs(rho) > TOLERANCE) {
-        toLat = Math.asin(Math.cos(c) * sinLat0
-                + (fromY * Math.sin(c) * cosLat0 / rho));
-        if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) {  // not 90 or -90
-          temp = rho * cosLat0 * Math.cos(c)
-                  - fromY * sinLat0 * Math.sin(c);
+        toLat = Math.asin(Math.cos(c) * sinLat0 + (fromY * Math.sin(c) * cosLat0 / rho));
+        if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
+          temp = rho * cosLat0 * Math.cos(c) - fromY * sinLat0 * Math.sin(c);
           toLon = lon0 + Math.atan(fromX * Math.sin(c) / temp);
         } else if (Double.compare(lat0, PI_OVER_4) == 0) {
           toLon = lon0 + Math.atan(fromX / -fromY);

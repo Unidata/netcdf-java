@@ -14,7 +14,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -39,7 +38,7 @@ public class TestDmspIosp extends TestCase {
   private String testDataFileSuborbitHistoryAttValue = "F14200307192230.OIS (1,691)";
   private String testDataFileProcessingSystemAttValue = "v2.1b";
   private String testDataFileProcessingDateAttValue = "2003-07-19T19:33:23.000Z";
-  //"Sat Jul 19 19:33:23 2003";
+  // "Sat Jul 19 19:33:23 2003";
   private String testDataFileSpacecraftIdAttValue = "F14";
   private String testDataFileNoradIdAttValue = "24753";
   private double testDataFileAscendingNodeAttValue = 320.55;
@@ -86,8 +85,8 @@ public class TestDmspIosp extends TestCase {
     String targetDate1AltDateTimeString = "Sat Jul 19 19:33:23 2003";
 
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.US);
-    calendar.set(targetDate1Year, targetDate1Month, targetDate1Day,
-            targetDate1Hour, targetDate1Minute, targetDate1Second);
+    calendar.set(targetDate1Year, targetDate1Month, targetDate1Day, targetDate1Hour, targetDate1Minute,
+        targetDate1Second);
     calendar.set(Calendar.MILLISECOND, targetDate1Milisecond);
     Date targetDate1 = calendar.getTime();
 
@@ -96,23 +95,25 @@ public class TestDmspIosp extends TestCase {
 
 
     // Test that alternate date/time format string is as expected.
-    assertTrue("Alternate date/time format string <" + DMSPHeader.DateFormatHandler.ALT_DATE_TIME.getDateTimeFormatString() + "> not as expected <" + altDateTimeFormatString + ">.",
-            DMSPHeader.DateFormatHandler.ALT_DATE_TIME.getDateTimeFormatString().equals(altDateTimeFormatString));
+    assertTrue(
+        "Alternate date/time format string <" + DMSPHeader.DateFormatHandler.ALT_DATE_TIME.getDateTimeFormatString()
+            + "> not as expected <" + altDateTimeFormatString + ">.",
+        DMSPHeader.DateFormatHandler.ALT_DATE_TIME.getDateTimeFormatString().equals(altDateTimeFormatString));
 
     // Test that alternate date/time format string handler parses date/time string properly.
     try {
       testDate = DMSPHeader.DateFormatHandler.ALT_DATE_TIME.getDateFromDateTimeString(targetDate1AltDateTimeString);
     } catch (ParseException e) {
-      assertTrue("Unexpected ParseException while parsing date/time string <" + targetDate1AltDateTimeString + ">: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected ParseException while parsing date/time string <" + targetDate1AltDateTimeString + ">: "
+          + e.getMessage(), false);
     }
     assertTrue("Alternate date/time <" + testDate + "> not as expected <" + targetDate1.toString() + ">.",
-            testDate.equals(targetDate1));
+        testDate.equals(targetDate1));
 
     // Test that alternate date/time format string handler formats date/time properly.
     testDateTimeString = DMSPHeader.DateFormatHandler.ALT_DATE_TIME.getDateTimeStringFromDate(targetDate1);
     assertTrue("Date/time string <" + testDateTimeString + "> not as expected <" + targetDate1AltDateTimeString + ">.",
-            testDateTimeString.equals(targetDate1AltDateTimeString));
+        testDateTimeString.equals(targetDate1AltDateTimeString));
   }
 
   /**
@@ -123,59 +124,81 @@ public class TestDmspIosp extends TestCase {
     setupReadDmspAsNetcdf(this.testFilePath, this.testDataFileName);
     assertTrue("Created NetcdfFile is null.", meNcf != null);
 
-//    // Test some header information not available from NetcdfFile.
-//    assertTrue( "Number of bytes per records <" + meHeader.getRecordSizeInBytes() + "> not as expected <" + this.testDataFileNumBytesPerRecordAttValue + ">.",
-//                meHeader.getRecordSizeInBytes() == this.testDataFileNumBytesPerRecordAttValue );
-//    assertTrue( "Number of header records <" + meHeader.getNumHeaderRecords() + "> not as expected <" + this.testDataFileNumHeaderRecordsAttValue + ">.",
-//                meHeader.getNumHeaderRecords() == this.testDataFileNumHeaderRecordsAttValue );
+    // // Test some header information not available from NetcdfFile.
+    // assertTrue( "Number of bytes per records <" + meHeader.getRecordSizeInBytes() + "> not as expected <" +
+    // this.testDataFileNumBytesPerRecordAttValue + ">.",
+    // meHeader.getRecordSizeInBytes() == this.testDataFileNumBytesPerRecordAttValue );
+    // assertTrue( "Number of header records <" + meHeader.getNumHeaderRecords() + "> not as expected <" +
+    // this.testDataFileNumHeaderRecordsAttValue + ">.",
+    // meHeader.getNumHeaderRecords() == this.testDataFileNumHeaderRecordsAttValue );
 
 
     // Test for the dimensions of the NetcdfFile.
     Dimension curDim = meNcf.getRootGroup().findDimension(this.numDataRecordsDimName);
-    assertTrue("Number of data records <" + curDim.getLength() + "> not as expected <" + this.testDataFileNumDataRecordsAttValue + ">.",
-            curDim.getLength() == this.testDataFileNumDataRecordsAttValue);
+    assertTrue(
+        "Number of data records <" + curDim.getLength() + "> not as expected <"
+            + this.testDataFileNumDataRecordsAttValue + ">.",
+        curDim.getLength() == this.testDataFileNumDataRecordsAttValue);
 
     curDim = meNcf.getRootGroup().findDimension(this.numSamplesPerBandDimName);
-    assertTrue("Number of bytes per records <" + curDim.getLength() + "> not as expected <" + this.testDataFileNumSamplesPerBandDimAttValue + ">.",
-            curDim.getLength() == this.testDataFileNumSamplesPerBandDimAttValue);
+    assertTrue(
+        "Number of bytes per records <" + curDim.getLength() + "> not as expected <"
+            + this.testDataFileNumSamplesPerBandDimAttValue + ">.",
+        curDim.getLength() == this.testDataFileNumSamplesPerBandDimAttValue);
 
     // Test for the attributes of the NetcdfFile.
     Attribute curAtt = meNcf.getRootGroup().findAttribute(this.fileIdAttName);
-    assertTrue("FileId attribute <" + curAtt.getStringValue() + "> not as expected <" + this.testDataFileFileIdAttValue + ">.",
-            curAtt.getStringValue().equals(this.testDataFileFileIdAttValue));
+    assertTrue(
+        "FileId attribute <" + curAtt.getStringValue() + "> not as expected <" + this.testDataFileFileIdAttValue + ">.",
+        curAtt.getStringValue().equals(this.testDataFileFileIdAttValue));
 
     curAtt = meNcf.getRootGroup().findAttribute(this.datasetIdAttName);
-    assertTrue("DatasetId attribute <" + curAtt.getStringValue() + "> not as expected <" + this.testDataFileDatasetIdAttValue + ">.",
-            curAtt.getStringValue().equals(this.testDataFileDatasetIdAttValue));
+    assertTrue("DatasetId attribute <" + curAtt.getStringValue() + "> not as expected <"
+        + this.testDataFileDatasetIdAttValue + ">.",
+        curAtt.getStringValue().equals(this.testDataFileDatasetIdAttValue));
 
 
     curAtt = meNcf.getRootGroup().findAttribute(this.suborbitHistoryAttName);
-    assertTrue("SuborbitHistory attribute <" + curAtt.getStringValue() + "> not as expected <" + this.testDataFileSuborbitHistoryAttValue + ">.",
-            curAtt.getStringValue().equals(this.testDataFileSuborbitHistoryAttValue));
+    assertTrue(
+        "SuborbitHistory attribute <" + curAtt.getStringValue() + "> not as expected <"
+            + this.testDataFileSuborbitHistoryAttValue + ">.",
+        curAtt.getStringValue().equals(this.testDataFileSuborbitHistoryAttValue));
 
     curAtt = meNcf.getRootGroup().findAttribute(this.processingSystemAttName);
-    assertTrue("ProcessingSystem attribute <" + curAtt.getStringValue() + "> not as expected <" + this.testDataFileProcessingSystemAttValue + ">.",
-            curAtt.getStringValue().equals(this.testDataFileProcessingSystemAttValue));
+    assertTrue(
+        "ProcessingSystem attribute <" + curAtt.getStringValue() + "> not as expected <"
+            + this.testDataFileProcessingSystemAttValue + ">.",
+        curAtt.getStringValue().equals(this.testDataFileProcessingSystemAttValue));
 
     curAtt = meNcf.getRootGroup().findAttribute(this.processingDateAttName);
-    assertTrue("ProcessingDate attribute <" + curAtt.getStringValue() + "> not as expected <" + this.testDataFileProcessingDateAttValue + ">.",
-            curAtt.getStringValue().equals(this.testDataFileProcessingDateAttValue));
+    assertTrue(
+        "ProcessingDate attribute <" + curAtt.getStringValue() + "> not as expected <"
+            + this.testDataFileProcessingDateAttValue + ">.",
+        curAtt.getStringValue().equals(this.testDataFileProcessingDateAttValue));
 
     curAtt = meNcf.getRootGroup().findAttribute(this.spacecraftIdAttName);
-    assertTrue("SpacecraftId attribute <" + curAtt.getStringValue() + "> not as expected <" + this.testDataFileSpacecraftIdAttValue + ">.",
-            curAtt.getStringValue().equals(this.testDataFileSpacecraftIdAttValue));
+    assertTrue(
+        "SpacecraftId attribute <" + curAtt.getStringValue() + "> not as expected <"
+            + this.testDataFileSpacecraftIdAttValue + ">.",
+        curAtt.getStringValue().equals(this.testDataFileSpacecraftIdAttValue));
 
     curAtt = meNcf.getRootGroup().findAttribute(this.noradIdAttName);
-    assertTrue("ProcessingDate attribute <" + curAtt.getStringValue() + "> not as expected <" + this.testDataFileNoradIdAttValue + ">.",
-            curAtt.getStringValue().equals(this.testDataFileNoradIdAttValue));
+    assertTrue(
+        "ProcessingDate attribute <" + curAtt.getStringValue() + "> not as expected <"
+            + this.testDataFileNoradIdAttValue + ">.",
+        curAtt.getStringValue().equals(this.testDataFileNoradIdAttValue));
 
     curAtt = meNcf.getRootGroup().findAttribute(this.ascendingNodeAttName);
-    assertTrue("AscendingNode attribute <" + curAtt.getNumericValue().doubleValue() + "> not as expected <" + this.testDataFileAscendingNodeAttValue + ">.",
-            curAtt.getNumericValue().doubleValue() == testDataFileAscendingNodeAttValue);
+    assertTrue(
+        "AscendingNode attribute <" + curAtt.getNumericValue().doubleValue() + "> not as expected <"
+            + this.testDataFileAscendingNodeAttValue + ">.",
+        curAtt.getNumericValue().doubleValue() == testDataFileAscendingNodeAttValue);
 
     curAtt = meNcf.getRootGroup().findAttribute(this.nodeHeadingAttName);
-    assertTrue("NodeHeading attribute <" + curAtt.getNumericValue().doubleValue() + "> not as expected <" + this.testDataFileNodeHeadingAttValue + ">.",
-            curAtt.getNumericValue().doubleValue() == testDataFileNodeHeadingAttValue);
+    assertTrue(
+        "NodeHeading attribute <" + curAtt.getNumericValue().doubleValue() + "> not as expected <"
+            + this.testDataFileNodeHeadingAttValue + ">.",
+        curAtt.getNumericValue().doubleValue() == testDataFileNodeHeadingAttValue);
 
     meNcf.close();
 
@@ -190,15 +213,13 @@ public class TestDmspIosp extends TestCase {
     try {
       year = meNcf.findVariable("year").read();
     } catch (IOException e) {
-      assertTrue("Unexpected IOException reading \"year\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected IOException reading \"year\" variable: " + e.getMessage(), false);
     }
     int val = 0;
     IndexIterator iter = year.getIndexIterator();
     while (iter.hasNext()) {
       val = iter.getIntNext();
-      assertTrue("Value of variable \"year\" <" + val + "> not expected <2003>.",
-              val == 2003);
+      assertTrue("Value of variable \"year\" <" + val + "> not expected <2003>.", val == 2003);
     }
 
     // Test reading dayOfYear.
@@ -206,15 +227,13 @@ public class TestDmspIosp extends TestCase {
     try {
       dayOfYear = meNcf.findVariable("dayOfYear").read();
     } catch (IOException e) {
-      assertTrue("Unexpected IOException reading \"dayOfYear\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected IOException reading \"dayOfYear\" variable: " + e.getMessage(), false);
     }
     val = 0;
     iter = dayOfYear.getIndexIterator();
     while (iter.hasNext()) {
       val = iter.getIntNext();
-      assertTrue("Value of variable \"dayOfYear\" <" + val + "> not expected <200>.",
-              val == 200);
+      assertTrue("Value of variable \"dayOfYear\" <" + val + "> not expected <200>.", val == 200);
     }
 
     // Test reading dayOfYear.
@@ -222,8 +241,7 @@ public class TestDmspIosp extends TestCase {
     try {
       secondsOfDay = meNcf.findVariable("secondsOfDay").read();
     } catch (IOException e) {
-      assertTrue("Unexpected IOException reading \"secondsOfDay\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected IOException reading \"secondsOfDay\" variable: " + e.getMessage(), false);
     }
     double prevVal = 0;
     double curVal = 0;
@@ -238,13 +256,12 @@ public class TestDmspIosp extends TestCase {
       while (iter.hasNext()) {
         curVal = iter.getDoubleNext();
         timeInterval = curVal - prevVal;
-        StringBuffer tmpMsg = new StringBuffer("Variable \"secondsOfDay\": [")
-                .append(timeStep).append("]=<").append(curVal).append(">, [")
-                .append((timeStep - 1)).append("]=<").append(prevVal).append("> difference <")
-                .append(timeInterval).append("> not within delta <").append(delta)
-                .append("> of expected <").append(timeIntervalGuess).append(">.");
+        StringBuffer tmpMsg = new StringBuffer("Variable \"secondsOfDay\": [").append(timeStep).append("]=<")
+            .append(curVal).append(">, [").append((timeStep - 1)).append("]=<").append(prevVal).append("> difference <")
+            .append(timeInterval).append("> not within delta <").append(delta).append("> of expected <")
+            .append(timeIntervalGuess).append(">.");
         assertTrue(tmpMsg.toString(),
-                timeInterval >= timeIntervalGuess - delta && timeInterval <= timeIntervalGuess + delta);
+            timeInterval >= timeIntervalGuess - delta && timeInterval <= timeIntervalGuess + delta);
         prevVal = curVal;
         timeStep++;
       }
@@ -263,8 +280,7 @@ public class TestDmspIosp extends TestCase {
     try {
       latitude = latVar.read();
     } catch (IOException e) {
-      assertTrue("Unexpected IOException reading \"latitude\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected IOException reading \"latitude\" variable: " + e.getMessage(), false);
     }
 
     // Test that difference between neighboring pixels in first scan is small
@@ -282,19 +298,21 @@ public class TestDmspIosp extends TestCase {
         biggestDiff = diff;
         smallestDiff = diff;
       } else {
-        if (diff > biggestDiff) biggestDiff = diff;
-        if (diff < smallestDiff) smallestDiff = diff;
+        if (diff > biggestDiff)
+          biggestDiff = diff;
+        if (diff < smallestDiff)
+          smallestDiff = diff;
       }
-      //System.out.println( curVal + "   :   " + diff);
+      // System.out.println( curVal + " : " + diff);
       prevVal = curVal;
       cnt++;
     }
-    //System.out.println( "\nBiggest Diff=" + biggestDiff);
-    //System.out.println( "Smallest Diff=" + smallestDiff);
-    assertTrue("Biggest difference in latitude between neighboring pixels of the first scan <" + biggestDiff + "> bigger than expected <0.004>.",
-            biggestDiff < 0.004);
-    assertTrue("Smallest difference in latitude between neighboring pixels of the first scan <" + smallestDiff + "> smaller than expected <0.002>.",
-            smallestDiff > 0.002);
+    // System.out.println( "\nBiggest Diff=" + biggestDiff);
+    // System.out.println( "Smallest Diff=" + smallestDiff);
+    assertTrue("Biggest difference in latitude between neighboring pixels of the first scan <" + biggestDiff
+        + "> bigger than expected <0.004>.", biggestDiff < 0.004);
+    assertTrue("Smallest difference in latitude between neighboring pixels of the first scan <" + smallestDiff
+        + "> smaller than expected <0.002>.", smallestDiff > 0.002);
 
     // Now test that the user isn't getting the cached data.
     float lat1 = latitude.getFloat(latitude.getIndex().set(0, 0));
@@ -305,16 +323,13 @@ public class TestDmspIosp extends TestCase {
     try {
       latPointAfterModify = latVar.read("0:0:1,0:0:1");
     } catch (InvalidRangeException e) {
-      assertTrue("Unexpected InvalidRangeException reading \"latitude\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected InvalidRangeException reading \"latitude\" variable: " + e.getMessage(), false);
     } catch (IOException e) {
-      assertTrue("Unexpected IOException reading \"latitude\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected IOException reading \"latitude\" variable: " + e.getMessage(), false);
     }
 
     float lat1After = latPointAfterModify.getFloat(latPointAfterModify.getIndex().set(0, 0));
-    assertTrue("Value of lat[0,0] <" + lat1 + "> changed <" + lat1After + ">",
-            lat1 == lat1After);
+    assertTrue("Value of lat[0,0] <" + lat1 + "> changed <" + lat1After + ">", lat1 == lat1After);
 
     meNcf.close();
   }
@@ -332,53 +347,44 @@ public class TestDmspIosp extends TestCase {
     setupReadDmspAsNetcdf(this.testFilePath, this.testDataFileName);
 
     Variable yearVar = meNcf.findVariable("year");
-    assertTrue("Year variable not of rank one.",
-            yearVar.getRank() == 1);
+    assertTrue("Year variable not of rank one.", yearVar.getRank() == 1);
 
     Variable visVar = meNcf.findVariable("visibleImagery");
-    assertTrue("Visible imagery variable not of rank two.",
-            visVar.getRank() == 2);
+    assertTrue("Visible imagery variable not of rank two.", visVar.getRank() == 2);
 
     Variable irVar = meNcf.findVariable("infraredImagery");
-    assertTrue("Infrared imagery variable not of rank two.",
-            irVar.getRank() == 2);
+    assertTrue("Infrared imagery variable not of rank two.", irVar.getRank() == 2);
 
     long visSize = visVar.getSize();
     long irSize = irVar.getSize();
     assertTrue("Visible and infrared imagery variables are different sizes (" + visSize + " vs " + irSize + ".",
-            visSize == irSize);
+        visSize == irSize);
 
     // Read in year variable with section not for single point.
     ucar.ma2.Array yearArray = null;
     try {
       yearArray = yearVar.read("0:1:1");
     } catch (InvalidRangeException e) {
-      assertTrue("Unexpected InvalidRangeException reading \"year\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected InvalidRangeException reading \"year\" variable: " + e.getMessage(), false);
     } catch (IOException e) {
-      assertTrue("Unexpected IOException reading \"year\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected IOException reading \"year\" variable: " + e.getMessage(), false);
     }
 
     int yearRank = yearArray.getRank();
-    assertTrue("Year array not rank 1 <" + yearRank + ">",
-            yearRank == 1);
+    assertTrue("Year array not rank 1 <" + yearRank + ">", yearRank == 1);
 
     // Read in visible imagery with only one point selected in one dimension.
     ucar.ma2.Array visArray = null;
     try {
       visArray = visVar.read("0:0:1,0:1:1");
     } catch (InvalidRangeException e) {
-      assertTrue("Unexpected InvalidRangeException reading \"visibleImagery\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected InvalidRangeException reading \"visibleImagery\" variable: " + e.getMessage(), false);
     } catch (IOException e) {
-      assertTrue("Unexpected IOException reading \"visibleImagery\" variable: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected IOException reading \"visibleImagery\" variable: " + e.getMessage(), false);
     }
 
     int visRank = visArray.getRank();
-    assertTrue("Latitude array rank not 2 <" + visRank + ">.",
-            visRank == 2);
+    assertTrue("Latitude array rank not 2 <" + visRank + ">.", visRank == 2);
 
 
     meNcf.close();
@@ -389,28 +395,23 @@ public class TestDmspIosp extends TestCase {
     try {
       NetcdfFile.registerIOProvider(DMSPiosp.class);
     } catch (IllegalAccessException e) {
-      assertTrue("Unexpected IllegalAccessException registering DMSPiosp: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected IllegalAccessException registering DMSPiosp: " + e.getMessage(), false);
     } catch (InstantiationException e) {
-      assertTrue("Unexpected InstantiationException registering DMSPiosp: " + e.getMessage(),
-              false);
+      assertTrue("Unexpected InstantiationException registering DMSPiosp: " + e.getMessage(), false);
     }
 
     // Make sure test DMSP file exists and such.
     File testFile = new File(testFilePath, testDataFileName);
-    assertTrue("Test file <" + testFile.getAbsolutePath() + "> does not exist.",
-            testFile.exists());
-    assertTrue("Test file <" + testFile.getAbsolutePath() + "> cannot be read.",
-            testFile.canRead());
-    assertTrue("Test file <" + testFile.getAbsolutePath() + "> is a directory.",
-            !testFile.isDirectory());
+    assertTrue("Test file <" + testFile.getAbsolutePath() + "> does not exist.", testFile.exists());
+    assertTrue("Test file <" + testFile.getAbsolutePath() + "> cannot be read.", testFile.canRead());
+    assertTrue("Test file <" + testFile.getAbsolutePath() + "> is a directory.", !testFile.isDirectory());
 
     // Open test DMSP file as NetCDF file.
     try {
       meNcf = NetcdfFile.open(testFilePath + "/" + testDataFileName);
     } catch (IOException e) {
       assertTrue("Unexpected IOException opening DMSP file <" + testFile.getAbsolutePath() + ">: " + e.getMessage(),
-              false);
+          false);
     }
   }
 
@@ -418,20 +419,20 @@ public class TestDmspIosp extends TestCase {
 
 /*
  * $Log: TestDmspIosp.java,v $
- * Revision 1.5  2006/05/31 19:04:41  edavis
+ * Revision 1.5 2006/05/31 19:04:41 edavis
  * Fix bug with use of section() instead of sectionNoReduce().
  * Also, fix so that copy of cached data is returned to user instead of backing store.
  *
- * Revision 1.4  2005/07/25 00:07:13  caron
+ * Revision 1.4 2005/07/25 00:07:13 caron
  * cache debugging
  *
- * Revision 1.3  2004/10/14 00:13:01  edavis
+ * Revision 1.3 2004/10/14 00:13:01 edavis
  * Comment out some print statements.
  *
- * Revision 1.2  2004/10/13 15:30:35  edavis
+ * Revision 1.2 2004/10/13 15:30:35 edavis
  * Some clean up and add test for latitude/longitude calculation.
  *
- * Revision 1.1  2004/10/06 21:47:06  edavis
+ * Revision 1.1 2004/10/06 21:47:06 edavis
  * Initial tests for ucar.nc2.iosp.dmsp classes.
  *
  */

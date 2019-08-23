@@ -21,12 +21,13 @@ public class FlatEarth extends AbstractTransformBuilder implements HorizTransfor
   }
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double rot = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.FlatEarth.ROTATIONANGLE, 0.0);
+    double lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double rot = readAttributeDouble(ctv, ucar.unidata.geoloc.projection.FlatEarth.ROTATIONANGLE, 0.0);
     double earth_radius = getEarthRadiusInKm(ctv);
 
-    ucar.unidata.geoloc.projection.FlatEarth proj = new ucar.unidata.geoloc.projection.FlatEarth(lat0, lon0, rot, earth_radius);
+    ucar.unidata.geoloc.projection.FlatEarth proj =
+        new ucar.unidata.geoloc.projection.FlatEarth(lat0, lon0, rot, earth_radius);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

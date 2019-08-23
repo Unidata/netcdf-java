@@ -16,6 +16,7 @@ import javax.swing.event.EventListenerList;
 /**
  * A UI Component for running background tasks and letting user cancel them.
  * Also can be adapted as a CancelTask implementation.
+ * 
  * @see ProgressMonitorTask
  *
  * @author caron
@@ -39,50 +40,56 @@ public class StopButton extends JButton {
 
   // bean for JForm Designer - let it set sizes
   public StopButton() {
-   setIcon(icon[0]);
-    //setMaximumSize(new java.awt.Dimension(28,28));       // kludge; consistent with BAMutil
-    //setPreferredSize(new java.awt.Dimension(28,28));
+    setIcon(icon[0]);
+    // setMaximumSize(new java.awt.Dimension(28,28)); // kludge; consistent with BAMutil
+    // setPreferredSize(new java.awt.Dimension(28,28));
     setFocusPainted(false);
 
     super.addActionListener(ne -> {
-        if (debug) System.out.println(" StopButton.EVENT");
-        isCancelled = true;
+      if (debug)
+        System.out.println(" StopButton.EVENT");
+      isCancelled = true;
     });
   }
 
   public StopButton(String tooltip) {
     setIcon(icon[0]);
-    setMaximumSize(new java.awt.Dimension(28,28));       // kludge; consistent with BAMutil
-    setPreferredSize(new java.awt.Dimension(28,28));
+    setMaximumSize(new java.awt.Dimension(28, 28)); // kludge; consistent with BAMutil
+    setPreferredSize(new java.awt.Dimension(28, 28));
     setToolTipText(tooltip);
     setFocusPainted(false);
 
     super.addActionListener(e -> {
-        if (debug) System.out.println(" StopButton.EVENT");
-        isCancelled = true;
+      if (debug)
+        System.out.println(" StopButton.EVENT");
+      isCancelled = true;
     });
   }
 
-  /** Add listener: action event sent when task is done. event.getActionCommand() =
-   *  <ul><li> "success"
-   *  <li> "error"
-   *  <li> "cancel"
-   *  <li> "done" if done, but success/error/cancel not set
-   *  </ul>
+  /**
+   * Add listener: action event sent when task is done. event.getActionCommand() =
+   * <ul>
+   * <li>"success"
+   * <li>"error"
+   * <li>"cancel"
+   * <li>"done" if done, but success/error/cancel not set
+   * </ul>
    */
   public void addActionListener(ActionListener l) {
     listenerList.add(ActionListener.class, l);
   }
+
   /** Remove listener */
   public void removeActionListener(ActionListener l) {
     listenerList.remove(ActionListener.class, l);
   }
+
   private void fireEvent(ActionEvent event) {
     // Guaranteed to return a non-null array
     Object[] listeners = listenerList.getListenerList();
     // Process the listeners last to first
-    for (int i = listeners.length-2; i>=0; i-=2) {
-      ((ActionListener)listeners[i+1]).actionPerformed(event);
+    for (int i = listeners.length - 2; i >= 0; i -= 2) {
+      ((ActionListener) listeners[i + 1]).actionPerformed(event);
     }
   }
 
@@ -95,7 +102,7 @@ public class StopButton extends JButton {
   }
 
   public void setError(String msg) {
-    System.out.println("Got Error= "+msg);
+    System.out.println("Got Error= " + msg);
   }
 
   public void setProgress(String msg, int progress) {
@@ -106,11 +113,13 @@ public class StopButton extends JButton {
    * The given task is run in a background thread.
    * Progress is indicated once a second.
    * You cannot call this method again till the task is completed.
+   * 
    * @param pmt heres where the work is done.
    * @return true task was started, false if still busy with previous task.
    */
-  public boolean startProgressMonitorTask( ProgressMonitorTask pmt) {
-    if (busy) return false;
+  public boolean startProgressMonitorTask(ProgressMonitorTask pmt) {
+    if (busy)
+      return false;
     busy = true;
 
     this.task = pmt;
@@ -121,17 +130,19 @@ public class StopButton extends JButton {
     // create timer, whose events happen on the awt event Thread
     ActionListener watcher = new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
-        //System.out.println("timer event"+evt);
+        // System.out.println("timer event"+evt);
 
         if (isCancelled && !task.isCancel()) {
           task.cancel();
-          if (debug) System.out.println(" task.cancel");
+          if (debug)
+            System.out.println(" task.cancel");
           return; // give it a chance to finish up
         } else {
           // indicate progress
           count++;
-          setIcon( icon[count % 2]);
-          if (debug) System.out.println(" stop count="+count);
+          setIcon(icon[count % 2]);
+          if (debug)
+            System.out.println(" stop count=" + count);
         }
 
         // need to make sure task acknowledges the cancel; so dont shut down
@@ -145,13 +156,13 @@ public class StopButton extends JButton {
             JOptionPane.showMessageDialog(null, task.getErrorMessage());
 
           if (task.isSuccess())
-            fireEvent( new ActionEvent(this, 0, "success"));
+            fireEvent(new ActionEvent(this, 0, "success"));
           else if (task.isError())
-            fireEvent( new ActionEvent(this, 0, "error"));
+            fireEvent(new ActionEvent(this, 0, "error"));
           else if (task.isCancel())
-            fireEvent( new ActionEvent(this, 0, "cancel"));
+            fireEvent(new ActionEvent(this, 0, "cancel"));
           else
-            fireEvent( new ActionEvent(this, 0, "done"));
+            fireEvent(new ActionEvent(this, 0, "done"));
 
           busy = false;
         }

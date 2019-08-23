@@ -5,7 +5,6 @@
 package ucar.util;
 
 import org.slf4j.Logger;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -18,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * LOOK Probably could replace with guava eventbus
  *
  * Example:
+ * 
  * <pre>
  *
   private void createListenerManager() {
@@ -53,16 +53,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
   }
 
  lm.sendEvent(event);
- </pre>
-
+ * </pre>
  *
+ * 
  * @author John Caron
  */
 @ThreadSafe
 public class ListenerManager {
   private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ListenerManager.class);
 
-  private final List<Object> listeners = new CopyOnWriteArrayList<>(); // cf http://www.ibm.com/developerworks/java/library/j-jtp07265/index.html
+  private final List<Object> listeners = new CopyOnWriteArrayList<>(); // cf
+                                                                       // http://www.ibm.com/developerworks/java/library/j-jtp07265/index.html
   private final java.lang.reflect.Method method;
   private boolean hasListeners = false;
   private boolean enabled = true;
@@ -71,9 +72,12 @@ public class ListenerManager {
    * Constructor.
    *
    * @param listener_class the name of the EventListener class, eg "ucar.unidata.ui.UIChangeListener"
-   * @param event_class    the name of the Event class, eg "ucar.unidata.ui.UIChangeEvent"
-   * @param method_name    the name of the EventListener method, eg "processChange". <pre>
-   *                          This method must have the signature     public void method_name( event_class e) </pre>
+   * @param event_class the name of the Event class, eg "ucar.unidata.ui.UIChangeEvent"
+   * @param method_name the name of the EventListener method, eg "processChange".
+   * 
+   *        <pre>
+   *                          This method must have the signature     public void method_name( event_class e)
+   *        </pre>
    */
   public ListenerManager(String listener_class, String event_class, String method_name) {
 
@@ -114,6 +118,7 @@ public class ListenerManager {
 
   /**
    * Remove a listener.
+   * 
    * @param l listener must be of type "listener_class"
    */
   public synchronized void removeListener(Object l) {
@@ -154,7 +159,8 @@ public class ListenerManager {
         logger.error("ListenerManager IllegalArgumentException", e);
         iter.remove();
       } catch (InvocationTargetException e) {
-        // logger.error("ListenerManager InvocationTargetException on " + method+ " threw exception " + e.getTargetException(), e);
+        // logger.error("ListenerManager InvocationTargetException on " + method+ " threw exception " +
+        // e.getTargetException(), e);
         throw new RuntimeException(e.getCause()); // pass exception to the caller of sendEvent()
       }
     }

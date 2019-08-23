@@ -22,8 +22,8 @@ import ucar.unidata.util.Parameter;
 
 public class AlbersEqualArea extends ProjectionImpl {
 
-  private double lat0, lon0;  // radians
-  private double par1, par2;  // degrees
+  private double lat0, lon0; // radians
+  private double par1, par2; // degrees
   private double falseEasting, falseNorthing;
   private final double earth_radius; // radius in km
 
@@ -38,7 +38,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    */
   public ProjectionImpl constructCopy() {
     ProjectionImpl result = new AlbersEqualArea(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
-            getFalseEasting(), getFalseNorthing(), getEarthRadius());
+        getFalseEasting(), getFalseNorthing(), getEarthRadius());
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -62,41 +62,43 @@ public class AlbersEqualArea extends ProjectionImpl {
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
   public AlbersEqualArea(double lat0, double lon0, double par1, double par2) {
-    this(lat0, lon0, par1, par2, 0, 0, Earth.getRadius()*.001);
+    this(lat0, lon0, par1, par2, 0, 0, Earth.getRadius() * .001);
   }
 
   /**
    * Construct a AlbersEqualArea Projection, two standard parellels.
    * For the one standard parellel case, set them both to the same value.
    *
-   * @param lat0          lat origin of the coord. system on the projection plane
-   * @param lon0          lon origin of the coord. system on the projection plane
-   * @param par1          standard parallel 1
-   * @param par2          standard parallel 2
-   * @param falseEasting  false easting in km
+   * @param lat0 lat origin of the coord. system on the projection plane
+   * @param lon0 lon origin of the coord. system on the projection plane
+   * @param par1 standard parallel 1
+   * @param par2 standard parallel 2
+   * @param falseEasting false easting in km
    * @param falseNorthing false easting in km
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
-  public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing) {
-    this(lat0, lon0, par1, par2, falseEasting, falseNorthing, Earth.getRadius()*.001);
+  public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting,
+      double falseNorthing) {
+    this(lat0, lon0, par1, par2, falseEasting, falseNorthing, Earth.getRadius() * .001);
   }
 
   /**
    * Construct a AlbersEqualArea Projection, two standard parellels.
    * For the one standard parellel case, set them both to the same value.
    *
-   * @param lat0          lat origin of the coord. system on the projection plane
-   * @param lon0          lon origin of the coord. system on the projection plane
-   * @param par1          standard parallel 1
-   * @param par2          standard parallel 2
-   * @param falseEasting  false easting in km
+   * @param lat0 lat origin of the coord. system on the projection plane
+   * @param lon0 lon origin of the coord. system on the projection plane
+   * @param par1 standard parallel 1
+   * @param par2 standard parallel 2
+   * @param falseEasting false easting in km
    * @param falseNorthing false easting in km
-   * @param earth_radius  radius of the earth in km
+   * @param earth_radius radius of the earth in km
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
-  public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing, double earth_radius) {
+  public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing,
+      double earth_radius) {
     super("AlbersEqualArea", false);
-    
+
     this.lat0 = Math.toRadians(lat0);
     lon0Degrees = lon0;
     this.lon0 = Math.toRadians(lon0);
@@ -140,7 +142,7 @@ public class AlbersEqualArea extends ProjectionImpl {
     double par1r = Math.toRadians(this.par1);
     double par2r = Math.toRadians(this.par2);
 
-    if (Math.abs(par2 - par1) < TOLERANCE) {  // single parallel
+    if (Math.abs(par2 - par1) < TOLERANCE) { // single parallel
       n = Math.sin(par1r);
     } else {
       n = (Math.sin(par1r) + Math.sin(par2r)) / 2.0;
@@ -175,19 +177,29 @@ public class AlbersEqualArea extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     AlbersEqualArea that = (AlbersEqualArea) o;
 
-    if (Double.compare(that.earth_radius, earth_radius) != 0) return false;
-    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
-    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
-    if (Double.compare(that.lat0, lat0) != 0) return false;
-    if (Double.compare(that.lon0, lon0) != 0) return false;
-    if (Double.compare(that.par1, par1) != 0) return false;
-    if (Double.compare(that.par2, par2) != 0) return false;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    if (Double.compare(that.earth_radius, earth_radius) != 0)
+      return false;
+    if (Double.compare(that.falseEasting, falseEasting) != 0)
+      return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0)
+      return false;
+    if (Double.compare(that.lat0, lat0) != 0)
+      return false;
+    if (Double.compare(that.lon0, lon0) != 0)
+      return false;
+    if (Double.compare(that.par1, par1) != 0)
+      return false;
+    if (Double.compare(that.par2, par2) != 0)
+      return false;
+    if ((defaultMapArea == null) != (that.defaultMapArea == null))
+      return false; // common case is that these are null
     return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
 
   }
@@ -224,7 +236,7 @@ public class AlbersEqualArea extends ProjectionImpl {
     return par2;
   }
 
-    /**
+  /**
    * Get the first standard parallel
    *
    * @return the first standard parallel
@@ -256,42 +268,43 @@ public class AlbersEqualArea extends ProjectionImpl {
 
 
   /**
-     * Set the second standard parallel
-     *
-     * @param par   the second standard parallel
-     */
-    public void setParallelTwo(double par) {
-        par2 = par;
-        precalculate();
-    }
+   * Set the second standard parallel
+   *
+   * @param par the second standard parallel
+   */
+  public void setParallelTwo(double par) {
+    par2 = par;
+    precalculate();
+  }
 
   /**
    * Set the first standard parallel
    *
-   * @param par   the first standard parallel
+   * @param par the first standard parallel
    */
   public void setParallelOne(double par) {
-      par1 = par;
-      precalculate();
+    par1 = par;
+    precalculate();
   }
 
   /**
    * Set the origin longitude.
-   * @param lon   the origin longitude.
+   * 
+   * @param lon the origin longitude.
    */
   public void setOriginLon(double lon) {
-      lon0 = Math.toRadians(lon);
-      precalculate();
+    lon0 = Math.toRadians(lon);
+    precalculate();
   }
 
   /**
    * Set the origin latitude.
    *
-   * @param lat   the origin latitude.
+   * @param lat the origin latitude.
    */
   public void setOriginLat(double lat) {
-      lat0 = Math.toRadians(lat);
-      precalculate();
+    lat0 = Math.toRadians(lat);
+    precalculate();
   }
 
   /**
@@ -314,7 +327,7 @@ public class AlbersEqualArea extends ProjectionImpl {
     this.falseNorthing = falseNorthing;
   }
 
-    //////////////////////////////////////////////
+  //////////////////////////////////////////////
 
 
   /**
@@ -337,6 +350,7 @@ public class AlbersEqualArea extends ProjectionImpl {
 
   /**
    * Earth radius in km
+   * 
    * @return Earth radius in km
    */
   public double getEarthRadius() {
@@ -364,15 +378,9 @@ public class AlbersEqualArea extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "AlbersEqualArea{" +
-            "lat0=" + lat0 +
-            ", lon0=" + lon0 +
-            ", par1=" + par1 +
-            ", par2=" + par2 +
-            ", falseEasting=" + falseEasting +
-            ", falseNorthing=" + falseNorthing +
-            ", earth_radius=" + earth_radius +
-            '}';
+    return "AlbersEqualArea{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", par1=" + par1 + ", par2=" + par2
+        + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", earth_radius=" + earth_radius
+        + '}';
   }
 
   /**
@@ -399,54 +407,54 @@ public class AlbersEqualArea extends ProjectionImpl {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1)
-            || ProjectionPointImpl.isInfinite(pt2)) {
+    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
       return true;
     }
     // opposite signed X values, larger then 5000 km
-    return (pt1.getX() * pt2.getX() < 0)
-            && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
+    return (pt1.getX() * pt2.getX() < 0) && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
   }
 
-  /*MACROBODY
-    latLonToProj {} {
-      fromLat = Math.toRadians(fromLat);
-      fromLon = Math.toRadians(fromLon);
-      double rho = computeRho(fromLat);
-      double theta = computeTheta(fromLon);
+  /*
+   * MACROBODY
+   * latLonToProj {} {
+   * fromLat = Math.toRadians(fromLat);
+   * fromLon = Math.toRadians(fromLon);
+   * double rho = computeRho(fromLat);
+   * double theta = computeTheta(fromLon);
+   * 
+   * toX = rho * Math.sin(theta);
+   * toY = rho0 - rho*Math.cos(theta);
+   * }
+   * projToLatLon {double rrho0 = rho0;} {
+   * if (n < 0) {
+   * rrho0 *= -1.0;
+   * fromX *= -1.0;
+   * fromY *= -1.0;
+   * }
+   * 
+   * 
+   * double yd = rrho0-fromY;
+   * double rho = Math.sqrt(fromX * fromX + yd*yd);
+   * double theta = Math.atan2( fromX, yd);
+   * if (n < 0) rho *= -1.0;
+   * 
+   * toLat = Math.toDegrees(Math.asin((C-Math.pow((rho*n/EARTH_RADIUS),2))/(2*n)));
+   * 
+   * toLon = Math.toDegrees(theta/n + lon0);
+   * 
+   * }
+   * MACROBODY
+   */
 
-      toX = rho * Math.sin(theta);
-      toY = rho0 - rho*Math.cos(theta);
-    }
-    projToLatLon {double rrho0 = rho0;} {
-      if (n < 0) {
-          rrho0 *= -1.0;
-          fromX *= -1.0;
-          fromY *= -1.0;
-      }
-
-
-      double yd = rrho0-fromY;
-      double rho = Math.sqrt(fromX * fromX + yd*yd);
-      double theta = Math.atan2( fromX, yd);
-      if (n < 0) rho *= -1.0;
-
-      toLat = Math.toDegrees(Math.asin((C-Math.pow((rho*n/EARTH_RADIUS),2))/(2*n)));
-
-      toLon = Math.toDegrees(theta/n + lon0);
-
-           }
-  MACROBODY*/
-
-  /*BEGINGENERATED*/
+  /* BEGINGENERATED */
 
   /*
-  Note this section has been generated using the convert.tcl script.
-  This script, run as:
-  tcl convert.tcl AlbersEqualArea.java
-  takes the actual projection conversion code defined in the MACROBODY
-  section above and generates the following 6 methods
-  */
+   * Note this section has been generated using the convert.tcl script.
+   * This script, run as:
+   * tcl convert.tcl AlbersEqualArea.java
+   * takes the actual projection conversion code defined in the MACROBODY
+   * section above and generates the following 6 methods
+   */
 
 
   /**
@@ -477,7 +485,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
@@ -511,18 +519,17 @@ public class AlbersEqualArea extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
    */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
-                                int lonIndex) {
+  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     float[] fromLatA = from[latIndex];
     float[] fromLonA = from[lonIndex];
@@ -552,11 +559,11 @@ public class AlbersEqualArea extends ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
   public float[][] projToLatLon(float[][] from, float[][] to) {
@@ -585,8 +592,7 @@ public class AlbersEqualArea extends ProjectionImpl {
         rho *= -1.0;
       }
 
-      toLat = Math.toDegrees(Math.asin((C
-              - Math.pow((rho * n / earth_radius), 2)) / (2 * n)));
+      toLat = Math.toDegrees(Math.asin((C - Math.pow((rho * n / earth_radius), 2)) / (2 * n)));
 
       toLon = Math.toDegrees(theta / n + lon0);
 
@@ -600,18 +606,17 @@ public class AlbersEqualArea extends ProjectionImpl {
   /**
    * Convert lat/lon coordinates to projection coordinates.
    *
-   * @param from     array of lat/lon coordinates: from[2][n],
-   *                 where from[0][i], from[1][i] is the (lat,lon)
-   *                 coordinate of the ith point
-   * @param to       resulting array of projection coordinates,
-   *                 where to[0][i], to[1][i] is the (x,y) coordinate
-   *                 of the ith point
+   * @param from array of lat/lon coordinates: from[2][n],
+   *        where from[0][i], from[1][i] is the (lat,lon)
+   *        coordinate of the ith point
+   * @param to resulting array of projection coordinates,
+   *        where to[0][i], to[1][i] is the (x,y) coordinate
+   *        of the ith point
    * @param latIndex index of latitude in "from"
    * @param lonIndex index of longitude in "from"
    * @return the "to" array.
    */
-  public double[][] latLonToProj(double[][] from, double[][] to,
-                                 int latIndex, int lonIndex) {
+  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
     int cnt = from[0].length;
     double[] fromLatA = from[latIndex];
     double[] fromLonA = from[lonIndex];
@@ -641,11 +646,11 @@ public class AlbersEqualArea extends ProjectionImpl {
    * Convert lat/lon coordinates to projection coordinates.
    *
    * @param from array of lat/lon coordinates: from[2][n], where
-   *             (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *             of the ith point
-   * @param to   resulting array of projection coordinates: to[2][n]
-   *             where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *             of the ith point
+   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
+   *        of the ith point
+   * @param to resulting array of projection coordinates: to[2][n]
+   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
+   *        of the ith point
    * @return the "to" array
    */
   public double[][] projToLatLon(double[][] from, double[][] to) {
@@ -674,8 +679,7 @@ public class AlbersEqualArea extends ProjectionImpl {
         rho *= -1.0;
       }
 
-      toLat = Math.toDegrees(Math.asin((C
-              - Math.pow((rho * n / earth_radius), 2)) / (2 * n)));
+      toLat = Math.toDegrees(Math.asin((C - Math.pow((rho * n / earth_radius), 2)) / (2 * n)));
 
       toLon = Math.toDegrees(theta / n + lon0);
 

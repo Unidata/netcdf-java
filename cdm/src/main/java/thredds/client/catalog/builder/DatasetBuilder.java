@@ -8,7 +8,6 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.Service;
 import thredds.client.catalog.ThreddsMetadata;
-
 import java.util.*;
 
 /**
@@ -27,7 +26,8 @@ public class DatasetBuilder {
    * otherwise add it to the existing list.
    */
   public static void addToList(Map<String, Object> flds, String fldName, Object fldValue) {
-    if (fldValue == null) return;
+    if (fldValue == null)
+      return;
     Object prevVal = flds.get(fldName);
     if (prevVal == null) {
       flds.put(fldName, fldValue);
@@ -51,7 +51,8 @@ public class DatasetBuilder {
   }
 
   public static void addToNewList(Map<String, Object> flds, String fldName, Object fldValue) {
-    if (fldValue == null) return;
+    if (fldValue == null)
+      return;
     List prevList;
     Object prevVal = flds.get(fldName);
     if (prevVal == null) {
@@ -70,7 +71,7 @@ public class DatasetBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  protected DatasetBuilder parent;  // null when its a top level dataset
+  protected DatasetBuilder parent; // null when its a top level dataset
   protected String name;
   protected Map<String, Object> flds = new HashMap<>(10);
 
@@ -100,15 +101,18 @@ public class DatasetBuilder {
     ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
     if (tmi != null) {
       Object value = tmi.getLocalField(fldName);
-      if (value != null) return value;
+      if (value != null)
+        return value;
     }
-    if (parent != null) return parent.getInherited(fldName);
+    if (parent != null)
+      return parent.getInherited(fldName);
     return null;
   }
 
   public Object getFldOrInherited(String fldName) {
     Object value = flds.get(fldName);
-    if (value != null) return value;
+    if (value != null)
+      return value;
     return getInherited(fldName);
   }
 
@@ -124,7 +128,8 @@ public class DatasetBuilder {
   }
 
   public void putInheritedField(String fldName, Object fldValue) {
-    if (fldValue == null) return;
+    if (fldValue == null)
+      return;
 
     ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
     if (tmi == null) {
@@ -135,7 +140,8 @@ public class DatasetBuilder {
   }
 
   public void addToList(String fldName, Object fldValue) {
-    if (fldValue != null) addToList(flds, fldName, fldValue);
+    if (fldValue != null)
+      addToList(flds, fldName, fldValue);
   }
 
   public void setName(String name) {
@@ -147,25 +153,31 @@ public class DatasetBuilder {
   }
 
   public void addDataset(DatasetBuilder d) {
-    if (d == null) return;
-    if (datasetBuilders == null) datasetBuilders = new ArrayList<>();
+    if (d == null)
+      return;
+    if (datasetBuilders == null)
+      datasetBuilders = new ArrayList<>();
     datasetBuilders.add(d);
   }
 
   public void addAccess(AccessBuilder d) {
-    if (accessBuilders == null) accessBuilders = new ArrayList<>();
+    if (accessBuilders == null)
+      accessBuilders = new ArrayList<>();
     accessBuilders.add(d);
   }
 
   public void addServiceToCatalog(Service s) {
-    if (s == null) return;
-    if (services == null) services = new ArrayList<>();
+    if (s == null)
+      return;
+    if (services == null)
+      services = new ArrayList<>();
     services.add(s);
   }
 
-  public Dataset makeDataset(DatasetNode parent) {  // LOOK whats relationship of parent with this.parent ??
+  public Dataset makeDataset(DatasetNode parent) { // LOOK whats relationship of parent with this.parent ??
     ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
-    if (tmi != null) tmi.finish();
+    if (tmi != null)
+      tmi.finish();
     return new Dataset(parent, name, flds, accessBuilders, datasetBuilders);
   }
 
@@ -175,12 +187,14 @@ public class DatasetBuilder {
   }
 
   public Iterable<DatasetBuilder> getDatasets() {
-    if (datasetBuilders != null) return datasetBuilders;
+    if (datasetBuilders != null)
+      return datasetBuilders;
     return new ArrayList<>(0);
   }
 
   public Iterable<Service> getServices() {
-    if (services != null) return services;
+    if (services != null)
+      return services;
     return new ArrayList<>(0);
   }
 
@@ -188,7 +202,7 @@ public class DatasetBuilder {
   /////////////////////////////////////////////////////////////////////////////
 
   // transfer all metadata, optionally also inheritable metadata from parents
-  public void transferMetadata( DatasetNode from, boolean parentsAlso) {
+  public void transferMetadata(DatasetNode from, boolean parentsAlso) {
     if (parentsAlso) {
       ThreddsMetadata inherit = getInheritableMetadata(); // make sure exists
       inheritMetadata(from, inherit.getFlds());
@@ -196,7 +210,8 @@ public class DatasetBuilder {
 
     // local metadata
     for (Map.Entry<String, Object> entry : from.getFldIterator()) {
-      if (parentsAlso && entry.getKey().equals(Dataset.ThreddsMetadataInheritable)) continue; // already did this
+      if (parentsAlso && entry.getKey().equals(Dataset.ThreddsMetadataInheritable))
+        continue; // already did this
       if (Dataset.listFlds.contains(entry.getKey()))
         addToNewList(flds, entry.getKey(), entry.getValue());
       else
@@ -213,20 +228,21 @@ public class DatasetBuilder {
 
   // transfer inherited metadata only, always include parents
   // place directly into flds (not in this.tmi) LOOK why not into tmi ?? LOOK put into tmi, see what breaks!
-  public void transferInheritedMetadata( DatasetNode from) {
+  public void transferInheritedMetadata(DatasetNode from) {
     ThreddsMetadata tmi = getInheritableMetadata();
     inheritMetadata(from, tmi.getFlds());
   }
 
   private void inheritMetadata(DatasetNode from, Map<String, Object> toFlds) {
-   // depth first, so closer parents override;
+    // depth first, so closer parents override;
     Dataset fromParent = from.getParentDataset();
     if (fromParent != null) {
       inheritMetadata(fromParent, toFlds);
     }
 
     ThreddsMetadata tmi = (ThreddsMetadata) from.get(Dataset.ThreddsMetadataInheritable);
-    if (tmi == null) return;
+    if (tmi == null)
+      return;
 
     for (Map.Entry<String, Object> entry : tmi.getFldIterator()) {
       if (Dataset.listFlds.contains(entry.getKey()))

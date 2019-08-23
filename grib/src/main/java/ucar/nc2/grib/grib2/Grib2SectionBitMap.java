@@ -9,7 +9,6 @@ import com.google.common.base.MoreObjects;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -58,11 +57,12 @@ public class Grib2SectionBitMap {
   }
 
   /*
-  Code Table Code table 6.0 - Bit map indicator (6.0)
-      0: A bit map applies to this product and is specified in this Section
-     -1: A bit map predetermined by the originating/generating centre applies to this product and is not specified in this Section
-    254: A bit map defined previously in the same "GRIB" message applies to this product
-    255: A bit map does not apply to this product
+   * Code Table Code table 6.0 - Bit map indicator (6.0)
+   * 0: A bit map applies to this product and is specified in this Section
+   * -1: A bit map predetermined by the originating/generating centre applies to this product and is not specified in
+   * this Section
+   * 254: A bit map defined previously in the same "GRIB" message applies to this product
+   * 255: A bit map does not apply to this product
    */
   public int getBitMapIndicator() {
     return bitMapIndicator;
@@ -90,7 +90,8 @@ public class Grib2SectionBitMap {
       logger.debug("HEY bitMapIndicator=254 previously defined bitmap");
 
     if (bitMapIndicator != 0) {
-      throw new UnsupportedOperationException("Grib2 Bit map section pre-defined (provided by center) = " + bitMapIndicator);
+      throw new UnsupportedOperationException(
+          "Grib2 Bit map section pre-defined (provided by center) = " + bitMapIndicator);
     }
 
     raf.seek(startingPosition);
@@ -105,9 +106,7 @@ public class Grib2SectionBitMap {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("startingPosition", startingPosition)
-        .add("bitMapIndicator", bitMapIndicator)
-        .toString();
+    return MoreObjects.toStringHelper(this).add("startingPosition", startingPosition)
+        .add("bitMapIndicator", bitMapIndicator).toString();
   }
 }

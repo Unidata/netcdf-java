@@ -11,6 +11,6 @@ import java.io.IOException;
  *
  */
 public interface GetDataRunnable {
-    void run(Object o) throws IOException;
+  void run(Object o) throws IOException;
 }
 

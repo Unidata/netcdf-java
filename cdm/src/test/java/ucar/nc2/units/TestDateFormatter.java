@@ -8,10 +8,10 @@ public class TestDateFormatter {
   private static void test(String text) {
     DateFormatter formatter = new DateFormatter();
     Date date = formatter.getISODate(text);
-    String text2 = formatter.toDateTimeStringISO( date);
+    String text2 = formatter.toDateTimeStringISO(date);
     Date date2 = formatter.getISODate(text2);
     assert date.equals(date2);
-    System.out.println(text+" == "+text2);
+    System.out.println(text + " == " + text2);
   }
 
   @Test

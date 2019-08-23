@@ -6,7 +6,6 @@
 package ucar.nc2.ft.point.standard;
 
 import java.io.IOException;
-
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataFactory;
@@ -15,15 +14,16 @@ import ucar.nc2.dataset.VariableDS;
 
 /**
  * Join data from an element of an Array, whose index is passed in as cursor.recnum[0].
+ * 
  * @author caron
  * @since Feb 25, 2009
  */
 public class JoinArray implements Join {
-  public enum Type { 
-    modulo,  // use cursor.recnum[0] % param
+  public enum Type {
+    modulo, // use cursor.recnum[0] % param
     divide, // use cursor.recnum[0] / param
-    level ,  // use cursor.recnum[param]
-    raw ,  // use cursor.recnum[0]
+    level, // use cursor.recnum[param]
+    raw, // use cursor.recnum[0]
     scalar // use 0
   }
 
@@ -34,6 +34,7 @@ public class JoinArray implements Join {
 
   /**
    * Constructor.
+   * 
    * @param v get data from this Variable
    * @param type how to use the parameter
    * @param param optional parameter
@@ -86,10 +87,6 @@ public class JoinArray implements Join {
 
   @Override
   public String toString() {
-    return "JoinArray{" +
-        "v=" + v.getFullName() +
-        ", type=" + type +
-        ", param=" + param +
-        '}';
+    return "JoinArray{" + "v=" + v.getFullName() + ", type=" + type + ", param=" + param + '}';
   }
 }

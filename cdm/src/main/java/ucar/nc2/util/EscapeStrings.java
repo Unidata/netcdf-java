@@ -5,39 +5,40 @@ package ucar.nc2.util;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.nc2.constants.CDM;
-
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /*
-  We want to refactor the escaping.
-  1. EscapeStrings (this class)
-  2. StringUtil2.escape() DONE
-  3. URLnaming DONE
-  4. Eliminate URLencode/decode in favor of guava.
-
-  https://texnoblog.wordpress.com/2014/06/11/urlencode-just-one-is-not-enough/
-  "Starting from version 15.0, Google's excellent Guava libraries have UrlEscapers class to do just that!
-  The documentation is pretty clear, use
-    1) urlPathSegmentEscaper to encode URL path segments (things that go between slashes),
-    2) urlFragmentEscaper if you already have a path/with/slashes
-    3) urlPathSegmentEscaper for the names and values of request parameters (things after the '?').
-
-  from Guava:
-
-  1) HtmlEscapers
-  HTML escaping is particularly tricky: For example, some elements' text contents must not be HTML escaped.
-  As a result, it is impossible to escape an HTML document correctly without domain-specific knowledge beyond what HtmlEscapers provides.
-  We strongly encourage the use of HTML templating systems.
-
-  2) XMLEscaper
-  Escaper instances suitable for strings to be included in XML attribute values and elements' text contents. When possible, avoid manual escaping
-  by using templating systems and high-level APIs that provide autoescaping. For example, consider XOM or JDOM.
-
-  3) PercentEscaper
-  PercentEscaper(String safeChars, boolean plusForSpace)
-  Constructs a percent escaper with the specified safe characters and optional handling of the space character.
+ * We want to refactor the escaping.
+ * 1. EscapeStrings (this class)
+ * 2. StringUtil2.escape() DONE
+ * 3. URLnaming DONE
+ * 4. Eliminate URLencode/decode in favor of guava.
+ * 
+ * https://texnoblog.wordpress.com/2014/06/11/urlencode-just-one-is-not-enough/
+ * "Starting from version 15.0, Google's excellent Guava libraries have UrlEscapers class to do just that!
+ * The documentation is pretty clear, use
+ * 1) urlPathSegmentEscaper to encode URL path segments (things that go between slashes),
+ * 2) urlFragmentEscaper if you already have a path/with/slashes
+ * 3) urlPathSegmentEscaper for the names and values of request parameters (things after the '?').
+ * 
+ * from Guava:
+ * 
+ * 1) HtmlEscapers
+ * HTML escaping is particularly tricky: For example, some elements' text contents must not be HTML escaped.
+ * As a result, it is impossible to escape an HTML document correctly without domain-specific knowledge beyond what
+ * HtmlEscapers provides.
+ * We strongly encourage the use of HTML templating systems.
+ * 
+ * 2) XMLEscaper
+ * Escaper instances suitable for strings to be included in XML attribute values and elements' text contents. When
+ * possible, avoid manual escaping
+ * by using templating systems and high-level APIs that provide autoescaping. For example, consider XOM or JDOM.
+ * 
+ * 3) PercentEscaper
+ * PercentEscaper(String safeChars, boolean plusForSpace)
+ * Constructs a percent escaper with the specified safe characters and optional handling of the space character.
  */
 
 public class EscapeStrings {
@@ -45,10 +46,14 @@ public class EscapeStrings {
   static protected final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   static protected final String numeric = "0123456789";
   static protected final String alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  static protected final String _allowableInUrl = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$&'()*+,-./:;=?@_~";
-  static protected final String _allowableInUrlQuery = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&'()*+,-./:;=?@_~";
-  static protected final String _allowableInDAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_!~*'-\"./";
-  static protected final String _allowableInOGC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~*'()";
+  static protected final String _allowableInUrl =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$&'()*+,-./:;=?@_~";
+  static protected final String _allowableInUrlQuery =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&'()*+,-./:;=?@_~";
+  static protected final String _allowableInDAP =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_!~*'-\"./";
+  static protected final String _allowableInOGC =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~*'()";
   static protected final char _URIEscape = '%';
   static protected final char _JavaEscape = '\\';
   static final byte blank = ((byte) ' ');
@@ -110,9 +115,9 @@ public class EscapeStrings {
    *
    * @param in The string to modify.
    * @param escape The character used to signal the begining of an escape sequence. param except If
-   * there is some escape code that should not be removed by this call (e.g., you might not want to
-   * remove spaces, %20) use this parameter to specify that code. The function will then transform
-   * all escapes except that one.
+   *        there is some escape code that should not be removed by this call (e.g., you might not want to
+   *        remove spaces, %20) use this parameter to specify that code. The function will then transform
+   *        all escapes except that one.
    * @param spaceplus True if spaces should be replaced by '+'.
    * @return The modified string.
    */
@@ -128,7 +133,7 @@ public class EscapeStrings {
       byte[] out = new byte[utf8.length]; // Should be max we need
 
       int index8 = 0;
-      for (int i = 0; i < utf8.length; ) {
+      for (int i = 0; i < utf8.length;) {
         byte b = utf8[i++];
         if (b == plus && spaceplus) {
           out[index8++] = blank;
@@ -191,8 +196,7 @@ public class EscapeStrings {
     return s;
   }
 
-  static private final Pattern p = Pattern
-      .compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
+  static private final Pattern p = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
 
   public static String escapeURL(String url) {
     String protocol;
@@ -292,7 +296,7 @@ public class EscapeStrings {
    * @return The escaped expression.
    */
   private static String urlEncode(String s) {
-    //try {s = URLEncoder.encode(s,"UTF-8");} catch(Exception e) {s = null;}
+    // try {s = URLEncoder.encode(s,"UTF-8");} catch(Exception e) {s = null;}
     s = escapeString(s, _allowableInUrl);
     return s;
   }
@@ -305,7 +309,7 @@ public class EscapeStrings {
    */
   public static String urlDecode(String s) {
     try {
-      //s = unescapeString(s, _URIEscape, "", false);
+      // s = unescapeString(s, _URIEscape, "", false);
       s = URLDecoder.decode(s, "UTF-8");
     } catch (Exception e) {
       s = null;

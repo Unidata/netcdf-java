@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib2;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.geoloc.projection.RotatedPole;
-
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -58,15 +56,15 @@ public class TestRotatedPole {
       Assert.assertEquals(rlonDim, rlonVar.getDimensions().get(0));
       Assert.assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
       Assert.assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
-      Assert.assertArrayEquals(new float[] { -30, -20, -10, 0, 10, 20, 30 },
-          (float[]) rlonVar.read().copyTo1DJavaArray(), (float) DELTA);
+      Assert.assertArrayEquals(new float[] {-30, -20, -10, 0, 10, 20, 30}, (float[]) rlonVar.read().copyTo1DJavaArray(),
+          (float) DELTA);
       Variable rlatVar = nc.findVariable("rlat");
       Assert.assertNotNull(rlatVar);
       Assert.assertEquals(1, rlatVar.getDimensions().size());
       Assert.assertEquals(rlatDim, rlatVar.getDimensions().get(0));
       Assert.assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
       Assert.assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
-      Assert.assertArrayEquals(new float[] { -20, -10, 0, 10, 20 }, (float[]) rlatVar.read().copyTo1DJavaArray(),
+      Assert.assertArrayEquals(new float[] {-20, -10, 0, 10, 20}, (float[]) rlatVar.read().copyTo1DJavaArray(),
           (float) DELTA);
       Variable timeVar = nc.findVariable("time");
       Assert.assertNotNull(timeVar);
@@ -74,7 +72,7 @@ public class TestRotatedPole {
       Assert.assertEquals(timeDim, timeVar.getDimensions().get(0));
       Assert.assertEquals("time", timeVar.findAttribute("standard_name").getStringValue());
       Assert.assertEquals("Hour since 2016-04-25T22:00:00Z", timeVar.findAttribute("units").getStringValue());
-      Assert.assertArrayEquals(new double[] { 0 }, (double[]) timeVar.read().copyTo1DJavaArray(), DELTA);
+      Assert.assertArrayEquals(new double[] {0}, (double[]) timeVar.read().copyTo1DJavaArray(), DELTA);
       // check projection variable
       Variable projVar = nc.findVariable("RotatedLatLon32769_Projection");
       Assert.assertNotNull(projVar);
@@ -93,8 +91,8 @@ public class TestRotatedPole {
       Assert.assertEquals(rlatDim, dataVar.getDimensions().get(1));
       Assert.assertEquals(rlonDim, dataVar.getDimensions().get(2));
       Assert.assertArrayEquals(
-          new float[] { 300, 299, 298, 297, 296, 295, 294, 299, 300, 299, 298, 297, 296, 295, 298, 299, 300, 299, 298,
-              297, 296, 297, 298, 299, 300, 299, 298, 297, 296, 297, 298, 299, 300, 299, 298 },
+          new float[] {300, 299, 298, 297, 296, 295, 294, 299, 300, 299, 298, 297, 296, 295, 298, 299, 300, 299, 298,
+              297, 296, 297, 298, 299, 300, 299, 298, 297, 296, 297, 298, 299, 300, 299, 298},
           (float[]) dataVar.read().copyTo1DJavaArray(), (float) DELTA);
     }
   }
@@ -124,7 +122,7 @@ public class TestRotatedPole {
       Assert.assertEquals(rlonDim, rlonVar.getDimensions().get(0));
       Assert.assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
       Assert.assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
-      Assert.assertArrayEquals(new float[] { -18, -8, 2, 12, 22 }, (float[]) rlonVar.read().copyTo1DJavaArray(),
+      Assert.assertArrayEquals(new float[] {-18, -8, 2, 12, 22}, (float[]) rlonVar.read().copyTo1DJavaArray(),
           (float) DELTA);
       Variable rlatVar = nc.findVariable("rlat");
       Assert.assertNotNull(rlatVar);
@@ -132,7 +130,7 @@ public class TestRotatedPole {
       Assert.assertEquals(rlatDim, rlatVar.getDimensions().get(0));
       Assert.assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
       Assert.assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
-      Assert.assertArrayEquals(new float[] { -20, -10, 0, 10, 20 }, (float[]) rlatVar.read().copyTo1DJavaArray(),
+      Assert.assertArrayEquals(new float[] {-20, -10, 0, 10, 20}, (float[]) rlatVar.read().copyTo1DJavaArray(),
           (float) DELTA);
       Variable timeVar = nc.findVariable("time");
       Assert.assertNotNull(timeVar);
@@ -140,7 +138,7 @@ public class TestRotatedPole {
       Assert.assertEquals(timeDim, timeVar.getDimensions().get(0));
       Assert.assertEquals("time", timeVar.findAttribute("standard_name").getStringValue());
       Assert.assertEquals("Hour since 2010-03-29T00:00:00Z", timeVar.findAttribute("units").getStringValue());
-      Assert.assertArrayEquals(new double[] { 0 }, (double[]) timeVar.read().copyTo1DJavaArray(), DELTA);
+      Assert.assertArrayEquals(new double[] {0}, (double[]) timeVar.read().copyTo1DJavaArray(), DELTA);
       // check projection variable
       Variable projVar = nc.findVariable("RotatedLatLon_Projection");
       Assert.assertNotNull(projVar);
@@ -158,8 +156,8 @@ public class TestRotatedPole {
       Assert.assertEquals(timeDim, dataVar.getDimensions().get(0));
       Assert.assertEquals(rlatDim, dataVar.getDimensions().get(1));
       Assert.assertEquals(rlonDim, dataVar.getDimensions().get(2));
-      Assert.assertArrayEquals(new float[] { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114,
-          115, 116, 117, 118, 119, 120, 121, 122, 123, 124 }, (float[]) dataVar.read().copyTo1DJavaArray(),
+      Assert.assertArrayEquals(new float[] {100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114,
+          115, 116, 117, 118, 119, 120, 121, 122, 123, 124}, (float[]) dataVar.read().copyTo1DJavaArray(),
           (float) DELTA);
     }
   }

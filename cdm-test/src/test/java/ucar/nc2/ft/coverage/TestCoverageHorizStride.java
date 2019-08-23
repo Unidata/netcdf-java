@@ -3,7 +3,6 @@ package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,7 +44,7 @@ public class TestCoverageHorizStride {
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       CoverageCoordSys csys = cover.getCoordSys();
-      int[] csysShape =  csys.getShape();
+      int[] csysShape = csys.getShape();
       System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
 
       SubsetParams params = new SubsetParams().setHorizStride(2);
@@ -56,12 +55,12 @@ public class TestCoverageHorizStride {
       }
 
       CoverageCoordSys subsetCoordSys = opt.get();
-      int[] subsetShape =  subsetCoordSys.getShape();
+      int[] subsetShape = subsetCoordSys.getShape();
       System.out.printf("csysSubset shape = %s%n", Misc.showInts(subsetShape));
 
       int n = csysShape.length;
-      csysShape[n-1] = (csysShape[n-1]+1)/2;
-      csysShape[n-2] = (csysShape[n-2]+1)/2;
+      csysShape[n - 1] = (csysShape[n - 1] + 1) / 2;
+      csysShape[n - 2] = (csysShape[n - 2] + 1) / 2;
 
       Assert.assertArrayEquals(csysShape, subsetShape);
     }
@@ -69,7 +68,8 @@ public class TestCoverageHorizStride {
 
   @Test
   public void TestGribCurvilinearHorizStride() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";  // GRIB Curvilinear
+    String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2"; // GRIB
+                                                                                                         // Curvilinear
     System.out.printf("open %s%n", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
@@ -88,7 +88,7 @@ public class TestCoverageHorizStride {
       Coverage coverage = gds.findCoverage(covName);
       Assert.assertNotNull(covName, coverage);
       CoverageCoordSys csys = coverage.getCoordSys();
-      int[] csysShape =  csys.getShape();
+      int[] csysShape = csys.getShape();
       System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
 
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).setHorizStride(2);
@@ -99,12 +99,12 @@ public class TestCoverageHorizStride {
       }
 
       CoverageCoordSys subsetCoordSys = opt.get();
-      int[] subsetShape =  subsetCoordSys.getShape();
+      int[] subsetShape = subsetCoordSys.getShape();
       System.out.printf("csysSubset shape = %s%n", Misc.showInts(subsetShape));
 
       int n = csysShape.length;
-      csysShape[n-1] = (csysShape[n-1]+1)/2;
-      csysShape[n-2] = (csysShape[n-2]+1)/2;
+      csysShape[n - 1] = (csysShape[n - 1] + 1) / 2;
+      csysShape[n - 2] = (csysShape[n - 2] + 1) / 2;
 
       Assert.assertArrayEquals(csysShape, subsetShape);
 

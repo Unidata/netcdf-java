@@ -17,9 +17,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.*;
-
 import ucar.nc2.ui.StructureTable;
-
 import org.jdom2.Element;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -85,7 +83,7 @@ public class DatasetViewer extends JPanel {
     this.fileChooser = fileChooser;
 
     // create the variable table(s)
-    tablePanel = new JPanel( new BorderLayout());
+    tablePanel = new JPanel(new BorderLayout());
     setNestedTable(0, null);
 
     // the tree view
@@ -107,48 +105,50 @@ public class DatasetViewer extends JPanel {
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage( "nj22/NetcdfUI"), infoTA);
-    infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
+    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // the data Table
-    dataTable = new StructureTable( (PreferencesExt) prefs.node("structTable"));
-    variableTable = new VariableTable( (PreferencesExt) prefs.node("variableTable"));
-    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "nj22/NetcdfUI"), dataTable);
-    dataWindow.setBounds( (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle( 50, 300, 1000, 1200)));
+    dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
+    variableTable = new VariableTable((PreferencesExt) prefs.node("variableTable"));
+    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
+    dataWindow.setBounds((Rectangle) prefs.getBean("dataWindowBounds", new Rectangle(50, 300, 1000, 1200)));
 
     // the ncdump Pane
     dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
-    dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage( "nj22/NetcdfUI"), dumpPane);
-    dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
-    
+    dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage("nj22/NetcdfUI"), dumpPane);
+    dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 300, 200)));
+
     // the plot Pane
     dataPlot = new VariablePlot((PreferencesExt) prefs.node("plotPane"));
-    plotWindow = new IndependentWindow("Plot Variable Data", BAMutil.getImage( "nj22/NetcdfUI"), dataPlot);
-    plotWindow.setBounds( (Rectangle) prefs.getBean("PlotWindowBounds", new Rectangle( 300, 300, 300, 200)));    
+    plotWindow = new IndependentWindow("Plot Variable Data", BAMutil.getImage("nj22/NetcdfUI"), dataPlot);
+    plotWindow.setBounds((Rectangle) prefs.getBean("PlotWindowBounds", new Rectangle(300, 300, 300, 200)));
     plotWindow.addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent e) {
-            dataPlot.clear();
-        }
+      @Override
+      public void windowClosing(WindowEvent e) {
+        dataPlot.clear();
+      }
     });
   }
 
   NetcdfOutputChooser outChooser;
+
   public void addActions(JPanel buttPanel) {
 
     AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-      if (ds == null) return;
-      if (outChooser == null) {
-        outChooser = new NetcdfOutputChooser((Frame) null);
-        outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
-           public void propertyChange(PropertyChangeEvent evt) {
-             writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
-           }
-         });
-      }
-      outChooser.setOutputFilename(ds.getLocation());
-      outChooser.setVisible(true);
+        if (ds == null)
+          return;
+        if (outChooser == null) {
+          outChooser = new NetcdfOutputChooser((Frame) null);
+          outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+              writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
+            }
+          });
+        }
+        outChooser.setOutputFilename(ds.getLocation());
+        outChooser.setVisible(true);
       }
     };
     BAMutil.setActionProperties(netcdfAction, "nj22/Netcdf", "Write netCDF file", false, 'S', -1);
@@ -177,7 +177,7 @@ public class DatasetViewer extends JPanel {
 
     try {
       FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version,
-              Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
+          Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
       // write() return the open file that was just written, so we just need to close it.
       try (NetcdfFile result = writer.write()) {
         result.close();
@@ -192,7 +192,7 @@ public class DatasetViewer extends JPanel {
   void writeNcstream(String filename) {
     try {
       NcStreamWriter writer = new NcStreamWriter(ds, null);
-      try (OutputStream fos = new BufferedOutputStream( new FileOutputStream(filename), 50 * 1000)) {
+      try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(filename), 50 * 1000)) {
         writer.streamAll(fos);
       }
       JOptionPane.showMessageDialog(this, "File successfully written");
@@ -216,15 +216,17 @@ public class DatasetViewer extends JPanel {
   }
 
   private CompareDialog dialog = null;
+
   public void compareDataset() {
-    if (ds == null) return;
+    if (ds == null)
+      return;
     if (dialog == null) {
       dialog = new CompareDialog(null, fileChooser);
       dialog.pack();
       dialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
           CompareDialog.Data data = (CompareDialog.Data) evt.getNewValue();
-          //System.out.printf("name=%s %s%n", evt.getPropertyName(), data);
+          // System.out.printf("name=%s %s%n", evt.getPropertyName(), data);
           compareDataset(data);
         }
       });
@@ -233,7 +235,8 @@ public class DatasetViewer extends JPanel {
   }
 
   private void compareDataset(CompareDialog.Data data) {
-    if (data.name == null) return;
+    if (data.name == null)
+      return;
 
     NetcdfFile compareFile = null;
     try {
@@ -252,11 +255,12 @@ public class DatasetViewer extends JPanel {
       } else {
         NestedTable nested = nestedTableList.get(0);
         Variable org = getCurrentVariable(nested.table);
-        if (org == null) return;
+        if (org == null)
+          return;
         Variable ov = compareFile.findVariable(org.getFullNameEscaped());
         if (ov != null)
           cn.compareVariable(org, ov);
-      }      
+      }
 
       infoTA.setText(f.toString());
       infoTA.gotoTop();
@@ -274,9 +278,8 @@ public class DatasetViewer extends JPanel {
       if (compareFile != null)
         try {
           compareFile.close();
-        }
-        catch (Exception eek) {
-            eek.printStackTrace();
+        } catch (Exception eek) {
+          eek.printStackTrace();
         }
     }
   }
@@ -291,7 +294,8 @@ public class DatasetViewer extends JPanel {
   ////////////////////////////////////////////////
 
   public void showAtts() {
-    if (ds == null) return;
+    if (ds == null)
+      return;
     if (attTable == null) {
       // global attributes
       attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
@@ -306,16 +310,16 @@ public class DatasetViewer extends JPanel {
           }
         }
       });
-      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "nj22/NetcdfUI"), attTable);
-      attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
+      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage("nj22/NetcdfUI"), attTable);
+      attWindow.setBounds((Rectangle) prefs.getBean("AttWindowBounds", new Rectangle(300, 100, 500, 800)));
     }
 
     List<AttributeBean> attlist = new ArrayList<>();
     for (Attribute att : ds.getGlobalAttributes()) {
-      attlist.add(new AttributeBean(att));      
+      attlist.add(new AttributeBean(att));
     }
     attTable.setBeans(attlist);
-    attWindow.show();    
+    attWindow.show();
   }
 
   public NetcdfFile getDataset() {
@@ -324,36 +328,38 @@ public class DatasetViewer extends JPanel {
 
   public void clear() {
     this.ds = null;
-    if (attTable != null) attTable.clearBeans();
-    for (NestedTable nt : nestedTableList) nt.table.clearBeans();
+    if (attTable != null)
+      attTable.clearBeans();
+    for (NestedTable nt : nestedTableList)
+      nt.table.clearBeans();
     datasetTree.clear();
   }
 
   public void setDataset(NetcdfFile ds) {
     this.ds = ds;
     NestedTable nt = nestedTableList.get(0);
-    nt.table.setBeans( getVariableBeans(ds));
-    hideNestedTable( 1);
+    nt.table.setBeans(getVariableBeans(ds));
+    hideNestedTable(1);
 
-    datasetTree.setFile( ds);
+    datasetTree.setFile(ds);
   }
 
-  private void setSelected( Variable v ) {
+  private void setSelected(Variable v) {
     eventsOK = false;
 
     List<Variable> vchain = new ArrayList<>();
-    vchain.add( v);
+    vchain.add(v);
 
     Variable vp = v;
     while (vp.isMemberOfStructure()) {
       vp = vp.getParentStructure();
-      vchain.add( 0, vp); // reverse
+      vchain.add(0, vp); // reverse
     }
 
-    for (int i=0; i<vchain.size(); i++) {
+    for (int i = 0; i < vchain.size(); i++) {
       vp = vchain.get(i);
       NestedTable ntable = setNestedTable(i, vp.getParentStructure());
-      ntable.setSelected( vp);
+      ntable.setSelected(vp);
     }
 
     eventsOK = true;
@@ -361,16 +367,16 @@ public class DatasetViewer extends JPanel {
 
   private NestedTable setNestedTable(int level, Structure s) {
     NestedTable ntable;
-    if (nestedTableList.size() < level+1) {
+    if (nestedTableList.size() < level + 1) {
       ntable = new NestedTable(level);
-      nestedTableList.add( ntable);
+      nestedTableList.add(ntable);
 
     } else {
       ntable = nestedTableList.get(level);
     }
 
     if (s != null) // variables inside of records
-      ntable.table.setBeans( getStructureVariables( s));
+      ntable.table.setBeans(getStructureVariables(s));
 
     ntable.show();
     return ntable;
@@ -378,7 +384,7 @@ public class DatasetViewer extends JPanel {
 
   private void hideNestedTable(int level) {
     int n = nestedTableList.size();
-    for (int i=n-1; i>=level; i--) {
+    for (int i = n - 1; i >= level; i--) {
       NestedTable ntable = nestedTableList.get(i);
       ntable.hide();
     }
@@ -395,7 +401,7 @@ public class DatasetViewer extends JPanel {
 
     NestedTable(int level) {
       this.level = level;
-      myPrefs = (PreferencesExt) prefs.node("NestedTable"+level);
+      myPrefs = (PreferencesExt) prefs.node("NestedTable" + level);
 
       table = new BeanTable(VariableBean.class, myPrefs, false);
 
@@ -436,25 +442,25 @@ public class DatasetViewer extends JPanel {
           }
         });
         csPopup.addAction("Data Plot", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-              dataPlot(table);
-            }
-          });        
+          public void actionPerformed(ActionEvent e) {
+            dataPlot(table);
+          }
+        });
       }
 
       // get selected variable, see if its a structure
       table.addListSelectionListener(e -> {
-          Variable v = getCurrentVariable(table);
-          if (v instanceof Structure) {
-            hideNestedTable(NestedTable.this.level+2);
-            setNestedTable(NestedTable.this.level+1, (Structure) v);
+        Variable v = getCurrentVariable(table);
+        if (v instanceof Structure) {
+          hideNestedTable(NestedTable.this.level + 2);
+          setNestedTable(NestedTable.this.level + 1, (Structure) v);
 
-          } else {
-            hideNestedTable(NestedTable.this.level+1);
-          }
-          if (eventsOK) {
-            datasetTree.setSelected( v);
-          }
+        } else {
+          hideNestedTable(NestedTable.this.level + 1);
+        }
+        if (eventsOK) {
+          datasetTree.setSelected(v);
+        }
       });
 
       // layout
@@ -465,7 +471,7 @@ public class DatasetViewer extends JPanel {
 
       } else {
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, currentComponent, table);
-        splitPos = myPrefs.getInt("splitPos"+level, 500);
+        splitPos = myPrefs.getInt("splitPos" + level, 500);
         if (splitPos > 0)
           split.setDividerLocation(splitPos);
 
@@ -474,11 +480,12 @@ public class DatasetViewer extends JPanel {
     }
 
     void show() {
-      if (isShowing) return;
+      if (isShowing)
+        return;
 
-      tablePanel.remove( currentComponent);
-      split.setLeftComponent( currentComponent);
-      split.setDividerLocation( splitPos);
+      tablePanel.remove(currentComponent);
+      split.setLeftComponent(currentComponent);
+      split.setDividerLocation(splitPos);
       currentComponent = split;
       tablePanel.add(currentComponent, BorderLayout.CENTER);
       tablePanel.revalidate();
@@ -486,8 +493,9 @@ public class DatasetViewer extends JPanel {
     }
 
     void hide() {
-      if (!isShowing) return;
-      tablePanel.remove( currentComponent);
+      if (!isShowing)
+        return;
+      tablePanel.remove(currentComponent);
 
       if (split != null) {
         splitPos = split.getDividerLocation();
@@ -499,7 +507,7 @@ public class DatasetViewer extends JPanel {
       isShowing = false;
     }
 
-    void setSelected( Variable vs) {
+    void setSelected(Variable vs) {
 
       List beans = table.getBeans();
       for (Object bean1 : beans) {
@@ -512,26 +520,30 @@ public class DatasetViewer extends JPanel {
     }
 
     void saveState() {
-      table.saveState( false);
-      if (split != null) myPrefs.putInt("splitPos"+level, split.getDividerLocation());
+      table.saveState(false);
+      if (split != null)
+        myPrefs.putInt("splitPos" + level, split.getDividerLocation());
     }
   }
 
-  /* public void showTreeViewWindow() {
-    if (treeWindow == null) {
-      datasetTree = new DatasetTreeView();
-      treeWindow = new IndependentWindow("TreeView", datasetTree);
-      treeWindow.setIconImage(thredds.ui.BAMutil.getImage("netcdfUI"));
-      treeWindow.setBounds( (Rectangle) prefs.getBean("treeWindow", new Rectangle( 150, 100, 400, 700)));
-    }
-
-    datasetTree.setDataset( ds);
-    treeWindow.show();
-  } */
+  /*
+   * public void showTreeViewWindow() {
+   * if (treeWindow == null) {
+   * datasetTree = new DatasetTreeView();
+   * treeWindow = new IndependentWindow("TreeView", datasetTree);
+   * treeWindow.setIconImage(thredds.ui.BAMutil.getImage("netcdfUI"));
+   * treeWindow.setBounds( (Rectangle) prefs.getBean("treeWindow", new Rectangle( 150, 100, 400, 700)));
+   * }
+   * 
+   * datasetTree.setDataset( ds);
+   * treeWindow.show();
+   * }
+   */
 
   private void showDeclaration(BeanTable from, boolean isNcml) {
     Variable v = getCurrentVariable(from);
-    if (v == null) return;
+    if (v == null)
+      return;
     infoTA.clear();
 
     if (isNcml) {
@@ -545,9 +557,9 @@ public class DatasetViewer extends JPanel {
       infoTA.appendLine(v.toString());
     }
 
-    if (Debug.isSet( "Xdeveloper")) {
+    if (Debug.isSet("Xdeveloper")) {
       infoTA.appendLine("\n");
-      infoTA.appendLine( "FULL NAME = "+ v.getFullName());
+      infoTA.appendLine("FULL NAME = " + v.getFullName());
       infoTA.appendLine("\n");
       infoTA.appendLine(v.toStringDebug());
     }
@@ -559,17 +571,18 @@ public class DatasetViewer extends JPanel {
 
   private void showData(BeanTable from) {
     Variable v = getCurrentVariable(from);
-    if (v == null) return;
+    if (v == null)
+      return;
     infoTA.clear();
 
     try {
       Array data = v.read();
-      infoTA.setText( NCdumpW.toString(data, v.getFullName(), null));
+      infoTA.setText(NCdumpW.toString(data, v.getFullName(), null));
 
     } catch (Exception ex) {
       StringWriter s = new StringWriter();
-      ex.printStackTrace( new PrintWriter(s));
-      infoTA.setText( s.toString());
+      ex.printStackTrace(new PrintWriter(s));
+      infoTA.setText(s.toString());
     }
 
     infoTA.gotoTop();
@@ -580,7 +593,8 @@ public class DatasetViewer extends JPanel {
 
   private void dumpData(BeanTable from) {
     Variable v = getCurrentVariable(from);
-    if (v == null) return;
+    if (v == null)
+      return;
 
     dumpPane.clear();
     String spec;
@@ -591,8 +605,8 @@ public class DatasetViewer extends JPanel {
 
     } catch (Exception ex) {
       StringWriter s = new StringWriter();
-      ex.printStackTrace( new PrintWriter(s));
-      dumpPane.setText( s.toString());
+      ex.printStackTrace(new PrintWriter(s));
+      dumpPane.setText(s.toString());
     }
 
     dumpWindow.show();
@@ -600,7 +614,8 @@ public class DatasetViewer extends JPanel {
 
   private void writeData(BeanTable from, File name) {
     Variable v = getCurrentVariable(from);
-    if (v == null || name == null) return;
+    if (v == null || name == null)
+      return;
 
     try (FileOutputStream stream = new FileOutputStream(name)) {
       WritableByteChannel channel = stream.getChannel();
@@ -613,148 +628,151 @@ public class DatasetViewer extends JPanel {
 
   }
 
-  /* private void showMissingData(BeanTable from) {
-    VariableBean vb = (VariableBean) from.getSelectedBean();
-    if (vb == null) return;
-    Variable v = vb.vs;
-    if ((v != null) && (v.getDataType() == ucar.nc2.DataType.STRUCTURE)) {
-      showMissingStructureData( (Structure) v);
-    }
-    if (!vb.vs.hasMissing()) return;
-
-    int count = 0, total = 0;
-    infoTA.clear();
-    infoTA.appendLine( v.toString());
-    try {
-
-      Array data = null;
-      if (v.isMemberOfStructure())
-        data = v.readAllStructures((List)null, true);
-      else
-        data = v.read();
-
-      IndexIterator iter = data.getIndexIterator();
-      while (iter.hasNext()) {
-        if (vb.vs.isMissing( iter.getDoubleNext()))
-          count++;
-        total++;
-      }
-
-      double p = ((100.0 * count) / total);
-      infoTA.appendLine( " missing values = "+count);
-      infoTA.appendLine( " total values = "+total);
-      infoTA.appendLine( " percent missing values = "+ Format.d(p, 2) +" %");
-
-    } catch( InvalidRangeException e ) {
-      infoTA.appendLine( "ERROR= "+e.getMessage());
-    } catch( IOException ioe ) {
-      infoTA.appendLine( "ERROR= "+ioe.getMessage());
-    }
-    infoTA.gotoTop();
-    infoWindow.showIfNotIconified();
-  }
-
-  private void showMissingStructureData(Structure s) {
-    ArrayList members = new ArrayList();
-    List allMembers = s.getVariables();
-    for (int i=0; i<allMembers.size(); i++) {
-      Variable vs = (Variable) allMembers.get(i);
-      if (vs.hasMissing())
-        members.add( vs);
-    }
-
-    if (members.size() == 0) return;
-    int[] count = new int[ members.size()];
-    int[] total = new int[ members.size()];
-
-    infoTA.clear();
-    try {
-
-     Structure.Iterator iter = s.getStructureIterator();
-     while (iter.hasNext()) {
-       StructureData sdata = iter.next();
-
-       for (int i=0; i<members.size(); i++) {
-         Variable vs = (Variable) members.get(i);
-
-         Array data = sdata.findMemberArray( vs.getShortName());
-         IndexIterator dataIter = data.getIndexIterator();
-         while (dataIter.hasNext()) {
-           if (vs.isMissing(dataIter.getDoubleNext()))
-             count[i]++;
-           total[i]++;
-         }
-       }
-     }
-     int countAll = 0, totalAll = 0;
-     infoTA.appendLine("      name                missing   total     percent missing");
-     for (int i=0; i<members.size(); i++) {
-       Variable vs = (Variable) members.get(i);
-       double p = ( (100.0 * count[i]) / total[i]);
-       infoTA.appendLine(Format.s(vs.getShortName(), 25) +
-                         " "+ Format.i(count[i], 7) +
-                         "   "+ Format.i(total[i], 7) +
-                         "   "+ Format.d(p, 2) + "%");
-       countAll += count[i];
-       totalAll += total[i];
-     }
-
-     infoTA.appendLine("");
-     double p = ( (100.0 * countAll) / totalAll);
-     infoTA.appendLine(Format.s("TOTAL ALL", 25) +
-                       " "+ Format.i(countAll, 7) +
-                       "   "+ Format.i(totalAll, 7) +
-                       "   "+ Format.d(p, 2) + "%");
-
-    } catch( IOException ioe ) {
-      infoTA.appendLine( "ERROR= "+ioe.getMessage());
-    }
-    infoTA.gotoTop();
-    infoWindow.showIfNotIconified();
-  } */
+  /*
+   * private void showMissingData(BeanTable from) {
+   * VariableBean vb = (VariableBean) from.getSelectedBean();
+   * if (vb == null) return;
+   * Variable v = vb.vs;
+   * if ((v != null) && (v.getDataType() == ucar.nc2.DataType.STRUCTURE)) {
+   * showMissingStructureData( (Structure) v);
+   * }
+   * if (!vb.vs.hasMissing()) return;
+   * 
+   * int count = 0, total = 0;
+   * infoTA.clear();
+   * infoTA.appendLine( v.toString());
+   * try {
+   * 
+   * Array data = null;
+   * if (v.isMemberOfStructure())
+   * data = v.readAllStructures((List)null, true);
+   * else
+   * data = v.read();
+   * 
+   * IndexIterator iter = data.getIndexIterator();
+   * while (iter.hasNext()) {
+   * if (vb.vs.isMissing( iter.getDoubleNext()))
+   * count++;
+   * total++;
+   * }
+   * 
+   * double p = ((100.0 * count) / total);
+   * infoTA.appendLine( " missing values = "+count);
+   * infoTA.appendLine( " total values = "+total);
+   * infoTA.appendLine( " percent missing values = "+ Format.d(p, 2) +" %");
+   * 
+   * } catch( InvalidRangeException e ) {
+   * infoTA.appendLine( "ERROR= "+e.getMessage());
+   * } catch( IOException ioe ) {
+   * infoTA.appendLine( "ERROR= "+ioe.getMessage());
+   * }
+   * infoTA.gotoTop();
+   * infoWindow.showIfNotIconified();
+   * }
+   * 
+   * private void showMissingStructureData(Structure s) {
+   * ArrayList members = new ArrayList();
+   * List allMembers = s.getVariables();
+   * for (int i=0; i<allMembers.size(); i++) {
+   * Variable vs = (Variable) allMembers.get(i);
+   * if (vs.hasMissing())
+   * members.add( vs);
+   * }
+   * 
+   * if (members.size() == 0) return;
+   * int[] count = new int[ members.size()];
+   * int[] total = new int[ members.size()];
+   * 
+   * infoTA.clear();
+   * try {
+   * 
+   * Structure.Iterator iter = s.getStructureIterator();
+   * while (iter.hasNext()) {
+   * StructureData sdata = iter.next();
+   * 
+   * for (int i=0; i<members.size(); i++) {
+   * Variable vs = (Variable) members.get(i);
+   * 
+   * Array data = sdata.findMemberArray( vs.getShortName());
+   * IndexIterator dataIter = data.getIndexIterator();
+   * while (dataIter.hasNext()) {
+   * if (vs.isMissing(dataIter.getDoubleNext()))
+   * count[i]++;
+   * total[i]++;
+   * }
+   * }
+   * }
+   * int countAll = 0, totalAll = 0;
+   * infoTA.appendLine("      name                missing   total     percent missing");
+   * for (int i=0; i<members.size(); i++) {
+   * Variable vs = (Variable) members.get(i);
+   * double p = ( (100.0 * count[i]) / total[i]);
+   * infoTA.appendLine(Format.s(vs.getShortName(), 25) +
+   * " "+ Format.i(count[i], 7) +
+   * "   "+ Format.i(total[i], 7) +
+   * "   "+ Format.d(p, 2) + "%");
+   * countAll += count[i];
+   * totalAll += total[i];
+   * }
+   * 
+   * infoTA.appendLine("");
+   * double p = ( (100.0 * countAll) / totalAll);
+   * infoTA.appendLine(Format.s("TOTAL ALL", 25) +
+   * " "+ Format.i(countAll, 7) +
+   * "   "+ Format.i(totalAll, 7) +
+   * "   "+ Format.d(p, 2) + "%");
+   * 
+   * } catch( IOException ioe ) {
+   * infoTA.appendLine( "ERROR= "+ioe.getMessage());
+   * }
+   * infoTA.gotoTop();
+   * infoWindow.showIfNotIconified();
+   * }
+   */
 
   private void dataTable(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
-    if (vb == null) return;
+    if (vb == null)
+      return;
     Variable v = vb.vs;
     if (v instanceof Structure) {
       try {
-        dataTable.setStructure((Structure)v);
-      }
-      catch (Exception ex) {
+        dataTable.setStructure((Structure) v);
+      } catch (Exception ex) {
         ex.printStackTrace();
       }
       dataWindow.setComponent(dataTable);
-  	}
-  	else {
-	  List<VariableBean> l = from.getSelectedBeans();
-	  List<Variable> vl = new ArrayList<>();
+    } else {
+      List<VariableBean> l = from.getSelectedBeans();
+      List<Variable> vl = new ArrayList<>();
 
-	  for(VariableBean vb1  : l) {
-		  if (vb1 == null) return;
-		  v = vb1.vs;
-		  if (v != null) {
-			  vl.add(v);
-		  }
-		  else return;
-	  }
- 
-	  variableTable.setDataset(ds);
-	  variableTable.setVariableList(vl);
-	  variableTable.createTable();
- 
-	  dataWindow.setComponent(variableTable);
+      for (VariableBean vb1 : l) {
+        if (vb1 == null)
+          return;
+        v = vb1.vs;
+        if (v != null) {
+          vl.add(v);
+        } else
+          return;
+      }
+
+      variableTable.setDataset(ds);
+      variableTable.setVariableList(vl);
+      variableTable.createTable();
+
+      dataWindow.setComponent(variableTable);
     }
-    Rectangle r = (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle( 50, 300, 1000, 1200));
+    Rectangle r = (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle(50, 300, 1000, 1200));
     dataWindow.setBounds(r);
-  	dataWindow.show();
+    dataWindow.show();
   }
 
   private void dataPlot(BeanTable from) {
     List<VariableBean> l = from.getSelectedBeans();
 
     for (VariableBean vb : l) {
-      if (vb == null) return;
+      if (vb == null)
+        return;
       Variable v = vb.vs;
       if (v != null) {
         try {
@@ -763,18 +781,22 @@ public class DatasetViewer extends JPanel {
         } catch (Exception ex) {
           ex.printStackTrace();
         }
-      } else return;
+      } else
+        return;
     }
     plotWindow.show();
   }
 
   private Variable getCurrentVariable(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
-    if (vb == null) return null;
+    if (vb == null)
+      return null;
     return vb.vs;
   }
 
-  public PreferencesExt getPrefs() { return prefs; }
+  public PreferencesExt getPrefs() {
+    return prefs;
+  }
 
   public void save() {
     dumpPane.save();
@@ -786,8 +808,9 @@ public class DatasetViewer extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("dataWindowBounds", dataWindow.getBounds());
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
-    prefs.putBeanObject("PlotWindowBounds", plotWindow.getBounds());    
-    if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
+    prefs.putBeanObject("PlotWindowBounds", plotWindow.getBounds());
+    if (attWindow != null)
+      prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
 
     prefs.putInt("mainSplit", mainSplit.getDividerLocation());
   }
@@ -803,7 +826,7 @@ public class DatasetViewer extends JPanel {
   public List<VariableBean> getStructureVariables(Structure s) {
     List<VariableBean> vlist = new ArrayList<>();
     for (Variable v : s.getVariables()) {
-      vlist.add( new VariableBean( v));
+      vlist.add(new VariableBean(v));
     }
     return vlist;
   }
@@ -814,26 +837,26 @@ public class DatasetViewer extends JPanel {
     private String name, dimensions, desc, units, dataType, shape;
 
     // create from a dataset
-    public VariableBean( Variable vs) {
+    public VariableBean(Variable vs) {
       this.vs = vs;
-      //vs = (v instanceof VariableEnhanced) ? (VariableEnhanced) v : new VariableStandardized( v);
+      // vs = (v instanceof VariableEnhanced) ? (VariableEnhanced) v : new VariableStandardized( v);
 
-      setName( vs.getShortName());
-      setDescription( vs.getDescription());
-      setUnits( vs.getUnitsString());
-      setDataType( vs.getDataType().toString());
+      setName(vs.getShortName());
+      setDescription(vs.getDescription());
+      setUnits(vs.getUnitsString());
+      setDataType(vs.getDataType().toString());
 
-      //Attribute csAtt = vs.findAttribute("_coordSystems");
-      //if (csAtt != null)
-      //  setCoordSys( csAtt.getStringValue());
+      // Attribute csAtt = vs.findAttribute("_coordSystems");
+      // if (csAtt != null)
+      // setCoordSys( csAtt.getStringValue());
 
       // collect dimensions
       StringBuilder lens = new StringBuilder();
       StringBuilder names = new StringBuilder();
       List dims = vs.getDimensions();
-      for (int j=0; j<dims.size(); j++) {
+      for (int j = 0; j < dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        if (j>0) {
+        if (j > 0) {
           lens.append(",");
           names.append(",");
         }
@@ -841,62 +864,98 @@ public class DatasetViewer extends JPanel {
         names.append(name);
         lens.append(dim.getLength());
       }
-      setDimensions( names.toString());
-      setShape( lens.toString());
+      setDimensions(names.toString());
+      setShape(lens.toString());
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
 
     public String getGroup() {
       return vs.getParentGroup().getFullName();
     }
 
-    public String getDimensions() { return dimensions; }
-    public void setDimensions(String dimensions) { this.dimensions = dimensions; }
+    public String getDimensions() {
+      return dimensions;
+    }
 
-    /* public boolean isCoordVar() { return isCoordVar; }
-    public void setCoordVar(boolean isCoordVar) { this.isCoordVar = isCoordVar; }
+    public void setDimensions(String dimensions) {
+      this.dimensions = dimensions;
+    }
 
-    /* public boolean isAxis() { return axis; }
-    public void setAxis(boolean axis) { this.axis = axis; }
+    /*
+     * public boolean isCoordVar() { return isCoordVar; }
+     * public void setCoordVar(boolean isCoordVar) { this.isCoordVar = isCoordVar; }
+     * 
+     * /* public boolean isAxis() { return axis; }
+     * public void setAxis(boolean axis) { this.axis = axis; }
+     * 
+     * public boolean isGeoGrid() { return isGrid; }
+     * public void setGeoGrid(boolean isGrid) { this.isGrid = isGrid; }
+     * 
+     * public String getAxisType() { return axisType; }
+     * public void setAxisType(String axisType) { this.axisType = axisType; }
+     */
 
-    public boolean isGeoGrid() { return isGrid; }
-    public void setGeoGrid(boolean isGrid) { this.isGrid = isGrid; }
+    // public String getCoordSys() { return coordSys; }
+    // public void setCoordSys(String coordSys) { this.coordSys = coordSys; }
 
-    public String getAxisType() { return axisType; }
-    public void setAxisType(String axisType) { this.axisType = axisType; } */
+    /*
+     * public String getPositive() { return positive; }
+     * public void setPositive(String positive) { this.positive = positive; }
+     * 
+     */
 
-    //public String getCoordSys() { return coordSys; }
-    //public void setCoordSys(String coordSys) { this.coordSys = coordSys; }
+    public String getDescription() {
+      return desc;
+    }
 
-    /* public String getPositive() { return positive; }
-    public void setPositive(String positive) { this.positive = positive; }
+    public void setDescription(String desc) {
+      this.desc = desc;
+    }
 
-    */
+    public String getUnits() {
+      return units;
+    }
 
-    public String getDescription() { return desc; }
-    public void setDescription(String desc) { this.desc = desc; }
+    public void setUnits(String units) {
+      this.units = units;
+    }
 
-    public String getUnits() { return units; }
-    public void setUnits(String units) { this.units = units; }
+    public String getDataType() {
+      return dataType;
+    }
 
-    public String getDataType() { return dataType; }
-    public void setDataType( String dataType) { this.dataType = dataType; }
+    public void setDataType(String dataType) {
+      this.dataType = dataType;
+    }
 
-    public String getShape() { return shape; }
-    public void setShape( String shape) { this.shape = shape; }
+    public String getShape() {
+      return shape;
+    }
+
+    public void setShape(String shape) {
+      this.shape = shape;
+    }
   }
 
   public class AttributeBean {
     private Attribute att;
 
     // create from a dataset
-    public AttributeBean( Attribute att) {
+    public AttributeBean(Attribute att) {
       this.att = att;
     }
 
-    public String getName() { return att.getShortName(); }
+    public String getName() {
+      return att.getShortName();
+    }
+
     public String getValue() {
       Array value = att.getValues();
       return NCdumpW.toString(value, null, null);
@@ -905,49 +964,51 @@ public class DatasetViewer extends JPanel {
   }
 
 
-  /* public class StructureBean {
-    // static public String editableProperties() { return "title include logging freq"; }
-
-    private String name;
-    private int domainRank, rangeRank;
-    private boolean isGeoXY, isLatLon, isProductSet, isZPositive;
-
-    // no-arg constructor
-    public StructureBean() {}
-
-    // create from a dataset
-    public StructureBean( Structure s) {
-
-
-      setName( cs.getName());
-      setGeoXY( cs.isGeoXY());
-      setLatLon( cs.isLatLon());
-      setProductSet( cs.isProductSet());
-      setDomainRank( cs.getDomain().size());
-      setRangeRank( cs.getCoordinateAxes().size());
-      //setZPositive( cs.isZPositive());
-    }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public boolean isGeoXY() { return isGeoXY; }
-    public void setGeoXY(boolean isGeoXY) { this.isGeoXY = isGeoXY; }
-
-    public boolean getLatLon() { return isLatLon; }
-    public void setLatLon(boolean isLatLon) { this.isLatLon = isLatLon; }
-
-    public boolean isProductSet() { return isProductSet; }
-    public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }
-
-    public int getDomainRank() { return domainRank; }
-    public void setDomainRank(int domainRank) { this.domainRank = domainRank; }
-
-    public int getRangeRank() { return rangeRank; }
-    public void setRangeRank(int rangeRank) { this.rangeRank = rangeRank; }
-
-    //public boolean isZPositive() { return isZPositive; }
-    //public void setZPositive(boolean isZPositive) { this.isZPositive = isZPositive; }
-  }  */
+  /*
+   * public class StructureBean {
+   * // static public String editableProperties() { return "title include logging freq"; }
+   * 
+   * private String name;
+   * private int domainRank, rangeRank;
+   * private boolean isGeoXY, isLatLon, isProductSet, isZPositive;
+   * 
+   * // no-arg constructor
+   * public StructureBean() {}
+   * 
+   * // create from a dataset
+   * public StructureBean( Structure s) {
+   * 
+   * 
+   * setName( cs.getName());
+   * setGeoXY( cs.isGeoXY());
+   * setLatLon( cs.isLatLon());
+   * setProductSet( cs.isProductSet());
+   * setDomainRank( cs.getDomain().size());
+   * setRangeRank( cs.getCoordinateAxes().size());
+   * //setZPositive( cs.isZPositive());
+   * }
+   * 
+   * public String getName() { return name; }
+   * public void setName(String name) { this.name = name; }
+   * 
+   * public boolean isGeoXY() { return isGeoXY; }
+   * public void setGeoXY(boolean isGeoXY) { this.isGeoXY = isGeoXY; }
+   * 
+   * public boolean getLatLon() { return isLatLon; }
+   * public void setLatLon(boolean isLatLon) { this.isLatLon = isLatLon; }
+   * 
+   * public boolean isProductSet() { return isProductSet; }
+   * public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }
+   * 
+   * public int getDomainRank() { return domainRank; }
+   * public void setDomainRank(int domainRank) { this.domainRank = domainRank; }
+   * 
+   * public int getRangeRank() { return rangeRank; }
+   * public void setRangeRank(int rangeRank) { this.rangeRank = rangeRank; }
+   * 
+   * //public boolean isZPositive() { return isZPositive; }
+   * //public void setZPositive(boolean isZPositive) { this.isZPositive = isZPositive; }
+   * }
+   */
 
 }

@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib1;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -82,13 +81,13 @@ public class Grib1ParamLevel {
         break;
 
       case 101:
-        value1 = pds11 * 10;  // convert from kPa to hPa - who uses kPa???
+        value1 = pds11 * 10; // convert from kPa to hPa - who uses kPa???
         value2 = pds12 * 10;
         break;
 
       case 104:
       case 106:
-        value1 = (pds11 * 100);  // convert hm to m
+        value1 = (pds11 * 100); // convert hm to m
         value2 = (pds12 * 100);
         break;
 
@@ -135,8 +134,8 @@ public class Grib1ParamLevel {
         break;
 
       case 141:
-        //value1 = pds11*10; // convert from kPa to hPa - who uses kPa???
-        value1 = pds11;  // 388 nows says it is hPA
+        // value1 = pds11*10; // convert from kPa to hPa - who uses kPa???
+        value1 = pds11; // 388 nows says it is hPA
         value2 = 1100 - pds12;
         break;
     }

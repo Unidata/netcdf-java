@@ -3,7 +3,6 @@ package ucar.nc2.grib;
 import static org.junit.Assert.*;
 import static ucar.nc2.grib.GribNumbers.convertSignedByte;
 import static ucar.nc2.grib.GribNumbers.convertSignedByte2;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

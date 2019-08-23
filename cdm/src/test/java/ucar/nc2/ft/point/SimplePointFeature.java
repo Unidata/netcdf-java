@@ -12,23 +12,23 @@ import ucar.unidata.geoloc.EarthLocation;
  * @since 2014/08/29
  */
 public class SimplePointFeature extends PointFeatureImpl {
-    private final StructureData featureData;
+  private final StructureData featureData;
 
-    public SimplePointFeature(DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime,
-            CalendarDateUnit timeUnit, StructureData featureData) {
-        super(dsg, location, obsTime, nomTime, timeUnit);
-        this.featureData = featureData;
-    }
+  public SimplePointFeature(DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime,
+      CalendarDateUnit timeUnit, StructureData featureData) {
+    super(dsg, location, obsTime, nomTime, timeUnit);
+    this.featureData = featureData;
+  }
 
-    @Nonnull
-    @Override
-    public StructureData getFeatureData() throws IOException {
-        return featureData;
-    }
+  @Nonnull
+  @Override
+  public StructureData getFeatureData() throws IOException {
+    return featureData;
+  }
 
-    @Nonnull
-    @Override
-    public StructureData getDataAll() throws IOException {
-        return featureData;
-    }
+  @Nonnull
+  @Override
+  public StructureData getDataAll() throws IOException {
+    return featureData;
+  }
 }

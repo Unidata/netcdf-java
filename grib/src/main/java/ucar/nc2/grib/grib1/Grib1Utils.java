@@ -15,7 +15,7 @@ public class Grib1Utils {
 
   public static String extractParameterCode(Grib1Record record) {
     Grib1SectionProductDefinition pds = record.getPDSsection();
-    return pds.getCenter()+"-"+pds.getSubCenter()+"-"+pds.getTableVersion()+"-"+pds.getParameterNumber();
+    return pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion() + "-" + pds.getParameterNumber();
   }
 
 }

@@ -16,7 +16,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.StructureData;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -27,15 +26,16 @@ import java.io.IOException;
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
-public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF  {
+public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF {
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString()) &&
-            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
+    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString())
+        && !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
-    if (conv == null) return false;
+    if (conv == null)
+      return false;
 
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
@@ -49,9 +49,12 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
 
   /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
-  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
-  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
-    return new SequenceObsDataset( ncd, task);
+  public boolean isMine(NetcdfDataset ds) {
+    return isValidFile(ds);
+  }
+
+  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+    return new SequenceObsDataset(ncd, task);
   }
 
   public SequenceObsDataset() {}
@@ -67,11 +70,11 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
     super(ds);
 
     // identify key variables
-    sequenceVar = (Structure) findVariable( ds, "obs_sequence");
-    latVar = findVariable( ds, "latitude_coordinate");
-    lonVar = findVariable( ds, "longitude_coordinate");
-    altVar = findVariable( ds, "zaxis_coordinate");
-    timeVar = findVariable( ds, "time_coordinate");
+    sequenceVar = (Structure) findVariable(ds, "obs_sequence");
+    latVar = findVariable(ds, "latitude_coordinate");
+    lonVar = findVariable(ds, "longitude_coordinate");
+    altVar = findVariable(ds, "zaxis_coordinate");
+    timeVar = findVariable(ds, "time_coordinate");
 
     if (latVar == null) {
       parseInfo.append("Missing latitude variable");
@@ -84,48 +87,51 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
     if (altVar == null) {
       parseInfo.append("Missing altitude variable");
     }
-     if (timeVar == null) {
+    if (timeVar == null) {
       parseInfo.append("Missing time variable");
       fatal = true;
     }
 
     // variables that link the structures together
-    timeNominalVar = findVariable( ds, "time_nominal");
+    timeNominalVar = findVariable(ds, "time_nominal");
 
     // station variables
-    stationIdVar = findVariable( ds, "station_id");
-    stationDescVar = findVariable( ds, "station_description");
-    numStationsVar = findVariable( ds, "number_stations");
+    stationIdVar = findVariable(ds, "station_id");
+    stationDescVar = findVariable(ds, "station_description");
+    numStationsVar = findVariable(ds, "number_stations");
 
-    if (stationIdVar == null){
+    if (stationIdVar == null) {
       parseInfo.append("Missing station id variable");
       fatal = true;
     }
 
-    /* sequenceHelper = new SequenceHelper(ds, sequenceVar, latVar, lonVar, altVar, timeVar, timeNominalVar,
-        dataVariables, parseInfo);
-    sequenceHelper.setStationInfo( stationIdVar, stationDescVar);
-
-    //removeDataVariable(timeVar.getName());
-    timeUnit = sequenceHelper.timeUnit;
-
-    stations = sequenceHelper.readStations( cancel);
-    setBoundingBox();
-
-    startDate = sequenceHelper.minDate;
-    endDate = sequenceHelper.maxDate; */
+    /*
+     * sequenceHelper = new SequenceHelper(ds, sequenceVar, latVar, lonVar, altVar, timeVar, timeNominalVar,
+     * dataVariables, parseInfo);
+     * sequenceHelper.setStationInfo( stationIdVar, stationDescVar);
+     * 
+     * //removeDataVariable(timeVar.getName());
+     * timeUnit = sequenceHelper.timeUnit;
+     * 
+     * stations = sequenceHelper.readStations( cancel);
+     * setBoundingBox();
+     * 
+     * startDate = sequenceHelper.minDate;
+     * endDate = sequenceHelper.maxDate;
+     */
 
     /*
-    Variable minTimeVar = ds.findVariable("minimum_time_observation");
-    int minTimeValue = minTimeVar.readScalarInt();
-    startDate = timeUnit.makeDate( minTimeValue);
+     * Variable minTimeVar = ds.findVariable("minimum_time_observation");
+     * int minTimeValue = minTimeVar.readScalarInt();
+     * startDate = timeUnit.makeDate( minTimeValue);
+     * 
+     * Variable maxTimeVar = ds.findVariable("maximum_time_observation");
+     * int maxTimeValue = maxTimeVar.readScalarInt();
+     * endDate = timeUnit.makeDate( maxTimeValue);
+     */
 
-    Variable maxTimeVar = ds.findVariable("maximum_time_observation");
-    int maxTimeValue = maxTimeVar.readScalarInt();
-    endDate = timeUnit.makeDate( maxTimeValue); */
-
-    title = ds.findAttValueIgnoreCase(null,"title","");
-    desc = ds.findAttValueIgnoreCase(null,"description", "");
+    title = ds.findAttValueIgnoreCase(null, "title", "");
+    desc = ds.findAttValueIgnoreCase(null, "description", "");
   }
 
   private Variable getCoordinate(NetcdfDataset ds, Structure sequenceVar, AxisType a) {
@@ -151,7 +157,7 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
   private Variable findVariable(NetcdfDataset ds, String name) {
     Variable result = ds.findVariable(name);
     if (result == null) {
-      String aname = ds.findAttValueIgnoreCase(null, name+"_variable", null);
+      String aname = ds.findAttValueIgnoreCase(null, name + "_variable", null);
       if (aname == null)
         aname = ds.findAttValueIgnoreCase(null, name, null);
       if (aname != null)
@@ -164,7 +170,7 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
   private Dimension findDimension(NetcdfDataset ds, String name) {
     Dimension result = ds.findDimension(name);
     if (result == null) {
-      String aname = ds.findAttValueIgnoreCase(null, name+"Dimension", null);
+      String aname = ds.findAttValueIgnoreCase(null, name + "Dimension", null);
       if (aname != null)
         result = ds.findDimension(aname);
     }
@@ -172,15 +178,18 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
   }
 
   protected void setTimeUnits() {}
+
   protected void setStartDate() {}
+
   protected void setEndDate() {}
+
   protected void setBoundingBox() {
     boundingBox = stationHelper.getBoundingBox();
   }
 
   public List getData(CancelTask cancel) throws IOException {
     ArrayList allData = new ArrayList();
-    for (int i=0; i<getDataCount(); i++) {
+    for (int i = 0; i < getDataCount(); i++) {
       // allData.add( makeObs(i));
       if ((cancel != null) && cancel.isCancel())
         return null;
@@ -193,65 +202,68 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
     return unlimitedDim.getLength();
   }
 
-  public List getData( ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
+  public List getData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return null; // sequenceHelper.getData( s, cancel);
   }
 
-  /* private class UnidataStationImpl extends StationImpl {
-    private int firstRecord;
-    private Variable next;
-
-    private UnidataStationImpl( String name, String desc, double lat, double lon, double elev, int firstRecord, int count) {
-      super( name, desc, lat, lon, elev, count);
-      this.firstRecord = firstRecord;
-
-      next = (isForwardLinkedList) ? nextVar : prevVar;
-    }
-
-    protected ArrayList readObservations() throws IOException {
-      ArrayList obs = new ArrayList();
-      int recno = firstRecord;
-
-      while (recno >= 0) {
-        try {
-          if (debugRead) System.out.println(name + " try to read at record "+recno);
-          StructureData sdata = recordVar.readStructure(recno);
-          int nextRecord = sdata.getScalarInt( next.getName());
-          float obsTime = sdata.getScalarFloat( timeVar.getName());
-          float nomTime = (timeNominalVar != null) ? sdata.getScalarFloat( timeNominalVar.getName()) : 0.0f;
-
-          obs.add( 0, recordHelper.new RecordStationObs( this, obsTime, nomTime, recno));
-          recno = nextRecord;
-        }
-        catch (ucar.ma2.InvalidRangeException e) {
-          e.printStackTrace();
-          throw new IOException( e.getMessage());
-        }
-      }
-
-      return obs;
-    }
-  }
-
-  protected StationObsDatatype makeObs(int recno) throws IOException {
-    try {
-      StructureData sdata = recordVar.readStructure(recno);
-
-      int stationIndex = sdata.getScalarInt(stationIndexVar.getName());
-      Station station = (Station) stations.get(stationIndex);
-      if (station == null)
-        parseInfo.append("cant find station at index = "+stationIndex+"\n");
-
-      float obsTime = sdata.getScalarFloat( timeVar.getName());
-      float nomTime = (timeNominalVar != null) ? sdata.getScalarFloat( timeNominalVar.getName()) : 0.0f;
-
-      return recordHelper.new RecordStationObs( station, obsTime, nomTime, recno);
-
-    } catch (ucar.ma2.InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IOException( e.getMessage());
-    }
-  } */
+  /*
+   * private class UnidataStationImpl extends StationImpl {
+   * private int firstRecord;
+   * private Variable next;
+   * 
+   * private UnidataStationImpl( String name, String desc, double lat, double lon, double elev, int firstRecord, int
+   * count) {
+   * super( name, desc, lat, lon, elev, count);
+   * this.firstRecord = firstRecord;
+   * 
+   * next = (isForwardLinkedList) ? nextVar : prevVar;
+   * }
+   * 
+   * protected ArrayList readObservations() throws IOException {
+   * ArrayList obs = new ArrayList();
+   * int recno = firstRecord;
+   * 
+   * while (recno >= 0) {
+   * try {
+   * if (debugRead) System.out.println(name + " try to read at record "+recno);
+   * StructureData sdata = recordVar.readStructure(recno);
+   * int nextRecord = sdata.getScalarInt( next.getName());
+   * float obsTime = sdata.getScalarFloat( timeVar.getName());
+   * float nomTime = (timeNominalVar != null) ? sdata.getScalarFloat( timeNominalVar.getName()) : 0.0f;
+   * 
+   * obs.add( 0, recordHelper.new RecordStationObs( this, obsTime, nomTime, recno));
+   * recno = nextRecord;
+   * }
+   * catch (ucar.ma2.InvalidRangeException e) {
+   * e.printStackTrace();
+   * throw new IOException( e.getMessage());
+   * }
+   * }
+   * 
+   * return obs;
+   * }
+   * }
+   * 
+   * protected StationObsDatatype makeObs(int recno) throws IOException {
+   * try {
+   * StructureData sdata = recordVar.readStructure(recno);
+   * 
+   * int stationIndex = sdata.getScalarInt(stationIndexVar.getName());
+   * Station station = (Station) stations.get(stationIndex);
+   * if (station == null)
+   * parseInfo.append("cant find station at index = "+stationIndex+"\n");
+   * 
+   * float obsTime = sdata.getScalarFloat( timeVar.getName());
+   * float nomTime = (timeNominalVar != null) ? sdata.getScalarFloat( timeNominalVar.getName()) : 0.0f;
+   * 
+   * return recordHelper.new RecordStationObs( station, obsTime, nomTime, recno);
+   * 
+   * } catch (ucar.ma2.InvalidRangeException e) {
+   * e.printStackTrace();
+   * throw new IOException( e.getMessage());
+   * }
+   * }
+   */
 
   public DataIterator getDataIterator(int bufferSize) throws IOException {
     return null; // new SeqDatatypeIterator(sequenceHelper.sequenceVar, bufferSize);
@@ -263,17 +275,17 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
     }
 
     SeqDatatypeIterator(Structure struct, int bufferSize) {
-      super( struct, bufferSize);
+      super(struct, bufferSize);
     }
   }
 
-    public static void main(String args[]) throws IOException {
+  public static void main(String args[]) throws IOException {
 
-      NetcdfDataset ds = NetcdfDataset.openDataset("C:/data/ncml/oceanwatch.ncml");
+    NetcdfDataset ds = NetcdfDataset.openDataset("C:/data/ncml/oceanwatch.ncml");
 
-      new SequenceObsDataset(ds, null);
+    new SequenceObsDataset(ds, null);
 
-    }
+  }
 
 
 }

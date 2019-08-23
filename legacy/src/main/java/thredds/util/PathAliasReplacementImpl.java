@@ -22,10 +22,12 @@ public class PathAliasReplacementImpl implements PathAliasReplacement {
 
     for (Map.Entry<String, String> entry : aliases.entrySet()) {
       String value = entry.getValue();
-      if (value == null || value.isEmpty()) continue;
+      if (value == null || value.isEmpty())
+        continue;
       PathAliasReplacementImpl alias = new PathAliasReplacementImpl("${" + entry.getKey() + "}", value);
       result.add(alias);
-      if (debug) System.out.printf("DataRootHandler alias= %s%n", alias);
+      if (debug)
+        System.out.printf("DataRootHandler alias= %s%n", alias);
     }
     return result;
   }
@@ -34,15 +36,18 @@ public class PathAliasReplacementImpl implements PathAliasReplacement {
   private final String replacementPath;
 
   public PathAliasReplacementImpl(String alias, String replacementPath) {
-    if (alias == null) throw new IllegalArgumentException("Alias must not be null.");
-    if (replacementPath == null) throw new IllegalArgumentException("Replacment path must not be null.");
+    if (alias == null)
+      throw new IllegalArgumentException("Alias must not be null.");
+    if (replacementPath == null)
+      throw new IllegalArgumentException("Replacment path must not be null.");
 
-    //alias = StringUtils.cleanPath(alias);
-    //replacementPath = StringUtils.cleanPath(replacementPath);
+    // alias = StringUtils.cleanPath(alias);
+    // replacementPath = StringUtils.cleanPath(replacementPath);
 
     // Make sure neither alias nor replacementPath ends with a slash ("/").
     this.alias = alias.endsWith("/") ? alias.substring(0, alias.length() - 1) : alias;
-    this.replacementPath = replacementPath.endsWith("/") ? replacementPath.substring(0, replacementPath.length() - 1) : replacementPath;
+    this.replacementPath =
+        replacementPath.endsWith("/") ? replacementPath.substring(0, replacementPath.length() - 1) : replacementPath;
   }
 
   public String getAlias() {
@@ -55,23 +60,27 @@ public class PathAliasReplacementImpl implements PathAliasReplacement {
 
   @Override
   public boolean containsPathAlias(String path) {
-    if (path == null) throw new IllegalArgumentException("Path must not be null.");
-    //path = StringUtils.cleanPath(path);
+    if (path == null)
+      throw new IllegalArgumentException("Path must not be null.");
+    // path = StringUtils.cleanPath(path);
     return path.startsWith(alias + "/");
   }
 
   @Override
   public String replacePathAlias(String path) {
-    if (path == null) throw new IllegalArgumentException("Path must not be null.");
-    //path = StringUtils.cleanPath(path);
+    if (path == null)
+      throw new IllegalArgumentException("Path must not be null.");
+    // path = StringUtils.cleanPath(path);
     if (!path.startsWith(alias + "/"))
-      throw new IllegalArgumentException("Path [" + path + "] does not contain alias [startWith( \"" + alias + "/\" )].");
+      throw new IllegalArgumentException(
+          "Path [" + path + "] does not contain alias [startWith( \"" + alias + "/\" )].");
     return replacementPath + path.substring(alias.length());
   }
 
   @Override
   public String replaceIfMatch(String path) {
-    if (!path.startsWith(alias)) return null;
+    if (!path.startsWith(alias))
+      return null;
     return replacementPath + path.substring(alias.length());
   }
 

@@ -11,7 +11,6 @@ import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.URLnaming;
-
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,15 +38,15 @@ public class Catalog extends DatasetNode {
   static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
   // all of these are catalog only
-  // public static final String CatalogScan = "CatalogScan";       // List<CatalogScan>
-  public static final String DatasetHash = "DatasetHash";       // Map<String,Dataset>
-  public static final String DatasetRoots = "DatasetRoots";     // List<DatasetRootConfig>
-  public static final String Expires = "Expires";               // CalendarDate
-  public static final String Services = "Services";             // List<Service>  (LOOK what about using Map ?)
-  public static final String Version = "Version";               // String
+  // public static final String CatalogScan = "CatalogScan"; // List<CatalogScan>
+  public static final String DatasetHash = "DatasetHash"; // Map<String,Dataset>
+  public static final String DatasetRoots = "DatasetRoots"; // List<DatasetRootConfig>
+  public static final String Expires = "Expires"; // CalendarDate
+  public static final String Services = "Services"; // List<Service> (LOOK what about using Map ?)
+  public static final String Version = "Version"; // String
 
   //////////////////////////////////////////////////////////////////////////////////////////
-  private final URI baseURI;   // LOOK its possible we never want to use this. perhaps "location" instead ??
+  private final URI baseURI; // LOOK its possible we never want to use this. perhaps "location" instead ??
 
   public Catalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
     super(null, name, flds, datasets);
@@ -60,11 +59,14 @@ public class Catalog extends DatasetNode {
   }
 
   private void addDatasetsToHash(List<Dataset> datasets, Map<String, Dataset> datasetMap) {
-    if (datasets == null) return;
+    if (datasets == null)
+      return;
     for (Dataset ds : datasets) {
       String id = ds.getIdOrPath();
-      if (id != null) datasetMap.put(id, ds);
-      if (ds instanceof CatalogRef) continue; // dont recurse into catrefs
+      if (id != null)
+        datasetMap.put(id, ds);
+      if (ds instanceof CatalogRef)
+        continue; // dont recurse into catrefs
       addDatasetsToHash(ds.getDatasetsLocal(), datasetMap);
     }
   }
@@ -88,42 +90,51 @@ public class Catalog extends DatasetNode {
 
   public boolean hasService(String name) {
     for (Service s : getServices())
-      if (s.getName().equalsIgnoreCase(name)) return true;
+      if (s.getName().equalsIgnoreCase(name))
+        return true;
     return false;
   }
 
-  public Service findService(String serviceName)  {
-    if (serviceName == null) return null;
+  public Service findService(String serviceName) {
+    if (serviceName == null)
+      return null;
     List<Service> services = (List<Service>) flds.get(Catalog.Services);
     return findService(services, serviceName);
   }
 
-  public Service findService(ServiceType type)  {
-    if (type == null) return null;
+  public Service findService(ServiceType type) {
+    if (type == null)
+      return null;
     List<Service> services = (List<Service>) flds.get(Catalog.Services);
     return findService(services, type);
   }
 
-  private Service findService(List<Service> services, String want)  {
-    if (services == null) return null;
+  private Service findService(List<Service> services, String want) {
+    if (services == null)
+      return null;
     for (Service s : services) {
-      if (s.getName().equals(want)) return s;
+      if (s.getName().equals(want))
+        return s;
     }
     for (Service s : services) {
       Service result = findService(s.getNestedServices(), want);
-      if (result != null) return result;
+      if (result != null)
+        return result;
     }
     return null;
   }
 
-  private Service findService(List<Service> services, ServiceType type)  {
-    if (services == null) return null;
+  private Service findService(List<Service> services, ServiceType type) {
+    if (services == null)
+      return null;
     for (Service s : services) {
-      if (s.getType() == type) return s;
+      if (s.getType() == type)
+        return s;
     }
     for (Service s : services) {
       Service result = findService(s.getNestedServices(), type);
-      if (result != null) return result;
+      if (result != null)
+        return result;
     }
     return null;
   }
@@ -133,7 +144,7 @@ public class Catalog extends DatasetNode {
     return properties == null ? new ArrayList<>(0) : properties;
   }
 
-  public Dataset findDatasetByID( String id) {
+  public Dataset findDatasetByID(String id) {
     Map<String, Dataset> datasetMap = (Map<String, Dataset>) flds.get(Catalog.DatasetHash);
     return datasetMap == null ? null : datasetMap.get(id);
   }
@@ -160,7 +171,8 @@ public class Catalog extends DatasetNode {
    * @throws java.net.URISyntaxException if uriString violates RFC 2396
    */
   public URI resolveUri(String uriString) throws URISyntaxException {
-    if (baseURI == null) return new URI(uriString);
+    if (baseURI == null)
+      return new URI(uriString);
     String resolved = URLnaming.resolve(baseURI.toString(), uriString);
     return new URI(resolved);
   }
@@ -184,7 +196,7 @@ public class Catalog extends DatasetNode {
       }
     }
 
-    //otherwise let the URI class resolve it
+    // otherwise let the URI class resolve it
     return baseURI.resolve(want);
   }
 
@@ -196,71 +208,78 @@ public class Catalog extends DatasetNode {
   //////////////////////////////////////////////////////////////////////////////////
   // from DeepCopyUtils, for subsetting
 
-  public Catalog subsetCatalogOnDataset( Dataset dataset) {
-    if ( dataset == null ) throw new IllegalArgumentException( "Dataset may not be null." );
-    if ( dataset.getParentCatalog() != this ) throw new IllegalArgumentException( "Catalog must contain the dataset." );
+  public Catalog subsetCatalogOnDataset(Dataset dataset) {
+    if (dataset == null)
+      throw new IllegalArgumentException("Dataset may not be null.");
+    if (dataset.getParentCatalog() != this)
+      throw new IllegalArgumentException("Catalog must contain the dataset.");
 
     CatalogBuilder builder = new CatalogBuilder();
 
-    URI docBaseUri = formDocBaseUriForSubsetCatalog( dataset );
+    URI docBaseUri = formDocBaseUriForSubsetCatalog(dataset);
     builder.setBaseURI(docBaseUri);
-    builder.setName( dataset.getName());
+    builder.setName(dataset.getName());
 
     List<Service> neededServices = new ArrayList<>();
-    DatasetBuilder topDs = copyDataset( null, dataset, neededServices, true );  // LOOK, cant set catalog as datasetNode parent
+    DatasetBuilder topDs = copyDataset(null, dataset, neededServices, true); // LOOK, cant set catalog as datasetNode
+                                                                             // parent
 
     for (Service s : neededServices)
       builder.addService(s);
 
-    builder.addDataset( topDs );
+    builder.addDataset(topDs);
 
     return builder.makeCatalog();
   }
 
-  private DatasetBuilder copyDataset( DatasetBuilder parent, Dataset dataset, List<Service> neededServices, boolean copyInherited ) {
+  private DatasetBuilder copyDataset(DatasetBuilder parent, Dataset dataset, List<Service> neededServices,
+      boolean copyInherited) {
 
     neededServices.add(dataset.getServiceDefault());
 
     DatasetBuilder result;
 
-    if ( dataset instanceof CatalogRef ) {
+    if (dataset instanceof CatalogRef) {
       CatalogRef catRef = (CatalogRef) dataset;
-      CatalogRefBuilder catBuilder = new CatalogRefBuilder( parent);
-      catBuilder.setHref( catRef.getXlinkHref());
-      catBuilder.setTitle( catRef.getName());
+      CatalogRefBuilder catBuilder = new CatalogRefBuilder(parent);
+      catBuilder.setHref(catRef.getXlinkHref());
+      catBuilder.setTitle(catRef.getName());
       result = catBuilder;
 
     } else {
-      result =  new DatasetBuilder(parent);
+      result = new DatasetBuilder(parent);
 
-      List<Access> access = dataset.getLocalFieldAsList(Dataset.Access);  // dont expand
-      for ( Access curAccess : access) {
-        result.addAccess( copyAccess( result, curAccess, neededServices ));
+      List<Access> access = dataset.getLocalFieldAsList(Dataset.Access); // dont expand
+      for (Access curAccess : access) {
+        result.addAccess(copyAccess(result, curAccess, neededServices));
       }
 
-      List<Dataset> datasets = dataset.getLocalFieldAsList(Dataset.Datasets);  // dont expand
-      for ( Dataset currDs : datasets) {
-        result.addDataset( copyDataset( result, currDs, neededServices, copyInherited ));
+      List<Dataset> datasets = dataset.getLocalFieldAsList(Dataset.Datasets); // dont expand
+      for (Dataset currDs : datasets) {
+        result.addDataset(copyDataset(result, currDs, neededServices, copyInherited));
       }
     }
 
-    result.setName( dataset.getName() );
-    result.transferMetadata(dataset, copyInherited);  // make a copy of all local metadata
+    result.setName(dataset.getName());
+    result.transferMetadata(dataset, copyInherited); // make a copy of all local metadata
     return result;
   }
 
-  private AccessBuilder copyAccess( DatasetBuilder parent, Access access, List<Service> neededServices ) {
-    neededServices.add(access.getService());  // LOOK may get dups
-    return new AccessBuilder( parent, access.getUrlPath(), access.getService(), access.getDataFormatName(), access.getDataSize() );
+  private AccessBuilder copyAccess(DatasetBuilder parent, Access access, List<Service> neededServices) {
+    neededServices.add(access.getService()); // LOOK may get dups
+    return new AccessBuilder(parent, access.getUrlPath(), access.getService(), access.getDataFormatName(),
+        access.getDataSize());
   }
 
-  private URI formDocBaseUriForSubsetCatalog( Dataset dataset ) {
+  private URI formDocBaseUriForSubsetCatalog(Dataset dataset) {
     String catDocBaseUri = getUriString();
-    String subsetDocBaseUriString = catDocBaseUri + "/" + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );
+    String subsetDocBaseUriString =
+        catDocBaseUri + "/" + (dataset.getID() != null ? dataset.getID() : dataset.getName());
     try {
-      return new URI( subsetDocBaseUriString);
-    } catch ( URISyntaxException e ) {   // This shouldn't happen. But just in case ...
-      throw new IllegalStateException( "Bad document Base URI for new catalog [" + catDocBaseUri + "/" + (dataset.getID() != null ? dataset.getID() : dataset.getName()) + "].", e );
+      return new URI(subsetDocBaseUriString);
+    } catch (URISyntaxException e) { // This shouldn't happen. But just in case ...
+      throw new IllegalStateException("Bad document Base URI for new catalog [" + catDocBaseUri + "/"
+          + (dataset.getID() != null ? dataset.getID() : dataset.getName()) + "].", e);
     }
   }
 

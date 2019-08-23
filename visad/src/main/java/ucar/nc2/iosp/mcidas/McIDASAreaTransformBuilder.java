@@ -6,11 +6,9 @@
 package ucar.nc2.iosp.mcidas;
 
 import ucar.ma2.Array;
-
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.ProjectionCT;
-
 import ucar.nc2.dataset.transform.AbstractTransformBuilder;
 import ucar.nc2.dataset.transform.HorizTransformBuilderIF;
 
@@ -53,14 +51,15 @@ public class McIDASAreaTransformBuilder extends AbstractTransformBuilder impleme
   /**
    * get the int array from the variable attribute
    *
-   * @param ctv     coordinate transform variable
+   * @param ctv coordinate transform variable
    * @param attName the attribute name
    * @return the int array
    */
   private int[] getIntArray(AttributeContainer ctv, String attName) {
     Attribute att = ctv.findAttribute(attName);
     if (att == null) {
-      throw new IllegalArgumentException("McIDASArea coordTransformVariable " + ctv.getName() + " must have " + attName + " attribute");
+      throw new IllegalArgumentException(
+          "McIDASArea coordTransformVariable " + ctv.getName() + " must have " + attName + " attribute");
     }
 
     Array arr = att.getValues();

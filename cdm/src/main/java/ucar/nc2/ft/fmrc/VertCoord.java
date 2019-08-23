@@ -7,7 +7,6 @@ package ucar.nc2.ft.fmrc;
 
 import java.util.stream.Collectors;
 import ucar.nc2.dataset.CoordinateAxis1D;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
@@ -19,8 +18,7 @@ public class VertCoord implements Comparable<VertCoord> {
   private int id; // unique id
   private double[] values1, values2;
 
-  VertCoord() {
-  }
+  VertCoord() {}
 
   VertCoord(CoordinateAxis1D axis) {
     // this.axis = axis;
@@ -126,9 +124,11 @@ public class VertCoord implements Comparable<VertCoord> {
     Formatter out = new Formatter();
     out.format("values=");
     if (values2 == null)
-      for (double val : values1) out.format("%5f, ", val);
+      for (double val : values1)
+        out.format("%5f, ", val);
     else {
-      for (int i = 0; i < values1.length; i++) out.format("(%6.3f,%6.3f) ", values1[i], values2[i]);
+      for (int i = 0; i < values1.length; i++)
+        out.format("(%6.3f,%6.3f) ", values1[i], values2[i]);
     }
     out.format("; name=%s", name);
     return out.toString();
@@ -137,7 +137,8 @@ public class VertCoord implements Comparable<VertCoord> {
   ///////////////////////////////////////////////////////
 
   static public VertCoord findVertCoord(List<VertCoord> vertCoords, VertCoord want) {
-    if (want == null) return null;
+    if (want == null)
+      return null;
 
     for (VertCoord vc : vertCoords) {
       if (want.equalsData(vc))
@@ -166,7 +167,7 @@ public class VertCoord implements Comparable<VertCoord> {
     }
 
     // now create a sorted list, transfer to values array
-    List<LevelCoord> valueList =  valueSet.stream().sorted().collect(Collectors.toList());
+    List<LevelCoord> valueList = valueSet.stream().sorted().collect(Collectors.toList());
     double[] values1 = new double[valueList.size()];
     double[] values2 = new double[valueList.size()];
     boolean has_values2 = false;
@@ -206,10 +207,13 @@ public class VertCoord implements Comparable<VertCoord> {
     }
 
     public boolean equals2(Object oo) {
-      if (this == oo) return true;
-      if (!(oo instanceof LevelCoord)) return false;
+      if (this == oo)
+        return true;
+      if (!(oo instanceof LevelCoord))
+        return false;
       LevelCoord other = (LevelCoord) oo;
-      return (ucar.nc2.util.Misc.nearlyEquals(value1, other.value1) && ucar.nc2.util.Misc.nearlyEquals(value2, other.value2));
+      return (ucar.nc2.util.Misc.nearlyEquals(value1, other.value1)
+          && ucar.nc2.util.Misc.nearlyEquals(value2, other.value2));
     }
 
     public int hashCode2() {
@@ -218,12 +222,15 @@ public class VertCoord implements Comparable<VertCoord> {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       LevelCoord that = (LevelCoord) o;
 
-      if (!ucar.nc2.util.Misc.nearlyEquals(that.value1, value1)) return false;
+      if (!ucar.nc2.util.Misc.nearlyEquals(that.value1, value1))
+        return false;
       return ucar.nc2.util.Misc.nearlyEquals(that.value2, value2);
 
     }

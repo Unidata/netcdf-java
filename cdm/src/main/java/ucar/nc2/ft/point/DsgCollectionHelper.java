@@ -6,7 +6,6 @@ package ucar.nc2.ft.point;
 
 import java.io.IOException;
 import javax.annotation.Nonnull;
-
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCC;

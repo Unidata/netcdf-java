@@ -7,7 +7,6 @@ package ucar.nc2.dataset;
 
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
-
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -18,25 +17,30 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class ProjectionCT extends CoordinateTransform {
-   private final ProjectionImpl proj;
+  private final ProjectionImpl proj;
 
   /**
    * Create a Projection Coordinate Transform.
+   * 
    * @param name name of transform, must be unique within the NcML.
    * @param authority naming authority.
    * @param proj projection function.
    */
-  public ProjectionCT (String name, String authority, ProjectionImpl proj) {
-    super( name, authority, TransformType.Projection);
+  public ProjectionCT(String name, String authority, ProjectionImpl proj) {
+    super(name, authority, TransformType.Projection);
     this.proj = proj;
 
     for (Parameter p : proj.getProjectionParameters()) {
-      addParameter( p);
+      addParameter(p);
     }
   }
 
-  /** get the Projection function
+  /**
+   * get the Projection function
+   * 
    * @return the Projection
    */
-  public ProjectionImpl getProjection() { return proj; }
+  public ProjectionImpl getProjection() {
+    return proj;
+  }
 }

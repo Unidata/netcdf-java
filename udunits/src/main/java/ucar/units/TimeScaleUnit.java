@@ -6,7 +6,6 @@ package ucar.units;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 
@@ -62,43 +61,38 @@ public final class TimeScaleUnit extends UnitImpl {
   /**
    * Constructs from a reference unit and a time origin.
    *
-   * @param unit   The reference time unit.
+   * @param unit The reference time unit.
    * @param origin The time origin.
    * @throws BadUnitException <code>unit</code> is not a unit of time.
    */
-  public TimeScaleUnit(final Unit unit, final Date origin)
-          throws BadUnitException, UnitSystemException {
+  public TimeScaleUnit(final Unit unit, final Date origin) throws BadUnitException, UnitSystemException {
     this(unit, origin, null);
   }
 
   /**
    * Constructs from a reference unit, a time origin, and an identifier.
    *
-   * @param unit   The reference time unit.
+   * @param unit The reference time unit.
    * @param origin The time origin.
-   * @param id     The identifier.
+   * @param id The identifier.
    * @throws BadUnitException <code>unit</code> is not a unit of time.
    */
   public TimeScaleUnit(final Unit unit, final Date origin, final UnitName id)
-          throws BadUnitException, UnitSystemException {
+      throws BadUnitException, UnitSystemException {
     super(id);
-    if (!unit.isCompatible(UnitSystemManager.instance().getBaseUnit(
-            BaseQuantity.TIME))) {
+    if (!unit.isCompatible(UnitSystemManager.instance().getBaseUnit(BaseQuantity.TIME))) {
       throw new BadUnitException("\"" + unit + "\" is not a unit of time");
     }
     _unit = unit;
     _origin = origin;
   }
 
-  static Unit getInstance(final Unit unit, final Date origin)
-          throws ShiftException {
+  static Unit getInstance(final Unit unit, final Date origin) throws ShiftException {
     try {
-      return unit instanceof TimeScaleUnit
-              ? new TimeScaleUnit(((TimeScaleUnit) unit)._unit, origin)
-              : new TimeScaleUnit(unit, origin);
+      return unit instanceof TimeScaleUnit ? new TimeScaleUnit(((TimeScaleUnit) unit)._unit, origin)
+          : new TimeScaleUnit(unit, origin);
     } catch (final Exception e) {
-      throw (ShiftException) new ShiftException(unit, origin)
-              .initCause(e);
+      throw (ShiftException) new ShiftException(unit, origin).initCause(e);
     }
   }
 
@@ -120,9 +114,9 @@ public final class TimeScaleUnit extends UnitImpl {
     return _origin;
   }
 
-    /*
-     * From UnitImpl:
-     */
+  /*
+   * From UnitImpl:
+   */
 
   /**
    * Clones this unit, changing the identifier.
@@ -144,19 +138,16 @@ public final class TimeScaleUnit extends UnitImpl {
   public Unit shiftTo(final double origin) throws ShiftException {
     Date newOrigin;
     try {
-      newOrigin = new Date(_origin.getTime()
-              + (long) (_unit.convertTo(origin, SECOND) * 1000));
+      newOrigin = new Date(_origin.getTime() + (long) (_unit.convertTo(origin, SECOND) * 1000));
     } catch (final ConversionException e) {
-      throw (ShiftException) new ShiftException(this, origin)
-              .initCause(e);
+      throw (ShiftException) new ShiftException(this, origin).initCause(e);
     }
     try {
       return new TimeScaleUnit(_unit, newOrigin);
     } catch (final BadUnitException e) {
       throw new AssertionError();
     } catch (final UnitSystemException e) {
-      throw (ShiftException) new ShiftException(this, origin)
-              .initCause(e);
+      throw (ShiftException) new ShiftException(this, origin).initCause(e);
     }
   }
 
@@ -229,15 +220,12 @@ public final class TimeScaleUnit extends UnitImpl {
     private final double offset;
     private final Converter converter;
 
-    protected MyConverter(final TimeScaleUnit fromUnit, final Unit toUnit)
-            throws ConversionException {
+    protected MyConverter(final TimeScaleUnit fromUnit, final Unit toUnit) throws ConversionException {
       super(fromUnit, toUnit);
-      converter = fromUnit.getUnit().getConverterTo(
-              ((TimeScaleUnit) toUnit).getUnit());
+      converter = fromUnit.getUnit().getConverterTo(((TimeScaleUnit) toUnit).getUnit());
       offset = SI.SECOND.convertTo(
-              (fromUnit.getOrigin().getTime() - ((TimeScaleUnit) toUnit)
-                      .getOrigin().getTime()) / 1000.0,
-              ((TimeScaleUnit) toUnit).getUnit());
+          (fromUnit.getOrigin().getTime() - ((TimeScaleUnit) toUnit).getOrigin().getTime()) / 1000.0,
+          ((TimeScaleUnit) toUnit).getUnit());
     }
 
     public double convert(final double amount) {
@@ -246,7 +234,7 @@ public final class TimeScaleUnit extends UnitImpl {
 
     public float[] convert(final float[] input, float[] output) {
       output = converter.convert(input, output);
-      for (int i = input.length; --i >= 0; ) {
+      for (int i = input.length; --i >= 0;) {
         output[i] += offset;
       }
       return output;
@@ -254,7 +242,7 @@ public final class TimeScaleUnit extends UnitImpl {
 
     public double[] convert(final double[] input, double[] output) {
       output = converter.convert(input, output);
-      for (int i = input.length; --i >= 0; ) {
+      for (int i = input.length; --i >= 0;) {
         output[i] += offset;
       }
       return output;
@@ -270,8 +258,7 @@ public final class TimeScaleUnit extends UnitImpl {
    * @throws ConversionException <code>outputUnit</code> is not a TimeScaleUnit.
    */
   @Override
-  public Converter getConverterTo(final Unit outputUnit)
-          throws ConversionException {
+  public Converter getConverterTo(final Unit outputUnit) throws ConversionException {
     return new MyConverter(this, outputUnit);
   }
 
@@ -280,7 +267,7 @@ public final class TimeScaleUnit extends UnitImpl {
    *
    * @param that The other unit.
    * @return <code>true</code> if and only if numeric values in this unit are
-   * convertible to <code>
+   *         convertible to <code>
    * that</code>.
    */
   @Override
@@ -293,7 +280,7 @@ public final class TimeScaleUnit extends UnitImpl {
    *
    * @param object The object.
    * @return <code>true</code> if and only if this unit is semantically
-   * identical to <code>object
+   *         identical to <code>object
    * </code>.
    */
   @Override
@@ -336,9 +323,7 @@ public final class TimeScaleUnit extends UnitImpl {
   @Override
   public String toString() {
     final String string = super.toString(); // get symbol or name
-    return string != null
-            ? string
-            : getCanonicalString();
+    return string != null ? string : getCanonicalString();
   }
 
   /**
@@ -347,11 +332,12 @@ public final class TimeScaleUnit extends UnitImpl {
    * @return The canonical string representation.
    */
   public String getCanonicalString() {
-      /* change this, not thread-safe; require dependency of joda-time (!)
-             dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
-             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-             dateFormat.applyPattern(" 'since' yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
-       */
+    /*
+     * change this, not thread-safe; require dependency of joda-time (!)
+     * dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+     * dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+     * dateFormat.applyPattern(" 'since' yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
+     */
     return getUnit().toString() + " since " + df_units.print(getOrigin().getTime());
   }
 

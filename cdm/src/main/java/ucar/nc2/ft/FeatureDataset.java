@@ -141,6 +141,7 @@ public interface FeatureDataset extends FileCacheable, Closeable {
 
   /**
    * Show who is implementing
+   * 
    * @return name of implementor
    */
   String getImplementationName();

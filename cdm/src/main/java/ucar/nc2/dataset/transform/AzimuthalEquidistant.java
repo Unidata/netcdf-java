@@ -34,13 +34,12 @@ public class AzimuthalEquidistant extends AbstractTransformBuilder implements Ho
 
     // create spherical Earth obj if not created by readStandardParams w radii, flattening
     if (earth == null) {
-        if (earth_radius > 0.) {
-            // Earth radius obtained in readStandardParams is in km, but Earth object wants m
-            earth = new Earth(earth_radius * 1000.);
-        }
-        else {
-            earth = new Earth();
-        }
+      if (earth_radius > 0.) {
+        // Earth radius obtained in readStandardParams is in km, but Earth object wants m
+        earth = new Earth(earth_radius * 1000.);
+      } else {
+        earth = new Earth();
+      }
     }
 
     ProjectionImpl proj = new EquidistantAzimuthalProjection(lat0, lon0, false_easting, false_northing, earth);

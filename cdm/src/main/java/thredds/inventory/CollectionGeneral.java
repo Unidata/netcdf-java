@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import ucar.nc2.util.CloseableIterator;
-
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -34,11 +33,11 @@ public class CollectionGeneral extends CollectionAbstract {
     super(config.collectionName, logger);
     this.root = specp.getRootDir();
     this.rootPath = Paths.get(this.root);
-    this.olderThanMillis = parseOlderThanString( config.olderThan);
+    this.olderThanMillis = parseOlderThanString(config.olderThan);
   }
 
   @Override
-  public void close() { }
+  public void close() {}
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {
@@ -73,8 +72,9 @@ public class CollectionGeneral extends CollectionAbstract {
 
         try {
           Path nextPath = dirStreamIterator.next();
-          BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
-          if (attr.isDirectory()) continue;  // LOOK fix this
+          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
+          if (attr.isDirectory())
+            continue; // LOOK fix this
 
           FileTime last = attr.lastModifiedTime();
           long millisSinceModified = now - last.toMillis();
@@ -83,15 +83,16 @@ public class CollectionGeneral extends CollectionAbstract {
           nextMFile = new MFileOS7(nextPath, attr);
           return true;
 
-       } catch (IOException e) {
-         throw new RuntimeException(e);
-       }
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       }
     }
 
 
     public MFile next() {
-      if (nextMFile == null) throw new NoSuchElementException();
+      if (nextMFile == null)
+        throw new NoSuchElementException();
       return nextMFile;
     }
 

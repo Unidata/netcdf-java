@@ -7,7 +7,6 @@ package ucar.nc2.iosp.hdf5;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
@@ -36,16 +35,17 @@ public class H5diag {
     }
 
     float getRatio() {
-      if (storage == 0) return 0;
-      return ((float) nominal / storage) ;
+      if (storage == 0)
+        return 0;
+      return ((float) nominal / storage);
     }
   }
 
   public void showCompress(Formatter f) throws IOException {
     NetcdfFile ncfile = iosp.getNetcdfFile();
 
-    Size totalSize = new Size(0,0);
-    for (Variable v : ncfile.getVariables())  {
+    Size totalSize = new Size(0, 0);
+    for (Variable v : ncfile.getVariables()) {
       H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
       showCompress(v, vinfo, totalSize, f);
     }
@@ -57,7 +57,7 @@ public class H5diag {
 
     File raf = new File(ncfile.getLocation());
     f.format(" file size    = %d%n", raf.length());
-    float overhead = totalSize.storage == 0 ? 0 : ((float) raf.length()/totalSize.storage);
+    float overhead = totalSize.storage == 0 ? 0 : ((float) raf.length() / totalSize.storage);
     f.format(" overhead     = %f%n", overhead);
   }
 
@@ -80,9 +80,10 @@ public class H5diag {
     total.storage += size.storage;
     total.nominal += nominalSize;
     total.count += size.count;
-    float ratio =  (size.storage == 0) ? 0 : (float) nominalSize / size.storage;
+    float ratio = (size.storage == 0) ? 0 : (float) nominalSize / size.storage;
 
-    f.format(") == %d nelems %s == %d bytes storage = %d (%f) nchunks = %d%n", total_elems, sizeOk ? "" : "*", nominalSize, size.storage, ratio, size.count);
+    f.format(") == %d nelems %s == %d bytes storage = %d (%f) nchunks = %d%n", total_elems, sizeOk ? "" : "*",
+        nominalSize, size.storage, ratio, size.count);
   }
 
   private void countStorageSize(H5header.Vinfo vinfo, Size size) throws IOException {
@@ -110,11 +111,13 @@ public class H5diag {
     long[] result = new long[2];
     DataBTree btree = vinfo.btree;
     if (btree == null) {
-      if (f != null) f.format("btree is null%n");
+      if (f != null)
+        f.format("btree is null%n");
       return result;
     }
     if (vinfo.useFillValue) {
-      if (f != null) f.format("useFillValue - no data is stored%n");
+      if (f != null)
+        f.format("useFillValue - no data is stored%n");
       return result;
     }
 
@@ -123,7 +126,8 @@ public class H5diag {
     DataBTree.DataChunkIterator iter = btree.getDataChunkIteratorFilter(null);
     while (iter.hasNext()) {
       DataBTree.DataChunk dc = iter.next();
-      if (f != null) f.format(" %s%n", dc);
+      if (f != null)
+        f.format(" %s%n", dc);
       total += dc.size;
       count++;
     }

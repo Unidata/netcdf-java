@@ -5,14 +5,12 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.TestNcML;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -21,23 +19,24 @@ import java.lang.invoke.MethodHandles;
 public class TestNcMLReadOverride extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestNcMLReadOverride( String name) {
+  public TestNcMLReadOverride(String name) {
     super(name);
   }
 
   static NetcdfFile ncfile = null;
 
   public void setUp() {
-    if (ncfile != null) return;
-    String filename = "file:./"+TestNcML.topDir + "testReadOverride.xml";
+    if (ncfile != null)
+      return;
+    String filename = "file:./" + TestNcML.topDir + "testReadOverride.xml";
 
     try {
       ncfile = NcMLReader.readNcML(filename, null);
-      //System.out.println("ncfile = "+ncfile);
+      // System.out.println("ncfile = "+ncfile);
     } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = "+e);
+      System.out.println("bad URL error = " + e);
     } catch (IOException e) {
-      System.out.println("IO error = "+e);
+      System.out.println("IO error = " + e);
       e.printStackTrace();
     }
   }
@@ -52,7 +51,7 @@ public class TestNcMLReadOverride extends TestCase {
     // rh was removed
     Variable v = ncfile.findVariable("rh");
     assert null == v;
-   }
+  }
 
   public void testReadReplaced() {
 
@@ -84,14 +83,15 @@ public class TestNcMLReadOverride extends TestCase {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert close( dataI.getDoubleNext(),0.5);
-      assert close( dataI.getDoubleNext(),1.5);
+      assert close(dataI.getDoubleNext(), 0.5);
+      assert close(dataI.getDoubleNext(), 1.5);
       try {
         dataI.getDoubleNext();
         assert (false);
       } catch (Exception e) {
       }
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
   }
 
 
@@ -133,16 +133,17 @@ public class TestNcMLReadOverride extends TestCase {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert close( dataI.getDoubleNext(),1.0);
-      assert close( dataI.getDoubleNext(),2.0);
-      assert close( dataI.getDoubleNext(),3.0);
-      assert close( dataI.getDoubleNext(),4.0);
-      assert close( dataI.getDoubleNext(),2.0);
-    } catch (IOException io) {}
+      assert close(dataI.getDoubleNext(), 1.0);
+      assert close(dataI.getDoubleNext(), 2.0);
+      assert close(dataI.getDoubleNext(), 3.0);
+      assert close(dataI.getDoubleNext(), 4.0);
+      assert close(dataI.getDoubleNext(), 2.0);
+    } catch (IOException io) {
+    }
   }
 
-  boolean close( double d1, double d2) {
-    //System.out.println(d1+" "+d2);
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
+  boolean close(double d1, double d2) {
+    // System.out.println(d1+" "+d2);
+    return Math.abs((d1 - d2) / d1) < 1.0e-5;
   }
 }

@@ -7,7 +7,6 @@ package ucar.ma2;
 import com.google.common.base.MoreObjects;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.Indent;
-
 import java.util.*;
 
 /**
@@ -32,7 +31,7 @@ public final class StructureMembers {
     members = new ArrayList<>(from.getMembers().size());
     for (Member m : from.members) {
       Member nm = new Member(m); // make copy - without the data info
-      addMember( nm);
+      addMember(nm);
       if (m.members != null) // recurse
         nm.members = new StructureMembers(m.members);
     }
@@ -77,14 +76,17 @@ public final class StructureMembers {
 
   /**
    * Remove the given member
+   * 
    * @param m member
    * @return position that it used to occupy, or -1 if not found
    */
   public int hideMember(Member m) {
-    if (m == null) return -1;
+    if (m == null)
+      return -1;
     int index = members.indexOf(m);
     members.remove(m);
-    if (memberHash != null) memberHash.remove(m.getName());
+    if (memberHash != null)
+      memberHash.remove(m.getName());
     return index;
   }
 
@@ -156,8 +158,9 @@ public final class StructureMembers {
    * @return Member matching the name, or null if not found
    */
   public Member findMember(String memberName) {
-    if (memberName == null) return null;
-    
+    if (memberName == null)
+      return null;
+
     if (memberHash == null) { // delay making the hash table until needed
       int initial_capacity = (int) (members.size() / .75) + 1;
       memberHash = new HashMap<>(initial_capacity);
@@ -169,11 +172,8 @@ public final class StructureMembers {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-            .add("name", name)
-            .add("members", members)
-            .add("structureSize", structureSize)
-            .toString();
+    return MoreObjects.toStringHelper(this).add("name", name).add("members", members)
+        .add("structureSize", structureSize).toString();
   }
 
 
@@ -214,13 +214,13 @@ public final class StructureMembers {
     /**
      * If member is type Structure, you must set its constituent members.
      *
-     * @param  members set to this value
-     * @throws  IllegalArgumentException if {@code members} is this Member's enclosing class instance.
+     * @param members set to this value
+     * @throws IllegalArgumentException if {@code members} is this Member's enclosing class instance.
      */
     public void setStructureMembers(StructureMembers members) {
       if (members == StructureMembers.this) {
-        throw new IllegalArgumentException(String.format(
-                "%s is already the parent of this Member '%s'; it cannot also be the child.", members, this));
+        throw new IllegalArgumentException(
+            String.format("%s is already the parent of this Member '%s'; it cannot also be the child.", members, this));
       }
       this.members = members;
     }
@@ -245,11 +245,11 @@ public final class StructureMembers {
     }
 
     public String getFullNameEscaped() {
-      return NetcdfFile.makeValidPathName(StructureMembers.this.getName()) + "." +  NetcdfFile.makeValidPathName(name);
+      return NetcdfFile.makeValidPathName(StructureMembers.this.getName()) + "." + NetcdfFile.makeValidPathName(name);
     }
 
     public String getFullName() {
-      return StructureMembers.this.getName() + "." +  name;
+      return StructureMembers.this.getName() + "." + name;
     }
 
     /**
@@ -317,8 +317,8 @@ public final class StructureMembers {
         return getDataType().getSize();
       else if (getDataType() == DataType.STRUCTURE)
         return size * members.getStructureSize();
-      //else if (this.isVariableLength())
-      //    return 0; // do not know
+      // else if (this.isVariableLength())
+      // return 0; // do not know
       else
         return size * getDataType().getSize();
     }
@@ -356,7 +356,8 @@ public final class StructureMembers {
 
     /**
      * Get the data array, if any. Used for implementation, DO NOT USE DIRECTLY!
-     * @return  data object, may be null
+     * 
+     * @return data object, may be null
      */
     public Array getDataArray() {
       return dataArray;
@@ -364,6 +365,7 @@ public final class StructureMembers {
 
     /**
      * Set the data array. Used for implementation, DO NOT USE DIRECTLY!
+     * 
      * @param data set to this Array. must not be a logical view
      */
     public void setDataArray(Array data) {
@@ -372,6 +374,7 @@ public final class StructureMembers {
 
     /**
      * Get an opaque data object, for use behind the scenes. May be null
+     * 
      * @return data object, may be null
      */
     public Object getDataObject() {
@@ -380,6 +383,7 @@ public final class StructureMembers {
 
     /**
      * Set an opaque data object, for use behind the scenes.
+     * 
      * @param o set to this value
      */
     public void setDataObject(Object o) {
@@ -402,8 +406,8 @@ public final class StructureMembers {
     }
 
     public void showInternal(Formatter f, Indent indent) {
-      f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d",
-              indent, name, desc, units, dtype, size, dataObject, dataParam);
+      f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d", indent, name, desc,
+          units, dtype, size, dataObject, dataParam);
       if (members != null) {
         indent.incr();
         f.format("%n%sNested members %s%n", indent, members.getName());
@@ -414,7 +418,7 @@ public final class StructureMembers {
       f.format("%n");
     }
 
-    public String toString() { 
+    public String toString() {
       return name;
     }
   }

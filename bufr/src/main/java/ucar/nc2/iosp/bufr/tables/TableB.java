@@ -5,7 +5,6 @@
 package ucar.nc2.iosp.bufr.tables;
 
 import javax.annotation.concurrent.Immutable;
-
 import java.util.*;
 
 /**
@@ -25,7 +24,8 @@ public class TableB {
     map = new HashMap<>();
   }
 
-  public void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units, String desc) {
+  public void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units,
+      String desc) {
     short id = (short) ((x << 8) + y);
     map.put(id, new Descriptor(x, y, scale, refVal, width, name, units, desc));
   }
@@ -57,7 +57,8 @@ public class TableB {
     out.format("Table B %s %n", name);
     for (Short key : sortKeys) {
       Descriptor dd = getDescriptor(key);
-      if (dd != null) dd.show(out);
+      if (dd != null)
+        dd.show(out);
       out.format("%n");
     }
   }
@@ -80,7 +81,8 @@ public class TableB {
     public Descriptor getDescriptor(short id) {
       for (TableB b : list) {
         Descriptor d = b.getDescriptor(id);
-        if (d != null) return d;
+        if (d != null)
+          return d;
       }
       return null;
     }
@@ -184,7 +186,7 @@ public class TableB {
       return ((x >= 48) || (y >= 192));
     }
 
-    public void setLocalOverride( boolean isOverride) {
+    public void setLocalOverride(boolean isOverride) {
       this.localOverride = isOverride;
     }
 
@@ -203,8 +205,8 @@ public class TableB {
     }
 
     void show(Formatter out) {
-      out.format(" %8s scale=%d refVal=%d width=%d  units=(%s) name=(%s)",
-              getFxy(), scale, refVal, dataWidth, units, name);
+      out.format(" %8s scale=%d refVal=%d width=%d  units=(%s) name=(%s)", getFxy(), scale, refVal, dataWidth, units,
+          name);
     }
 
     @Override

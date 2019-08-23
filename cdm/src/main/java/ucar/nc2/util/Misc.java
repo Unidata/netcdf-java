@@ -17,8 +17,8 @@ import ucar.ma2.DataType;
  * @author caron
  */
 public class Misc {
-  public static final int referenceSize = 4;   // estimates pointer size, in principle JVM dependent
-  public static final int objectSize = 16;   // estimates pointer size, in principle JVM dependent
+  public static final int referenceSize = 4; // estimates pointer size, in principle JVM dependent
+  public static final int objectSize = 16; // estimates pointer size, in principle JVM dependent
 
   /**
    * The default maximum {@link #relativeDifference(float, float) relative difference} that two floats can have in
@@ -35,12 +35,12 @@ public class Misc {
   /**
    * Returns the absolute difference between two numbers, i.e. {@code |a - b|}.
    *
-   * @param a  first number.
-   * @param b  second number.
-   * @return   the absolute difference.
+   * @param a first number.
+   * @param b second number.
+   * @return the absolute difference.
    */
   public static float absoluteDifference(float a, float b) {
-    if (Float.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+    if (Float.compare(a, b) == 0) { // Shortcut: handles infinities and NaNs.
       return 0;
     } else {
       return Math.abs(a - b);
@@ -49,7 +49,7 @@ public class Misc {
 
   /** Same as {@link #absoluteDifference(float, float)}, but for doubles. */
   public static double absoluteDifference(double a, double b) {
-    if (Double.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+    if (Double.compare(a, b) == 0) { // Shortcut: handles infinities and NaNs.
       return 0;
     } else {
       return Math.abs(a - b);
@@ -63,17 +63,17 @@ public class Misc {
    * relative difference calculation breaks down. So, in those instances, we compute the difference relative to
    * {@link Float#MIN_NORMAL}, i.e. {@code |a - b| / Float.MIN_NORMAL}.
    *
-   * @param a  first number.
-   * @param b  second number.
-   * @return   the relative difference.
+   * @param a first number.
+   * @param b second number.
+   * @return the relative difference.
    * @see <a href="http://floating-point-gui.de/errors/comparison/">The Floating-Point Guide</a>
    * @see <a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/">
-   *          Comparing Floating Point Numbers, 2012 Edition</a>
+   *      Comparing Floating Point Numbers, 2012 Edition</a>
    */
   public static float relativeDifference(float a, float b) {
     float absDiff = absoluteDifference(a, b);
 
-    if (Float.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+    if (Float.compare(a, b) == 0) { // Shortcut: handles infinities and NaNs.
       return 0;
     } else if (a == 0 || b == 0 || absDiff < Float.MIN_NORMAL) {
       return absDiff / Float.MIN_NORMAL;
@@ -87,7 +87,7 @@ public class Misc {
   public static double relativeDifference(double a, double b) {
     double absDiff = absoluteDifference(a, b);
 
-    if (Double.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+    if (Double.compare(a, b) == 0) { // Shortcut: handles infinities and NaNs.
       return 0;
     } else if (a == 0 || b == 0 || absDiff < Double.MIN_NORMAL) {
       return absDiff / Double.MIN_NORMAL;
@@ -106,9 +106,9 @@ public class Misc {
    * Returns {@code true} if {@code a} and {@code b} are nearly equal. Specifically, it checks whether the
    * {@link #relativeDifference(float, float) relative difference} of the two numbers is less than {@code maxRelDiff}.
    *
-   * @param a  first number.
-   * @param b  second number.
-   * @param maxRelDiff  the maximum {@link #relativeDifference relative difference} the two numbers may have.
+   * @param a first number.
+   * @param b second number.
+   * @param maxRelDiff the maximum {@link #relativeDifference relative difference} the two numbers may have.
    * @return {@code true} if {@code a} and {@code b} are nearly equal.
    */
   public static boolean nearlyEquals(float a, float b, float maxRelDiff) {
@@ -130,9 +130,9 @@ public class Misc {
   /**
    * Check if two numbers are nearly equal with given absolute tolerance.
    *
-   * @param a  first number.
-   * @param b  second number.
-   * @param maxAbsDiff  the maximum {@link #absoluteDifference absolute difference} the two numbers may have.
+   * @param a first number.
+   * @param b second number.
+   * @param maxAbsDiff the maximum {@link #absoluteDifference absolute difference} the two numbers may have.
    * @return true if within tolerance.
    */
   public static boolean nearlyEqualsAbs(float a, float b, float maxAbsDiff) {
@@ -146,16 +146,20 @@ public class Misc {
 
 
   static public String showInts(int[] inta) {
-    if (inta == null) return "null";
+    if (inta == null)
+      return "null";
     Formatter f = new Formatter();
-    for (int i : inta) f.format("%d,", i);
+    for (int i : inta)
+      f.format("%d,", i);
     return f.toString();
   }
 
   static public String showInts(List<Integer> intList) {
-    if (intList == null) return "null";
+    if (intList == null)
+      return "null";
     Formatter f = new Formatter();
-    for (int i : intList) f.format("%d,", i);
+    for (int i : intList)
+      f.format("%d,", i);
     return f.toString();
   }
 
@@ -164,7 +168,8 @@ public class Misc {
       f.format("null");
       return;
     }
-    for (int i : inta) f.format("%d, ", i);
+    for (int i : inta)
+      f.format("%d, ", i);
   }
 
   static public String showBytes(byte[] buff) {
@@ -172,7 +177,8 @@ public class Misc {
     for (int i = 0; i < buff.length; i++) {
       byte b = buff[i];
       int ub = (b < 0) ? b + 256 : b;
-      if (i > 0) sbuff.append(" ");
+      if (i > 0)
+        sbuff.append(" ");
       sbuff.append(ub);
     }
     return sbuff.toString();
@@ -189,7 +195,8 @@ public class Misc {
     if (ii instanceof Collection)
       return ((Collection) ii).size();
     int count = 0;
-    for (Object i : ii) count++;
+    for (Object i : ii)
+      count++;
     return count;
   }
 
@@ -197,7 +204,8 @@ public class Misc {
     if (ii instanceof List)
       return (List) ii;
     List<Object> result = new ArrayList<>();
-    for (Object i : ii) result.add(i);
+    for (Object i : ii)
+      result.add(i);
     return result;
   }
 
@@ -217,7 +225,8 @@ public class Misc {
   //////////////////////////////////////////////////////////////////////
 
   static public boolean compare(byte[] raw1, byte[] raw2, Formatter f) {
-    if (raw1 == null || raw2 == null) return false;
+    if (raw1 == null || raw2 == null)
+      return false;
 
     if (raw1.length != raw2.length) {
       f.format("length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);

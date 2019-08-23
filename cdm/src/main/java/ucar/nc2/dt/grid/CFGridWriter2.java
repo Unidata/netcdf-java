@@ -20,7 +20,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Parameter;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,76 +37,76 @@ public class CFGridWriter2 {
   /**
    * Compute the size of the file without writing
    *
-   * @param gds              the GridDataset
-   * @param gridList         the list of variables to be written, or null for all
-   * @param llbb             the lat/lon bounding box, or null for all
-   * @param projRect         the projection bounding box, or null for all
-   * @param horizStride      the x and y stride
-   * @param zRange           the z stride
-   * @param dateRange        date range, or null for all
-   * @param stride_time      the time stride
-   * @param addLatLon        add 2D lat/lon coordinates if needed
+   * @param gds the GridDataset
+   * @param gridList the list of variables to be written, or null for all
+   * @param llbb the lat/lon bounding box, or null for all
+   * @param projRect the projection bounding box, or null for all
+   * @param horizStride the x and y stride
+   * @param zRange the z stride
+   * @param dateRange date range, or null for all
+   * @param stride_time the time stride
+   * @param addLatLon add 2D lat/lon coordinates if needed
    * @return total bytes written
    */
-  static public long makeSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
-                                       LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
-                                       CalendarDateRange dateRange, int stride_time, boolean addLatLon) throws IOException, InvalidRangeException {
+  static public long makeSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
+      ProjectionRect projRect, int horizStride, Range zRange, CalendarDateRange dateRange, int stride_time,
+      boolean addLatLon) throws IOException, InvalidRangeException {
 
     CFGridWriter2 writer2 = new CFGridWriter2();
-    return writer2.writeOrTestSize(gds, gridList, llbb, projRect, horizStride, zRange, dateRange, stride_time, addLatLon, true, null);
+    return writer2.writeOrTestSize(gds, gridList, llbb, projRect, horizStride, zRange, dateRange, stride_time,
+        addLatLon, true, null);
   }
 
   /**
    * Write a netcdf/CF file from a GridDataset
    *
-   * @param gds              the GridDataset
-   * @param gridList         the list of variables to be written, or null for all
-   * @param llbb             the lat/lon bounding box, or null for all
-   * @param projRect         the projection bounding box, or null for all
-   * @param horizStride      the x and y stride
-   * @param zRange           the z stride
-   * @param dateRange        date range, or null for all
-   * @param stride_time      the time stride
-   * @param addLatLon        add 2D lat/lon coordinates if needed
-   * @param writer           this does the actual writing
+   * @param gds the GridDataset
+   * @param gridList the list of variables to be written, or null for all
+   * @param llbb the lat/lon bounding box, or null for all
+   * @param projRect the projection bounding box, or null for all
+   * @param horizStride the x and y stride
+   * @param zRange the z stride
+   * @param dateRange date range, or null for all
+   * @param stride_time the time stride
+   * @param addLatLon add 2D lat/lon coordinates if needed
+   * @param writer this does the actual writing
    * @return total bytes written
    */
-  static public long writeFile(ucar.nc2.dt.GridDataset gds, List<String> gridList,
-                                       LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
-                                       CalendarDateRange dateRange, int stride_time, boolean addLatLon, NetcdfFileWriter writer) throws IOException, InvalidRangeException {
+  static public long writeFile(ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
+      ProjectionRect projRect, int horizStride, Range zRange, CalendarDateRange dateRange, int stride_time,
+      boolean addLatLon, NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     CFGridWriter2 writer2 = new CFGridWriter2();
-    return writer2.writeOrTestSize(gds, gridList, llbb, projRect, horizStride, zRange, dateRange, stride_time, addLatLon, false, writer);
+    return writer2.writeOrTestSize(gds, gridList, llbb, projRect, horizStride, zRange, dateRange, stride_time,
+        addLatLon, false, writer);
   }
 
   /**
    *
-   * @param gds              the GridDataset
-   * @param gridList         the list of variables to be written, or null for all
-   * @param llbb             the lat/lon bounding box, or null for all
-   * @param projRect         the projection bounding box, or null for all
-   * @param horizStride      the x and y stride
-   * @param zRange           the z stride
-   * @param dateRange        date range, or null for all
-   * @param stride_time      the time stride
-   * @param addLatLon        add 2D lat/lon coordinates if needed
-   * @param testSizeOnly     dont write, just return size
-   * @param writer           this does the actual writing
+   * @param gds the GridDataset
+   * @param gridList the list of variables to be written, or null for all
+   * @param llbb the lat/lon bounding box, or null for all
+   * @param projRect the projection bounding box, or null for all
+   * @param horizStride the x and y stride
+   * @param zRange the z stride
+   * @param dateRange date range, or null for all
+   * @param stride_time the time stride
+   * @param addLatLon add 2D lat/lon coordinates if needed
+   * @param testSizeOnly dont write, just return size
+   * @param writer this does the actual writing
    * @return total bytes written
    */
-  private long writeOrTestSize(ucar.nc2.dt.GridDataset gds, List<String> gridList,
-                              LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
-                              CalendarDateRange dateRange, int stride_time,
-                              boolean addLatLon, boolean testSizeOnly,
-                              NetcdfFileWriter writer) throws IOException, InvalidRangeException {
+  private long writeOrTestSize(ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
+      ProjectionRect projRect, int horizStride, Range zRange, CalendarDateRange dateRange, int stride_time,
+      boolean addLatLon, boolean testSizeOnly, NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 
-    List<Variable> varList = new ArrayList<>();         // could make these Sets
+    List<Variable> varList = new ArrayList<>(); // could make these Sets
     List<String> varNameList = new ArrayList<>();
     List<CoordinateAxis> axisList = new ArrayList<>();
 
-    if (gridList == null) {   // want all of them
+    if (gridList == null) { // want all of them
       gridList = new ArrayList<>();
       for (GridDatatype grid : gds.getGrids())
         gridList.add(grid.getName());
@@ -116,9 +115,9 @@ public class CFGridWriter2 {
     LatLonRect resultBB = null;
     long total_size = 0;
 
-    // add each desired Grid to the new file   LOOK Might be better to group by coordSys
+    // add each desired Grid to the new file LOOK Might be better to group by coordSys
     for (String gridName : gridList) {
-      if (varNameList.contains(gridName))  // already contains
+      if (varNameList.contains(gridName)) // already contains
         continue;
       GridDatatype gridOrg = gds.findGridDatatype(gridName);
       if (gridOrg == null) {
@@ -132,7 +131,7 @@ public class CFGridWriter2 {
 
       // make subset as needed
       Range timeRange = makeTimeRange(dateRange, gcsOrg.getTimeAxis1D(), stride_time);
-      Range zRangeUse = makeVerticalRange(zRange, gcsOrg.getVerticalAxis());             // LOOK no vert stride
+      Range zRangeUse = makeVerticalRange(zRange, gcsOrg.getVerticalAxis()); // LOOK no vert stride
 
       GridDatatype gridWant;
       List<Range> yxRanges = new ArrayList<>(2);
@@ -162,7 +161,7 @@ public class CFGridWriter2 {
       else
         resultBB.extend(gridBB);
 
-      Variable gridV = gridWant.getVariable(); // LOOK  WTF ??
+      Variable gridV = gridWant.getVariable(); // LOOK WTF ??
       varList.add(gridV);
       total_size += gridV.getSize() * gridV.getElementSize();
 
@@ -172,8 +171,9 @@ public class CFGridWriter2 {
       // add coordinate transform variables
       addCoordinateTransform(gcsWant, ncd, varNameList, varList);
 
-      //Add Variables from the formula_terms
-      total_size += processTransformationVars(varList, varNameList, ncd, gds, gridWant, timeRange, zRangeUse, yxRanges.get(0), yxRanges.get(1), horizStride, horizStride);
+      // Add Variables from the formula_terms
+      total_size += processTransformationVars(varList, varNameList, ncd, gds, gridWant, timeRange, zRangeUse,
+          yxRanges.get(0), yxRanges.get(1), horizStride, horizStride);
 
       // optional lat/lon
       if (addLatLon) {
@@ -208,7 +208,7 @@ public class CFGridWriter2 {
 
     // use fileWriter to copy the data
     fileWriter.copyVarData(varList, null, null);
-    //updateGeospatialRanges(writer, llrect );
+    // updateGeospatialRanges(writer, llrect );
     writer.close();
 
     // this writes the data to the new file.
@@ -217,7 +217,7 @@ public class CFGridWriter2 {
 
   private boolean isLargeFile(long total_size) {
     boolean isLargeFile = false;
-    long maxSize = 2 * 1000 * 1000 * 1000;  // LOOK why not use exact
+    long maxSize = 2 * 1000 * 1000 * 1000; // LOOK why not use exact
     if (total_size > maxSize) {
       log.debug("Request size = {} Mbytes", total_size / 1000 / 1000);
       isLargeFile = true;
@@ -225,7 +225,8 @@ public class CFGridWriter2 {
     return isLargeFile;
   }
 
-  private void makeHorizRange(GridCoordSystem gcsOrg, ProjectionRect projRect, int horizStride, List<Range> yxRanges) throws InvalidRangeException {
+  private void makeHorizRange(GridCoordSystem gcsOrg, ProjectionRect projRect, int horizStride, List<Range> yxRanges)
+      throws InvalidRangeException {
     if (gcsOrg.getXHorizAxis().getRank() > 1 || gcsOrg.getYHorizAxis().getRank() > 1) {
       throw new IllegalArgumentException("Coordinate systems with 2D horizontal axis are not supported");
     }
@@ -237,10 +238,12 @@ public class CFGridWriter2 {
     double[] yCoords = yAxis.getCoordValues();
 
 
-    ProjectionRect fullBB = new ProjectionRect(xCoords[0], yCoords[0], xCoords[xCoords.length - 1], yCoords[yCoords.length - 1]);
+    ProjectionRect fullBB =
+        new ProjectionRect(xCoords[0], yCoords[0], xCoords[xCoords.length - 1], yCoords[yCoords.length - 1]);
 
     if (!projRect.intersects(fullBB)) {
-      throw new InvalidRangeException("BBOX must intersect grid BBOX, minx=" + xCoords[0] + ", miny=" + yCoords[0] + ", maxx=" + xCoords[xCoords.length - 1] + ", maxy=" + yCoords[yCoords.length - 1]);
+      throw new InvalidRangeException("BBOX must intersect grid BBOX, minx=" + xCoords[0] + ", miny=" + yCoords[0]
+          + ", maxx=" + xCoords[xCoords.length - 1] + ", maxy=" + yCoords[yCoords.length - 1]);
     }
 
     ProjectionRect.intersect(fullBB, projRect, projRect);
@@ -271,18 +274,21 @@ public class CFGridWriter2 {
   private void addGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, LatLonRect llbb) {
     // global attributes
     for (Attribute att : gds.getGlobalAttributes()) {
-      if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
-      if (att.getShortName().equals(_Coordinate._CoordSysBuilder)) continue;
+      if (att.getShortName().equals(CDM.FILE_FORMAT))
+        continue;
+      if (att.getShortName().equals(_Coordinate._CoordSysBuilder))
+        continue;
       writer.addGroupAttribute(null, att);
     }
 
     Attribute att = gds.findGlobalAttributeIgnoreCase(CDM.CONVENTIONS);
-    if (att == null || !att.getStringValue().startsWith("CF-"))  // preserve previous version of CF Convention if it exists
+    if (att == null || !att.getStringValue().startsWith("CF-")) // preserve previous version of CF Convention if it
+                                                                // exists
       writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.0"));
 
-    writer.addGroupAttribute(null, new Attribute("History",
-            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridWriter2)\n" +
-                    "Original Dataset = " + gds.getLocation() + "; Translation Date = " + CalendarDate.present()));
+    writer.addGroupAttribute(null,
+        new Attribute("History", "Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridWriter2)\n"
+            + "Original Dataset = " + gds.getLocation() + "; Translation Date = " + CalendarDate.present()));
 
     // this will replace any existing
     writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
@@ -291,10 +297,10 @@ public class CFGridWriter2 {
     writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getLonMax()));
   }
 
-  private void addCFAnnotations(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, List<String> gridList, NetcdfDataset ncd,
-                                List<CoordinateAxis> axisList, boolean addLatLon) {
+  private void addCFAnnotations(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+      NetcdfDataset ncd, List<CoordinateAxis> axisList, boolean addLatLon) {
 
-    //Group root = ncfile.getRootGroup();
+    // Group root = ncfile.getRootGroup();
     for (String gridName : gridList) {
       GridDatatype grid = gds.findGridDatatype(gridName);
       Variable newV = writer.findVariable(gridName);
@@ -323,7 +329,8 @@ public class CFGridWriter2 {
 
     for (CoordinateAxis axis : axisList) {
       Variable newV = writer.findVariable(axis.getFullNameEscaped());
-      if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
+      if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure)
+          || (axis.getAxisType() == AxisType.GeoZ)) {
         if (null != axis.getPositive())
           newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
       }
@@ -374,13 +381,14 @@ public class CFGridWriter2 {
   }
 
   private void convertAttribute(Variable ctv, Attribute att, double scalef) {
-    if (att == null) return;
+    if (att == null)
+      return;
     double val = scalef * att.getNumericValue().doubleValue();
     ctv.addAttribute(new Attribute(att.getShortName(), val));
   }
 
-  private long addLatLon2D(NetcdfFile ncfile, List<Variable> varList, Projection proj,
-                           CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
+  private long addLatLon2D(NetcdfFile ncfile, List<Variable> varList, Projection proj, CoordinateAxis xaxis,
+      CoordinateAxis yaxis) throws IOException {
 
     double[] xData = (double[]) xaxis.read().get1DJavaArray(double.class);
     double[] yData = (double[]) yaxis.read().get1DJavaArray(double.class);
@@ -421,10 +429,10 @@ public class CFGridWriter2 {
         lonData[i * nx + j] = latlonPoint.getLongitude();
       }
     }
-    Array latDataArray = Array.factory(DataType.DOUBLE, new int[]{ny, nx}, latData);
+    Array latDataArray = Array.factory(DataType.DOUBLE, new int[] {ny, nx}, latData);
     latVar.setCachedData(latDataArray, false);
 
-    Array lonDataArray = Array.factory(DataType.DOUBLE, new int[]{ny, nx}, lonData);
+    Array lonDataArray = Array.factory(DataType.DOUBLE, new int[] {ny, nx}, lonData);
     lonVar.setCachedData(lonDataArray, false);
 
     varList.add(latVar);
@@ -440,17 +448,21 @@ public class CFGridWriter2 {
     return (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
   }
 
-  private Range makeTimeRange(CalendarDateRange dateRange, CoordinateAxis1DTime timeAxis, int stride_time) throws InvalidRangeException {
+  private Range makeTimeRange(CalendarDateRange dateRange, CoordinateAxis1DTime timeAxis, int stride_time)
+      throws InvalidRangeException {
 
     Range timeRange = null;
     if ((dateRange != null) && (timeAxis != null)) {
       int startIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getStart());
       int endIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getEnd());
       if (startIndex < 0)
-        throw new InvalidRangeException("start time=" + dateRange.getStart() + " must be >= " + timeAxis.getCalendarDate(0));
+        throw new InvalidRangeException(
+            "start time=" + dateRange.getStart() + " must be >= " + timeAxis.getCalendarDate(0));
       if (endIndex < 0)
-        throw new InvalidRangeException("end time=" + dateRange.getEnd() + " must be >= " + timeAxis.getCalendarDate(0));
-      if (stride_time <= 1) stride_time = 1;
+        throw new InvalidRangeException(
+            "end time=" + dateRange.getEnd() + " must be >= " + timeAxis.getCalendarDate(0));
+      if (stride_time <= 1)
+        stride_time = 1;
       timeRange = new Range(startIndex, endIndex, stride_time);
     }
 
@@ -458,22 +470,24 @@ public class CFGridWriter2 {
 
   }
 
-  private void addCoordinateAxis(GridCoordSystem gcs, List<String> varNameList, List<Variable> varList, List<CoordinateAxis> axisList) {
+  private void addCoordinateAxis(GridCoordSystem gcs, List<String> varNameList, List<Variable> varList,
+      List<CoordinateAxis> axisList) {
 
     for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
       if (!varNameList.contains(axis.getFullName())) {
         varNameList.add(axis.getFullName());
-        varList.add(axis);                    // LOOK axis hasnt been subset yet !!
+        varList.add(axis); // LOOK axis hasnt been subset yet !!
         axisList.add(axis);
-        //if (timeAxis != null && timeAxis.isInterval()) {
-        // LOOK gotta add the bounds  !!!
-        //}
+        // if (timeAxis != null && timeAxis.isInterval()) {
+        // LOOK gotta add the bounds !!!
+        // }
       }
     }
 
   }
 
-  private void addCoordinateTransform(GridCoordSystem gcs, NetcdfFile ncd, List<String> varNameList, List<Variable> varList) {
+  private void addCoordinateTransform(GridCoordSystem gcs, NetcdfFile ncd, List<String> varNameList,
+      List<Variable> varList) {
 
     List<String> coordTransformNames = new ArrayList<>();
 
@@ -509,12 +523,14 @@ public class CFGridWriter2 {
 
 
   /*
-   * Process the coordinate transformations (formula_terms) and adds the variables needed for performing that transformation.
+   * Process the coordinate transformations (formula_terms) and adds the variables needed for performing that
+   * transformation.
    * Subsets the grids variables, if needed.
    * Return size of variables added
    */
-  private long processTransformationVars(List<Variable> varList, List<String> varNameList, NetcdfDataset ncd, ucar.nc2.dt.GridDataset gds,
-                                         GridDatatype grid, Range timeRange, Range zRangeUse, Range yRange, Range xRange, int y_stride, int x_stride) throws InvalidRangeException {
+  private long processTransformationVars(List<Variable> varList, List<String> varNameList, NetcdfDataset ncd,
+      ucar.nc2.dt.GridDataset gds, GridDatatype grid, Range timeRange, Range zRangeUse, Range yRange, Range xRange,
+      int y_stride, int x_stride) throws InvalidRangeException {
 
     long varsSize = 0L;
     List<CoordinateTransform> cctt = grid.getCoordinateSystem().getCoordinateTransforms();
@@ -529,14 +545,16 @@ public class CFGridWriter2 {
           if (!varNameList.contains(varStrings[i]) && (null != paramVar)) {
 
             if (gds.findGridDatatype(paramVar.getFullName()) != null) {
-              //Subset if needed
-              if ((null != timeRange) || (zRangeUse != null) || (x_stride > 1 && y_stride > 1) || (yRange != null || xRange != null)) {
+              // Subset if needed
+              if ((null != timeRange) || (zRangeUse != null) || (x_stride > 1 && y_stride > 1)
+                  || (yRange != null || xRange != null)) {
                 GridDatatype complementaryGrid = gds.findGridDatatype(paramVar.getFullName());
                 complementaryGrid = complementaryGrid.makeSubset(null, null, timeRange, zRangeUse, yRange, xRange);
                 paramVar = complementaryGrid.getVariable();
               }
             } else {
-              //Also have to subset the var if it is not a grid but has vertical dimension (the dimensionless vars in the formula) and zRangeUse != null
+              // Also have to subset the var if it is not a grid but has vertical dimension (the dimensionless vars in
+              // the formula) and zRangeUse != null
               if (zRangeUse != null && paramVar.getRank() == 1) {
                 List<Range> ranges = new ArrayList<>();
                 ranges.add(zRangeUse);

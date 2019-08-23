@@ -11,14 +11,11 @@ package thredds.catalog.query;
 import thredds.catalog.XMLEntityResolver;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
-
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.*;
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
 import ucar.nc2.util.DiskCache2;
 
 /**
@@ -26,11 +23,12 @@ import ucar.nc2.util.DiskCache2;
  * <p/>
  * <h3>Example of normal use:</h3>
  * <p/>
+ * 
  * <pre>
  * DqcFactory fac = new DqcFactory(true);
  * QueryCapability dqc = fac.readXML(url);
- * System.out.println(" dqc hasFatalError= "+dqc.hasFatalError());
- * System.out.println(" dqc messages= \n"+dqc.getErrorMessages());
+ * System.out.println(" dqc hasFatalError= " + dqc.hasFatalError());
+ * System.out.println(" dqc messages= \n" + dqc.getErrorMessages());
  * fac.writeXML(dqc, System.out);
  * </pre>
  * <p/>
@@ -78,18 +76,20 @@ public class DqcFactory {
 
   private void setDefaults() {
     try {
-      /* Class fac2 = Class.forName("thredds.catalog.parser.jdom.DqcConvert2");
-      Object fac2o = fac2.newInstance();
-      registerConverter( "0.2", XMLEntityResolver.DQC_NAMESPACE_02, (DqcConvertIF) fac2o);
-
-      Class fac3 = Class.forName("thredds.catalog.parser.jdom.DqcConvert3");
-      Object fac3o = fac3.newInstance();
-      registerConverter( "0.3", XMLEntityResolver.DQC_NAMESPACE_03, (DqcConvertIF) fac3o); */
+      /*
+       * Class fac2 = Class.forName("thredds.catalog.parser.jdom.DqcConvert2");
+       * Object fac2o = fac2.newInstance();
+       * registerConverter( "0.2", XMLEntityResolver.DQC_NAMESPACE_02, (DqcConvertIF) fac2o);
+       * 
+       * Class fac3 = Class.forName("thredds.catalog.parser.jdom.DqcConvert3");
+       * Object fac3o = fac3.newInstance();
+       * registerConverter( "0.3", XMLEntityResolver.DQC_NAMESPACE_03, (DqcConvertIF) fac3o);
+       */
 
       Class fac4 = Class.forName("thredds.catalog.parser.jdom.DqcConvert4");
       Object fac4o = fac4.newInstance();
       defaultConverter = (DqcConvertIF) fac4o;
-      registerConverter( "0.4", XMLEntityResolver.DQC_NAMESPACE_04, (DqcConvertIF) fac4o);
+      registerConverter("0.4", XMLEntityResolver.DQC_NAMESPACE_04, (DqcConvertIF) fac4o);
 
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("DqcFactory: no implementing class found: " + e.getMessage());
@@ -118,24 +118,20 @@ public class DqcFactory {
     warnMessages.append(err);
   }
 
-  public QueryCapability readXML( String docAsString, URI uri ) throws IOException
-  {
+  public QueryCapability readXML(String docAsString, URI uri) throws IOException {
     // get ready for XML parsing
-    warnMessages.setLength( 0 );
-    errMessages.setLength( 0 );
-    fatalMessages.setLength( 0 );
+    warnMessages.setLength(0);
+    errMessages.setLength(0);
+    fatalMessages.setLength(0);
 
     Document doc = null;
-    try
-    {
-      doc = builder.build( new StringReader( docAsString ) );
-    }
-    catch ( JDOMException e )
-    {
-      fatalMessages.append( e.getMessage() ); // makes it invalid
+    try {
+      doc = builder.build(new StringReader(docAsString));
+    } catch (JDOMException e) {
+      fatalMessages.append(e.getMessage()); // makes it invalid
     }
 
-    return readXML( doc, uri );
+    return readXML(doc, uri);
   }
 
   /**
@@ -174,9 +170,9 @@ public class DqcFactory {
             java.io.InputStream is = conn.getInputStream();
             if (is != null) {
               try (FileOutputStream fout = new FileOutputStream(file)) {
-                  IO.copyB(is, fout, buffer_size);  // cache it
+                IO.copyB(is, fout, buffer_size); // cache it
               }
-              try (InputStream fin = new BufferedInputStream( new FileInputStream(file), 50000)) {
+              try (InputStream fin = new BufferedInputStream(new FileInputStream(file), 50000)) {
                 return readXML(fin, uri);
               }
             }
@@ -198,8 +194,7 @@ public class DqcFactory {
 
       // no file - read and cache
       IO.readURLtoFileWithExceptions(uriString, file, buffer_size);
-      try (InputStream fin = new BufferedInputStream(
-              new FileInputStream(file), 50000)) {
+      try (InputStream fin = new BufferedInputStream(new FileInputStream(file), 50000)) {
         return readXML(fin, uri);
       }
 
@@ -225,7 +220,7 @@ public class DqcFactory {
    * check dqc.isValid, dqc.getErrorMessages() to see if ok.
    *
    * @param docIs : the InputStream to read from
-   * @param uri   : the URI of the document, used for resolving reletive references.
+   * @param uri : the URI of the document, used for resolving reletive references.
    * @return an QueryCapability object
    * @throws IOException on failure
    */
@@ -279,7 +274,7 @@ public class DqcFactory {
     } else if (debugVersion)
       System.out.println("use converter " + fac.getClass().getName() + " based on namespace " + namespace);
 
-// convert to object model
+    // convert to object model
     QueryCapability dqc = fac.parseXML(this, doc, uri);
     if (fatalMessages.length() > 0)
       dqc.appendErrorMessage(fatalMessages.toString(), true); // makes it invalid
@@ -307,23 +302,23 @@ public class DqcFactory {
    * Write the catalog as an XML document to the specified stream.
    *
    * @param dqc : write this QueryCapability to an XML representation.
-   * @param os  write to this OutputStream
+   * @param os write to this OutputStream
    * @throws IOException on an error.
    */
   public void writeXML(QueryCapability dqc, OutputStream os) throws IOException {
-    String ns = versionToNamespaceHash.get( dqc.getVersion() );
-    DqcConvertIF fac = namespaceToDqcConverterHash.get( ns );
+    String ns = versionToNamespaceHash.get(dqc.getVersion());
+    DqcConvertIF fac = namespaceToDqcConverterHash.get(ns);
 
-    if ( fac == null )
+    if (fac == null)
       fac = defaultConverter;
 
-    fac.writeXML( dqc, os );
+    fac.writeXML(dqc, os);
   }
 
   /**
    * Write the catalog as an XML document to the specified filename.
    *
-   * @param dqc      : write this QueryCapability to an XML representation.
+   * @param dqc : write this QueryCapability to an XML representation.
    * @param filename write to this filename
    * @return true if success
    */
@@ -339,7 +334,7 @@ public class DqcFactory {
     return true;
   }
 
-/************************************************************************/
+  /************************************************************************/
   /**
    * testing
    */

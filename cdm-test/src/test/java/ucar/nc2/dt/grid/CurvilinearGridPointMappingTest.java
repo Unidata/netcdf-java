@@ -15,11 +15,9 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -31,8 +29,7 @@ import static org.junit.Assert.assertEquals;
  * @since 4.1
  */
 @Category(NeedsCdmUnitTest.class)
-public class CurvilinearGridPointMappingTest
-{
+public class CurvilinearGridPointMappingTest {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private String datasetLocation = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
@@ -44,59 +41,56 @@ public class CurvilinearGridPointMappingTest
   /**
    * Test GridCoordSystem.getLatLon()
    *
-   * @throws IOException  if ...
-   * @throws InvalidRangeException  if ...
+   * @throws IOException if ...
+   * @throws InvalidRangeException if ...
    */
   @Test
-  public void checkGridCoordSystem_getLatLon()
-          throws IOException, InvalidRangeException
-  {
-    int[] origin = new int[] { j, i};
-    int[] shape = new int[] {1,1};
+  public void checkGridCoordSystem_getLatLon() throws IOException, InvalidRangeException {
+    int[] origin = new int[] {j, i};
+    int[] shape = new int[] {1, 1};
 
-    NetcdfFile ncf = NetcdfFile.open( datasetLocation);
-    Variable latVar = ncf.findVariable( "lat" );
-    Array latArray = latVar.read( origin, shape );
-    Variable lonVar = ncf.findVariable( "lon" );
-    Array lonArray = lonVar.read( origin, shape );
+    NetcdfFile ncf = NetcdfFile.open(datasetLocation);
+    Variable latVar = ncf.findVariable("lat");
+    Array latArray = latVar.read(origin, shape);
+    Variable lonVar = ncf.findVariable("lon");
+    Array lonArray = lonVar.read(origin, shape);
 
-    double latVal = latArray.getDouble( latArray.getIndex());
-    double lonVal = lonArray.getDouble( lonArray.getIndex());
+    double latVal = latArray.getDouble(latArray.getIndex());
+    double lonVal = lonArray.getDouble(lonArray.getIndex());
 
-    GridDataset gd = GridDataset.open( datasetLocation );
-    GeoGrid gg = gd.findGridByName( "hs" );
+    GridDataset gd = GridDataset.open(datasetLocation);
+    GeoGrid gg = gd.findGridByName("hs");
     GridCoordSystem gridCoordSys = gg.getCoordinateSystem();
-    //gridCoordSys.getXHorizAxis().;
-    //gridCoordSys.getYHorizAxis();
-    LatLonPoint llPnt = gridCoordSys.getLatLon( 170, 62 );
+    // gridCoordSys.getXHorizAxis().;
+    // gridCoordSys.getYHorizAxis();
+    LatLonPoint llPnt = gridCoordSys.getLatLon(170, 62);
 
-    Assert.assertEquals( lat, llPnt.getLatitude(), 0.001 );
-    Assert.assertEquals( lon, llPnt.getLongitude(), 0.001 );
+    Assert.assertEquals(lat, llPnt.getLatitude(), 0.001);
+    Assert.assertEquals(lon, llPnt.getLongitude(), 0.001);
   }
 
   /**
    * Test GridCoordSystem.findXYindexFromLatLonBounded()
+   * 
    * @throws IOException
    */
   @Test
-  public void checkGridCoordSystem_findXYindexFromLatLonBounded()
-          throws IOException
-  {
-    GridDataset gd = GridDataset.open( datasetLocation );
+  public void checkGridCoordSystem_findXYindexFromLatLonBounded() throws IOException {
+    GridDataset gd = GridDataset.open(datasetLocation);
 
-    GridDatatype hsGrid = gd.findGridDatatype( "hs" );
+    GridDatatype hsGrid = gd.findGridDatatype("hs");
     GridCoordSystem coordSys = hsGrid.getCoordinateSystem();
     CalendarDate date = coordSys.getTimeAxis1D().getCalendarDate(0);
 
-    int[] xy = coordSys.findXYindexFromLatLonBounded( lat, lon, null );
-    assertEquals( i, xy[0] );
-    assertEquals( j, xy[1] );
+    int[] xy = coordSys.findXYindexFromLatLonBounded(lat, lon, null);
+    assertEquals(i, xy[0]);
+    assertEquals(j, xy[1]);
 
-    GridAsPointDataset hsGridAsPoint = new GridAsPointDataset( Collections.singletonList( hsGrid ));
-    GridAsPointDataset.Point point = hsGridAsPoint.readData( hsGrid, date, lat, lon );
+    GridAsPointDataset hsGridAsPoint = new GridAsPointDataset(Collections.singletonList(hsGrid));
+    GridAsPointDataset.Point point = hsGridAsPoint.readData(hsGrid, date, lat, lon);
 
-    assertEquals( lat, point.lat, 0.001 );
-    assertEquals( lon, point.lon, 0.001 );
+    assertEquals(lat, point.lat, 0.001);
+    assertEquals(lon, point.lon, 0.001);
 
   }
 }

@@ -14,7 +14,6 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Dimension;
-
 import java.util.Formatter;
 import java.util.StringTokenizer;
 
@@ -29,15 +28,17 @@ public class UnidataPointObs extends TableConfigurerImpl {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataPointObs.class);
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT))
+    if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION)
+        && (wantFeatureType != FeatureType.POINT))
       return false;
 
-    FeatureType ft = FeatureDatasetFactoryManager.findFeatureType( ds);
+    FeatureType ft = FeatureDatasetFactoryManager.findFeatureType(ds);
     if (((ft != FeatureType.STATION) && (ft != FeatureType.POINT)))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
-    if (conv == null) return false;
+    if (conv == null)
+      return false;
 
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
@@ -53,19 +54,21 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
     Dimension obsDim = UnidataPointDatasetHelper.findObsDimension(ds);
     if (obsDim == null) {
-      errlog.format("Must have an Observation dimension: named by global attribute 'observationDimension', or unlimited dimension");
+      errlog.format(
+          "Must have an Observation dimension: named by global attribute 'observationDimension', or unlimited dimension");
       return null;
     }
     boolean hasStruct = Evaluator.hasNetcdf3RecordStructure(ds);
 
     FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
-    if (ft == null )
+    if (ft == null)
       ft = Evaluator.getFeatureType(ds, ":cdm_data_type", null);
 
     // its really a point
     if (ft == FeatureType.POINT) {
       TableConfig obsTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName());
-      obsTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+      obsTable.structureType =
+          hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       obsTable.featureType = FeatureType.POINT;
       obsTable.structName = "record";
 
@@ -78,12 +81,13 @@ public class UnidataPointObs extends TableConfigurerImpl {
       return obsTable;
     }
 
-    //  we want a point dataset, but its really a station
+    // we want a point dataset, but its really a station
     // iterate over obs struct, in file order
     // extra join on station structure
     if ((ft == FeatureType.STATION) && (wantFeatureType == FeatureType.POINT)) {
-      TableConfig obsTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName() );
-      obsTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+      TableConfig obsTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName());
+      obsTable.structureType =
+          hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       obsTable.featureType = FeatureType.POINT;
       obsTable.dimName = obsDim.getShortName();
       obsTable.structName = "record";
@@ -100,7 +104,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
       // otherwise join it to the station with a parent_index
       String parentIndexVar = UnidataPointDatasetHelper.findVariableName(ds, "parent_index");
-      if (parentIndexVar == null)  {
+      if (parentIndexVar == null) {
         errlog.format("Must have a parent_index variable");
         return null;
       }
@@ -113,14 +117,14 @@ public class UnidataPointObs extends TableConfigurerImpl {
       }
 
       // TableConfig stationTable = new TableConfig(Table.Type.Structure, "station");
-      //stationTable.isPsuedoStructure = true;
-      //stationTable.dim = stationDim;
+      // stationTable.isPsuedoStructure = true;
+      // stationTable.dim = stationDim;
       obsTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, stationDim);
       obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, stationDim);
       obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
 
       StructureDS stns = new StructurePseudoDS(ds, null, "stationPsuedoStructure", null, stationDim);
-      obsTable.addJoin( new JoinParentIndex(stns, parentIndexVar));
+      obsTable.addJoin(new JoinParentIndex(stns, parentIndexVar));
 
       return obsTable;
     }
@@ -129,7 +133,8 @@ public class UnidataPointObs extends TableConfigurerImpl {
     // its really a trajectory
     if (ft == FeatureType.TRAJECTORY) {
       TableConfig obsTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName());
-      obsTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+      obsTable.structureType =
+          hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       obsTable.featureType = FeatureType.TRAJECTORY;
 
       obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time, obsDim);
@@ -140,7 +145,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
       Dimension trajDim = UnidataPointDatasetHelper.findDimension(ds, "trajectory");
       if (trajDim != null) {
-        log.error("Ignoring trajectory structure "+ds.getLocation());
+        log.error("Ignoring trajectory structure " + ds.getLocation());
       }
 
       return obsTable;
@@ -161,7 +166,8 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
     boolean isForwardLinkedList = (firstVar != null) && (nextVar != null);
     boolean isBackwardLinkedList = (lastVar != null) && (prevVar != null);
-    boolean isContiguousList = !isForwardLinkedList && !isBackwardLinkedList && (firstVar != null) && (numChildrenVar != null);
+    boolean isContiguousList =
+        !isForwardLinkedList && !isBackwardLinkedList && (firstVar != null) && (numChildrenVar != null);
     boolean isMultiDim = !isForwardLinkedList && !isBackwardLinkedList && !isContiguousList;
 
     // station table
@@ -189,10 +195,11 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
     } else {
 
-      Table.Type obsType =  isForwardLinkedList || isBackwardLinkedList ? Table.Type.LinkedList : Table.Type.Contiguous;
+      Table.Type obsType = isForwardLinkedList || isBackwardLinkedList ? Table.Type.LinkedList : Table.Type.Contiguous;
 
       obsTable = new TableConfig(obsType, hasStruct ? "record" : obsDim.getShortName());
-      obsTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+      obsTable.structureType =
+          hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       obsTable.structName = "record";
 
       if (isForwardLinkedList) {

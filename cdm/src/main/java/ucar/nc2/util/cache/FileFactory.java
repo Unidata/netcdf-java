@@ -14,5 +14,6 @@ import ucar.nc2.dataset.DatasetUrl;
  * @since Jun 2, 2008
  */
 public interface FileFactory {
-  FileCacheable open(DatasetUrl location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws java.io.IOException;
+  FileCacheable open(DatasetUrl location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage)
+      throws java.io.IOException;
 }

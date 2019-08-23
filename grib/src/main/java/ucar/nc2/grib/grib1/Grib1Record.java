@@ -11,7 +11,6 @@ import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -35,18 +34,15 @@ public class Grib1Record {
   /**
    * Construction for Grib1Record.
    *
-   * @param header      Grib header
-   * @param is          Grib1IndicatorSection
-   * @param gdss        Grib1GridDefinitionSection
-   * @param pdss        Grib1ProductDefinitionSection
-   * @param bitmap      Grib1SectionBitMap
+   * @param header Grib header
+   * @param is Grib1IndicatorSection
+   * @param gdss Grib1GridDefinitionSection
+   * @param pdss Grib1ProductDefinitionSection
+   * @param bitmap Grib1SectionBitMap
    * @param dataSection Grib1SectionData
    */
-  public Grib1Record(byte[] header, Grib1SectionIndicator is,
-                     Grib1SectionGridDefinition gdss,
-                     Grib1SectionProductDefinition pdss,
-                     Grib1SectionBitMap bitmap,
-                     Grib1SectionBinaryData dataSection) {
+  public Grib1Record(byte[] header, Grib1SectionIndicator is, Grib1SectionGridDefinition gdss,
+      Grib1SectionProductDefinition pdss, Grib1SectionBitMap bitmap, Grib1SectionBinaryData dataSection) {
 
     this.header = header;
     this.is = is;
@@ -124,7 +120,8 @@ public class Grib1Record {
   private Grib1ParamTime ptime;
 
   public Grib1ParamTime getParamTime(Grib1Customizer cust) {
-    if (ptime == null) ptime = cust.getParamTime(pdss);
+    if (ptime == null)
+      ptime = cust.getParamTime(pdss);
     return ptime;
   }
 
@@ -143,7 +140,8 @@ public class Grib1Record {
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public float[] readData(RandomAccessFile raf, GribData.InterpolationMethod method) throws IOException {
     Grib1Gds gds = getGDS();
-    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(), gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
+    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(),
+        gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     float[] data = reader.getData(raf, bm);
 
@@ -187,7 +185,7 @@ public class Grib1Record {
    * Read data array by first reading in GribRecord.
    * All sections are read in, so scanMode is from the datafile, not the index.
    *
-   * @param raf      from this RandomAccessFile
+   * @param raf from this RandomAccessFile
    * @param startPos message starts here
    * @return data as float[] array
    * @throws IOException on read error
@@ -204,24 +202,33 @@ public class Grib1Record {
   /*
    * Read data array: use when you want to be independent of the GribRecord
    *
-   * @param raf          from this RandomAccessFile
-   * @param bmPos        bitmap.start
+   * @param raf from this RandomAccessFile
+   * 
+   * @param bmPos bitmap.start
+   * 
    * @param decimalScale pds.decimalScale
-   * @param scanMode     gds.scanMode
-   * @param nx           gds.nx
-   * @param ny           gds.ny
+   * 
+   * @param scanMode gds.scanMode
+   * 
+   * @param nx gds.nx
+   * 
+   * @param ny gds.ny
+   * 
    * @return data as float[] array
+   * 
    * @throws IOException on read error
    *
-  public static float[] readData(RandomAccessFile raf, long bmPos, int decimalScale, int scanMode, int nx, int ny) throws IOException {
-    raf.seek(bmPos);
-    Grib1SectionBitMap bms = new Grib1SectionBitMap(raf);
-    Grib1DataReader reader = new Grib1DataReader(decimalScale, scanMode, nx, ny, raf.getFilePointer());
-
-    boolean[] bitmap = bms.getBitmap(raf);
-
-    return reader.getData(raf, bitmap);
-  } */
+   * public static float[] readData(RandomAccessFile raf, long bmPos, int decimalScale, int scanMode, int nx, int ny)
+   * throws IOException {
+   * raf.seek(bmPos);
+   * Grib1SectionBitMap bms = new Grib1SectionBitMap(raf);
+   * Grib1DataReader reader = new Grib1DataReader(decimalScale, scanMode, nx, ny, raf.getFilePointer());
+   * 
+   * boolean[] bitmap = bms.getBitmap(raf);
+   * 
+   * return reader.getData(raf, bitmap);
+   * }
+   */
 
   public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
     GribData.Info info = dataSection.getBinaryDataInfo(raf);
@@ -247,7 +254,8 @@ public class Grib1Record {
   // debugging - do not use
   public int[] readRawData(RandomAccessFile raf) throws IOException {
     Grib1Gds gds = getGDS();
-    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(), gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
+    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(),
+        gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     return reader.getDataRaw(raf, bm);
   }

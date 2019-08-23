@@ -8,9 +8,11 @@ package thredds.crawlabledataset;
 /**
  * A filter for CrawlableDatasets.
  *
- * <p>Instances of this interface may be passed to the
+ * <p>
+ * Instances of this interface may be passed to the
  * <code>{@link CrawlableDataset#listDatasets(CrawlableDatasetFilter)}</code>
- * method of the <code>{@link CrawlableDataset}</code> class.</p>
+ * method of the <code>{@link CrawlableDataset}</code> class.
+ * </p>
  *
  * Implementation note:
  * The TDS framework (InvDatasetScan, etc) uses a public constructor
@@ -22,8 +24,7 @@ package thredds.crawlabledataset;
  * @since Jun 22, 2005 9:30:43 AM
  * @see CrawlableDataset#listDatasets(CrawlableDatasetFilter)
  */
-public interface CrawlableDatasetFilter
-{
+public interface CrawlableDatasetFilter {
   /**
    * Test whether the specified CrawlableDataset should be included
    * in a list of CrawlableDatasets.
@@ -31,7 +32,7 @@ public interface CrawlableDatasetFilter
    * @param dataset the CrawlableDataset to test for inclusion.
    * @return true if the given CrawlableDataset should be included, false otherwise.
    */
-  public boolean accept( CrawlableDataset dataset);
+  public boolean accept(CrawlableDataset dataset);
 
   /**
    * Return the configuration object.

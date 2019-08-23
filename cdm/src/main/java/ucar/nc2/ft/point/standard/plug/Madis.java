@@ -9,56 +9,64 @@ import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.FeatureType;
-
 import java.util.Formatter;
 
 /**
  * Madis Convention
+ * 
  * @author caron
  * @since Apr 23, 2008
  */
-public class Madis extends TableConfigurerImpl  {
+public class Madis extends TableConfigurerImpl {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT)
-            && (wantFeatureType != FeatureType.STATION_PROFILE))
+    if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION)
+        && (wantFeatureType != FeatureType.POINT) && (wantFeatureType != FeatureType.STATION_PROFILE))
       return false;
 
-    if (!ds.hasUnlimitedDimension()) return false;
-    if (ds.findDimension("recNum") == null) return false;
+    if (!ds.hasUnlimitedDimension())
+      return false;
+    if (ds.findDimension("recNum") == null)
+      return false;
 
-    if (ds.findVariable("staticIds") == null) return false;
-    if (ds.findVariable("nStaticIds") == null) return false;
-    if (ds.findVariable("lastRecord") == null) return false;
-    if (ds.findVariable("prevRecord") == null) return false;
+    if (ds.findVariable("staticIds") == null)
+      return false;
+    if (ds.findVariable("nStaticIds") == null)
+      return false;
+    if (ds.findVariable("lastRecord") == null)
+      return false;
+    if (ds.findVariable("prevRecord") == null)
+      return false;
 
-    VNames vn = getVariableNames(ds, null);    
-    if (ds.findVariable(vn.lat) == null) return false;
-    if (ds.findVariable(vn.lon) == null) return false;
+    VNames vn = getVariableNames(ds, null);
+    if (ds.findVariable(vn.lat) == null)
+      return false;
+    if (ds.findVariable(vn.lon) == null)
+      return false;
     return ds.findVariable(vn.obsTime) != null;
 
   }
 
   /*
-  <!-- C:/data/dt2/station/madis2.sao -->
-  <stationCollection>
-    <table dim="maxStaticIds" limit="nStaticIds">
-      <lastLink>lastRecord</lastLink>
-
-      <table dim="recNum">
-        <stationId>:stationIdVariable</stationId>
-        <stationWmoId>wmoId</stationWmoId>
-        <coordAxis type="time">timeObs</coordAxis>
-        <coordAxis type="lat">latitude</coordAxis>
-        <coordAxis type="lon">longitude</coordAxis>
-        <coordAxis type="height">elevation</coordAxis>
-        <prevLink>prevRecord</prevLink>
-      </table>
-
-    </table>
-
-    <cdmDataType>:thredds_data_type</cdmDataType>
-  </stationCollection>
+   * <!-- C:/data/dt2/station/madis2.sao -->
+   * <stationCollection>
+   * <table dim="maxStaticIds" limit="nStaticIds">
+   * <lastLink>lastRecord</lastLink>
+   * 
+   * <table dim="recNum">
+   * <stationId>:stationIdVariable</stationId>
+   * <stationWmoId>wmoId</stationWmoId>
+   * <coordAxis type="time">timeObs</coordAxis>
+   * <coordAxis type="lat">latitude</coordAxis>
+   * <coordAxis type="lon">longitude</coordAxis>
+   * <coordAxis type="height">elevation</coordAxis>
+   * <prevLink>prevRecord</prevLink>
+   * </table>
+   * 
+   * </table>
+   * 
+   * <cdmDataType>:thredds_data_type</cdmDataType>
+   * </stationCollection>
    */
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
@@ -85,14 +93,16 @@ public class Madis extends TableConfigurerImpl  {
         levDimName = "level";
       }
     }
-    if (null == ft) ft = FeatureType.POINT;
+    if (null == ft)
+      ft = FeatureType.POINT;
 
     // points
     if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
-      TableConfig ptTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName() );
+      TableConfig ptTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName());
       ptTable.structName = "record";
       ptTable.featureType = FeatureType.POINT;
-      ptTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
+      ptTable.structureType =
+          hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
       ptTable.dimName = obsDim.getShortName();
       ptTable.time = vn.obsTime;
@@ -102,7 +112,7 @@ public class Madis extends TableConfigurerImpl  {
       ptTable.elev = vn.elev;
 
       return ptTable;
-     }
+    }
 
     if (ft == FeatureType.STATION) {
       TableConfig stnTable = new TableConfig(Table.Type.Construct, "station");
@@ -139,7 +149,7 @@ public class Madis extends TableConfigurerImpl  {
       obs.lat = vn.lat;
       obs.lon = vn.lon;
       obs.stnAlt = vn.elev;
-  
+
       stnTable.addChild(obs);
 
       TableConfig lev = new TableConfig(Table.Type.MultidimInner, "mandatory");
@@ -166,30 +176,38 @@ public class Madis extends TableConfigurerImpl  {
     if (val == null)
       val = ds.findAttValueIgnoreCase(null, "latLonVars", null);
     if (val == null) {
-      if (errlog != null) errlog.format(" Cant find global attribute stationLocationVariables%n");
+      if (errlog != null)
+        errlog.format(" Cant find global attribute stationLocationVariables%n");
       vn.lat = "latitude";
       vn.lon = "longitude";
     } else {
       String[] vals = val.split(",");
-      if (vals.length > 0) vn.lat = vals[0];
-      if (vals.length > 1) vn.lon = vals[1];
-      if (vals.length > 2) vn.elev = vals[2];
+      if (vals.length > 0)
+        vn.lat = vals[0];
+      if (vals.length > 1)
+        vn.lon = vals[1];
+      if (vals.length > 2)
+        vn.elev = vals[2];
     }
 
     val = ds.findAttValueIgnoreCase(null, "timeVariables", null);
     if (val == null) {
-      if (errlog != null) errlog.format(" Cant find global attribute timeVariables%n");
+      if (errlog != null)
+        errlog.format(" Cant find global attribute timeVariables%n");
       vn.obsTime = "observationTime";
       vn.nominalTime = "reportTime";
     } else {
       String[] vals = val.split(",");
-      if (vals.length > 0) vn.obsTime = vals[0];
-      if (vals.length > 1) vn.nominalTime = vals[1];
+      if (vals.length > 0)
+        vn.obsTime = vals[0];
+      if (vals.length > 1)
+        vn.nominalTime = vals[1];
     }
 
     val = ds.findAttValueIgnoreCase(null, "stationDescriptionVariable", null);
     if (val == null) {
-      if (errlog != null) errlog.format(" Cant find global attribute stationDescriptionVariable%n");
+      if (errlog != null)
+        errlog.format(" Cant find global attribute stationDescriptionVariable%n");
       vn.stnDesc = "stationName";
     } else {
       vn.stnDesc = val;
@@ -199,7 +217,8 @@ public class Madis extends TableConfigurerImpl  {
     if (val == null)
       val = ds.findAttValueIgnoreCase(null, "idVariables", null);
     if (val == null) {
-      if (errlog != null) errlog.format(" Cant find global attribute stationIdVariable%n");
+      if (errlog != null)
+        errlog.format(" Cant find global attribute stationIdVariable%n");
       vn.stnId = "stationId";
     } else {
       vn.stnId = val;

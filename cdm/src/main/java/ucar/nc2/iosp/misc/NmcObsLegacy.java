@@ -14,7 +14,6 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
-
 import java.io.IOException;
 import java.io.EOFException;
 import java.util.*;
@@ -31,8 +30,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   private List<Station> stations = new ArrayList<>();
   private List<Report> reports = new ArrayList<>();
-  //private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
-  //private List<String> stations;
+  // private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
+  // private List<String> stations;
 
   // private int nobs = 0, nstations = 0;
   private Calendar cal = null;
@@ -41,18 +40,20 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   private List<StructureCode> catStructures = new ArrayList<>(10);
 
-  private boolean showObs = false, showSkip = false, showOverflow = false, showData = false,
-          showHeader = false, showTime = false;
+  private boolean showObs = false, showSkip = false, showOverflow = false, showData = false, showHeader = false,
+      showTime = false;
   private boolean checkType = false, checkPositions = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    if (raf.length() < 60) return false;
+    if (raf.length() < 60)
+      return false;
     byte[] h = raf.readBytes(60);
 
     // 32 - 56 are X's
     for (int i = 32; i < 56; i++)
-      if (h[i] != (byte) 'X') return false;
+      if (h[i] != (byte) 'X')
+        return false;
 
     try {
       short hour = Short.parseShort(new String(h, 0, 2, CDM.utf8Charset));
@@ -61,11 +62,16 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       short month = Short.parseShort(new String(h, 6, 2, CDM.utf8Charset));
       short day = Short.parseShort(new String(h, 8, 2, CDM.utf8Charset));
 
-      if ((hour < 0) || (hour > 24)) return false;
-      if ((minute < 0) || (minute > 60)) return false;
-      if ((year < 0) || (year > 100)) return false;
-      if ((month < 0) || (month > 12)) return false;
-      if ((day < 0) || (day > 31)) return false;
+      if ((hour < 0) || (hour > 24))
+        return false;
+      if ((minute < 0) || (minute > 60))
+        return false;
+      if ((year < 0) || (year > 100))
+        return false;
+      if ((month < 0) || (month > 12))
+        return false;
+      if ((day < 0) || (day > 31))
+        return false;
 
     } catch (Exception e) {
       return false;
@@ -119,7 +125,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         return readReportIndex(v, section);
     }
 
-    throw new IllegalArgumentException("Unknown variable name= "+v.getShortName());
+    throw new IllegalArgumentException("Unknown variable name= " + v.getShortName());
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -131,7 +137,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     int pos = 0;
     Variable v = station.addMemberVariable(new Variable(ncfile, null, station, "stationName", DataType.CHAR, ""));
-    v.setDimensionsAnonymous(new int[]{6});
+    v.setDimensionsAnonymous(new int[] {6});
     v.addAttribute(new Attribute(CDM.LONG_NAME, "name of station"));
     v.addAttribute(new Attribute("standard_name", "station_name"));
     v.setSPobject(new Vinfo(pos));
@@ -175,8 +181,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     reportIndex.addAttribute(new Attribute(CDM.LONG_NAME, "index on report - in memory"));
     int pos = 0;
 
-    Variable v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "stationName", DataType.CHAR, ""));
-    v.setDimensionsAnonymous(new int[]{6});
+    Variable v =
+        reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "stationName", DataType.CHAR, ""));
+    v.setDimensionsAnonymous(new int[] {6});
     v.addAttribute(new Attribute(CDM.LONG_NAME, "name of station"));
     v.addAttribute(new Attribute("standard_name", "station_name"));
     v.setSPobject(new Vinfo(pos));
@@ -205,7 +212,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     pos += 4;
 
     v = report.addMemberVariable(new Variable(ncfile, null, report, "timeISO", DataType.CHAR, ""));
-    v.setDimensionsAnonymous(new int[]{20});
+    v.setDimensionsAnonymous(new int[] {20});
     v.addAttribute(new Attribute(CDM.LONG_NAME, "ISO formatted date/time"));
     v.setSPobject(new Vinfo(pos));
     pos += 20;
@@ -222,7 +229,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     pos += 2;
 
     v = report.addMemberVariable(new Variable(ncfile, null, report, "reserved", DataType.CHAR, ""));
-    v.setDimensionsAnonymous(new int[]{7});
+    v.setDimensionsAnonymous(new int[] {7});
     v.addAttribute(new Attribute(CDM.LONG_NAME, "reserved characters"));
     v.setSPobject(new Vinfo(pos));
     pos += 7;
@@ -242,7 +249,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return report;
   }
 
-  private int makeInnerSequence(Structure reportVar, List<Record> records, int code, int obs_pos) throws InvalidRangeException {
+  private int makeInnerSequence(Structure reportVar, List<Record> records, int code, int obs_pos)
+      throws InvalidRangeException {
 
     for (Record record : records) {
       if (record.code == code) {
@@ -286,12 +294,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       StructureMembers.Member m = members.findMember(v2.getShortName());
       if (vinfo != null) {
         m.setDataParam(vinfo.offset);
-        //m.setVariableInfo( vinfo.size);
+        // m.setVariableInfo( vinfo.size);
       }
     }
 
     int size = (int) section.computeSize();
-    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[] {size});
     ByteBuffer bb = abb.getByteBuffer();
 
     Range range = section.getRange(0);
@@ -308,7 +316,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   public Array readReportIndex(Variable v, Section section) {
-      //coverity[FB.BC_UNCONFIRMED_CAST]
+    // coverity[FB.BC_UNCONFIRMED_CAST]
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
     for (Variable v2 : s.getVariables()) {
@@ -318,7 +326,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     int size = (int) section.computeSize();
-    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[] {size});
     ByteBuffer bb = abb.getByteBuffer();
 
     Range range = section.getRange(0);
@@ -331,7 +339,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   public Array readReport(Variable v, Section section) throws IOException {
-    //coverity[FB.BC_UNCONFIRMED_CAST]
+    // coverity[FB.BC_UNCONFIRMED_CAST]
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
     for (Variable v2 : s.getVariables()) {
@@ -341,7 +349,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     int size = (int) section.computeSize();
-    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[] {size});
     ByteBuffer bb = abb.getByteBuffer();
 
     Range range = section.getRange(0);
@@ -353,46 +361,48 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return abb;
   }
 
-  /* private class ReportIterator implements StructureDataIterator {
-    List<Report> reports;
-    Iterator<Report> iter;
-    StructureMembers members;
-
-    ReportIterator(List<Report> reports) {
-      this.reports = reports;
-      iter = reports.iterator();
-
-      members = reportVar.makeStructureMembers();
-      for (Variable v2 : reportVar.getVariables()) {
-        Vinfo vinfo = (Vinfo) v2.getSPobject();
-        StructureMembers.Member m = members.findMember(v2.getShortName());
-        m.setDataParam(vinfo.offset);
-      }
-    }
-
-    public boolean hasNext() throws IOException {
-      return iter.hasNext();
-    }
-
-    public StructureData next() throws IOException {
-      Report r = iter.next();
-
-      // LOOK should optimize - read 10 at a time or something ???
-      ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{1});
-      ByteBuffer bb = abb.getByteBuffer();
-      bb.position(0);
-      r.loadStructureData(abb, bb);
-      return abb.getStructureData(0);
-    }
-
-    public void setBufferSize(int bytes) {
-    }
-
-    public StructureDataIterator reset() {
-      iter = reports.iterator();
-      return this;
-    }
-  } */
+  /*
+   * private class ReportIterator implements StructureDataIterator {
+   * List<Report> reports;
+   * Iterator<Report> iter;
+   * StructureMembers members;
+   * 
+   * ReportIterator(List<Report> reports) {
+   * this.reports = reports;
+   * iter = reports.iterator();
+   * 
+   * members = reportVar.makeStructureMembers();
+   * for (Variable v2 : reportVar.getVariables()) {
+   * Vinfo vinfo = (Vinfo) v2.getSPobject();
+   * StructureMembers.Member m = members.findMember(v2.getShortName());
+   * m.setDataParam(vinfo.offset);
+   * }
+   * }
+   * 
+   * public boolean hasNext() throws IOException {
+   * return iter.hasNext();
+   * }
+   * 
+   * public StructureData next() throws IOException {
+   * Report r = iter.next();
+   * 
+   * // LOOK should optimize - read 10 at a time or something ???
+   * ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{1});
+   * ByteBuffer bb = abb.getByteBuffer();
+   * bb.position(0);
+   * r.loadStructureData(abb, bb);
+   * return abb.getStructureData(0);
+   * }
+   * 
+   * public void setBufferSize(int bytes) {
+   * }
+   * 
+   * public StructureDataIterator reset() {
+   * iter = reports.iterator();
+   * return this;
+   * }
+   * }
+   */
 
 
   private Report firstReport = null;
@@ -409,7 +419,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     Map<String, Station> map = new HashMap<>();
     while (true) {
       Report report = new Report();
-      if (!report.readId(raf)) break;
+      if (!report.readId(raf))
+        break;
 
       if (firstReport == null) {
         firstReport = report;
@@ -454,47 +465,49 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     if (checkType)
       System.out.println("\nnon matching reportTypes= " + badType);
 
-    //System.out.println(firstReport);
-    //firstReport.show();
-    //firstReport.readData();
+    // System.out.println(firstReport);
+    // firstReport.show();
+    // firstReport.readData();
 
-    /* Set<String> keys = map.keySet();
-    if (showTimes || readData || checkSort) {
-      int unsorted = 0;
-
-      for (String key : keys) {
-        List<Report> reports = map.get(key);
-        if (showTimes) System.out.print("Station " + key + ": ");
-        if (summarizeData) System.out.println("Station " + key + " :");
-        Report last = null;
-        for (Report r : reports) {
-          if ((last != null) && last.date.after(r.date)) {
-            System.out.println("***NOT ORDERED " + key +
-                " last=" + dateFormatter.toDateTimeStringISO(last.date) + "(" + last.filePos + ")" +
-                " next =" + dateFormatter.toDateTimeStringISO(r.date) + "(" + r.filePos + ")");
-            unsorted++;
-          }
-          last = r;
-
-          if (showTimes) System.out.print(dateFormatter.toDateTimeStringISO(r.date) + " ");
-          if (readData || summarizeData) {
-            List<Record> cats = r.readData();
-            if (summarizeData) {
-              System.out.print("  " + r.obsTime + ": (");
-              for (Record cat : cats)
-                System.out.print(cat.code + "/" + cat.nlevels + " ");
-              System.out.println(")");
-            }
-          }
-
-        }
-        if (showTimes) System.out.println();
-      }
-      if (checkSort)
-        System.out.println("\nunsorted= " + unsorted);
-
-    }
-    nstations = keys.size(); */
+    /*
+     * Set<String> keys = map.keySet();
+     * if (showTimes || readData || checkSort) {
+     * int unsorted = 0;
+     * 
+     * for (String key : keys) {
+     * List<Report> reports = map.get(key);
+     * if (showTimes) System.out.print("Station " + key + ": ");
+     * if (summarizeData) System.out.println("Station " + key + " :");
+     * Report last = null;
+     * for (Report r : reports) {
+     * if ((last != null) && last.date.after(r.date)) {
+     * System.out.println("***NOT ORDERED " + key +
+     * " last=" + dateFormatter.toDateTimeStringISO(last.date) + "(" + last.filePos + ")" +
+     * " next =" + dateFormatter.toDateTimeStringISO(r.date) + "(" + r.filePos + ")");
+     * unsorted++;
+     * }
+     * last = r;
+     * 
+     * if (showTimes) System.out.print(dateFormatter.toDateTimeStringISO(r.date) + " ");
+     * if (readData || summarizeData) {
+     * List<Record> cats = r.readData();
+     * if (summarizeData) {
+     * System.out.print("  " + r.obsTime + ": (");
+     * for (Record cat : cats)
+     * System.out.print(cat.code + "/" + cat.nlevels + " ");
+     * System.out.println(")");
+     * }
+     * }
+     * 
+     * }
+     * if (showTimes) System.out.println();
+     * }
+     * if (checkSort)
+     * System.out.println("\nunsorted= " + unsorted);
+     * 
+     * }
+     * nstations = keys.size();
+     */
 
     // System.out.println("\nnreports= " + reports.size() + " nstations= " + stations.size());
   }
@@ -540,14 +553,15 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       }
       if (latS.equals("ENDOF")) {
         raf.skipBytes(-40);
-        if (!endFile(raf)) return false;
+        if (!endFile(raf))
+          return false;
 
         filePos = raf.getFilePointer();
         reportId = raf.readBytes(40);
         latS = new String(reportId, 0, 5, CDM.utf8Charset);
       }
 
-      //System.out.println("ReportId start at " + start);
+      // System.out.println("ReportId start at " + start);
       try {
         lat = (float) (.01 * Float.parseFloat(latS));
         lon = (float) (360.0 - .01 * Float.parseFloat(new String(reportId, 5, 5, CDM.utf8Charset)));
@@ -568,10 +582,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         cal.set(Calendar.MINUTE, 6 * (obsTime % 100));
         date = cal.getTime();
 
-        if (showObs) System.out.println(this);
-        else if (showTime) System.out.print("  time=" + obsTime + " date= " + dateFormatter.toDateTimeString(date));
+        if (showObs)
+          System.out.println(this);
+        else if (showTime)
+          System.out.print("  time=" + obsTime + " date= " + dateFormatter.toDateTimeString(date));
 
-        //nobs++;
+        // nobs++;
         raf.skipBytes(reportLen - 40);
         return reportLen < 30000;
 
@@ -581,10 +597,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     public String toString() {
-      return "Report " + " stationId=" + stationId + " lat=" + lat + " lon=" + lon +
-              " obsTime=" + obsTime + " date= " + dateFormatter.toDateTimeStringISO(date) +
-              " reportType=" + reportType + " elevMeters=" + elevMeters + " instType=" + instType + " reserved=" + new String(reserved, CDM.utf8Charset) +
-              " start=" + filePos + " reportLen=" + reportLen;
+      return "Report " + " stationId=" + stationId + " lat=" + lat + " lon=" + lon + " obsTime=" + obsTime + " date= "
+          + dateFormatter.toDateTimeStringISO(date) + " reportType=" + reportType + " elevMeters=" + elevMeters
+          + " instType=" + instType + " reserved=" + new String(reserved, CDM.utf8Charset) + " start=" + filePos
+          + " reportLen=" + reportLen;
     }
 
     // heres where the data for this Report is read into memory
@@ -594,15 +610,18 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       raf.seek(filePos + 40);
       byte[] b = raf.readBytes(reportLen - 40);
-      if (showData) System.out.println("\n" + new String(b, CDM.utf8Charset));
-      if (showData) System.out.println(this);
+      if (showData)
+        System.out.println("\n" + new String(b, CDM.utf8Charset));
+      if (showData)
+        System.out.println(this);
 
       int offset = 0;
       while (true) {
         Record record = new Record();
         offset = record.read(b, offset);
         records.add(record);
-        if (record.next >= reportLen / 10) break;
+        if (record.next >= reportLen / 10)
+          break;
       }
 
       return records;
@@ -631,7 +650,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         loadInnerSequence(abb, bb, records, sc.s, sc.code);
     }
 
-    private void loadInnerSequence(ArrayStructureBB abb, ByteBuffer bb, List<Record> records, Structure useStructure, int code) {
+    private void loadInnerSequence(ArrayStructureBB abb, ByteBuffer bb, List<Record> records, Structure useStructure,
+        int code) {
 
       for (Record record : records) {
         if (record.code == code) {
@@ -676,7 +696,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         Entry entry = entries[count++];
 
         // LOOK should read 10 at a time or something ???
-        ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{1});
+        ArrayStructureBB abb = new ArrayStructureBB(members, new int[] {1});
         ByteBuffer bb = abb.getByteBuffer();
         bb.position(0);
         entry.loadStructureData(bb);
@@ -711,80 +731,99 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       next = Integer.parseInt(new String(b, offset + 2, 3, CDM.utf8Charset));
       nlevels = Integer.parseInt(new String(b, offset + 5, 2, CDM.utf8Charset));
       nbytes = readIntWithOverflow(b, offset + 7, 3);
-      if (showData) System.out.println("\n" + this);
+      if (showData)
+        System.out.println("\n" + this);
 
       offset += 10;
 
       if (code == 1) {
-        if (showData) System.out.println(catNames[1] + ":");
+        if (showData)
+          System.out.println(catNames[1] + ":");
         entries = new Cat01[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat01(b, offset, i);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 22;
         }
       } else if (code == 2) {
-        if (showData) System.out.println(catNames[2] + ":");
+        if (showData)
+          System.out.println(catNames[2] + ":");
         entries = new Cat02[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat02(b, offset);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 15;
         }
       } else if (code == 3) {
-        if (showData) System.out.println(catNames[3] + ":");
+        if (showData)
+          System.out.println(catNames[3] + ":");
         entries = new Cat03[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat03(b, offset);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 13;
         }
       } else if (code == 4) {
-        if (showData) System.out.println(catNames[4] + ":");
+        if (showData)
+          System.out.println(catNames[4] + ":");
         entries = new Cat04[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat04(b, offset);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 13;
         }
       } else if (code == 5) {
-        if (showData) System.out.println(catNames[5] + ":");
+        if (showData)
+          System.out.println(catNames[5] + ":");
         entries = new Cat05[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat05(b, offset);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 22;
         }
       } else if (code == 7) {
-        if (showData) System.out.println(catNames[7] + ":");
+        if (showData)
+          System.out.println(catNames[7] + ":");
         entries = new Cat07[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat07(b, offset);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 10;
         }
       } else if (code == 8) {
-        if (showData) System.out.println(catNames[8] + ":");
+        if (showData)
+          System.out.println(catNames[8] + ":");
         entries = new Cat08[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat08(b, offset);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 10;
         }
       } else if (code == 51) {
-        if (showData) System.out.println(catNames[10] + ":");
+        if (showData)
+          System.out.println(catNames[10] + ":");
         entries = new Cat51[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat51(b, offset);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 60;
         }
       } else if (code == 52) {
-        if (showData) System.out.println(catNames[10] + ":");
+        if (showData)
+          System.out.println(catNames[10] + ":");
         entries = new Cat52[nlevels];
         for (int i = 0; i < nlevels; i++) {
           entries[i] = new Cat52(b, offset);
-          if (showData) System.out.println(" " + i + ": " + entries[i]);
+          if (showData)
+            System.out.println(" " + i + ": " + entries[i]);
           offset += 40;
         }
       } else {
@@ -809,26 +848,22 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     try {
       return Integer.parseInt(s);
     } catch (Exception e) {
-      if (showOverflow) System.out.println("OVERFLOW=" + s);
+      if (showOverflow)
+        System.out.println("OVERFLOW=" + s);
       return 0;
     }
   }
 
-  private String[] catNames = new String[]{"",
-          "Category 01: mandatory constant-pressure data",
-          "Category 02: temperature/dewpoint at variable pressure-levels ",
-          "Category 03: wind at variable pressure-levels ",
-          "Category 04: wind at variable height-levels ",
-          "Category 05: tropopause data", "",
-          "Category 07: cloud cover",
-          "Category 08: additional data", "", "",
-          "Category 51: surface Data",
-          "Category 52: ship surface Data"};
+  private String[] catNames = new String[] {"", "Category 01: mandatory constant-pressure data",
+      "Category 02: temperature/dewpoint at variable pressure-levels ",
+      "Category 03: wind at variable pressure-levels ", "Category 04: wind at variable height-levels ",
+      "Category 05: tropopause data", "", "Category 07: cloud cover", "Category 08: additional data", "", "",
+      "Category 51: surface Data", "Category 52: ship surface Data"};
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private static float[] mandPressureLevel = new float[]{1000, 850, 700, 500, 400, 300, 250, 200, 150, 100,
-          70, 50, 30, 20, 10, 7, 5, 3, 2, 1};
+  private static float[] mandPressureLevel =
+      new float[] {1000, 850, 700, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10, 7, 5, 3, 2, 1};
 
   private abstract class Entry {
     abstract Structure makeStructure(Structure parent) throws InvalidRangeException;
@@ -852,8 +887,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     public String toString() {
-      return "Cat01: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-              " windSpeed=" + windSpeed + " qs=" + new String(quality, CDM.utf8Charset);
+      return "Cat01: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir
+          + " windSpeed=" + windSpeed + " qs=" + new String(quality, CDM.utf8Charset);
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -907,7 +942,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{4});
+      v.setDimensionsAnonymous(new int[] {4});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=geopot, 1=temp, 2=dewpoint, 3=wind"));
       v.setSPobject(new Vinfo(pos));
 
@@ -973,7 +1008,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{3});
+      v.setDimensionsAnonymous(new int[] {3});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=temp, 2=dewpoint"));
       v.setSPobject(new Vinfo(pos));
 
@@ -1036,7 +1071,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=wind"));
       v.setSPobject(new Vinfo(pos));
 
@@ -1098,7 +1133,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=geopot, 1=wind"));
       v.setSPobject(new Vinfo(pos));
 
@@ -1131,8 +1166,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     public String toString() {
-      return "Cat05: press= " + press + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-              " windSpeed=" + windSpeed + " qs=" + qs;
+      return "Cat05: press= " + press + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir + " windSpeed="
+          + windSpeed + " qs=" + qs;
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -1179,7 +1214,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{4});
+      v.setDimensionsAnonymous(new int[] {4});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=temp, 2=dewpoint, 3=wind"));
       v.setSPobject(new Vinfo(pos));
 
@@ -1235,7 +1270,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=percentClouds"));
       v.setSPobject(new Vinfo(pos));
 
@@ -1286,7 +1321,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "indicatorFlags", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=data, 1=form"));
       v.setSPobject(new Vinfo(pos));
 
@@ -1341,8 +1376,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     public String toString() {
-      return "Cat51: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-              " windSpeed=" + windSpeed + " qs=" + new String(quality, CDM.utf8Charset) + " pressureTendency=" + pressureTendency;
+      return "Cat51: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir
+          + " windSpeed=" + windSpeed + " qs=" + new String(quality, CDM.utf8Charset) + " pressureTendency="
+          + pressureTendency;
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -1416,8 +1452,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{4});
-      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressureSeaLevel, 1=pressure, 2=wind, 3=temperature"));
+      v.setDimensionsAnonymous(new int[] {4});
+      v.addAttribute(
+          new Attribute(CDM.LONG_NAME, "quality marks: 0=pressureSeaLevel, 1=pressure, 2=wind, 3=temperature"));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
@@ -1427,61 +1464,63 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "horizViz", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{3});
+      v.setDimensionsAnonymous(new int[] {3});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "horizontal visibility: WMO table 4300"));
       v.setSPobject(new Vinfo(pos));
       pos += 3;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "presentWeatherWW", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{3});
+      v.setDimensionsAnonymous(new int[] {3});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "present weather (WW): WMO table 4677"));
       v.setSPobject(new Vinfo(pos));
       pos += 3;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pastWeatherW1", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "past weather (WW): WMO table 4561"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionN", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (N): WMO table 2700"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionNh", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (Nh): WMO table 2700"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCL", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (CL): WMO table 0513"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudHeightCL", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud base height above ground (h): WMO table 1600"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCM", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (CM): WMO table 0515"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCH", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (CH): WMO table 0509"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
-      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureTendencyCharacteristic", DataType.CHAR, ""));
-      v.addAttribute(new Attribute(CDM.LONG_NAME, "pressure tendency characteristic for 3 hours previous to obs time: WMO table 0200"));
+      v = seq
+          .addMemberVariable(new Variable(ncfile, null, parent, "pressureTendencyCharacteristic", DataType.CHAR, ""));
+      v.addAttribute(new Attribute(CDM.LONG_NAME,
+          "pressure tendency characteristic for 3 hours previous to obs time: WMO table 0200"));
       v.setSPobject(new Vinfo(pos));
       pos += 1;
 
@@ -1567,9 +1606,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     public String toString() {
-      return "Cat52: precip6hours= " + precip6hours + " precip24hours=" + precip24hours + " sst= " + sst + " waterEquiv=" + waterEquiv +
-              " snowDepth=" + snowDepth + " wavePeriod=" + wavePeriod + " waveHeight=" + waveHeight +
-              " waveSwellPeriod=" + waveSwellPeriod + " waveSwellHeight=" + waveSwellHeight;
+      return "Cat52: precip6hours= " + precip6hours + " precip24hours=" + precip24hours + " sst= " + sst
+          + " waterEquiv=" + waterEquiv + " snowDepth=" + snowDepth + " wavePeriod=" + wavePeriod + " waveHeight="
+          + waveHeight + " waveSwellPeriod=" + waveSwellPeriod + " waveSwellHeight=" + waveSwellHeight;
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -1623,7 +1662,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWaveDir", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{2});
+      v.setDimensionsAnonymous(new int[] {2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "direction from which swell waves are moving: WMO table 0877"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
@@ -1683,7 +1722,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   private boolean endRecord(RandomAccessFile raf) throws IOException {
-    if (showSkip) System.out.print(" endRecord start at " + raf.getFilePointer());
+    if (showSkip)
+      System.out.print(" endRecord start at " + raf.getFilePointer());
 
     int skipped = 0;
     String endRecord = raf.readString(10); // new String(raf.readBytes(10), CDM.utf8Charset);
@@ -1691,12 +1731,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       endRecord = raf.readString(10); // new String(raf.readBytes(10));
       skipped++;
     }
-    if (showSkip) System.out.println(" last 10 chars= " + endRecord + " skipped= " + skipped);
+    if (showSkip)
+      System.out.println(" last 10 chars= " + endRecord + " skipped= " + skipped);
     return true;
   }
 
   private boolean endFile(RandomAccessFile raf) throws IOException {
-    if (showSkip) System.out.println(" endFile start at " + raf.getFilePointer());
+    if (showSkip)
+      System.out.println(" endFile start at " + raf.getFilePointer());
 
     String endRecord = raf.readString(10); // new String(raf.readBytes(10));
     while (endRecord.equals("ENDOF FILE")) {
@@ -1704,8 +1746,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     try {
-      while (raf.read() != (int) 'X') ; //find where X's start
-      while (raf.read() == (int) 'X') ; //skip X's till you run out
+      while (raf.read() != (int) 'X'); // find where X's start
+      while (raf.read() == (int) 'X'); // skip X's till you run out
       raf.skipBytes(-1); // go back one
       readHeader(raf);
       return true;
@@ -1719,7 +1761,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     byte[] h = raf.readBytes(60);
 
     // 12 00 070101
-    short hour = Short.parseShort( new String(h, 0, 2, CDM.utf8Charset));
+    short hour = Short.parseShort(new String(h, 0, 2, CDM.utf8Charset));
     short minute = Short.parseShort(new String(h, 2, 2, CDM.utf8Charset));
     short year = Short.parseShort(new String(h, 4, 2, CDM.utf8Charset));
     short month = Short.parseShort(new String(h, 6, 2, CDM.utf8Charset));
@@ -1735,13 +1777,16 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     cal.set(fullyear, month - 1, day, hour, minute);
     refDate = cal.getTime();
 
-    if (showHeader) System.out.println("\nhead=" + new String(h, CDM.utf8Charset) +
-            " date= " + dateFormatter.toDateTimeString(refDate));
+    if (showHeader)
+      System.out
+          .println("\nhead=" + new String(h, CDM.utf8Charset) + " date= " + dateFormatter.toDateTimeString(refDate));
 
     int b, count = 0;
-    while ((b = raf.read()) == (int) 'X') count++;
+    while ((b = raf.read()) == (int) 'X')
+      count++;
     char c = (char) b;
-    if (showSkip) System.out.println(" b=" + b + " c=" + c + " at " + raf.getFilePointer() + " skipped= " + count);
+    if (showSkip)
+      System.out.println(" b=" + b + " c=" + c + " at " + raf.getFilePointer() + " skipped= " + count);
     raf.skipBytes(-1); // go back one
   }
 }

@@ -6,7 +6,6 @@ package ucar.unidata.geoloc;
 
 import com.google.common.math.DoubleMath;
 import ucar.nc2.util.Misc;
-
 import java.io.*;
 
 /**
@@ -29,25 +28,25 @@ public class ProjectionRect implements java.io.Serializable {
   /**
    * Construct a ProjectionRect from any two opposite corner points.
    *
-   * @param corner1  a corner.
-   * @param corner2  the opposite corner.
+   * @param corner1 a corner.
+   * @param corner2 the opposite corner.
    */
   public ProjectionRect(ProjectionPoint corner1, ProjectionPoint corner2) {
     this(corner1.getX(), corner1.getY(), corner2.getX(), corner2.getY());
   }
 
   /**
-    * Construct a ProjectionRect from any two opposite corner points.
-    *
-    * @param minimum  lower left corner, ie the minimum x and y
-    * @param width    x width.
-    * @param height   y height
-    */
-   public ProjectionRect(ProjectionPoint minimum, double width, double height) {
-     setRect(minimum.getX(), minimum.getY(), width, height);
-   }
+   * Construct a ProjectionRect from any two opposite corner points.
+   *
+   * @param minimum lower left corner, ie the minimum x and y
+   * @param width x width.
+   * @param height y height
+   */
+  public ProjectionRect(ProjectionPoint minimum, double width, double height) {
+    setRect(minimum.getX(), minimum.getY(), width, height);
+  }
 
-   /**
+  /**
    * Copy Constructor
    *
    * @param r rectangle to copy
@@ -147,46 +146,49 @@ public class ProjectionRect implements java.io.Serializable {
    * Returns the X coordinate of the center of the framing
    * rectangle of the <code>Shape</code> in <code>double</code>
    * precision.
+   * 
    * @return the X coordinate of the center of the framing rectangle
-   *          of the <code>Shape</code>.
+   *         of the <code>Shape</code>.
    * @since 1.2
    */
   public double getCenterX() {
-      return getX() + getWidth() / 2.0;
+    return getX() + getWidth() / 2.0;
   }
 
   /**
    * Returns the Y coordinate of the center of the framing
    * rectangle of the <code>Shape</code> in <code>double</code>
    * precision.
+   * 
    * @return the Y coordinate of the center of the framing rectangle
-   *          of the <code>Shape</code>.
+   *         of the <code>Shape</code>.
    * @since 1.2
    */
   public double getCenterY() {
-      return getY() + getHeight() / 2.0;
+    return getY() + getHeight() / 2.0;
   }
 
   /**
    * Adds a <code>Rectangle2D</code> object to this
-   * <code>Rectangle2D</code>.  The resulting <code>Rectangle2D</code>
+   * <code>Rectangle2D</code>. The resulting <code>Rectangle2D</code>
    * is the union of the two <code>Rectangle2D</code> objects.
+   * 
    * @param r the <code>Rectangle2D</code> to add to this
-   * <code>Rectangle2D</code>.
+   *        <code>Rectangle2D</code>.
    * @since 1.2
    */
   public void add(ProjectionRect r) {
-      double x1 = Math.min(getMinX(), r.getMinX());
-      double x2 = Math.max(getMaxX(), r.getMaxX());
-      double y1 = Math.min(getMinY(), r.getMinY());
-      double y2 = Math.max(getMaxY(), r.getMaxY());
-      setRect(x1, y1, x2 - x1, y2 - y1);
+    double x1 = Math.min(getMinX(), r.getMinX());
+    double x2 = Math.max(getMaxX(), r.getMaxX());
+    double y1 = Math.min(getMinY(), r.getMinY());
+    double y2 = Math.max(getMaxY(), r.getMaxY());
+    setRect(x1, y1, x2 - x1, y2 - y1);
   }
 
   /**
    * Adds a point, specified by the double precision arguments
    * <code>newx</code> and <code>newy</code>, to this
-   * <code>Rectangle2D</code>.  The resulting <code>Rectangle2D</code>
+   * <code>Rectangle2D</code>. The resulting <code>Rectangle2D</code>
    * is the smallest <code>Rectangle2D</code> that
    * contains both the original <code>Rectangle2D</code> and the
    * specified point.
@@ -198,16 +200,17 @@ public class ProjectionRect implements java.io.Serializable {
    * edges of a rectangle. Therefore, if the added point falls on
    * the left or bottom edge of the enlarged rectangle,
    * <code>contains</code> returns <code>false</code> for that point.
+   * 
    * @param newx the X coordinate of the new point
    * @param newy the Y coordinate of the new point
    * @since 1.2
    */
   public void add(double newx, double newy) {
-      double x1 = Math.min(getMinX(), newx);
-      double x2 = Math.max(getMaxX(), newx);
-      double y1 = Math.min(getMinY(), newy);
-      double y2 = Math.max(getMaxY(), newy);
-      setRect(x1, y1, x2 - x1, y2 - y1);
+    double x1 = Math.min(getMinX(), newx);
+    double x2 = Math.max(getMaxX(), newx);
+    double y1 = Math.min(getMinY(), newy);
+    double y2 = Math.max(getMaxY(), newy);
+    setRect(x1, y1, x2 - x1, y2 - y1);
   }
 
   /**
@@ -224,56 +227,55 @@ public class ProjectionRect implements java.io.Serializable {
    * or bottom edges of a rectangle. Therefore, if the added point falls
    * on the left or bottom edge of the enlarged rectangle,
    * <code>contains</code> returns <code>false</code> for that point.
-   * @param     pt the new <code>Point2D</code> to add to this
-   * <code>Rectangle2D</code>.
+   * 
+   * @param pt the new <code>Point2D</code> to add to this
+   *        <code>Rectangle2D</code>.
    * @since 1.2
    */
   public void add(ProjectionPoint pt) {
-      add(pt.getX(), pt.getY());
+    add(pt.getX(), pt.getY());
   }
 
   public boolean isEmpty() {
-      return (width <= 0.0) || (height <= 0.0);
+    return (width <= 0.0) || (height <= 0.0);
   }
 
   public boolean intersects(ProjectionRect r) {
-      return intersects(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    return intersects(r.getX(), r.getY(), r.getWidth(), r.getHeight());
   }
 
   public boolean intersects(double x, double y, double w, double h) {
-      if (isEmpty() || w <= 0 || h <= 0) {
-          return false;
-      }
-      double x0 = getX();
-      double y0 = getY();
-      return (x + w > x0 &&
-              y + h > y0 &&
-              x < x0 + getWidth() &&
-              y < y0 + getHeight());
+    if (isEmpty() || w <= 0 || h <= 0) {
+      return false;
+    }
+    double x0 = getX();
+    double y0 = getY();
+    return (x + w > x0 && y + h > y0 && x < x0 + getWidth() && y < y0 + getHeight());
   }
 
   /**
    * Intersects the pair of specified source <code>Rectangle2D</code>
    * objects and puts the result into the specified destination
-   * <code>Rectangle2D</code> object.  One of the source rectangles
+   * <code>Rectangle2D</code> object. One of the source rectangles
    * can also be the destination to avoid creating a third Rectangle2D
    * object, but in this case the original points of this source
    * rectangle will be overwritten by this method.
+   * 
    * @param src1 the first of a pair of <code>Rectangle2D</code>
-   * objects to be intersected with each other
+   *        objects to be intersected with each other
    * @param src2 the second of a pair of <code>Rectangle2D</code>
-   * objects to be intersected with each other
+   *        objects to be intersected with each other
    * @param dest the <code>Rectangle2D</code> that holds the
-   * results of the intersection of <code>src1</code> and
-   * <code>src2</code>
+   *        results of the intersection of <code>src1</code> and
+   *        <code>src2</code>
    * @since 1.2
    */
   public static void intersect(ProjectionRect src1, ProjectionRect src2, ProjectionRect dest) {
     double x1 = Math.max(src1.getMinX(), src2.getMinX());
-      double y1 = Math.max(src1.getMinY(), src2.getMinY());
-      double x2 = Math.min(src1.getMaxX(), src2.getMaxX());
-      double y2 = Math.min(src1.getMaxY(), src2.getMaxY());
-      dest.setRect(x1, y1, x2 - x1, y2 - y1);
+    double y1 = Math.max(src1.getMinY(), src2.getMinY());
+    double x2 = Math.min(src1.getMaxX(), src2.getMaxX());
+    double y2 = Math.min(src1.getMaxY(), src2.getMaxY());
+    dest.setRect(x1, y1, x2 - x1, y2 - y1);
   }
 
   /**
@@ -283,10 +285,10 @@ public class ProjectionRect implements java.io.Serializable {
    * @return {@code true} if this bounding box contains {@code point}.
    */
   public boolean contains(ProjectionPoint point) {
-    return DoubleMath.fuzzyCompare(point.getX(), getMinX(), 1e-6) >= 0 &&
-           DoubleMath.fuzzyCompare(point.getX(), getMaxX(), 1e-6) <= 0 &&
-           DoubleMath.fuzzyCompare(point.getY(), getMinY(), 1e-6) >= 0 &&
-           DoubleMath.fuzzyCompare(point.getY(), getMaxY(), 1e-6) <= 0;
+    return DoubleMath.fuzzyCompare(point.getX(), getMinX(), 1e-6) >= 0
+        && DoubleMath.fuzzyCompare(point.getX(), getMaxX(), 1e-6) <= 0
+        && DoubleMath.fuzzyCompare(point.getY(), getMinY(), 1e-6) >= 0
+        && DoubleMath.fuzzyCompare(point.getY(), getMaxY(), 1e-6) <= 0;
   }
 
   /**
@@ -345,8 +347,7 @@ public class ProjectionRect implements java.io.Serializable {
    * @return the Upper Left Point
    */
   public ProjectionPoint getUpperLeftPoint() {
-    return new ProjectionPointImpl(getMinPoint().getX(),
-            getMaxPoint().getY());
+    return new ProjectionPointImpl(getMinPoint().getX(), getMaxPoint().getY());
   }
 
   /**
@@ -364,8 +365,7 @@ public class ProjectionRect implements java.io.Serializable {
    * @return maximum corner of the bounding box
    */
   public ProjectionPoint getMaxPoint() {
-    return new ProjectionPointImpl(getX() + getWidth(),
-            getY() + getHeight());
+    return new ProjectionPointImpl(getX() + getWidth(), getY() + getHeight());
   }
 
   /**
@@ -378,8 +378,8 @@ public class ProjectionRect implements java.io.Serializable {
   }
 
   public String toString2(int ndec) {
-    String f = " %."+ndec+"f";
-    return String.format("min:"+f+f+" max:"+f+f, getX(), getY(), getMaxX(), getMaxY());
+    String f = " %." + ndec + "f";
+    return String.format("min:" + f + f + " max:" + f + f, getX(), getY(), getMaxX(), getMaxY());
   }
 
   /**
@@ -435,10 +435,9 @@ public class ProjectionRect implements java.io.Serializable {
    * Read the object from the input stream of the serialized object
    *
    * @param s stream to read
-   * @throws IOException            Problem reading from stream
+   * @throws IOException Problem reading from stream
    */
-  private void readObject(ObjectInputStream s)
-          throws IOException {
+  private void readObject(ObjectInputStream s) throws IOException {
     double x = s.readDouble();
     double y = s.readDouble();
     double w = s.readDouble();
@@ -462,13 +461,18 @@ public class ProjectionRect implements java.io.Serializable {
   // Exact comparison is needed in order to be consistent with hashCode().
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
     ProjectionRect that = (ProjectionRect) o;
 
-    if (Double.compare(that.height, height) != 0) return false;
-    if (Double.compare(that.width, width) != 0) return false;
-    if (Double.compare(that.x, x) != 0) return false;
+    if (Double.compare(that.height, height) != 0)
+      return false;
+    if (Double.compare(that.width, width) != 0)
+      return false;
+    if (Double.compare(that.x, x) != 0)
+      return false;
     return Double.compare(that.y, y) == 0;
 
   }
@@ -499,12 +503,12 @@ public class ProjectionRect implements java.io.Serializable {
    * Returns {@code true} if this rectangle is nearly equal to {@code other}. The "near equality" of corners is
    * determined using {@link ProjectionPoint#nearlyEquals(ProjectionPoint, double)}, with the specified maxRelDiff.
    *
-   * @param other    the other rectangle to check.
-   * @param maxRelDiff  the maximum {@link Misc#relativeDifference relative difference} that two corners may have.
+   * @param other the other rectangle to check.
+   * @param maxRelDiff the maximum {@link Misc#relativeDifference relative difference} that two corners may have.
    * @return {@code true} if this rectangle is nearly equal to {@code other}.
    */
   public boolean nearlyEquals(ProjectionRect other, double maxRelDiff) {
-    return this.getLowerLeftPoint() .nearlyEquals(other.getLowerLeftPoint(),  maxRelDiff) &&
-           this.getUpperRightPoint().nearlyEquals(other.getUpperRightPoint(), maxRelDiff);
+    return this.getLowerLeftPoint().nearlyEquals(other.getLowerLeftPoint(), maxRelDiff)
+        && this.getUpperRightPoint().nearlyEquals(other.getUpperRightPoint(), maxRelDiff);
   }
 }

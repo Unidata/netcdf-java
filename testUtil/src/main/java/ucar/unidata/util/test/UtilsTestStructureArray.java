@@ -5,7 +5,6 @@
 package ucar.unidata.util.test;
 
 import ucar.ma2.*;
-
 import java.util.List;
 import java.io.IOException;
 
@@ -76,8 +75,8 @@ public class UtilsTestStructureArray {
       List<StructureMembers.Member> members = sdata.getMembers();
       for (StructureMembers.Member m : members) {
         Array sdataArray = sdata.getArray(m);
-        assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType()) :
-                sdataArray.getElementType() +" != "+m.getDataType().getPrimitiveClassType();
+        assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType()) : sdataArray.getElementType()
+            + " != " + m.getDataType().getPrimitiveClassType();
 
         Array sdataArray2 = sdata.getArray(m.getName());
         UtilsMa2Test.testEquals(sdataArray, sdataArray2);
@@ -148,7 +147,7 @@ public class UtilsTestStructureArray {
       Array sdataArray2 = sdata.getArray(m.getName());
       UtilsMa2Test.testEquals(sdataArray, sdataArray2);
 
-      //NCdump.printArray(sdataArray, m.getName(), System.out, null);
+      // NCdump.printArray(sdataArray, m.getName(), System.out, null);
 
       testGetArrayByType(sdata, m, sdataArray);
     }

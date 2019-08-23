@@ -6,53 +6,58 @@ package ucar.nc2.dt;
 
 import java.util.List;
 
-/** A collection of TrajectoryObsDatatype.
+/**
+ * A collection of TrajectoryObsDatatype.
  *
  * To open a data file as a TrajectoryObsDataset and access the trajectories it
  * contains use TrajectoryObsDatasetFactory.open() and TrajectoryObsDataset.getTrajectories(),
  * for example:
  *
  * <pre>
-    TrajectoryObsDataset trajDs = TrajectoryObsDatasetFactory.open (uriString);
-    for ( Iterator it = trajDs.getTrajectories().iterator(); it.hasNext(); )
-    {
-      TrajectoryObsDatatype traj = (TrajectoryObsDatatype) it.next();
-    }
-   </pre>
+ * TrajectoryObsDataset trajDs = TrajectoryObsDatasetFactory.open(uriString);
+ * for (Iterator it = trajDs.getTrajectories().iterator(); it.hasNext();) {
+ *   TrajectoryObsDatatype traj = (TrajectoryObsDatatype) it.next();
+ * }
+ * </pre>
  *
  * @deprecated
  * @author caron
  */
 public interface TrajectoryObsDataset extends ucar.nc2.dt.TypedDataset {
 
-//  /** Get a description of the data variables in the StructureData.
-//   * return List of type TypedDataVariable
-//   */
-//  public java.util.List getMemberVariables();
-//
-//  /**
-//   * Get the named data variable.
-//   * @param name valid member name from the StructureData.
-//   * @return TypedDataVariable corresponding to a StructureData member name.
-//   */
-//  public ucar.nc2.dt.TypedDataVariable getMemberVariable( String name);
+  // /** Get a description of the data variables in the StructureData.
+  // * return List of type TypedDataVariable
+  // */
+  // public java.util.List getMemberVariables();
+  //
+  // /**
+  // * Get the named data variable.
+  // * @param name valid member name from the StructureData.
+  // * @return TypedDataVariable corresponding to a StructureData member name.
+  // */
+  // public ucar.nc2.dt.TypedDataVariable getMemberVariable( String name);
 
   /**
    * Get a list of String IDs for the available trajectories.
+   * 
    * @return list of ids for this dataset
    */
   public List<String> getTrajectoryIds();
 
-  /** Get trajectories contained in this dataset.
-   *  @return List of type TrajectoryObsDatatype.
+  /**
+   * Get trajectories contained in this dataset.
+   * 
+   * @return List of type TrajectoryObsDatatype.
    */
   public List getTrajectories(); // throws IOException;
 
-  /** Get the named trajectory
+  /**
+   * Get the named trajectory
+   * 
    * @param trajectoryId id of trajectory
    * @return the named trajectory
    */
-  public TrajectoryObsDatatype getTrajectory( String trajectoryId); // throws IOException;
+  public TrajectoryObsDatatype getTrajectory(String trajectoryId); // throws IOException;
 
   /**
    * Get an efficient iterator over all the data in the TrajectoryObsDataset.
@@ -60,16 +65,18 @@ public interface TrajectoryObsDataset extends ucar.nc2.dt.TypedDataset {
    * This is the efficient way to get all the data, it can be 100 times faster than getData().
    * This will return an iterator over type getDataClass(), and the actual data has already been read
    * into memory, that is, dataType.getData() will not incur any I/O.
-   * <p> This is accomplished by buffering bufferSize amount of data at once. You must fully process the
+   * <p>
+   * This is accomplished by buffering bufferSize amount of data at once. You must fully process the
    * data, or copy it out of the StructureData, as you iterate over it, in order for the garbage collector
    * to work.
-   * <p> We dont need a cancelTask, just stop the iteration if the user want to cancel.
+   * <p>
+   * We dont need a cancelTask, just stop the iteration if the user want to cancel.
    *
    * @param bufferSize if > 0, the internal buffer size, else use the default. Typically 100k - 1M for best results.
    * @return Iterator over type getDataClass(), no guaranteed order.
    * @throws java.io.IOException
    */
-  //public java.util.Iterator getDataIterator( int bufferSize ) throws IOException;
+  // public java.util.Iterator getDataIterator( int bufferSize ) throws IOException;
 
   /**
    * Syncronize with the underlying dataset if it has been extended in a way

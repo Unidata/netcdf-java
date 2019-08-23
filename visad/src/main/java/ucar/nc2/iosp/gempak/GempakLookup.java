@@ -61,12 +61,12 @@ public final class GempakLookup implements GridTableLookup {
   }
 
   public final String getLevelName(GridRecord gr) {
-    // TODO:  flesh this out
+    // TODO: flesh this out
     return GempakUtil.LV_CCRD(gr.getLevelType1());
   }
 
   public final String getLevelDescription(GridRecord gr) {
-    // TODO:  flesh this out
+    // TODO: flesh this out
     String levelName = getLevelName(gr);
     switch (levelName) {
       case "PRES":
@@ -98,7 +98,7 @@ public final class GempakLookup implements GridTableLookup {
   }
 
   public final String getLevelUnit(GridRecord gr) {
-    // TODO:  flesh this out
+    // TODO: flesh this out
     String levelName = getLevelName(gr);
     switch (levelName) {
       case "PRES":
@@ -161,8 +161,7 @@ public final class GempakLookup implements GridTableLookup {
 
   public final boolean isVerticalCoordinate(GridRecord gr) {
     int type = gr.getLevelType1();
-    return (type > GempakUtil.vertCoords.length)
-        || !GempakUtil.vertCoords[type].equals("NONE");
+    return (type > GempakUtil.vertCoords.length) || !GempakUtil.vertCoords[type].equals("NONE");
   }
 
   /**

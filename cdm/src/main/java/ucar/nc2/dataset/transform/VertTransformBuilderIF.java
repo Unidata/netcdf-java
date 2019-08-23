@@ -9,7 +9,6 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
-
 import java.util.Formatter;
 
 /**
@@ -27,11 +26,12 @@ public interface VertTransformBuilderIF {
    * @param ctv the coordinate transform variable.
    * @return CoordinateTransform
    */
-  VerticalCT makeCoordinateTransform (NetcdfDataset ds, AttributeContainer ctv);
+  VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv);
 
   /**
    * Make a VerticalTransform.
    * We need to defer making the transform until we've identified the time coordinate dimension.
+   * 
    * @param ds the dataset
    * @param timeDim the time dimension
    * @param vCT the vertical coordinate transform
@@ -41,13 +41,15 @@ public interface VertTransformBuilderIF {
 
   /**
    * Get the Transform name. Typically this is matched on by an attribute in the dataset.
+   * 
    * @return name of the transform.
    */
   String getTransformName();
 
   /***
    * Pass in a Formatter where error messages can be appended.
+   * 
    * @param sb use this Formatter to record parse and error info
    */
-  void setErrorBuffer( Formatter sb);
+  void setErrorBuffer(Formatter sb);
 }

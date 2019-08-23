@@ -6,7 +6,6 @@ package ucar.nc2.iosp.hdf5;
 
 import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
-
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.time.CalendarDate;
@@ -15,7 +14,6 @@ import ucar.nc2.iosp.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.*;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -57,7 +55,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     H5header.setDebugFlags(debugFlag);
     H4header.setDebugFlags(debugFlag);
-    if(debugFilter)
+    if (debugFilter)
       H5tiledLayoutBB.debugFilter = debugFilter;
 
   }
@@ -67,8 +65,10 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
-    if (isEos) return "HDF5-EOS";
-    if (headerParser.isNetcdf4()) return DataFormatType.NETCDF4.getDescription();
+    if (isEos)
+      return "HDF5-EOS";
+    if (headerParser.isNetcdf4())
+      return DataFormatType.NETCDF4.getDescription();
     return DataFormatType.HDF5.getDescription();
   }
 
@@ -92,7 +92,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  //private RandomAccessFile raf;
+  // private RandomAccessFile raf;
   private H5header headerParser;
   private boolean isEos;
   boolean includeOriginalAttributes = false;
@@ -100,7 +100,8 @@ public class H5iosp extends AbstractIOServiceProvider {
   /////////////////////////////////////////////////////////////////////////////
   // reading
 
-  public void open(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public void open(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ucar.nc2.util.CancelTask cancelTask)
+      throws IOException {
     super.open(raf, ncfile, cancelTask);
     headerParser = new H5header(this.raf, ncfile, this);
     headerParser.read(null);
@@ -116,12 +117,14 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
-    if (debugRead) System.out.printf("%s read %s%n", v2.getFullName(), section);
+    if (debugRead)
+      System.out.printf("%s read %s%n", v2.getFullName(), section);
     return readData(v2, vinfo.dataPos, section);
   }
 
   // all the work is here, so can be called recursively
-  private Array readData(ucar.nc2.Variable v2, long dataPos, Section wantSection) throws IOException, InvalidRangeException {
+  private Array readData(ucar.nc2.Variable v2, long dataPos, Section wantSection)
+      throws IOException, InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
     Object data;
@@ -135,18 +138,20 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (vinfo.mfp != null) { // filtered
-      if (debugFilter) System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
+      if (debugFilter)
+        System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
       ByteOrder bo = (vinfo.typeInfo.endian == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
       layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
       if (vinfo.typeInfo.isVString) {
         data = readFilteredStringData((LayoutBB) layout);
-      } else{
+      } else {
         data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
       }
 
     } else { // normal case
-      if (debug) System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
+      if (debug)
+        System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
 
       DataType readDtype = v2.getDataType();
       int elemSize = v2.getElementSize();
@@ -171,7 +176,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       } else if (vinfo.typeInfo.hdfType == 9) { // vlen
         elemSize = vinfo.typeInfo.byteSize;
         endian = vinfo.typeInfo.endian;
-        //wantSection = wantSection.removeVlen(); // remove vlen dimension
+        // wantSection = wantSection.removeVlen(); // remove vlen dimension
       }
 
       if (vinfo.isChunked) {
@@ -185,7 +190,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (data instanceof Array)
       return (Array) data;
     else if (dataType == DataType.STRUCTURE)
-      return convertStructure((Structure) v2, layout, wantSection.getShape(), (byte[]) data);  // LOOK
+      return convertStructure((Structure) v2, layout, wantSection.getShape(), (byte[]) data); // LOOK
     else
       return Array.factory(dataType, wantSection.getShape(), data);
   }
@@ -196,11 +201,13 @@ public class H5iosp extends AbstractIOServiceProvider {
     while (layout.hasNext()) {
       LayoutBB.Chunk chunk = layout.next();
       ByteBuffer bb = chunk.getByteBuffer();
-      //bb.position(chunk.getSrcElem());
-      if (debugHeapStrings) System.out.printf("readFilteredStringData chunk=%s%n", chunk);
+      // bb.position(chunk.getSrcElem());
+      if (debugHeapStrings)
+        System.out.printf("readFilteredStringData chunk=%s%n", chunk);
       int destPos = (int) chunk.getDestElem();
       for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
-        sa[destPos++] = headerParser.readHeapString(bb, (chunk.getSrcElem() + i) * 16); // LOOK does this handle section correctly ??
+        sa[destPos++] = headerParser.readHeapString(bb, (chunk.getSrcElem() + i) * 16); // LOOK does this handle section
+                                                                                        // correctly ??
       }
     }
     return sa;
@@ -209,17 +216,24 @@ public class H5iosp extends AbstractIOServiceProvider {
   /*
    * Read data subset from file for a variable, return Array or java primitive array.
    *
-   * @param v         the variable to read.
-   * @param layout     handles skipping around in the file.
-   * @param dataType  dataType of the data to read
-   * @param shape     the shape of the output
+   * @param v the variable to read.
+   * 
+   * @param layout handles skipping around in the file.
+   * 
+   * @param dataType dataType of the data to read
+   * 
+   * @param shape the shape of the output
+   * 
    * @param fillValue fill value as a wrapped primitive
+   * 
    * @return primitive array or Array with data read in
-   * @throws java.io.IOException            if read error
+   * 
+   * @throws java.io.IOException if read error
+   * 
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
   private Object readData(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
-                          Object fillValue, int endian) throws java.io.IOException, InvalidRangeException {
+      Object fillValue, int endian) throws java.io.IOException, InvalidRangeException {
 
     H5header.TypeInfo typeInfo = vinfo.typeInfo;
 
@@ -250,12 +264,14 @@ public class H5iosp extends AbstractIOServiceProvider {
 
       // general case is to read an array of vlen objects
       // each vlen generates an Array - so return ArrayObject of Array
-      // boolean scalar = false; // layout.getTotalNelems() == 1; // if scalar, return just the len Array // remove 12/25/10 jcaron
+      // boolean scalar = false; // layout.getTotalNelems() == 1; // if scalar, return just the len Array // remove
+      // 12/25/10 jcaron
       Array[] data = new Array[(int) layout.getTotalNelems()];
       int count = 0;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
-        if (chunk == null) continue;
+        if (chunk == null)
+          continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
           long address = chunk.getSrcPos() + layout.getElemSize() * i;
           Array vlenArray = headerParser.getHeapDataArray(address, readType, endian);
@@ -263,16 +279,16 @@ public class H5iosp extends AbstractIOServiceProvider {
         }
       }
       int prefixrank = 0;
-      for (int i=0;i<shape.length;i++) { // find leftmost vlen
+      for (int i = 0; i < shape.length; i++) { // find leftmost vlen
         if (shape[i] < 0) {
           prefixrank = i;
           break;
         }
       }
       Array result;
-      if(prefixrank == 0) // if scalar, return just the singleton vlen array
+      if (prefixrank == 0) // if scalar, return just the singleton vlen array
         result = data[0];
-       else {
+      else {
         int[] newshape = new int[prefixrank];
         System.arraycopy(shape, 0, newshape, 0, prefixrank);
         // result = Array.makeObjectArray(readType, data[0].getClass(), newshape, data);
@@ -280,34 +296,37 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
 
       /*
-      else if (prefixrank == 1) // LOOK cant these two cases be combines - just differ in shape ??
-        result = Array.makeObjectArray(readType, data[0].getClass(), new int[]{count}, data);
-     else {  // LOOK cant these two cases be combines - just differ in shape ??
-          // Otherwise create and fill in an n-dimensional Array Of Arrays
-          int[] newshape = new int[prefixrank];
-          System.arraycopy(shape, 0, newshape, 0, prefixrank);
-          Array ndimarray = Array.makeObjectArray(readType, Array.class, newshape, null);
-          // Transfer the elements of data into the n-dim arrays
-          IndexIterator iter = ndimarray.getIndexIterator();
-          for(int i = 0;iter.hasNext();i++) {
-              iter.setObjectNext(data[i]);
-          }
-          result = ndimarray;
-      } */
-      //return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
-      //return new ArrayObject(data[0].getClass(), shape, data);
+       * else if (prefixrank == 1) // LOOK cant these two cases be combines - just differ in shape ??
+       * result = Array.makeObjectArray(readType, data[0].getClass(), new int[]{count}, data);
+       * else { // LOOK cant these two cases be combines - just differ in shape ??
+       * // Otherwise create and fill in an n-dimensional Array Of Arrays
+       * int[] newshape = new int[prefixrank];
+       * System.arraycopy(shape, 0, newshape, 0, prefixrank);
+       * Array ndimarray = Array.makeObjectArray(readType, Array.class, newshape, null);
+       * // Transfer the elements of data into the n-dim arrays
+       * IndexIterator iter = ndimarray.getIndexIterator();
+       * for(int i = 0;iter.hasNext();i++) {
+       * iter.setObjectNext(data[i]);
+       * }
+       * result = ndimarray;
+       * }
+       */
+      // return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
+      // return new ArrayObject(data[0].getClass(), shape, data);
       return result;
     }
 
-    if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
+    if (dataType == DataType.STRUCTURE) { // LOOK what about subset ?
       int recsize = layout.getElemSize();
       long size = recsize * layout.getTotalNelems();
-      byte[] byteArray = new byte[(int)size];
+      byte[] byteArray = new byte[(int) size];
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
-        if (chunk == null) continue;
+        if (chunk == null)
+          continue;
         if (debugStructure)
-          System.out.println(" readStructure " + v.getFullName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
+          System.out.println(
+              " readStructure " + v.getFullName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
         // copy bytes directly into the underlying byte[] LOOK : assumes contiguous layout ??
         raf.seek(chunk.getSrcPos());
         raf.readFully(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
@@ -329,20 +348,22 @@ public class H5iosp extends AbstractIOServiceProvider {
       long reference = refArray.getLong(ima.set(i));
       String name = headerParser.getDataObjectName(reference);
       result[i] = name != null ? name : Long.toString(reference);
-      if (debugVlen) System.out.printf(" convertReference 0x%x to %s %n", reference, result[i]);
+      if (debugVlen)
+        System.out.printf(" convertReference 0x%x to %s %n", reference, result[i]);
     }
-    return Array.factory(DataType.STRING, new int[]{nelems}, result);
+    return Array.factory(DataType.STRING, new int[] {nelems}, result);
   }
 
-  private ArrayStructure convertStructure(Structure s, Layout layout, int[] shape, byte[] byteArray) throws IOException, InvalidRangeException {
+  private ArrayStructure convertStructure(Structure s, Layout layout, int[] shape, byte[] byteArray)
+      throws IOException, InvalidRangeException {
     // create StructureMembers - must set offsets
     StructureMembers sm = s.makeStructureMembers();
     int calcSize = ArrayStructureBB.setOffsets(sm); // standard
-    //ArrayStructureBB.showOffsets(sm, new Indent(2), new Formatter(System.out));
+    // ArrayStructureBB.showOffsets(sm, new Indent(2), new Formatter(System.out));
 
     // special offset setting
     boolean hasHeap = convertStructure(s, sm);
-    //ArrayStructureBB.showOffsets(sm, new Indent(2), new Formatter(System.out));
+    // ArrayStructureBB.showOffsets(sm, new Indent(2), new Formatter(System.out));
 
     int recSize = layout.getElemSize();
     if (recSize < calcSize) {
@@ -367,7 +388,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   // recursive
-  private boolean convertStructure(Structure s, StructureMembers sm ) {
+  private boolean convertStructure(Structure s, StructureMembers sm) {
     boolean hasHeap = false;
     for (StructureMembers.Member m : sm.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
@@ -376,7 +397,8 @@ public class H5iosp extends AbstractIOServiceProvider {
 
       // apparently each member may have seperate byte order (!!!??)
       if (vm.typeInfo.endian >= 0)
-        m.setDataObject(vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+        m.setDataObject(
+            vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
       // vm.dataPos : offset since start of Structure
       m.setDataParam((int) vm.dataPos);
@@ -397,22 +419,23 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   /*
-    public static int setOffsets(StructureMembers members) {
-    int offset = 0;
-    for (StructureMembers.Member m : members.getMembers()) {
-      m.setDataParam(offset);
-      offset += m.getSizeBytes();
-
-      // set inner offsets (starts again at 0)
-      if (m.getStructureMembers() != null)
-        setOffsets(m.getStructureMembers());
-    }
-    members.setStructureSize(offset);
-    return offset;
-  }
+   * public static int setOffsets(StructureMembers members) {
+   * int offset = 0;
+   * for (StructureMembers.Member m : members.getMembers()) {
+   * m.setDataParam(offset);
+   * offset += m.getSizeBytes();
+   * 
+   * // set inner offsets (starts again at 0)
+   * if (m.getStructureMembers() != null)
+   * setOffsets(m.getStructureMembers());
+   * }
+   * members.setStructureSize(offset);
+   * return offset;
+   * }
    */
 
-  void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException, InvalidRangeException {
+  void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm)
+      throws java.io.IOException, InvalidRangeException {
     ByteBuffer bb = asbb.getByteBuffer();
     for (StructureMembers.Member m : sm.getMembers()) {
       if (m.getDataType() == DataType.STRING) {
@@ -437,23 +460,24 @@ public class H5iosp extends AbstractIOServiceProvider {
         int[] fieldshape = m.getShape();
         int prefixrank = 0;
         int size = 1;
-        for(;prefixrank < fieldshape.length;prefixrank++) {
-            if(fieldshape[prefixrank] < 0) break;
-            size *= fieldshape[prefixrank];
+        for (; prefixrank < fieldshape.length; prefixrank++) {
+          if (fieldshape[prefixrank] < 0)
+            break;
+          size *= fieldshape[prefixrank];
         }
         assert size == m.getSize() : "Internal error: field size mismatch";
         Array[] fieldarray = new Array[size]; // hold all the vlen instance data
         // destPos will point to each vlen instance in turn
         // assuming we have 'size' such instances in a row.
         int destPos = startPos;
-        for(int i = 0;i < size;i++) {
+        for (int i = 0; i < size; i++) {
           // vlenarray extracts the i'th vlen contents (struct not supported).
           Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
           fieldarray[i] = vlenArray;
-          destPos += VLEN_T_SIZE;  // Apparentlly no way to compute VLEN_T_SIZE on the fly
+          destPos += VLEN_T_SIZE; // Apparentlly no way to compute VLEN_T_SIZE on the fly
         }
         Array result;
-        if(prefixrank == 0) // if scalar, return just the singleton vlen array
+        if (prefixrank == 0) // if scalar, return just the singleton vlen array
           result = fieldarray[0];
         else {
           int[] newshape = new int[prefixrank];
@@ -462,22 +486,24 @@ public class H5iosp extends AbstractIOServiceProvider {
           result = Array.makeVlenArray(newshape, fieldarray);
         }
 
-        /* if (prefixrank == 1)
-          result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), new int[]{size}, fieldarray);
-        else {
-          // Otherwise create and fill in an n-dimensional Array Of Arrays
-          int[] newshape = new int[prefixrank];
-          System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
-          Array ndimarray = Array.makeObjectArray(m.getDataType(), Array.class, newshape, null);
-          // Transfer the elements of data into the n-dim arrays
-          IndexIterator iter = ndimarray.getIndexIterator();
-          for(int i = 0;iter.hasNext();i++) {
-              iter.setObjectNext(fieldarray[i]);
-          }
-          result = ndimarray;
-        } */
+        /*
+         * if (prefixrank == 1)
+         * result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), new int[]{size}, fieldarray);
+         * else {
+         * // Otherwise create and fill in an n-dimensional Array Of Arrays
+         * int[] newshape = new int[prefixrank];
+         * System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
+         * Array ndimarray = Array.makeObjectArray(m.getDataType(), Array.class, newshape, null);
+         * // Transfer the elements of data into the n-dim arrays
+         * IndexIterator iter = ndimarray.getIndexIterator();
+         * for(int i = 0;iter.hasNext();i++) {
+         * iter.setObjectNext(fieldarray[i]);
+         * }
+         * result = ndimarray;
+         * }
+         */
 
-        //Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
+        // Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
 
         int index = asbb.addObjectToHeap(result);
         bb.order(ByteOrder.nativeOrder());
@@ -489,16 +515,24 @@ public class H5iosp extends AbstractIOServiceProvider {
   /*
    * Read data subset from file for a variable, create primitive array.
    *
-   * @param layout     handles skipping around in the file.
-   * @param dataType  dataType of the variable
-   * @param shape     the shape of the output
+   * @param layout handles skipping around in the file.
+   * 
+   * @param dataType dataType of the variable
+   * 
+   * @param shape the shape of the output
+   * 
    * @param fillValue fill value as a wrapped primitive
+   * 
    * @param endian byte order
+   * 
    * @return primitive array with data read in
-   * @throws java.io.IOException            if read error
+   * 
+   * @throws java.io.IOException if read error
+   * 
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian, boolean convertChar) throws java.io.IOException {
+  Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian,
+      boolean convertChar) throws java.io.IOException {
 
     if (dataType == DataType.STRING) {
       int size = (int) layout.getTotalNelems();
@@ -506,7 +540,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       int count = 0;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
-        if (chunk == null) continue;
+        if (chunk == null)
+          continue;
         for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
           sa[count++] = headerParser.readHeapString(chunk.getSrcPos() + layout.getElemSize() * i);
         }
@@ -521,7 +556,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       int count = 0;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
-        if (chunk == null) continue;
+        if (chunk == null)
+          continue;
         int recsize = layout.getElemSize();
         for (int i = 0; i < chunk.getNelems(); i++) {
           byte[] pa = new byte[recsize];
@@ -538,13 +574,16 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   // old way
-  private StructureData readStructure(Structure s, ArrayStructureW asw, long dataPos) throws IOException, InvalidRangeException {
+  private StructureData readStructure(Structure s, ArrayStructureW asw, long dataPos)
+      throws IOException, InvalidRangeException {
     StructureDataW sdata = new StructureDataW(asw.getStructureMembers());
-    if (debug) System.out.println(" readStructure " + s.getFullName() + " dataPos = " + dataPos);
+    if (debug)
+      System.out.println(" readStructure " + s.getFullName() + " dataPos = " + dataPos);
 
     for (Variable v2 : s.getVariables()) {
       H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
-      if (debug) System.out.println(" readStructureMember " + v2.getFullName() + " vinfo = " + vinfo);
+      if (debug)
+        System.out.println(" readStructureMember " + v2.getFullName() + " vinfo = " + vinfo);
       Array dataArray = readData(v2, dataPos + vinfo.dataPos, v2.getShapeAsSection());
       sdata.setMemberData(v2.getShortName(), dataArray);
     }
@@ -581,7 +620,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   public String getDetailInfo() {
     Formatter f = new Formatter();
     ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
-    PrintWriter pw = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, CDM.utf8Charset));
 
     try {
       NetcdfFile ncfile = new NetcdfFileSubclass();

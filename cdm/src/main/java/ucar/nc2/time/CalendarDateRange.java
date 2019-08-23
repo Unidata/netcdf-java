@@ -6,7 +6,6 @@ package ucar.nc2.time;
 
 import org.joda.time.DateTime;
 import ucar.nc2.units.DateRange;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 
@@ -41,7 +40,7 @@ public class CalendarDateRange {
 
   public CalendarDateRange(CalendarDate start, long durationInSecs) {
     this.start = start;
-    this.end = start.add((int) durationInSecs, CalendarPeriod.Field.Second );
+    this.end = start.add((int) durationInSecs, CalendarPeriod.Field.Second);
     this.startDt = start.getDateTime();
     this.endDt = end.getDateTime();
     this.cal = start.getCalendar();
@@ -65,45 +64,46 @@ public class CalendarDateRange {
   }
 
   // LOOK
-  public CalendarDuration getResolution()  {
+  public CalendarDuration getResolution() {
     return null;
   }
 
   // LOOK
-  public void setResolution()  {
-  }
+  public void setResolution() {}
 
-  public boolean intersects(CalendarDateRange o)  {
+  public boolean intersects(CalendarDateRange o) {
     return intersects(o.getStart(), o.getEnd());
   }
 
-  public boolean intersects(CalendarDate start, CalendarDate end)  {
-    if (startDt.isAfter(end.getDateTime())) return false;
+  public boolean intersects(CalendarDate start, CalendarDate end) {
+    if (startDt.isAfter(end.getDateTime()))
+      return false;
     return !endDt.isBefore(start.getDateTime());
   }
 
   public boolean includes(CalendarDate cd) {
     DateTime dt = cd.getDateTime();
-    if (startDt.isAfter(dt)) return false;
+    if (startDt.isAfter(dt))
+      return false;
     return !endDt.isBefore(dt);
   }
 
   public CalendarDateRange intersect(CalendarDateRange clip) {
     DateTime cs = clip.getStart().getDateTime();
-    DateTime s = startDt.isBefore(cs) ? cs : startDt;  // later one
+    DateTime s = startDt.isBefore(cs) ? cs : startDt; // later one
 
     DateTime ce = clip.getEnd().getDateTime();
-    DateTime e = endDt.isBefore(ce) ? endDt : ce;  // earlier one
+    DateTime e = endDt.isBefore(ce) ? endDt : ce; // earlier one
 
     return CalendarDateRange.of(CalendarDate.of(cal, s), CalendarDate.of(cal, e));
   }
 
-  public CalendarDateRange extend(CalendarDateRange other)  {
+  public CalendarDateRange extend(CalendarDateRange other) {
     DateTime cs = other.getStart().getDateTime();
     DateTime s = startDt.isBefore(cs) ? startDt : cs; // earlier one
 
     DateTime ce = other.getEnd().getDateTime();
-    DateTime e = endDt.isBefore(ce) ? ce : endDt;  // later one
+    DateTime e = endDt.isBefore(ce) ? ce : endDt; // later one
 
     return CalendarDateRange.of(CalendarDate.of(cal, s), CalendarDate.of(cal, e));
   }
@@ -122,15 +122,18 @@ public class CalendarDateRange {
   ///////////////////////////////////////////////
   /**
    * Does not handle non-standard calendars
+   * 
    * @deprecated
    */
   static public CalendarDateRange of(DateRange dr) {
-    if (dr == null) return null;
-    return CalendarDateRange.of( dr.getStart().getDate(), dr.getEnd().getDate());
+    if (dr == null)
+      return null;
+    return CalendarDateRange.of(dr.getStart().getDate(), dr.getEnd().getDate());
   }
 
   /**
    * Does not handle non-standard calendars
+   * 
    * @deprecated
    */
   public DateRange toDateRange() {

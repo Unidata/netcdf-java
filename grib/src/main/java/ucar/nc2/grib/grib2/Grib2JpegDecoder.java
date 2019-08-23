@@ -18,12 +18,10 @@ import ucar.jpeg.jj2000.j2k.image.*;
 import ucar.jpeg.jj2000.j2k.util.*;
 import ucar.jpeg.jj2000.j2k.roi.*;
 import ucar.jpeg.jj2000.j2k.io.*;
-
 import ucar.jpeg.colorspace.*;
 import ucar.jpeg.icc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.io.IOException;
 import java.io.EOFException;
@@ -33,7 +31,7 @@ import java.io.ByteArrayInputStream;
  * Adaptation of jj2000.j2k.decoder.Decoder, in order to read input from memory.
  *
  * @author robb kambic
- * @author caron  rewritten Aug 2014
+ * @author caron rewritten Aug 2014
  */
 public class Grib2JpegDecoder {
   private static final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
@@ -81,14 +79,14 @@ public class Grib2JpegDecoder {
     argv[1] = Integer.toString(nbits);
     argv[2] = "-verbose";
     argv[3] = "off";
-    argv[4] = "-debug" ;
-    argv[5] = "on" ;
+    argv[4] = "-debug";
+    argv[5] = "on";
 
     // Initialize default parameters
-    //System.err.println("calling Grib2JpegDecoder with argv argument");
+    // System.err.println("calling Grib2JpegDecoder with argv argument");
     /*
-    The default parameter list (with modules arguments)
-   */
+     * The default parameter list (with modules arguments)
+     */
     ParameterList defpl = new ParameterList();
     String[][] param = Grib2JpegDecoder.getAllParameters();
 
@@ -119,6 +117,7 @@ public class Grib2JpegDecoder {
   }
 
   private boolean hasSignedProblem = false;
+
   public boolean hasSignedProblem() {
     return hasSignedProblem;
   }
@@ -140,7 +139,7 @@ public class Grib2JpegDecoder {
     Dequantizer deq;
     InverseWT invWT;
     InvCompTransf ictransf;
-    //ImgWriter imwriter[];
+    // ImgWriter imwriter[];
     ImgDataConverter converter;
     DecoderSpecs decSpec;
     BlkImgDataSrc palettized;
@@ -163,7 +162,7 @@ public class Grib2JpegDecoder {
       ff.readFileFormat();
       if (ff.JP2FFUsed) {
         in.seek(ff.getFirstCodeStreamPos());
-        logger.warn("ff.JP2FFUsed is used");  // LOOK probably not
+        logger.warn("ff.JP2FFUsed is used"); // LOOK probably not
       }
 
       // +----------------------------+
@@ -173,8 +172,8 @@ public class Grib2JpegDecoder {
       // **** Header decoder ****
       // Instantiate header decoder and read main header
       /*
-    Information contained in the codestream's headers
-   */
+       * Information contained in the codestream's headers
+       */
       HeaderInfo hi = new HeaderInfo();
       try {
         hd = new HeaderDecoder(in, pl, hi);
@@ -224,7 +223,7 @@ public class Grib2JpegDecoder {
         // full page inverse wavelet transform
         invWT = InverseWT.createInstance(deq, decSpec);
       } catch (IllegalArgumentException e) {
-        error("Cannot instantiate inverse wavelet transform" , 2, e);
+        error("Cannot instantiate inverse wavelet transform", 2, e);
         return;
       }
 
@@ -285,7 +284,8 @@ public class Grib2JpegDecoder {
             imwriter[i] = new ImgWriterArray(decodedImage, i, hd.isOriginalSigned(i));
           }
         } catch (IOException e) {
-          if (debug) e.printStackTrace();
+          if (debug)
+            e.printStackTrace();
           return;
         }
 
@@ -295,17 +295,19 @@ public class Grib2JpegDecoder {
           data = iwa.getGdata();
           // unSigned data processing here
           if (!isSigned) {
-            //float unSignIt = (float) java.lang.Math.pow((double) 2.0, fnb - 1); // LOOK WTF ?
+            // float unSignIt = (float) java.lang.Math.pow((double) 2.0, fnb - 1); // LOOK WTF ?
             int nb = depth[i];
-            int levShift = 1 << (nb - 1);      // check
-            if (nb != rate) hasSignedProblem = true;
+            int levShift = 1 << (nb - 1); // check
+            if (nb != rate)
+              hasSignedProblem = true;
 
             for (int j = 0; j < data.length; j++)
               data[j] += levShift;
           }
           packBytes = iwa.getPackBytes();
         } catch (IOException e) {
-          if (debug) e.printStackTrace();
+          if (debug)
+            e.printStackTrace();
           return;
         }
       } // end for(i=0; i<imwriter.length; i++)
@@ -331,7 +333,8 @@ public class Grib2JpegDecoder {
 
     } catch (IllegalArgumentException e) {
       error(e.getMessage(), 2);
-      if (debug) e.printStackTrace();
+      if (debug)
+        e.printStackTrace();
 
     } catch (RuntimeException e) {
       error("An uncaught runtime exception has occurred", 2, e);
@@ -350,7 +353,8 @@ public class Grib2JpegDecoder {
   private void error(String msg, int code, Throwable e) {
     exitCode = code;
     logger.debug(String.format("%s=%s", msg, e.getMessage()));
-    if (debug) e.printStackTrace();
+    if (debug)
+      e.printStackTrace();
   }
 
   /**
@@ -366,6 +370,7 @@ public class Grib2JpegDecoder {
   public int[] getGdata() {
     return data;
   }
+
   private int[] data;
 
   /**
@@ -380,236 +385,259 @@ public class Grib2JpegDecoder {
     int i;
 
     String[][] str = BitstreamReaderAgent.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
+    if (str != null)
+      for (i = str.length - 1; i >= 0; i--)
+        vec.add(str[i]);
 
     str = EntropyDecoder.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
+    if (str != null)
+      for (i = str.length - 1; i >= 0; i--)
+        vec.add(str[i]);
 
     str = ROIDeScaler.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
+    if (str != null)
+      for (i = str.length - 1; i >= 0; i--)
+        vec.add(str[i]);
 
     str = Dequantizer.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
+    if (str != null)
+      for (i = str.length - 1; i >= 0; i--)
+        vec.add(str[i]);
 
     str = InvCompTransf.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
+    if (str != null)
+      for (i = str.length - 1; i >= 0; i--)
+        vec.add(str[i]);
 
     str = HeaderDecoder.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
+    if (str != null)
+      for (i = str.length - 1; i >= 0; i--)
+        vec.add(str[i]);
 
     str = ICCProfiler.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
+    if (str != null)
+      for (i = str.length - 1; i >= 0; i--)
+        vec.add(str[i]);
 
     str = ucar.jpeg.jj2000.j2k.decoder.Decoder.getParameterInfo();
-    if (str != null) for (i = str.length - 1; i >= 0; i--) vec.add(str[i]);
+    if (str != null)
+      for (i = str.length - 1; i >= 0; i--)
+        vec.add(str[i]);
 
     String[][] result = new String[vec.size()][];
-    for (i = vec.size() - 1; i >= 0; i--)  // fill it backwards
+    for (i = vec.size() - 1; i >= 0; i--) // fill it backwards
       result[i] = vec.get(i);
 
     return result;
   }
 
+  /**
+   * This class extends the ImgWriter abstract class for writing Array .
+   * <p/>
+   * <u>Data:</u> The image binary values appear one after the other (in raster
+   * order) immediately after the last header character ('\n') and are
+   * byte-aligned (they are packed into 1,2 or 4 bytes per sample, depending
+   * upon the bit-depth value).
+   * </p>
+   * <p/>
+   * <p>
+   * If the data is unsigned, level shifting is applied adding 2^(bit depth
+   * - 1)
+   * </p>
+   * <p/>
+   * <p>
+   * <u>NOTE</u>: This class is not thread safe, for reasons of internal
+   * buffering.
+   * </p>
+   *
+   * @see ImgWriter
+   * @see BlkImgDataSrc
+   */
+  private static class ImgWriterArray extends ImgWriter {
+
     /**
-     * This class extends the ImgWriter abstract class for writing Array .
+     * Whether the data must be signed when writing or not. In the latter
+     * case inverse level shifting must be applied
+     */
+    final boolean isSigned;
+
+    /**
+     * The bit-depth of the input file (must be between 1 and 31)
+     */
+    private final int bitDepth;
+
+    /**
+     * A DataBlk, just used to avoid allocating a new one each time it is
+     * needed
+     */
+    private DataBlkInt db = new DataBlkInt();
+
+    // The number of fractional bits in the source data */
+    // private int fb;
+
+    /**
+     * The index of the component from where to get the data
+     */
+    private final int c;
+
+    /**
+     * The pack length of one sample (in bytes, according to the output
+     * bit-depth
+     */
+    private int packBytes;
+
+    /**
+     * Creates a new writer to the specified Array object, to write data from
+     * the specified component.
      * <p/>
-     * <u>Data:</u> The image binary values appear one after the other (in raster
-     * order) immediately after the last header character ('\n') and are
-     * byte-aligned (they are packed into 1,2 or 4 bytes per sample, depending
-     * upon the bit-depth value).
+     * <p>
+     * The size of the image that is written to the file is the size of the
+     * component from which to get the data, specified by b, not the size of
+     * the source image (they differ if there is some sub-sampling).
+     * </p>
+     *
+     * @param imgSrc The source from where to get the image data to write.
+     * @param c The index of the component from where to get the data.
+     * @param isSigned Whether the data are signed or not (needed only when
+     *        writing header).
+     * @see DataBlk
+     */
+    ImgWriterArray(BlkImgDataSrc imgSrc, int c, boolean isSigned) throws IOException {
+      // Initialize
+      this.c = c;
+      this.isSigned = isSigned;
+      src = imgSrc;
+      w = src.getImgWidth();
+      h = src.getImgHeight();
+
+      bitDepth = src.getNomRangeBits(this.c);
+      if ((bitDepth <= 0) || (bitDepth > 31)) {
+        throw new IOException("Array supports only bit-depth between 1 and 31");
+      }
+      if (bitDepth <= 8) {
+        packBytes = 1;
+      } else if (bitDepth <= 16) {
+        packBytes = 2;
+      } else { // <= 31
+        packBytes = 4;
+      }
+
+    } // end ImgWriterArray
+
+    /**
+     * Closes the underlying file or network connection to where the data is
+     * written. Any call to other methods of the class become illegal after a
+     * call to this one.
+     *
+     */
+    public void close() {}
+
+    /**
+     * Writes the data of the specified area to the file, coordinates are
+     * relative to the current tile of the source. Before writing, the
+     * coefficients are limited to the nominal range and packed into 1,2 or 4
+     * bytes (according to the bit-depth).
+     * <p/>
+     * <p>
+     * If the data is unisigned, level shifting is applied adding 2^(bit depth - 1)
      * </p>
      * <p/>
-     * <p> If the data is unsigned, level shifting is applied adding 2^(bit depth
-     * - 1)</p>
+     * <p>
+     * This method may not be called concurrently from different threads.
+     * </p>
      * <p/>
-     * <p><u>NOTE</u>: This class is not thread safe, for reasons of internal
-     * buffering.</p>
+     * <p>
+     * If the data returned from the BlkImgDataSrc source is progressive,
+     * then it is requested over and over until it is not progressive
+     * anymore.
+     * </p>
      *
-     * @see ImgWriter
-     * @see BlkImgDataSrc
+     * @param ulx The horizontal coordinate of the upper-left corner of the
+     *        area to write, relative to the current tile.
+     * @param uly The vertical coordinate of the upper-left corner of the area
+     *        to write, relative to the current tile.
+     * @param w The width of the area to write.
+     * @param h The height of the area to write.
      */
-    private static class ImgWriterArray extends ImgWriter {
-
-        /**
-         * Whether the data must be signed when writing or not. In the latter
-         * case inverse level shifting must be applied
-         */
-        final boolean isSigned;
-
-        /**
-         * The bit-depth of the input file (must be between 1 and 31)
-         */
-        private final int bitDepth;
-
-        /**
-         * A DataBlk, just used to avoid allocating a new one each time it is
-         * needed
-         */
-        private DataBlkInt db = new DataBlkInt();
-
-        // The number of fractional bits in the source data */
-        // private int fb;
-
-        /**
-         * The index of the component from where to get the data
-         */
-        private final int c;
-
-        /**
-         * The pack length of one sample (in bytes, according to the output
-         * bit-depth
-         */
-        private int packBytes;
-
-        /**
-         * Creates a new writer to the specified Array object, to write data from
-         * the specified component.
-         * <p/>
-         * <p>The size of the image that is written to the file is the size of the
-         * component from which to get the data, specified by b, not the size of
-         * the source image (they differ if there is some sub-sampling).</p>
-         *
-         * @param imgSrc   The source from where to get the image data to write.
-         * @param c        The index of the component from where to get the data.
-         * @param isSigned Whether the data are signed or not (needed only when
-         *                 writing header).
-         * @see DataBlk
-         */
-        ImgWriterArray(BlkImgDataSrc imgSrc, int c, boolean isSigned) throws IOException {
-            //Initialize
-            this.c = c;
-            this.isSigned = isSigned;
-            src = imgSrc;
-            w = src.getImgWidth();
-            h = src.getImgHeight();
-
-            bitDepth = src.getNomRangeBits(this.c);
-            if ((bitDepth <= 0) || (bitDepth > 31)) {
-                throw new IOException("Array supports only bit-depth between 1 and 31");
-            }
-            if (bitDepth <= 8) {
-                packBytes = 1;
-            } else if (bitDepth <= 16) {
-                packBytes = 2;
-            } else { // <= 31
-                packBytes = 4;
-            }
-
-        } // end ImgWriterArray
-
-        /**
-         * Closes the underlying file or network connection to where the data is
-         * written. Any call to other methods of the class become illegal after a
-         * call to this one.
-         *
-         */
-        public void close() {
-        }
-
-        /**
-         * Writes the data of the specified area to the file, coordinates are
-         * relative to the current tile of the source. Before writing, the
-         * coefficients are limited to the nominal range and packed into 1,2 or 4
-         * bytes (according to the bit-depth).
-         * <p/>
-         * <p>If the data is unisigned, level shifting is applied adding 2^(bit depth - 1)</p>
-         * <p/>
-         * <p>This method may not be called concurrently from different threads.</p>
-         * <p/>
-         * <p>If the data returned from the BlkImgDataSrc source is progressive,
-         * then it is requested over and over until it is not progressive
-         * anymore.</p>
-         *
-         * @param ulx    The horizontal coordinate of the upper-left corner of the
-         *               area to write, relative to the current tile.
-         * @param uly    The vertical coordinate of the upper-left corner of the area
-         *               to write, relative to the current tile.
-         * @param w  The width of the area to write.
-         * @param h The height of the area to write.
-         */
-        public void write(int ulx, int uly, int w, int h) {
-            // Initialize db
-            db.ulx = ulx;
-            db.uly = uly;
-            db.w = w;
-            db.h = h;
-            if (db.data != null && db.data.length < w * h) {
-                // A new one will be allocated by getInternCompData()
-                db.data = null;
-            }
-            // Request the data and make sure it is not
-            // progressive
-            do {
-                db = (DataBlkInt) src.getInternCompData(db, c);
-            } while (db.progressive);
-
-        } // end int ulx, int uly, int w, int h
-
-        public void writeAll() {
-            // Find the list of tile to decode.
-            Coord nT = src.getNumTiles(null);
-
-            // Loop on vertical tiles
-            for (int y = 0; y < nT.y; y++) {
-                // Loop on horizontal tiles
-                for (int x = 0; x < nT.x; x++) {
-                    src.setTile(x, y);
-                    write(0, 0, src.getImgWidth(), src.getImgHeight());
-                } // End loop on horizontal tiles
-            } // End loop on vertical tiles
-        }
-
-        /**
-         * Writes the source's current tile to the output. The requests of data
-         * issued to the source BlkImgDataSrc object are done by strips, in order
-         * to reduce memory usage.
-         * <p/>
-         * <p>If the data returned from the BlkImgDataSrc source is progressive,
-         * then it is requested over and over until it is not progressive
-         * anymore.</p>
-         *
-         * @see DataBlk
-         */
-        public void write() {
-            int i;
-            int tIdx = src.getTileIdx();
-            int tw = src.getTileCompWidth(tIdx, c);  // Tile width
-            int th = src.getTileCompHeight(tIdx, c);  // Tile height
-            // Write in strips
-            for (i = 0; i < th; i += DEF_STRIP_HEIGHT) {
-                write(0, i, tw, (th - i < DEF_STRIP_HEIGHT) ? th - i : DEF_STRIP_HEIGHT);
-            }
-        }
-
-        /**
-         * The pack length of one sample (in bytes, according to the output bit-depth
-         */
-        int getPackBytes() {
-            return packBytes;
-        }
-
-        /**
-         * the jpeg data decoded into an int array
-         *
-         * @return a int[]
-         */
-        int[] getGdata() {
-            return db.data;
-        }
-
-        public void flush() {
-        }
-
-      @Override
-      public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("isSigned", isSigned)
-            .add("bitDepth", bitDepth)
-            .add("component", c)
-            .add("w", w)
-            .add("h", h)
-            .toString();
+    public void write(int ulx, int uly, int w, int h) {
+      // Initialize db
+      db.ulx = ulx;
+      db.uly = uly;
+      db.w = w;
+      db.h = h;
+      if (db.data != null && db.data.length < w * h) {
+        // A new one will be allocated by getInternCompData()
+        db.data = null;
       }
-    } // end ImgWriterArray
+      // Request the data and make sure it is not
+      // progressive
+      do {
+        db = (DataBlkInt) src.getInternCompData(db, c);
+      } while (db.progressive);
+
+    } // end int ulx, int uly, int w, int h
+
+    public void writeAll() {
+      // Find the list of tile to decode.
+      Coord nT = src.getNumTiles(null);
+
+      // Loop on vertical tiles
+      for (int y = 0; y < nT.y; y++) {
+        // Loop on horizontal tiles
+        for (int x = 0; x < nT.x; x++) {
+          src.setTile(x, y);
+          write(0, 0, src.getImgWidth(), src.getImgHeight());
+        } // End loop on horizontal tiles
+      } // End loop on vertical tiles
+    }
+
+    /**
+     * Writes the source's current tile to the output. The requests of data
+     * issued to the source BlkImgDataSrc object are done by strips, in order
+     * to reduce memory usage.
+     * <p/>
+     * <p>
+     * If the data returned from the BlkImgDataSrc source is progressive,
+     * then it is requested over and over until it is not progressive
+     * anymore.
+     * </p>
+     *
+     * @see DataBlk
+     */
+    public void write() {
+      int i;
+      int tIdx = src.getTileIdx();
+      int tw = src.getTileCompWidth(tIdx, c); // Tile width
+      int th = src.getTileCompHeight(tIdx, c); // Tile height
+      // Write in strips
+      for (i = 0; i < th; i += DEF_STRIP_HEIGHT) {
+        write(0, i, tw, (th - i < DEF_STRIP_HEIGHT) ? th - i : DEF_STRIP_HEIGHT);
+      }
+    }
+
+    /**
+     * The pack length of one sample (in bytes, according to the output bit-depth
+     */
+    int getPackBytes() {
+      return packBytes;
+    }
+
+    /**
+     * the jpeg data decoded into an int array
+     *
+     * @return a int[]
+     */
+    int[] getGdata() {
+      return db.data;
+    }
+
+    public void flush() {}
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this).add("isSigned", isSigned).add("bitDepth", bitDepth).add("component", c)
+          .add("w", w).add("h", h).toString();
+    }
+  } // end ImgWriterArray
 
 } // end Grib2JpegDecoder

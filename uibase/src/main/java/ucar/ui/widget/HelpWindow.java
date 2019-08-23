@@ -15,24 +15,25 @@ import javax.swing.SwingUtilities;
 
 /**
  * Popup Help window.
+ * 
  * @author jcaron
  * @version 1.0
  *
- * Example:
+ *          Example:
  *
- * <pre>
-*  if (help != null) {
-    helpButton = new JButton("help");
-    helpButton.addActionListener(new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if (helpWindow == null)
-          helpWindow = new HelpWindow(null, "Help on "+tit, helpMessage);
-        helpWindow.show(helpButton);
-       }
-    });
-    butts.add(helpButton);
-  }
-  </pre>
+ *          <pre>
+ *          if (help != null) {
+ *            helpButton = new JButton("help");
+ *            helpButton.addActionListener(new AbstractAction() {
+ *              public void actionPerformed(ActionEvent e) {
+ *                if (helpWindow == null)
+ *                  helpWindow = new HelpWindow(null, "Help on " + tit, helpMessage);
+ *                helpWindow.show(helpButton);
+ *              }
+ *            });
+ *            butts.add(helpButton);
+ *          }
+ *          </pre>
  */
 
 public class HelpWindow extends IndependentDialog {
@@ -40,36 +41,36 @@ public class HelpWindow extends IndependentDialog {
   private JTextArea ta;
 
   public HelpWindow(JFrame parent, String title, String helpMessage) {
-    super( parent, true, title);
+    super(parent, true, title);
     this.helpMessage = helpMessage;
   }
 
-  public void show( Component source) {
+  public void show(Component source) {
     if (ta == null) {
       ta = new JTextArea(7, 30);
-      ta.setLineWrap(true); // need to insert \n ourself, because  XML removes \n ? or use IndependentWinfow ?
+      ta.setLineWrap(true); // need to insert \n ourself, because XML removes \n ? or use IndependentWinfow ?
       ta.setWrapStyleWord(true);
       ta.setEditable(false);
       ta.setText(helpMessage);
 
       Container cp = getContentPane();
-      cp.setLayout( new BorderLayout());
+      cp.setLayout(new BorderLayout());
       cp.add(ta, BorderLayout.CENTER);
       pack();
     }
 
-    Point op = new Point( source.getLocation());
+    Point op = new Point(source.getLocation());
     if (parent != null)
       SwingUtilities.convertPoint(source, op, parent);
     else
       SwingUtilities.convertPointToScreen(op, source);
 
-    setLocation( op);
+    setLocation(op);
     super.setVisible(true);
   }
 
   public void show() {
-    show( this);
+    show(this);
   }
 
 }

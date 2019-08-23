@@ -12,64 +12,66 @@ import ucar.nc2.constants.FeatureType;
 /**
  * Proxy an InvDatasetImpl to another InvDatasetImpl.
  */
-public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
+public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl {
   private thredds.catalog.InvDatasetImpl proxy;
   private String aliasName;
 
-  public InvDatasetImplProxy ( String aliasName, thredds.catalog.InvDatasetImpl proxy) {
+  public InvDatasetImplProxy(String aliasName, thredds.catalog.InvDatasetImpl proxy) {
     super(proxy.getParent(), proxy.getName());
     this.aliasName = aliasName;
     this.proxy = proxy;
   }
 
-  public String getAliasName() { return aliasName; }
+  public String getAliasName() {
+    return aliasName;
+  }
 
   public void addAccess(thredds.catalog.InvAccess p0) {
-    proxy.addAccess( p0);
+    proxy.addAccess(p0);
   }
 
   public void addDataset(thredds.catalog.InvDatasetImpl p0) {
-    proxy.addDataset( p0);
+    proxy.addDataset(p0);
   }
 
   public void addDocumentation(thredds.catalog.InvDocumentation p0) {
-    proxy.addDocumentation( p0);
+    proxy.addDocumentation(p0);
   }
 
   public void addProperty(thredds.catalog.InvProperty p0) {
-    proxy.addProperty( p0);
+    proxy.addProperty(p0);
   }
 
   public void addService(thredds.catalog.InvService p0) {
-    proxy.addService( p0);
+    proxy.addService(p0);
   }
 
-   boolean check(java.lang.StringBuilder p0, boolean p1) {
-    return proxy.check( p0, p1);
+  boolean check(java.lang.StringBuilder p0, boolean p1) {
+    return proxy.check(p0, p1);
   }
 
   public java.lang.String dump() {
     return proxy.dump();
   }
 
-   java.lang.String dump(int p0) {
-    return proxy.dump( p0);
+  java.lang.String dump(int p0) {
+    return proxy.dump(p0);
   }
 
   public boolean equals(java.lang.Object p0) {
-    return proxy.equals( p0);
+    return proxy.equals(p0);
   }
 
   public thredds.catalog.InvDatasetImpl findDatasetByName(java.lang.String p0) {
-    return proxy.findDatasetByName( p0);
+    return proxy.findDatasetByName(p0);
   }
 
   public java.lang.String findProperty(java.lang.String p0) {
-    return proxy.findProperty( p0);
+    return proxy.findProperty(p0);
   }
 
   public thredds.catalog.InvService findService(java.lang.String p0) {
-    return proxy.findService( p0);
+    return proxy.findService(p0);
   }
 
   public boolean finish() {
@@ -77,7 +79,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
   }
 
   public thredds.catalog.InvAccess getAccess(thredds.catalog.ServiceType p0) {
-    return proxy.getAccess( p0);
+    return proxy.getAccess(p0);
   }
 
   public java.util.List<InvAccess> getAccess() {
@@ -129,7 +131,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
   }
 
   public java.lang.String getDocumentation(java.lang.String p0) {
-    return proxy.getDocumentation( p0);
+    return proxy.getDocumentation(p0);
   }
 
   public java.lang.String getFullName() {
@@ -157,7 +159,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
   }
 
   public java.util.List<InvMetadata> getMetadata(thredds.catalog.MetadataType p0) {
-    return proxy.getMetadata( p0);
+    return proxy.getMetadata(p0);
   }
 
   public java.util.List<InvMetadata> getMetadata() {
@@ -209,7 +211,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
   }
 
   public java.lang.Object getUserProperty(java.lang.Object p0) {
-    return proxy.getUserProperty( p0);
+    return proxy.getUserProperty(p0);
   }
 
   public java.util.List<ThreddsMetadata.Variables> getVariables() {
@@ -233,87 +235,87 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
   }
 
   public boolean removeDataset(thredds.catalog.InvDatasetImpl p0) {
-    return proxy.removeDataset( p0);
+    return proxy.removeDataset(p0);
   }
 
   public void removeService(thredds.catalog.InvService p0) {
-    proxy.removeService( p0);
+    proxy.removeService(p0);
   }
 
   public void setAlias(java.lang.String p0) {
-    proxy.setAlias( p0);
+    proxy.setAlias(p0);
   }
 
   public void setAuthority(java.lang.String p0) {
-    proxy.setAuthority( p0);
+    proxy.setAuthority(p0);
   }
 
   public void setCatalog(thredds.catalog.InvCatalog p0) {
-    proxy.setCatalog( p0);
+    proxy.setCatalog(p0);
   }
 
   public void setCollectionType(thredds.catalog.CollectionType p0) {
-    proxy.setCollectionType( p0);
+    proxy.setCollectionType(p0);
   }
 
   public void setContributors(java.util.List<ThreddsMetadata.Contributor> p0) {
-    proxy.setContributors( p0);
+    proxy.setContributors(p0);
   }
 
   public void setGeospatialCoverage(thredds.catalog.ThreddsMetadata.GeospatialCoverage p0) {
-    proxy.setGeospatialCoverage( p0);
+    proxy.setGeospatialCoverage(p0);
   }
 
   public void setHarvest(boolean p0) {
-    proxy.setHarvest( p0);
+    proxy.setHarvest(p0);
   }
 
   public void setID(java.lang.String p0) {
-    proxy.setID( p0);
+    proxy.setID(p0);
   }
 
   public void setKeywords(java.util.List<ThreddsMetadata.Vocab> p0) {
-    proxy.setKeywords( p0);
+    proxy.setKeywords(p0);
   }
 
   public void setLocalMetadata(thredds.catalog.ThreddsMetadata p0) {
-    proxy.setLocalMetadata( p0);
+    proxy.setLocalMetadata(p0);
   }
 
   protected void setMark(boolean p0) {
-    proxy.setMark( p0);
+    proxy.setMark(p0);
   }
 
   public void setName(java.lang.String p0) {
-    proxy.setName( p0);
+    proxy.setName(p0);
   }
 
   public void setParent(thredds.catalog.InvDatasetImpl p0) {
-    proxy.setParent( p0);
+    proxy.setParent(p0);
   }
 
   public void setProjects(java.util.List<ThreddsMetadata.Vocab> p0) {
-    proxy.setProjects( p0);
+    proxy.setProjects(p0);
   }
 
   public void setPublishers(java.util.List<ThreddsMetadata.Source> p0) {
-    proxy.setPublishers( p0);
+    proxy.setPublishers(p0);
   }
 
   public void setServicesLocal(java.util.List<InvService> p0) {
-    proxy.setServicesLocal( p0);
+    proxy.setServicesLocal(p0);
   }
 
   public void setTimeCoverage(DateRange p0) {
-    proxy.setTimeCoverage( p0);
+    proxy.setTimeCoverage(p0);
   }
 
   public void setUrlPath(java.lang.String p0) {
-    proxy.setUrlPath( p0);
+    proxy.setUrlPath(p0);
   }
 
   public void setUserProperty(java.lang.Object p0, java.lang.Object p1) {
-    proxy.setUserProperty( p0, p1);
+    proxy.setUserProperty(p0, p1);
   }
 
   public java.lang.String toString() {

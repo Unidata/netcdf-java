@@ -23,7 +23,6 @@ import ucar.ui.widget.ProgressMonitor;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.util.prefs.PreferencesExt;
-
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
@@ -43,7 +42,7 @@ public class GridUI extends JPanel {
   private static final String DATASET_URL = "DatasetURL";
   private static final String GEOTIFF_FILECHOOSER_DEFAULTDIR = "geotiffDefDir";
 
-  //private TopLevel topLevel;
+  // private TopLevel topLevel;
   private PreferencesExt store;
   private FileManager fileChooser;
 
@@ -71,7 +70,7 @@ public class GridUI extends JPanel {
 
   // the various managers and dialog boxes
   private ProjectionManager projManager;
-  //private ColorScaleManager csManager;
+  // private ColorScaleManager csManager;
   private IndependentWindow infoWindow = null;
   private IndependentWindow ncmlWindow = null;
   private IndependentWindow gtWindow = null;
@@ -108,39 +107,39 @@ public class GridUI extends JPanel {
     this.store = pstore;
     this.fileChooser = fileChooser;
 
-    try  {
+    try {
       choosers = new ArrayList();
       fieldChooser = new SuperComboBox(root, "field", true, null);
-      choosers.add( new Chooser("field", fieldChooser, true));
+      choosers.add(new Chooser("field", fieldChooser, true));
       runtimeChooser = new SuperComboBox(root, "runtime", false, null);
-      choosers.add( new Chooser("runtime", runtimeChooser, false));
+      choosers.add(new Chooser("runtime", runtimeChooser, false));
       timeChooser = new SuperComboBox(root, "time", false, null);
-      choosers.add( new Chooser("time", timeChooser, false));
+      choosers.add(new Chooser("time", timeChooser, false));
       ensembleChooser = new SuperComboBox(root, "ensemble", false, null);
-      choosers.add( new Chooser("ensemble", ensembleChooser, false));
+      choosers.add(new Chooser("ensemble", ensembleChooser, false));
       levelChooser = new SuperComboBox(root, "level", false, null);
-      choosers.add( new Chooser("level", levelChooser, false));
+      choosers.add(new Chooser("level", levelChooser, false));
 
       makeActionsDataset();
       makeActionsToolbars();
 
       gridTable = new GridTable("field");
-      gtWindow = new IndependentWindow("Grid Table Information", BAMutil.getImage( "nj22/GDVs"), gridTable.getPanel());
+      gtWindow = new IndependentWindow("Grid Table Information", BAMutil.getImage("nj22/GDVs"), gridTable.getPanel());
 
       PreferencesExt dsNode = (PreferencesExt) pstore.node("DatasetTable");
       dsTable = new GeoGridTable(dsNode, true);
       dsDialog = dsTable.makeDialog(root, "NetcdfDataset Info", false);
-      //dsDialog.setIconImage( BAMutil.getImage( "GDVs"));
+      // dsDialog.setIconImage( BAMutil.getImage( "GDVs"));
       Rectangle bounds = (Rectangle) dsNode.getBean("DialogBounds", new Rectangle(50, 50, 800, 450));
-      dsDialog.setBounds( bounds);
+      dsDialog.setBounds(bounds);
 
-      controller = new GridController( this, store);
+      controller = new GridController(this, store);
       makeUI(defaultHeight);
       controller.finishInit();
 
-          // other components
+      // other components
       geotiffFileChooser = new FileManager(null);
-      geotiffFileChooser.setCurrentDirectory( store.get(GEOTIFF_FILECHOOSER_DEFAULTDIR, "."));
+      geotiffFileChooser.setCurrentDirectory(store.get(GEOTIFF_FILECHOOSER_DEFAULTDIR, "."));
 
     } catch (Exception e) {
       System.out.println("UI creation failed");
@@ -148,12 +147,12 @@ public class GridUI extends JPanel {
     }
   }
 
-      /** save all data in the PersistentStore */
+  /** save all data in the PersistentStore */
   public void storePersistentData() {
-    store.putInt( "vertSplit", splitDraw.getDividerLocation());
+    store.putInt("vertSplit", splitDraw.getDividerLocation());
 
-    store.putBoolean( "navToolbarAction", (Boolean) navToolbarAction.getValue(BAMutil.STATE));
-    store.putBoolean( "moveToolbarAction", (Boolean) moveToolbarAction.getValue(BAMutil.STATE));
+    store.putBoolean("navToolbarAction", (Boolean) navToolbarAction.getValue(BAMutil.STATE));
+    store.putBoolean("moveToolbarAction", (Boolean) moveToolbarAction.getValue(BAMutil.STATE));
 
     if (projManager != null)
       projManager.storePersistentData();
@@ -166,57 +165,60 @@ public class GridUI extends JPanel {
     controller.storePersistentData();
   }
 
-  boolean isSelected() { return selected; }
-  void setSelected( boolean b) {
-    selected = b;
-
-    showGridTableAction.setEnabled( b);
-    showNcMLAction.setEnabled( b);
-    showNcMLAction.setEnabled( b);
-    showNetcdfDatasetAction.setEnabled( b);
-    showGridDatasetInfoAction.setEnabled( b);
-    //showNetcdfXMLAction.setEnabled( b);
-
-    navToolbarAction.setEnabled( b);
-    moveToolbarAction.setEnabled( b);
-
-    controller.showGridAction.setEnabled( b);
-    controller.showContoursAction.setEnabled( b);
-    controller.showContourLabelsAction.setEnabled( b);
-    redrawAction.setEnabled( b);
-
-    minmaxHorizAction.setEnabled( b);
-    minmaxLogAction.setEnabled( b);
-    minmaxHoldAction.setEnabled( b);
-
-    fieldLoopAction.setEnabled( b);
-    levelLoopAction.setEnabled( b);
-    timeLoopAction.setEnabled( b);
-
-    panz.setEnabledActions( b);
+  boolean isSelected() {
+    return selected;
   }
 
-           // add a MapBean to the User Interface
-  public void addMapBean( MapBean mb) {
-    mapBeanMenu.addAction( mb.getActionDesc(), mb.getIcon(), mb.getAction());
+  void setSelected(boolean b) {
+    selected = b;
+
+    showGridTableAction.setEnabled(b);
+    showNcMLAction.setEnabled(b);
+    showNcMLAction.setEnabled(b);
+    showNetcdfDatasetAction.setEnabled(b);
+    showGridDatasetInfoAction.setEnabled(b);
+    // showNetcdfXMLAction.setEnabled( b);
+
+    navToolbarAction.setEnabled(b);
+    moveToolbarAction.setEnabled(b);
+
+    controller.showGridAction.setEnabled(b);
+    controller.showContoursAction.setEnabled(b);
+    controller.showContourLabelsAction.setEnabled(b);
+    redrawAction.setEnabled(b);
+
+    minmaxHorizAction.setEnabled(b);
+    minmaxLogAction.setEnabled(b);
+    minmaxHoldAction.setEnabled(b);
+
+    fieldLoopAction.setEnabled(b);
+    levelLoopAction.setEnabled(b);
+    timeLoopAction.setEnabled(b);
+
+    panz.setEnabledActions(b);
+  }
+
+  // add a MapBean to the User Interface
+  public void addMapBean(MapBean mb) {
+    mapBeanMenu.addAction(mb.getActionDesc(), mb.getIcon(), mb.getAction());
 
     // first one is the "default"
     if (mapBeanCount == 0) {
-      setMapRenderer( mb.getRenderer());
+      setMapRenderer(mb.getRenderer());
     }
     mapBeanCount++;
 
-   mb.addPropertyChangeListener( new PropertyChangeListener() {
-     public void propertyChange( java.beans.PropertyChangeEvent e) {
-       if (e.getPropertyName().equals("Renderer")) {
-         setMapRenderer( (Renderer) e.getNewValue());
-       }
-     }
-   });
+    mb.addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(java.beans.PropertyChangeEvent e) {
+        if (e.getPropertyName().equals("Renderer")) {
+          setMapRenderer((Renderer) e.getNewValue());
+        }
+      }
+    });
   }
 
-  void setMapRenderer( Renderer mapRenderer) {
-    controller.setMapRenderer( mapRenderer);
+  void setMapRenderer(Renderer mapRenderer) {
+    controller.setMapRenderer(mapRenderer);
   }
 
   public void clear() {
@@ -225,57 +227,60 @@ public class GridUI extends JPanel {
   }
 
   public void setDataset(Dataset ds) {
-     if (ds == null) return;
+    if (ds == null)
+      return;
 
-     OpenDatasetTask openTask = new OpenDatasetTask(ds);
-     ProgressMonitor pm = new ProgressMonitor(openTask, (e) -> {
-           controller.showDataset();
-           gridTable.setDataset(controller.getFields());
-           datasetNameLabel.setText("Dataset:  "+ controller.getDatasetUrlString());
-           setSelected(true);
-           gtWindow.hide();
-         });
-     pm.start( this, "Open Dataset "+ds.getName(), 100);
-   }
+    OpenDatasetTask openTask = new OpenDatasetTask(ds);
+    ProgressMonitor pm = new ProgressMonitor(openTask, (e) -> {
+      controller.showDataset();
+      gridTable.setDataset(controller.getFields());
+      datasetNameLabel.setText("Dataset:  " + controller.getDatasetUrlString());
+      setSelected(true);
+      gtWindow.hide();
+    });
+    pm.start(this, "Open Dataset " + ds.getName(), 100);
+  }
 
 
   public void setDataset(GridDataset ds) {
-     controller.setGridDataset( ds);
-     controller.showDataset();
-     datasetNameLabel.setText("Dataset:  "+ controller.getDatasetUrlString());
-     gridTable.setDataset(controller.getFields());
-   }
+    controller.setGridDataset(ds);
+    controller.showDataset();
+    datasetNameLabel.setText("Dataset:  " + controller.getDatasetUrlString());
+    gridTable.setDataset(controller.getFields());
+  }
 
-   void setFields( java.util.List fields) {
+  void setFields(java.util.List fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
   void setField(GridDatatype field) {
-    /*int idx = fieldChooser.setSelectedByName(field.toString());
-    if (idx < 0)
-      fieldChooser.setSelectedByIndex(0); */
-    fieldChooser.setToolTipText( field.getName());
+    /*
+     * int idx = fieldChooser.setSelectedByName(field.toString());
+     * if (idx < 0)
+     * fieldChooser.setSelectedByIndex(0);
+     */
+    fieldChooser.setToolTipText(field.getName());
 
     GridCoordSystem gcs = field.getCoordinateSystem();
 
-      // levels
+    // levels
     CoordinateAxis1D axis = gcs.getVerticalAxis();
     setChooserWanted("level", axis != null);
     if (axis != null) {
       List<NamedObject> levels = axis.getNames();
       levelChooser.setCollection(levels.iterator(), true);
-      NamedObject no = levels.get( controller.getCurrentLevelIndex());
+      NamedObject no = levels.get(controller.getCurrentLevelIndex());
       levelChooser.setSelectedByName(no.getName());
     }
 
-      // times
+    // times
     if (gcs.hasTimeAxis()) {
       axis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
       setChooserWanted("time", axis != null);
       if (axis != null) {
         List<NamedObject> names = axis.getNames();
         timeChooser.setCollection(names.iterator(), true);
-        NamedObject no =  names.get(controller.getCurrentTimeIndex());
+        NamedObject no = names.get(controller.getCurrentTimeIndex());
         timeChooser.setSelectedByName(no.getName());
       }
     } else {
@@ -287,7 +292,7 @@ public class GridUI extends JPanel {
     if (axis != null) {
       List<NamedObject> names = axis.getNames();
       ensembleChooser.setCollection(names.iterator(), true);
-      NamedObject no =  names.get(controller.getCurrentEnsembleIndex());
+      NamedObject no = names.get(controller.getCurrentEnsembleIndex());
       ensembleChooser.setSelectedByName(no.getName());
     }
 
@@ -302,30 +307,31 @@ public class GridUI extends JPanel {
 
     setChoosers();
 
-    colorScalePanel.setUnitString( field.getUnitsString());
+    colorScalePanel.setUnitString(field.getUnitsString());
   }
 
-  void setDrawHorizAndVert( boolean drawHoriz, boolean drawVert) {
+  void setDrawHorizAndVert(boolean drawHoriz, boolean drawVert) {
     drawingPanel.removeAll();
     if (drawHoriz && drawVert) {
       splitDraw.setTopComponent(panz);
       splitDraw.setBottomComponent(vertPanel);
-      drawingPanel.add( splitDraw,  BorderLayout.CENTER);
+      drawingPanel.add(splitDraw, BorderLayout.CENTER);
     } else if (drawHoriz) {
-      drawingPanel.add( panz,  BorderLayout.CENTER);
+      drawingPanel.add(panz, BorderLayout.CENTER);
     } else if (drawVert) {
-      drawingPanel.add( splitDraw,  BorderLayout.CENTER);
+      drawingPanel.add(splitDraw, BorderLayout.CENTER);
     }
   }
 
   // actions that control the dataset
   private void makeActionsDataset() {
 
-      // choose local dataset
+    // choose local dataset
     AbstractAction chooseLocalDatasetAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         String filename = fileChooser.chooseFilename();
-        if (filename == null) return;
+        if (filename == null)
+          return;
 
         Dataset invDs;
         try {
@@ -340,51 +346,53 @@ public class GridUI extends JPanel {
     };
     BAMutil.setActionProperties(chooseLocalDatasetAction, "FileChooser", "open Local dataset...", false, 'L', -1);
 
-    /* saveDatasetAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        String fname = controller.getDatasetName();
-        if (fname != null) {
-          savedDatasetList.add( fname);
-          BAMutil.addActionToMenu( savedDatasetMenu, new DatasetAction( fname), 0);
-        }
-      }
-    };
-    BAMutil.setActionProperties( saveDatasetAction, null, "save dataset", false, 'S', 0);
-    */
+    /*
+     * saveDatasetAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * String fname = controller.getDatasetName();
+     * if (fname != null) {
+     * savedDatasetList.add( fname);
+     * BAMutil.addActionToMenu( savedDatasetMenu, new DatasetAction( fname), 0);
+     * }
+     * }
+     * };
+     * BAMutil.setActionProperties( saveDatasetAction, null, "save dataset", false, 'S', 0);
+     */
 
-      // Configure
+    // Configure
     chooseProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         getProjectionManager().setVisible();
       }
     };
-    BAMutil.setActionProperties( chooseProjectionAction, null, "Projection Manager...", false, 'P', 0);
+    BAMutil.setActionProperties(chooseProjectionAction, null, "Projection Manager...", false, 'P', 0);
 
     saveCurrentProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         getProjectionManager();
-          // set the bounding box
+        // set the bounding box
         ProjectionImpl proj = panz.getProjectionImpl().constructCopy();
-        proj.setDefaultMapArea( panz.getMapArea());
-        //if (debug) System.out.println(" GV save projection "+ proj);
+        proj.setDefaultMapArea(panz.getMapArea());
+        // if (debug) System.out.println(" GV save projection "+ proj);
 
-        // projManage.setMap(renderAll.get("Map"));   LOOK!
-        //projManager.saveProjection( proj);
+        // projManage.setMap(renderAll.get("Map")); LOOK!
+        // projManager.saveProjection( proj);
       }
     };
-    BAMutil.setActionProperties( saveCurrentProjectionAction, null, "save Current Projection", false, 'S', 0);
+    BAMutil.setActionProperties(saveCurrentProjectionAction, null, "save Current Projection", false, 'S', 0);
 
-    /* chooseColorScaleAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if (null == csManager) // lazy instantiation
-          makeColorScaleManager();
-        csManager.show();
-      }
-    };
-    BAMutil.setActionProperties( chooseColorScaleAction, null, "ColorScale Manager...", false, 'C', 0);
-
-    */
-      // redraw
+    /*
+     * chooseColorScaleAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * if (null == csManager) // lazy instantiation
+     * makeColorScaleManager();
+     * csManager.show();
+     * }
+     * };
+     * BAMutil.setActionProperties( chooseColorScaleAction, null, "ColorScale Manager...", false, 'C', 0);
+     * 
+     */
+    // redraw
     redrawAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         repaint();
@@ -392,70 +400,70 @@ public class GridUI extends JPanel {
         controller.draw(true);
       }
     };
-    BAMutil.setActionProperties( redrawAction, "alien", "RedRaw", false, 'W', 0);
+    BAMutil.setActionProperties(redrawAction, "alien", "RedRaw", false, 'W', 0);
 
     showDatasetInfoAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (infoWindow == null) {
           datasetInfoTA = new TextHistoryPane();
-          infoWindow = new IndependentWindow("Dataset Information", BAMutil.getImage( "nj22/GDVs"), datasetInfoTA);
-          infoWindow.setSize(700,700);
-          infoWindow.setLocation(100,100);
+          infoWindow = new IndependentWindow("Dataset Information", BAMutil.getImage("nj22/GDVs"), datasetInfoTA);
+          infoWindow.setSize(700, 700);
+          infoWindow.setLocation(100, 100);
         }
 
         datasetInfoTA.clear();
-        datasetInfoTA.appendLine( controller.getDatasetInfo());
+        datasetInfoTA.appendLine(controller.getDatasetInfo());
         datasetInfoTA.gotoTop();
         infoWindow.show();
       }
     };
-    BAMutil.setActionProperties( showDatasetInfoAction, "Information", "Show info...", false, 'S', -1);
+    BAMutil.setActionProperties(showDatasetInfoAction, "Information", "Show info...", false, 'S', -1);
 
     showNcMLAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (ncmlWindow == null) {
           ncmlTA = new TextHistoryPane();
-          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "nj22/GDVs"), ncmlTA);
-          ncmlWindow.setSize(700,700);
+          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage("nj22/GDVs"), ncmlTA);
+          ncmlWindow.setSize(700, 700);
           ncmlWindow.setLocation(200, 70);
         }
 
         ncmlTA.clear();
-        //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
-        ncmlTA.appendLine( controller.getNcML());
+        // datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
+        ncmlTA.appendLine(controller.getNcML());
         ncmlTA.gotoTop();
         ncmlWindow.show();
       }
     };
-    BAMutil.setActionProperties( showNcMLAction, null, "Show NcML...", false, 'X', -1);
+    BAMutil.setActionProperties(showNcMLAction, null, "Show NcML...", false, 'X', -1);
 
     showGridDatasetInfoAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (ncmlWindow == null) {
           ncmlTA = new TextHistoryPane();
-          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "nj22/GDVs"), ncmlTA);
-          ncmlWindow.setSize(700,700);
+          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage("nj22/GDVs"), ncmlTA);
+          ncmlWindow.setSize(700, 700);
           ncmlWindow.setLocation(200, 70);
         }
 
         ncmlTA.clear();
-        //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
-        ncmlTA.appendLine( controller.getDatasetXML());
+        // datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
+        ncmlTA.appendLine(controller.getDatasetXML());
         ncmlTA.gotoTop();
         ncmlWindow.show();
       }
     };
-    BAMutil.setActionProperties( showGridDatasetInfoAction, null, "Show GridDataset Info XML...", false, 'X', -1);
+    BAMutil.setActionProperties(showGridDatasetInfoAction, null, "Show GridDataset Info XML...", false, 'X', -1);
 
-      // show gridTable
+    // show gridTable
     showGridTableAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         gtWindow.show();
       }
     };
-    BAMutil.setActionProperties( showGridTableAction, "Table", "grid Table...", false, 'T', -1);
+    BAMutil.setActionProperties(showGridTableAction, "Table", "grid Table...", false, 'T', -1);
 
-      // show netcdf dataset Table
+    // show netcdf dataset Table
     showNetcdfDatasetAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         NetcdfDataset netcdfDataset = controller.getNetcdfDataset();
@@ -470,84 +478,87 @@ public class GridUI extends JPanel {
         }
       }
     };
-    BAMutil.setActionProperties( showNetcdfDatasetAction, "nj22/Netcdf", "NetcdfDataset Table Info...", false, 'D', -1);
+    BAMutil.setActionProperties(showNetcdfDatasetAction, "nj22/Netcdf", "NetcdfDataset Table Info...", false, 'D', -1);
 
-      /* write geotiff file
-    geotiffAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        GeoGrid grid = controller.getCurrentField();
-        ucar.ma2.Array data = controller.getCurrentHorizDataSlice();
-        if ((grid == null) || (data == null)) return;
+    /*
+     * write geotiff file
+     * geotiffAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * GeoGrid grid = controller.getCurrentField();
+     * ucar.ma2.Array data = controller.getCurrentHorizDataSlice();
+     * if ((grid == null) || (data == null)) return;
+     * 
+     * String filename = geotiffFileChooser.chooseFilename();
+     * if (filename == null) return;
+     * 
+     * GeoTiff geotiff = null;
+     * try {
+     * /* System.out.println("write to= "+filename);
+     * ucar.nc2.geotiff.Writer.write2D(grid, data, filename+".tfw");
+     * geotiff = new GeoTiff(filename); // read back in
+     * geotiff.read();
+     * System.out.println( geotiff.showInfo());
+     * //geotiff.testReadData();
+     * geotiff.close(); * /
+     * 
+     * // write two
+     * ucar.nc2.geotiff.GeotiffWriter writer = new ucar.nc2.geotiff.GeotiffWriter(filename);
+     * writer.writeGrid(grid, data, false);
+     * geotiff = new GeoTiff(filename); // read back in
+     * geotiff.read();
+     * System.out.println( "*************************************");
+     * System.out.println( geotiff.showInfo());
+     * //geotiff.testReadData();
+     * geotiff.close();
+     * 
+     * 
+     * } catch (IOException ioe) {
+     * ioe.printStackTrace();
+     * 
+     * } finally {
+     * try {
+     * if (geotiff != null) geotiff.close();
+     * } catch (IOException ioe) { }
+     * }
+     * 
+     * }
+     * };
+     * BAMutil.setActionProperties( geotiffAction, "Geotiff", "Write Geotiff file", false, 'G', -1);
+     */
 
-        String filename = geotiffFileChooser.chooseFilename();
-        if (filename == null) return;
-
-        GeoTiff geotiff = null;
-        try {
-          /* System.out.println("write to= "+filename);
-          ucar.nc2.geotiff.Writer.write2D(grid, data, filename+".tfw");
-          geotiff = new GeoTiff(filename); // read back in
-          geotiff.read();
-          System.out.println( geotiff.showInfo());
-          //geotiff.testReadData();
-          geotiff.close(); * /
-
-          // write two
-          ucar.nc2.geotiff.GeotiffWriter writer = new ucar.nc2.geotiff.GeotiffWriter(filename);
-          writer.writeGrid(grid, data, false);
-          geotiff = new GeoTiff(filename); // read back in
-          geotiff.read();
-          System.out.println( "*************************************");
-          System.out.println( geotiff.showInfo());
-          //geotiff.testReadData();
-          geotiff.close();
-
-
-        } catch (IOException ioe) {
-          ioe.printStackTrace();
-
-        } finally {
-          try {
-            if (geotiff != null) geotiff.close();
-          } catch (IOException ioe) { }
-        }
-
-      }
-    };
-    BAMutil.setActionProperties( geotiffAction, "Geotiff", "Write Geotiff file", false, 'G', -1);
-    */
-
-    minmaxHorizAction =  new AbstractAction() {
+    minmaxHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         csDataMinMax.setSelectedItem(ColorScale.MinMaxType.horiz);
         controller.setDataMinMaxType(ColorScale.MinMaxType.horiz);
       }
     };
-    BAMutil.setActionProperties( minmaxHorizAction, null, "Horizontal plane", false, 'H', 0);
+    BAMutil.setActionProperties(minmaxHorizAction, null, "Horizontal plane", false, 'H', 0);
 
-    minmaxLogAction =  new AbstractAction() {
+    minmaxLogAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         csDataMinMax.setSelectedItem(ColorScale.MinMaxType.log);
         controller.setDataMinMaxType(ColorScale.MinMaxType.log);
       }
     };
-    BAMutil.setActionProperties( minmaxLogAction, null, "log horiz plane", false, 'V', 0);
+    BAMutil.setActionProperties(minmaxLogAction, null, "log horiz plane", false, 'V', 0);
 
-    /* minmaxVolAction =  new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        csDataMinMax.setSelectedIndex(GridRenderer.VOL_MinMaxType);
-        controller.setDataMinMaxType(GridRenderer.MinMaxType.vert;
-      }
-    };
-    BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0); */
+    /*
+     * minmaxVolAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * csDataMinMax.setSelectedIndex(GridRenderer.VOL_MinMaxType);
+     * controller.setDataMinMaxType(GridRenderer.MinMaxType.vert;
+     * }
+     * };
+     * BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0);
+     */
 
-    minmaxHoldAction =  new AbstractAction() {
+    minmaxHoldAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         csDataMinMax.setSelectedItem(ColorScale.MinMaxType.hold);
         controller.setDataMinMaxType(ColorScale.MinMaxType.hold);
       }
     };
-    BAMutil.setActionProperties( minmaxHoldAction, null, "Hold scale constant", false, 'C', 0);
+    BAMutil.setActionProperties(minmaxHoldAction, null, "Hold scale constant", false, 'C', 0);
 
     fieldLoopAction = new LoopControlAction(fieldChooser);
     levelLoopAction = new LoopControlAction(levelChooser);
@@ -565,7 +576,7 @@ public class GridUI extends JPanel {
           toolPanel.remove(navToolbar);
       }
     };
-    BAMutil.setActionProperties( navToolbarAction, "MagnifyPlus", "show Navigate toolbar", true, 'M', 0);
+    BAMutil.setActionProperties(navToolbarAction, "MagnifyPlus", "show Navigate toolbar", true, 'M', 0);
     navToolbarAction.putValue(BAMutil.STATE, store.getBoolean("navToolbarAction", true));
 
     moveToolbarAction = new AbstractAction() {
@@ -577,45 +588,47 @@ public class GridUI extends JPanel {
           toolPanel.remove(moveToolbar);
       }
     };
-    BAMutil.setActionProperties( moveToolbarAction, "Up", "show Move toolbar", true, 'M', 0);
+    BAMutil.setActionProperties(moveToolbarAction, "Up", "show Move toolbar", true, 'M', 0);
     moveToolbarAction.putValue(BAMutil.STATE, store.getBoolean("moveToolbarAction", true));
   }
 
- /*  private void makeSysConfigWindow() {
-    sysConfigDialog = new ucar.unidata.ui.PropertyDialog(topLevel.getRootPaneContainer(), true,
-        "System Configuration", store, "HelpDir");     // LOOK KLUDGE
-    sysConfigDialog.pack();
-    sysConfigDialog.setSize(500,200);
-    sysConfigDialog.setLocation(300,300);
-  }
-
-  private void makeColorScaleManager() {
-    csManager = new ColorScaleManager(topLevel.getRootPaneContainer(), store);
-    csManager.addPropertyChangeListener(  new java.beans.PropertyChangeListener() {
-      public void propertyChange( java.beans.PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("ColorScale")) {
-          ColorScale cs = (ColorScale) e.getNewValue();
-          cs = (ColorScale) cs.clone();
-          //System.out.println("UI: new Colorscale got "+cs);
-          colorScalePanel.setColorScale(cs);
-          controller.setColorScale(cs);
-        }
-      }
-    });
-  } */
+  /*
+   * private void makeSysConfigWindow() {
+   * sysConfigDialog = new ucar.unidata.ui.PropertyDialog(topLevel.getRootPaneContainer(), true,
+   * "System Configuration", store, "HelpDir"); // LOOK KLUDGE
+   * sysConfigDialog.pack();
+   * sysConfigDialog.setSize(500,200);
+   * sysConfigDialog.setLocation(300,300);
+   * }
+   * 
+   * private void makeColorScaleManager() {
+   * csManager = new ColorScaleManager(topLevel.getRootPaneContainer(), store);
+   * csManager.addPropertyChangeListener( new java.beans.PropertyChangeListener() {
+   * public void propertyChange( java.beans.PropertyChangeEvent e) {
+   * if (e.getPropertyName().equals("ColorScale")) {
+   * ColorScale cs = (ColorScale) e.getNewValue();
+   * cs = (ColorScale) cs.clone();
+   * //System.out.println("UI: new Colorscale got "+cs);
+   * colorScalePanel.setColorScale(cs);
+   * controller.setColorScale(cs);
+   * }
+   * }
+   * });
+   * }
+   */
 
   public ProjectionManager getProjectionManager() {
     if (null != projManager)
       return projManager;
 
     projManager = new ProjectionManager(null, store);
-    projManager.addPropertyChangeListener(  new java.beans.PropertyChangeListener() {
-      public void propertyChange( java.beans.PropertyChangeEvent e) {
+    projManager.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+      public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("ProjectionImpl")) {
           ProjectionImpl p = (ProjectionImpl) e.getNewValue();
           p = p.constructCopy();
-          //System.out.println("UI: new Projection "+p);
-          controller.setProjection( p);
+          // System.out.println("UI: new Projection "+p);
+          controller.setProjection(p);
         }
       }
     });
@@ -627,16 +640,18 @@ public class GridUI extends JPanel {
   private void makeUI(int defaultHeight) {
 
     datasetNameLabel = new JLabel();
-    /* gridPP = new PrefPanel("GridView", (PreferencesExt) store.node("GridViewPrefs"));
-    gridUrlIF = gridPP.addTextComboField("url", "Gridded Data URL", null, 10, false);
-    gridPP.addButton( BAMutil.makeButtconFromAction( chooseLocalDatasetAction ));
-    gridPP.finish(true, BorderLayout.EAST);
-    gridPP.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        InvDatasetImpl ds = new InvDatasetImpl( gridUrlIF.getText(), thredds.catalog.DataType.GRID, ServiceType.NETCDF);
-        setDataset( ds);
-      }
-    }); */
+    /*
+     * gridPP = new PrefPanel("GridView", (PreferencesExt) store.node("GridViewPrefs"));
+     * gridUrlIF = gridPP.addTextComboField("url", "Gridded Data URL", null, 10, false);
+     * gridPP.addButton( BAMutil.makeButtconFromAction( chooseLocalDatasetAction ));
+     * gridPP.finish(true, BorderLayout.EAST);
+     * gridPP.addActionListener(new ActionListener() {
+     * public void actionPerformed(ActionEvent e) {
+     * InvDatasetImpl ds = new InvDatasetImpl( gridUrlIF.getText(), thredds.catalog.DataType.GRID, ServiceType.NETCDF);
+     * setDataset( ds);
+     * }
+     * });
+     */
 
     // top tool panel
     toolPanel = new JPanel();
@@ -649,7 +664,7 @@ public class GridUI extends JPanel {
     configMenu = new JMenu("Configure");
     configMenu.setMnemonic('C');
     JMenu toolMenu = new JMenu("Controls");
-    toolMenu.setMnemonic( 'T');
+    toolMenu.setMnemonic('T');
     addActionsToMenus(dataMenu, configMenu, toolMenu);
     JMenuBar menuBar = new JMenuBar();
     menuBar.add(dataMenu);
@@ -660,16 +675,16 @@ public class GridUI extends JPanel {
     // field choosers
     fieldPanel = new JPanel();
     fieldPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-    toolPanel.add( fieldPanel);
+    toolPanel.add(fieldPanel);
 
     // stride
-    toolPanel.add( controller.strideSpinner);
+    toolPanel.add(controller.strideSpinner);
 
     // buttcons
-    BAMutil.addActionToContainer( toolPanel, controller.drawHorizAction);
-    BAMutil.addActionToContainer( toolPanel, controller.drawVertAction);
+    BAMutil.addActionToContainer(toolPanel, controller.drawHorizAction);
+    BAMutil.addActionToContainer(toolPanel, controller.drawVertAction);
     mapBeanMenu = MapBean.makeMapSelectButton();
-    toolPanel.add( mapBeanMenu.getParentComponent());
+    toolPanel.add(mapBeanMenu.getParentComponent());
 
     // the Navigated panel and its toolbars
     panz.setLayout(new FlowLayout());
@@ -680,18 +695,18 @@ public class GridUI extends JPanel {
     if ((Boolean) moveToolbarAction.getValue(BAMutil.STATE))
       toolPanel.add(moveToolbar);
 
-    BAMutil.addActionToContainer( toolPanel, panz.setReferenceAction);
-    BAMutil.addActionToContainer( toolPanel, controller.dataProjectionAction);
-    BAMutil.addActionToContainer( toolPanel, controller.showGridAction);
-    BAMutil.addActionToContainer( toolPanel, controller.showContoursAction);
-    BAMutil.addActionToContainer( toolPanel, controller.showContourLabelsAction);
+    BAMutil.addActionToContainer(toolPanel, panz.setReferenceAction);
+    BAMutil.addActionToContainer(toolPanel, controller.dataProjectionAction);
+    BAMutil.addActionToContainer(toolPanel, controller.showGridAction);
+    BAMutil.addActionToContainer(toolPanel, controller.showContoursAction);
+    BAMutil.addActionToContainer(toolPanel, controller.showContourLabelsAction);
 
-    BAMutil.addActionToContainer( toolPanel, redrawAction);
+    BAMutil.addActionToContainer(toolPanel, redrawAction);
 
-      //  vertical split
+    // vertical split
     vertPanel = new VertPanel();
     splitDraw = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panz, vertPanel);
-    int divLoc = store.getInt( "vertSplit", 2*defaultHeight/3);
+    int divLoc = store.getInt("vertSplit", 2 * defaultHeight / 3);
     splitDraw.setDividerLocation(divLoc);
     drawingPanel = new JPanel(new BorderLayout()); // filled later
 
@@ -704,23 +719,24 @@ public class GridUI extends JPanel {
     dataValueLabel.setToolTipText("data value (double click on grid)");
     statusPanel.add(positionLabel, BorderLayout.WEST);
     statusPanel.add(dataValueLabel, BorderLayout.CENTER);
-    panz.setPositionLabel( positionLabel);
+    panz.setPositionLabel(positionLabel);
 
     // colorscale panel
     colorScalePanel = new ColorScale.Panel(this, controller.getColorScale());
-    csDataMinMax = new JComboBox( ColorScale.MinMaxType.values());
+    csDataMinMax = new JComboBox(ColorScale.MinMaxType.values());
     csDataMinMax.setToolTipText("ColorScale Min/Max setting");
-    csDataMinMax.addActionListener(e -> controller.setDataMinMaxType( ( ColorScale.MinMaxType) csDataMinMax.getSelectedItem()));
+    csDataMinMax
+        .addActionListener(e -> controller.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem()));
     JPanel westPanel = new JPanel(new BorderLayout());
-    westPanel.add( colorScalePanel, BorderLayout.CENTER);
-    westPanel.add( csDataMinMax, BorderLayout.NORTH);
+    westPanel.add(colorScalePanel, BorderLayout.CENTER);
+    westPanel.add(csDataMinMax, BorderLayout.NORTH);
 
     // lay it out
     JPanel northPanel = new JPanel();
-    //northPanel.setLayout( new BoxLayout(northPanel, BoxLayout.Y_AXIS));
-    northPanel.setLayout( new BorderLayout());
-    northPanel.add( datasetNameLabel, BorderLayout.NORTH);
-    northPanel.add( toolPanel, BorderLayout.SOUTH);
+    // northPanel.setLayout( new BoxLayout(northPanel, BoxLayout.Y_AXIS));
+    northPanel.setLayout(new BorderLayout());
+    northPanel.add(datasetNameLabel, BorderLayout.NORTH);
+    northPanel.add(toolPanel, BorderLayout.SOUTH);
 
     setLayout(new BorderLayout());
     add(northPanel, BorderLayout.NORTH);
@@ -728,10 +744,11 @@ public class GridUI extends JPanel {
     add(westPanel, BorderLayout.WEST);
     add(drawingPanel, BorderLayout.CENTER);
 
-    setDrawHorizAndVert( controller.drawHorizOn, controller.drawVertOn);
+    setDrawHorizAndVert(controller.drawHorizOn, controller.drawVertOn);
   }
 
   private ArrayList choosers;
+
   private void setChoosers() {
     fieldPanel.removeAll();
     for (Object chooser : choosers) {
@@ -743,13 +760,14 @@ public class GridUI extends JPanel {
   }
 
   private static class Chooser {
-    Chooser(String name, SuperComboBox field, boolean want){
+    Chooser(String name, SuperComboBox field, boolean want) {
       this.name = name;
       this.field = field;
       this.isWanted = want;
     }
+
     boolean isWanted;
-    String  name;
+    String name;
     SuperComboBox field;
   }
 
@@ -763,75 +781,78 @@ public class GridUI extends JPanel {
   }
 
   private void addToolbarOption(String toolbarName, JToolBar toolbar, AbstractAction act) {
-    boolean wantsToolbar = store.getBoolean( toolbarName, true);
+    boolean wantsToolbar = store.getBoolean(toolbarName, true);
     if (wantsToolbar)
       toolPanel.add(toolbar);
- }
+  }
 
   void addActionsToMenus(JMenu datasetMenu, JMenu configMenu, JMenu toolMenu) {
-      // Info
-    BAMutil.addActionToMenu( datasetMenu, showGridTableAction);
-    BAMutil.addActionToMenu( datasetMenu, showDatasetInfoAction);
-    BAMutil.addActionToMenu( datasetMenu, showNcMLAction);
-    BAMutil.addActionToMenu( datasetMenu, showGridDatasetInfoAction);
-    BAMutil.addActionToMenu( datasetMenu, showNetcdfDatasetAction);
+    // Info
+    BAMutil.addActionToMenu(datasetMenu, showGridTableAction);
+    BAMutil.addActionToMenu(datasetMenu, showDatasetInfoAction);
+    BAMutil.addActionToMenu(datasetMenu, showNcMLAction);
+    BAMutil.addActionToMenu(datasetMenu, showGridDatasetInfoAction);
+    BAMutil.addActionToMenu(datasetMenu, showNetcdfDatasetAction);
     // BAMutil.addActionToMenu( datasetMenu, geotiffAction);
-    //BAMutil.addActionToMenu( infoMenu, showNetcdfXMLAction);
+    // BAMutil.addActionToMenu( infoMenu, showNetcdfXMLAction);
 
     /// Configure
     JMenu toolbarMenu = new JMenu("Toolbars");
-    toolbarMenu.setMnemonic( 'T');
+    toolbarMenu.setMnemonic('T');
     configMenu.add(toolbarMenu);
-    BAMutil.addActionToMenu( toolbarMenu, navToolbarAction);
-    BAMutil.addActionToMenu( toolbarMenu, moveToolbarAction);
+    BAMutil.addActionToMenu(toolbarMenu, navToolbarAction);
+    BAMutil.addActionToMenu(toolbarMenu, moveToolbarAction);
 
-    BAMutil.addActionToMenu( configMenu, chooseProjectionAction);
-    BAMutil.addActionToMenu( configMenu, saveCurrentProjectionAction);
+    BAMutil.addActionToMenu(configMenu, chooseProjectionAction);
+    BAMutil.addActionToMenu(configMenu, saveCurrentProjectionAction);
 
-    /* BAMutil.addActionToMenu( configMenu, chooseColorScaleAction);
-    BAMutil.addActionToMenu( configMenu, controller.dataProjectionAction);
-    */
+    /*
+     * BAMutil.addActionToMenu( configMenu, chooseColorScaleAction);
+     * BAMutil.addActionToMenu( configMenu, controller.dataProjectionAction);
+     */
 
     //// tools menu
     JMenu displayMenu = new JMenu("Display control");
-    displayMenu.setMnemonic( 'D');
+    displayMenu.setMnemonic('D');
 
-    BAMutil.addActionToMenu( displayMenu, controller.showGridAction);
-    BAMutil.addActionToMenu( displayMenu, controller.showContoursAction);
-    BAMutil.addActionToMenu( displayMenu, controller.showContourLabelsAction);
-    BAMutil.addActionToMenu( displayMenu, redrawAction);
+    BAMutil.addActionToMenu(displayMenu, controller.showGridAction);
+    BAMutil.addActionToMenu(displayMenu, controller.showContoursAction);
+    BAMutil.addActionToMenu(displayMenu, controller.showContourLabelsAction);
+    BAMutil.addActionToMenu(displayMenu, redrawAction);
     toolMenu.add(displayMenu);
 
     // Loop Control
     JMenu loopMenu = new JMenu("Loop control");
-    loopMenu.setMnemonic( 'L');
+    loopMenu.setMnemonic('L');
 
-    BAMutil.addActionToMenu( loopMenu, fieldLoopAction);
-    BAMutil.addActionToMenu( loopMenu, levelLoopAction);
-    BAMutil.addActionToMenu( loopMenu, timeLoopAction);
+    BAMutil.addActionToMenu(loopMenu, fieldLoopAction);
+    BAMutil.addActionToMenu(loopMenu, levelLoopAction);
+    BAMutil.addActionToMenu(loopMenu, timeLoopAction);
     toolMenu.add(loopMenu);
 
     // MinMax Control
     JMenu mmMenu = new JMenu("ColorScale min/max");
     mmMenu.setMnemonic('C');
-    BAMutil.addActionToMenu( mmMenu, minmaxHorizAction);
-    BAMutil.addActionToMenu( mmMenu, minmaxLogAction);
-    BAMutil.addActionToMenu( mmMenu, minmaxHoldAction);
+    BAMutil.addActionToMenu(mmMenu, minmaxHorizAction);
+    BAMutil.addActionToMenu(mmMenu, minmaxLogAction);
+    BAMutil.addActionToMenu(mmMenu, minmaxHoldAction);
     toolMenu.add(mmMenu);
 
     // Zoom/Pan
     JMenu zoomMenu = new JMenu("Zoom/Pan");
     zoomMenu.setMnemonic('Z');
-    panz.addActionsToMenu( zoomMenu); // items are added by NavigatedPanelToolbar
+    panz.addActionsToMenu(zoomMenu); // items are added by NavigatedPanelToolbar
     toolMenu.add(zoomMenu);
   }
 
   private static class LoopControlAction extends AbstractAction {
     SuperComboBox scbox;
-    LoopControlAction( SuperComboBox cbox) {
+
+    LoopControlAction(SuperComboBox cbox) {
       this.scbox = cbox;
-      BAMutil.setActionProperties( this, null, cbox.getName(), false, 0, 0);
+      BAMutil.setActionProperties(this, null, cbox.getName(), false, 0, 0);
     }
+
     public void actionPerformed(ActionEvent e) {
       scbox.getLoopControl().show();
     }
@@ -852,15 +873,16 @@ public class GridUI extends JPanel {
       Formatter errlog = new Formatter();
 
       try {
-        dataset = factory.openDataset( invds, true, this, errlog);
+        dataset = factory.openDataset(invds, true, this, errlog);
         gridDataset = new ucar.nc2.dt.grid.GridDataset(dataset);
 
       } catch (IOException e) {
-        setError("Failed to open datset: "+errlog);
+        setError("Failed to open datset: " + errlog);
       }
 
       success = !cancel && (gridDataset != null);
-      if (success) controller.setGridDataset( gridDataset);
+      if (success)
+        controller.setGridDataset(gridDataset);
       done = true;
     }
   }

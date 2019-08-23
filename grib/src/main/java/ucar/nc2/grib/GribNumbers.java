@@ -23,16 +23,18 @@ public final class GribNumbers {
 
   /**
    * Test if the given gribBitNumber is set in the test value.
+   * 
    * @param value test the 8 bits in this value .
    * @param gribBitNumber one based, starting from highest bit. Must be between 1-8.
    * @return true if the given gribBitNumber is set.
    */
   public static boolean testGribBitIsSet(int value, int gribBitNumber) {
-    return (value & bitmask[gribBitNumber-1]) != 0;
+    return (value & bitmask[gribBitNumber - 1]) != 0;
   }
 
   /**
    * Test if the given bit is set in the test value.
+   * 
    * @param value test the 8 bits in this value .
    * @param bit zero based, starting from highest bit. Must be between 0-7.
    * @return true if the given bit is set.
@@ -65,18 +67,18 @@ public final class GribNumbers {
   }
 
   /**
-    * Convert unsigned bytes into an integer.
-    *
-    * @param raf read one byte from here
-    * @return integer value
-    * @throws IOException on read error
-    */
-   public static int uint(RandomAccessFile raf) throws IOException {
-     int a = raf.read();
-     return (int) DataType.unsignedByteToShort((byte) a);
-   }
+   * Convert unsigned bytes into an integer.
+   *
+   * @param raf read one byte from here
+   * @return integer value
+   * @throws IOException on read error
+   */
+  public static int uint(RandomAccessFile raf) throws IOException {
+    int a = raf.read();
+    return (int) DataType.unsignedByteToShort((byte) a);
+  }
 
-   /**
+  /**
    * convert 2 bytes to a signed integer.
    *
    * @param a first byte
@@ -84,7 +86,7 @@ public final class GribNumbers {
    * @return int
    */
   public static int int2(int a, int b) {
-    if (((a == 0xff) && (b == 0xff))) {  // all bits set to one
+    if (((a == 0xff) && (b == 0xff))) { // all bits set to one
       return UNDEFINED;
     }
 
@@ -149,9 +151,8 @@ public final class GribNumbers {
       return UNDEFINED;
     }
 
-    return (1 - ((a & 128) >> 6))
-            * ((a & 127) << 24 | b << 16 | c << 8 | d);
-  }  // end int4
+    return (1 - ((a & 128) >> 6)) * ((a & 127) << 24 | b << 16 | c << 8 | d);
+  } // end int4
 
   /**
    * Convert 2 bytes into an unsigned integer.
@@ -205,7 +206,7 @@ public final class GribNumbers {
     return a << 16 | b << 8 | c;
   }
 
-   /**
+  /**
    * Convert 4 bytes into a float value.
    *
    * @param raf read from here
@@ -262,14 +263,14 @@ public final class GribNumbers {
     int h = raf.read();
 
     return (1 - ((a & 128) >> 6))
-            * ((long)(a & 127) << 56 | (long) b << 48 | (long) c << 40 | (long) d << 32 | e << 24
-            | f << 16 | g << 8 | h);
+        * ((long) (a & 127) << 56 | (long) b << 48 | (long) c << 40 | (long) d << 32 | e << 24 | f << 16 | g << 8 | h);
 
   }
 
   /**
    * A signed byte has a sign bit then 1 15-bit value.
    * This is not twos complement (!)
+   * 
    * @param v convert byte to signed int
    * @return signed int
    */

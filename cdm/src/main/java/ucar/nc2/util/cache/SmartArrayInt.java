@@ -6,7 +6,6 @@
 package ucar.nc2.util.cache;
 
 import ucar.nc2.util.Misc;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -22,9 +21,9 @@ import java.util.Formatter;
 public class SmartArrayInt {
   private final int[] raw;
   private final int start;
-  private final boolean isSequential;   // if elem[i] = constant + i; LOOK could generalize to strided
-  private final boolean isConstant;   // if elem[i] = constant
-  private final boolean isSorted;    // if elements are sorted, can use a binary search
+  private final boolean isSequential; // if elem[i] = constant + i; LOOK could generalize to strided
+  private final boolean isConstant; // if elem[i] = constant
+  private final boolean isSorted; // if elements are sorted, can use a binary search
   private final int n;
 
   public SmartArrayInt(int[] raw) {
@@ -41,10 +40,13 @@ public class SmartArrayInt {
     boolean isSeq = true;
     boolean isSort = true;
     this.start = raw[0];
-    for (int i=0; i<raw.length; i++) {
-      if (raw[i] != start+i) isSeq = false;
-      if (raw[i] != start) isC = false;
-      if (i>0 && raw[i] < raw[i-1]) isSort = false;
+    for (int i = 0; i < raw.length; i++) {
+      if (raw[i] != start + i)
+        isSeq = false;
+      if (raw[i] != start)
+        isC = false;
+      if (i > 0 && raw[i] < raw[i - 1])
+        isSort = false;
     }
 
     this.raw = (!isSeq && !isC) ? raw : null;
@@ -54,8 +56,10 @@ public class SmartArrayInt {
   }
 
   public int get(int idx) {
-    if (isConstant) return start;
-    if (isSequential) return start+idx;
+    if (isConstant)
+      return start;
+    if (isSequential)
+      return start + idx;
     return raw[idx];
   }
 
@@ -64,8 +68,10 @@ public class SmartArrayInt {
   }
 
   public void show(Formatter f) {
-    if (isConstant) f.format("isConstant=%d",start);
-    else if (isSequential) f.format("isSequential start=%d",start);
+    if (isConstant)
+      f.format("isConstant=%d", start);
+    else if (isSequential)
+      f.format("isSequential start=%d", start);
     else {
       f.format("isSorted=%s ", isSorted);
       Misc.showInts(raw, f);
@@ -74,18 +80,22 @@ public class SmartArrayInt {
 
   /**
    * Find which index holds the value want
-   * @param want  value wanted
+   * 
+   * @param want value wanted
    * @return < 0 if not found, else the index. If duplicates, then return any match
    */
   public int findIdx(int want) {
-    if (isConstant) return (want == start)  ? 0 : -1;
-    if (isSequential) return want - start;
+    if (isConstant)
+      return (want == start) ? 0 : -1;
+    if (isSequential)
+      return want - start;
     if (isSorted) {
       return Arrays.binarySearch(raw, want);
     }
     // linear search
-    for (int i=0; i<raw.length; i++)
-      if (raw[i] == want) return i;
+    for (int i = 0; i < raw.length; i++)
+      if (raw[i] == want)
+        return i;
     return -1;
   }
 

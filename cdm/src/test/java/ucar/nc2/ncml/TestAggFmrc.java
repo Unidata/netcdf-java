@@ -8,12 +8,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -24,7 +22,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.time.CalendarDate;
-
 import static java.lang.Math.toIntExact;
 
 
@@ -98,7 +95,7 @@ public class TestAggFmrc {
 
   @Test
   public void testAggVarShape() {
-    for (Variable var : new Variable[]{varScan, varExplicit}) {
+    for (Variable var : new Variable[] {varScan, varExplicit}) {
       Assert.assertEquals(3, var.getShape(0));
       Assert.assertEquals(21, var.getShape(1));
       Assert.assertEquals(6, var.getShape(2));
@@ -122,9 +119,9 @@ public class TestAggFmrc {
     Array valuesScan = varScan.read();
     Array valuesExplicit = varExplicit.read();
     List<int[]> idxs = new ArrayList<>();
-    idxs.add(new int[]{0, 0, 0, 0, 0});
-    idxs.add(new int[]{2, 20, 5, 38, 44});
-    idxs.add(new int[]{1, 10, 3, 19, 22});
+    idxs.add(new int[] {0, 0, 0, 0, 0});
+    idxs.add(new int[] {2, 20, 5, 38, 44});
+    idxs.add(new int[] {1, 10, 3, 19, 22});
 
     Index idx = Index.factory(valuesScan.getShape());
 
@@ -140,17 +137,17 @@ public class TestAggFmrc {
   public void testAggDataValuesWithOrig() throws IOException {
     // test values in aggregation against values from files that were aggregated.
     // Agg Shapes
-    // run, time, isobaric,  y,  x
-    //   3,   21,        6, 39, 45
+    // run, time, isobaric, y, x
+    // 3, 21, 6, 39, 45
 
-    // individual file shapes time, isobaric,  y,  x
-    //                 valuesA  20,        6, 39, 45
-    //                 valuesB  21,        6, 39, 45
-    //                 valuesC  20,        6, 39, 45
+    // individual file shapes time, isobaric, y, x
+    // valuesA 20, 6, 39, 45
+    // valuesB 21, 6, 39, 45
+    // valuesC 20, 6, 39, 45
 
-    int[] startAgg = new int[]{0, 0, 0, 0, 0};
-    int[] endAgg = new int[]{2, 19, 5, 38, 44};
-    int[] startFileBInAgg = new int[]{1, 0, 0, 0, 0};
+    int[] startAgg = new int[] {0, 0, 0, 0, 0};
+    int[] endAgg = new int[] {2, 19, 5, 38, 44};
+    int[] startFileBInAgg = new int[] {1, 0, 0, 0, 0};
 
 
     Index idxAgg = Index.factory(valuesScan.getShape());
@@ -218,16 +215,16 @@ public class TestAggFmrc {
   @Test
   public void testBestDataset() {
     // delta_t is 12 hours, first time in dataset is 2007-07-29T1200
-    // best ds shapes time, isobaric,  y,  x
-    //                  24,        6, 39, 45
+    // best ds shapes time, isobaric, y, x
+    // 24, 6, 39, 45
     //
-    // individual file shapes time, isobaric,  y,  x
-    //                 valuesA  20,        6, 39, 45
-    //                 valuesB  21,        6, 39, 45
-    //                 valuesC  20,        6, 39, 45
-    int[] startFmrc = new int[]{0, 0, 0, 0};
-    int[] endFmrc = new int[]{23, 5, 38, 44};
-    int[] startFileBInFmrc = new int[]{1, 0, 0, 0};
+    // individual file shapes time, isobaric, y, x
+    // valuesA 20, 6, 39, 45
+    // valuesB 21, 6, 39, 45
+    // valuesC 20, 6, 39, 45
+    int[] startFmrc = new int[] {0, 0, 0, 0};
+    int[] endFmrc = new int[] {23, 5, 38, 44};
+    int[] startFileBInFmrc = new int[] {1, 0, 0, 0};
 
 
     Index idxAgg = Index.factory(valuesBestScanVar.getShape());
@@ -257,6 +254,7 @@ public class TestAggFmrc {
     Assert.assertEquals(b, orig, 0);
 
   }
+
   /**
    * close out datasets when tests are finished
    */

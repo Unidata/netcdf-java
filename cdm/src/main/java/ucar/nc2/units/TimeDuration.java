@@ -6,10 +6,8 @@
 package ucar.nc2.units;
 
 import ucar.units.ConversionException;
-
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
-
 import java.util.Calendar;
 import java.util.Date;
 
@@ -20,8 +18,8 @@ import java.util.Date;
  * <p/>
  * A duration can be one of the following:
  * <ol>
- * <li> a valid udunits string compatible with "secs"
- * <li> an xsd:duration type specified in the following form "PnYnMnDTnHnMnS" where:
+ * <li>a valid udunits string compatible with "secs"
+ * <li>an xsd:duration type specified in the following form "PnYnMnDTnHnMnS" where:
  * <ul>
  * <li>P indicates the period (required)
  * <li>nY indicates the number of years
@@ -42,15 +40,17 @@ import java.util.Date;
 public class TimeDuration {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TimeDuration.class);
 
-  /* private static TimeUnit secUnits;
-
-  static {
-    try {
-      secUnits = new TimeUnit("1 sec");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  } */
+  /*
+   * private static TimeUnit secUnits;
+   * 
+   * static {
+   * try {
+   * secUnits = new TimeUnit("1 sec");
+   * } catch (Exception e) {
+   * e.printStackTrace();
+   * }
+   * }
+   */
 
   private String text;
   private TimeUnit timeUnit;
@@ -58,8 +58,7 @@ public class TimeDuration {
 
   static private boolean debug = false;
 
-  private TimeDuration() {
-  }
+  private TimeDuration() {}
 
   /**
    * Copy constructor.
@@ -92,7 +91,7 @@ public class TimeDuration {
     text = (text == null) ? "" : text.trim();
     this.text = text;
 
-    // see if its blank   LOOK WTF ?
+    // see if its blank LOOK WTF ?
     if (text.length() == 0) {
       isBlank = true;
       try {
@@ -105,17 +104,18 @@ public class TimeDuration {
     // see if its a udunits string
     try {
       timeUnit = new TimeUnit(text);
-      if (debug) System.out.println(" set time unit= " + timeUnit);
+      if (debug)
+        System.out.println(" set time unit= " + timeUnit);
 
     } catch (Exception e) {
       // see if its a xsd:duration
       try {
         DatatypeFactory factory = DatatypeFactory.newInstance();
         Duration d = factory.newDuration(text);
-        //long secs = d.getTimeInMillis(new Date()) / 1000;
-        Calendar c  = Calendar.getInstance();
+        // long secs = d.getTimeInMillis(new Date()) / 1000;
+        Calendar c = Calendar.getInstance();
         c.set(1900, 0, 1, 0, 0, 0);
-        long secs =d.getTimeInMillis( c.getTime() ) / 1000;
+        long secs = d.getTimeInMillis(c.getTime()) / 1000;
         timeUnit = new TimeUnit(secs + " secs");
 
       } catch (Exception e1) {
@@ -145,12 +145,12 @@ public class TimeDuration {
     try {
       DatatypeFactory factory = DatatypeFactory.newInstance();
       Duration d = factory.newDuration(text);
-      //long secs = d.getTimeInMillis(new Date()) / 1000;
-      
-      Calendar c  = Calendar.getInstance();
+      // long secs = d.getTimeInMillis(new Date()) / 1000;
+
+      Calendar c = Calendar.getInstance();
       c.set(1900, 0, 1, 0, 0, 0);
-      long secs =d.getTimeInMillis( c.getTime() ) / 1000;      
-      
+      long secs = d.getTimeInMillis(c.getTime()) / 1000;
+
       td.timeUnit = new TimeUnit(secs + " secs");
     } catch (Exception e) {
       throw new java.text.ParseException(e.getMessage(), 0);
@@ -160,6 +160,7 @@ public class TimeDuration {
 
   /**
    * Get the duration in natural units, ie units of getTimeUnit()
+   * 
    * @return the duration in natural units
    */
   public double getValue() {
@@ -190,6 +191,7 @@ public class TimeDuration {
 
   /**
    * Get the duration in seconds
+   * 
    * @return the duration in seconds
    */
   public double getValueInSeconds() {
@@ -198,6 +200,7 @@ public class TimeDuration {
 
   /**
    * Set the duration in seconds
+   * 
    * @param secs the duration in seconds
    */
   public void setValueInSeconds(double secs) {
@@ -207,6 +210,7 @@ public class TimeDuration {
 
   /**
    * If this is a blank string
+   * 
    * @return true if this is a blank string
    */
   public boolean isBlank() {
@@ -215,6 +219,7 @@ public class TimeDuration {
 
   /**
    * Get the corresponding time unit
+   * 
    * @return the corresponding time unit
    */
   public TimeUnit getTimeUnit() {
@@ -223,6 +228,7 @@ public class TimeDuration {
 
   /**
    * Get the String text
+   * 
    * @return the text
    */
   public String getText() {
@@ -231,6 +237,7 @@ public class TimeDuration {
 
   /**
    * String representation
+   * 
    * @return getText()
    */
   public String toString() {
@@ -257,7 +264,7 @@ public class TimeDuration {
     return to.getValueInSeconds() == getValueInSeconds();
   }
 
-  public Date add( Date d) {
+  public Date add(Date d) {
     return timeUnit.add(d);
   }
 }

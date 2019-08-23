@@ -15,7 +15,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,18 +25,19 @@ import java.util.Formatter;
  * Abstract base class for IOSP implementations that provides default implementations
  * of readToByteChannel(...) and readSection(...).
  *
- * <p>Implementations should make sure to handle the RandomAccessFile properly by
+ * <p>
+ * Implementations should make sure to handle the RandomAccessFile properly by
  * doing one of the following:
  *
  * <ol>
- *   <li> Write your own open(...) and close() methods that keep track of the
- *     RandomAccessFile, be sure to close the RandomAccessFile in your close()
- *     method.</li>
- *   <li> Write your own open(...) and close() methods that call the open(...)
- *     and close() methods defined here, use the "raf" variable also defined
- *     here.</li>
- *   <li> Don't write an open(...) or close() method, so that those defined
- *     here are used.</li>
+ * <li>Write your own open(...) and close() methods that keep track of the
+ * RandomAccessFile, be sure to close the RandomAccessFile in your close()
+ * method.</li>
+ * <li>Write your own open(...) and close() methods that call the open(...)
+ * and close() methods defined here, use the "raf" variable also defined
+ * here.</li>
+ * <li>Don't write an open(...) or close() method, so that those defined
+ * here are used.</li>
  * </ol>
  *
  */
@@ -53,7 +53,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   protected NetcdfFile ncfile;
 
   @Override
-  public void open( RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask ) throws IOException {
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.location = (raf != null) ? raf.getLocation() : null;
     this.ncfile = ncfile;
@@ -84,29 +84,29 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   // LOOK DataOutputStream uses big-endian
   @Override
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array data = readData(v2, section);
-    return IospHelper.copyToByteChannel(data,  channel);
+    return IospHelper.copyToByteChannel(data, channel);
   }
 
   public long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array data = readData(v2, section);
-    return IospHelper.copyToOutputStream(data,  out);
+    return IospHelper.copyToOutputStream(data, out);
   }
 
   public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array data = readData(v2, section);
-    return IospHelper.copyToByteChannel(data,  channel);
+    return IospHelper.copyToByteChannel(data, channel);
   }
 
   @Override
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
-    return IospHelper.readSection(cer);  //  IOSPs can optimize by overriding
+    return IospHelper.readSection(cer); // IOSPs can optimize by overriding
   }
 
   @Override
@@ -131,8 +131,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
    * Returns the time that the underlying file(s) were last modified. If they've changed since they were stored in the
    * cache, they will be closed and reopened with {@link ucar.nc2.util.cache.FileFactory}.
    *
-   * @return  a {@code long} value representing the time the file(s) were last modified or {@code 0L} if the
-   *          last-modified time couldn't be determined for any reason.
+   * @return a {@code long} value representing the time the file(s) were last modified or {@code 0L} if the
+   *         last-modified time couldn't be determined for any reason.
    */
   public long getLastModified() {
     if (location != null) {
@@ -150,7 +150,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   @Override
   public String getDetailInfo() {
-    if (raf == null) return "";
+    if (raf == null)
+      return "";
     try {
       Formatter fout = new Formatter();
       double size = raf.length() / (1000.0 * 1000.0);

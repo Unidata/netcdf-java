@@ -8,7 +8,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dods.DODSNode;
 import opendap.dap.*;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -18,24 +17,23 @@ import java.io.IOException;
  * @author caron
  */
 
-//Coverity[FB.EQ_DOESNT_OVERRIDE_EQUALS]
-public class DODSStructure extends ucar.nc2.Structure implements DODSNode
-{
+// Coverity[FB.EQ_DOESNT_OVERRIDE_EQUALS]
+public class DODSStructure extends ucar.nc2.Structure implements DODSNode {
   private DConstructor ds;
   protected DODSNetcdfFile dodsfile; // so we dont have to cast everywhere
   protected String dodsShortName;
 
   // constructor called from DODSNetcdfFile.makeVariable() for scalar Structure or Sequence
-  DODSStructure( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName,
-         DodsV dodsV) throws IOException {
+  DODSStructure(DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName,
+      DodsV dodsV) throws IOException {
 
-    super(dodsfile, parentGroup, parentStructure,  DODSNetcdfFile.makeShortName(dodsShortName));
+    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeShortName(dodsShortName));
     setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
     this.ds = (DConstructor) dodsV.bt;
 
     if (ds instanceof DSequence) {
-      this.dimensions.add( Dimension.VLEN);
+      this.dimensions.add(Dimension.VLEN);
       this.shape = new int[1]; // scalar
     } else
       this.shape = new int[0]; // scalar
@@ -51,19 +49,21 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
   }
 
   // constructor called from DODSNetcdfFile.makeVariable() for array of Structure
-  DODSStructure( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String shortName,
-                 DArray dodsArray, DodsV dodsV) throws IOException {
-    this( dodsfile, parentGroup, parentStructure, shortName, dodsV);
-    List<Dimension> dims = dodsfile.constructDimensions( parentGroup, dodsArray);
+  DODSStructure(DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String shortName,
+      DArray dodsArray, DodsV dodsV) throws IOException {
+    this(dodsfile, parentGroup, parentStructure, shortName, dodsV);
+    List<Dimension> dims = dodsfile.constructDimensions(parentGroup, dodsArray);
     setDimensions(dims);
     setSPobject(dodsV);
   }
 
-  /** Copy constructor.
-   * @param from  copy from this
+  /**
+   * Copy constructor.
+   * 
+   * @param from copy from this
    */
-  private DODSStructure( DODSStructure from) { // boolean reparent) {
-    super( from);
+  private DODSStructure(DODSStructure from) { // boolean reparent) {
+    super(from);
 
     dodsfile = from.dodsfile;
     setDODSName(from.getDODSName());
@@ -77,12 +77,16 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
   }
 
 
-  DConstructor getDConstructor() { return ds; }
+  DConstructor getDConstructor() {
+    return ds;
+  }
 
   // need package access
-  //protected void calcIsCoordinateVariable() { super.calcIsCoordinateVariable(); }
+  // protected void calcIsCoordinateVariable() { super.calcIsCoordinateVariable(); }
 
-  protected String getDODSshortName() { return getShortName(); }
+  protected String getDODSshortName() {
+    return getShortName();
+  }
 
 
   ///////////////////////////////////////////////////////////////////////
@@ -92,7 +96,8 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
    * Sequence will be read using the given constraint expression, and the data
    * returned sequentially.
    *
-   * <br> If the data has been cached by a read() to an enclosing container, you must
+   * <br>
+   * If the data has been cached by a read() to an enclosing container, you must
    * leave the CE null. Otherwise a new call will be made to the server.
    *
    * @param CE constraint expression, or null.
@@ -139,9 +144,15 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
 
   ////////////////////////////////////////////
   // DODSNode Interface
-  //Coverity[FB.UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD]
+  // Coverity[FB.UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD]
   String dodsName = null;
-  public String getDODSName() {return dodsName;}
-  public void setDODSName(String name) {this.dodsName = name;}
+
+  public String getDODSName() {
+    return dodsName;
+  }
+
+  public void setDODSName(String name) {
+    this.dodsName = name;
+  }
 
 }

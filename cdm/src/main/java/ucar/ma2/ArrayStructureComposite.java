@@ -12,24 +12,24 @@ import java.util.ArrayList;
  * An ArrayStructure compose of other ArrayStructures.
  * Doesnt work because of read(StructureMembers.Member). this need to be withdrawn.
  *
- *    int total = 0;
-    List<ArrayStructure> list = new ArrayList<ArrayStructure> (msgs.size());
-    for (Message m : msgs) {
-     ArrayStructure oneMess;
-     if (!m.dds.isCompressed()) {
-       MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-       oneMess = reader.readEntireMessage(s, protoMessage, m, raf, null);
-     } else {
-       MessageCompressedDataReader reader = new MessageCompressedDataReader();
-       oneMess = reader.readEntireMessage(s, protoMessage, m, raf, null);
-     }
-      list.add(oneMess);
-      total += (int) oneMess.getSize();
-    }
-
-    return (list.size() == 1) ? list.get(0) : new ArrayStructureComposite(sm, list, total);
-         
+ * int total = 0;
+ * List<ArrayStructure> list = new ArrayList<ArrayStructure> (msgs.size());
+ * for (Message m : msgs) {
+ * ArrayStructure oneMess;
+ * if (!m.dds.isCompressed()) {
+ * MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+ * oneMess = reader.readEntireMessage(s, protoMessage, m, raf, null);
+ * } else {
+ * MessageCompressedDataReader reader = new MessageCompressedDataReader();
+ * oneMess = reader.readEntireMessage(s, protoMessage, m, raf, null);
+ * }
+ * list.add(oneMess);
+ * total += (int) oneMess.getSize();
+ * }
+ * 
+ * return (list.size() == 1) ? list.get(0) : new ArrayStructureComposite(sm, list, total);
  *
+ * 
  * @author caron
  * @since Nov 19, 2009
  */
@@ -53,7 +53,7 @@ public class ArrayStructureComposite extends ArrayStructure {
 
   @Override
   protected StructureData makeStructureData(ArrayStructure me, int recno) {
-    for (int i=0; i< start.length; i++) {
+    for (int i = 0; i < start.length; i++) {
       if (recno >= start[i]) {
         ArrayStructure as = compose.get(i);
         return as.makeStructureData(as, recno - start[i]);

@@ -13,7 +13,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Format;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,15 +34,16 @@ public class DtCoverage implements IsMissingEvaluator {
   private final DtCoverageCS gcs;
   private final VariableDS vs;
   private int xDimOrgIndex, yDimOrgIndex, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
-  private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1, rtDimNewIndex = -1;
+  private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1,
+      rtDimNewIndex = -1;
   private final List<Dimension> mydims;
 
   /**
    * Constructor.
    *
    * @param dataset belongs to this dataset
-   * @param dsvar   wraps this Variable
-   * @param gcs     has this grid coordinate system
+   * @param dsvar wraps this Variable
+   * @param gcs has this grid coordinate system
    */
   public DtCoverage(DtCoverageDataset dataset, DtCoverageCS gcs, VariableDS dsvar) {
     this.dataset = dataset;
@@ -56,12 +56,13 @@ public class DtCoverage implements IsMissingEvaluator {
       yDimOrgIndex = findDimension(gcs.getYHorizAxis().getDimension(0));
 
     } else { // 2D case
-      //coverity[COPY_PASTE_ERROR]
+      // coverity[COPY_PASTE_ERROR]
       yDimOrgIndex = findDimension(gcs.getXHorizAxis().getDimension(0));
       xDimOrgIndex = findDimension(gcs.getXHorizAxis().getDimension(1));
     }
 
-    if (gcs.getVerticalAxis() != null) zDimOrgIndex = findDimension(gcs.getVerticalAxis().getDimension(0));
+    if (gcs.getVerticalAxis() != null)
+      zDimOrgIndex = findDimension(gcs.getVerticalAxis().getDimension(0));
     if (gcs.getTimeAxis() != null) {
       if (gcs.getTimeAxis().getRank() == 1)
         tDimOrgIndex = findDimension(gcs.getTimeAxis().getDimension(0));
@@ -72,8 +73,10 @@ public class DtCoverage implements IsMissingEvaluator {
         tDimOrgIndex = -1;
       }
     }
-    if (gcs.getEnsembleAxis() != null) eDimOrgIndex = findDimension(gcs.getEnsembleAxis().getDimension(0));
-    if (gcs.getRunTimeAxis() != null) rtDimOrgIndex = findDimension(gcs.getRunTimeAxis().getDimension(0));
+    if (gcs.getEnsembleAxis() != null)
+      eDimOrgIndex = findDimension(gcs.getEnsembleAxis().getDimension(0));
+    if (gcs.getRunTimeAxis() != null)
+      rtDimOrgIndex = findDimension(gcs.getRunTimeAxis().getDimension(0));
 
     // construct canonical dimension list
     int count = 0;
@@ -134,7 +137,8 @@ public class DtCoverage implements IsMissingEvaluator {
    * @return ith Dimension
    */
   public Dimension getDimension(int i) {
-    if ((i < 0) || (i >= mydims.size())) return null;
+    if ((i < 0) || (i >= mydims.size()))
+      return null;
     return mydims.get(i);
   }
 
@@ -235,7 +239,7 @@ public class DtCoverage implements IsMissingEvaluator {
   /**
    * Convenience function; lookup Attribute value by name. Must be String valued
    *
-   * @param attName      name of the attribute
+   * @param attName name of the attribute
    * @param defaultValue if not found, use this as the default
    * @return Attribute string value, or default if not found.
    */
@@ -321,7 +325,7 @@ public class DtCoverage implements IsMissingEvaluator {
   }
 
 
-  //public ucar.unidata.geoloc.ProjectionImpl getProjection() { return gcs.getProjection(); }
+  // public ucar.unidata.geoloc.ProjectionImpl getProjection() { return gcs.getProjection(); }
 
   /**
    * true if there may be missing data, see VariableDS.hasMissing()
@@ -353,7 +357,8 @@ public class DtCoverage implements IsMissingEvaluator {
    * @return input array, with missing values converted to NaNs.
    */
   public float[] setMissingToNaN(float[] values) {
-    if (!vs.hasMissing()) return values;
+    if (!vs.hasMissing())
+      return values;
     final int length = values.length;
     for (int i = 0; i < length; i++) {
       double value = values[i];
@@ -393,11 +398,11 @@ public class DtCoverage implements IsMissingEvaluator {
    * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
    *
    * @param rt if < 0, get all of runtime dim; if valid index, fix slice to that value.
-   * @param e  if < 0, get all of ensemble dim; if valid index, fix slice to that value.
-   * @param t  if < 0, get all of time dim; if valid index, fix slice to that value.
-   * @param z  if < 0, get all of z dim; if valid index, fix slice to that value.
-   * @param y  if < 0, get all of y dim; if valid index, fix slice to that value.
-   * @param x  if < 0, get all of x dim; if valid index, fix slice to that value.
+   * @param e if < 0, get all of ensemble dim; if valid index, fix slice to that value.
+   * @param t if < 0, get all of time dim; if valid index, fix slice to that value.
+   * @param z if < 0, get all of z dim; if valid index, fix slice to that value.
+   * @param y if < 0, get all of y dim; if valid index, fix slice to that value.
+   * @param x if < 0, get all of x dim; if valid index, fix slice to that value.
    *
    * @return data[rt, e, t, z, y, x], eliminating missing or fixed dimension.
    */
@@ -420,7 +425,7 @@ public class DtCoverage implements IsMissingEvaluator {
     // construct the shape of the data volume to be read
     if (rtdim != null) {
       if ((rt >= 0) && (rt < rtdim.getLength()))
-        start[rtDimOrgIndex] = rt;  // fix rt
+        start[rtDimOrgIndex] = rt; // fix rt
       else {
         shape[rtDimOrgIndex] = rtdim.getLength(); // all of rt
       }
@@ -428,7 +433,7 @@ public class DtCoverage implements IsMissingEvaluator {
 
     if (edim != null) {
       if ((e >= 0) && (e < edim.getLength()))
-        start[eDimOrgIndex] = e;  // fix e
+        start[eDimOrgIndex] = e; // fix e
       else {
         shape[eDimOrgIndex] = edim.getLength(); // all of e
       }
@@ -436,7 +441,7 @@ public class DtCoverage implements IsMissingEvaluator {
 
     if (tdim != null) {
       if ((t >= 0) && (t < tdim.getLength()))
-        start[tDimOrgIndex] = t;  // fix t
+        start[tDimOrgIndex] = t; // fix t
       else {
         shape[tDimOrgIndex] = tdim.getLength(); // all of t
       }
@@ -444,7 +449,7 @@ public class DtCoverage implements IsMissingEvaluator {
 
     if (zdim != null) {
       if ((z >= 0) && (z < zdim.getLength()))
-        start[zDimOrgIndex] = z;  // fix z
+        start[zDimOrgIndex] = z; // fix z
       else {
         shape[zDimOrgIndex] = zdim.getLength(); // all of z
       }
@@ -452,7 +457,7 @@ public class DtCoverage implements IsMissingEvaluator {
 
     if (ydim != null) {
       if ((y >= 0) && (y < ydim.getLength()))
-        start[yDimOrgIndex] = y;  // fix y
+        start[yDimOrgIndex] = y; // fix y
       else {
         shape[yDimOrgIndex] = ydim.getLength(); // all of y
       }
@@ -460,7 +465,7 @@ public class DtCoverage implements IsMissingEvaluator {
 
     if (xdim != null) {
       if ((x >= 0) && (x < xdim.getLength())) // all of x
-        start[xDimOrgIndex] = x;  // fix x
+        start[xDimOrgIndex] = x; // fix x
       else {
         shape[xDimOrgIndex] = xdim.getLength(); // all of x
       }
@@ -469,7 +474,8 @@ public class DtCoverage implements IsMissingEvaluator {
     if (debugArrayShape) {
       System.out.println("read shape from org variable = ");
       for (int i = 0; i < rank; i++)
-        System.out.println("   start = " + start[i] + " shape = " + shape[i] + " name = " + vs.getDimension(i).getShortName());
+        System.out.println(
+            "   start = " + start[i] + " shape = " + shape[i] + " name = " + vs.getDimension(i).getShortName());
     }
 
     // read it
@@ -489,27 +495,38 @@ public class DtCoverage implements IsMissingEvaluator {
     // eliminate fixed dimensions, but not all dimensions of length 1.
     int count = 0;
     if (rtdim != null) {
-      if (rt >= 0) dataVolume = dataVolume.reduce(count);
-      else count++;
+      if (rt >= 0)
+        dataVolume = dataVolume.reduce(count);
+      else
+        count++;
     }
     if (edim != null) {
-      if (e >= 0) dataVolume = dataVolume.reduce(count);
-      else count++;
+      if (e >= 0)
+        dataVolume = dataVolume.reduce(count);
+      else
+        count++;
     }
     if (tdim != null) {
-      if (t >= 0) dataVolume = dataVolume.reduce(count);
-      else count++;
+      if (t >= 0)
+        dataVolume = dataVolume.reduce(count);
+      else
+        count++;
     }
     if (zdim != null) {
-      if (z >= 0) dataVolume = dataVolume.reduce(count);
-      else count++;
+      if (z >= 0)
+        dataVolume = dataVolume.reduce(count);
+      else
+        count++;
     }
     if (ydim != null) {
-      if (y >= 0) dataVolume = dataVolume.reduce(count);
-      else count++;
+      if (y >= 0)
+        dataVolume = dataVolume.reduce(count);
+      else
+        count++;
     }
     if (xdim != null) {
-      if (x >= 0) dataVolume = dataVolume.reduce(count);
+      if (x >= 0)
+        dataVolume = dataVolume.reduce(count);
     }
 
     return dataVolume;
@@ -581,24 +598,33 @@ public class DtCoverage implements IsMissingEvaluator {
     List<Dimension> oldDims = vs.getDimensions();
     int[] permuteIndex = new int[vs.getRank()];
     int count = 0;
-    if (oldDims.contains(rtdim)) permuteIndex[count++] = oldDims.indexOf(rtdim);
-    if (oldDims.contains(edim)) permuteIndex[count++] = oldDims.indexOf(edim);
-    if (oldDims.contains(tdim)) permuteIndex[count++] = oldDims.indexOf(tdim);
-    if (oldDims.contains(zdim)) permuteIndex[count++] = oldDims.indexOf(zdim);
-    if (oldDims.contains(ydim)) permuteIndex[count++] = oldDims.indexOf(ydim);
-    if (oldDims.contains(xdim)) permuteIndex[count] = oldDims.indexOf(xdim);
+    if (oldDims.contains(rtdim))
+      permuteIndex[count++] = oldDims.indexOf(rtdim);
+    if (oldDims.contains(edim))
+      permuteIndex[count++] = oldDims.indexOf(edim);
+    if (oldDims.contains(tdim))
+      permuteIndex[count++] = oldDims.indexOf(tdim);
+    if (oldDims.contains(zdim))
+      permuteIndex[count++] = oldDims.indexOf(zdim);
+    if (oldDims.contains(ydim))
+      permuteIndex[count++] = oldDims.indexOf(ydim);
+    if (oldDims.contains(xdim))
+      permuteIndex[count] = oldDims.indexOf(xdim);
 
     if (debugArrayShape) {
       System.out.println("oldDims = ");
-      for (Dimension oldDim : oldDims) System.out.println("   oldDim = " + oldDim.getShortName());
+      for (Dimension oldDim : oldDims)
+        System.out.println("   oldDim = " + oldDim.getShortName());
       System.out.println("permute dims = ");
-      for (int aPermuteIndex : permuteIndex) System.out.println("   oldDim index = " + aPermuteIndex);
+      for (int aPermuteIndex : permuteIndex)
+        System.out.println("   oldDim index = " + aPermuteIndex);
     }
 
     // check to see if we need to permute
     boolean needPermute = false;
     for (int i = 0; i < permuteIndex.length; i++) {
-      if (i != permuteIndex[i]) needPermute = true;
+      if (i != permuteIndex[i])
+        needPermute = true;
     }
 
     return needPermute ? permuteIndex : null;
@@ -610,12 +636,14 @@ public class DtCoverage implements IsMissingEvaluator {
    * Instances which have same name and coordinate system are equal.
    */
   public boolean equals(Object oo) {
-    if (this == oo) return true;
+    if (this == oo)
+      return true;
     if (!(oo instanceof DtCoverage))
       return false;
 
     DtCoverage d = (DtCoverage) oo;
-    if (!getFullName().equals(d.getFullName())) return false;
+    if (!getFullName().equals(d.getFullName()))
+      return false;
     return getCoordinateSystem().equals(d.getCoordinateSystem());
   }
 

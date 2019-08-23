@@ -18,11 +18,15 @@ public class RotatedLatLon extends AbstractTransformBuilder implements HorizTran
   }
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double lon = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LONGITUDE, Double.NaN);
-    double lat = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LATITUDE, Double.NaN);
-    double angle = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_ANGLE, Double.NaN);
+    double lon =
+        readAttributeDouble(ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LONGITUDE, Double.NaN);
+    double lat =
+        readAttributeDouble(ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LATITUDE, Double.NaN);
+    double angle =
+        readAttributeDouble(ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_ANGLE, Double.NaN);
 
-    ucar.unidata.geoloc.projection.RotatedLatLon proj = new ucar.unidata.geoloc.projection.RotatedLatLon( lat, lon, angle);
+    ucar.unidata.geoloc.projection.RotatedLatLon proj =
+        new ucar.unidata.geoloc.projection.RotatedLatLon(lat, lon, angle);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 

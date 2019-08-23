@@ -13,7 +13,7 @@ import java.awt.*;
  */
 
 public class FldInputVerifier extends InputVerifier implements KeyListener {
-  private static Color color = new Color(243, 255, 159);  // yaller
+  private static Color color = new Color(243, 255, 159); // yaller
   private PopupFactory popupFactory = PopupFactory.getSharedInstance();
   private Popup popup;
   private Field fld;
@@ -22,8 +22,8 @@ public class FldInputVerifier extends InputVerifier implements KeyListener {
 
 
   /**
-   * @param c       The Swing component to listen to.
-   * @param fld       The Field to be validated.
+   * @param c The Swing component to listen to.
+   * @param fld The Field to be validated.
    */
 
   public FldInputVerifier(Component c, Field fld) {
@@ -38,7 +38,7 @@ public class FldInputVerifier extends InputVerifier implements KeyListener {
   public boolean verify(JComponent c) {
     StringBuffer buff = new StringBuffer();
     if (!fld.validate(buff)) {
-      message.setText( buff.toString());
+      message.setText(buff.toString());
       c.setBackground(Color.PINK);
       makePopup(c);
       return false;
@@ -51,7 +51,7 @@ public class FldInputVerifier extends InputVerifier implements KeyListener {
 
   private void makePopup(JComponent c) {
     removePopup(); // in case theres already one
-    
+
     Point p = c.getLocationOnScreen();
     Dimension cDim = c.getSize();
     popup = popupFactory.getPopup(c, main, (int) p.getX() + 15, (int) (p.getY() + cDim.getHeight())); // LOOK 1.4

@@ -12,7 +12,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.util.Formatter;
 import java.util.List;
 import java.io.IOException;
@@ -22,52 +21,56 @@ import java.nio.ByteOrder;
 /**
  * Read data for uncompressed messages.
  *
-  Within one message there are n obs (datasets) and s fields in each dataset.
-  For uncompressed datasets, storage order is data(obs, fld) (fld varying fastest) :
-
-    R11, R12, R13, . . . R1s
-    R21, R22, R23, . . . R2s
-    ....
-    Rn1, Rn2, Rn3, . . . Rns
-
-   where Rij is the jth value of the ith data subset. 
-   the datasets each occupy an identical number of bits, unless delayed replication is used,
-   and are not necessarily aligned on octet boundaries.
-
-   A replicated field (structure) takes a group of fields and replicates them:
-
-     Ri1, (Ri2, Ri3)*r, . . . Ris
-
-   where r is set in the data descriptor, and is the same for all datasets.
-
-   A delayed replicated field (sequence) takes a group of fields and replicates them, and adds the number of replications
-   in the data :
-
-     Ri1, dri, (Ri2, Ri3)*dri, . . . Ris
-
-   where the width (nbits) of dr is set in the data descriptor. This dr can be different for each dataset in the message.
-   It can be 0. When it has a bit width of 1, it indicates an optional set of fields.
-
-   --------------------------
-
-   We use an ArrayStructureBB to hold the data, and fill it sequentially as we scan the message.
-   Fixed length nested Structures are kept in the ArrayStructureBB.
-   Variable length objects (Strings, Sequences) are added to the heap.
+ * Within one message there are n obs (datasets) and s fields in each dataset.
+ * For uncompressed datasets, storage order is data(obs, fld) (fld varying fastest) :
+ * 
+ * R11, R12, R13, . . . R1s
+ * R21, R22, R23, . . . R2s
+ * ....
+ * Rn1, Rn2, Rn3, . . . Rns
+ * 
+ * where Rij is the jth value of the ith data subset.
+ * the datasets each occupy an identical number of bits, unless delayed replication is used,
+ * and are not necessarily aligned on octet boundaries.
+ * 
+ * A replicated field (structure) takes a group of fields and replicates them:
+ * 
+ * Ri1, (Ri2, Ri3)*r, . . . Ris
+ * 
+ * where r is set in the data descriptor, and is the same for all datasets.
+ * 
+ * A delayed replicated field (sequence) takes a group of fields and replicates them, and adds the number of
+ * replications
+ * in the data :
+ * 
+ * Ri1, dri, (Ri2, Ri3)*dri, . . . Ris
+ * 
+ * where the width (nbits) of dr is set in the data descriptor. This dr can be different for each dataset in the
+ * message.
+ * It can be 0. When it has a bit width of 1, it indicates an optional set of fields.
+ * 
+ * --------------------------
+ * 
+ * We use an ArrayStructureBB to hold the data, and fill it sequentially as we scan the message.
+ * Fixed length nested Structures are kept in the ArrayStructureBB.
+ * Variable length objects (Strings, Sequences) are added to the heap.
  */
 
 public class MessageUncompressedDataReader {
 
   /**
    * Read all datasets from a single message
+   * 
    * @param s outer variables
    * @param proto prototype message, has been processed
-   * @param m   read this message
+   * @param m read this message
    * @param raf from this file
-   * @param f  output bit count debugging info (may be null)
-   * @return  ArraySTructure with all the data from the message in it.
+   * @param f output bit count debugging info (may be null)
+   * @return ArraySTructure with all the data from the message in it.
    * @throws IOException on read error
    */
-  ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException {
+  ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f)
+      throws IOException {
     // transfer info from proto message
     DataDescriptor.transferInfo(proto.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
@@ -77,7 +80,7 @@ public class MessageUncompressedDataReader {
     ArrayStructureBB.setOffsets(members);
 
     int n = m.getNumberDatasets();
-    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{n});
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[] {n});
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
 
@@ -90,18 +93,20 @@ public class MessageUncompressedDataReader {
    * Read some or all datasets from a single message
    *
    * @param abb place data into here in order (may be null)
-   * @param m   read this message
+   * @param m read this message
    * @param raf from this file
    * @param r which datasets, reletive to this message. null == all.
    * @param addTime add the time coordinate
-   * @param f  output bit count debugging info (may be null)
+   * @param f output bit count debugging info (may be null)
    * @return number of datasets read
    * @throws IOException on read error
    */
-  public int readData(ArrayStructureBB abb, Message m, RandomAccessFile raf, Range r, boolean addTime, Formatter f) throws IOException {
+  public int readData(ArrayStructureBB abb, Message m, RandomAccessFile raf, Range r, boolean addTime, Formatter f)
+      throws IOException {
     BitReader reader = new BitReader(raf, m.dataSection.getDataPos() + 4);
     DataDescriptor root = m.getRootDataDescriptor();
-    if (root.isBad) return 0;
+    if (root.isBad)
+      return 0;
 
     Request req = new Request(abb, r);
 
@@ -112,7 +117,8 @@ public class MessageUncompressedDataReader {
     // loop over the rows
     int count = 0;
     for (int i = 0; i < n; i++) {
-      if (f != null) f.format("Count bits in observation %d%n", i);
+      if (f != null)
+        f.format("Count bits in observation %d%n", i);
       // the top table always has exactly one "row", since we are working with a single obs
       m.counterDatasets[i] = new BitCounterUncompressed(root, 1, 0);
       DebugOut out = (f == null) ? null : new DebugOut(f);
@@ -138,7 +144,8 @@ public class MessageUncompressedDataReader {
 
     Request(ArrayStructureBB abb, Range r) {
       this.abb = abb;
-      if (abb != null) bb = abb.getByteBuffer();
+      if (abb != null)
+        bb = abb.getByteBuffer();
       this.r = r;
       this.row = 0;
     }
@@ -149,8 +156,10 @@ public class MessageUncompressedDataReader {
     }
 
     boolean wantRow() {
-      if (abb == null) return false;
-      if (r == null) return true;
+      if (abb == null)
+        return false;
+      if (r == null)
+        return true;
       return r.contains(row);
     }
 
@@ -159,20 +168,21 @@ public class MessageUncompressedDataReader {
   /**
    * count/read the bits in one row of a "nested table", defined by List<DataDescriptor> dkeys.
    *
-   * @param out    optional debug output, may be null
+   * @param out optional debug output, may be null
    * @param reader read data with this
-   * @param dkeys  the fields of the table
-   * @param table  put the results here
-   * @param nestedRow    which row of the table
-   * @param req    read data into here, may be null
+   * @param dkeys the fields of the table
+   * @param table put the results here
+   * @param nestedRow which row of the table
+   * @param req read data into here, may be null
    * @throws IOException on read error
    */
   private void readData(DebugOut out, BitReader reader, BitCounterUncompressed table, List<DataDescriptor> dkeys,
-                                    int nestedRow, Request req) throws IOException {
+      int nestedRow, Request req) throws IOException {
 
     for (DataDescriptor dkey : dkeys) {
       if (!dkey.isOkForVariable()) {// misc skip
-        if (out != null) out.f.format("%s %d %s (%s) %n", out.indent(), out.fldno++, dkey.name, dkey.getFxyName());
+        if (out != null)
+          out.f.format("%s %d %s (%s) %n", out.indent(), out.fldno++, dkey.name, dkey.getFxyName());
         continue;
       }
 
@@ -181,10 +191,11 @@ public class MessageUncompressedDataReader {
 
         // find out how many objects in the sequence
         int count = (int) reader.bits2UInt(dkey.replicationCountSize);
-        if (out != null) out.f.format("%4d delayed replication count=%d %n", out.fldno++, count);
+        if (out != null)
+          out.f.format("%4d delayed replication count=%d %n", out.fldno++, count);
         if ((out != null) && (count > 0)) {
-          out.f.format("%4d %s read sequence %s count= %d bitSize=%d start at=0x%x %n",
-                  out.fldno, out.indent(), dkey.getFxyName(), count, dkey.replicationCountSize, reader.getPos());
+          out.f.format("%4d %s read sequence %s count= %d bitSize=%d start at=0x%x %n", out.fldno, out.indent(),
+              dkey.getFxyName(), count, dkey.replicationCountSize, reader.getPos());
         }
 
         // read the data
@@ -201,7 +212,9 @@ public class MessageUncompressedDataReader {
       // compound
       if (dkey.type == 3) {
         BitCounterUncompressed nested = table.makeNested(dkey, dkey.replication, nestedRow, 0);
-        if (out != null) out.f.format("%4d %s read structure %s count= %d%n", out.fldno, out.indent(), dkey.getFxyName(), dkey.replication);
+        if (out != null)
+          out.f.format("%4d %s read structure %s count= %d%n", out.fldno, out.indent(), dkey.getFxyName(),
+              dkey.replication);
 
         for (int i = 0; i < dkey.replication; i++) {
           if (out != null) {
@@ -221,8 +234,8 @@ public class MessageUncompressedDataReader {
         byte[] vals = readCharData(dkey, reader, req);
         if (out != null) {
           String s = new String(vals, CDM.utf8Charset);
-          out.f.format("%4d %s read char %s (%s) width=%d end at= 0x%x val=<%s>%n",
-                  out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.bitWidth, reader.getPos(), s);
+          out.f.format("%4d %s read char %s (%s) width=%d end at= 0x%x val=<%s>%n", out.fldno++, out.indent(),
+              dkey.getFxyName(), dkey.getName(), dkey.bitWidth, reader.getPos(), s);
         }
         continue;
       }
@@ -230,8 +243,8 @@ public class MessageUncompressedDataReader {
       // otherwise read a number
       long val = readNumericData(dkey, reader, req);
       if (out != null)
-        out.f.format("%4d %s read %s (%s %s) bitWidth=%d end at= 0x%x raw=%d convert=%f%n",
-                out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.getUnits(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
+        out.f.format("%4d %s read %s (%s %s) bitWidth=%d end at= 0x%x raw=%d convert=%f%n", out.fldno++, out.indent(),
+            dkey.getFxyName(), dkey.getName(), dkey.getUnits(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
     }
 
   }
@@ -262,8 +275,8 @@ public class MessageUncompressedDataReader {
       } else if (dkey.getByteWidthCDM() == 2) {
         byte b1 = (byte) (result & 0xff);
         byte b2 = (byte) ((result & 0xff00) >> 8);
-        req.bb.put( b2);
-        req.bb.put( b1);
+        req.bb.put(b2);
+        req.bb.put(b1);
 
       } else if (dkey.getByteWidthCDM() == 4) {
         byte b1 = (byte) (result & 0xff);
@@ -275,8 +288,8 @@ public class MessageUncompressedDataReader {
         req.bb.put(b2);
         req.bb.put(b1);
 
-      } else  {
-        byte b1 = (byte)  (result & 0xff);
+      } else {
+        byte b1 = (byte) (result & 0xff);
         byte b2 = (byte) ((result & 0xff00) >> 8);
         byte b3 = (byte) ((result & 0xff0000) >> 16);
         byte b4 = (byte) ((result & 0xff000000) >> 24);
@@ -299,8 +312,8 @@ public class MessageUncompressedDataReader {
   }
 
   // read in the data into an ArrayStructureBB, wrapped by an ArraySequence
-  private ArraySequence makeArraySequenceUncompressed(DebugOut out, BitReader reader, BitCounterUncompressed bitCounterNested,
-                                                      DataDescriptor seqdd, Request req) throws IOException {
+  private ArraySequence makeArraySequenceUncompressed(DebugOut out, BitReader reader,
+      BitCounterUncompressed bitCounterNested, DataDescriptor seqdd, Request req) throws IOException {
 
     int count = bitCounterNested.getNumberRows(); // the actual number of rows in this sequence
     ArrayStructureBB abb = null;
@@ -312,7 +325,7 @@ public class MessageUncompressedDataReader {
       assert seq != null;
 
       // for the obs structure
-      int[] shape = new int[]{count};
+      int[] shape = new int[] {count};
 
       // allocate ArrayStructureBB for outer structure
       // LOOK why is this different from ArrayStructureBB.setOffsets() ?
@@ -324,7 +337,7 @@ public class MessageUncompressedDataReader {
         Variable mv = seq.findVariable(m.getName());
         BufrConfig.FieldConverter fld = (BufrConfig.FieldConverter) mv.getSPobject();
         DataDescriptor dk = fld.dds;
-        if (dk.replication == 0)  // LOOK
+        if (dk.replication == 0) // LOOK
           offset += 4;
         else
           offset += dk.getByteWidthCDM();

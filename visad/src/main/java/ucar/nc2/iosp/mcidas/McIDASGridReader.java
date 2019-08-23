@@ -8,13 +8,9 @@ package ucar.nc2.iosp.mcidas;
 
 
 import edu.wisc.ssec.mcidas.*;
-
 import ucar.nc2.iosp.grid.*;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
-
 import java.util.*;
 
 
@@ -59,8 +55,7 @@ public class McIDASGridReader {
   /**
    * Bean ctor
    */
-  public McIDASGridReader() {
-  }
+  public McIDASGridReader() {}
 
   /**
    * Create a McIDASGrid Reader from the file
@@ -97,18 +92,17 @@ public class McIDASGridReader {
    * Initialize the file, read in all the metadata (ala DM_OPEN)
    *
    * @param fullCheck for a full check reading grids
-   * @param raf       RandomAccessFile to read.
+   * @param raf RandomAccessFile to read.
    * @throws IOException problem reading file
    */
-  public final boolean init(RandomAccessFile raf, boolean fullCheck)
-          throws IOException {
+  public final boolean init(RandomAccessFile raf, boolean fullCheck) throws IOException {
     rf = raf;
     raf.order(RandomAccessFile.BIG_ENDIAN);
     return init(fullCheck);
   }
 
   /**
-   * Initialize this reader.  Get the Grid specific info
+   * Initialize this reader. Get the Grid specific info
    *
    * @return true if successful
    * @throws IOException problem reading the data
@@ -118,7 +112,7 @@ public class McIDASGridReader {
   }
 
   /**
-   * Initialize this reader.  Get the Grid specific info
+   * Initialize this reader. Get the Grid specific info
    *
    * @param fullCheck for a full check reading grids
    * @return true if successful, false if not a mcidas grid file
@@ -132,7 +126,8 @@ public class McIDASGridReader {
     gridIndex = new GridIndex(rf.getLocation());
 
     rf.order(RandomAccessFile.BIG_ENDIAN);
-    if (rf.length() < 44) return false;
+    if (rf.length() < 44)
+      return false;
     int numEntries = Math.abs(readInt(10));
     if (numEntries > 1000000) {
       needToSwap = true;
@@ -141,8 +136,8 @@ public class McIDASGridReader {
     if (numEntries > MAX_GRIDS) {
       return false;
     }
-    //System.out.println("need to Swap = " + needToSwap);
-    //System.out.println("number entries="+numEntries);
+    // System.out.println("need to Swap = " + needToSwap);
+    // System.out.println("number entries="+numEntries);
 
     // go back to the beginning
     rf.seek(0);
@@ -162,10 +157,10 @@ public class McIDASGridReader {
       }
     }
 
-    //System.out.println("label = " + label);
+    // System.out.println("label = " + label);
 
     // int project = readInt(8);
-    //System.out.println("Project = " + project);
+    // System.out.println("Project = " + project);
 
     int date = readInt(9);
     // dates are supposed to be yyyddd, but account for ccyyddd up to year 4000
@@ -173,9 +168,10 @@ public class McIDASGridReader {
       logError("date wrong, not a McIDAS grid");
       return false;
     }
-    //System.out.println("date = " + date);
+    // System.out.println("date = " + date);
 
-    if (rf.length() < 4 * (numEntries + 12)) return false;
+    if (rf.length() < 4 * (numEntries + 12))
+      return false;
     int[] entries = new int[numEntries];
     for (int i = 0; i < numEntries; i++) {
       entries[i] = readInt(i + 11);
@@ -203,20 +199,19 @@ public class McIDASGridReader {
       }
       try {
 
-        McIDASGridRecord gr = new McIDASGridRecord(entries[i],
-                header);
-        //if (gr.getGridDefRecordId().equals("CONF X:93 Y:65")) {
-        //if (gr.getGridDefRecordId().equals("CONF X:54 Y:47")) {
+        McIDASGridRecord gr = new McIDASGridRecord(entries[i], header);
+        // if (gr.getGridDefRecordId().equals("CONF X:93 Y:65")) {
+        // if (gr.getGridDefRecordId().equals("CONF X:54 Y:47")) {
         // figure out how to handle Mercator projections
         // if ( !(gr.getGridDefRecordId().startsWith("MERC"))) {
         gridIndex.addGridRecord(gr);
         if (gdsMap.get(gr.getGridDefRecordId()) == null) {
           McGridDefRecord mcdef = gr.getGridDefRecord();
-          //System.out.println("new nav " + mcdef.toString());
+          // System.out.println("new nav " + mcdef.toString());
           gdsMap.put(mcdef.toString(), mcdef);
           gridIndex.addHorizCoordSys(mcdef);
         }
-        //}
+        // }
       } catch (McIDASException me) {
         logError("problem creating grid dir");
         return false;
@@ -252,31 +247,28 @@ public class McIDASGridReader {
   public float[] readGrid(McIDASGridRecord gr) throws IOException {
 
     float[] data;
-    //try {
-      int te = (gr.getOffsetToHeader() + 64) * 4;
-      int rows = gr.getRows();
-      int cols = gr.getColumns();
-      rf.seek(te);
+    // try {
+    int te = (gr.getOffsetToHeader() + 64) * 4;
+    int rows = gr.getRows();
+    int cols = gr.getColumns();
+    rf.seek(te);
 
-      float scale = (float) gr.getParamScale();
+    float scale = (float) gr.getParamScale();
 
-      data = new float[rows * cols];
-      rf.order(needToSwap ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN);
-      // int n = 0;
-      // store such that 0,0 is in lower left corner...
-      for (int nc = 0; nc < cols; nc++) {
-        for (int nr = 0; nr < rows; nr++) {
-          int temp = rf.readInt();  // check for missing value
-          data[(rows - nr - 1) * cols + nc] = (temp
-                  == McIDASUtil.MCMISSING)
-                  ? Float.NaN
-                  : ((float) temp) / scale;
-        }
+    data = new float[rows * cols];
+    rf.order(needToSwap ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN);
+    // int n = 0;
+    // store such that 0,0 is in lower left corner...
+    for (int nc = 0; nc < cols; nc++) {
+      for (int nr = 0; nr < rows; nr++) {
+        int temp = rf.readInt(); // check for missing value
+        data[(rows - nr - 1) * cols + nc] = (temp == McIDASUtil.MCMISSING) ? Float.NaN : ((float) temp) / scale;
       }
-      rf.order(RandomAccessFile.BIG_ENDIAN);
-    //} catch (Exception esc) {
-    //  System.out.println(esc);
-    //}
+    }
+    rf.order(RandomAccessFile.BIG_ENDIAN);
+    // } catch (Exception esc) {
+    // System.out.println(esc);
+    // }
     return data;
   }
 
@@ -303,7 +295,7 @@ public class McIDASGridReader {
     rf.seek(word * 4);
     // set the order
     if (needToSwap) {
-      rf.order(RandomAccessFile.LITTLE_ENDIAN);  // swap
+      rf.order(RandomAccessFile.LITTLE_ENDIAN); // swap
     } else {
       rf.order(RandomAccessFile.BIG_ENDIAN);
     }

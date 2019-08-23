@@ -29,7 +29,7 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
   private final ImmutableMap<Integer, Entry> paramMap;
 
   public static EccodesCodeTable factory(int version, int discipline, int category) throws IOException {
-      return new EccodesCodeTable(version, discipline, category);
+    return new EccodesCodeTable(version, discipline, category);
   }
 
   private EccodesCodeTable(int version, int discipline, int category) throws IOException {
@@ -42,7 +42,8 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
 
   @Override
   public String getName() {
-    return String.format("Ecmwf version %d discipline %d category %d (%s)", version, discipline, category, getTablePath());
+    return String.format("Ecmwf version %d discipline %d category %d (%s)", version, discipline, category,
+        getTablePath());
   }
 
   @Override
@@ -66,38 +67,38 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
   }
 
   /*
-  # Code table 4.2 - Parameter number by product discipline and parameter category
-  0 0 Estimated precipitation (kg m-2)
-  1 1 Instantaneous rain rate (kg m-2 s-1)
-  2 2 Cloud top height (m)
-  3 3 Cloud top height quality indicator (Code table 4.219)
-  4 4 Estimated u-component of wind (m/s)
-  5 5 Estimated v-component of wind (m/s)
-  6 6 Number of pixel used (Numeric)
-  7 7 Solar zenith angle (deg)
-  8 8 Relative azimuth angle (deg)
-  9 9 Reflectance in 0.6 micron channel (%)
-  10 10 Reflectance in 0.8 micron channel (%)
-  11 11 Reflectance in 1.6 micron channel (%)
-  12 12 Reflectance in 3.9 micron channel (%)
-  13 13 Atmospheric divergence (/s)
-  14 14 Cloudy brightness temperature (K)
-  15 15 Clear-sky brightness temperature (K)
-  16 16 Cloudy radiance (with respect to wave number) (W m-1 sr-1)
-  17 17 Clear-sky radiance (with respect to wave number) (W m-1 sr-1)
-  18 18 Reserved
-  19 19 Wind speed (m/s)
-  20 20 Aerosol optical thickness at 0.635 um
-  21 21 Aerosol optical thickness at 0.810 um
-  22 22 Aerosol optical thickness at 1.640 um
-  23 23 Angstrom coefficient
-  # 24-26 Reserved
-  27 27 Bidirectional reflectance factor (numeric)
-  28 28 Brightness temperature (K)
-  29 29 Scaled radiance (numeric)
-  # 30-191 Reserved
-  # 192-254 Reserved for local use
-  255 255 Missing
+   * # Code table 4.2 - Parameter number by product discipline and parameter category
+   * 0 0 Estimated precipitation (kg m-2)
+   * 1 1 Instantaneous rain rate (kg m-2 s-1)
+   * 2 2 Cloud top height (m)
+   * 3 3 Cloud top height quality indicator (Code table 4.219)
+   * 4 4 Estimated u-component of wind (m/s)
+   * 5 5 Estimated v-component of wind (m/s)
+   * 6 6 Number of pixel used (Numeric)
+   * 7 7 Solar zenith angle (deg)
+   * 8 8 Relative azimuth angle (deg)
+   * 9 9 Reflectance in 0.6 micron channel (%)
+   * 10 10 Reflectance in 0.8 micron channel (%)
+   * 11 11 Reflectance in 1.6 micron channel (%)
+   * 12 12 Reflectance in 3.9 micron channel (%)
+   * 13 13 Atmospheric divergence (/s)
+   * 14 14 Cloudy brightness temperature (K)
+   * 15 15 Clear-sky brightness temperature (K)
+   * 16 16 Cloudy radiance (with respect to wave number) (W m-1 sr-1)
+   * 17 17 Clear-sky radiance (with respect to wave number) (W m-1 sr-1)
+   * 18 18 Reserved
+   * 19 19 Wind speed (m/s)
+   * 20 20 Aerosol optical thickness at 0.635 um
+   * 21 21 Aerosol optical thickness at 0.810 um
+   * 22 22 Aerosol optical thickness at 1.640 um
+   * 23 23 Angstrom coefficient
+   * # 24-26 Reserved
+   * 27 27 Bidirectional reflectance factor (numeric)
+   * 28 28 Brightness temperature (K)
+   * 29 29 Scaled radiance (numeric)
+   * # 30-191 Reserved
+   * # 192-254 Reserved for local use
+   * 255 255 Missing
    */
   private ImmutableMap<Integer, Entry> readTable(String path) throws IOException {
     ImmutableMap.Builder<Integer, Entry> builder = ImmutableMap.builder();
@@ -111,8 +112,7 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
       if (is == null) {
         throw new IllegalStateException("Cant find " + path);
       }
-      try (BufferedReader dataIS = new BufferedReader(
-          new InputStreamReader(is, Charset.forName("UTF8")))) {
+      try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF8")))) {
         int count = 0;
         while (true) {
           String line = dataIS.readLine();
@@ -130,8 +130,8 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
 
           String num1 = line.substring(0, posBlank1).trim();
           String num2 = line.substring(posBlank1 + 1, posBlank2);
-          String desc = (lastParen > 0) ? line.substring(posBlank2 + 1, lastParen).trim()
-              : line.substring(posBlank2 + 1).trim();
+          String desc =
+              (lastParen > 0) ? line.substring(posBlank2 + 1, lastParen).trim() : line.substring(posBlank2 + 1).trim();
 
           if (!num1.equals(num2)) {
             if (debug) {
@@ -178,10 +178,7 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("codeValue", codeValue)
-          .add("name", name)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("codeValue", codeValue).add("name", name).toString();
     }
   }
 

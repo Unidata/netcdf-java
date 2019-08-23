@@ -7,12 +7,9 @@
 package ucar.nc2.iosp.mcidas;
 
 import ucar.nc2.*;
-
 import ucar.nc2.iosp.grid.*;
 import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 
 
@@ -61,13 +58,13 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
   /**
    * Open the service provider for reading.
    *
-   * @param raf        file to read from
-   * @param ncfile     netCDF file we are writing to (memory)
+   * @param raf file to read from
+   * @param ncfile netCDF file we are writing to (memory)
    * @param cancelTask task for cancelling
    * @throws IOException problem reading file
    */
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    //debugProj = true;
+    // debugProj = true;
     super.open(raf, ncfile, cancelTask);
     long start = System.currentTimeMillis();
     if (mcGridReader == null) {
@@ -77,24 +74,22 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
     GridIndex index = mcGridReader.getGridIndex();
     open(index, cancelTask);
     if (debugOpen) {
-      System.out.println(" GridServiceProvider.open "
-              + ncfile.getLocation() + " took "
-              + (System.currentTimeMillis() - start));
+      System.out.println(
+          " GridServiceProvider.open " + ncfile.getLocation() + " took " + (System.currentTimeMillis() - start));
     }
   }
 
   /**
    * Open the index and create the netCDF file from that
    *
-   * @param index      GridIndex to use
+   * @param index GridIndex to use
    * @param cancelTask cancel task
    * @throws IOException problem reading the file
    */
-  protected void open(GridIndex index, CancelTask cancelTask)
-          throws IOException {
+  protected void open(GridIndex index, CancelTask cancelTask) throws IOException {
     McIDASLookup lookup = new McIDASLookup((McIDASGridRecord) index.getGridRecords().get(0));
     GridIndexToNC delegate = new GridIndexToNC(index.filename);
-    //delegate.setUseDescriptionForVariableName(false);
+    // delegate.setUseDescriptionForVariableName(false);
     delegate.open(index, lookup, 4, ncfile, cancelTask);
     ncfile.finish();
   }

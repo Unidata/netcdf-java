@@ -8,7 +8,6 @@ package ucar.nc2.grib.collection;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Formatter;
-
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -28,13 +27,13 @@ import ucar.nc2.grib.coverage.GribCoverageDataset;
  */
 public class Grib2Partition extends PartitionCollectionImmutable implements Closeable {
 
-  Grib2Partition( PartitionCollectionMutable pc) {
+  Grib2Partition(PartitionCollectionMutable pc) {
     super(pc);
   }
 
   @Override
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
-          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
@@ -43,7 +42,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
 
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
-          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
@@ -52,8 +51,8 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
   }
 
   @Override
-  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
-          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
+  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig config,
+      Formatter errlog, org.slf4j.Logger logger) {
 
     GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
     return gribCov.createCoverageCollection();
@@ -66,7 +65,8 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
       result.addAttribute(new Attribute("Type_of_generating_process", val));
     val = cust.getGeneratingProcessName(getGenProcessId());
     if (val != null)
-      result.addAttribute(new Attribute("Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre", val));
+      result.addAttribute(
+          new Attribute("Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre", val));
     val = cust.getGeneratingProcessName(getBackProcessId());
     if (val != null)
       result.addAttribute(new Attribute("Background_generating_process_identifier_defined_by_originating_centre", val));
@@ -81,7 +81,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
   @Override
   protected String makeVariableId(VariableIndex v) {
     return Grib1Collection.makeVariableId(getCenter(), getSubcenter(), v.getTableVersion(), v.getParameter(),
-            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
+        v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
 }

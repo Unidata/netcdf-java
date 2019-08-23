@@ -16,7 +16,6 @@ import ucar.nc2.util.Misc;
 import ucar.nc2.util.NamedObject;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -44,7 +43,8 @@ public class CoverageTable extends JPanel {
   public CoverageTable(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
 
-    dsTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBeans"), false, "CoverageDatasets", "ucar.nc2.ft2.coverage.CoverageDataset", null);
+    dsTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBeans"), false, "CoverageDatasets",
+        "ucar.nc2.ft2.coverage.CoverageDataset", null);
     dsTable.addListSelectionListener(e -> {
       DatasetBean pb = (DatasetBean) dsTable.getSelectedBean();
       if (pb != null) {
@@ -53,22 +53,26 @@ public class CoverageTable extends JPanel {
       }
     });
 
-    covTable = new BeanTable(CoverageBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages", "ucar.nc2.ft2.coverage.Coverage", new CoverageBean());
-    /* covTable.addListSelectionListener(e -> {
-      CoverageBean bean = (CoverageBean) covTable.getSelectedBean();
-        for (Object cbean : csysTable.getBeans()) {
-      if (null != bean) {   // find the coordinate system
-          CoordSysBean csysBean = (CoordSysBean) cbean;
-          if (csysBean.getName().equals(bean.coordSysName))
-            csysTable.setSelectedBean(csysBean);
-        }
-      }
-    });  */
+    covTable = new BeanTable(CoverageBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages",
+        "ucar.nc2.ft2.coverage.Coverage", new CoverageBean());
+    /*
+     * covTable.addListSelectionListener(e -> {
+     * CoverageBean bean = (CoverageBean) covTable.getSelectedBean();
+     * for (Object cbean : csysTable.getBeans()) {
+     * if (null != bean) { // find the coordinate system
+     * CoordSysBean csysBean = (CoordSysBean) cbean;
+     * if (csysBean.getName().equals(bean.coordSysName))
+     * csysTable.setSelectedBean(csysBean);
+     * }
+     * }
+     * });
+     */
 
-    csysTable = new BeanTable(CoordSysBean.class, (PreferencesExt) prefs.node("CoverageCoordSysBeans"), false, "CoverageCoordSys", "ucar.nc2.ft2.coverage.CoverageCoordSys", null);
+    csysTable = new BeanTable(CoordSysBean.class, (PreferencesExt) prefs.node("CoverageCoordSysBeans"), false,
+        "CoverageCoordSys", "ucar.nc2.ft2.coverage.CoverageCoordSys", null);
     csysTable.addListSelectionListener(e -> {
       CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
-      if (null != bean) {   // find the coverages
+      if (null != bean) { // find the coverages
         List result = new ArrayList();
         for (Object cbean : covTable.getBeans()) {
           CoverageBean covBean = (CoverageBean) cbean;
@@ -79,7 +83,8 @@ public class CoverageTable extends JPanel {
       }
     });
 
-    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoverageCoordAxisBeans"), false, "CoverageCoordAxes", "ucar.nc2.ft2.coverage.CoverageCoordAxis", null);
+    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoverageCoordAxisBeans"), false,
+        "CoverageCoordAxes", "ucar.nc2.ft2.coverage.CoverageCoordAxis", null);
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -142,7 +147,8 @@ public class CoverageTable extends JPanel {
         CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
         infoTA.clear();
         for (CoverageTransform ct : bean.gcs.getTransforms())
-          if (!ct.isHoriz()) infoTA.appendLine(ct.toString());
+          if (!ct.isHoriz())
+            infoTA.appendLine(ct.toString());
 
         HorizCoordSys hcs = bean.gcs.getHorizCoordSys();
         if (hcs.getTransform() != null)
@@ -176,96 +182,99 @@ public class CoverageTable extends JPanel {
 
   }
 
-  /* public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
+  /*
+   * public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
+   * 
+   * AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
+   * infoButton.addActionListener(new ActionListener() {
+   * public void actionPerformed(ActionEvent e) {
+   * if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
+   * ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
+   * infoTA.clear();
+   * infoTA.appendLine(gdsImpl.getDetailInfo());
+   * infoTA.gotoTop();
+   * infoWindow.show();
+   * }
+   * }
+   * });
+   * buttPanel.add(infoButton);
+   * 
+   * /*
+   * 
+   * /* AbstractAction netcdfAction = new AbstractAction() {
+   * public void actionPerformed(ActionEvent e) {
+   * if (gridDataset == null) return;
+   * List<String> gridList = getSelectedGrids();
+   * if (gridList.size() == 0) {
+   * JOptionPane.showMessageDialog(CoverageTable.this, "No Grids are selected");
+   * return;
+   * }
+   * 
+   * if (outChooser == null) {
+   * outChooser = new NetcdfOutputChooser((Frame) null);
+   * outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
+   * public void propertyChange(PropertyChangeEvent evt) {
+   * writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
+   * }
+   * });
+   * }
+   * outChooser.setOutputFilename(gridDataset.getLocation());
+   * outChooser.setVisible(true);
+   * }
+   * };
+   * BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
+   * BAMutil.addActionToContainer(buttPanel, netcdfAction);
+   */
 
-    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
-          ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
-          infoTA.clear();
-          infoTA.appendLine(gdsImpl.getDetailInfo());
-          infoTA.gotoTop();
-          infoWindow.show();
-        }
-      }
-    });
-    buttPanel.add(infoButton);
-
-    /*
-
-    /* AbstractAction netcdfAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if (gridDataset == null) return;
-        List<String> gridList = getSelectedGrids();
-        if (gridList.size() == 0) {
-          JOptionPane.showMessageDialog(CoverageTable.this, "No Grids are selected");
-          return;
-        }
-
-        if (outChooser == null) {
-          outChooser = new NetcdfOutputChooser((Frame) null);
-          outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-              writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
-            }
-          });
-        }
-        outChooser.setOutputFilename(gridDataset.getLocation());
-        outChooser.setVisible(true);
-      }
-    };
-    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
-    BAMutil.addActionToContainer(buttPanel, netcdfAction);  */
-
-    /*
- AbstractAction writeAction = new AbstractAction() {
-   public void actionPerformed(ActionEvent e) {
-     if (gridDataset == null) return;
-     List<String> gridList = getSelectedGrids();
-     if (gridList.size() == 0) {
-       JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
-       return;
-     }
-     String location = gridDataset.getLocationURI();
-     if (location == null) location = "test";
-     String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
-     int pos = location.lastIndexOf(".");
-     if (pos > 0)
-       location = location.substring(0, pos);
-
-     String filename = fileChooser.chooseFilenameToSave(location + suffix);
-     if (filename == null) return;
-
-     try {
-       NetcdfCFWriter.makeFileVersioned(filename, gridDataset, gridList, null, null);
-       JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
-     } catch (Exception ioe) {
-       JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
-       ioe.printStackTrace();
-     }
-   }
- };
- BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
- BAMutil.addActionToContainer(buttPanel, writeAction);
-  //; }
-
-  private void showCoordinates(CoverageBean vb, Formatter f) {
-    CoverageCS gcs = vb.geogrid.getCoordinateSystem();
-    gcs.show(f, true);
-  }
-
-  /* private void writeNetcdf(NetcdfOutputChooser.Data data) {
-    if (data.version == NetcdfFileWriter.Version.ncstream) return;
-
-    try {
-      NetcdfCFWriter.makeFileVersioned(data.outputFilename, gridDataset, getSelectedGrids(), null, null, data.version);
-      JOptionPane.showMessageDialog(this, "File successfully written");
-    } catch (Exception ioe) {
-      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-      ioe.printStackTrace();
-    }
-  } */
+  /*
+   * AbstractAction writeAction = new AbstractAction() {
+   * public void actionPerformed(ActionEvent e) {
+   * if (gridDataset == null) return;
+   * List<String> gridList = getSelectedGrids();
+   * if (gridList.size() == 0) {
+   * JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
+   * return;
+   * }
+   * String location = gridDataset.getLocationURI();
+   * if (location == null) location = "test";
+   * String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
+   * int pos = location.lastIndexOf(".");
+   * if (pos > 0)
+   * location = location.substring(0, pos);
+   * 
+   * String filename = fileChooser.chooseFilenameToSave(location + suffix);
+   * if (filename == null) return;
+   * 
+   * try {
+   * NetcdfCFWriter.makeFileVersioned(filename, gridDataset, gridList, null, null);
+   * JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
+   * } catch (Exception ioe) {
+   * JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
+   * ioe.printStackTrace();
+   * }
+   * }
+   * };
+   * BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
+   * BAMutil.addActionToContainer(buttPanel, writeAction);
+   * //; }
+   * 
+   * private void showCoordinates(CoverageBean vb, Formatter f) {
+   * CoverageCS gcs = vb.geogrid.getCoordinateSystem();
+   * gcs.show(f, true);
+   * }
+   * 
+   * /* private void writeNetcdf(NetcdfOutputChooser.Data data) {
+   * if (data.version == NetcdfFileWriter.Version.ncstream) return;
+   * 
+   * try {
+   * NetcdfCFWriter.makeFileVersioned(data.outputFilename, gridDataset, getSelectedGrids(), null, null, data.version);
+   * JOptionPane.showMessageDialog(this, "File successfully written");
+   * } catch (Exception ioe) {
+   * JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+   * ioe.printStackTrace();
+   * }
+   * }
+   */
 
   public void clear() {
     dsTable.clearBeans();
@@ -288,7 +297,8 @@ public class CoverageTable extends JPanel {
   }
 
   public void showInfo(Formatter result) {
-    if (coverageCollection == null) return;
+    if (coverageCollection == null)
+      return;
     coverageCollection.getDetailInfo(result);
   }
 
@@ -322,7 +332,8 @@ public class CoverageTable extends JPanel {
 
   private boolean contains(List<AxisBean> axisList, String name) {
     for (AxisBean axis : axisList)
-      if (axis.getName().equals(name)) return true;
+      if (axis.getName().equals(name))
+        return true;
     return false;
   }
 
@@ -347,8 +358,7 @@ public class CoverageTable extends JPanel {
   public class DatasetBean {
     CoverageCollection cds;
 
-    public DatasetBean() {
-    }
+    public DatasetBean() {}
 
     public DatasetBean(CoverageCollection cds) {
       this.cds = cds;
@@ -390,7 +400,7 @@ public class CoverageTable extends JPanel {
 
   public class CoverageBean implements NamedObject {
 
-    public String hiddenProperties() {  // for BeanTable
+    public String hiddenProperties() { // for BeanTable
       return "value";
     }
 
@@ -399,8 +409,7 @@ public class CoverageTable extends JPanel {
     DataType dataType;
 
     // no-arg constructor
-    public CoverageBean() {
-    }
+    public CoverageBean() {}
 
     // create from a dataset
     public CoverageBean(Coverage geogrid) {
@@ -449,8 +458,7 @@ public class CoverageTable extends JPanel {
     private int nCov = 0;
 
     // no-arg constructor
-    public CoordSysBean() {
-    }
+    public CoordSysBean() {}
 
     public CoordSysBean(CoverageCollection coverageDataset, CoverageCoordSys gcs) {
       this.gcs = gcs;
@@ -461,18 +469,25 @@ public class CoverageTable extends JPanel {
       coordTrans = buff.toString();
 
       for (CoverageCoordAxis axis : gcs.getAxes()) {
-        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) nIndAxis++;
+        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
+          nIndAxis++;
 
         AxisType axisType = axis.getAxisType();
-        if (axisType == null) continue;
-        if (axisType == AxisType.RunTime) runtimeName = axis.getName();
-        else if (axisType.isTime()) timeName = axis.getName();
-        else if (axisType == AxisType.Ensemble) ensName = axis.getName();
-        else if (axisType.isVert()) vertName = axis.getName();
+        if (axisType == null)
+          continue;
+        if (axisType == AxisType.RunTime)
+          runtimeName = axis.getName();
+        else if (axisType.isTime())
+          timeName = axis.getName();
+        else if (axisType == AxisType.Ensemble)
+          ensName = axis.getName();
+        else if (axisType.isVert())
+          vertName = axis.getName();
       }
 
       for (Coverage cov : coverageDataset.getCoverages()) {
-        if (cov.getCoordSys() == gcs) nCov++;
+        if (cov.getCoordSys() == gcs)
+          nCov++;
       }
     }
 
@@ -520,8 +535,7 @@ public class CoverageTable extends JPanel {
     boolean isHoriz;
 
     // no-arg constructor
-    public CoordTransBean() {
-    }
+    public CoordTransBean() {}
 
     public CoordTransBean(CoverageTransform gcs) {
       this.gcs = gcs;
@@ -555,8 +569,7 @@ public class CoverageTable extends JPanel {
     boolean indepenent;
 
     // no-arg constructor
-    public AxisBean() {
-    }
+    public AxisBean() {}
 
     // create from a dataset
     public AxisBean(CoverageCoordAxis v) {
@@ -661,8 +674,8 @@ public class CoverageTable extends JPanel {
    * Wrap this in a JDialog component.
    *
    * @param parent JFrame (application) or JApplet (applet) or null
-   * @param title  dialog window title
-   * @param modal  modal dialog or not
+   * @param title dialog window title
+   * @param modal modal dialog or not
    * @return JDialog
    */
   public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {
@@ -682,15 +695,17 @@ public class CoverageTable extends JPanel {
         }
       });
 
-      /* add a dismiss button
-      JButton dismissButton = new JButton("Dismiss");
-      buttPanel.add(dismissButton, null);
-
-      dismissButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          setVisible(false);
-        }
-      }); */
+      /*
+       * add a dismiss button
+       * JButton dismissButton = new JButton("Dismiss");
+       * buttPanel.add(dismissButton, null);
+       * 
+       * dismissButton.addActionListener(new ActionListener() {
+       * public void actionPerformed(ActionEvent evt) {
+       * setVisible(false);
+       * }
+       * });
+       */
 
       // add it to contentPane
       Container cp = getContentPane();

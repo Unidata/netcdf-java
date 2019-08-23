@@ -6,17 +6,22 @@ package ucar.util;
 
 /**
  * An object that has a name and a description.
+ * 
  * @author caron
  */
 
 public interface NamedObject {
 
-  /** Get the object's name
+  /**
+   * Get the object's name
+   * 
    * @return object's name
    */
   String getName();
 
-  /** Get the object's description. Use as a tooltip, for example
+  /**
+   * Get the object's description. Use as a tooltip, for example
+   * 
    * @return object's description
    */
   String getDescription();

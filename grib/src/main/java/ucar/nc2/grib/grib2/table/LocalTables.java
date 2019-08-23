@@ -8,7 +8,6 @@ package ucar.nc2.grib.grib2.table;
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-
 import java.util.*;
 
 /**
@@ -19,7 +18,7 @@ import java.util.*;
  * @since 6/22/11
  */
 abstract class LocalTables extends Grib2Tables {
-  protected Map<Integer, Grib2Parameter> localParams = new HashMap<>();  // subclass must set
+  protected Map<Integer, Grib2Parameter> localParams = new HashMap<>(); // subclass must set
 
   LocalTables(Grib2TableConfig config) {
     super(config);
@@ -27,9 +26,8 @@ abstract class LocalTables extends Grib2Tables {
 
   @Override
   public String getParamTablePathUsedFor(int discipline, int category, int number) {
-    return isLocal(discipline, category, number) ?
-        super.getParamTablePathUsedFor(discipline, category, number) :
-        config.getPath();
+    return isLocal(discipline, category, number) ? super.getParamTablePathUsedFor(discipline, category, number)
+        : config.getPath();
   }
 
   @Override
@@ -44,10 +42,12 @@ abstract class LocalTables extends Grib2Tables {
   protected static class ParameterSort implements Comparator<Parameter> {
     public int compare(Parameter p1, Parameter p2) {
       int c = p1.getDiscipline() - p2.getDiscipline();
-      if (c != 0) return c;
+      if (c != 0)
+        return c;
       c = p1.getCategory() - p2.getCategory();
-      if (c != 0) return c;
-      return p1.getNumber() - p2.getNumber() ;
+      if (c != 0)
+        return c;
+      return p1.getNumber() - p2.getNumber();
     }
   }
 
@@ -69,8 +69,10 @@ abstract class LocalTables extends Grib2Tables {
 
     if (isLocal(discipline, category, number)) {
       GribTables.Parameter pwmo = WmoParamTable.getParameter(discipline, category, number);
-      if (plocal == null) return pwmo;
-      if (pwmo == null) return plocal;
+      if (plocal == null)
+        return pwmo;
+      if (pwmo == null)
+        return plocal;
 
       // allow local table to override all but name, units
       return new Grib2Parameter(plocal, pwmo.getName(), pwmo.getUnit());
@@ -82,6 +84,6 @@ abstract class LocalTables extends Grib2Tables {
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
     return localParams.get(makeParamId(discipline, category, number));
-   }
+  }
 
 }

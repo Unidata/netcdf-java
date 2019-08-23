@@ -8,9 +8,7 @@ package ucar.nc2.iosp.gempak;
 
 
 import ucar.nc2.iosp.grid.*;
-
 import ucar.nc2.*;
-
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
@@ -31,7 +29,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
   /**
    * Reread the file on a sync
    */
-  public static boolean extendIndex = true;  // check if index needs to be extended
+  public static boolean extendIndex = true; // check if index needs to be extended
 
   /**
    * Is this a valid file?
@@ -60,8 +58,8 @@ public class GempakGridServiceProvider extends GridServiceProvider {
   /**
    * Open the service provider for reading.
    *
-   * @param raf        file to read from
-   * @param ncfile     netCDF file we are writing to (memory)
+   * @param raf file to read from
+   * @param ncfile netCDF file we are writing to (memory)
    * @param cancelTask task for cancelling
    * @throws IOException problem reading file
    */
@@ -77,23 +75,22 @@ public class GempakGridServiceProvider extends GridServiceProvider {
     GridIndex index = gemreader.getGridIndex();
     open(index, cancelTask);
     if (debugOpen) {
-      System.out.println(" GridServiceProvider.open "
-              + ncfile.getLocation() + " took "
-              + (System.currentTimeMillis() - start));
+      System.out.println(
+          " GridServiceProvider.open " + ncfile.getLocation() + " took " + (System.currentTimeMillis() - start));
     }
   }
 
   /**
    * Open the index and create the netCDF file from that
    *
-   * @param index      GridIndex to use
+   * @param index GridIndex to use
    * @param cancelTask cancel task
    * @throws IOException problem reading the file
    */
   protected void open(GridIndex index, CancelTask cancelTask) throws IOException {
     GempakLookup lookup = new GempakLookup((GempakGridRecord) index.getGridRecords().get(0));
     GridIndexToNC delegate = new GridIndexToNC(index.filename);
-    //delegate.setUseDescriptionForVariableName(false);
+    // delegate.setUseDescriptionForVariableName(false);
     delegate.open(index, lookup, 4, ncfile, cancelTask);
     ncfile.finish();
   }
@@ -124,7 +121,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
    * @throws IOException problem reading the data
    */
   protected float[] _readData(GridRecord gr) throws IOException {
-    return gemreader.readGrid( gr);
+    return gemreader.readGrid(gr);
   }
 
   /**
@@ -132,10 +129,8 @@ public class GempakGridServiceProvider extends GridServiceProvider {
    */
   private void initTables() {
     try {
-      GempakGridParameterTable.addParameters(
-              "resources/nj22/tables/gempak/wmogrib3.tbl");
-      GempakGridParameterTable.addParameters(
-              "resources/nj22/tables/gempak/ncepgrib2.tbl");
+      GempakGridParameterTable.addParameters("resources/nj22/tables/gempak/wmogrib3.tbl");
+      GempakGridParameterTable.addParameters("resources/nj22/tables/gempak/ncepgrib2.tbl");
     } catch (Exception e) {
       System.out.println("unable to init tables");
     }

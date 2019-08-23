@@ -6,7 +6,6 @@ package ucar.nc2.dt;
 
 import ucar.ma2.*;
 import ucar.nc2.Structure;
-
 import java.io.IOException;
 
 /**
@@ -17,7 +16,7 @@ import java.io.IOException;
  */
 public abstract class DatatypeIterator implements DataIterator {
 
-  protected abstract Object makeDatatypeWithData( int recnum, StructureData sdata) throws IOException;
+  protected abstract Object makeDatatypeWithData(int recnum, StructureData sdata) throws IOException;
 
   private StructureDataIterator structIter;
   private int recnum = 0;
@@ -39,8 +38,8 @@ public abstract class DatatypeIterator implements DataIterator {
   }
 
   public Object nextData() throws IOException {
-    StructureData sdata =  structIter.next();
-    return makeDatatypeWithData( recnum++, sdata);
+    StructureData sdata = structIter.next();
+    return makeDatatypeWithData(recnum++, sdata);
   }
 
   public Object next() { // LOOK needs IOException
@@ -51,7 +50,7 @@ public abstract class DatatypeIterator implements DataIterator {
       throw new RuntimeException(e);
     }
     try {
-      return makeDatatypeWithData( recnum++, sdata);
+      return makeDatatypeWithData(recnum++, sdata);
     } catch (IOException e) {
       throw new RuntimeException(e.getMessage());
     }

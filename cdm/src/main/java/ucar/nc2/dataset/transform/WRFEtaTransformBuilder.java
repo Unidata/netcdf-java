@@ -53,18 +53,21 @@ public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements 
     return VerticalCT.Type.WRFEta.name();
   }
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+      VerticalCT vCT) {
     return new WRFEta(ds, timeDim, vCT.getParameters());
   }
 
   private boolean isStaggered(CoordinateAxis axis) {
-    if (axis == null) return false;
+    if (axis == null)
+      return false;
     String name = axis.getShortName();
     return name != null && name.endsWith("stag");
   }
 
   private boolean isStaggered2(CoordinateAxis axis, int dimIndex) {
-    if (axis == null) return false;
+    if (axis == null)
+      return false;
     Dimension dim = axis.getDimension(dimIndex);
     return dim != null && dim.getShortName().endsWith("stag");
   }

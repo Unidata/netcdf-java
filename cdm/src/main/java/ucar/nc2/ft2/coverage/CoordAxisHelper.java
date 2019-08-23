@@ -10,10 +10,8 @@ import ucar.ma2.RangeIterator;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Misc;
-
 import javax.annotation.Nonnull;
 import java.util.Arrays;
-
 import ucar.nc2.util.Optional;
 
 /**
@@ -31,7 +29,8 @@ class CoordAxisHelper {
 
   /**
    * Given a coordinate interval, find what grid element matches it.
-   * @param target  interval in this coordinate system
+   * 
+   * @param target interval in this coordinate system
    * @param bounded if true, always return a valid index. otherwise can return < 0 or > n-1
    * @return index of grid point containing it, or < 0 or > n-1 if outside grid area
    */
@@ -39,10 +38,10 @@ class CoordAxisHelper {
     switch (axis.getSpacing()) {
       case regularInterval:
         // can use midpoint
-        return findCoordElementRegular((target[0]+target[1])/2, bounded);
+        return findCoordElementRegular((target[0] + target[1]) / 2, bounded);
       case contiguousInterval:
         // can use midpoint
-        return findCoordElementContiguous((target[0]+target[1])/2, bounded);
+        return findCoordElementContiguous((target[0] + target[1]) / 2, bounded);
       case discontiguousInterval:
         // cant use midpoint
         return findCoordElementDiscontiguousInterval(target, bounded);
@@ -53,12 +52,13 @@ class CoordAxisHelper {
   /**
    * Given a coordinate position, find what grid element contains it.
    * This means that
+   * 
    * <pre>
    * edge[i] <= target < edge[i+1] (if values are ascending)
    * edge[i] > target >= edge[i+1] (if values are descending)
    * </pre>
    *
-   * @param target  position in this coordinate system
+   * @param target position in this coordinate system
    * @param bounded if true, always return a valid index. otherwise can return < 0 or > n-1
    * @return index of grid point containing it, or < 0 or > n-1 if outside grid area
    */
@@ -79,15 +79,18 @@ class CoordAxisHelper {
   // same contract as findCoordElement()
   private int findCoordElementRegular(double coordValue, boolean bounded) {
     int n = axis.getNcoords();
-    if (n == 1 && bounded) return 0;
+    if (n == 1 && bounded)
+      return 0;
 
     double distance = coordValue - axis.getCoordEdge1(0);
     double exactNumSteps = distance / axis.getResolution();
-    //int index = (int) Math.round(exactNumSteps); // ties round to +Inf
+    // int index = (int) Math.round(exactNumSteps); // ties round to +Inf
     int index = (int) exactNumSteps; // truncate down
 
-    if (bounded && index < 0) return 0;
-    if (bounded && index >= n) return n - 1;
+    if (bounded && index < 0)
+      return 0;
+    if (bounded && index >= n)
+      return n - 1;
 
     // check that found point is within interval
     if (index >= 0 && index < n) {
@@ -106,16 +109,18 @@ class CoordAxisHelper {
   }
 
   /**
-   * Performs a binary search to find the index of the element of the array whose value is contained in the contiguous intervals.
-   * irregularPoint,    // irregular spaced points (values, npts), edges halfway between coords
-   * contiguousInterval, // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+   * Performs a binary search to find the index of the element of the array whose value is contained in the contiguous
+   * intervals.
+   * irregularPoint, // irregular spaced points (values, npts), edges halfway between coords
+   * contiguousInterval, // irregular contiguous spaced intervals (values, npts), values are the edges, and there are
+   * npts+1, coord halfway between edges
    * <p>
    * same contract as findCoordElement()
    */
   private int findCoordElementContiguous(double target, boolean bounded) {
     int n = axis.getNcoords();
-    //double resolution = (values[n-1] - values[0]) / (n - 1);
-    //int startGuess = (int) Math.round((target - values[0]) / resolution);
+    // double resolution = (values[n-1] - values[0]) / (n - 1);
+    // int startGuess = (int) Math.round((target - values[0]) / resolution);
 
     int low = 0;
     int high = n - 1;
@@ -129,14 +134,17 @@ class CoordAxisHelper {
       // do a binary search to find the nearest index
       int mid;
       while (high > low + 1) {
-        mid = (low + high) / 2;                           // binary search
-        if (contains(target, mid, true)) return mid;
-        else if (axis.getCoordEdge2(mid) < target) low = mid;
-        else high = mid;
+        mid = (low + high) / 2; // binary search
+        if (contains(target, mid, true))
+          return mid;
+        else if (axis.getCoordEdge2(mid) < target)
+          low = mid;
+        else
+          high = mid;
       }
       return contains(target, low, true) ? low : high;
 
-    } else {  // descending
+    } else { // descending
 
       // Check that the point is within range
       if (target > axis.getCoordEdge1(0))
@@ -147,10 +155,13 @@ class CoordAxisHelper {
       // do a binary search to find the nearest index
       int mid;
       while (high > low + 1) {
-        mid = (low + high) / 2;         // binary search
-        if (contains(target, mid, false)) return mid;
-        else if (axis.getCoordEdge2(mid) < target) high = mid;
-        else low = mid;
+        mid = (low + high) / 2; // binary search
+        if (contains(target, mid, false))
+          return mid;
+        else if (axis.getCoordEdge2(mid) < target)
+          high = mid;
+        else
+          low = mid;
       }
       return contains(target, low, false) ? low : high;
     }
@@ -178,8 +189,10 @@ class CoordAxisHelper {
   // LOOK not using bounded
   private int findCoordElementDiscontiguousInterval(double target, boolean bounded) {
     int idx = findSingleHit(target);
-    if (idx >= 0) return idx;
-    if (idx == -1) return -1; // no hits
+    if (idx >= 0)
+      return idx;
+    if (idx == -1)
+      return -1; // no hits
 
     // multiple hits = choose closest to the midpoint
     return findClosest(target);
@@ -208,8 +221,10 @@ class CoordAxisHelper {
         idxFound = i;
       }
     }
-    if (hits == 1) return idxFound;
-    if (hits == 0) return -1;
+    if (hits == 1)
+      return idxFound;
+    if (hits == 0)
+      return -1;
     return -hits;
   }
 
@@ -301,8 +316,8 @@ class CoordAxisHelper {
   }
 
   public Optional<RangeIterator> makeRange(double minValue, double maxValue, int stride) {
-    //if (axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval)
-    //  return subsetValuesDiscontinuous(minValue, maxValue, stride);
+    // if (axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval)
+    // return subsetValuesDiscontinuous(minValue, maxValue, stride);
 
     double lower = axis.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
     double upper = axis.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
@@ -345,7 +360,7 @@ class CoordAxisHelper {
     double resolution = 0.0;
 
     int count2 = 0;
-    double[] values = axis.getValues();  // will be null for regular
+    double[] values = axis.getValues(); // will be null for regular
     double[] subsetValues = null;
     switch (axis.getSpacing()) {
       case regularInterval:
@@ -360,14 +375,14 @@ class CoordAxisHelper {
         break;
 
       case contiguousInterval:
-        subsetValues = new double[ncoords + 1];            // need npts+1
+        subsetValues = new double[ncoords + 1]; // need npts+1
         for (int i : range)
           subsetValues[count2++] = values[i];
         subsetValues[count2] = values[range.last() + 1];
         break;
 
       case discontiguousInterval:
-        subsetValues = new double[2 * ncoords];            // need 2*npts
+        subsetValues = new double[2 * ncoords]; // need 2*npts
         for (int i : range) {
           subsetValues[count2++] = values[2 * i];
           subsetValues[count2++] = values[2 * i + 1];
@@ -377,7 +392,8 @@ class CoordAxisHelper {
 
     // subset(int ncoords, double start, double end, double[] values)
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
-    builder.subset(ncoords, axis.getCoordMidpoint(range.first()), axis.getCoordMidpoint(range.last()), resolution, subsetValues);
+    builder.subset(ncoords, axis.getCoordMidpoint(range.first()), axis.getCoordMidpoint(range.last()), resolution,
+        subsetValues);
     builder.setRange(range);
     return builder;
   }
@@ -392,7 +408,7 @@ class CoordAxisHelper {
     if (axis.spacing == CoverageCoordAxis.Spacing.regularInterval) {
       double val1 = axis.getCoordEdge1(closest_index);
       double val2 = axis.getCoordEdge2(closest_index);
-      builder.subset(1, val1, val2, val2-val1, null);
+      builder.subset(1, val1, val2, val2 - val1, null);
 
     } else {
       builder.subset(1, 0, 0, 0.0, makeValues(closest_index));
@@ -418,7 +434,7 @@ class CoordAxisHelper {
     } else if (axis.spacing == CoverageCoordAxis.Spacing.regularInterval) {
       double val1 = axis.getCoordEdge1(closest_index);
       double val2 = axis.getCoordEdge2(closest_index);
-      builder.subset(1, val1, val2, val2-val1, null);
+      builder.subset(1, val1, val2, val2 - val1, null);
 
     } else {
       builder.subset(1, 0, 0, 0.0, makeValues(closest_index));

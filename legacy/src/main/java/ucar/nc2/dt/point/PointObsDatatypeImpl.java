@@ -20,23 +20,32 @@ public abstract class PointObsDatatypeImpl implements PointObsDatatype, Comparab
   protected ucar.unidata.geoloc.EarthLocation location;
   protected double obsTime, nomTime;
 
-  public PointObsDatatypeImpl() {
-  }
+  public PointObsDatatypeImpl() {}
 
-  public PointObsDatatypeImpl( ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime) {
+  public PointObsDatatypeImpl(ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime) {
     this.location = location;
     this.obsTime = obsTime;
     this.nomTime = nomTime;
   }
 
-  public ucar.unidata.geoloc.EarthLocation getLocation() { return location; }
-  public double getNominalTime() { return nomTime; }
-  public double getObservationTime() { return obsTime; }
+  public ucar.unidata.geoloc.EarthLocation getLocation() {
+    return location;
+  }
+
+  public double getNominalTime() {
+    return nomTime;
+  }
+
+  public double getObservationTime() {
+    return obsTime;
+  }
 
   public int compareTo(Object o) {
     PointObsDatatypeImpl other = (PointObsDatatypeImpl) o;
-    if (obsTime < other.obsTime) return -1;
-    if (obsTime > other.obsTime) return 1;
+    if (obsTime < other.obsTime)
+      return -1;
+    if (obsTime > other.obsTime)
+      return 1;
     return 0;
   }
 }

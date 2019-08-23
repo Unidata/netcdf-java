@@ -5,7 +5,6 @@
 package thredds.ui.monitor;
 
 import ucar.unidata.io.RandomAccessFile;
-
 import java.util.List;
 
 /**

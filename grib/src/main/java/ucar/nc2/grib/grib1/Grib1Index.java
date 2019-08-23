@@ -12,7 +12,6 @@ import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,32 +23,33 @@ import java.util.*;
  * Hides Grib1IndexProto
  *
  * sample use:
+ * 
  * <pre>
-      Grib1Index index = new Grib1Index();
-      if (!index.readIndex(path))
-        index.makeIndex(path);
-
-      for (Grib1SectionGridDefinition gds : index.getGds()) {
-        if (gdsSet.get(gds.calcCRC()) == null)
-          gdsSet.put(gds.calcCRC(), gds);
-      }
-
-      for (Grib1Record gr : index.getRecords()) {
-        gr.setFile(fileno);
-
-        Grib1Pds pds = gr.getPDSsection().getPDS();
-        int discipline = gr.getDiscipline();
-
-        int id = gr.cdmVariableHash();
-        Grib1ParameterBean bean = pdsSet.get(id);
-        if (bean == null) {
-          bean = new Grib1ParameterBean(gr);
-          pdsSet.put(id, bean);
-          params.add(bean);
-        }
-        bean.addRecord(gr);
-      }
-      </pre>
+ * Grib1Index index = new Grib1Index();
+ * if (!index.readIndex(path))
+ *   index.makeIndex(path);
+ * 
+ * for (Grib1SectionGridDefinition gds : index.getGds()) {
+ *   if (gdsSet.get(gds.calcCRC()) == null)
+ *     gdsSet.put(gds.calcCRC(), gds);
+ * }
+ * 
+ * for (Grib1Record gr : index.getRecords()) {
+ *   gr.setFile(fileno);
+ * 
+ *   Grib1Pds pds = gr.getPDSsection().getPDS();
+ *   int discipline = gr.getDiscipline();
+ * 
+ *   int id = gr.cdmVariableHash();
+ *   Grib1ParameterBean bean = pdsSet.get(id);
+ *   if (bean == null) {
+ *     bean = new Grib1ParameterBean(gr);
+ *     pdsSet.put(id, bean);
+ *     params.add(bean);
+ *   }
+ *   bean.addRecord(gr);
+ * }
+ * </pre>
  *
  * @author John
  * @since 9/5/11
@@ -85,12 +85,15 @@ public class Grib1Index extends GribIndex {
 
   public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) {
     String idxPath = filename;
-    if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+    if (!idxPath.endsWith(GBX9_IDX))
+      idxPath += GBX9_IDX;
     File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
-    if (idxFile == null) return false;
+    if (idxFile == null)
+      return false;
 
     long idxModified = idxFile.lastModified();
-    if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
+    if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified))
+      return false; // force new index if file was updated
 
     try (FileInputStream fin = new FileInputStream(idxFile)) {
       //// check header is ok
@@ -103,7 +106,8 @@ public class Grib1Index extends GribIndex {
       if (v != version) {
         if ((v == 0) || (v > version))
           throw new IOException("Grib1Index found version " + v + ", want version " + version + " on " + filename);
-        if (logger.isDebugEnabled()) logger.debug("Grib1Index found version " + v + ", want version " + version + " on " + filename);
+        if (logger.isDebugEnabled())
+          logger.debug("Grib1Index found version " + v + ", want version " + version + " on " + filename);
         return false;
       }
 
@@ -117,7 +121,7 @@ public class Grib1Index extends GribIndex {
       NcStream.readFully(fin, m);
 
       Grib1IndexProto.Grib1Index proto = Grib1IndexProto.Grib1Index.parseFrom(m);
-      logger.debug("{} for {}",  proto.getFilename(), filename);
+      logger.debug("{} for {}", proto.getFilename(), filename);
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib1IndexProto.Grib1GdsSection pgds : proto.getGdsListList()) {
@@ -162,7 +166,8 @@ public class Grib1Index extends GribIndex {
   // LOOK what about extending an index ??
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     String idxPath = filename;
-    if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+    if (!idxPath.endsWith(GBX9_IDX))
+      idxPath += GBX9_IDX;
     File idxFile = GribIndexCache.getFileOrCache(idxPath);
     File idxFileTmp = GribIndexCache.getFileOrCache(idxPath + ".tmp");
 
@@ -179,7 +184,7 @@ public class Grib1Index extends GribIndex {
       Grib1IndexProto.Grib1Index.Builder rootBuilder = Grib1IndexProto.Grib1Index.newBuilder();
       rootBuilder.setFilename(filename);
 
-      if (dataRaf == null)  { // open if dataRaf not already open
+      if (dataRaf == null) { // open if dataRaf not already open
         raf = RandomAccessFile.acquire(filename);
         dataRaf = raf;
       }
@@ -187,7 +192,8 @@ public class Grib1Index extends GribIndex {
       Grib1RecordScanner scan = new Grib1RecordScanner(dataRaf);
       while (scan.hasNext()) {
         Grib1Record r = scan.next();
-        if (r == null) break; // done
+        if (r == null)
+          break; // done
         records.add(r);
 
         Grib1SectionGridDefinition gdss = r.getGDSsection();
@@ -204,19 +210,20 @@ public class Grib1Index extends GribIndex {
       }
 
       if (records.isEmpty())
-        throw new RuntimeException("No GRIB1 records found in "+dataRaf.getLocation());
+        throw new RuntimeException("No GRIB1 records found in " + dataRaf.getLocation());
 
       ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index index = rootBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(fout, b.length); // message size
-      fout.write(b);  // message  - all in one gulp
+      fout.write(b); // message - all in one gulp
       logger.debug("  made gbx9 index for {} size={}", filename, b.length);
       return true;
 
     } finally {
-      if (raf != null) raf.close();   // only close if it was opened here
+      if (raf != null)
+        raf.close(); // only close if it was opened here
 
-            // now switch
+      // now switch
       RandomAccessFile.eject(idxFile.getPath());
       boolean deleteOk = !idxFile.exists() || idxFile.delete();
       boolean renameOk = idxFileTmp.renameTo(idxFile);

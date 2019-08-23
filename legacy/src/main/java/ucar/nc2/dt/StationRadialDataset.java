@@ -4,8 +4,10 @@
  */
 package ucar.nc2.dt;
 
-/** A collection of Stations with RadialDatatype data.
+/**
+ * A collection of Stations with RadialDatatype data.
  * All getData() methods return List of RadialDatatype.
+ * 
  * @author caron
  */
 public interface StationRadialDataset extends RadialDatasetSweep, StationCollection {

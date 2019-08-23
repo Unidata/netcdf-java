@@ -6,7 +6,6 @@
 package ucar.nc2.dt.grid;
 
 import junit.framework.TestCase;
-
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,6 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -32,23 +30,23 @@ public class TestGridVerticalTransforms extends TestCase {
   }
 
   public void testWRF() throws Exception {
-    testDataset( TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
-    testDataset( TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_d01_2006-03-08_21-00-00");
+    testDataset(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
+    testDataset(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_d01_2006-03-08_21-00-00");
   }
 
-  private void testDataset( String location) throws IOException, InvalidRangeException {
+  private void testDataset(String location) throws IOException, InvalidRangeException {
     ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(location);
     assert dataset != null;
 
-    testGrid( dataset.findGridByName("U"));
-    testGrid( dataset.findGridByName("V"));
-    testGrid( dataset.findGridByName("W"));
-    testGrid( dataset.findGridByName("T"));
+    testGrid(dataset.findGridByName("U"));
+    testGrid(dataset.findGridByName("V"));
+    testGrid(dataset.findGridByName("W"));
+    testGrid(dataset.findGridByName("T"));
 
     dataset.close();
   }
 
-  private void testGrid( GeoGrid grid) throws IOException, InvalidRangeException {
+  private void testGrid(GeoGrid grid) throws IOException, InvalidRangeException {
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
@@ -71,19 +69,20 @@ public class TestGridVerticalTransforms extends TestCase {
     assert vt.getUnitString() != null;
 
     ucar.ma2.ArrayDouble.D3 vcoord = vt.getCoordinateArray(0);
-    assert vcoord.getShape()[0] ==  zaxis.getSize() : vcoord.getShape()[0];
-    assert vcoord.getShape()[1] ==  yaxis.getSize() : vcoord.getShape()[1];
-    assert vcoord.getShape()[2] ==  xaxis.getSize() : vcoord.getShape()[2];
+    assert vcoord.getShape()[0] == zaxis.getSize() : vcoord.getShape()[0];
+    assert vcoord.getShape()[1] == yaxis.getSize() : vcoord.getShape()[1];
+    assert vcoord.getShape()[2] == xaxis.getSize() : vcoord.getShape()[2];
   }
 
 
-/*  The 3D coordinate array does not return correct shape and values. Just running this simple code to get z values..
-
-url=http://coast-enviro.er.usgs.gov/models/share/erie_test.ncml;
-var='temp';
-
-z is of shape 20x2x87, it should be 20x87x193.
-*/
+  /*
+   * The 3D coordinate array does not return correct shape and values. Just running this simple code to get z values..
+   * 
+   * url=http://coast-enviro.er.usgs.gov/models/share/erie_test.ncml;
+   * var='temp';
+   * 
+   * z is of shape 20x2x87, it should be 20x87x193.
+   */
 
   public void testErie() throws IOException, InvalidRangeException {
     String uri = TestDir.cdmUnitTestDir + "transforms/erie_test.ncml";

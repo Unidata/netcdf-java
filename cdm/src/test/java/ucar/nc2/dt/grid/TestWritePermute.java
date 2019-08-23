@@ -11,11 +11,10 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
-/** Test  write JUnit framework. */
+/** Test write JUnit framework. */
 
 public class TestWritePermute extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -23,7 +22,7 @@ public class TestWritePermute extends TestCase {
   private boolean show = false;
 
   public void testWritePermute() throws Exception {
-    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(TestDir.cdmLocalTestDataDir+"permuteTest.nc", true);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(TestDir.cdmLocalTestDataDir + "permuteTest.nc", true);
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
@@ -32,41 +31,41 @@ public class TestWritePermute extends TestCase {
     Dimension tDim = ncfile.addDimension("time", 2);
 
     // define Variables
-    ncfile.addVariable("time", DataType.DOUBLE, "time" );
+    ncfile.addVariable("time", DataType.DOUBLE, "time");
     ncfile.addVariableAttribute("time", "units", "secs since 1-1-1 00:00");
 
-    ncfile.addVariable("z", DataType.DOUBLE, "z" );
+    ncfile.addVariable("z", DataType.DOUBLE, "z");
     ncfile.addVariableAttribute("z", "units", "meters");
     ncfile.addVariableAttribute("z", "positive", "up");
 
-    ncfile.addVariable("y", DataType.DOUBLE, "y" );
+    ncfile.addVariable("y", DataType.DOUBLE, "y");
     ncfile.addVariableAttribute("y", "units", "degrees_north");
 
-    ncfile.addVariable("x", DataType.DOUBLE, "x" );
+    ncfile.addVariable("x", DataType.DOUBLE, "x");
     ncfile.addVariableAttribute("x", "units", "degrees_east");
 
     ncfile.addVariable("tzyx", DataType.DOUBLE, Lists.newArrayList(tDim, zDim, yDim, xDim));
     ncfile.addVariableAttribute("tzyx", "units", "K");
 
-    ncfile.addVariable("tzxy", DataType.DOUBLE, Lists.newArrayList( tDim, zDim, xDim, yDim));
+    ncfile.addVariable("tzxy", DataType.DOUBLE, Lists.newArrayList(tDim, zDim, xDim, yDim));
     ncfile.addVariableAttribute("tzxy", "units", "K");
 
-    ncfile.addVariable("tyxz", DataType.DOUBLE, Lists.newArrayList( tDim, yDim, xDim, zDim));
+    ncfile.addVariable("tyxz", DataType.DOUBLE, Lists.newArrayList(tDim, yDim, xDim, zDim));
     ncfile.addVariableAttribute("tyxz", "units", "K");
 
-    ncfile.addVariable("txyz", DataType.DOUBLE, Lists.newArrayList( tDim, xDim, yDim, zDim));
+    ncfile.addVariable("txyz", DataType.DOUBLE, Lists.newArrayList(tDim, xDim, yDim, zDim));
     ncfile.addVariableAttribute("txyz", "units", "K");
 
-    ncfile.addVariable("zyxt", DataType.DOUBLE, Lists.newArrayList( zDim, yDim, xDim, tDim));
+    ncfile.addVariable("zyxt", DataType.DOUBLE, Lists.newArrayList(zDim, yDim, xDim, tDim));
     ncfile.addVariableAttribute("zyxt", "units", "K");
 
-    ncfile.addVariable("zxyt", DataType.DOUBLE, Lists.newArrayList( zDim, xDim, yDim, tDim));
+    ncfile.addVariable("zxyt", DataType.DOUBLE, Lists.newArrayList(zDim, xDim, yDim, tDim));
     ncfile.addVariableAttribute("zxyt", "units", "K");
 
-    ncfile.addVariable("yxzt", DataType.DOUBLE, Lists.newArrayList( yDim, xDim, zDim, tDim));
+    ncfile.addVariable("yxzt", DataType.DOUBLE, Lists.newArrayList(yDim, xDim, zDim, tDim));
     ncfile.addVariableAttribute("yxzt", "units", "K");
 
-    ncfile.addVariable("xyzt", DataType.DOUBLE, Lists.newArrayList( xDim, yDim, zDim, tDim));
+    ncfile.addVariable("xyzt", DataType.DOUBLE, Lists.newArrayList(xDim, yDim, zDim, tDim));
     ncfile.addVariableAttribute("xyzt", "units", "K");
 
     // missing one dimension
@@ -94,62 +93,62 @@ public class TestWritePermute extends TestCase {
     // create the file
     try {
       ncfile.create();
-    }  catch (IOException e) {
+    } catch (IOException e) {
       System.err.println("ERROR creating file");
-      assert(false);
+      assert (false);
     }
 
     // write time data
     int len = tDim.getLength();
     ArrayDouble A = new ArrayDouble.D1(len);
     Index ima = A.getIndex();
-    for (int i=0; i<len; i++)
-      A.setDouble(ima.set(i), (double) (i*3600));
+    for (int i = 0; i < len; i++)
+      A.setDouble(ima.set(i), (double) (i * 3600));
     int[] origin = new int[1];
     try {
       ncfile.write("time", origin, A);
     } catch (IOException e) {
       System.err.println("ERROR writing time");
-      assert(false);
+      assert (false);
     }
 
     // write z data
     len = zDim.getLength();
     A = new ArrayDouble.D1(len);
     ima = A.getIndex();
-    for (int i=0; i<len; i++)
-      A.setDouble(ima.set(i), (double) (i*10));
+    for (int i = 0; i < len; i++)
+      A.setDouble(ima.set(i), (double) (i * 10));
     try {
       ncfile.write("z", origin, A);
     } catch (IOException e) {
       System.err.println("ERROR writing z");
-      assert(false);
+      assert (false);
     }
 
     // write y data
     len = yDim.getLength();
     A = new ArrayDouble.D1(len);
     ima = A.getIndex();
-    for (int i=0; i<len; i++)
-      A.setDouble(ima.set(i), (double) (i*3));
+    for (int i = 0; i < len; i++)
+      A.setDouble(ima.set(i), (double) (i * 3));
     try {
       ncfile.write("y", origin, A);
     } catch (IOException e) {
       System.err.println("ERROR writing y");
-      assert(false);
+      assert (false);
     }
 
     // write x data
     len = xDim.getLength();
     A = new ArrayDouble.D1(len);
     ima = A.getIndex();
-    for (int i=0; i<len; i++)
-      A.setDouble(ima.set(i), (double) (i*5));
+    for (int i = 0; i < len; i++)
+      A.setDouble(ima.set(i), (double) (i * 5));
     try {
       ncfile.write("x", origin, A);
     } catch (IOException e) {
       System.err.println("ERROR writing x");
-      assert(false);
+      assert (false);
     }
 
     // write tzyx data
@@ -180,31 +179,32 @@ public class TestWritePermute extends TestCase {
     doWrite2(ncfile, "ty");
     doWrite2(ncfile, "tx");
 
-    if (show) System.out.println( "ncfile = "+ ncfile);
+    if (show)
+      System.out.println("ncfile = " + ncfile);
 
     // all done
     try {
       ncfile.close();
     } catch (IOException e) {
       System.err.println("ERROR writing file");
-      assert(false);
+      assert (false);
     }
 
-    System.out.println( "*****************Test Write done");
+    System.out.println("*****************Test Write done");
   }
 
-  private void doWrite4( NetcdfFileWriter ncfile, String varName) throws Exception {
-    Variable v = ncfile.findVariable( varName);
-    int[] w = getWeights( v);
+  private void doWrite4(NetcdfFileWriter ncfile, String varName) throws Exception {
+    Variable v = ncfile.findVariable(varName);
+    int[] w = getWeights(v);
 
     int[] shape = v.getShape();
     Array aa = Array.factory(v.getDataType(), shape);
     Index ima = aa.getIndex();
-    for (int i=0; i<shape[0]; i++) {
-      for (int j=0; j<shape[1]; j++) {
-        for (int k=0; k<shape[2]; k++) {
-          for (int m=0; m<shape[3]; m++) {
-            aa.setDouble( ima.set(i,j,k,m), (double) (i*w[0] + j*w[1] + k*w[2] + m*w[3]));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        for (int k = 0; k < shape[2]; k++) {
+          for (int m = 0; m < shape[3]; m++) {
+            aa.setDouble(ima.set(i, j, k, m), (double) (i * w[0] + j * w[1] + k * w[2] + m * w[3]));
           }
         }
       }
@@ -213,17 +213,17 @@ public class TestWritePermute extends TestCase {
     ncfile.write(varName, aa);
   }
 
-  private void doWrite3( NetcdfFileWriter ncfile, String varName) throws Exception {
-    Variable v = ncfile.findVariable( varName);
-    int[] w = getWeights( v);
+  private void doWrite3(NetcdfFileWriter ncfile, String varName) throws Exception {
+    Variable v = ncfile.findVariable(varName);
+    int[] w = getWeights(v);
 
     int[] shape = v.getShape();
     Array aa = Array.factory(v.getDataType(), shape);
     Index ima = aa.getIndex();
-    for (int i=0; i<shape[0]; i++) {
-      for (int j=0; j<shape[1]; j++) {
-        for (int k=0; k<shape[2]; k++) {
-            aa.setDouble( ima.set(i,j,k), (double) (i*w[0] + j*w[1] + k*w[2]));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        for (int k = 0; k < shape[2]; k++) {
+          aa.setDouble(ima.set(i, j, k), (double) (i * w[0] + j * w[1] + k * w[2]));
         }
       }
     }
@@ -232,33 +232,37 @@ public class TestWritePermute extends TestCase {
   }
 
 
-  private void doWrite2( NetcdfFileWriter ncfile, String varName) throws Exception {
-    Variable v = ncfile.findVariable( varName);
-    int[] w = getWeights( v);
+  private void doWrite2(NetcdfFileWriter ncfile, String varName) throws Exception {
+    Variable v = ncfile.findVariable(varName);
+    int[] w = getWeights(v);
 
     int[] shape = v.getShape();
     Array aa = Array.factory(v.getDataType(), shape);
     Index ima = aa.getIndex();
-    for (int i=0; i<shape[0]; i++) {
-      for (int j=0; j<shape[1]; j++) {
-            aa.setDouble( ima.set(i,j), (double) (i*w[0] + j*w[1]));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        aa.setDouble(ima.set(i, j), (double) (i * w[0] + j * w[1]));
       }
     }
 
     ncfile.write(varName, aa);
   }
 
-  private int[] getWeights( Variable v) {
+  private int[] getWeights(Variable v) {
     int rank = v.getRank();
     int[] w = new int[rank];
 
-    for (int n=0; n<rank; n++) {
+    for (int n = 0; n < rank; n++) {
       Dimension dim = v.getDimension(n);
       String dimName = dim.getShortName();
-      if (dimName.equals("time")) w[n]  = 1000;
-      if (dimName.equals("z")) w[n]  = 100;
-      if (dimName.equals("y")) w[n]  = 10;
-      if (dimName.equals("x")) w[n]  = 1;
+      if (dimName.equals("time"))
+        w[n] = 1000;
+      if (dimName.equals("z"))
+        w[n] = 100;
+      if (dimName.equals("y"))
+        w[n] = 10;
+      if (dimName.equals("x"))
+        w[n] = 1;
     }
 
     return w;

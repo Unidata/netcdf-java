@@ -14,7 +14,6 @@ import ucar.nc2.time.CalendarDateRange;
 // import ucar.nc2.units.DateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -22,6 +21,7 @@ import java.util.*;
  * Abstract superclass for implementations of FeatureDataset.
  * Subclass must implement getFeatureClass(), and add specific functionality.
  * Also set dataVariables
+ * 
  * @author caron
  * @since Sep 7, 2007
  */
@@ -40,7 +40,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     this.title = from.title;
     this.desc = from.desc;
     this.location = from.location;
-    this.dataVariables = new ArrayList<>( from.dataVariables);
+    this.dataVariables = new ArrayList<>(from.dataVariables);
     this.parseInfo = new Formatter();
     String fromInfo = from.parseInfo.toString().trim();
     if (fromInfo.length() > 0)
@@ -51,7 +51,8 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   /** No-arg constuctor */
   public FeatureDatasetImpl() {}
 
-  /** Constructor when theres no NetcdfFile underneath.
+  /**
+   * Constructor when theres no NetcdfFile underneath.
    *
    * @param title title of the dataset.
    * @param description description of the dataset.
@@ -63,7 +64,9 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     this.location = location;
   }
 
-  /** Constructor when theres a NetcdfFile underneath
+  /**
+   * Constructor when theres a NetcdfFile underneath
+   * 
    * @param netcdfDataset adapt this NetcdfDataset
    */
   public FeatureDatasetImpl(NetcdfDataset netcdfDataset) {
@@ -77,65 +80,97 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
       desc = netcdfDataset.findAttValueIgnoreCase(null, "description", null);
   }
 
-  protected void setTitle( String title) { this.title = title; }
-  protected void setDescription( String desc) { this.desc = desc; }
-  protected void setLocationURI( String location) {this.location = location; }
-  public void setDateRange(CalendarDateRange dateRange) { this.dateRange = dateRange; }
-  public void setBoundingBox(LatLonRect boundingBox) { this.boundingBox = boundingBox; }
+  protected void setTitle(String title) {
+    this.title = title;
+  }
 
-  /* protected void removeDataVariable( String varName) {
-    if (dataVariables == null) return;
-    Iterator iter = dataVariables.iterator();
-    while (iter.hasNext()) {
-      VariableSimpleIF v = (VariableSimpleIF) iter.next();
-      if (v.getName().equals( varName) )
-        iter.remove();
-    }
-  } */
+  protected void setDescription(String desc) {
+    this.desc = desc;
+  }
+
+  protected void setLocationURI(String location) {
+    this.location = location;
+  }
+
+  public void setDateRange(CalendarDateRange dateRange) {
+    this.dateRange = dateRange;
+  }
+
+  public void setBoundingBox(LatLonRect boundingBox) {
+    this.boundingBox = boundingBox;
+  }
+
+  /*
+   * protected void removeDataVariable( String varName) {
+   * if (dataVariables == null) return;
+   * Iterator iter = dataVariables.iterator();
+   * while (iter.hasNext()) {
+   * VariableSimpleIF v = (VariableSimpleIF) iter.next();
+   * if (v.getName().equals( varName) )
+   * iter.remove();
+   * }
+   * }
+   */
 
   /////////////////////////////////////////////////
 
-  public NetcdfFile getNetcdfFile() { return netcdfDataset; }
-  public String getTitle() { return title; }
-  public String getDescription() { return desc; }
-  public String getLocation() {return location; }
+  public NetcdfFile getNetcdfFile() {
+    return netcdfDataset;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getDescription() {
+    return desc;
+  }
+
+  public String getLocation() {
+    return location;
+  }
+
   public List<Attribute> getGlobalAttributes() {
-    if (netcdfDataset == null) return new ArrayList<>();
+    if (netcdfDataset == null)
+      return new ArrayList<>();
     return netcdfDataset.getGlobalAttributes();
   }
 
-  public Attribute findGlobalAttributeIgnoreCase( String name ) {
-    if (netcdfDataset == null) return null;
-    return netcdfDataset.findGlobalAttributeIgnoreCase( name);
+  public Attribute findGlobalAttributeIgnoreCase(String name) {
+    if (netcdfDataset == null)
+      return null;
+    return netcdfDataset.findGlobalAttributeIgnoreCase(name);
   }
 
-  public void getDetailInfo( java.util.Formatter sf) {
+  public void getDetailInfo(java.util.Formatter sf) {
 
     sf.format("FeatureDataset on location= %s%n", getLocation());
-    sf.format("  featureType= %s%n",getFeatureType());
-    sf.format("  title= %s%n",getTitle());
-    sf.format("  desc= %s%n",getDescription());
-    sf.format("  range= %s%n",getCalendarDateRange());
+    sf.format("  featureType= %s%n", getFeatureType());
+    sf.format("  title= %s%n", getTitle());
+    sf.format("  desc= %s%n", getDescription());
+    sf.format("  range= %s%n", getCalendarDateRange());
     sf.format("  start= %s%n", getCalendarDateEnd());
-    sf.format("  end  = %s%n",getCalendarDateEnd());
+    sf.format("  end  = %s%n", getCalendarDateEnd());
     LatLonRect bb = getBoundingBox();
     sf.format("  bb   = %s%n", bb);
     if (bb != null)
-      sf.format("  bb   = %s%n",getBoundingBox().toString2());
+      sf.format("  bb   = %s%n", getBoundingBox().toString2());
 
     sf.format("  has netcdf = %b%n", (getNetcdfFile() != null));
     List<Attribute> ga = getGlobalAttributes();
     if (ga.size() > 0) {
       sf.format("  Attributes%n");
       for (Attribute a : ga)
-        sf.format("    %s%n",a);
+        sf.format("    %s%n", a);
     }
 
     List<VariableSimpleIF> vars = getDataVariables();
-    sf.format("%n  Data Variables (%d)%n",vars.size());
+    sf.format("%n  Data Variables (%d)%n", vars.size());
     for (VariableSimpleIF v : vars) {
-      sf.format("    name='%s' desc='%s' units=%s' type='%s' dims=(", v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType());
-      for (Dimension d : v.getDimensions()) sf.format("%s ", d);
+      sf.format("    name='%s' desc='%s' units=%s' type='%s' dims=(", v.getShortName(), v.getDescription(),
+          v.getUnitsString(), v.getDataType());
+      for (Dimension d : v.getDimensions())
+        sf.format("%s ", d);
       sf.format(")%n");
     }
 
@@ -158,16 +193,19 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     return (dateRange == null) ? null : dateRange.getEnd();
   }
 
-  public LatLonRect getBoundingBox() { return boundingBox; }
+  public LatLonRect getBoundingBox() {
+    return boundingBox;
+  }
 
   public List<VariableSimpleIF> getDataVariables() {
     return (dataVariables == null) ? new ArrayList<>() : dataVariables;
   }
 
-  public VariableSimpleIF getDataVariable( String shortName) {
+  public VariableSimpleIF getDataVariable(String shortName) {
     for (VariableSimpleIF s : getDataVariables()) {
       String ss = s.getShortName();
-      if (shortName.equals(ss)) return s;
+      if (shortName.equals(ss))
+        return s;
     }
     return null;
   }
@@ -177,29 +215,33 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   }
 
   //////////////////////////////////////////////////
-  //  FileCacheable
+  // FileCacheable
 
   @Override
   public synchronized void close() throws java.io.IOException {
     if (fileCache != null) {
-      if (fileCache.release(this)) return;
+      if (fileCache.release(this))
+        return;
     }
 
     try {
-      if (netcdfDataset != null) netcdfDataset.close();
+      if (netcdfDataset != null)
+        netcdfDataset.close();
     } finally {
       netcdfDataset = null;
     }
   }
 
-      // release any resources like file handles
+  // release any resources like file handles
   public void release() throws IOException {
-    if (netcdfDataset != null) netcdfDataset.release();
+    if (netcdfDataset != null)
+      netcdfDataset.release();
   }
 
   // reacquire any resources like file handles
   public void reacquire() throws IOException {
-    if (netcdfDataset != null) netcdfDataset.reacquire();
+    if (netcdfDataset != null)
+      netcdfDataset.reacquire();
   }
 
   @Override

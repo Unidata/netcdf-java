@@ -18,9 +18,7 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.*;
-
 import org.jdom2.Element;
-
 import ucar.ma2.Array;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -62,7 +60,7 @@ import ucar.ui.prefs.Debug;
 public class SimpleGeomController {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SimpleGeomController.class);
 
-  private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec
+  private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250; // quarter sec
   private static final String LastMapAreaName = "LastMapArea";
   private static final String LastProjectionName = "LastProjection";
   private static final String LastDatasetName = "LastDataset";
@@ -71,13 +69,13 @@ public class SimpleGeomController {
   private PreferencesExt store;
   private SimpleGeomUI ui;
 
-   // delegates
+  // delegates
   private ColorScale cs;
   private NavigatedPanel np;
   private VertPanel vertPanel;
   private ProjectionImpl project;
 
-    // state
+  // state
   private String datasetUrlString;
   private NetcdfDataset netcdfDataset;
   private GridDataset gridDataset;
@@ -91,21 +89,21 @@ public class SimpleGeomController {
   boolean drawHorizOn = true, drawVertOn = false;
   private boolean hasDependentTimeAxis = false;
 
-    // rendering
-  private AffineTransform atI = new AffineTransform();  // identity transform
+  // rendering
+  private AffineTransform atI = new AffineTransform(); // identity transform
   // private MyImageObserver imageObs = new MyImageObserver();
   // private MyPrintable printer = null;
 
   private Renderer renderMap = null;
   public GridRenderer renderGrid;
-  //private WindRenderer renderWind;
+  // private WindRenderer renderWind;
   private javax.swing.Timer redrawTimer;
   private Color mapColor = Color.black;
 
-    // ui
+  // ui
   private javax.swing.JLabel dataValueLabel, posLabel;
 
-    // event management
+  // event management
   AbstractAction dataProjectionAction, showGridAction, showContoursAction, showContourLabelsAction;
   AbstractAction drawHorizAction, drawVertAction;
 
@@ -115,39 +113,39 @@ public class SimpleGeomController {
   private boolean eventsOK = true;
   private boolean startOK = false;
 
-    // optimize GC
+  // optimize GC
   private ProjectionPointImpl projPoint = new ProjectionPointImpl();
 
-    // debugging
+  // debugging
   private final boolean debugThread = false;
 
-  public SimpleGeomController( SimpleGeomUI ui, PreferencesExt store) {
+  public SimpleGeomController(SimpleGeomUI ui, PreferencesExt store) {
     this.ui = ui;
     this.store = store;
 
     // colorscale
-    Object bean = store.getBean( ColorScaleName, null);
+    Object bean = store.getBean(ColorScaleName, null);
     if (!(bean instanceof ColorScale))
       cs = new ColorScale("default");
     else
-      cs = (ColorScale) store.getBean( ColorScaleName, null);
+      cs = (ColorScale) store.getBean(ColorScaleName, null);
 
     // set up the renderers; Maps are added by addMapBean()
     renderGrid = new GridRenderer();
     renderGrid.setColorScale(cs);
-    //renderWind = new WindRenderer();
+    // renderWind = new WindRenderer();
 
     // stride
-    strideSpinner = new JSpinner( new SpinnerNumberModel(1, 1, 100, 1) );
+    strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
     strideSpinner.addChangeListener(e -> {
-        Integer val = (Integer) strideSpinner.getValue();
-        renderGrid.setHorizStride(val);
+      Integer val = (Integer) strideSpinner.getValue();
+      renderGrid.setHorizStride(val);
     });
 
-     // timer
+    // timer
     redrawTimer = new javax.swing.Timer(0, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        SwingUtilities.invokeLater( new Runnable() {  // invoke in event thread
+        SwingUtilities.invokeLater(new Runnable() { // invoke in event thread
           public void run() {
             draw(false);
           }
@@ -161,32 +159,34 @@ public class SimpleGeomController {
     makeActions();
   }
 
-    // stuff to do after UI is complete
+  // stuff to do after UI is complete
   void finishInit() {
 
-      // some widgets from the GridUI
+    // some widgets from the GridUI
     np = ui.panz;
     vertPanel = ui.vertPanel;
     dataValueLabel = ui.dataValueLabel;
     posLabel = ui.positionLabel;
 
-      // get last saved Projection
+    // get last saved Projection
     project = (ProjectionImpl) store.getBean(LastProjectionName, null);
     if (project != null)
-      setProjection( project);
+      setProjection(project);
 
-      // get last saved MapArea
+    // get last saved MapArea
     ProjectionRect ma = (ProjectionRect) store.getBean(LastMapAreaName, null);
     if (ma != null)
-      np.setMapArea( ma);
+      np.setMapArea(ma);
 
     makeEventManagement();
 
     // last thing
-    /* get last dataset filename and reopen it
-    String filename = (String) store.get(LastDatasetName);
-    if (filename != null)
-      setDataset(filename); */
+    /*
+     * get last dataset filename and reopen it
+     * String filename = (String) store.get(LastDatasetName);
+     * if (filename != null)
+     * setDataset(filename);
+     */
   }
 
   void start(boolean ok) {
@@ -194,49 +194,49 @@ public class SimpleGeomController {
     renderGrid.makeStridedGrid();
   }
 
-    // create all actions here
-    // the actions can then be attached to buttcons, menus, etc
+  // create all actions here
+  // the actions can then be attached to buttcons, menus, etc
   private void makeActions() {
     boolean state;
 
     dataProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         ProjectionImpl dataProjection = renderGrid.getDataProjection();
-        if ( null != dataProjection)
-          setProjection( dataProjection);
+        if (null != dataProjection)
+          setProjection(dataProjection);
       }
     };
-    BAMutil.setActionProperties( dataProjectionAction, "DataProjection", "use Data Projection", false, 'D', 0);
+    BAMutil.setActionProperties(dataProjectionAction, "DataProjection", "use Data Projection", false, 'D', 0);
 
-     // draw horiz
+    // draw horiz
     drawHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         drawHorizOn = (Boolean) getValue(BAMutil.STATE);
         // System.out.println("showGridAction state "+state);
-        ui.setDrawHorizAndVert( drawHorizOn, drawVertOn);
+        ui.setDrawHorizAndVert(drawHorizOn, drawVertOn);
         draw(false);
       }
     };
-    BAMutil.setActionProperties( drawHorizAction, "nj22/DrawHoriz", "draw horizontal", true, 'H', 0);
-    state = store.getBoolean( "drawHorizAction", true);
+    BAMutil.setActionProperties(drawHorizAction, "nj22/DrawHoriz", "draw horizontal", true, 'H', 0);
+    state = store.getBoolean("drawHorizAction", true);
     drawHorizAction.putValue(BAMutil.STATE, state);
     drawHorizOn = state;
 
-     // draw Vert
+    // draw Vert
     drawVertAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         drawVertOn = (Boolean) getValue(BAMutil.STATE);
         // System.out.println("showGridAction state "+state);
-        ui.setDrawHorizAndVert( drawHorizOn, drawVertOn);
+        ui.setDrawHorizAndVert(drawHorizOn, drawVertOn);
         draw(false);
-       }
+      }
     };
-    BAMutil.setActionProperties( drawVertAction, "nj22/DrawVert", "draw vertical", true, 'V', 0);
-    state = store.getBoolean( "drawVertAction", false);
+    BAMutil.setActionProperties(drawVertAction, "nj22/DrawVert", "draw vertical", true, 'V', 0);
+    state = store.getBoolean("drawVertAction", false);
     drawVertAction.putValue(BAMutil.STATE, state);
     drawVertOn = state;
 
-       // show grid
+    // show grid
     showGridAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
@@ -245,12 +245,12 @@ public class SimpleGeomController {
         draw(false);
       }
     };
-    BAMutil.setActionProperties( showGridAction, "nj22/Grid", "show grid lines", true, 'G', 0);
-    state = store.getBoolean( "showGridAction", false);
+    BAMutil.setActionProperties(showGridAction, "nj22/Grid", "show grid lines", true, 'G', 0);
+    state = store.getBoolean("showGridAction", false);
     showGridAction.putValue(BAMutil.STATE, state);
-    renderGrid.setDrawGridLines( state);
+    renderGrid.setDrawGridLines(state);
 
-     // contouring
+    // contouring
     showContoursAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
@@ -258,12 +258,12 @@ public class SimpleGeomController {
         draw(false);
       }
     };
-    BAMutil.setActionProperties( showContoursAction, "nj22/Contours", "show contours", true, 'C', 0);
-    state = store.getBoolean( "showContoursAction", false);
+    BAMutil.setActionProperties(showContoursAction, "nj22/Contours", "show contours", true, 'C', 0);
+    state = store.getBoolean("showContoursAction", false);
     showContoursAction.putValue(BAMutil.STATE, state);
-    renderGrid.setDrawContours( state);
+    renderGrid.setDrawContours(state);
 
-     // contouring labels
+    // contouring labels
     showContourLabelsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
@@ -271,39 +271,40 @@ public class SimpleGeomController {
         draw(false);
       }
     };
-    BAMutil.setActionProperties( showContourLabelsAction, "nj22/ContourLabels", "show contour labels", true, 'L', 0);
-    state = store.getBoolean( "showContourLabelsAction", false);
+    BAMutil.setActionProperties(showContourLabelsAction, "nj22/ContourLabels", "show contour labels", true, 'L', 0);
+    state = store.getBoolean("showContourLabelsAction", false);
     showContourLabelsAction.putValue(BAMutil.STATE, state);
-    renderGrid.setDrawContourLabels( state);
+    renderGrid.setDrawContourLabels(state);
 
-     /* winds
-    showWindsAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        drawWinds = state.booleanValue();
-        draw(true, false, false);
-      }
-    };
-    BAMutil.setActionProperties( showWindsAction, "ShowWinds", "show wind", true, 'W', 0);
-    */
+    /*
+     * winds
+     * showWindsAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * Boolean state = (Boolean) getValue(BAMutil.STATE);
+     * drawWinds = state.booleanValue();
+     * draw(true, false, false);
+     * }
+     * };
+     * BAMutil.setActionProperties( showWindsAction, "ShowWinds", "show wind", true, 'W', 0);
+     */
   }
 
   private void makeEventManagement() {
 
-      //// manage field selection events
+    //// manage field selection events
     String actionName = "field";
     ActionCoordinator fieldCoordinator = new ActionCoordinator(actionName);
-      // connect to the fieldChooser
+    // connect to the fieldChooser
     fieldCoordinator.addActionSourceListener(ui.fieldChooser.getActionSourceListener());
-      // connect to the gridTable
+    // connect to the gridTable
     fieldCoordinator.addActionSourceListener(ui.gridTable.getActionSourceListener());
-      // heres what to do when the currentField changes
+    // heres what to do when the currentField changes
     ActionSourceListener fieldSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        if (setField( e.getValue())) {
+        if (setField(e.getValue())) {
           if (e.getActionCommand().equals("redrawImmediate")) {
             draw(true);
-            //colorScalePanel.paintImmediately(colorScalePanel.getBounds());   // kludgerino
+            // colorScalePanel.paintImmediately(colorScalePanel.getBounds()); // kludgerino
           } else
             redrawLater();
         }
@@ -314,28 +315,28 @@ public class SimpleGeomController {
     //// manage level selection events
     actionName = "level";
     ActionCoordinator levelCoordinator = new ActionCoordinator(actionName);
-      // connect to the levelChooser
+    // connect to the levelChooser
     levelCoordinator.addActionSourceListener(ui.levelChooser.getActionSourceListener());
-      // connect to the vertPanel
+    // connect to the vertPanel
     levelCoordinator.addActionSourceListener(ui.vertPanel.getActionSourceListener());
-      // also manage Pick events from the vertPanel
-    vertPanel.getDrawArea().addPickEventListener( new PickEventListener() {
+    // also manage Pick events from the vertPanel
+    vertPanel.getDrawArea().addPickEventListener(new PickEventListener() {
       public void actionPerformed(PickEvent e) {
         int level = renderGrid.findLevelCoordElement(e.getLocation().getY());
-         if ((level != -1) && (level != currentLevel)) {
+        if ((level != -1) && (level != currentLevel)) {
           currentLevel = level;
           redrawLater();
           String selectedName = levelNames.get(currentLevel).getName();
           if (Debug.isSet("pick/event"))
-            System.out.println("pick.event Vert: "+selectedName);
+            System.out.println("pick.event Vert: " + selectedName);
           levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
         }
       }
     });
-      // heres what to do when a level changes
+    // heres what to do when a level changes
     levelSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        int level = findIndexFromName( levelNames, e.getValue().toString());
+        int level = findIndexFromName(levelNames, e.getValue().toString());
         if ((level != -1) && (level != currentLevel)) {
           currentLevel = level;
           if (e.getActionCommand().equals("redrawImmediate")) {
@@ -350,17 +351,17 @@ public class SimpleGeomController {
     //// manage time selection events
     actionName = "time";
     ActionCoordinator timeCoordinator = new ActionCoordinator(actionName);
-      // connect to the timeChooser
+    // connect to the timeChooser
     timeCoordinator.addActionSourceListener(ui.timeChooser.getActionSourceListener());
-      // heres what to do when the time changes
+    // heres what to do when the time changes
     ActionSourceListener timeSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        int time = findIndexFromName( timeNames, e.getValue().toString());
+        int time = findIndexFromName(timeNames, e.getValue().toString());
         if ((time != -1) && (time != currentTime)) {
           currentTime = time;
           if (e.getActionCommand().equals("redrawImmediate")) {
             draw(true);
-            //colorScalePanel.paintImmediately(colorScalePanel.getBounds());   // kludgerino
+            // colorScalePanel.paintImmediately(colorScalePanel.getBounds()); // kludgerino
           } else
             redrawLater();
         }
@@ -371,12 +372,12 @@ public class SimpleGeomController {
     //// manage runtime selection events
     actionName = "runtime";
     ActionCoordinator runtimeCoordinator = new ActionCoordinator(actionName);
-      // connect to the timeChooser
+    // connect to the timeChooser
     runtimeCoordinator.addActionSourceListener(ui.runtimeChooser.getActionSourceListener());
-      // heres what to do when the time changes
+    // heres what to do when the time changes
     ActionSourceListener runtimeSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        int runtime = findIndexFromName( runtimeNames, e.getValue().toString());
+        int runtime = findIndexFromName(runtimeNames, e.getValue().toString());
         if ((runtime != -1) && (runtime != currentRunTime)) {
           currentRunTime = runtime;
           if (hasDependentTimeAxis) {
@@ -392,7 +393,7 @@ public class SimpleGeomController {
             ui.timeChooser.setCollection(timeNames.iterator(), true);
             if (currentTime >= timeNames.size())
               currentTime = 0;
-            ui.timeChooser.setSelectedByIndex( currentTime);
+            ui.timeChooser.setSelectedByIndex(currentTime);
           }
 
           if (e.getActionCommand().equals("redrawImmediate")) {
@@ -407,12 +408,12 @@ public class SimpleGeomController {
     //// manage runtime selection events
     actionName = "ensemble";
     ActionCoordinator ensembleCoordinator = new ActionCoordinator(actionName);
-      // connect to the timeChooser
+    // connect to the timeChooser
     ensembleCoordinator.addActionSourceListener(ui.ensembleChooser.getActionSourceListener());
-      // heres what to do when the time changes
+    // heres what to do when the time changes
     ActionSourceListener ensembleSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        int ensIndex = findIndexFromName( ensembleNames, e.getValue().toString());
+        int ensIndex = findIndexFromName(ensembleNames, e.getValue().toString());
         if ((ensIndex != -1) && (ensIndex != currentEnsemble)) {
           currentEnsemble = ensIndex;
           if (e.getActionCommand().equals("redrawImmediate")) {
@@ -424,46 +425,46 @@ public class SimpleGeomController {
     };
     ensembleCoordinator.addActionSourceListener(ensembleSource);
 
-      // get Projection Events from the navigated panel
-    np.addNewProjectionListener( new NewProjectionListener() {
-      public void actionPerformed( NewProjectionEvent e) {
+    // get Projection Events from the navigated panel
+    np.addNewProjectionListener(new NewProjectionListener() {
+      public void actionPerformed(NewProjectionEvent e) {
         if (Debug.isSet("event/NewProjection"))
-           System.out.println("Controller got NewProjectionEvent "+ np.getMapArea());
+          System.out.println("Controller got NewProjectionEvent " + np.getMapArea());
         if (eventsOK && renderMap != null) {
-          renderMap.setProjection( e.getProjection());
-          renderGrid.setProjection( e.getProjection());
+          renderMap.setProjection(e.getProjection());
+          renderGrid.setProjection(e.getProjection());
           drawH(false);
         }
       }
     });
 
-          // get NewMapAreaEvents from the navigated panel
-    np.addNewMapAreaListener( new NewMapAreaListener() {
+    // get NewMapAreaEvents from the navigated panel
+    np.addNewMapAreaListener(new NewMapAreaListener() {
       public void actionPerformed(NewMapAreaEvent e) {
         if (Debug.isSet("event/NewMapArea"))
-           System.out.println("Controller got NewMapAreaEvent "+ np.getMapArea());
+          System.out.println("Controller got NewMapAreaEvent " + np.getMapArea());
         drawH(false);
       }
     });
 
 
-      // get Pick events from the navigated panel
-    np.addPickEventListener( new PickEventListener() {
+    // get Pick events from the navigated panel
+    np.addPickEventListener(new PickEventListener() {
       public void actionPerformed(PickEvent e) {
         projPoint.setLocation(e.getLocation());
         int slice = renderGrid.findSliceFromPoint(projPoint);
         if (Debug.isSet("pick/event"))
-          System.out.println("pick.event: "+projPoint+" "+slice);
+          System.out.println("pick.event: " + projPoint + " " + slice);
         if ((slice >= 0) && (slice != currentSlice)) {
           currentSlice = slice;
-          vertPanel.setSlice( currentSlice);
+          vertPanel.setSlice(currentSlice);
           redrawLater();
         }
       }
     });
 
-      // get Move events from the navigated panel
-    np.addCursorMoveEventListener( new CursorMoveEventListener() {
+    // get Move events from the navigated panel
+    np.addCursorMoveEventListener(new CursorMoveEventListener() {
       public void actionPerformed(CursorMoveEvent e) {
         projPoint.setLocation(e.getLocation());
         String valueS = renderGrid.getXYvalueStr(projPoint);
@@ -471,8 +472,8 @@ public class SimpleGeomController {
       }
     });
 
-      // get Move events from the vertPanel
-    vertPanel.getDrawArea().addCursorMoveEventListener( new CursorMoveEventListener() {
+    // get Move events from the vertPanel
+    vertPanel.getDrawArea().addCursorMoveEventListener(new CursorMoveEventListener() {
       public void actionPerformed(CursorMoveEvent e) {
         Point2D loc = e.getLocationPoint();
         posLabel.setText(renderGrid.getYZpositionStr(loc));
@@ -481,9 +482,9 @@ public class SimpleGeomController {
     });
 
 
-      // catch window resize events in vertPanel : LOOK event order problem?
-    vertPanel.getDrawArea().addComponentListener( new ComponentAdapter() {
-      public void componentResized( ComponentEvent e) {
+    // catch window resize events in vertPanel : LOOK event order problem?
+    vertPanel.getDrawArea().addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
         draw(false);
       }
     });
@@ -500,39 +501,50 @@ public class SimpleGeomController {
   }
 
   String getDatasetXML() {
-    if (gridDataset == null) return "";
+    if (gridDataset == null)
+      return "";
     try {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       GridDatasetInfo info = new GridDatasetInfo(gridDataset, "path");
-      info.writeXML( info.makeDatasetDescription(), bos);
+      info.writeXML(info.makeDatasetDescription(), bos);
       return bos.toString(CDM.utf8Charset.name());
     } catch (IOException ioe) {
-        ioe.printStackTrace();
+      ioe.printStackTrace();
     }
     return "";
   }
 
 
   String getNcML() {
-    if (gridDataset == null) return "Null gridset";
+    if (gridDataset == null)
+      return "Null gridset";
 
     NcMLWriter ncmlWriter = new NcMLWriter();
     Element netcdfElement = ncmlWriter.makeNetcdfElement(gridDataset.getNetcdfFile(), null);
     return ncmlWriter.writeToString(netcdfElement);
   }
 
-  NetcdfDataset getNetcdfDataset() { return netcdfDataset; }
-  GridDatatype getCurrentField() { return currentField; }
-  Array getCurrentHorizDataSlice() { return renderGrid.getCurrentHorizDataSlice(); }
+  NetcdfDataset getNetcdfDataset() {
+    return netcdfDataset;
+  }
+
+  GridDatatype getCurrentField() {
+    return currentField;
+  }
+
+  Array getCurrentHorizDataSlice() {
+    return renderGrid.getCurrentHorizDataSlice();
+  }
 
   String getDatasetInfo() {
-    if (null == gridDataset) return "";
+    if (null == gridDataset)
+      return "";
     Formatter info = new Formatter();
     gridDataset.getDetailInfo(info);
     return info.toString();
   }
 
- /** iterator returns NamedObject CHANGE TO GENERIC */
+  /** iterator returns NamedObject CHANGE TO GENERIC */
   java.util.List getFields() {
     if (gridDataset == null)
       return null;
@@ -554,126 +566,128 @@ public class SimpleGeomController {
     renderGrid.clear();
   }
 
-  /* assume that this might be done in a backgound task
-  boolean openDataset(thredds.catalog.InvAccess access, ucar.nc2.util.CancelTask task) {
-    String urlString = access.getStandardUrlName();
-    if (debugOpen) System.out.println("GridController.openDataset= "+urlString);
-
-    InvService s = access.getService();
-    if (s.getServiceType() == ServiceType.RESOLVER) {
-      InvDatasetImpl rds = openResolver( urlString);
-      if (rds == null) return false;
-      access = rds.getAccess(ServiceType.DODS);
-      if (access == null)
-        access = rds.getAccess(ServiceType.NETCDF);
-      if (access == null) {
-        JOptionPane.showMessageDialog(null, rds.getName() + ": no access of type DODS or NETCDF");
-        return false;
-      }
-      urlString = access.getStandardUrlName();
-    }
-
-    InvDatasetImpl ds = (InvDatasetImpl) access.getDataset();
-    NetcdfFile ncfile = null;
-
-    try {
-      // check for NcML substitution
-      java.util.List list = ds.getMetadata(MetadataType.NcML);
-      if (list.size() > 0 ) {
-        InvMetadata metadata = (InvMetadata) list.get(0);
-        String ncmlUrlName = metadata.getXlinkHref();
-        try {
-          java.net.URI url = ds.getParentCatalog().resolveUri(ncmlUrlName);
-          ncmlUrlName = url.toString();
-          if (debugOpen)
-            System.out.println(" got NcML metadata= " + ncmlUrlName);
-          ncfile = new NetcdfDataset(ncmlUrlName, urlString);
-        } catch (java.net.URISyntaxException e) {
-          System.err.println("Error parsing ncmlUrlName= "+ncmlUrlName); //LOOK
-        }
-      }
-
-      // check for DODS type
-      else if (s.getServiceType() == ServiceType.DODS) {
-        ncfile = new DODSNetcdfFile(urlString, task);
-
-      // otherwise send it through the factory
-      } else {
-        ncfile = ucar.nc2.dataset.NetcdfDataset.factory( urlString, task);
-      }
-
-      // add conventions
-      if (task.isCancel()) return false;
-      NetcdfDataset ncDataset = ucar.nc2.dataset.conv.Convention.factory( ncfile);
-      if (ncDataset == null)
-        ncDataset = new NetcdfDataset( ncfile);
-
-      // GeoGrid parsing
-      if (task.isCancel()) return false;
-      GridDataset gDataset = new GridDataset( ncDataset);
-
-      // all ok !!
-      datasetUrlString = ncDataset.getPathName();
-      netcdfDataset = ncDataset;
-      gridDataset = gDataset;
-      return true;
-
-    } catch (java.net.MalformedURLException ee) {
-      task.setError("URL incorrectly formed "+urlString+"\n"+ee.getMessage());
-      return false;
-    } catch (java.rmi.RemoteException ee) {
-      task.setError("Cannot open remote file "+urlString+"\n"+ee.getMessage());
-      //ee.printStackTrace();
-      return false;
-    } catch (dods.dap.DODSException ee) {
-      task.setError("Cannot open file "+urlString+"\nIOException = "+ee);
-      ee.printStackTrace();
-      return false;
-    } catch (java.io.IOException ee) {
-      task.setError("Cannot open file "+urlString+"\nIOException = "+ee);
-      ee.printStackTrace();
-      return false;
-    } catch (java.lang.IllegalArgumentException ee) {
-      ee.printStackTrace();
-      task.setError("Cannot open file "+urlString+"\n"+ee.getMessage());
-      return false;
-    }
-  }
-
-  private InvDatasetImpl openResolver( String urlString) {
-    try {
-      InvCatalogFactory factory = new InvCatalogFactory("grid", true);
-      InvCatalog catalog = factory.readXML( urlString);
-      if (catalog == null) return null;
-      StringBuffer buff = new StringBuffer();
-      if (!catalog.check( buff)) {
-        javax.swing.JOptionPane.showMessageDialog(null, "Invalid catalog  from Resolver <"+ urlString+">\n"+
-          buff.toString());
-        System.out.println("Invalid catalog from Resolver <"+ urlString+">\n"+buff.toString());
-        return null;
-      }
-      InvDataset top = catalog.getDataset();
-      if (top.hasAccess())
-        return (InvDatasetImpl) top;
-      else {
-        java.util.List datasets = top.getDatasets();
-        return (InvDatasetImpl) datasets.get(0);
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  } */
+  /*
+   * assume that this might be done in a backgound task
+   * boolean openDataset(thredds.catalog.InvAccess access, ucar.nc2.util.CancelTask task) {
+   * String urlString = access.getStandardUrlName();
+   * if (debugOpen) System.out.println("GridController.openDataset= "+urlString);
+   * 
+   * InvService s = access.getService();
+   * if (s.getServiceType() == ServiceType.RESOLVER) {
+   * InvDatasetImpl rds = openResolver( urlString);
+   * if (rds == null) return false;
+   * access = rds.getAccess(ServiceType.DODS);
+   * if (access == null)
+   * access = rds.getAccess(ServiceType.NETCDF);
+   * if (access == null) {
+   * JOptionPane.showMessageDialog(null, rds.getName() + ": no access of type DODS or NETCDF");
+   * return false;
+   * }
+   * urlString = access.getStandardUrlName();
+   * }
+   * 
+   * InvDatasetImpl ds = (InvDatasetImpl) access.getDataset();
+   * NetcdfFile ncfile = null;
+   * 
+   * try {
+   * // check for NcML substitution
+   * java.util.List list = ds.getMetadata(MetadataType.NcML);
+   * if (list.size() > 0 ) {
+   * InvMetadata metadata = (InvMetadata) list.get(0);
+   * String ncmlUrlName = metadata.getXlinkHref();
+   * try {
+   * java.net.URI url = ds.getParentCatalog().resolveUri(ncmlUrlName);
+   * ncmlUrlName = url.toString();
+   * if (debugOpen)
+   * System.out.println(" got NcML metadata= " + ncmlUrlName);
+   * ncfile = new NetcdfDataset(ncmlUrlName, urlString);
+   * } catch (java.net.URISyntaxException e) {
+   * System.err.println("Error parsing ncmlUrlName= "+ncmlUrlName); //LOOK
+   * }
+   * }
+   * 
+   * // check for DODS type
+   * else if (s.getServiceType() == ServiceType.DODS) {
+   * ncfile = new DODSNetcdfFile(urlString, task);
+   * 
+   * // otherwise send it through the factory
+   * } else {
+   * ncfile = ucar.nc2.dataset.NetcdfDataset.factory( urlString, task);
+   * }
+   * 
+   * // add conventions
+   * if (task.isCancel()) return false;
+   * NetcdfDataset ncDataset = ucar.nc2.dataset.conv.Convention.factory( ncfile);
+   * if (ncDataset == null)
+   * ncDataset = new NetcdfDataset( ncfile);
+   * 
+   * // GeoGrid parsing
+   * if (task.isCancel()) return false;
+   * GridDataset gDataset = new GridDataset( ncDataset);
+   * 
+   * // all ok !!
+   * datasetUrlString = ncDataset.getPathName();
+   * netcdfDataset = ncDataset;
+   * gridDataset = gDataset;
+   * return true;
+   * 
+   * } catch (java.net.MalformedURLException ee) {
+   * task.setError("URL incorrectly formed "+urlString+"\n"+ee.getMessage());
+   * return false;
+   * } catch (java.rmi.RemoteException ee) {
+   * task.setError("Cannot open remote file "+urlString+"\n"+ee.getMessage());
+   * //ee.printStackTrace();
+   * return false;
+   * } catch (dods.dap.DODSException ee) {
+   * task.setError("Cannot open file "+urlString+"\nIOException = "+ee);
+   * ee.printStackTrace();
+   * return false;
+   * } catch (java.io.IOException ee) {
+   * task.setError("Cannot open file "+urlString+"\nIOException = "+ee);
+   * ee.printStackTrace();
+   * return false;
+   * } catch (java.lang.IllegalArgumentException ee) {
+   * ee.printStackTrace();
+   * task.setError("Cannot open file "+urlString+"\n"+ee.getMessage());
+   * return false;
+   * }
+   * }
+   * 
+   * private InvDatasetImpl openResolver( String urlString) {
+   * try {
+   * InvCatalogFactory factory = new InvCatalogFactory("grid", true);
+   * InvCatalog catalog = factory.readXML( urlString);
+   * if (catalog == null) return null;
+   * StringBuffer buff = new StringBuffer();
+   * if (!catalog.check( buff)) {
+   * javax.swing.JOptionPane.showMessageDialog(null, "Invalid catalog  from Resolver <"+ urlString+">\n"+
+   * buff.toString());
+   * System.out.println("Invalid catalog from Resolver <"+ urlString+">\n"+buff.toString());
+   * return null;
+   * }
+   * InvDataset top = catalog.getDataset();
+   * if (top.hasAccess())
+   * return (InvDatasetImpl) top;
+   * else {
+   * java.util.List datasets = top.getDatasets();
+   * return (InvDatasetImpl) datasets.get(0);
+   * }
+   * 
+   * } catch (Exception e) {
+   * e.printStackTrace();
+   * return null;
+   * }
+   * }
+   */
 
 
   // assume that its done in the event thread
   boolean showDataset() {
 
-      // temp kludge for initialization
+    // temp kludge for initialization
     java.util.List grids = gridDataset.getGrids();
     if ((grids == null) || grids.size() == 0) {
-      javax.swing.JOptionPane.showMessageDialog(null, "No gridded fields in file "+gridDataset.getTitle());
+      javax.swing.JOptionPane.showMessageDialog(null, "No gridded fields in file " + gridDataset.getTitle());
       return false;
     }
 
@@ -685,31 +699,31 @@ public class SimpleGeomController {
     currentRunTime = 0;
 
     eventsOK = false; // dont let this trigger redraw
-    renderGrid.setGeoGrid( currentField);
-    ui.setFields( gridDataset.getGrids());
-    setField( currentField);
+    renderGrid.setGeoGrid(currentField);
+    ui.setFields(gridDataset.getGrids());
+    setField(currentField);
 
     // if possible, change the projection and the map area to one that fits this
     // dataset
     ProjectionImpl dataProjection = currentField.getProjection();
     if (dataProjection != null)
-       setProjection(dataProjection);
+      setProjection(dataProjection);
 
     // ready to draw
-    //draw(true);
+    // draw(true);
 
     // events now ok
     eventsOK = true;
     return true;
   }
 
-  //public GridDatatype getField() { return currentField; }
+  // public GridDatatype getField() { return currentField; }
   private boolean setField(Object fld) {
     GridDatatype gg = null;
     if (fld instanceof GridDatatype)
       gg = (GridDatatype) fld;
     else if (fld instanceof String)
-      gg = gridDataset.findGridDatatype( (String) fld);
+      gg = gridDataset.findGridDatatype((String) fld);
     if (null == gg)
       return false;
 
@@ -750,29 +764,41 @@ public class SimpleGeomController {
     return true;
   }
 
-  public int getCurrentLevelIndex() { return currentLevel; }
-  public int getCurrentTimeIndex() { return currentTime; }
-  public int getCurrentEnsembleIndex() { return currentEnsemble; }
-  public int getCurrentRunTimeIndex() { return currentRunTime; }
+  public int getCurrentLevelIndex() {
+    return currentLevel;
+  }
 
-  private int findIndexFromName( List<NamedObject> list, String name) {
-     for (int idx=0; idx < list.size(); idx++) {
-       NamedObject no = list.get(idx);
-       if (name.equals(no.getName()))
-         return idx;
-     }
-     log.error("findIndexFromName cant find "+name);
-     return -1;
+  public int getCurrentTimeIndex() {
+    return currentTime;
+  }
+
+  public int getCurrentEnsembleIndex() {
+    return currentEnsemble;
+  }
+
+  public int getCurrentRunTimeIndex() {
+    return currentRunTime;
+  }
+
+  private int findIndexFromName(List<NamedObject> list, String name) {
+    for (int idx = 0; idx < list.size(); idx++) {
+      NamedObject no = list.get(idx);
+      if (name.equals(no.getName()))
+        return idx;
+    }
+    log.error("findIndexFromName cant find " + name);
+    return -1;
   }
 
   synchronized void draw(boolean immediate) {
-    if (!startOK) return;
+    if (!startOK)
+      return;
 
-    renderGrid.setLevel( currentLevel);
-    renderGrid.setTime( currentTime);
-    renderGrid.setSlice( currentSlice);
-    renderGrid.setEnsemble( currentEnsemble);
-    renderGrid.setRunTime( currentRunTime);
+    renderGrid.setLevel(currentLevel);
+    renderGrid.setTime(currentTime);
+    renderGrid.setSlice(currentSlice);
+    renderGrid.setEnsemble(currentEnsemble);
+    renderGrid.setRunTime(currentRunTime);
 
     if (drawHorizOn)
       drawH(immediate);
@@ -781,11 +807,13 @@ public class SimpleGeomController {
   }
 
   private void drawH(boolean immediate) {
-    if (!startOK) return;
+    if (!startOK)
+      return;
 
     // cancel any redrawLater
     boolean already = redrawTimer.isRunning();
-    if (debugThread && already) System.out.println( "redrawLater canceled ");
+    if (debugThread && already)
+      System.out.println("redrawLater canceled ");
     if (already)
       redrawTimer.stop();
 
@@ -798,11 +826,11 @@ public class SimpleGeomController {
     if (gNP == null) // panel not drawn on screen yet
       return;
 
-      // clear
+    // clear
     gNP.setBackground(np.getBackgroundColor());
     gNP.fill(gNP.getClipBounds());
 
-      // draw grid
+    // draw grid
     startTime = System.currentTimeMillis();
     try {
       renderGrid.renderPlanView(gNP, atI);
@@ -813,46 +841,49 @@ public class SimpleGeomController {
     }
     if (Debug.isSet("timing/GridDraw")) {
       tookTime = System.currentTimeMillis() - startTime;
-      System.out.println("timing.GridDraw: " + tookTime*.001 + " seconds");
+      System.out.println("timing.GridDraw: " + tookTime * .001 + " seconds");
     }
 
-    //draw Map
+    // draw Map
     if (renderMap != null) {
       startTime = System.currentTimeMillis();
       renderMap.draw(gNP, atI);
       if (Debug.isSet("timing/MapDraw")) {
         tookTime = System.currentTimeMillis() - startTime;
-        System.out.println("timing/MapDraw: " + tookTime*.001 + " seconds");
+        System.out.println("timing/MapDraw: " + tookTime * .001 + " seconds");
       }
     }
 
-    /* draw Winds
-    if (drawWinds) {
-      startTime = System.currentTimeMillis();
-      renderWind.draw(gNP, currentLevel, currentTime);
-      if (Debug.isSet("timing/WindsDraw")) {
-        tookTime = System.currentTimeMillis() - startTime;
-        System.out.println("timing.WindsDraw: " + tookTime*.001 + " seconds");
-      }
-    } */
+    /*
+     * draw Winds
+     * if (drawWinds) {
+     * startTime = System.currentTimeMillis();
+     * renderWind.draw(gNP, currentLevel, currentTime);
+     * if (Debug.isSet("timing/WindsDraw")) {
+     * tookTime = System.currentTimeMillis() - startTime;
+     * System.out.println("timing.WindsDraw: " + tookTime*.001 + " seconds");
+     * }
+     * }
+     */
 
-     // copy buffer to the screen
+    // copy buffer to the screen
     if (immediate)
       np.drawG();
     else
       np.repaint();
 
-      // cleanup
+    // cleanup
     gNP.dispose();
 
     if (Debug.isSet("timing/total")) {
       tookTime = System.currentTimeMillis() - tstart;
-      System.out.println("timing.total: " + tookTime*.001 + " seconds");
+      System.out.println("timing.total: " + tookTime * .001 + " seconds");
     }
   }
 
   private void drawV(boolean immediate) {
-    if (!startOK) return;
+    if (!startOK)
+      return;
     ScaledPanel drawArea = vertPanel.getDrawArea();
     Graphics2D gV = drawArea.getBufferedImageGraphics();
     if (gV == null)
@@ -866,50 +897,54 @@ public class SimpleGeomController {
 
     if (Debug.isSet("timing/GridDrawVert")) {
       long tookTime = System.currentTimeMillis() - startTime;
-      System.out.println("timing.GridDrawVert: " + tookTime*.001 + " seconds");
+      System.out.println("timing.GridDrawVert: " + tookTime * .001 + " seconds");
     }
     gV.dispose();
 
     // copy buffer to the screen
-     if (immediate)
+    if (immediate)
       drawArea.drawNow();
     else
       drawArea.repaint();
   }
 
   private synchronized void redrawLater() {
-    //redrawComplete |= complete;
+    // redrawComplete |= complete;
     boolean already = redrawTimer.isRunning();
-    if (debugThread) System.out.println( "redrawLater isRunning= "+ already);
+    if (debugThread)
+      System.out.println("redrawLater isRunning= " + already);
     if (already)
       redrawTimer.restart();
     else
       redrawTimer.start();
   }
 
-  public ColorScale getColorScale() { return cs; }
-  public void setColorScale( ColorScale cs) {
+  public ColorScale getColorScale() {
+    return cs;
+  }
+
+  public void setColorScale(ColorScale cs) {
     this.cs = cs;
-    renderGrid.setColorScale( cs);
+    renderGrid.setColorScale(cs);
     redrawLater();
   }
 
-  public void setProjection( ProjectionImpl p) {
+  public void setProjection(ProjectionImpl p) {
     project = p;
     if (renderMap != null)
-      renderMap.setProjection( p);
-    renderGrid.setProjection( p);
+      renderMap.setProjection(p);
+    renderGrid.setProjection(p);
     // renderWind.setProjection( p);
     np.setProjectionImpl(p);
     redrawLater();
   }
 
-  public void setDataMinMaxType( ColorScale.MinMaxType type) {
-    renderGrid.setDataMinMaxType( type);
+  public void setDataMinMaxType(ColorScale.MinMaxType type) {
+    renderGrid.setDataMinMaxType(type);
     redrawLater();
   }
 
-  void setMapRenderer( ucar.nc2.ui.util.Renderer mapRenderer) {
+  void setMapRenderer(ucar.nc2.ui.util.Renderer mapRenderer) {
     this.renderMap = mapRenderer;
     mapRenderer.setProjection(np.getProjectionImpl());
     mapRenderer.setColor(mapColor);
@@ -923,10 +958,9 @@ public class SimpleGeomController {
       store.put(LastDatasetName, gridDataset.getTitle());
     store.putBeanObject(ColorScaleName, cs);
 
-    store.putBoolean( "showGridAction", (Boolean) showGridAction.getValue(BAMutil.STATE));
-    store.putBoolean( "showContoursAction", (Boolean) showContoursAction.getValue(BAMutil.STATE));
-    store.putBoolean( "showContourLabelsAction",
-        (Boolean) showContourLabelsAction.getValue(BAMutil.STATE));
+    store.putBoolean("showGridAction", (Boolean) showGridAction.getValue(BAMutil.STATE));
+    store.putBoolean("showContoursAction", (Boolean) showContoursAction.getValue(BAMutil.STATE));
+    store.putBoolean("showContourLabelsAction", (Boolean) showContourLabelsAction.getValue(BAMutil.STATE));
 
   }
 }

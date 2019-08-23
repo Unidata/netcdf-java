@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -61,7 +61,7 @@ public class BufrBCompare extends JDialog {
   }
 
   private void okButtonActionPerformed(ActionEvent e) {
-    Data data =  new Data(compareNames.isSelected(), compareUnits.isSelected() );
+    Data data = new Data(compareNames.isSelected(), compareUnits.isSelected());
     firePropertyChange("OK", null, data);
     setVisible(false);
   }
@@ -72,7 +72,7 @@ public class BufrBCompare extends JDialog {
 
 
   private void initComponents() {
-    // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+    // JFormDesigner - Component initialization - DO NOT MODIFY //GEN-BEGIN:initComponents
     // Generated using JFormDesigner non-commercial license
     dialogPane = new JPanel();
     contentPanel = new JPanel();
@@ -85,117 +85,102 @@ public class BufrBCompare extends JDialog {
     okButton = new JButton();
     cancelButton = new JButton();
 
-    //======== this ========
+    // ======== this ========
     setTitle("Compare current Table with standard Table");
     Container contentPane = getContentPane();
     contentPane.setLayout(new BorderLayout());
 
-    //======== dialogPane ========
+    // ======== dialogPane ========
     {
       dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
       dialogPane.setLayout(new BorderLayout());
 
-      //======== contentPanel ========
+      // ======== contentPanel ========
       {
 
-        //======== scrollPane1 ========
+        // ======== scrollPane1 ========
         {
 
-          //---- standard ----
+          // ---- standard ----
           standard.setModel(new AbstractListModel() {
-            String[] values = {
-              "WMO-v14",
-              "ours-v13",
-              "ncep-v13",
-              "ncep-v14",
-              "ecmwf-v13",
-              "ukmet-v13"
-            };
+            String[] values = {"WMO-v14", "ours-v13", "ncep-v13", "ncep-v14", "ecmwf-v13", "ukmet-v13"};
+
             @Override
-            public int getSize() { return values.length; }
+            public int getSize() {
+              return values.length;
+            }
+
             @Override
-            public Object getElementAt(int i) { return values[i]; }
+            public Object getElementAt(int i) {
+              return values[i];
+            }
           });
           standard.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
           standard.setSelectedIndex(0);
           scrollPane1.setViewportView(standard);
         }
 
-        //---- label1 ----
+        // ---- label1 ----
         label1.setText("Compare To:");
         label1.setFont(new Font("Dialog", Font.BOLD, 12));
 
-        //---- compareNames ----
+        // ---- compareNames ----
         compareNames.setText("compare Names");
 
-        //---- compareUnits ----
+        // ---- compareUnits ----
         compareUnits.setText("compare Units");
 
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
-        contentPanelLayout.setHorizontalGroup(
-          contentPanelLayout.createParallelGroup()
-            .addGroup(contentPanelLayout.createSequentialGroup()
-              .addContainerGap()
-              .addGroup(contentPanelLayout.createParallelGroup()
-                .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                  .addGap(60, 60, 60)
-                  .addGroup(contentPanelLayout.createParallelGroup()
-                    .addComponent(compareUnits)
-                    .addComponent(compareNames)))
+        contentPanelLayout.setHorizontalGroup(contentPanelLayout.createParallelGroup().addGroup(contentPanelLayout
+            .createSequentialGroup().addContainerGap()
+            .addGroup(contentPanelLayout.createParallelGroup().addGroup(contentPanelLayout.createSequentialGroup()
+                .addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                    GroupLayout.PREFERRED_SIZE)
+                .addGap(60, 60, 60).addGroup(
+                    contentPanelLayout.createParallelGroup().addComponent(compareUnits).addComponent(compareNames)))
                 .addComponent(label1))
-              .addContainerGap(135, Short.MAX_VALUE))
-        );
-        contentPanelLayout.setVerticalGroup(
-          contentPanelLayout.createParallelGroup()
+            .addContainerGap(135, Short.MAX_VALUE)));
+        contentPanelLayout.setVerticalGroup(contentPanelLayout.createParallelGroup()
             .addGroup(contentPanelLayout.createSequentialGroup()
-              .addGroup(contentPanelLayout.createParallelGroup()
-                .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addContainerGap()
-                  .addComponent(label1)
-                  .addGap(3, 3, 3)
-                  .addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addGap(22, 22, 22)
-                  .addComponent(compareNames)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(compareUnits)))
-              .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                .addGroup(contentPanelLayout.createParallelGroup()
+                    .addGroup(contentPanelLayout.createSequentialGroup().addContainerGap().addComponent(label1)
+                        .addGap(3, 3, 3).addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                            GroupLayout.PREFERRED_SIZE))
+                    .addGroup(contentPanelLayout.createSequentialGroup().addGap(22, 22, 22).addComponent(compareNames)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(compareUnits)))
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
       }
       dialogPane.add(contentPanel, BorderLayout.CENTER);
 
-      //======== buttonBar ========
+      // ======== buttonBar ========
       {
         buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
         buttonBar.setLayout(new GridBagLayout());
-        ((GridBagLayout)buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
-        ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
+        ((GridBagLayout) buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
+        ((GridBagLayout) buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
 
-        //---- okButton ----
+        // ---- okButton ----
         okButton.setText("OK");
         okButton.addActionListener(this::okButtonActionPerformed);
-        buttonBar.add(okButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-          GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-          new Insets(0, 0, 0, 5), 0, 0));
+        buttonBar.add(okButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+            GridBagConstraints.BOTH, new Insets(0, 0, 0, 5), 0, 0));
 
-        //---- cancelButton ----
+        // ---- cancelButton ----
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(this::cancelButtonActionPerformed);
-        buttonBar.add(cancelButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-          GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-          new Insets(0, 0, 0, 0), 0, 0));
+        buttonBar.add(cancelButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+            GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
       }
       dialogPane.add(buttonBar, BorderLayout.SOUTH);
     }
     contentPane.add(dialogPane, BorderLayout.CENTER);
     pack();
     setLocationRelativeTo(getOwner());
-    // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    // JFormDesigner - End of component initialization //GEN-END:initComponents
   }
 
-  // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+  // JFormDesigner - Variables declaration - DO NOT MODIFY //GEN-BEGIN:variables
   // Generated using JFormDesigner non-commercial license
   private JPanel dialogPane;
   private JPanel contentPanel;
@@ -207,5 +192,5 @@ public class BufrBCompare extends JDialog {
   private JPanel buttonBar;
   private JButton okButton;
   private JButton cancelButton;
-  // JFormDesigner - End of variables declaration  //GEN-END:variables
+  // JFormDesigner - End of variables declaration //GEN-END:variables
 }

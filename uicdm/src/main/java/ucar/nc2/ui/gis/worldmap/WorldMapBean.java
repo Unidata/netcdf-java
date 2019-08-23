@@ -13,19 +13,24 @@ import ucar.ui.widget.BAMutil;
 public class WorldMapBean extends MapBean {
   private Renderer rend;
 
-  public WorldMapBean() {
-  }
+  public WorldMapBean() {}
 
   public Renderer getRenderer() {
-     if (rend == null)
-       rend = new WorldMap();
-     return rend;
+    if (rend == null)
+      rend = new WorldMap();
+    return rend;
   }
 
   public javax.swing.ImageIcon getIcon() {
     return BAMutil.getIcon("nj22/WorldMap", true);
   }
-  public String getActionName() { return "WorldMap"; }
-  public String getActionDesc() { return "use World Map"; }
+
+  public String getActionName() {
+    return "WorldMap";
+  }
+
+  public String getActionDesc() {
+    return "use World Map";
+  }
 
 }

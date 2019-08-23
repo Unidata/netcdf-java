@@ -6,7 +6,6 @@
 package ucar.nc2.units;
 
 import ucar.nc2.time.CalendarDateRange;
-
 import java.util.Date;
 import java.text.ParseException;
 
@@ -37,48 +36,49 @@ public class DateRange {
   }
 
   /**
-    * Create Date Range from a start and end date
-    *
-    * @param start start of range
-    * @param end   end of range
-    */
-   public DateRange(Date start, Date end) {
-     this(new DateType(false, start), new DateType(false, end), null, null);
-   }
+   * Create Date Range from a start and end date
+   *
+   * @param start start of range
+   * @param end end of range
+   */
+  public DateRange(Date start, Date end) {
+    this(new DateType(false, start), new DateType(false, end), null, null);
+  }
 
   /**
-    * Create Date Range from a start date and duration
-    *
-    * @param start start of range
-    * @param duration   duration of range
-    */
-   public DateRange(Date start, TimeDuration duration) {
-     this(new DateType(false, start), null, duration, null);
-   }
+   * Create Date Range from a start date and duration
+   *
+   * @param start start of range
+   * @param duration duration of range
+   */
+  public DateRange(Date start, TimeDuration duration) {
+    this(new DateType(false, start), null, duration, null);
+  }
 
-   /**
+  /**
    * Create DateRange from another DateRange, with a different units of resolution.
    *
-   * @param range     copy start and end from here
+   * @param range copy start and end from here
    * @param timeUnits make resolution using new TimeDuration( timeUnits)
    * @throws ParseException is units are not valid time units
    */
   public DateRange(DateRange range, String timeUnits) throws ParseException {
-    this(new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null, new TimeDuration(timeUnits));
+    this(new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null,
+        new TimeDuration(timeUnits));
   }
 
   /**
    * Encapsulates a range of dates, using DateType start/end, and/or a TimeDuration.
    * A DateRange can be specified in any of the following ways:
    * <ol>
-   * <li> a start date and end date
-   * <li> a start date and duration
-   * <li> an end date and duration
+   * <li>a start date and end date
+   * <li>a start date and duration
+   * <li>an end date and duration
    * </ol>
    *
-   * @param start      starting date
-   * @param end        ending date
-   * @param duration   time duration; may be null
+   * @param start starting date
+   * @param end ending date
+   * @param duration time duration; may be null
    * @param resolution time resolution; may be null
    */
   public DateRange(DateType start, DateType end, TimeDuration duration, TimeDuration resolution) {
@@ -156,15 +156,18 @@ public class DateRange {
    * @return true if date in inside this range
    */
   public boolean included(Date d) {
-    if (isEmpty) return false;
+    if (isEmpty)
+      return false;
 
-    if (getStart().after(d)) return false;
+    if (getStart().after(d))
+      return false;
     return !getEnd().before(d);
 
   }
 
   /**
    * Same as included()
+   * 
    * @param d date to check
    * @return true if date in inside this range
    */
@@ -177,13 +180,15 @@ public class DateRange {
    * Determine if the given range intersects this date range.
    *
    * @param start_want range starts here
-   * @param end_want   range ends here
+   * @param end_want range ends here
    * @return true if ranges intersect
    */
   public boolean intersects(Date start_want, Date end_want) {
-    if (isEmpty) return false;
+    if (isEmpty)
+      return false;
 
-    if (getStart().after(end_want)) return false;
+    if (getStart().after(end_want))
+      return false;
     return !getEnd().before(start_want);
 
   }
@@ -205,8 +210,10 @@ public class DateRange {
    * @return new date range that is the intersection
    */
   public DateRange intersect(DateRange clip) {
-    if (isEmpty) return this;
-    if (clip.isEmpty) return clip;
+    if (isEmpty)
+      return this;
+    if (clip.isEmpty)
+      return clip;
 
     DateType ss = getStart();
     DateType s = ss.before(clip.getStart()) ? clip.getStart() : ss;
@@ -237,7 +244,7 @@ public class DateRange {
    */
   public void extend(Date d) {
     if (d.before(getStart().getDate()))
-      setStart( new DateType(false, d));
+      setStart(new DateType(false, d));
     if (getEnd().before(d))
       setEnd(new DateType(false, d));
   }
@@ -389,6 +396,7 @@ public class DateRange {
 
   /**
    * Get if the start is fixed.
+   * 
    * @return if start is fixed
    */
   public boolean useStart() {
@@ -397,6 +405,7 @@ public class DateRange {
 
   /**
    * Get if the end is fixed.
+   * 
    * @return if end is fixed
    */
   public boolean useEnd() {
@@ -405,6 +414,7 @@ public class DateRange {
 
   /**
    * Get if the duration is fixed.
+   * 
    * @return if duration is fixed
    */
   public boolean useDuration() {
@@ -413,6 +423,7 @@ public class DateRange {
 
   /**
    * Get if the resolution is set.
+   * 
    * @return if resolution is fixed
    */
   public boolean useResolution() {
@@ -439,18 +450,22 @@ public class DateRange {
 
   @Override
   public String toString() {
-    return "start= " + start + " end= " + end + " duration= " + duration
-        + " resolution= " + resolution;
+    return "start= " + start + " end= " + end + " duration= " + duration + " resolution= " + resolution;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof DateRange)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof DateRange))
+      return false;
     DateRange oo = (DateRange) o;
-    if (useStart && !start.equals(oo.start)) return false;
-    if (useEnd && !end.equals(oo.end)) return false;
-    if (useDuration && !duration.equals(oo.duration)) return false;
+    if (useStart && !start.equals(oo.start))
+      return false;
+    if (useEnd && !end.equals(oo.end))
+      return false;
+    if (useDuration && !duration.equals(oo.duration))
+      return false;
     return !useResolution || resolution.equals(oo.resolution);
   }
 
@@ -473,5 +488,6 @@ public class DateRange {
     }
     return hashCode;
   }
+
   private int hashCode; // Bloch, item 8
 }

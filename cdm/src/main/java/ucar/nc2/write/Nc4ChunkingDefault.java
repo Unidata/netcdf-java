@@ -9,7 +9,6 @@ import ucar.ma2.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.Variable;
-
 import java.util.List;
 
 /**
@@ -20,9 +19,9 @@ import java.util.List;
  */
 public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
-  private static final int DEFAULT_CHUNKSIZE_BYTES = (int) Math.pow(2,18); // 256K
-  private static final int MIN_VARIABLE_BYTES = (int) Math.pow(2,16); // 65K
-  private static final int MIN_CHUNKSIZE_BYTES = (int) Math.pow(2,13); // 8K
+  private static final int DEFAULT_CHUNKSIZE_BYTES = (int) Math.pow(2, 18); // 256K
+  private static final int MIN_VARIABLE_BYTES = (int) Math.pow(2, 16); // 65K
+  private static final int MIN_CHUNKSIZE_BYTES = (int) Math.pow(2, 13); // 8K
 
   ////////////////////////////////////////////////////
 
@@ -64,7 +63,8 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
   @Override
   public boolean isChunked(Variable v) {
-    if (v.isUnlimited()) return true;
+    if (v.isUnlimited())
+      return true;
     // if (getChunkAttribute(v) != null) return true;
 
     long size = v.getSize() * v.getElementSize();
@@ -73,10 +73,12 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
   @Override
   public long[] computeChunking(Variable v) {
-    /* check attribute
-    int[] resultFromAtt = computeChunkingFromAttribute(v);
-    if (resultFromAtt != null)
-      return convertToLong(resultFromAtt); */
+    /*
+     * check attribute
+     * int[] resultFromAtt = computeChunkingFromAttribute(v);
+     * if (resultFromAtt != null)
+     * return convertToLong(resultFromAtt);
+     */
 
     int maxElements = defaultChunkSize / v.getElementSize();
 
@@ -114,27 +116,31 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
   private int[] incrUnlimitedShape(List<Dimension> dims, int[] shape, long maxElements) {
     int countUnlimitedDims = 0;
     for (Dimension d : dims) {
-      if (d.isUnlimited()) countUnlimitedDims++;
+      if (d.isUnlimited())
+        countUnlimitedDims++;
     }
     long shapeSize = new Section(shape).computeSize(); // shape with unlimited dimensions == 1
     int needFactor = (int) (maxElements / shapeSize);
 
     // distribute needFactor amongst the n unlimited dimensions
     int need;
-    if ( countUnlimitedDims <= 1) need = needFactor;
-    else if ( countUnlimitedDims == 2) need = (int) Math.sqrt(needFactor);
-    else if ( countUnlimitedDims == 3) need = (int) Math.cbrt(needFactor);
+    if (countUnlimitedDims <= 1)
+      need = needFactor;
+    else if (countUnlimitedDims == 2)
+      need = (int) Math.sqrt(needFactor);
+    else if (countUnlimitedDims == 3)
+      need = (int) Math.cbrt(needFactor);
     else {
       // nth root?? hmm roundoff !!
-      need = (int)  Math.pow(needFactor, 1.0 / countUnlimitedDims);
+      need = (int) Math.pow(needFactor, 1.0 / countUnlimitedDims);
     }
 
     int[] result = new int[shape.length];
-      int count = 0;
-      for (Dimension d : dims) {
-        result[count] = (d.isUnlimited()) ? need : shape[count];
-        count++;
-      }
+    int count = 0;
+    for (Dimension d : dims) {
+      result[count] = (d.isUnlimited()) ? need : shape[count];
+      count++;
+    }
     return result;
   }
 
@@ -148,9 +154,10 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
   }
 
   protected long[] convertToLong(int[] shape) {
-    if (shape.length == 0) shape = new int[1];
+    if (shape.length == 0)
+      shape = new int[1];
     long[] result = new long[shape.length];
-    for (int i=0; i<shape.length; i++)
+    for (int i = 0; i < shape.length; i++)
       result[i] = shape[i] > 0 ? shape[i] : 1; // unlimited dim has 0
     return result;
   }

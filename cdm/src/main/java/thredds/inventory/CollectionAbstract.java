@@ -12,7 +12,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -22,23 +21,36 @@ import java.util.*;
 /**
  * Abstract superclass for Collections of MFiles.
  * Deal with the collection element of feature collections:
-  <pre>
-    <xsd:complexType name="collectionType">
-      <xsd:attribute name="spec" type="xsd:string" use="required"/>
-      <xsd:attribute name="name" type="xsd:token"/>
-      <xsd:attribute name="olderThan" type="xsd:string" />
-      <xsd:attribute name="dateFormatMark" type="xsd:string"/>
-      <xsd:attribute name="timePartition" type="xsd:string"/>
-    </xsd:complexType>
-  </pre>
-  where:
-  <li>
-    <ol>spec: is handled by CollectionSpecParser. it provides the root directory, Pattern filter, and optionally a dateExtractor</ol>
-    <ol>name: getCollectionName()</ol>
-    <ol>olderThan: getOlderThanMsecs()</ol>
-    <ol>dateFormatMark: dateExtractor</ol>
-    <ol>timePartition: CollectionGeneral, DirectoryPartition, FilePartition, TimePartition</ol>
-  </li>
+ * 
+ * <pre>
+   <xsd:complexType name="collectionType">
+     <xsd:attribute name="spec" type="xsd:string" use="required"/>
+     <xsd:attribute name="name" type="xsd:token"/>
+     <xsd:attribute name="olderThan" type="xsd:string" />
+     <xsd:attribute name="dateFormatMark" type="xsd:string"/>
+     <xsd:attribute name="timePartition" type="xsd:string"/>
+   </xsd:complexType>
+ * </pre>
+ * 
+ * where:
+ * <li>
+ * <ol>
+ * spec: is handled by CollectionSpecParser. it provides the root directory, Pattern filter, and optionally a
+ * dateExtractor
+ * </ol>
+ * <ol>
+ * name: getCollectionName()
+ * </ol>
+ * <ol>
+ * olderThan: getOlderThanMsecs()
+ * </ol>
+ * <ol>
+ * dateFormatMark: dateExtractor
+ * </ol>
+ * <ol>
+ * timePartition: CollectionGeneral, DirectoryPartition, FilePartition, TimePartition
+ * </ol>
+ * </li>
  *
  * @author caron
  * @since 11/20/13
@@ -53,19 +65,22 @@ public abstract class CollectionAbstract implements MCollection {
   static public final String GLOB = "glob:";
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
+  static public MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog)
+      throws IOException {
     if (collectionSpec.startsWith(CATALOG))
-      return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan, errlog);
+      return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan,
+          errlog);
 
     else if (collectionSpec.startsWith(DIR))
       return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), true, olderThan, null);
 
     else if (collectionSpec.startsWith(FILE)) {
       MFile file = MFileOS7.getExistingFile(collectionSpec.substring(FILE.length()));
-      if (file == null) throw new FileNotFoundException(collectionSpec.substring(FILE.length()));
+      if (file == null)
+        throw new FileNotFoundException(collectionSpec.substring(FILE.length()));
       return new CollectionSingleFile(file, null);
 
-    }else if (collectionSpec.startsWith(LIST))
+    } else if (collectionSpec.startsWith(LIST))
       return new CollectionList(collectionName, collectionSpec.substring(LIST.length()), null);
 
     else if (collectionSpec.startsWith(GLOB))
@@ -76,8 +91,9 @@ public abstract class CollectionAbstract implements MCollection {
   }
 
   static public String cleanName(String name) {
-    if (name == null) return null;
-    return StringUtil2.replace(name.trim(), ' ', "_");  // LOOK must be ok in URL - probably not sufficient here
+    if (name == null)
+      return null;
+    return StringUtil2.replace(name.trim(), ' ', "_"); // LOOK must be ok in URL - probably not sufficient here
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +102,7 @@ public abstract class CollectionAbstract implements MCollection {
   protected String root;
   protected final org.slf4j.Logger logger;
 
-  protected FeatureCollectionConfig.ProtoChoice protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;  // default
+  protected FeatureCollectionConfig.ProtoChoice protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
 
   protected Map<String, Object> auxInfo; // lazy init
 
@@ -173,7 +189,8 @@ public abstract class CollectionAbstract implements MCollection {
 
   @Override
   public void putAuxInfo(String key, Object value) {
-    if (auxInfo == null) auxInfo = new HashMap<>();
+    if (auxInfo == null)
+      auxInfo = new HashMap<>();
     auxInfo.put(key, value);
   }
 
@@ -182,7 +199,8 @@ public abstract class CollectionAbstract implements MCollection {
 
   @Override
   public int getProtoIndex(int n) {
-    if (n < 2) return 0;
+    if (n < 2)
+      return 0;
 
     int protoIdx = 0;
     switch (protoChoice) {
@@ -209,8 +227,8 @@ public abstract class CollectionAbstract implements MCollection {
       CalendarDate cd1 = extractRunDateWithError(m1);
       CalendarDate cd2 = extractRunDateWithError(m2);
       if ((cd1 == null) || (cd2 == null)) {
-        //cd1 = extractRunDateWithError(m1);  //debug
-        //cd2 = extractRunDateWithError(m2);
+        // cd1 = extractRunDateWithError(m1); //debug
+        // cd2 = extractRunDateWithError(m2);
         throw new IllegalStateException();
       }
       return cd1.compareTo(cd2);
@@ -236,15 +254,16 @@ public abstract class CollectionAbstract implements MCollection {
   protected List<MFile> makeFileListSorted() throws IOException {
     List<MFile> list = new ArrayList<>(100);
     try (CloseableIterator<MFile> iter = getFileIterator()) {
-      if (iter == null) return list;
+      if (iter == null)
+        return list;
 
       while (iter.hasNext())
         list.add(iter.next());
     }
     if (hasDateExtractor()) {
-      list.sort(new DateSorter());  // sort by date
+      list.sort(new DateSorter()); // sort by date
     } else {
-      Collections.sort(list);                    // sort by name
+      Collections.sort(list); // sort by name
     }
     return list;
   }
@@ -253,10 +272,11 @@ public abstract class CollectionAbstract implements MCollection {
 
   /**
    * parse the "olderThan" TimeDuration, meaning files must not have been modified since this amount of time
-   * @param olderThan  TimeDuration string
-   * @return  TimeDuration in millisecs
+   * 
+   * @param olderThan TimeDuration string
+   * @return TimeDuration in millisecs
    */
- protected long parseOlderThanString(String olderThan) {
+  protected long parseOlderThanString(String olderThan) {
     if (olderThan != null) {
       try {
         TimeDuration tu = new TimeDuration(olderThan);

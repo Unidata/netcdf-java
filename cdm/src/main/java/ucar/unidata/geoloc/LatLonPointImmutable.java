@@ -12,8 +12,8 @@ package ucar.unidata.geoloc;
  * @since 7/29/2014
  */
 public class LatLonPointImmutable extends LatLonPointImpl {
-  public static final LatLonPointImmutable INVALID = new LatLonPointImmutable(
-          Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+  public static final LatLonPointImmutable INVALID =
+      new LatLonPointImmutable(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
   public LatLonPointImmutable(double lat, double lon) {
     this.lat = latNormal(lat);

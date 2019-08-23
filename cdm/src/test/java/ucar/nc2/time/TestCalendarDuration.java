@@ -1,7 +1,6 @@
 package ucar.nc2.time;
 
 import static ucar.nc2.time.CalendarDuration.convertToPeriod;
-
 import org.junit.Test;
 
 public class TestCalendarDuration {
@@ -10,7 +9,7 @@ public class TestCalendarDuration {
     org.joda.time.Period jp = convertToPeriod(1, unit);
     assert jp != null;
     System.out.printf("%s == %s%n", unit, jp);
-    assert jp.toString().equals(result) : jp.toString()+" != "+ result;
+    assert jp.toString().equals(result) : jp.toString() + " != " + result;
   }
 
   @Test

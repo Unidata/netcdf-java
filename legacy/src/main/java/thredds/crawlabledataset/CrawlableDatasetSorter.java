@@ -18,8 +18,7 @@ import java.util.List;
  * @author edavis
  * @since Nov 18, 2005 4:12:50 PM
  */
-public interface CrawlableDatasetSorter
-{
+public interface CrawlableDatasetSorter {
   /**
    * Sort the given CrawlableDataset list into the order defined by this sorter.
    *
@@ -28,7 +27,7 @@ public interface CrawlableDatasetSorter
    * @throws ClassCastException if the list contains elements that are not CrawlableDatasets.
    * @throws UnsupportedOperationException if the given list does not allow the necessary list manipulation.
    */
-  public void sort( List<CrawlableDataset> datasetList );
+  public void sort(List<CrawlableDataset> datasetList);
 
   /**
    * Return the configuration object.

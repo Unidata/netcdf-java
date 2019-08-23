@@ -3,7 +3,6 @@ package ucar.nc2.ui;
 import thredds.inventory.*;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -20,7 +19,7 @@ public abstract class ReportPanel extends JPanel {
   protected PreferencesExt prefs;
   protected TextHistoryPane reportPane;
   protected String spec;
-  //protected JPanel buttPanel;
+  // protected JPanel buttPanel;
 
   protected ReportPanel(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -33,14 +32,15 @@ public abstract class ReportPanel extends JPanel {
 
   }
 
-  public void save() {
-  }
+  public void save() {}
 
-  protected abstract void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException;
+  protected abstract void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile,
+      boolean extra) throws IOException;
 
   public abstract Object[] getOptions();
 
-  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException {
+  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Object option)
+      throws IOException {
     Formatter f = new Formatter();
     f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", option, spec, useIndex, eachFile, extra);
     this.spec = spec;
@@ -78,7 +78,8 @@ public abstract class ReportPanel extends JPanel {
     boolean hasFiles = false;
 
     try (MCollection dcm = getCollection(spec, f)) {
-      if (dcm == null) return false;
+      if (dcm == null)
+        return false;
 
       try {
         for (MFile mfile : dcm.getFilesSorted()) {
@@ -86,7 +87,7 @@ public abstract class ReportPanel extends JPanel {
           hasFiles = true;
         }
       } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
       }
 
       reportPane.setText(f.toString());
@@ -101,7 +102,8 @@ public abstract class ReportPanel extends JPanel {
       CollectionFiltered filteredCollection = new CollectionFiltered("GribReportPanel", org, new MFileFilter() {
         public boolean accept(MFile mfile) {
           String suffix = mfile.getName();
-          if (suffix.contains(".ncx")) return false;
+          if (suffix.contains(".ncx"))
+            return false;
           return !suffix.contains(".gbx");
         }
       });

@@ -16,37 +16,35 @@ import com.google.common.base.MoreObjects;
  */
 public class AnalysisBlock {
 
-    /** raw values */
-    float[] vals = null;
+  /** raw values */
+  float[] vals = null;
 
-    /**
-     * Create a new analysis block
-     */
-    public AnalysisBlock() {}
+  /**
+   * Create a new analysis block
+   */
+  public AnalysisBlock() {}
 
-    /**
-     * Create a new analysis block with the values
-     *
-     * @param words   analysis block values
-     */
-    public AnalysisBlock(float[] words) {
-        setValues(words);
-    }
+  /**
+   * Create a new analysis block with the values
+   *
+   * @param words analysis block values
+   */
+  public AnalysisBlock(float[] words) {
+    setValues(words);
+  }
 
-    /**
-     * Set the analysis block values
-     *
-     * @param values   the raw values
-     */
-    public void setValues(float[] values) {
-        vals = values;
-    }
+  /**
+   * Set the analysis block values
+   *
+   * @param values the raw values
+   */
+  public void setValues(float[] values) {
+    vals = values;
+  }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("vals", vals)
-            .toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this).add("vals", vals).toString();
+  }
 }
 

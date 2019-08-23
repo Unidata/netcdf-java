@@ -11,7 +11,6 @@ import com.google.common.cache.CacheStats;
 import com.google.common.cache.LoadingCache;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
-
 import java.util.Formatter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -29,17 +28,14 @@ public class FileCacheGuava implements FileCacheIF {
 
   public FileCacheGuava(String name, int maxSize) {
     this.name = name;
-    this.cache = CacheBuilder.newBuilder()
-           .maximumSize(maxSize)
-                   .recordStats()
-           // .removalListener(MY_LISTENER)
-           .build(
-                   new CacheLoader<String, FileCacheable>() {
-                     public FileCacheable load(String key) {
-                       throw new IllegalStateException();
-                     }
-                   });
-   }
+    this.cache = CacheBuilder.newBuilder().maximumSize(maxSize).recordStats()
+        // .removalListener(MY_LISTENER)
+        .build(new CacheLoader<String, FileCacheable>() {
+          public FileCacheable load(String key) {
+            throw new IllegalStateException();
+          }
+        });
+  }
 
 
   @Override
@@ -59,13 +55,16 @@ public class FileCacheGuava implements FileCacheIF {
   }
 
   @Override
-  public FileCacheable acquire(final FileFactory factory, Object hashKey, final DatasetUrl durl, final int buffer_size, final CancelTask cancelTask, final Object spiObject) {
-    if (null == hashKey) hashKey = durl.trueurl;
-    if (null == hashKey) throw new IllegalArgumentException();
+  public FileCacheable acquire(final FileFactory factory, Object hashKey, final DatasetUrl durl, final int buffer_size,
+      final CancelTask cancelTask, final Object spiObject) {
+    if (null == hashKey)
+      hashKey = durl.trueurl;
+    if (null == hashKey)
+      throw new IllegalArgumentException();
 
     try {
       // If the key wasn't in the "easy to compute" group, we need to use the factory.
-      return cache.get((String)hashKey, () -> factory.open(durl, buffer_size, cancelTask, spiObject));
+      return cache.get((String) hashKey, () -> factory.open(durl, buffer_size, cancelTask, spiObject));
     } catch (ExecutionException e) {
       throw new RuntimeException(e.getCause());
     }

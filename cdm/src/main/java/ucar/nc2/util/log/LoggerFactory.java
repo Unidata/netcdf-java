@@ -14,6 +14,6 @@ package ucar.nc2.util.log;
  */
 public interface LoggerFactory {
 
-   org.slf4j.Logger getLogger(String name);
+  org.slf4j.Logger getLogger(String name);
 
 }

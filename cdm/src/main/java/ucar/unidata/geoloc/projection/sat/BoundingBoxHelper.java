@@ -6,7 +6,6 @@
 package ucar.unidata.geoloc.projection.sat;
 
 import ucar.unidata.geoloc.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class BoundingBoxHelper {
   private double maxR, maxR2;
   private Projection proj;
 
-  public BoundingBoxHelper( Projection proj, double maxR) {
+  public BoundingBoxHelper(Projection proj, double maxR) {
     this.proj = proj;
     this.maxR = maxR;
     this.maxR2 = maxR * maxR;
@@ -106,9 +105,10 @@ public class BoundingBoxHelper {
   private boolean addGoodPts(List<ProjectionPoint> goodPts, ProjectionPoint pt) {
     if (!ProjectionPointImpl.isInfinite(pt)) {
       goodPts.add(pt);
-      //System.out.println("  good= "+pt);
+      // System.out.println(" good= "+pt);
       return true;
-    } else return false;
+    } else
+      return false;
   }
 
   // where does line x|y = coord intersect the map limit circle?

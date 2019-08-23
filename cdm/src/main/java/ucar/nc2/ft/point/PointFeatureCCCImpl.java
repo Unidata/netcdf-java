@@ -7,7 +7,6 @@ package ucar.nc2.ft.point;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -20,8 +19,9 @@ import javax.annotation.Nonnull;
 public abstract class PointFeatureCCCImpl extends DsgCollectionImpl implements PointFeatureCCC {
   protected FeatureType collectionFeatureType;
 
-  protected PointFeatureCCCImpl(String name, CalendarDateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
-    super( name, timeUnit, altUnits);
+  protected PointFeatureCCCImpl(String name, CalendarDateUnit timeUnit, String altUnits,
+      FeatureType collectionFeatureType) {
+    super(name, timeUnit, altUnits);
     this.collectionFeatureType = collectionFeatureType;
   }
 

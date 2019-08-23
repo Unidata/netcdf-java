@@ -9,6 +9,7 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
 
 /**
  * Ndfd local tables
+ * 
  * @see "http://graphical.weather.gov/docs/grib_design.html"
  */
 
@@ -21,14 +22,15 @@ public class NdfdLocalTables extends LocalTables {
 
   @Override
   public String getParamTablePathUsedFor(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) return super.getParamTablePathUsedFor(discipline, category, number);
+    if ((category <= 191) && (number <= 191))
+      return super.getParamTablePathUsedFor(discipline, category, number);
     return this.getClass().getName();
   }
 
   /*
-  take from degrib repository:http://slosh.nws.noaa.gov/pubview/degrib/src/degrib/metaname.c?root=degrib&view=markup
-  Apparently for center 8, subcenter 0 and subcenter 255 (!)
-  */
+   * take from degrib repository:http://slosh.nws.noaa.gov/pubview/degrib/src/degrib/metaname.c?root=degrib&view=markup
+   * Apparently for center 8, subcenter 0 and subcenter 255 (!)
+   */
   private void init() {
     add(0, 0, 193, "ApparentT", "Apparent Temperature", "K");
     add(0, 1, 192, "Wx", "Weather string", "");
@@ -69,8 +71,8 @@ public class NdfdLocalTables extends LocalTables {
   }
 
   private void add(int discipline, int category, int number, String abbrev, String name, String unit) {
-    localParams
-        .put(makeParamId(discipline, category, number), new Grib2Parameter(discipline, category, number, name, unit, abbrev, null));
+    localParams.put(makeParamId(discipline, category, number),
+        new Grib2Parameter(discipline, category, number, name, unit, abbrev, null));
   }
 
 }

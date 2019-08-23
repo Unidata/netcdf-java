@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -43,7 +43,6 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 
@@ -57,16 +56,15 @@ import java.lang.invoke.MethodHandles;
 public class TestOffAggFmrcMisc {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  String location = TestDir.cdmUnitTestDir +"ft/fmrc/efine/";
+  String location = TestDir.cdmUnitTestDir + "ft/fmrc/efine/";
 
   @Test
   public void testScaling() throws Exception {
-    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true' >\n" +
-      "  <aggregation dimName='runtime' type='forecastModelRunCollection' timeUnitsChange='true'>\n" +
-      "    <scan location='"+location+"' suffix='.nc' dateFormatMark='#yyyyMMddHH' enhance='true' />" +
-      "  </aggregation>\n" +
-      "</netcdf>";
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true' >\n"
+        + "  <aggregation dimName='runtime' type='forecastModelRunCollection' timeUnitsChange='true'>\n"
+        + "    <scan location='" + location + "' suffix='.nc' dateFormatMark='#yyyyMMddHH' enhance='true' />"
+        + "  </aggregation>\n" + "</netcdf>";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), location, null);
 
     // make sure that scaling is applied
@@ -76,7 +74,7 @@ public class TestOffAggFmrcMisc {
       float val = data.nextFloat();
       if (!vs.isMissing(val))
         assert (val < 10.0) : val;
-      //System.out.printf("%f %n",val);
+      // System.out.printf("%f %n",val);
     }
 
     ncfile.close();
@@ -84,7 +82,7 @@ public class TestOffAggFmrcMisc {
 
   @Test
   public void testScaling2() throws Exception {
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(location+"fine.ncml");
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(location + "fine.ncml");
     NetcdfFile ncfile = NetcdfDataset.acquireFile(durl, null);
 
     // make sure that scaling is applied
@@ -94,7 +92,7 @@ public class TestOffAggFmrcMisc {
       float val = data.nextFloat();
       if (!vs.isMissing(val))
         assert (val < 10.0) : val;
-      //System.out.printf("%f %n",val);
+      // System.out.printf("%f %n",val);
     }
 
     ncfile.close();

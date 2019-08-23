@@ -10,7 +10,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.point.standard.PointConfigXML;
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
-
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -25,10 +24,10 @@ public class Jason extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String mission = ds.findAttValueIgnoreCase(null, "mission_name", null);
     String center = ds.findAttValueIgnoreCase(null, "processing_center", null);
-    if( center != null && center.equals("ESPC")){
-        return mission != null && mission.equals("OSTM/Jason-2");
+    if (center != null && center.equals("ESPC")) {
+      return mission != null && mission.equals("OSTM/Jason-2");
     } else
-        return false;
+      return false;
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {

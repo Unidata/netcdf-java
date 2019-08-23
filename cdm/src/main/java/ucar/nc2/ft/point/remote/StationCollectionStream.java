@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -65,18 +64,20 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
       NcStream.readFully(in, b);
       PointStreamProto.StationList stationsp = PointStreamProto.StationList.parseFrom(b);
       for (ucar.nc2.ft.point.remote.PointStreamProto.Station sp : stationsp.getStationsList()) {
-//        Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
-        stationHelper.addStation(new StationFeatureStream(null, null));    // LOOK WRONG
+        // Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
+        stationHelper.addStation(new StationFeatureStream(null, null)); // LOOK WRONG
       }
       return stationHelper;
     }
   }
 
   // note this assumes that a PointFeature is-a StationPointFeature
-  /* @Override
-  public StationFeature getStation(PointFeature feature) throws IOException {
-    return (StationFeature) feature; // LOOK probably will fail here
-  } */
+  /*
+   * @Override
+   * public StationFeature getStation(PointFeature feature) throws IOException {
+   * return (StationFeature) feature; // LOOK probably will fail here
+   * }
+   */
 
 
   // Must override default subsetting implementation for efficiency: eg to make a single call to server
@@ -85,22 +86,24 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
 
   @Override
   public StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) {
-    if (stations == null) return this;
-//    List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
+    if (stations == null)
+      return this;
+    // List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
     return new Subset(this, null, null); // LOOK WRONG
   }
 
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) {
-    if (boundingBox == null) return this;
+    if (boundingBox == null)
+      return this;
     return new Subset(this, boundingBox, null);
   }
 
   // NestedPointFeatureCollection
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) {
-    //boolean restrictedList = false;
-    //QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
+    // boolean restrictedList = false;
+    // QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
     PointFeatureCollection pfc = new PointCollectionStreamRemote(uri, getTimeUnit(), getAltUnits(), null);
     return pfc.subset(boundingBox, dateRange);
   }
@@ -130,12 +133,14 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
       if (filter_bb == null)
         this.boundingBoxSubset = from.getBoundingBox();
       else
-        this.boundingBoxSubset = (from.getBoundingBox() == null) ? filter_bb : from.getBoundingBox().intersect(filter_bb);
+        this.boundingBoxSubset =
+            (from.getBoundingBox() == null) ? filter_bb : from.getBoundingBox().intersect(filter_bb);
 
       if (filter_date == null) {
         this.dateRangeSubset = from.dateRangeSubset;
       } else {
-        this.dateRangeSubset = (from.dateRangeSubset == null) ? filter_date : from.dateRangeSubset.intersect(filter_date);
+        this.dateRangeSubset =
+            (from.dateRangeSubset == null) ? filter_date : from.dateRangeSubset.intersect(filter_date);
       }
     }
 
@@ -170,7 +175,8 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
 
     @Override
     public StationTimeSeriesFeature subset(CalendarDateRange dateRange) {
-      if (dateRange == null) return this;
+      if (dateRange == null)
+        return this;
       return new StationFeatureStream(stnFeature, dateRange);
     }
 
@@ -185,8 +191,10 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     @Nullable
     public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
       if (boundingBox != null) {
-        if (!boundingBox.contains(s.getLatLon())) return null;
-        if (dateRange == null) return this;
+        if (!boundingBox.contains(s.getLatLon()))
+          return null;
+        if (dateRange == null)
+          return this;
       }
       return subset(dateRange);
     }
@@ -194,14 +202,15 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     // an iterator over the observations for this station
     @Override
     public PointFeatureIterator getPointFeatureIterator() throws IOException {
-      String query = PointDatasetRemote.makeQuery("stn=" + s.getName(), null, getInfo().getCalendarDateRange(this.getTimeUnit()));
+      String query =
+          PointDatasetRemote.makeQuery("stn=" + s.getName(), null, getInfo().getCalendarDateRange(this.getTimeUnit()));
 
       InputStream in = null;
       try {
         in = CdmRemote.sendQuery(null, uri, query);
 
         PointStream.MessageType mtype = PointStream.readMagic(in);
-        if (mtype == PointStream.MessageType.End) {  // no obs were found
+        if (mtype == PointStream.MessageType.End) { // no obs were found
           in.close();
           return new PointIteratorEmpty(); // return empty iterator
         }
@@ -219,7 +228,8 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
         return riter;
 
       } catch (Throwable t) {
-        if (in != null) in.close();
+        if (in != null)
+          in.close();
         throw new IOException(t.getMessage(), t);
       }
     }

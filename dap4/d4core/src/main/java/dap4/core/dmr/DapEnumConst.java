@@ -1,46 +1,42 @@
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information.
-*/
+/*
+ * Copyright 2012, UCAR/Unidata.
+ * See the LICENSE file for more information.
+ */
 
 package dap4.core.dmr;
 
-public class DapEnumConst extends DapNode
-{
-    //////////////////////////////////////////////////
-    // Instance Variables
+public class DapEnumConst extends DapNode {
+  //////////////////////////////////////////////////
+  // Instance Variables
 
-    protected Long value = null;
+  protected Long value = null;
 
-    //////////////////////////////////////////////////
-    // Constructors
+  //////////////////////////////////////////////////
+  // Constructors
 
-    public DapEnumConst(String name, Long value)
-    {
-        super(name);
-        this.value = value;
-    }
+  public DapEnumConst(String name, Long value) {
+    super(name);
+    this.value = value;
+  }
 
-    ///////////////////////////////////////////////////
-    // Accessors
+  ///////////////////////////////////////////////////
+  // Accessors
 
-    public DapType getParent()
-    {
-        return (DapEnumeration) getParent();
-    }
+  public DapType getParent() {
+    return (DapEnumeration) getParent();
+  }
 
-    public Long getValue()
-    {
-        return value;
-    }
+  public Long getValue() {
+    return value;
+  }
 
-    /**
-     * Convenience
-     *
-     * @return value cast as int
-     */
-    public int getIntValue()
-    {
-        return (int)(long)value;
-    }
+  /**
+   * Convenience
+   *
+   * @return value cast as int
+   */
+  public int getIntValue() {
+    return (int) (long) value;
+  }
 
 }

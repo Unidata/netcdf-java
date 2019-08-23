@@ -16,6 +16,7 @@ public interface Join {
 
   /**
    * Get 'join' data to be added to the row.
+   * 
    * @param cursor the state of the iteration
    * @return extra data to be added to the row
    */
@@ -23,6 +24,7 @@ public interface Join {
 
   /**
    * Find the Variable of the given name in the joined table.
+   * 
    * @param varName find this Variable
    * @return the named Variable, or null
    */

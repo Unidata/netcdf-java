@@ -26,7 +26,8 @@ public class EnsCoordValue implements Comparable<EnsCoordValue> {
   @Override
   public int compareTo(@Nonnull EnsCoordValue o) {
     int r = Misc.compare(code, o.code);
-    if (r != 0) return r;
+    if (r != 0)
+      return r;
     return Misc.compare(ensMember, o.ensMember);
   }
 
@@ -39,8 +40,7 @@ public class EnsCoordValue implements Comparable<EnsCoordValue> {
       return false;
     }
     EnsCoordValue that = (EnsCoordValue) o;
-    return code == that.code &&
-        ensMember == that.ensMember;
+    return code == that.code && ensMember == that.ensMember;
   }
 
   @Override

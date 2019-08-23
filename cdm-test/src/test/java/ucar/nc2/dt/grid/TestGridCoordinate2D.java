@@ -29,7 +29,7 @@ public class TestGridCoordinate2D {
 
   @Test
   public void testStuff1() throws IOException {
-    String filename = TestDir.cdmUnitTestDir +"asaScience/EGM200_3.ncml";
+    String filename = TestDir.cdmUnitTestDir + "asaScience/EGM200_3.ncml";
     GridDataset gds = GridDataset.open(filename);
     GeoGrid grid = gds.findGridByName("u_wind");
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -50,7 +50,7 @@ public class TestGridCoordinate2D {
 
   @Test
   public void testStuff2() throws IOException {
-    String filename = TestDir.cdmUnitTestDir +"fmrc/apex_fmrc/Run_20091025_0000.nc";
+    String filename = TestDir.cdmUnitTestDir + "fmrc/apex_fmrc/Run_20091025_0000.nc";
     GridDataset gds = GridDataset.open(filename);
     GeoGrid grid = gds.findGridByName("temp");
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -60,13 +60,13 @@ public class TestGridCoordinate2D {
     assert latAxis instanceof CoordinateAxis2D;
 
     GridCoordinate2D g2d = new GridCoordinate2D((CoordinateAxis2D) latAxis, (CoordinateAxis2D) lonAxis);
-    doOne(g2d, 40.166959,-73.954234);
+    doOne(g2d, 40.166959, -73.954234);
 
     gds.close();
   }
 
- @Test
- public void testStuff3() throws IOException {
+  @Test
+  public void testStuff3() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
 
     GridDataset gds = GridDataset.open(filename);

@@ -8,7 +8,6 @@ package ucar.nc2.dt;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
-
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
@@ -31,8 +30,8 @@ public class TypedDatasetFactory {
     registerFactory(FeatureType.POINT, ucar.nc2.dt.point.UnidataPointObsDataset.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsMultidimDataset.class);
-    //registerFactory(FeatureType.POINT, ucar.nc2.dt.point.DapperDataset.class);
-    //registerFactory(FeatureType.STATION, ucar.nc2.dt.point.SequenceObsDataset.class);
+    // registerFactory(FeatureType.POINT, ucar.nc2.dt.point.DapperDataset.class);
+    // registerFactory(FeatureType.STATION, ucar.nc2.dt.point.SequenceObsDataset.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset2.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.NdbcDataset.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.MadisStationObsDataset.class);
@@ -58,41 +57,44 @@ public class TypedDatasetFactory {
   }
 
 
-   /**
-    * Register a class that implements a TypedDatasetFactoryIF.
-    * @param className name of class that implements TypedDatasetFactoryIF.
-    * @param datatype  scientific data type
-    * @throws ClassNotFoundException if loading error
-    */
-   static public void registerFactory( FeatureType datatype, String className) throws ClassNotFoundException {
-     Class c = Class.forName( className);
-     registerFactory( datatype, c);
-   }
+  /**
+   * Register a class that implements a TypedDatasetFactoryIF.
+   * 
+   * @param className name of class that implements TypedDatasetFactoryIF.
+   * @param datatype scientific data type
+   * @throws ClassNotFoundException if loading error
+   */
+  static public void registerFactory(FeatureType datatype, String className) throws ClassNotFoundException {
+    Class c = Class.forName(className);
+    registerFactory(datatype, c);
+  }
 
-   /**
-    * Register a class that implements a TypedDatasetFactoryIF.
-    * @param datatype scientific data type
-    * @param c class that implements TypedDatasetFactoryIF.
-    */
-  static public void registerFactory( FeatureType datatype, Class c) {
-    if (!(TypedDatasetFactoryIF.class.isAssignableFrom( c)))
-      throw new IllegalArgumentException("Class "+c.getName()+" must implement TypedDatasetFactoryIF");
+  /**
+   * Register a class that implements a TypedDatasetFactoryIF.
+   * 
+   * @param datatype scientific data type
+   * @param c class that implements TypedDatasetFactoryIF.
+   */
+  static public void registerFactory(FeatureType datatype, Class c) {
+    if (!(TypedDatasetFactoryIF.class.isAssignableFrom(c)))
+      throw new IllegalArgumentException("Class " + c.getName() + " must implement TypedDatasetFactoryIF");
 
     // fail fast - check newInstance works
     Object instance;
     try {
       instance = c.newInstance();
     } catch (InstantiationException e) {
-      throw new IllegalArgumentException("CoordTransBuilderIF Class "+c.getName()+" cannot instantiate, probably need default Constructor");
+      throw new IllegalArgumentException(
+          "CoordTransBuilderIF Class " + c.getName() + " cannot instantiate, probably need default Constructor");
     } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException("CoordTransBuilderIF Class "+c.getName()+" is not accessible");
+      throw new IllegalArgumentException("CoordTransBuilderIF Class " + c.getName() + " is not accessible");
     }
 
     // user stuff gets put at top
     if (userMode)
-      transformList.add( 0, new Factory( datatype, c, (TypedDatasetFactoryIF) instance));
+      transformList.add(0, new Factory(datatype, c, (TypedDatasetFactoryIF) instance));
     else
-      transformList.add( new Factory( datatype, c, (TypedDatasetFactoryIF)instance));
+      transformList.add(new Factory(datatype, c, (TypedDatasetFactoryIF) instance));
 
   }
 
@@ -112,36 +114,39 @@ public class TypedDatasetFactory {
    * Open a dataset as a TypedDataset.
    *
    * @param datatype open this kind of Typed Dataset; may be null, which means search all factories.
-   *   If datatype is not null, only return correct TypedDataset (eg PointObsDataset for DataType.POINT).
+   *        If datatype is not null, only return correct TypedDataset (eg PointObsDataset for DataType.POINT).
    * @param location URL or file location of the dataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
    * @return a subclass of TypedDataset
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open( FeatureType datatype, String location, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+  static public TypedDataset open(FeatureType datatype, String location, ucar.nc2.util.CancelTask task,
+      StringBuilder errlog) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, task);
-    return open( datatype, ncd, task, errlog);
+    return open(datatype, ncd, task, errlog);
   }
 
   /**
    * Open a dataset as a TypedDataset.
    *
    * @param datatype open this kind of Typed Dataset; may be null, which means search all factories.
-   *   If datatype is not null, only return correct TypedDataset (eg PointObsDataset for DataType.POINT).
-   * @param ncd  the NetcdfDataset to wrap in a TypedDataset
+   *        If datatype is not null, only return correct TypedDataset (eg PointObsDataset for DataType.POINT).
+   * @param ncd the NetcdfDataset to wrap in a TypedDataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
    * @return a subclass of TypedDataset, or null if cant find
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open( FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+  static public TypedDataset open(FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task,
+      StringBuilder errlog) throws IOException {
 
     // look for a Factory that claims this dataset
     Class useClass = null;
     for (Factory fac : transformList) {
-      if ((datatype != null) && (datatype != fac.datatype)) continue;
+      if ((datatype != null) && (datatype != fac.datatype))
+        continue;
 
       if (fac.instance.isMine(ncd)) {
         useClass = fac.c;
@@ -154,22 +159,23 @@ public class TypedDatasetFactory {
 
       // POINT is also a STATION
       if (datatype == FeatureType.POINT) {
-        return open( FeatureType.STATION, ncd, task, errlog);
+        return open(FeatureType.STATION, ncd, task, errlog);
       }
 
       // if explicitly requested, give em a GridDataset even if no Grids
       if (datatype == FeatureType.GRID) {
-        return null; // new ucar.nc2.dt.grid.GridDataset( ncd);   LOOK have to copy old  GridDataset to archive
+        return null; // new ucar.nc2.dt.grid.GridDataset( ncd); LOOK have to copy old GridDataset to archive
       }
 
       if (null == datatype) {
         // if no datatype was requested, give em a GridDataset only if some Grids are found.
-        ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset( ncd);
+        ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset(ncd);
         if (gds.getGrids().size() > 0)
-          return null; // gds;    LOOK have to copy old  GridDataset to archive
+          return null; // gds; LOOK have to copy old GridDataset to archive
       }
 
-      errlog.append("**Failed to find Datatype Factory for= ").append(ncd.getLocation()).append(" datatype= ").append(datatype).append("\n");
+      errlog.append("**Failed to find Datatype Factory for= ").append(ncd.getLocation()).append(" datatype= ")
+          .append(datatype).append("\n");
       return null;
     }
 
@@ -187,7 +193,7 @@ public class TypedDatasetFactory {
       return null;
     }
 
-    return builder.open( ncd, task, errlog);
+    return builder.open(ncd, task, errlog);
   }
 
 }

@@ -16,7 +16,7 @@ import ucar.nc2.Variable;
 public class Nc4ChunkingStrategyNone extends Nc4ChunkingDefault {
   @Override
   public boolean isChunked(Variable v) {
-    return v.isUnlimited();  // must chunk
+    return v.isUnlimited(); // must chunk
   }
 
   @Override

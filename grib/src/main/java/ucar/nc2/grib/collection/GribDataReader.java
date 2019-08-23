@@ -25,7 +25,6 @@ import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.*;
@@ -42,7 +41,8 @@ public abstract class GribDataReader {
   private static final Logger logger = LoggerFactory.getLogger(GribDataReader.class);
 
 
-  public static GribDataReader factory(GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
+  public static GribDataReader factory(GribCollectionImmutable gribCollection,
+      GribCollectionImmutable.VariableIndex vindex) {
     if (gribCollection.isGrib1)
       return new Grib1DataReader(gribCollection, vindex);
     else
@@ -50,13 +50,14 @@ public abstract class GribDataReader {
   }
 
   protected abstract float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException;
+
   protected abstract void show(RandomAccessFile rafData, long dataPos) throws IOException;
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   public static GribCollectionImmutable.Record currentDataRecord;
   public static GribDataValidator validator;
   public static String currentDataRafFilename;
-  static boolean show = false;   // debug
+  static boolean show = false; // debug
 
   protected final GribCollectionImmutable gribCollection;
   private final GribCollectionImmutable.VariableIndex vindex;
@@ -69,6 +70,7 @@ public abstract class GribDataReader {
 
   /**
    * Read the section of data described by want
+   * 
    * @param want which data do you want?
    * @return data as an Array
    */
@@ -80,13 +82,14 @@ public abstract class GribDataReader {
   }
 
   /*
-   SectionIterable iterates over the source indexes, corresponding to vindex's SparseArray.
-     IOSP: works because variable coordinate corresponds 1-1 to Grib Coordinate.
-     GribCoverage: must translate coordinates to Grib Coordinate index.
-   want.getShape() indicates the result Array shape.
-   SectionIterable.next(int[] index) is not used here.
+   * SectionIterable iterates over the source indexes, corresponding to vindex's SparseArray.
+   * IOSP: works because variable coordinate corresponds 1-1 to Grib Coordinate.
+   * GribCoverage: must translate coordinates to Grib Coordinate index.
+   * want.getShape() indicates the result Array shape.
+   * SectionIterable.next(int[] index) is not used here.
    */
-  private Array readDataFromCollection(GribCollectionImmutable.VariableIndex vindex, SectionIterable want) throws IOException {
+  private Array readDataFromCollection(GribCollectionImmutable.VariableIndex vindex, SectionIterable want)
+      throws IOException {
     // first time, read records and keep in memory
     vindex.readRecords();
 
@@ -97,39 +100,42 @@ public abstract class GribDataReader {
 
     // collect all the records that need to be read
     int resultIndex = 0;
-    for  (int sourceIndex : sectionWanted) {
+    for (int sourceIndex : sectionWanted) {
       // addRecord(sourceIndex, count++);
       GribCollectionImmutable.Record record = vindex.getRecordAt(sourceIndex);
       if (Grib.debugRead)
-        logger.debug("GribIosp debugRead sourceIndex={} resultIndex={} record is null={}", sourceIndex, resultIndex, record == null);
+        logger.debug("GribIosp debugRead sourceIndex={} resultIndex={} record is null={}", sourceIndex, resultIndex,
+            record == null);
       if (record != null)
-        records.add( new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys()));
+        records.add(new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys()));
       resultIndex++;
     }
 
     // sort by file and position, then read
-    DataReceiverIF dataReceiver = new DataReceiver(want.getShape(), want.getRange(rank - 2), want.getRange(rank-1) );
+    DataReceiverIF dataReceiver = new DataReceiver(want.getShape(), want.getRange(rank - 2), want.getRange(rank - 1));
     read(dataReceiver);
     return dataReceiver.getArray();
   }
 
   /*
-   Iterates using SectionIterable.next(int[] index).
-   The work of translating that down into partition heirarchy and finally to a GC is all in VariableIndexPartitioned.getDataRecord(int[] index)
-   want.getShape() indicates the result Array shape.
- */
-  private Array readDataFromPartition(PartitionCollectionImmutable.VariableIndexPartitioned vindexP, SectionIterable section) throws IOException {
+   * Iterates using SectionIterable.next(int[] index).
+   * The work of translating that down into partition heirarchy and finally to a GC is all in
+   * VariableIndexPartitioned.getDataRecord(int[] index)
+   * want.getShape() indicates the result Array shape.
+   */
+  private Array readDataFromPartition(PartitionCollectionImmutable.VariableIndexPartitioned vindexP,
+      SectionIterable section) throws IOException {
 
     int rank = section.getRank();
     SectionIterable sectionWanted = section.subSection(0, rank - 2); // all but x, y
-    SectionIterable.SectionIterator iterWanted = sectionWanted.getIterator();  // iterator over wanted indices in vindexP
-    int[] indexWanted = new int[rank - 2];                              // place to put the iterator result
+    SectionIterable.SectionIterator iterWanted = sectionWanted.getIterator(); // iterator over wanted indices in vindexP
+    int[] indexWanted = new int[rank - 2]; // place to put the iterator result
     int[] useIndex = indexWanted;
 
     // collect all the records that need to be read
     int resultPos = 0;
     while (iterWanted.hasNext()) {
-      iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted array
+      iterWanted.next(indexWanted); // returns the vindexP index in indexWanted array
 
       // for MRUTP, must munge the index here (not in vindexP.getDataRecord, because its recursive
       if (vindexP.getType() == GribCollectionImmutable.Type.MRUTP) {
@@ -138,16 +144,17 @@ public abstract class GribDataReader {
         assert time2D != null;
         int[] timeIndices = time2D.getTimeIndicesFromMrutp(indexWanted[0]);
 
-        int[] indexReallyWanted = new int[indexWanted.length+1];
+        int[] indexReallyWanted = new int[indexWanted.length + 1];
         indexReallyWanted[0] = timeIndices[0];
         indexReallyWanted[1] = timeIndices[1];
-        System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length-1);
+        System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length - 1);
         useIndex = indexReallyWanted;
       }
 
       PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(useIndex);
       if (record == null) {
-        if (Grib.debugRead) logger.debug("readDataFromPartition missing data%n");
+        if (Grib.debugRead)
+          logger.debug("readDataFromPartition missing data%n");
         resultPos++; // can just skip, since result is prefilled with NaNs
         continue;
       }
@@ -157,7 +164,8 @@ public abstract class GribDataReader {
     }
 
     // sort by file and position, then read
-    DataReceiverIF dataReceiver = new DataReceiver(section.getShape(), section.getRange(rank-2), section.getRange(rank-1) );
+    DataReceiverIF dataReceiver =
+        new DataReceiver(section.getShape(), section.getRange(rank - 2), section.getRange(rank - 1));
     readPartitioned(dataReceiver);
 
     return dataReceiver.getArray();
@@ -168,12 +176,14 @@ public abstract class GribDataReader {
 
   public Array readData2(CoordsSet want, RangeIterator yRange, RangeIterator xRange) throws IOException {
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
-      return readDataFromPartition2((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want, yRange, xRange);
+      return readDataFromPartition2((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want, yRange,
+          xRange);
     else
       return readDataFromCollection2(vindex, want, yRange, xRange);
   }
 
-  private Array readDataFromCollection2(GribCollectionImmutable.VariableIndex vindex, CoordsSet want, RangeIterator yRange, RangeIterator xRange) throws IOException {
+  private Array readDataFromCollection2(GribCollectionImmutable.VariableIndex vindex, CoordsSet want,
+      RangeIterator yRange, RangeIterator xRange) throws IOException {
     // first time, read records and keep in memory
     vindex.readRecords();
 
@@ -183,18 +193,20 @@ public abstract class GribDataReader {
       GribCollectionImmutable.Record record = vindex.getRecordAt(coords);
       if (record != null) {
         DataRecord dr = new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys());
-        if (GribDataReader.validator != null) dr.validation = coords;
+        if (GribDataReader.validator != null)
+          dr.validation = coords;
         records.add(dr);
       }
       resultIndex++;
     }
 
-    DataReceiverIF dataReceiver = new DataReceiver(want.getShape(yRange, xRange), yRange, xRange );
+    DataReceiverIF dataReceiver = new DataReceiver(want.getShape(yRange, xRange), yRange, xRange);
     read(dataReceiver);
     return dataReceiver.getArray();
   }
 
-  private Array readDataFromPartition2(PartitionCollectionImmutable.VariableIndexPartitioned vindexP, CoordsSet want, RangeIterator yRange, RangeIterator xRange) throws IOException {
+  private Array readDataFromPartition2(PartitionCollectionImmutable.VariableIndexPartitioned vindexP, CoordsSet want,
+      RangeIterator yRange, RangeIterator xRange) throws IOException {
 
     // collect all the records that need to be read
     int resultPos = 0;
@@ -208,7 +220,7 @@ public abstract class GribDataReader {
     }
 
     // sort by file and position, then read
-    DataReceiverIF dataReceiver = new DataReceiver(want.getShape(yRange, xRange), yRange, xRange );
+    DataReceiverIF dataReceiver = new DataReceiver(want.getShape(yRange, xRange), yRange, xRange);
     readPartitioned(dataReceiver);
 
     return dataReceiver.getArray();
@@ -219,6 +231,7 @@ public abstract class GribDataReader {
   /**
    * Read all of the data records that have been added.
    * The full (x,y) record is read, the reciever will subset the (x, y) as needed.
+   * 
    * @param dataReceiver send data here.
    */
   private void read(DataReceiverIF dataReceiver) throws IOException {
@@ -232,24 +245,28 @@ public abstract class GribDataReader {
           GribIosp.debugIndexOnlyCount++;
           currentDataRecord = dr.record;
           currentDataRafFilename = gribCollection.getDataRafFilename(dr.record.fileno);
-          if (Grib.debugIndexOnlyShow) dr.show(gribCollection);
+          if (Grib.debugIndexOnlyShow)
+            dr.show(gribCollection);
           dataReceiver.setDataToZero();
           continue;
         }
 
         if (dr.record.fileno != currFile) {
-          if (rafData != null) rafData.close();
+          if (rafData != null)
+            rafData.close();
           rafData = gribCollection.getDataRaf(dr.record.fileno);
           currFile = dr.record.fileno;
         }
 
-        if (dr.record.pos == GribCollectionMutable.MISSING_RECORD) continue;
+        if (dr.record.pos == GribCollectionMutable.MISSING_RECORD)
+          continue;
 
         if (GribDataReader.validator != null && dr.validation != null && rafData != null) {
-          GribDataReader.validator.validate(gribCollection.cust, rafData, dr.record.pos + dr.record.drsOffset, dr.validation);
+          GribDataReader.validator.validate(gribCollection.cust, rafData, dr.record.pos + dr.record.drsOffset,
+              dr.validation);
 
         } else if (show && rafData != null) { // for validation
-          show( dr.validation);
+          show(dr.validation);
           show(rafData, dr.record.pos + dr.record.drsOffset);
         }
 
@@ -259,12 +276,14 @@ public abstract class GribDataReader {
       }
 
     } finally {
-      if (rafData != null) rafData.close();  // make sure its closed even on exception
+      if (rafData != null)
+        rafData.close(); // make sure its closed even on exception
     }
   }
 
   private void show(SubsetParams validation) {
-    if (validation == null) return;
+    if (validation == null)
+      return;
     System.out.printf("Coords wanted%n %s", validation);
   }
 
@@ -279,23 +298,27 @@ public abstract class GribDataReader {
         PartitionCollectionImmutable.DataRecord drp = (PartitionCollectionImmutable.DataRecord) dr;
         if (Grib.debugIndexOnly || Grib.debugGbxIndexOnly) {
           GribIosp.debugIndexOnlyCount++;
-          if (Grib.debugIndexOnlyShow) drp.show();
+          if (Grib.debugIndexOnlyShow)
+            drp.show();
           dataReceiver.setDataToZero();
           continue;
         }
 
         if ((rafData == null) || !drp.usesSameFile(lastRecord)) {
-          if (rafData != null) rafData.close();
+          if (rafData != null)
+            rafData.close();
           rafData = drp.usePartition.getRaf(drp.partno, dr.record.fileno);
         }
         lastRecord = drp;
 
-        if (dr.record.pos == GribCollectionMutable.MISSING_RECORD) continue;
+        if (dr.record.pos == GribCollectionMutable.MISSING_RECORD)
+          continue;
 
         if (GribDataReader.validator != null && dr.validation != null) {
-          GribDataReader.validator.validate(gribCollection.cust, rafData, dr.record.pos + dr.record.drsOffset, dr.validation);
+          GribDataReader.validator.validate(gribCollection.cust, rafData, dr.record.pos + dr.record.drsOffset,
+              dr.validation);
         } else if (show) { // for validation
-          show( dr.validation);
+          show(dr.validation);
           show(rafData, dr.record.pos + dr.record.drsOffset);
         }
 
@@ -305,7 +328,8 @@ public abstract class GribDataReader {
       }
 
     } finally {
-      if (rafData != null) rafData.close();  // make sure its closed even on exception
+      if (rafData != null)
+        rafData.close(); // make sure its closed even on exception
     }
   }
 
@@ -324,7 +348,8 @@ public abstract class GribDataReader {
     @Override
     public int compareTo(@Nonnull DataRecord o) {
       int r = Misc.compare(record.fileno, o.record.fileno);
-      if (r != 0) return r;
+      if (r != 0)
+        return r;
       return Misc.compare(record.pos, o.record.pos);
     }
 
@@ -337,7 +362,9 @@ public abstract class GribDataReader {
 
   public interface DataReceiverIF {
     void addData(float[] data, int resultIndex, int nx);
+
     void setDataToZero(); // only used when debugging with gbx/ncx only, to fake the data
+
     Array getArray();
   }
 
@@ -353,12 +380,12 @@ public abstract class GribDataReader {
       this.horizSize = yRange.length() * xRange.length();
 
       long len = Section.computeSize(shape);
-      if (len > 100 * 1000 * 1000*4) { // LOOK make configurable
+      if (len > 100 * 1000 * 1000 * 4) { // LOOK make configurable
         logger.debug("Len greater that 100MB shape={}%n{}", Misc.showInts(shape),
-                Throwables.getStackTraceAsString(new Throwable()));
+            Throwables.getStackTraceAsString(new Throwable()));
         throw new IllegalArgumentException("RequestTooLarge: Len greater that 100M ");
       }
-      float[] data = new float[ (int) len];
+      float[] data = new float[(int) len];
       Arrays.fill(data, Float.NaN); // prefill primitive array
       dataArray = Array.factory(DataType.FLOAT, shape, data);
     }
@@ -389,50 +416,52 @@ public abstract class GribDataReader {
     }
   }
 
-    /* public static class ChannelReceiver implements DataReceiverIF {
-    private WritableByteChannel channel;
-    private DataOutputStream outStream;
-    private Range yRange, xRange;
-
-    ChannelReceiver(WritableByteChannel channel, Range yRange, Range xRange) {
-      this.channel = channel;
-      this.outStream = new DataOutputStream(Channels.newOutputStream(channel));
-      this.yRange = yRange;
-      this.xRange = xRange;
-    }
-
-    @Override
-    public void addData(float[] data, int resultIndex, int nx) throws IOException {
-      // LOOK: write some ncstream header
-      // outStream.write(header);
-
-      // now write the data
-      for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
-        for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
-          int dataIdx = y * nx + x;
-          outStream.writeFloat(data[dataIdx]);
-        }
-      }
-    }
-
-    // optimization
-    @Override
-    public void setDataToZero() {
-    }
-
-    @Override
-    public Array getArray() {
-      return null;
-    }
-  }    */
+  /*
+   * public static class ChannelReceiver implements DataReceiverIF {
+   * private WritableByteChannel channel;
+   * private DataOutputStream outStream;
+   * private Range yRange, xRange;
+   * 
+   * ChannelReceiver(WritableByteChannel channel, Range yRange, Range xRange) {
+   * this.channel = channel;
+   * this.outStream = new DataOutputStream(Channels.newOutputStream(channel));
+   * this.yRange = yRange;
+   * this.xRange = xRange;
+   * }
+   * 
+   * @Override
+   * public void addData(float[] data, int resultIndex, int nx) throws IOException {
+   * // LOOK: write some ncstream header
+   * // outStream.write(header);
+   * 
+   * // now write the data
+   * for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
+   * for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
+   * int dataIdx = y * nx + x;
+   * outStream.writeFloat(data[dataIdx]);
+   * }
+   * }
+   * }
+   * 
+   * // optimization
+   * 
+   * @Override
+   * public void setDataToZero() {
+   * }
+   * 
+   * @Override
+   * public Array getArray() {
+   * return null;
+   * }
+   * }
+   */
 
   /////////////////////////////////////////////////////////
 
   private static class Grib2DataReader extends GribDataReader {
     private final Grib2Tables cust;
 
-    Grib2DataReader(GribCollectionImmutable gribCollection,
-        GribCollectionImmutable.VariableIndex vindex) {
+    Grib2DataReader(GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
       super(gribCollection, vindex);
       this.cust = (Grib2Tables) gribCollection.cust;
     }
@@ -442,8 +471,8 @@ public abstract class GribDataReader {
       GdsHorizCoordSys hcs = dr.hcs;
       long dataPos = dr.record.pos + dr.record.drsOffset;
       long bmsPos = (dr.record.bmsOffset > 0) ? dr.record.pos + dr.record.bmsOffset : 0;
-      return Grib2Record.readData(rafData, dataPos, bmsPos, hcs.gdsNumberPoints, hcs.getScanMode(),
-              hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
+      return Grib2Record.readData(rafData, dataPos, bmsPos, hcs.gdsNumberPoints, hcs.getScanMode(), hcs.nxRaw,
+          hcs.nyRaw, hcs.nptsInLine);
     }
 
     @Override
@@ -456,7 +485,8 @@ public abstract class GribDataReader {
         f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
         f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
         TimeCoordIntvDateValue tinv = cust.getForecastTimeInterval(gr);
-        if (tinv != null) f.format("  TimeInterval=%s%n", tinv);
+        if (tinv != null)
+          f.format("  TimeInterval=%s%n", tinv);
         f.format("  ");
         gr.getPDS().show(f);
         System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", pos, f.toString());
@@ -467,8 +497,7 @@ public abstract class GribDataReader {
   private static class Grib1DataReader extends GribDataReader {
     private final Grib1Customizer cust;
 
-    Grib1DataReader(GribCollectionImmutable gribCollection,
-        GribCollectionImmutable.VariableIndex vindex) {
+    Grib1DataReader(GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
       super(gribCollection, vindex);
       this.cust = (Grib1Customizer) gribCollection.cust;
     }
@@ -485,7 +514,8 @@ public abstract class GribDataReader {
       Formatter f = new Formatter();
       f.format("File=%s%n", rafData.getLocation());
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      Grib1Parameter param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
+      Grib1Parameter param =
+          cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       f.format("  Parameter=%s%n", param);
       f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
       Grib1ParamTime ptime = gr.getParamTime(cust);

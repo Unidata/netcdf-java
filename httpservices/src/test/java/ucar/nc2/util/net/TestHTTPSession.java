@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -45,123 +45,116 @@ import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
-
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-public class TestHTTPSession extends UnitTestCommon
-{
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+public class TestHTTPSession extends UnitTestCommon {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    //////////////////////////////////////////////////
-    // Constants
+  //////////////////////////////////////////////////
+  // Constants
 
-    protected final String TESTURL1 = "http://" + TestDir.dap2TestServer + "/dts/test.01.dds";
-    static final String GLOBALAGENT = "TestUserAgent123global";
-    static final String SESSIONAGENT = "TestUserAgent123session";
+  protected final String TESTURL1 = "http://" + TestDir.dap2TestServer + "/dts/test.01.dds";
+  static final String GLOBALAGENT = "TestUserAgent123global";
+  static final String SESSIONAGENT = "TestUserAgent123session";
 
-    //////////////////////////////////////////////////
-    // Define the test sets
+  //////////////////////////////////////////////////
+  // Define the test sets
 
-    int passcount = 0;
-    int xfailcount = 0;
-    int failcount = 0;
-    boolean verbose = true;
-    boolean pass = false;
+  int passcount = 0;
+  int xfailcount = 0;
+  int failcount = 0;
+  boolean verbose = true;
+  boolean pass = false;
 
-    String datadir = null;
-    String threddsroot = null;
+  String datadir = null;
+  String threddsroot = null;
 
-    public TestHTTPSession()
-    {
-        super();
-        setTitle("HTTP Session tests");
-        HTTPSession.TESTING = true;
+  public TestHTTPSession() {
+    super();
+    setTitle("HTTP Session tests");
+    HTTPSession.TESTING = true;
+  }
+
+  @Test
+  public void testAgent() throws Exception {
+    System.out.println("*** Testing: User Agent");
+    System.out.println("*** URL: " + TESTURL1);
+    System.out.println("Test: HTTPSession.setGlobalUserAgent(" + GLOBALAGENT + ")");
+
+    HTTPSession.setInterceptors(false);
+    HTTPSession.setGlobalUserAgent(GLOBALAGENT);
+    try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
+      List<Header> agents = null;
+      HTTPMethod method = HTTPFactory.Get(session, TESTURL1);
+      method.execute();
+      // Use special interface to access the request
+      // Look for the user agent header
+      agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
+      Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
+      Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
+      Assert.assertTrue(
+          String.format("User-Agent mismatch: expected %s found:%s", GLOBALAGENT, agents.get(0).getValue()),
+          GLOBALAGENT.equals(agents.get(0).getValue()));
+      System.out.println("*** Pass: set global agent");
+      // method.close();
+
+      System.out.println("Test: HTTPSession.setUserAgent(" + SESSIONAGENT + ")");
+      HTTPSession.resetInterceptors();
+      session.setUserAgent(SESSIONAGENT);
+      method = HTTPFactory.Get(session, TESTURL1);
+      method.execute();
+      // Use special interface to access the request
+      agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
+      Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
+      Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
+      Assert.assertTrue(
+          String.format("User-Agent mismatch: expected %s found:%s", SESSIONAGENT, agents.get(0).getValue()),
+          SESSIONAGENT.equals(agents.get(0).getValue()));
+      System.out.println("*** Pass: set session agent");
+      method.close();
     }
+  }
 
-    @Test
-    public void
-    testAgent() throws Exception
-    {
-        System.out.println("*** Testing: User Agent");
-        System.out.println("*** URL: " + TESTURL1);
-        System.out.println("Test: HTTPSession.setGlobalUserAgent(" + GLOBALAGENT + ")");
+  // Verify that other configuration parameters Can at least be set.
+  @Test
+  public void testConfigure() throws Exception {
+    try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
 
-        HTTPSession.setInterceptors(false);
-        HTTPSession.setGlobalUserAgent(GLOBALAGENT);
-        try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
-            List<Header> agents = null;
-            HTTPMethod method = HTTPFactory.Get(session, TESTURL1);
-            method.execute();
-            // Use special interface to access the request
-            // Look for the user agent header
-            agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
-            Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
-            Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
-            Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
-                    GLOBALAGENT, agents.get(0).getValue()),
-                    GLOBALAGENT.equals(agents.get(0).getValue()));
-            System.out.println("*** Pass: set global agent");
-            //method.close();
+      System.out.println("Test: HTTPSession: Configuration");
+      session.setSoTimeout(17777);
+      session.setConnectionTimeout(37777);
+      session.setMaxRedirects(111);
+      Credentials bp = new UsernamePasswordCredentials("anyuser", "password");
+      session.setCredentials(bp);
+      // session.setAuthorizationPreemptive(true); not implemented
 
-            System.out.println("Test: HTTPSession.setUserAgent(" + SESSIONAGENT + ")");
-            HTTPSession.resetInterceptors();
-            session.setUserAgent(SESSIONAGENT);
-            method = HTTPFactory.Get(session, TESTURL1);
-            method.execute();
-            // Use special interface to access the request
-            agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
-            Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
-            Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
-            Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
-                    SESSIONAGENT, agents.get(0).getValue()),
-                    SESSIONAGENT.equals(agents.get(0).getValue()));
-            System.out.println("*** Pass: set session agent");
-            method.close();
-        }
+      HTTPMethod method = HTTPFactory.Get(session, TESTURL1);
+      method.execute();
+
+      // Use special interface to access the config
+      RequestConfig dbgcfg = method.getDebugConfig();
+
+      boolean b = dbgcfg.isCircularRedirectsAllowed();
+      System.out.println("Test: Circular Redirects");
+      Assert.assertTrue("*** Fail: Circular Redirects", b);
+      System.out.println("*** Pass: Circular Redirects");
+
+      System.out.println("Test: Max Redirects");
+      int n = dbgcfg.getMaxRedirects();
+      Assert.assertTrue("*** Fail: Max Redirects", n == 111);
+      System.out.println("*** Pass: Max Redirects");
+
+      System.out.println("Test: SO Timeout");
+      n = dbgcfg.getSocketTimeout();
+      Assert.assertTrue("*** Fail: SO Timeout", n == 17777);
+      System.out.println("*** Pass: SO Timeout");
+
+      System.out.println("Test: Connection Timeout");
+      n = dbgcfg.getConnectTimeout();
+      Assert.assertTrue("*** Fail: Connection Timeout", n == 37777);
+      System.out.println("*** Pass: SO Timeout");
+      method.close();
     }
-
-    // Verify that other configuration parameters Can at least be set.
-    @Test
-    public void
-    testConfigure() throws Exception
-    {
-        try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
-
-            System.out.println("Test: HTTPSession: Configuration");
-            session.setSoTimeout(17777);
-            session.setConnectionTimeout(37777);
-            session.setMaxRedirects(111);
-            Credentials bp = new UsernamePasswordCredentials("anyuser", "password");
-            session.setCredentials(bp);
-            //session.setAuthorizationPreemptive(true); not implemented
-
-            HTTPMethod method = HTTPFactory.Get(session, TESTURL1);
-            method.execute();
-
-            // Use special interface to access the config
-            RequestConfig dbgcfg = method.getDebugConfig();
-
-            boolean b = dbgcfg.isCircularRedirectsAllowed();
-            System.out.println("Test: Circular Redirects");
-            Assert.assertTrue("*** Fail: Circular Redirects", b);
-            System.out.println("*** Pass: Circular Redirects");
-
-            System.out.println("Test: Max Redirects");
-            int n = dbgcfg.getMaxRedirects();
-            Assert.assertTrue("*** Fail: Max Redirects", n == 111);
-            System.out.println("*** Pass: Max Redirects");
-
-            System.out.println("Test: SO Timeout");
-            n = dbgcfg.getSocketTimeout();
-            Assert.assertTrue("*** Fail: SO Timeout", n == 17777);
-            System.out.println("*** Pass: SO Timeout");
-
-            System.out.println("Test: Connection Timeout");
-            n = dbgcfg.getConnectTimeout();
-            Assert.assertTrue("*** Fail: Connection Timeout", n == 37777);
-            System.out.println("*** Pass: SO Timeout");
-            method.close();
-        }
-    }
+  }
 }

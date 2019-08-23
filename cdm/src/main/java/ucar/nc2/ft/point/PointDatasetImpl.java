@@ -6,7 +6,6 @@ package ucar.nc2.ft.point;
 
 import java.io.IOException;
 import java.util.List;
-
 import com.beust.jcommander.internal.Lists;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -85,12 +84,14 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
       sf.format("%nPointFeatureCollection %d %n", count);
       sf.format(" %s %s %n", pfc.getCollectionFeatureType(), pfc.getName());
       sf.format("   npts = %d %n", pfc.size());
-      /* List<Variable> extra = pfc.getExtraVariables();
-      if (extra.size() > 0) {
-        sf.format("  extra variables = ");
-        for (Variable v : extra) sf.format("%s,", v.getNameAndDimensions());
-        sf.format("%n");
-      } */
+      /*
+       * List<Variable> extra = pfc.getExtraVariables();
+       * if (extra.size() > 0) {
+       * sf.format("  extra variables = ");
+       * for (Variable v : extra) sf.format("%s,", v.getNameAndDimensions());
+       * sf.format("%n");
+       * }
+       */
       sf.format("   timeUnit = %s %n", pfc.getTimeUnit());
       sf.format("    altUnit = %s %n", pfc.getAltUnits());
       count++;
@@ -101,8 +102,8 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
   public void calcBounds(java.util.Formatter sf) {
     for (DsgFeatureCollection pfc : collectionList) {
       try {
-        CollectionInfo info  = new DsgCollectionHelper(pfc).calcBounds();
-        sf.format("     bb = %s %n", info.bbox == null ? "" :info.bbox.toString2());
+        CollectionInfo info = new DsgCollectionHelper(pfc).calcBounds();
+        sf.format("     bb = %s %n", info.bbox == null ? "" : info.bbox.toString2());
         sf.format("  dates = %s %n", info.getCalendarDateRange(pfc.getTimeUnit()));
       } catch (IOException e) {
         e.printStackTrace();

@@ -18,12 +18,10 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -38,7 +36,8 @@ public class TestMetadataExtractor {
 
   @Test
   public void testMetadataExtractorAcdd() throws IOException, URISyntaxException {
-    String filename = TestDir.cdmUnitTestDir + "agg/pointFeatureCollection/netCDFbuoydata/BOD001_000_20050627_20051109.nc";
+    String filename =
+        TestDir.cdmUnitTestDir + "agg/pointFeatureCollection/netCDFbuoydata/BOD001_000_20050627_20051109.nc";
     NetcdfFile ncfile = NetcdfFile.open(filename);
 
     CatalogBuilder catb = new CatalogBuilder();

@@ -17,18 +17,18 @@ import thredds.inventory.MFile;
  * @since Jun 26, 2009
  */
 public class RegExpMatchOnName implements MFileFilter {
-    private String regExpString;
-    private Pattern pattern;
+  private String regExpString;
+  private Pattern pattern;
 
-    public RegExpMatchOnName(String regExpString) {
-      this.regExpString = regExpString;
-      this.pattern = Pattern.compile(regExpString);
-    }
+  public RegExpMatchOnName(String regExpString) {
+    this.regExpString = regExpString;
+    this.pattern = Pattern.compile(regExpString);
+  }
 
-    public boolean accept(MFile file) {
-      Matcher matcher = this.pattern.matcher(file.getName());
-      return matcher.matches();
-    }
+  public boolean accept(MFile file) {
+    Matcher matcher = this.pattern.matcher(file.getName());
+    return matcher.matches();
+  }
 
   @Override
   public String toString() {

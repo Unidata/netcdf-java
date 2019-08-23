@@ -4,8 +4,8 @@
  */
 
 /*
-TODO: add function calls
-*/
+ * TODO: add function calls
+ */
 
 
 package opendap.test;
@@ -13,8 +13,7 @@ package opendap.test;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
-//import opendap.dts.*;
-
+// import opendap.dts.*;
 import java.util.*;
 import java.io.*;
 import org.junit.Test;
@@ -22,7 +21,7 @@ import org.junit.Test;
 // Generate random constraints
 
 public class GenerateConstraints extends TestCeParser {
-  //////////////////////////////////////////////////"
+  ////////////////////////////////////////////////// "
   // Define the constraint pieces for generating"
   // random constraint expressions"
 
@@ -40,47 +39,43 @@ public class GenerateConstraints extends TestCeParser {
   // Probability that we use a multi-valued rsh for a selection
   static final double NVALUESPROB = (1.0 / 4.0);
 
-  static final String[] dimrangeset = {
-          "[0]",
-          "[1:9]",
-          "[2:2:9]"
-  };
+  static final String[] dimrangeset = {"[0]", "[1:9]", "[2:2:9]"};
 
-  static final String[] dimset = {
-          "[0]",
-          "[9]",
-          "[2]"
-  };
+  static final String[] dimset = {"[0]", "[9]", "[2]"};
 
-  static final String[] opset = {
-          "=", "!=", ">", ">=", "<", "<="
-  };
+  static final String[] opset = {"=", "!=", ">", ">=", "<", "<="};
 
   static String valuefor(BaseType bt) {
-    if (bt instanceof DInt32) return "101";
-    if (bt instanceof DFloat32) return "37.0";
-    if (bt instanceof DString) return "\"string\"";
+    if (bt instanceof DInt32)
+      return "101";
+    if (bt instanceof DFloat32)
+      return "37.0";
+    if (bt instanceof DString)
+      return "\"string\"";
     return "<?>";
   }
 
   static boolean sametype(BaseType b1, BaseType b2) {
-    if (b1 instanceof DInt32 && b2 instanceof DInt32) return true;
-    if (b1 instanceof DFloat32 && b2 instanceof DFloat32) return true;
-    if (b1 instanceof DString && b2 instanceof DString) return true;
+    if (b1 instanceof DInt32 && b2 instanceof DInt32)
+      return true;
+    if (b1 instanceof DFloat32 && b2 instanceof DFloat32)
+      return true;
+    if (b1 instanceof DString && b2 instanceof DString)
+      return true;
     return false;
   }
 
   //////////////////////////////////////////////////
 
-  //public GenerateConstraints(String name) {
- //   super(name, null);
- // }
+  // public GenerateConstraints(String name) {
+  // super(name, null);
+  // }
 
   //////////////////////////////////////////////////
   // Control the generation of constraint strings
-  int NPROJECTIONS = 3;  // 0..NPROJECTIONS-1
-  int NSELECTIONS = 3;  // 0..NSELECTIONS-1
-  int MAXRHSSIZE = 4;  // 1..MAXRHSSIZE
+  int NPROJECTIONS = 3; // 0..NPROJECTIONS-1
+  int NSELECTIONS = 3; // 0..NSELECTIONS-1
+  int MAXRHSSIZE = 4; // 1..MAXRHSSIZE
 
   List<BaseType> projections = new ArrayList<BaseType>();
   List<BaseType> selections = new ArrayList<BaseType>();
@@ -96,14 +91,19 @@ public class GenerateConstraints extends TestCeParser {
     assert (isprimitive(var));
     BaseType match = null;
     for (BaseType bt : leaves) {
-      if (bt == var) continue;
+      if (bt == var)
+        continue;
       if (sametype(bt, var)) {
         // make sure that this var does not cause conflict
-        if (selections.contains(bt)) continue;
-        if (projections.contains(bt)) continue;
-        if (valuelist.contains(bt)) continue;
+        if (selections.contains(bt))
+          continue;
+        if (projections.contains(bt))
+          continue;
+        if (valuelist.contains(bt))
+          continue;
         BaseType parent = containsParent(bt, projections);
-        if (parent != null) continue;
+        if (parent != null)
+          continue;
         match = bt;
         valuelist.add(bt);
       }
@@ -115,7 +115,8 @@ public class GenerateConstraints extends TestCeParser {
     String nodename = node.getLongName();
     for (BaseType parent : list) {
       String parentname = parent.getLongName();
-      if (nodename.startsWith(parentname)) return parent;
+      if (nodename.startsWith(parentname))
+        return parent;
     }
     return null;
   }
@@ -124,7 +125,8 @@ public class GenerateConstraints extends TestCeParser {
     String nodename = node.getLongName();
     for (BaseType child : list) {
       String childname = child.getLongName();
-      if (childname.startsWith(nodename)) return true;
+      if (childname.startsWith(nodename))
+        return true;
     }
     return false;
   }
@@ -135,7 +137,8 @@ public class GenerateConstraints extends TestCeParser {
       int rank = 0;
       if (bt.getParent() instanceof DArray)
         rank = ((DArray) (bt.getParent())).numDimensions();
-      if (i > 0) buf.append('.');
+      if (i > 0)
+        buf.append('.');
       buf.append(bt.getEncodedName());
       for (int j = 0; j < rank; j++) {
         String dimprojection = dimrangeset[random.nextInt(dimrangeset.length)];
@@ -151,7 +154,8 @@ public class GenerateConstraints extends TestCeParser {
       int rank = 0;
       if (bt.getParent() instanceof DArray)
         rank = ((DArray) (bt.getParent())).numDimensions();
-      if (i > 0) buf.append('.');
+      if (i > 0)
+        buf.append('.');
       buf.append(bt.getEncodedName());
       for (int j = 0; j < rank; j++) {
         String dimprojection = dimset[random.nextInt(dimset.length)];
@@ -175,7 +179,8 @@ public class GenerateConstraints extends TestCeParser {
         genvalue(buf, lhsvar, true); // replace with a constant
     } else { // use a constant
       String rhs = valuefor(lhsvar);
-      while (rhs == null) rhs = valuefor(lhsvar);
+      while (rhs == null)
+        rhs = valuefor(lhsvar);
       buf.append(rhs);
     }
   }
@@ -192,7 +197,8 @@ public class GenerateConstraints extends TestCeParser {
         setsize = random.nextInt(MAXRHSSIZE) + 1; // 1..MAXRHSSIZE
       buf.append("{");
       for (int i = 0; i < setsize; i++) {
-        if (i > 0) buf.append(",");
+        if (i > 0)
+          buf.append(",");
         genvalue(buf, lhsvar, false);
       }
       buf.append("}");
@@ -209,22 +215,27 @@ public class GenerateConstraints extends TestCeParser {
   void genconstraint(StringBuilder buf) {
     int nprojections = random.nextInt(NPROJECTIONS);
     int nselections = random.nextInt(NSELECTIONS);
-    if (nprojections + nselections == 0) nprojections++; // guarantee non-null constraint
+    if (nprojections + nselections == 0)
+      nprojections++; // guarantee non-null constraint
     projections = new ArrayList<BaseType>();
     // generate candidate projection list
     while (projections.size() < nprojections) {
       BaseType node = choose(allnodes);
       // check for conflicts
-      if (projections.contains(node)) continue; // no duplicates
-      if (containsChild(node, projections)) continue; // child => !parent
+      if (projections.contains(node))
+        continue; // no duplicates
+      if (containsChild(node, projections))
+        continue; // child => !parent
       BaseType parent = containsParent(node, projections);
-      if (parent != null) projections.remove(parent); //parent && child => !parent
+      if (parent != null)
+        projections.remove(parent); // parent && child => !parent
       projections.add(node);
     }
-    projections = sort(projections); //sort
+    projections = sort(projections); // sort
     for (int i = 0; i < projections.size(); i++) {
       BaseType node = projections.get(i);
-      if (i > 0) buf.append(",");
+      if (i > 0)
+        buf.append(",");
       genprojection(node, buf);
     }
     selections = new ArrayList<BaseType>();
@@ -232,12 +243,16 @@ public class GenerateConstraints extends TestCeParser {
     // generate candidate selection list
     while (selections.size() < nselections) {
       BaseType node = choose(leaves);
-      if (selections.contains(node)) continue; // no duplicates
+      if (selections.contains(node))
+        continue; // no duplicates
       // conflict avoidance
-      if (projections.contains(node)) continue; // no duplicates with projection list
-      if (containsChild(node, projections)) continue; // child => !parent wrt projection list
+      if (projections.contains(node))
+        continue; // no duplicates with projection list
+      if (containsChild(node, projections))
+        continue; // child => !parent wrt projection list
       BaseType parent = containsParent(node, projections);
-      if (parent != null) continue; //project parent && select child => remove child
+      if (parent != null)
+        continue; // project parent && select child => remove child
       selections.add(node);
     }
     for (int i = 0; i < nselections; i++) {

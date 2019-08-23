@@ -13,7 +13,6 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.*;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
-
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -29,21 +28,26 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public String makeVariableName(GribCollectionImmutable.VariableIndex v) {
-    return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(), v.getParameter(),
-            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
+    return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(),
+        v.getParameter(), v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
-  public static String makeVariableName(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig, Grib1SectionProductDefinition pds) {
-    return makeVariableNameFromTables(cust, gribConfig, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
-            pds.getLevelType(), cust.isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
+  public static String makeVariableName(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig,
+      Grib1SectionProductDefinition pds) {
+    return makeVariableNameFromTables(cust, gribConfig, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(),
+        pds.getParameterNumber(), pds.getLevelType(), cust.isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(),
+        null);
   }
 
-  private String makeVariableNameFromTables(int center, int subcenter, int version, int paramNo, int levelType, boolean isLayer, int intvType, String intvName) {
-    return makeVariableNameFromTables(cust, config.gribConfig, center, subcenter, version, paramNo, levelType, isLayer, intvType, intvName);
+  private String makeVariableNameFromTables(int center, int subcenter, int version, int paramNo, int levelType,
+      boolean isLayer, int intvType, String intvName) {
+    return makeVariableNameFromTables(cust, config.gribConfig, center, subcenter, version, paramNo, levelType, isLayer,
+        intvType, intvName);
   }
 
-  private static String makeVariableNameFromTables(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig, int center, int subcenter, int version, int paramNo,
-                                 int levelType, boolean isLayer, int timeRangeIndicator, String intvName) {
+  private static String makeVariableNameFromTables(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig,
+      int center, int subcenter, int version, int paramNo, int levelType, boolean isLayer, int timeRangeIndicator,
+      String intvName) {
     try (Formatter f = new Formatter()) {
 
       Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo); // code table 2
@@ -93,19 +97,19 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public String makeVariableLongName(GribCollectionImmutable.VariableIndex v) {
-    return makeVariableLongName(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(), v.getParameter(),
-            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName(), v.getProbabilityName());
+    return makeVariableLongName(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(),
+        v.getParameter(), v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName(), v.getProbabilityName());
   }
 
 
-  private String makeVariableLongName(int center, int subcenter, int version, int paramNo,
-      int levelType, boolean isLayer, int intvType, String intvName, String probabilityName) {
-    return makeVariableLongName(cust, center, subcenter, version, paramNo, levelType, isLayer, intvType, intvName, probabilityName);
-  }
-
-  static String makeVariableLongName(Grib1Customizer cust, int center, int subcenter, int version,
-      int paramNo, int levelType,
+  private String makeVariableLongName(int center, int subcenter, int version, int paramNo, int levelType,
       boolean isLayer, int intvType, String intvName, String probabilityName) {
+    return makeVariableLongName(cust, center, subcenter, version, paramNo, levelType, isLayer, intvType, intvName,
+        probabilityName);
+  }
+
+  static String makeVariableLongName(Grib1Customizer cust, int center, int subcenter, int version, int paramNo,
+      int levelType, boolean isLayer, int intvType, String intvName, String probabilityName) {
     try (Formatter f = new Formatter()) {
 
       boolean isProb = (probabilityName != null && probabilityName.length() > 0);
@@ -142,7 +146,8 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   protected String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex) {
-    return makeVariableUnits(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
+    return makeVariableUnits(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(),
+        vindex.getParameter());
   }
 
   private String makeVariableUnits(int center, int subcenter, int version, int paramNo) {
@@ -153,7 +158,8 @@ public class Grib1Iosp extends GribIosp {
 
   static String makeVariableUnits(Grib1Customizer cust, GribCollectionImmutable gribCollection,
       GribCollectionImmutable.VariableIndex vindex) {
-    Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
+    Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(),
+        vindex.getTableVersion(), vindex.getParameter());
     String val = (param == null) ? "" : param.getUnit();
     return (val == null) ? "" : val;
   }
@@ -168,10 +174,12 @@ public class Grib1Iosp extends GribIosp {
       if (raf.length() > raf.getBufferSize())
         return false;
 
-    } else {                                  // wont accept remote index
+    } else { // wont accept remote index
       GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
-      if (type == GribCdmIndex.GribCollectionType.GRIB1) return true;
-      if (type == GribCdmIndex.GribCollectionType.Partition1) return true;
+      if (type == GribCdmIndex.GribCollectionType.GRIB1)
+        return true;
+      if (type == GribCdmIndex.GribCollectionType.Partition1)
+        return true;
     }
 
     // check for GRIB1 data file
@@ -208,10 +216,19 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   protected ucar.nc2.grib.GribTables createCustomizer() throws IOException {
-    Grib1ParamTables tables = (config.gribConfig.paramTable != null) ? Grib1ParamTables.factory(config.gribConfig.paramTable) :
-            Grib1ParamTables.factory(config.gribConfig.paramTablePath, config.gribConfig.lookupTablePath); // so an iosp message must be received before the open()
+    Grib1ParamTables tables =
+        (config.gribConfig.paramTable != null) ? Grib1ParamTables.factory(config.gribConfig.paramTable)
+            : Grib1ParamTables.factory(config.gribConfig.paramTablePath, config.gribConfig.lookupTablePath); // so an
+                                                                                                             // iosp
+                                                                                                             // message
+                                                                                                             // must be
+                                                                                                             // received
+                                                                                                             // before
+                                                                                                             // the
+                                                                                                             // open()
 
-    cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), tables);
+    cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(),
+        gribCollection.getMaster(), tables);
     return cust;
   }
 
@@ -222,7 +239,8 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   protected GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex) {
-    return cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getVersion(), vindex.getParameter());
+    return cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getVersion(),
+        vindex.getParameter());
   }
 
   public Object getLastRecordRead() {

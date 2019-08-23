@@ -14,7 +14,6 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -35,12 +34,12 @@ public class TestRedefine {
 
       ncWriter.addDimension(null, "time", 4, false, false);
 
-            /* Add time */
+      /* Add time */
       ncWriter.addVariable("time", DataType.DOUBLE, "time");
       ncWriter.addVariableAttribute("time", "quantity", "time");
       ncWriter.addVariableAttribute("time", "units", "s");
 
-            /* Add a dependent variable */
+      /* Add a dependent variable */
       ncWriter.addVariable("h", DataType.DOUBLE, "time");
       ncWriter.addVariableAttribute("h", "quantity", "Height");
       ncWriter.addVariableAttribute("h", "units", "m");

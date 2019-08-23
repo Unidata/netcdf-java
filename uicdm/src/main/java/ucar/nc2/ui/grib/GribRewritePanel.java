@@ -21,7 +21,6 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -53,12 +52,14 @@ public class GribRewritePanel extends JPanel {
     this.prefs = prefs;
 
     ftTable = new BeanTable(FileBean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
-    /* ftTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        FileBean ftb = (FileBean) ftTable.getSelectedBean();
-        setSelectedFeatureDataset(ftb);
-      }
-    }); */
+    /*
+     * ftTable.addListSelectionListener(new ListSelectionListener() {
+     * public void valueChanged(ListSelectionEvent e) {
+     * FileBean ftb = (FileBean) ftTable.getSelectedBean();
+     * setSelectedFeatureDataset(ftb);
+     * }
+     * });
+     */
 
     AbstractAction calcAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -72,15 +73,17 @@ public class GribRewritePanel extends JPanel {
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FileBean ftb = (FileBean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         GribRewritePanel.this.firePropertyChange("openNetcdfFile", null, ftb.getPath());
       }
     });
-    
+
     varPopup.addAction("Open as GridDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FileBean ftb = (FileBean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         GribRewritePanel.this.firePropertyChange("openGridDataset", null, ftb.getPath());
       }
     });
@@ -88,7 +91,8 @@ public class GribRewritePanel extends JPanel {
     varPopup.addAction("Open in Grib2Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FileBean ftb = (FileBean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         GribRewritePanel.this.firePropertyChange("openGrib2Data", null, ftb.getPath());
       }
     });
@@ -96,29 +100,32 @@ public class GribRewritePanel extends JPanel {
     varPopup.addAction("Open in Grib1Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FileBean ftb = (FileBean) ftTable.getSelectedBean();
-        if (ftb == null) return;
+        if (ftb == null)
+          return;
         GribRewritePanel.this.firePropertyChange("openGrib1Data", null, ftb.getPath());
       }
     });
 
-    /* varPopup.addAction("Show Report on selected rows", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List<FileBean> selected = ftTable.getSelectedBeans();
-        Formatter f = new Formatter();
-        for (FileBean bean : selected) {
-          bean.toString(f, false);
-        }
-        dumpTA.setText(f.toString());
-      }
-    });
-
-    varPopup.addAction("Run Coverage Classifier", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FileBean ftb = (FileBean) ftTable.getSelectedBean();
-        if (ftb == null) return;
-        dumpTA.setText(ftb.runClassifier());
-      }
-    });  */
+    /*
+     * varPopup.addAction("Show Report on selected rows", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * List<FileBean> selected = ftTable.getSelectedBeans();
+     * Formatter f = new Formatter();
+     * for (FileBean bean : selected) {
+     * bean.toString(f, false);
+     * }
+     * dumpTA.setText(f.toString());
+     * }
+     * });
+     * 
+     * varPopup.addAction("Run Coverage Classifier", new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * FileBean ftb = (FileBean) ftTable.getSelectedBean();
+     * if (ftb == null) return;
+     * dumpTA.setText(ftb.runClassifier());
+     * }
+     * });
+     */
 
     // the info window
     TextHistoryPane infoTA = new TextHistoryPane();
@@ -150,16 +157,16 @@ public class GribRewritePanel extends JPanel {
   public boolean setScanDirectory(String dirName) {
     clear();
 
-    //repaint();
+    // repaint();
     Formatter errlog = new Formatter();
     List<FileBean> beans = scan(dirName, errlog);
-    if (beans.size() == 0)  {
+    if (beans.size() == 0) {
       dumpTA.setText(errlog.toString());
       return false;
     }
 
     ftTable.setBeans(beans);
-    //repaint();
+    // repaint();
     return true;
   }
 
@@ -177,28 +184,32 @@ public class GribRewritePanel extends JPanel {
     dumpTA.setText(f.toString());
     dumpTA.gotoTop();
   }
-  
+
   private void calcAverage(String what, Formatter f) {
 
     double totalRecords = 0.0;
     double ratio = 0.0;
     List<FileBean> beans = ftTable.getBeans();
     for (FileBean bean : beans) {
-      if (bean.getNdups() > 0) continue;
-      if (bean.getRatio() == 0) continue;
-      if (what != null && (!bean.getPath().contains(what))) continue;
+      if (bean.getNdups() > 0)
+        continue;
+      if (bean.getRatio() == 0)
+        continue;
+      if (what != null && (!bean.getPath().contains(what)))
+        continue;
       totalRecords += bean.getNrecords();
       ratio += bean.getNrecords() * bean.getRatio();
     }
 
     double weightedAvg = (totalRecords == 0.0) ? 0.0 : ratio / totalRecords;
-    if (what != null) f.format("%n%s%n", what);
+    if (what != null)
+      f.format("%n%s%n", what);
     f.format("Weighted average ratio = %f%n", weightedAvg);
     f.format("Total # grib records = %f%n", totalRecords);
   }
 
   ///////////////
-  
+
   public java.util.List<FileBean> scan(String top, Formatter errlog) {
 
     List<FileBean> result = new ArrayList<>();
@@ -226,21 +237,24 @@ public class GribRewritePanel extends JPanel {
 
   public static class FileFilterFromSuffixes implements FileFilter {
     String[] suffixes;
+
     public FileFilterFromSuffixes(String suffixes) {
       this.suffixes = suffixes.split(" ");
     }
 
     @Override
     public boolean accept(File file) {
-      for (String s: suffixes)
-        if (file.getPath().endsWith(s)) return true;
+      for (String s : suffixes)
+        if (file.getPath().endsWith(s))
+          return true;
       return false;
     }
   }
 
 
   private void scanDirectory(File dir, boolean subdirs, java.util.List<FileBean> result, Formatter errlog) {
-    if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))return;
+    if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))
+      return;
 
     File[] gribFilesInDir = dir.listFiles(new FileFilterFromSuffixes("grib1 grib2"));
     if (gribFilesInDir == null) {
@@ -268,7 +282,7 @@ public class GribRewritePanel extends JPanel {
         if (prev != null) {
           if (name.endsWith(".ncml")) {
             if (prev.getName().equals(stem) || prev.getName().equals(stem + ".grib2"))
-               files2.remove(prev);
+              files2.remove(prev);
           }
         }
         prev = f;
@@ -308,13 +322,13 @@ public class GribRewritePanel extends JPanel {
     int nrecords, nvars, ndups;
 
     // no-arg constructor
-    public FileBean() {
-    }
+    public FileBean() {}
 
     public FileBean(File f) throws IOException {
       this.f = f;
 
-      if (debug) System.out.printf(" fileScan=%s%n", getPath());
+      if (debug)
+        System.out.printf(" fileScan=%s%n", getPath());
       try (NetcdfDataset ncd = NetcdfDataset.openDataset(getPath())) {
         fileType = ncd.getFileTypeId();
         cdmData2D = countCdmData2D(ncd);
@@ -333,14 +347,16 @@ public class GribRewritePanel extends JPanel {
     }
 
     public double getGribSizeM() {
-      return ((double) f.length()) / 1000 /1000;
-      /* Formatter fm = new Formatter();
-      //long size = f.length();
-      //if (size > 10 * 1000 * 1000) fm.format("%6.1f M", ((float) size) / 1000 / 1000);
-      //else if (size > 10 * 1000) fm.format("%6.1f K", ((float) size) / 1000);
-      //else fm.format("%d", size);
-      fm.format("%,-15d", f.length() / 1000);
-      return fm.toString(); */
+      return ((double) f.length()) / 1000 / 1000;
+      /*
+       * Formatter fm = new Formatter();
+       * //long size = f.length();
+       * //if (size > 10 * 1000 * 1000) fm.format("%6.1f M", ((float) size) / 1000 / 1000);
+       * //else if (size > 10 * 1000) fm.format("%6.1f K", ((float) size) / 1000);
+       * //else fm.format("%d", size);
+       * fm.format("%,-15d", f.length() / 1000);
+       * return fm.toString();
+       */
     }
 
     public long getCdmData2D() {
@@ -403,9 +419,9 @@ public class GribRewritePanel extends JPanel {
         for (GribCollectionImmutable.Dataset ds : gc.getDatasets())
           for (GribCollectionImmutable.GroupGC group : ds.getGroups())
             for (GribCollectionImmutable.VariableIndex vi : group.getVariables()) {
-              //vi.calcTotalSize();
-              //nrecords += vi.nrecords;
-              //ndups += vi.ndups;
+              // vi.calcTotalSize();
+              // nrecords += vi.nrecords;
+              // ndups += vi.ndups;
               nvars++;
             }
       }
@@ -414,30 +430,24 @@ public class GribRewritePanel extends JPanel {
     public void countNc4Data2D(File f) {
       String filename = f.getName();
 
-      String nc4Filename = "G:/write/"+filename+".3.grib.nc4";
+      String nc4Filename = "G:/write/" + filename + ".3.grib.nc4";
       File nc4 = new File(nc4Filename);
-      if (!nc4.exists()) return;
+      if (!nc4.exists())
+        return;
       nc4Size = nc4.length();
 
       try (NetcdfDataset ncd = NetcdfDataset.openDataset(nc4Filename)) {
-         nc4Data2D = countCdmData2D(ncd);
-       } catch (IOException e) {
+        nc4Data2D = countCdmData2D(ncd);
+      } catch (IOException e) {
         System.out.printf("Error opening %s%n", nc4Filename);
       }
     }
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("f", f)
-          .add("fileType", fileType)
-          .add("cdmData2D", cdmData2D)
-          .add("nc4Data2D", nc4Data2D)
-          .add("nc4Size", nc4Size)
-          .add("nrecords", nrecords)
-          .add("nvars", nvars)
-          .add("ndups", ndups)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("f", f).add("fileType", fileType).add("cdmData2D", cdmData2D)
+          .add("nc4Data2D", nc4Data2D).add("nc4Size", nc4Size).add("nrecords", nrecords).add("nvars", nvars)
+          .add("ndups", ndups).toString();
     }
   }
 }

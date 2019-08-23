@@ -3,10 +3,12 @@
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.geoloc;
+
 /**
  * Listeners for new world bounding box events.
+ * 
  * @author John Caron
  */
 public interface NewMapAreaListener extends java.util.EventListener {
-    void actionPerformed(NewMapAreaEvent e);
+  void actionPerformed(NewMapAreaEvent e);
 }

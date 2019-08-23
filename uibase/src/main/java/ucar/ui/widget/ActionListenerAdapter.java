@@ -3,8 +3,10 @@ package ucar.ui.widget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/** Wrap an action listener to filter on event type.
- *  Prevent the  delegate from causing more events. */
+/**
+ * Wrap an action listener to filter on event type.
+ * Prevent the delegate from causing more events.
+ */
 public class ActionListenerAdapter implements ActionListener {
   private final String actionCommand;
   private final ActionListener delegate;

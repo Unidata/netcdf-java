@@ -12,32 +12,33 @@ import java.util.List;
 
 public class StringLocker {
 
-    private List<String> stringList = Collections.synchronizedList(new ArrayList<String>());
-    private boolean waiting = false;
+  private List<String> stringList = Collections.synchronizedList(new ArrayList<String>());
+  private boolean waiting = false;
 
-    public synchronized void control(String item) {
-        // If the string is in use by another thread then wait() for the other thread to notify this thread it is done with it
-        waiting = stringList.contains(item);
-        while (waiting) {
-            try {
-                wait();
-            } catch (InterruptedException e)  {
-                Thread.currentThread().interrupt();
-            }
-        }
-        // Finished waiting so the thread can have the string
-        stringList.add(item);
+  public synchronized void control(String item) {
+    // If the string is in use by another thread then wait() for the other thread to notify this thread it is done with
+    // it
+    waiting = stringList.contains(item);
+    while (waiting) {
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
     }
+    // Finished waiting so the thread can have the string
+    stringList.add(item);
+  }
 
-    public synchronized void release(String item) {
-        // Tell StringLocker the thread is done with the string
-        stringList.remove(item);
-        waiting = false;
-        notifyAll();
-    }
+  public synchronized void release(String item) {
+    // Tell StringLocker the thread is done with the string
+    stringList.remove(item);
+    waiting = false;
+    notifyAll();
+  }
 
-    public String toString() {
-        return stringList.toString();
-    }
+  public String toString() {
+    return stringList.toString();
+  }
 
 }

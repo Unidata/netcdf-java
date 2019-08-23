@@ -10,9 +10,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-
 import org.apache.commons.io.FileUtils;
-
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,6 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -46,18 +43,24 @@ import java.util.List;
 public class TestGeoTiffWriter {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule
+  public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", FeatureType.GRID, "Temperature_sigma"});         // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", FeatureType.GRID, "Pressure_surface"});                                         // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID, "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC, "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
+    result
+        .add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",
+            FeatureType.GRID, "Temperature_sigma"}); // SRC // TP
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", FeatureType.GRID,
+        "Pressure_surface"}); // TP
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,
+        "Best/Soil_temperature_depth_below_surface_layer"}); // TwoD Best
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,
+        "TwoD/Soil_temperature_depth_below_surface_layer"}); // TwoD
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature"});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature"});
 
     return result;
   }
@@ -86,15 +89,15 @@ public class TestGeoTiffWriter {
       CoordinateAxis timeAxis = grid.getCoordinateSystem().getTimeAxis();
       if (timeAxis instanceof CoordinateAxis2D) {
         int[] shape = timeAxis.getShape();
-        rtindex = shape[0]-1;
-        tindex = shape[1]-1;
+        rtindex = shape[0] - 1;
+        tindex = shape[1] - 1;
       } else {
         CoordinateAxis rtimeAxis = grid.getCoordinateSystem().getRunTimeAxis();
         if (rtimeAxis != null)
           rtindex = (int) rtimeAxis.getSize() - 1; // last one
         timeAxis = grid.getCoordinateSystem().getTimeAxis1D();
         if (timeAxis != null)
-          tindex =(int) timeAxis.getSize() - 1; // last one
+          tindex = (int) timeAxis.getSize() - 1; // last one
       }
       dtArray = grid.readDataSlice(rtindex, -1, tindex, 0, -1, -1);
 
@@ -118,12 +121,13 @@ public class TestGeoTiffWriter {
         Assert.assertNotNull(type.toString(), gcd);
 
         int pos = field.indexOf("/");
-        String covName = (pos > 0) ? field.substring(pos+1) : field;
+        String covName = (pos > 0) ? field.substring(pos + 1) : field;
 
         Coverage coverage = gcd.findCoverage(covName);
         CoverageCoordAxis1D z = (CoverageCoordAxis1D) coverage.getCoordSys().getZAxis();
         SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true);
-        if (z != null) params.set(SubsetParams.vertCoord, z.getCoordMidpoint(0));
+        if (z != null)
+          params.set(SubsetParams.vertCoord, z.getCoordMidpoint(0));
         Assert.assertNotNull(covName, coverage);
         covArray = coverage.readData(params);
 

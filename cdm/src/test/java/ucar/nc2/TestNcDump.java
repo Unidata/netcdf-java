@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -29,8 +28,8 @@ public class TestNcDump {
   @Test
   public void testUnsignedFillValue() throws IOException {
     try (StringWriter sw = new StringWriter()) {
-      NCdumpW.print(TestDir.cdmLocalTestDataDir + "testUnsignedFillValue.ncml",
-              sw, true, true, false, false, null, null);
+      NCdumpW.print(TestDir.cdmLocalTestDataDir + "testUnsignedFillValue.ncml", sw, true, true, false, false, null,
+          null);
 
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValue.dump");
       String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
@@ -43,8 +42,7 @@ public class TestNcDump {
   @Test
   public void testNestedGroups() throws IOException {
     try (StringWriter sw = new StringWriter()) {
-      NCdumpW.print(TestDir.cdmLocalTestDataDir + "testNestedGroups.ncml",
-              sw, true, true, false, false, null, null);
+      NCdumpW.print(TestDir.cdmLocalTestDataDir + "testNestedGroups.ncml", sw, true, true, false, false, null, null);
 
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testNestedGroups.dump");
       String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);

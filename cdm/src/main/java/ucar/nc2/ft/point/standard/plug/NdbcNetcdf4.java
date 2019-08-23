@@ -11,19 +11,20 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.Dimension;
-
 import java.util.Formatter;
 
 /**
  * NOT DONE YET
  * NDBC (National Data Buoy Center) Convention with netcdf4 files
+ * 
  * @author caron
  * @since Sept 6, 2011
  */
-public class NdbcNetcdf4 extends TableConfigurerImpl  {
+public class NdbcNetcdf4 extends TableConfigurerImpl {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    if (ds.getFileTypeId().equals("HDF5")) return false;
+    if (ds.getFileTypeId().equals("HDF5"))
+      return false;
 
     String dataProvider = ds.findAttValueIgnoreCase(null, "data_provider", null);
     if (dataProvider == null)
@@ -31,27 +32,29 @@ public class NdbcNetcdf4 extends TableConfigurerImpl  {
     if (!dataProvider.contains("National Data Buoy Center"))
       return false;
 
-    if (null == ds.findAttValueIgnoreCase(null, "station_name", null)) return false;
-    if (null == ds.findAttValueIgnoreCase(null, "nominal_latitude", null)) return false;
+    if (null == ds.findAttValueIgnoreCase(null, "station_name", null))
+      return false;
+    if (null == ds.findAttValueIgnoreCase(null, "nominal_latitude", null))
+      return false;
     return null != ds.findAttValueIgnoreCase(null, "nominal_longitude", null);
 
   }
 
   /*
-  <!-- C:/data/dt2/station/ndbc.nc -->
-  <stationFeature>
-    <stationId>":station"</stationId>
-    <stationDesc>":description"</stationDesc>
-    <coordAxis type="lat">lat</coordAxis>
-    <coordAxis type="lon">lon</coordAxis>
-    <coordAxis type="height">0</coordAxis>
-    <table dim="time">
-      <coordAxis type="time">time</coordAxis>
-    </table>
-  </stationFeature>
+   * <!-- C:/data/dt2/station/ndbc.nc -->
+   * <stationFeature>
+   * <stationId>":station"</stationId>
+   * <stationDesc>":description"</stationDesc>
+   * <coordAxis type="lat">lat</coordAxis>
+   * <coordAxis type="lon">lon</coordAxis>
+   * <coordAxis type="height">0</coordAxis>
+   * <table dim="time">
+   * <coordAxis type="time">time</coordAxis>
+   * </table>
+   * </stationFeature>
    */
 
-   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     Dimension obsDim = ds.findDimension("time");
     if (obsDim == null) {
       CoordinateAxis axis = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -63,7 +66,7 @@ public class NdbcNetcdf4 extends TableConfigurerImpl  {
       errlog.format("Must have an Observation dimension: unlimited dimension, or from Time Coordinate");
       return null;
     }
-     boolean hasStruct = Evaluator.hasNetcdf3RecordStructure(ds);
+    boolean hasStruct = Evaluator.hasNetcdf3RecordStructure(ds);
 
 
 

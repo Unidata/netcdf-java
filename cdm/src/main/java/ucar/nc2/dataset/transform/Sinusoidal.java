@@ -22,7 +22,7 @@ public class Sinusoidal extends AbstractTransformBuilder implements HorizTransfo
   }
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double centralMeridian = readAttributeDouble( ctv, CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
+    double centralMeridian = readAttributeDouble(ctv, CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
     double earth_radius = getEarthRadiusInKm(ctv);
@@ -34,7 +34,7 @@ public class Sinusoidal extends AbstractTransformBuilder implements HorizTransfo
     }
 
     ucar.unidata.geoloc.projection.Sinusoidal proj =
-            new ucar.unidata.geoloc.projection.Sinusoidal( centralMeridian, false_easting, false_northing, earth_radius);
+        new ucar.unidata.geoloc.projection.Sinusoidal(centralMeridian, false_easting, false_northing, earth_radius);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

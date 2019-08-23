@@ -6,12 +6,10 @@
 package ucar.nc2.iosp.grid;
 
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
-
 import java.util.*;
 
 /**
@@ -41,12 +39,12 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   protected boolean isVerticalCoordinate = false;
 
   /**
-     * vertical pressure factors
-     */
+   * vertical pressure factors
+   */
   protected double[] factors = null;
 
   /**
-   * positive  direction
+   * positive direction
    */
   private String positive = "up";
 
@@ -58,7 +56,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   /**
    * levels
    */
-  protected List<LevelCoord> levels = new ArrayList<>();  // LevelCoord
+  protected List<LevelCoord> levels = new ArrayList<>(); // LevelCoord
 
   /**
    * Create a new GridVertCoord with the given name.
@@ -73,9 +71,9 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   /**
    * Create a new GridVertCoord with the appropriate params
    *
-   * @param records   list of GridRecords that make up this coord
+   * @param records list of GridRecords that make up this coord
    * @param levelName the name of the level
-   * @param lookup    the lookup table
+   * @param lookup the lookup table
    * @param hcs Horizontal coordinate
    */
   protected GridVertCoord(List<GridRecord> records, String levelName, GridTableLookup lookup, GridHorizCoordSys hcs) {
@@ -84,7 +82,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     this.lookup = lookup;
     this.isVerticalCoordinate = lookup.isVerticalCoordinate(typicalRecord);
 
-    //isVerticalCoordinate = lookup.isVerticalCoordinate(typicalRecord);
+    // isVerticalCoordinate = lookup.isVerticalCoordinate(typicalRecord);
     positive = lookup.isPositiveUp(typicalRecord) ? "up" : "down";
     units = lookup.getLevelUnit(typicalRecord);
 
@@ -95,27 +93,27 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
       if (coordIndex(record) < 0) {
         levels.add(new LevelCoord(record.getLevel1(), record.getLevel2()));
 
-        /* check if assumption violated
-       if (!isVerticalCoordinate && (levels.size() > 1)) {
-         if (GridServiceProvider.debugVert) {
-           logger.warn( "GribCoordSys: unused level coordinate has > 1 levels = "
-                   + levelName + " " + record.getLevelType1() + " "
-                   + levels.size());
-         }
-       } */
+        /*
+         * check if assumption violated
+         * if (!isVerticalCoordinate && (levels.size() > 1)) {
+         * if (GridServiceProvider.debugVert) {
+         * logger.warn( "GribCoordSys: unused level coordinate has > 1 levels = "
+         * + levelName + " " + record.getLevelType1() + " "
+         * + levels.size());
+         * }
+         * }
+         */
       }
     }
 
     Collections.sort(levels);
-      if (positive.equals("down")) {
-        Collections.reverse(levels);
-      }
+    if (positive.equals("down")) {
+      Collections.reverse(levels);
+    }
 
     if (GridServiceProvider.debugVert) {
-      System.out.println("GribVertCoord: " + getVariableName() + "("
-          + typicalRecord.getLevelType1()
-          + ") isVertDimensionUsed= " + isVertDimensionUsed()
-          + " positive=" + positive + " units=" + units);
+      System.out.println("GribVertCoord: " + getVariableName() + "(" + typicalRecord.getLevelType1()
+          + ") isVertDimensionUsed= " + isVertDimensionUsed() + " positive=" + positive + " units=" + units);
     }
   }
 
@@ -124,33 +122,39 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * Used by deprecated GridIndex2NC.makeDefinedCoord()
    *
    * @deprecated
-   * @param record    layer record
+   * 
+   * @param record layer record
+   * 
    * @param levelName name of this level
-   * @param lookup    lookup table
-   * @param level1    level 1
-   * @param level2    level 2
+   * 
+   * @param lookup lookup table
+   * 
+   * @param level1 level 1
+   * 
+   * @param level2 level 2
    *
-  GridVertCoord(GridRecord record, String levelName, GridTableLookup lookup, double[] level1, double[] level2) {
-    this.typicalRecord = record;
-    this.levelName = levelName;
-    this.lookup = lookup;
-
-    //dontUseVertical    = !lookup.isVerticalCoordinate(record);
-    positive = lookup.isPositiveUp(record) ? "up" : "down";
-    units = lookup.getLevelUnit(record);
-    usesBounds = lookup.isLayer(this.typicalRecord);
-
-    levels = new ArrayList<LevelCoord>(level1.length);
-    for (int i = 0; i < level1.length; i++) {
-      levels.add(new LevelCoord(level1[i], (level2 == null) ? 0.0  : level2[i]));
-    }
-
-    Collections.sort(levels);
-    if (positive.equals("down")) {
-      Collections.reverse(levels);
-    }
-    //isVerticalCoordinate = (levels.size() > 1);
-  } */
+   * GridVertCoord(GridRecord record, String levelName, GridTableLookup lookup, double[] level1, double[] level2) {
+   * this.typicalRecord = record;
+   * this.levelName = levelName;
+   * this.lookup = lookup;
+   * 
+   * //dontUseVertical = !lookup.isVerticalCoordinate(record);
+   * positive = lookup.isPositiveUp(record) ? "up" : "down";
+   * units = lookup.getLevelUnit(record);
+   * usesBounds = lookup.isLayer(this.typicalRecord);
+   * 
+   * levels = new ArrayList<LevelCoord>(level1.length);
+   * for (int i = 0; i < level1.length; i++) {
+   * levels.add(new LevelCoord(level1[i], (level2 == null) ? 0.0 : level2[i]));
+   * }
+   * 
+   * Collections.sort(levels);
+   * if (positive.equals("down")) {
+   * Collections.reverse(levels);
+   * }
+   * //isVerticalCoordinate = (levels.size() > 1);
+   * }
+   */
 
   /**
    * Set the sequence number
@@ -176,7 +180,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @return the variable name
    */
   public String getVariableName() {
-    return (seq == 0) ? levelName : levelName + seq;  // more than one with same levelName
+    return (seq == 0) ? levelName : levelName + seq; // more than one with same levelName
   }
 
   /**
@@ -190,6 +194,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
 
   /**
    * vert coordinates are used when nlevels > 1, otherwise use isVerticalCoordinate
+   * 
    * @return if vert dimension should be used
    */
   boolean isVertDimensionUsed() {
@@ -227,14 +232,14 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * Add this coord as a dimension to the netCDF file
    *
    * @param ncfile file to add to
-   * @param g      group in the file
+   * @param g group in the file
    */
   void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
     if (!isVertDimensionUsed())
       return;
-    
+
     int nlevs = levels.size();
-    if ( coordValues != null )
+    if (coordValues != null)
       nlevs = coordValues.length;
     ncfile.addDimension(g, new Dimension(getVariableName(), nlevs, true));
   }
@@ -251,7 +256,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * Add this coord as a variable in the netCDF file
    *
    * @param ncfile netCDF file to add to
-   * @param g      group in file
+   * @param g group in file
    */
   void addToNetcdfFile(NetcdfFile ncfile, Group g) {
     if (!isVertDimensionUsed()) {
@@ -267,7 +272,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     Variable v = new Variable(ncfile, g, null, getVariableName());
     v.setDataType(DataType.DOUBLE);
 
-    String desc =  getLevelDesc();
+    String desc = getLevelDesc();
     v.addAttribute(new Attribute("long_name", desc));
     v.addAttribute(new Attribute("units", lookup.getLevelUnit(typicalRecord)));
 
@@ -297,7 +302,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
         coordValues[i] = lc.mid;
       }
     }
-    Array dataArray = Array.factory(DataType.DOUBLE, new int[]{coordValues.length}, coordValues);
+    Array dataArray = Array.factory(DataType.DOUBLE, new int[] {coordValues.length}, coordValues);
 
     v.setDimensions(getVariableName());
     v.setCachedData(dataArray, true);
@@ -314,14 +319,10 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
       Variable b = new Variable(ncfile, g, null, bname);
       b.setDataType(DataType.DOUBLE);
       b.setDimensions(getVariableName() + " " + bd.getShortName());
-      b.addAttribute(new Attribute("long_name",
-          "bounds for " + v.getFullName()));
-      b.addAttribute(new Attribute("units",
-          lookup.getLevelUnit(typicalRecord)));
+      b.addAttribute(new Attribute("long_name", "bounds for " + v.getFullName()));
+      b.addAttribute(new Attribute("units", lookup.getLevelUnit(typicalRecord)));
 
-      Array boundsArray = Array.factory(DataType.DOUBLE,
-          new int[]{coordValues.length,
-              2});
+      Array boundsArray = Array.factory(DataType.DOUBLE, new int[] {coordValues.length, 2});
       ucar.ma2.Index ima = boundsArray.getIndex();
       for (int i = 0; i < coordValues.length; i++) {
         LevelCoord lc = levels.get(i);
@@ -338,71 +339,72 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
       if (g == null) {
         g = ncfile.getRootGroup();
       }
-      if ( g.findVariable ( "hybrida" ) != null)
-        return ;
-      v.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate" ));
-      v.addAttribute(new Attribute("formula_terms", "ap: hybrida b: hybridb ps: Pressure" ));
-      // create  hybrid factor variables
+      if (g.findVariable("hybrida") != null)
+        return;
+      v.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate"));
+      v.addAttribute(new Attribute("formula_terms", "ap: hybrida b: hybridb ps: Pressure"));
+      // create hybrid factor variables
       // add hybrida variable
       Variable ha = new Variable(ncfile, g, null, "hybrida");
       ha.setDataType(DataType.DOUBLE);
-      ha.addAttribute(new Attribute("long_name",  "level_a_factor" ));
+      ha.addAttribute(new Attribute("long_name", "level_a_factor"));
       ha.addAttribute(new Attribute("units", ""));
       ha.setDimensions(getVariableName());
       // add data
       int middle = factors.length / 2;
       double[] adata;
       double[] bdata;
-      if( levels.size() < middle ) { // only partial data wanted
-        adata = new double[ levels.size() ];
-        bdata = new double[ levels.size() ];
+      if (levels.size() < middle) { // only partial data wanted
+        adata = new double[levels.size()];
+        bdata = new double[levels.size()];
       } else {
-        adata = new double[ middle ];
-        bdata = new double[ middle ];
+        adata = new double[middle];
+        bdata = new double[middle];
       }
-      for( int i = 0; i < middle && i < levels.size(); i++ )
-        adata[ i ] = factors[ i ];
-      Array haArray = Array.factory(DataType.DOUBLE, new int[]{adata.length},adata);
+      for (int i = 0; i < middle && i < levels.size(); i++)
+        adata[i] = factors[i];
+      Array haArray = Array.factory(DataType.DOUBLE, new int[] {adata.length}, adata);
       ha.setCachedData(haArray, true);
       ncfile.addVariable(g, ha);
 
       // add hybridb variable
       Variable hb = new Variable(ncfile, g, null, "hybridb");
       hb.setDataType(DataType.DOUBLE);
-      hb.addAttribute(new Attribute("long_name",  "level_b_factor" ));
+      hb.addAttribute(new Attribute("long_name", "level_b_factor"));
       hb.addAttribute(new Attribute("units", ""));
       hb.setDimensions(getVariableName());
       // add data
-      for( int i = 0; i < middle && i < levels.size(); i++ )
-        bdata[ i ] = factors[ i + middle ];
-      Array hbArray = Array.factory(DataType.DOUBLE, new int[]{bdata.length},bdata);
+      for (int i = 0; i < middle && i < levels.size(); i++)
+        bdata[i] = factors[i + middle];
+      Array hbArray = Array.factory(DataType.DOUBLE, new int[] {bdata.length}, bdata);
       hb.setCachedData(hbArray, true);
       ncfile.addVariable(g, hb);
 
 
-      /*  // TODO: delete next time modifying code
-      double[] adata = new double[ middle ];
-      for( int i = 0; i < middle; i++ )
-        adata[ i ] = factors[ i ];
-      Array haArray = Array.factory(DataType.DOUBLE, new int[]{adata.length}, adata);
-      ha.setCachedData(haArray, true);
-      ncfile.addVariable(g, ha);
-
-      // add hybridb variable
-      Variable hb = new Variable(ncfile, g, null, "hybridb");
-      hb.setDataType(DataType.DOUBLE);
-      hb.addAttribute(new Attribute("long_name",  "level_b_factor" ));
-      //hb.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate" ));
-      hb.addAttribute(new Attribute("units", ""));
-      hb.setDimensions(getVariableName());
-      // add data
-      double[] bdata = new double[ middle ];
-      for( int i = 0; i < middle; i++ )
-        bdata[ i ] = factors[ i + middle ];
-      Array hbArray = Array.factory(DataType.DOUBLE, new int[]{bdata.length}, bdata);
-      hb.setCachedData(hbArray, true);
-      ncfile.addVariable(g, hb);
-      */
+      /*
+       * // TODO: delete next time modifying code
+       * double[] adata = new double[ middle ];
+       * for( int i = 0; i < middle; i++ )
+       * adata[ i ] = factors[ i ];
+       * Array haArray = Array.factory(DataType.DOUBLE, new int[]{adata.length}, adata);
+       * ha.setCachedData(haArray, true);
+       * ncfile.addVariable(g, ha);
+       * 
+       * // add hybridb variable
+       * Variable hb = new Variable(ncfile, g, null, "hybridb");
+       * hb.setDataType(DataType.DOUBLE);
+       * hb.addAttribute(new Attribute("long_name", "level_b_factor" ));
+       * //hb.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate" ));
+       * hb.addAttribute(new Attribute("units", ""));
+       * hb.setDimensions(getVariableName());
+       * // add data
+       * double[] bdata = new double[ middle ];
+       * for( int i = 0; i < middle; i++ )
+       * bdata[ i ] = factors[ i + middle ];
+       * Array hbArray = Array.factory(DataType.DOUBLE, new int[]{bdata.length}, bdata);
+       * hb.setCachedData(hbArray, true);
+       * ncfile.addVariable(g, hb);
+       */
     }
 
     // allow gc
@@ -536,9 +538,6 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
 
   @Override
   public String toString() {
-    return "GridVertCoord{" +
-            "levelName='" + levelName + '\'' +
-            ", seq=" + seq +
-            '}';
+    return "GridVertCoord{" + "levelName='" + levelName + '\'' + ", seq=" + seq + '}';
   }
 }

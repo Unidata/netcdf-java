@@ -6,7 +6,6 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 import ucar.nc2.util.CancelTask;
-
 import java.io.IOException;
 
 /**
@@ -20,11 +19,11 @@ class SliceReader implements ProxyReader {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SliceReader.class);
 
   private Variable orgClient;
-  private int sliceDim;    // dimension index into original
-  private Section slice;   // section of the original
+  private int sliceDim; // dimension index into original
+  private Section slice; // section of the original
 
   SliceReader(Variable orgClient, int dim, Section slice) {
-   // LOOK could do check that slice is compatible with client
+    // LOOK could do check that slice is compatible with client
 
     this.orgClient = orgClient;
     this.sliceDim = dim;
@@ -35,21 +34,22 @@ class SliceReader implements ProxyReader {
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     Array data;
     try {
-      data = orgClient._read( slice);
+      data = orgClient._read(slice);
     } catch (InvalidRangeException e) {
-      log.error("InvalidRangeException in slice, var="+ client);
+      log.error("InvalidRangeException in slice, var=" + client);
       throw new IllegalStateException(e.getMessage());
     }
-    data = data.reduce( sliceDim);
+    data = data.reduce(sliceDim);
     return data;
   }
 
   @Override
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
     Section orgSection = new Section(section.getRanges());
     orgSection.insertRange(sliceDim, slice.getRange(sliceDim));
-    Array data = orgClient._read( orgSection);
-    data = data.reduce( sliceDim);
+    Array data = orgClient._read(orgSection);
+    data = data.reduce(sliceDim);
     return data;
   }
 

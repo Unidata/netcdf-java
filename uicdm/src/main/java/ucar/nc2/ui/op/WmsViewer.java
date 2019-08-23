@@ -15,7 +15,6 @@ import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import ucar.nc2.util.IO;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -39,7 +38,6 @@ import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.RootPaneContainer;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -167,7 +165,7 @@ public class WmsViewer extends JPanel {
    */
   private void showImage(BufferedImage img) {
 
-    //BufferedImage img = ImageIO.read(new File("D:/data/images/labyrinth.jpg"));
+    // BufferedImage img = ImageIO.read(new File("D:/data/images/labyrinth.jpg"));
     if (img != null) {
       final Graphics g = imagePanel.getGraphics();
       g.drawImage(img, 0, 0, null);
@@ -197,8 +195,7 @@ public class WmsViewer extends JPanel {
     info = new Formatter();
     info.format("%s%n", url);
 
-    try (HTTPSession session = HTTPFactory.newSession(url);
-        HTTPMethod method = HTTPFactory.Get(session, url)) {
+    try (HTTPSession session = HTTPFactory.newSession(url); HTTPMethod method = HTTPFactory.Get(session, url)) {
       int statusCode = method.execute();
 
       info.format(" Status = %d %s%n", method.getStatusCode(), method.getStatusText());
@@ -266,8 +263,7 @@ public class WmsViewer extends JPanel {
     final Formatter f = new Formatter();
     f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
     f.format("layers=%s&CRS=%s&", layer.getName(), layer.getCRS());
-    f.format("bbox=%s,%s,%s,%s&", layer.getMinx(), layer.getMiny(), layer.getMaxx(),
-        layer.getMaxy());
+    f.format("bbox=%s,%s,%s,%s&", layer.getMinx(), layer.getMiny(), layer.getMaxx(), layer.getMaxy());
     f.format("width=500&height=500&");
     f.format("styles=%s&", styleChooser.getSelectedObject());
     f.format("format=%s&", formatChooser.getSelectedObject());
@@ -380,8 +376,7 @@ public class WmsViewer extends JPanel {
     /**
      * no-arg constructor
      */
-    public LayerBean() {
-    }
+    public LayerBean() {}
 
     /**
      *

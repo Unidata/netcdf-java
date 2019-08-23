@@ -17,7 +17,6 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.util.IO;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.FileInputStream;
@@ -51,15 +50,17 @@ public class CdmrFeaturePanel extends JPanel {
 
     messTable = new BeanTable(MessBean.class, (PreferencesExt) prefs.node("CdmMessage"), false);
     messTable.addListSelectionListener(e -> {
-        MessBean bean = (MessBean) messTable.getSelectedBean();
-        if (bean == null) return;
-        infoTA.setText(bean.getDesc());
+      MessBean bean = (MessBean) messTable.getSelectedBean();
+      if (bean == null)
+        return;
+      infoTA.setText(bean.getDesc());
     });
     varPopup = new PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show record -> variable data assignments", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessBean bean = (MessBean) messTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         infoTA.setText(bean.getDesc());
       }
     });
@@ -85,11 +86,13 @@ public class CdmrFeaturePanel extends JPanel {
 
   public void save() {
     messTable.saveState(false);
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
+    if (split != null)
+      prefs.putInt("splitPos", split.getDividerLocation());
   }
 
   public void setNcStream(String stream) throws IOException {
-    if (ncd != null) ncd.close();
+    if (ncd != null)
+      ncd.close();
 
     long total = 0;
     List<MessBean> messages = new ArrayList<>();
@@ -100,7 +103,8 @@ public class CdmrFeaturePanel extends JPanel {
         is = IO.getInputStreamFromUrl(stream);
       else
         is = new FileInputStream(stream);
-      if (is == null) return;
+      if (is == null)
+        return;
 
       while (true) {
         Mess mess = new Mess();
@@ -119,8 +123,8 @@ public class CdmrFeaturePanel extends JPanel {
         NcStream.readFully(is, m);
         total += mess.vlen;
 
-       // Start, Header, Data, End, Error,
-       // StationList, PointFeatureCollection, PointFeature
+        // Start, Header, Data, End, Error,
+        // StationList, PointFeatureCollection, PointFeature
 
         switch (mess.magic) {
           case Header:
@@ -148,13 +152,14 @@ public class CdmrFeaturePanel extends JPanel {
         }
       }
     } finally {
-      if (is != null) is.close();
+      if (is != null)
+        is.close();
     }
 
     messTable.setBeans(messages);
     System.out.printf(" nmess = %d nbytes=%d%n", messages.size(), total);
   }
-  
+
   private static class Mess {
     PointStream.MessageType magic;
     int vlen;
@@ -163,20 +168,21 @@ public class CdmrFeaturePanel extends JPanel {
   }
 
   public void closeOpenFiles() throws IOException {
-    if (ncd != null) ncd.close();
+    if (ncd != null)
+      ncd.close();
     ncd = null;
   }
 
   public void showInfo(Formatter f) {
-    if (ncd == null) return;
+    if (ncd == null)
+      return;
     f.format("%s", ncd.toString()); // CDL
   }
 
-  public class MessBean  {
+  public class MessBean {
     Mess mess;
 
-    MessBean() {
-    }
+    MessBean() {}
 
     MessBean(Mess m) {
       this.mess = m;
@@ -187,7 +193,7 @@ public class CdmrFeaturePanel extends JPanel {
     public String getMagic() {
       return mess.magic.toString();
     }
-    
+
     public String getObjClass() {
       return (mess.obj == null) ? "" : mess.obj.getClass().toString();
     }

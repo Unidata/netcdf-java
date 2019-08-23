@@ -46,7 +46,8 @@ public class Mercator extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result =  new Mercator(getOriginLon(), getParallel(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    ProjectionImpl result =
+        new Mercator(getOriginLon(), getParallel(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -63,7 +64,7 @@ public class Mercator extends ProjectionImpl {
    * Construct a Mercator Projection.
    *
    * @param lon0 longitude of origin (degrees)
-   * @param par  standard parallel (degrees). cylinder cuts earth at this latitude.
+   * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
    */
   public Mercator(double lon0, double par) {
     this(lon0, par, 0.0, 0.0, EARTH_RADIUS);
@@ -76,11 +77,11 @@ public class Mercator extends ProjectionImpl {
   /**
    * Construct a Mercator Projection.
    *
-   * @param lon0           longitude of origin (degrees)
-   * @param par            standard parallel (degrees). cylinder cuts earth at this latitude.
-   * @param false_easting  false_easting in km
+   * @param lon0 longitude of origin (degrees)
+   * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
+   * @param false_easting false_easting in km
    * @param false_northing false_northing in km
-   * @param radius         earth radius in km
+   * @param radius earth radius in km
    */
   public Mercator(double lon0, double par, double false_easting, double false_northing, double radius) {
     super("Mercator", false);
@@ -111,7 +112,7 @@ public class Mercator extends ProjectionImpl {
    * Precalculate some params
    */
   private void precalculate() {
-    A = earthRadius * Math.cos(par_r);  // incorporates the scale factor at par
+    A = earthRadius * Math.cos(par_r); // incorporates the scale factor at par
   }
 
   /**
@@ -212,13 +213,8 @@ public class Mercator extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "Mercator{" +
-            "earthRadius=" + earthRadius +
-            ", lon0=" + lon0 +
-            ", par=" + par +
-            ", falseEasting=" + falseEasting +
-            ", falseNorthing=" + falseNorthing +
-            '}';
+    return "Mercator{" + "earthRadius=" + earthRadius + ", lon0=" + lon0 + ", par=" + par + ", falseEasting="
+        + falseEasting + ", falseNorthing=" + falseNorthing + '}';
   }
 
   /**
@@ -241,17 +237,25 @@ public class Mercator extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Mercator mercator = (Mercator) o;
 
-    if (Double.compare(mercator.earthRadius, earthRadius) != 0) return false;
-    if (Double.compare(mercator.falseEasting, falseEasting) != 0) return false;
-    if (Double.compare(mercator.falseNorthing, falseNorthing) != 0) return false;
-    if (Double.compare(mercator.lon0, lon0) != 0) return false;
-    if (Double.compare(mercator.par, par) != 0) return false;
-    if ((defaultMapArea == null) != (mercator.defaultMapArea == null)) return false; // common case is that these are null
+    if (Double.compare(mercator.earthRadius, earthRadius) != 0)
+      return false;
+    if (Double.compare(mercator.falseEasting, falseEasting) != 0)
+      return false;
+    if (Double.compare(mercator.falseNorthing, falseNorthing) != 0)
+      return false;
+    if (Double.compare(mercator.lon0, lon0) != 0)
+      return false;
+    if (Double.compare(mercator.par, par) != 0)
+      return false;
+    if ((defaultMapArea == null) != (mercator.defaultMapArea == null))
+      return false; // common case is that these are null
     return defaultMapArea == null || mercator.defaultMapArea.equals(defaultMapArea);
 
   }
@@ -304,7 +308,7 @@ public class Mercator extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */

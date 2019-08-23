@@ -6,7 +6,6 @@ package ucar.nc2.ft.point;
 
 import java.io.IOException;
 import javax.annotation.Nonnull;
-
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -24,7 +23,8 @@ import ucar.unidata.geoloc.LatLonRect;
 public abstract class PointFeatureCCImpl extends DsgCollectionImpl implements PointFeatureCC {
   protected FeatureType collectionFeatureType;
 
-  protected PointFeatureCCImpl(String name, CalendarDateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
+  protected PointFeatureCCImpl(String name, CalendarDateUnit timeUnit, String altUnits,
+      FeatureType collectionFeatureType) {
     super(name, timeUnit, altUnits);
     this.collectionFeatureType = collectionFeatureType;
   }
@@ -37,11 +37,14 @@ public abstract class PointFeatureCCImpl extends DsgCollectionImpl implements Po
   }
 
   // flatten into a PointFeatureCollection
-  /* if empty, may return null
-  @Override
-  public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-    return new NestedPointFeatureCollectionFlatten(this, boundingBox, dateRange);
-  } */
+  /*
+   * if empty, may return null
+   * 
+   * @Override
+   * public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+   * return new NestedPointFeatureCollectionFlatten(this, boundingBox, dateRange);
+   * }
+   */
 
   private static class NestedPointFeatureCollectionFlatten extends PointCollectionImpl {
     protected PointFeatureCCImpl from;
@@ -49,7 +52,7 @@ public abstract class PointFeatureCCImpl extends DsgCollectionImpl implements Po
     protected CalendarDateRange filter_date;
 
     NestedPointFeatureCollectionFlatten(PointFeatureCCImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
-      super( from.getName(), from.getTimeUnit(), from.getAltUnits());
+      super(from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.filter_bb = filter_bb;
       this.filter_date = filter_date;
@@ -57,7 +60,7 @@ public abstract class PointFeatureCCImpl extends DsgCollectionImpl implements Po
 
     @Override
     public PointFeatureIterator getPointFeatureIterator() throws IOException {
-      return new PointIteratorFlatten( from.getCollectionIterator(), filter_bb, filter_date);
+      return new PointIteratorFlatten(from.getCollectionIterator(), filter_bb, filter_date);
     }
   }
 }

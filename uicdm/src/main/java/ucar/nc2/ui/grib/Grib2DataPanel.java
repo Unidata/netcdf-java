@@ -6,10 +6,10 @@
  * Access and use of this software shall impose the following obligations
  * and understandings on the user. The user is granted the right, without
  * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting                                                             2
+ * this software, and any derivative works thereof, and its supporting 2
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -47,7 +47,6 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -83,7 +82,7 @@ public class Grib2DataPanel extends JPanel {
 
     ////////////////
     param2BeanTable = new BeanTable(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false,
-            "UniquePDSVariables", "from Grib2Input.getRecords()", null);
+        "UniquePDSVariables", "from Grib2Input.getRecords()", null);
     param2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
@@ -107,7 +106,7 @@ public class Grib2DataPanel extends JPanel {
     });
 
     record2BeanTable = new BeanTable(Grib2RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false,
-            "DataRepresentation", "from Grib2Input.getRecords()", null);
+        "DataRepresentation", "from Grib2Input.getRecords()", null);
     record2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Grib2RecordBean pb = (Grib2RecordBean) record2BeanTable.getSelectedBean();
@@ -218,7 +217,7 @@ public class Grib2DataPanel extends JPanel {
           try {
             showBitmap(bean, f);
           } catch (IOException e1) {
-            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e1.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
           }
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
@@ -240,8 +239,9 @@ public class Grib2DataPanel extends JPanel {
       }
     });
 
-    //gds2Table = new BeanTable(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
-    //varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
+    // gds2Table = new BeanTable(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false,
+    // "Grib2GridDefinitionSection", "unique from Grib2Records");
+    // varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
 
     /////////////////////////////////////////
     // the info windows
@@ -272,8 +272,10 @@ public class Grib2DataPanel extends JPanel {
     record2BeanTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split != null)
+      prefs.putInt("splitPos", split.getDividerLocation());
+    if (split2 != null)
+      prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
   ///////////////////////////////////////////////
@@ -284,45 +286,48 @@ public class Grib2DataPanel extends JPanel {
   private Grib2Tables cust;
   // private Grib2Rectilyser rect2;
 
-  /* public void setCollection(String filename) throws IOException {
-    if (filename.endsWith(GribCollection.IDX_EXT)) {
-      openIndex(filename);
-    } else {
-      openCollection(filename);
-    }
-  }
-
-  private void openIndex(String filename) throws IOException {
-    GribCollection gribCollection = new GribCollection(null);
-    if (!gribCollection.readIndex(filename))
-      throw new FileNotFoundException();
-
-    this.cust = GribTables.factory(gribCollection.center, gribCollection.subcenter, gribCollection.master, gribCollection.local);
-
-    java.util.List<Grib2ParameterBean> params = new ArrayList<Grib2ParameterBean>();
-    java.util.List<Gds2Bean> gdsList = new ArrayList<Gds2Bean>();
-
-    for (GribCollection.GroupHcs gHcs : gribCollection.getGroups()) {
-      for (GribCollection.VariableIndex vi : gHcs.varIndex) {
-        for (vi.records)
-      }
-    }
-      addGroup(ncfile, g, useGroups);
-
-
-    int fileno = 0;
-    fileList = dcm.getFiles();
-    for (MFile mfile : fileList) {
-      f.format("%n %s%n", mfile.getPath());
-      processGribFile(mfile.getPath(), fileno++, pdsSet, gdsSet, params);
-    }
-    param2BeanTable.setBeans(params);
-
-    for (Grib2SectionGridDefinition gds : gdsSet.values()) {
-      gdsList.add(new Gds2Bean( gds));
-    }
-    gds2Table.setBeans(gdsList);
-  }  */
+  /*
+   * public void setCollection(String filename) throws IOException {
+   * if (filename.endsWith(GribCollection.IDX_EXT)) {
+   * openIndex(filename);
+   * } else {
+   * openCollection(filename);
+   * }
+   * }
+   * 
+   * private void openIndex(String filename) throws IOException {
+   * GribCollection gribCollection = new GribCollection(null);
+   * if (!gribCollection.readIndex(filename))
+   * throw new FileNotFoundException();
+   * 
+   * this.cust = GribTables.factory(gribCollection.center, gribCollection.subcenter, gribCollection.master,
+   * gribCollection.local);
+   * 
+   * java.util.List<Grib2ParameterBean> params = new ArrayList<Grib2ParameterBean>();
+   * java.util.List<Gds2Bean> gdsList = new ArrayList<Gds2Bean>();
+   * 
+   * for (GribCollection.GroupHcs gHcs : gribCollection.getGroups()) {
+   * for (GribCollection.VariableIndex vi : gHcs.varIndex) {
+   * for (vi.records)
+   * }
+   * }
+   * addGroup(ncfile, g, useGroups);
+   * 
+   * 
+   * int fileno = 0;
+   * fileList = dcm.getFiles();
+   * for (MFile mfile : fileList) {
+   * f.format("%n %s%n", mfile.getPath());
+   * processGribFile(mfile.getPath(), fileno++, pdsSet, gdsSet, params);
+   * }
+   * param2BeanTable.setBeans(params);
+   * 
+   * for (Grib2SectionGridDefinition gds : gdsSet.values()) {
+   * gdsList.add(new Gds2Bean( gds));
+   * }
+   * gds2Table.setBeans(gdsList);
+   * }
+   */
 
   public void setCollection(String spec) throws IOException {
     this.spec = spec;
@@ -352,9 +357,8 @@ public class Grib2DataPanel extends JPanel {
   }
 
   private void processGribFile(MFile mfile, int fileno, ucar.unidata.io.RandomAccessFile raf,
-                               Map<Grib2Variable, Grib2ParameterBean> pdsSet,
-                               Map<Integer, Grib2SectionGridDefinition> gdsSet,
-                               List<Grib2ParameterBean> params, Formatter f) throws IOException {
+      Map<Grib2Variable, Grib2ParameterBean> pdsSet, Map<Integer, Grib2SectionGridDefinition> gdsSet,
+      List<Grib2ParameterBean> params, Formatter f) throws IOException {
 
     Grib2Index index = new Grib2Index();
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
@@ -372,7 +376,8 @@ public class Grib2DataPanel extends JPanel {
 
       gr.setFile(fileno);
 
-      Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
+      Grib2Variable gv =
+          new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
       Grib2ParameterBean bean = pdsSet.get(gv);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr, gv);
@@ -395,31 +400,35 @@ public class Grib2DataPanel extends JPanel {
     }
   }
 
-  /* public boolean writeIndex(Formatter f) throws IOException {
-    MCollection dcm = scanCollection(spec, f);
-
-    if (fileChooser == null)
-      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-    String name = dcm.getCollectionName();
-    int pos = name.lastIndexOf('/');
-    if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + GribCollection.NCX_IDX);
-    String filename = fileChooser.chooseFilename(def);
-    if (filename == null) return false;
-    if (!filename.endsWith(GribCollection.NCX_IDX))
-      filename += GribCollection.NCX_IDX;
-    File idxFile = new File(filename);
-
-    Grib2CollectionBuilder.makeIndex(dcm, new Formatter(), logger);
-    return true;
-  }     */
+  /*
+   * public boolean writeIndex(Formatter f) throws IOException {
+   * MCollection dcm = scanCollection(spec, f);
+   * 
+   * if (fileChooser == null)
+   * fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+   * String name = dcm.getCollectionName();
+   * int pos = name.lastIndexOf('/');
+   * if (pos < 0) pos = name.lastIndexOf('\\');
+   * if (pos > 0) name = name.substring(pos + 1);
+   * File def = new File(dcm.getRoot(), name + GribCollection.NCX_IDX);
+   * String filename = fileChooser.chooseFilename(def);
+   * if (filename == null) return false;
+   * if (!filename.endsWith(GribCollection.NCX_IDX))
+   * filename += GribCollection.NCX_IDX;
+   * File idxFile = new File(filename);
+   * 
+   * Grib2CollectionBuilder.makeIndex(dcm, new Formatter(), logger);
+   * return true;
+   * }
+   */
 
   public void showInfo(Formatter f) {
     if (dcm == null) {
-      if (spec == null) return;
+      if (spec == null)
+        return;
       dcm = scanCollection(spec, f);
-      if (dcm == null) return;
+      if (dcm == null)
+        return;
     }
 
     // just a list of the files
@@ -429,7 +438,7 @@ public class Grib2DataPanel extends JPanel {
         f.format("  %s%n", mfile.getPath());
       }
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
     }
 
     // show nrecords, data size
@@ -451,7 +460,7 @@ public class Grib2DataPanel extends JPanel {
 
   public void checkProblems(Formatter f) {
     checkDuplicates(f);
-    //checkRuntimes(f);
+    // checkRuntimes(f);
   }
 
   private static class DateCount implements Comparable<DateCount> {
@@ -468,29 +477,31 @@ public class Grib2DataPanel extends JPanel {
     }
   }
 
-  /* private void checkRuntimes(Formatter f) {
-     Map<Date, DateCount> runs = new HashMap<Date, DateCount>();
-     List<Grib2ParameterBean> params = param2BeanTable.getBeans();
-     for (Grib2ParameterBean pb : params) {
-       List<Grib2RecordBean> records = pb.getRecordBeans();
-       for (Grib2RecordBean record : records) {
-         Date d = record.getBaseTime();
-         DateCount dc = runs.get(d);
-         if (dc == null) {
-           dc = new DateCount(d);
-           runs.put(d, dc);
-         }
-         dc.count++;
-       }
-     }
-
-     List<DateCount> dcList= new ArrayList<DateCount>(runs.values());
-     Collections.sort(dcList);
-
-     f.format("Run Dates%n");
-     for (DateCount dc : dcList)
-       f.format(" %s == %d%n", df.toDateTimeStringISO( dc.d), dc.count);
-   } */
+  /*
+   * private void checkRuntimes(Formatter f) {
+   * Map<Date, DateCount> runs = new HashMap<Date, DateCount>();
+   * List<Grib2ParameterBean> params = param2BeanTable.getBeans();
+   * for (Grib2ParameterBean pb : params) {
+   * List<Grib2RecordBean> records = pb.getRecordBeans();
+   * for (Grib2RecordBean record : records) {
+   * Date d = record.getBaseTime();
+   * DateCount dc = runs.get(d);
+   * if (dc == null) {
+   * dc = new DateCount(d);
+   * runs.put(d, dc);
+   * }
+   * dc.count++;
+   * }
+   * }
+   * 
+   * List<DateCount> dcList= new ArrayList<DateCount>(runs.values());
+   * Collections.sort(dcList);
+   * 
+   * f.format("Run Dates%n");
+   * for (DateCount dc : dcList)
+   * f.format(" %s == %d%n", df.toDateTimeStringISO( dc.d), dc.count);
+   * }
+   */
 
   private void checkDuplicates(Formatter f) {
 
@@ -557,7 +568,8 @@ public class Grib2DataPanel extends JPanel {
         Grib2RecordBean bean = (Grib2RecordBean) o;
         MFile mfile = fileList.get(bean.gr.getFile());
         if (curr == null || curr != mfile) {
-          if (raf != null) raf.close();
+          if (raf != null)
+            raf.close();
           raf = new RandomAccessFile(mfile.getPath(), "r");
           curr = mfile;
         }
@@ -565,7 +577,8 @@ public class Grib2DataPanel extends JPanel {
         if (fos == null) {
           String defloc = mfile.getPath();
           filename = fileChooser.chooseFilenameToSave(defloc + ".grib2");
-          if (filename == null) return;
+          if (filename == null)
+            return;
           File f = new File(filename);
           append = f.exists();
           fos = new FileOutputStream(filename, append);
@@ -575,7 +588,8 @@ public class Grib2DataPanel extends JPanel {
         int size = (int) (is.getMessageLength());
         long startPos = is.getStartPos();
         if (startPos < 0) {
-          JOptionPane.showMessageDialog(Grib2DataPanel.this, "Old index does not have message start - record not written");
+          JOptionPane.showMessageDialog(Grib2DataPanel.this,
+              "Old index does not have message start - record not written");
         }
 
         byte[] rb = new byte[size];
@@ -585,7 +599,8 @@ public class Grib2DataPanel extends JPanel {
         n++;
       }
 
-      JOptionPane.showMessageDialog(Grib2DataPanel.this, filename + ": " + n + " records successfully written, append=" + append);
+      JOptionPane.showMessageDialog(Grib2DataPanel.this,
+          filename + ": " + n + " records successfully written, append=" + append);
 
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(Grib2DataPanel.this, "ERROR: " + ex.getMessage());
@@ -593,8 +608,10 @@ public class Grib2DataPanel extends JPanel {
 
     } finally {
       try {
-        if (fos != null) fos.close();
-        if (raf != null) raf.close();
+        if (fos != null)
+          fos.close();
+        if (raf != null)
+          raf.close();
       } catch (IOException ioe) {
       }
     }
@@ -618,7 +635,8 @@ public class Grib2DataPanel extends JPanel {
     if (id1.getSubcenter_id() != id2.getSubcenter_id())
       f.format("Subcenter_id differs %d != %d %n", id1.getSubcenter_id(), id2.getSubcenter_id());
     if (id1.getMaster_table_version() != id2.getMaster_table_version())
-      f.format("Master_table_version differs %d != %d %n", id1.getMaster_table_version(), id2.getMaster_table_version());
+      f.format("Master_table_version differs %d != %d %n", id1.getMaster_table_version(),
+          id2.getMaster_table_version());
     if (id1.getLocal_table_version() != id2.getLocal_table_version())
       f.format("Local_table_version differs %d != %d %n", id1.getLocal_table_version(), id2.getLocal_table_version());
     if (id1.getProductionStatus() != id2.getProductionStatus())
@@ -735,209 +753,212 @@ public class Grib2DataPanel extends JPanel {
     f.format("bitmap nbytes = %d%n", bitmap.length);
   }
 
-  /* void calcData(Grib2RecordBean bean1, Formatter f) {
-    float[] data;
-    try {
-      data = bean1.readData();
-    } catch (IOException e) {
-      f.format("IOException %s", e.getMessage());
-      return;
-    }
-
-    // calc scale/offset
-
-    int nbits = bean1.getNBits();
-    //int width = (2 << nbits) - 1;
-    int width2 = (2 << (nbits-1)) - 1;
-    f.format(" nbits = %d%n", nbits);
-    //f.format(" width = %d (0x%s) %n", width, Long.toHexString(width));
-    f.format(" width = %d (0x%s) %n", width2, Long.toHexString(width2));
-
-    float dataMin = Float.MAX_VALUE;
-    float dataMax = -Float.MAX_VALUE;
-    for (float fd : data) {
-      dataMin = Math.min(dataMin, fd);
-      dataMax = Math.max(dataMax, fd);
-    }
-    f.format(" dataMin = %f%n", dataMin);
-    f.format(" dataMax = %f%n", dataMax);
-    f.format(" range = %f%n", (dataMax - dataMin));
-
-    // scale_factor =(dataMax - dataMin) / (2^n - 1)
-    // add_offset = dataMin + 2^(n-1) * scale_factor
-
-    float scale_factor = (dataMax - dataMin) / width2;
-    float add_offset = dataMin + width2 * scale_factor / 2;
-
-    f.format(" scale_factor = %f%n", scale_factor);
-    f.format(" add_offset = %f%n", add_offset);
-
-    // unpacked_data_value = packed_data_value * scale_factor + add_offset
-    // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
-
-    int n = data.length;
-
-    ByteBuffer bb = ByteBuffer.allocate(2*n);
-    ShortBuffer sb = bb.asShortBuffer();
-    float diffMax = -Float.MAX_VALUE;
-    float diffTotal = 0;
-    float diffTotal2 = 0;
-    for (float fd : data) {
-      short packed_data = (short) Math.round((fd - add_offset) / scale_factor);
-      float unpacked_data = packed_data * scale_factor + add_offset;
-      float diff = Math.abs(fd-unpacked_data);
-      if (diff > 100)
-        f.format("   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
-
-      diffMax = Math.max(diffMax, diff);
-      diffTotal += diff;
-      diffTotal2 += diff*diff;
-      sb.put(packed_data);
-    }
-
-    f.format("%n max_diff = %f%n", diffMax);
-    f.format(" avg_diff = %f%n", diffTotal/data.length);
-
-    // Math.sqrt( sumsq/n - avg * avg)
-    float mean = diffTotal/n;
-    float var = (diffTotal2/n - mean * mean);
-    f.format(" std_diff = %f%n", Math.sqrt(var));
-
-    f.format("%nCompression%n");
-    f.format(" number of values = %d%n", n);
-    f.format(" uncompressed as floats = %d%n", n*4);
-    f.format(" uncompressed packed = %d%n", n*nbits/8);
-    f.format(" grib compressed = %d%n",  bean1.getDataLength());
-
-    f.format("%ndeflate%n");
-    Deflater deflater = new Deflater();
-    deflater.setInput(bb.array());
-    deflater.finish();
-    int compressedSize = deflater.deflate(new byte[10*n]);
-    deflater.end();
-
-    f.format(" compressedSize = %d%n", compressedSize);
-    f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-    f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
-
-    try {
-      f.format("%nbzip2%n");
-      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
-      org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
-      InputStream fin = new ByteArrayInputStream(bb.array());
-      IO.copy(fin, zipper);
-      zipper.close();
-      compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-
-    /* try {
-      f.format("%nbzip2%n");
-      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
-      BZip2CompressorOutputStream zipper = new BZip2CompressorOutputStream(out);
-      InputStream fin = new ByteArrayInputStream(bb.array());
-      IO.copy(fin, zipper);
-      zipper.close();
-      compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-
-    try {
-      f.format("%nLZMA2%n");
-      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
-      XZCompressorOutputStream zipper = new XZCompressorOutputStream(out);
-      InputStream fin = new ByteArrayInputStream(bb.array());
-      IO.copy(fin, zipper);
-      zipper.close();
-      compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
-      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-
-  }  */
+  /*
+   * void calcData(Grib2RecordBean bean1, Formatter f) {
+   * float[] data;
+   * try {
+   * data = bean1.readData();
+   * } catch (IOException e) {
+   * f.format("IOException %s", e.getMessage());
+   * return;
+   * }
+   * 
+   * // calc scale/offset
+   * 
+   * int nbits = bean1.getNBits();
+   * //int width = (2 << nbits) - 1;
+   * int width2 = (2 << (nbits-1)) - 1;
+   * f.format(" nbits = %d%n", nbits);
+   * //f.format(" width = %d (0x%s) %n", width, Long.toHexString(width));
+   * f.format(" width = %d (0x%s) %n", width2, Long.toHexString(width2));
+   * 
+   * float dataMin = Float.MAX_VALUE;
+   * float dataMax = -Float.MAX_VALUE;
+   * for (float fd : data) {
+   * dataMin = Math.min(dataMin, fd);
+   * dataMax = Math.max(dataMax, fd);
+   * }
+   * f.format(" dataMin = %f%n", dataMin);
+   * f.format(" dataMax = %f%n", dataMax);
+   * f.format(" range = %f%n", (dataMax - dataMin));
+   * 
+   * // scale_factor =(dataMax - dataMin) / (2^n - 1)
+   * // add_offset = dataMin + 2^(n-1) * scale_factor
+   * 
+   * float scale_factor = (dataMax - dataMin) / width2;
+   * float add_offset = dataMin + width2 * scale_factor / 2;
+   * 
+   * f.format(" scale_factor = %f%n", scale_factor);
+   * f.format(" add_offset = %f%n", add_offset);
+   * 
+   * // unpacked_data_value = packed_data_value * scale_factor + add_offset
+   * // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
+   * 
+   * int n = data.length;
+   * 
+   * ByteBuffer bb = ByteBuffer.allocate(2*n);
+   * ShortBuffer sb = bb.asShortBuffer();
+   * float diffMax = -Float.MAX_VALUE;
+   * float diffTotal = 0;
+   * float diffTotal2 = 0;
+   * for (float fd : data) {
+   * short packed_data = (short) Math.round((fd - add_offset) / scale_factor);
+   * float unpacked_data = packed_data * scale_factor + add_offset;
+   * float diff = Math.abs(fd-unpacked_data);
+   * if (diff > 100)
+   * f.format("   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+   * 
+   * diffMax = Math.max(diffMax, diff);
+   * diffTotal += diff;
+   * diffTotal2 += diff*diff;
+   * sb.put(packed_data);
+   * }
+   * 
+   * f.format("%n max_diff = %f%n", diffMax);
+   * f.format(" avg_diff = %f%n", diffTotal/data.length);
+   * 
+   * // Math.sqrt( sumsq/n - avg * avg)
+   * float mean = diffTotal/n;
+   * float var = (diffTotal2/n - mean * mean);
+   * f.format(" std_diff = %f%n", Math.sqrt(var));
+   * 
+   * f.format("%nCompression%n");
+   * f.format(" number of values = %d%n", n);
+   * f.format(" uncompressed as floats = %d%n", n*4);
+   * f.format(" uncompressed packed = %d%n", n*nbits/8);
+   * f.format(" grib compressed = %d%n", bean1.getDataLength());
+   * 
+   * f.format("%ndeflate%n");
+   * Deflater deflater = new Deflater();
+   * deflater.setInput(bb.array());
+   * deflater.finish();
+   * int compressedSize = deflater.deflate(new byte[10*n]);
+   * deflater.end();
+   * 
+   * f.format(" compressedSize = %d%n", compressedSize);
+   * f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+   * f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+   * 
+   * try {
+   * f.format("%nbzip2%n");
+   * ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
+   * org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
+   * InputStream fin = new ByteArrayInputStream(bb.array());
+   * IO.copy(fin, zipper);
+   * zipper.close();
+   * compressedSize = out.size();
+   * f.format(" compressedSize = %d%n", compressedSize);
+   * f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+   * f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+   * 
+   * } catch (IOException ioe) {
+   * ioe.printStackTrace();
+   * }
+   * 
+   * /* try {
+   * f.format("%nbzip2%n");
+   * ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
+   * BZip2CompressorOutputStream zipper = new BZip2CompressorOutputStream(out);
+   * InputStream fin = new ByteArrayInputStream(bb.array());
+   * IO.copy(fin, zipper);
+   * zipper.close();
+   * compressedSize = out.size();
+   * f.format(" compressedSize = %d%n", compressedSize);
+   * f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+   * f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+   * 
+   * } catch (IOException ioe) {
+   * ioe.printStackTrace();
+   * }
+   * 
+   * try {
+   * f.format("%nLZMA2%n");
+   * ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
+   * XZCompressorOutputStream zipper = new XZCompressorOutputStream(out);
+   * InputStream fin = new ByteArrayInputStream(bb.array());
+   * IO.copy(fin, zipper);
+   * zipper.close();
+   * compressedSize = out.size();
+   * f.format(" compressedSize = %d%n", compressedSize);
+   * f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+   * f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+   * 
+   * } catch (IOException ioe) {
+   * ioe.printStackTrace();
+   * }
+   * 
+   * }
+   */
 
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /*
-  /* private String doAccumAlgo(Grib2ParameterBean pb) {
-    List<Grib2RecordBean> all = new ArrayList<Grib2RecordBean>(pb.getRecordBeans());
-    List<Grib2RecordBean> hourAccum = new ArrayList<Grib2RecordBean>(all.size());
-    List<Grib2RecordBean> runAccum = new ArrayList<Grib2RecordBean>(all.size());
-
-    Set<Integer> ftimes = new HashSet<Integer>();
-
-    for (Grib2RecordBean rb : pb.getRecordBeans()) {
-      int ftime = rb.getForecastTime();
-      ftimes.add(ftime);
-
-      int start = rb.getStartInterval();
-      int end = rb.getEndInterval();
-      if (end - start == 1) hourAccum.add(rb);
-      if (start == 0) runAccum.add(rb);
-    }
-
-    int n = ftimes.size();
-
-    Formatter f = new Formatter();
-    f.format("      all: ");
-    showList(all, f);
-    f.format("%n");
-
-    if (hourAccum.size() > n - 2) {
-      for (Grib2RecordBean rb : hourAccum) all.remove(rb);
-      f.format("hourAccum: ");
-      showList(hourAccum, f);
-      f.format("%n");
-    }
-
-    if (runAccum.size() > n - 2) {
-      for (Grib2RecordBean rb : runAccum) all.remove(rb);
-      f.format(" runAccum: ");
-      showList(runAccum, f);
-      f.format("%n");
-    }
-
-    if (all.size() > 0) {
-      boolean same = true;
-      int intv = -1;
-      for (Grib2RecordBean rb : all) {
-        int start = rb.getStartInterval();
-        int end = rb.getEndInterval();
-        int intv2 = end - start;
-        if (intv < 0) intv = intv2;
-        else same = (intv == intv2);
-        if (!same) break;
-      }
-
-      f.format("remaining: ");
-      showList(all, f);
-      f.format("%s %n", same ? " Interval=" + intv : " Mixed");
-    }
-
-    return f.toString();
-  }
-
-  private void showList(List<Grib2RecordBean> list, Formatter f) {
-    f.format("(%d) ", list.size());
-    for (Grib2RecordBean rb : list)
-      f.format(" %d-%d", rb.getStartInterval(), rb.getEndInterval());
-  }  */
+   * /* private String doAccumAlgo(Grib2ParameterBean pb) {
+   * List<Grib2RecordBean> all = new ArrayList<Grib2RecordBean>(pb.getRecordBeans());
+   * List<Grib2RecordBean> hourAccum = new ArrayList<Grib2RecordBean>(all.size());
+   * List<Grib2RecordBean> runAccum = new ArrayList<Grib2RecordBean>(all.size());
+   * 
+   * Set<Integer> ftimes = new HashSet<Integer>();
+   * 
+   * for (Grib2RecordBean rb : pb.getRecordBeans()) {
+   * int ftime = rb.getForecastTime();
+   * ftimes.add(ftime);
+   * 
+   * int start = rb.getStartInterval();
+   * int end = rb.getEndInterval();
+   * if (end - start == 1) hourAccum.add(rb);
+   * if (start == 0) runAccum.add(rb);
+   * }
+   * 
+   * int n = ftimes.size();
+   * 
+   * Formatter f = new Formatter();
+   * f.format("      all: ");
+   * showList(all, f);
+   * f.format("%n");
+   * 
+   * if (hourAccum.size() > n - 2) {
+   * for (Grib2RecordBean rb : hourAccum) all.remove(rb);
+   * f.format("hourAccum: ");
+   * showList(hourAccum, f);
+   * f.format("%n");
+   * }
+   * 
+   * if (runAccum.size() > n - 2) {
+   * for (Grib2RecordBean rb : runAccum) all.remove(rb);
+   * f.format(" runAccum: ");
+   * showList(runAccum, f);
+   * f.format("%n");
+   * }
+   * 
+   * if (all.size() > 0) {
+   * boolean same = true;
+   * int intv = -1;
+   * for (Grib2RecordBean rb : all) {
+   * int start = rb.getStartInterval();
+   * int end = rb.getEndInterval();
+   * int intv2 = end - start;
+   * if (intv < 0) intv = intv2;
+   * else same = (intv == intv2);
+   * if (!same) break;
+   * }
+   * 
+   * f.format("remaining: ");
+   * showList(all, f);
+   * f.format("%s %n", same ? " Interval=" + intv : " Mixed");
+   * }
+   * 
+   * return f.toString();
+   * }
+   * 
+   * private void showList(List<Grib2RecordBean> list, Formatter f) {
+   * f.format("(%d) ", list.size());
+   * for (Grib2RecordBean rb : list)
+   * f.format(" %d-%d", rb.getStartInterval(), rb.getEndInterval());
+   * }
+   */
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -951,8 +972,7 @@ public class Grib2DataPanel extends JPanel {
 
     // no-arg constructor
 
-    public Grib2ParameterBean() {
-    }
+    public Grib2ParameterBean() {}
 
     public Grib2ParameterBean(Grib2Record r, Grib2Variable gv) throws IOException {
       this.gr = r;
@@ -963,7 +983,7 @@ public class Grib2DataPanel extends JPanel {
       id = r.getId();
       discipline = r.getDiscipline();
       records = new ArrayList<>();
-      //gdsKey = r.getGDSsection().calcCRC();
+      // gdsKey = r.getGDSsection().calcCRC();
     }
 
     public String getCdmHash() {
@@ -1016,19 +1036,20 @@ public class Grib2DataPanel extends JPanel {
 
     public String getNBits() {
       calcBits();
-      if (minBits == maxBits) return Integer.toString(minBits);
-      return minBits+"-"+maxBits;
+      if (minBits == maxBits)
+        return Integer.toString(minBits);
+      return minBits + "-" + maxBits;
     }
 
     public String getScale() {
       calcBits();
-      Formatter f= new Formatter();
+      Formatter f = new Formatter();
       if (minScale == Double.MAX_VALUE)
         f.format("N/A");
       if (Misc.nearlyEquals(minScale, maxScale))
-        f.format("%g",minScale);
+        f.format("%g", minScale);
       else
-        f.format("(%g,%g)",minScale,maxScale);
+        f.format("(%g,%g)", minScale, maxScale);
       return f.toString();
     }
 
@@ -1047,8 +1068,10 @@ public class Grib2DataPanel extends JPanel {
     private float nbits = -1;
     private float avgbits;
     private float compress;
+
     private void calcBits() {
-      if (nbits >= 0) return;
+      if (nbits >= 0)
+        return;
       nbits = 0;
       int count = 0;
       minScale = Float.MAX_VALUE;
@@ -1084,8 +1107,8 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public final String getCenter() {
-      //String center = CommonCodeTable.getCenterName(id.getCenter_id(), 2);
-      //String subcenter = cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id());
+      // String center = CommonCodeTable.getCenterName(id.getCenter_id(), 2);
+      // String subcenter = cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id());
       return id.getCenter_id() + "/" + id.getSubcenter_id(); // + " (" + center + "/" + subcenter + ")";
     }
 
@@ -1107,8 +1130,7 @@ public class Grib2DataPanel extends JPanel {
     GribData.Info info;
     double minimum, maximum, scale;
 
-    public Grib2RecordBean() {
-    }
+    public Grib2RecordBean() {}
 
     public Grib2RecordBean(Grib2Record m, ucar.unidata.io.RandomAccessFile raf) throws IOException {
       this.gr = m;
@@ -1120,15 +1142,15 @@ public class Grib2DataPanel extends JPanel {
 
       info = gr.getBinaryDataInfo(raf);
 
-      double pow10 =  Math.pow(10.0, -getDecScale());        // 1/10^D
-      minimum = (float) (pow10 * info.referenceValue);          // R / 10^D
-      scale = (float) (pow10 * Math.pow(2.0, getBinScale()));  // 2^E / 10^D
+      double pow10 = Math.pow(10.0, -getDecScale()); // 1/10^D
+      minimum = (float) (pow10 * info.referenceValue); // R / 10^D
+      scale = (float) (pow10 * Math.pow(2.0, getBinScale())); // 2^E / 10^D
 
       double maxPacked = Math.pow(2.0, getNBits()) - 1;
-      maximum = minimum +  scale * maxPacked;
+      maximum = minimum + scale * maxPacked;
     }
 
-   // public String getHeader() { return Grib2Utils.cleanupHeader(gr.getHeader()); }
+    // public String getHeader() { return Grib2Utils.cleanupHeader(gr.getHeader()); }
 
     public int getDrsTemplate() {
       return gr.getDataRepresentationSection().getDataTemplate();
@@ -1139,8 +1161,8 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public int getNPoints() {
-       return info.nPoints;
-     }
+      return info.nPoints;
+    }
 
     public int getNGroups() {
       return drs.getNGroups();
@@ -1185,7 +1207,7 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public String getPrecision() {
-      return String.format("%.5g", scale/2);
+      return String.format("%.5g", scale / 2);
     }
 
     public int getBitMap() {
@@ -1211,9 +1233,12 @@ public class Grib2DataPanel extends JPanel {
     public String getLevel() {
       int v1 = pds.getLevelType1();
       int v2 = pds.getLevelType2();
-      if (v1 == 255) return "";
-      if (v2 == 255) return "" + pds.getLevelValue1();
-      if (v1 != v2) return pds.getLevelValue1() + "-" + pds.getLevelValue2() + " level2 type= " + v2;
+      if (v1 == 255)
+        return "";
+      if (v2 == 255)
+        return "" + pds.getLevelValue1();
+      if (v1 != v2)
+        return pds.getLevelValue1() + "-" + pds.getLevelValue2() + " level2 type= " + v2;
       return pds.getLevelValue1() + "-" + pds.getLevelValue2();
     }
 

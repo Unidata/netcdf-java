@@ -25,7 +25,6 @@ import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +33,7 @@ import java.util.*;
 /**
  * Write Point Feature Collections into netcdf3/4 files in CF 1.6 point obs conventions.
  * <ul>
- *   <li>netcdf3: use indexed ragged array representation</li>
+ * <li>netcdf3: use indexed ragged array representation</li>
  * </ul>
  *
  * @author caron
@@ -73,19 +72,21 @@ public abstract class CFPointWriter implements Closeable {
 
   private static boolean debug = false;
 
-  public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
+  public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut,
+      NetcdfFileWriter.Version version) throws IOException {
     return writeFeatureCollection(fdpoint, fileOut, new CFPointWriterConfig(version));
   }
 
   /**
    * Write a FeatureDatasetPoint to a netcd3/4 file.
    *
-   * @param fdpoint  the FeatureDatasetPoint; do first FeatureCollection contained within.
-   * @param fileOut  write to the is file
-   * @param config  configuration
-   * @return  count of number of pointFeatures written.
+   * @param fdpoint the FeatureDatasetPoint; do first FeatureCollection contained within.
+   * @param fileOut write to the is file
+   * @param config configuration
+   * @return count of number of pointFeatures written.
    */
-  public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, CFPointWriterConfig config) throws IOException {
+  public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, CFPointWriterConfig config)
+      throws IOException {
 
     for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
 
@@ -105,7 +106,8 @@ public abstract class CFPointWriter implements Closeable {
         return writeStationProfileFeatureCollection(fdpoint, (StationProfileFeatureCollection) fc, fileOut, config);
 
       } else if (fc instanceof TrajectoryProfileFeatureCollection) {
-        return writeTrajectoryProfileFeatureCollection(fdpoint, (TrajectoryProfileFeatureCollection) fc, fileOut, config);
+        return writeTrajectoryProfileFeatureCollection(fdpoint, (TrajectoryProfileFeatureCollection) fc, fileOut,
+            config);
       }
     }
 
@@ -113,12 +115,13 @@ public abstract class CFPointWriter implements Closeable {
   }
 
 
-  private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut, CFPointWriterConfig config) throws IOException {
+  private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc,
+      String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
-            pfc.getTimeUnit(), pfc.getAltUnits(), config)) {
+    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(),
+        fdpoint.getDataVariables(), pfc.getTimeUnit(), pfc.getAltUnits(), config)) {
 
-      pointWriter.setExtraVariables( pfc.getExtraVariables());
+      pointWriter.setExtraVariables(pfc.getExtraVariables());
 
       int count = 0;
       for (PointFeature pf : pfc) {
@@ -127,8 +130,10 @@ public abstract class CFPointWriter implements Closeable {
 
         pointWriter.writeRecord(pf, pf.getFeatureData());
         count++;
-        if (debug && count % 100 == 0) System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0) System.out.printf("%n ");
+        if (debug && count % 100 == 0)
+          System.out.printf("%d ", count);
+        if (debug && count % 1000 == 0)
+          System.out.printf("%n ");
       }
 
       pointWriter.finish();
@@ -136,13 +141,13 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  private static int writeStationFeatureCollection(FeatureDatasetPoint dataset, StationTimeSeriesFeatureCollection fc, String fileOut,
-                                                   CFPointWriterConfig config) throws IOException {
+  private static int writeStationFeatureCollection(FeatureDatasetPoint dataset, StationTimeSeriesFeatureCollection fc,
+      String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
-            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+    try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(),
+        dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      cfWriter.setExtraVariables( fc.getExtraVariables());
+      cfWriter.setExtraVariables(fc.getExtraVariables());
 
       ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, null, null); // all data, but no need to sort by station
 
@@ -154,8 +159,10 @@ public abstract class CFPointWriter implements Closeable {
 
         cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
         count++;
-        if (debug && count % 100 == 0) System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0) System.out.printf("%n ");
+        if (debug && count % 100 == 0)
+          System.out.printf("%d ", count);
+        if (debug && count % 1000 == 0)
+          System.out.printf("%n ");
       }
 
       cfWriter.finish();
@@ -163,13 +170,13 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection fc, String fileOut,
-                                                   CFPointWriterConfig config) throws IOException {
+  private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection fc,
+      String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
-            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+    try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(),
+        fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      cfWriter.setExtraVariables( fc.getExtraVariables());
+      cfWriter.setExtraVariables(fc.getExtraVariables());
 
       // LOOK not always needed
       int count = 0;
@@ -187,8 +194,10 @@ public abstract class CFPointWriter implements Closeable {
       count = 0;
       for (ProfileFeature profile : fc) {
         count += cfWriter.writeProfile(profile);
-        if (debug && count % 10 == 0) System.out.printf("%d ", count);
-        if (debug && count % 100 == 0) System.out.printf("%n ");
+        if (debug && count % 10 == 0)
+          System.out.printf("%d ", count);
+        if (debug && count % 100 == 0)
+          System.out.printf("%n ");
       }
 
       cfWriter.finish();
@@ -196,13 +205,13 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection fc, String fileOut,
-                                                   CFPointWriterConfig config) throws IOException {
+  private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection fc,
+      String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
-            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+    try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut,
+        fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      cfWriter.setExtraVariables( fc.getExtraVariables());
+      cfWriter.setExtraVariables(fc.getExtraVariables());
 
       // LOOK not always needed
       int count = 0;
@@ -220,8 +229,10 @@ public abstract class CFPointWriter implements Closeable {
       count = 0;
       for (TrajectoryFeature traj : fc) {
         count += cfWriter.writeTrajectory(traj);
-        if (debug && count % 10 == 0) System.out.printf("%d ", count);
-        if (debug && count % 100 == 0) System.out.printf("%n ");
+        if (debug && count % 10 == 0)
+          System.out.printf("%d ", count);
+        if (debug && count % 100 == 0)
+          System.out.printf("%n ");
       }
 
       cfWriter.finish();
@@ -229,14 +240,14 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  private static int writeStationProfileFeatureCollection(FeatureDatasetPoint dataset, StationProfileFeatureCollection fc, String fileOut,
-                                                   CFPointWriterConfig config) throws IOException {
+  private static int writeStationProfileFeatureCollection(FeatureDatasetPoint dataset,
+      StationProfileFeatureCollection fc, String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
-            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+    try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut,
+        dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      cfWriter.setExtraVariables( fc.getExtraVariables());
-      cfWriter.setStations( fc.getStationFeatures());
+      cfWriter.setExtraVariables(fc.getExtraVariables());
+      cfWriter.setStations(fc.getStationFeatures());
 
       int name_strlen = 0;
       int countProfiles = 0;
@@ -255,11 +266,14 @@ public abstract class CFPointWriter implements Closeable {
       int count = 0;
       for (StationProfileFeature spf : fc) {
         for (ProfileFeature pf : spf) {
-          if (pf.getTime() == null) continue;  // assume this means its an "incomplete multidimensional"
+          if (pf.getTime() == null)
+            continue; // assume this means its an "incomplete multidimensional"
 
           count += cfWriter.writeProfile(spf, pf);
-          if (debug && count % 100 == 0) System.out.printf("%d ", count);
-          if (debug && count % 1000 == 0) System.out.printf("%n ");
+          if (debug && count % 100 == 0)
+            System.out.printf("%d ", count);
+          if (debug && count % 1000 == 0)
+            System.out.printf("%n ");
         }
       }
 
@@ -268,13 +282,13 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  private static int writeTrajectoryProfileFeatureCollection(FeatureDatasetPoint dataset, TrajectoryProfileFeatureCollection fc, String fileOut,
-                                                   CFPointWriterConfig config) throws IOException {
+  private static int writeTrajectoryProfileFeatureCollection(FeatureDatasetPoint dataset,
+      TrajectoryProfileFeatureCollection fc, String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
-            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+    try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut,
+        dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      cfWriter.setExtraVariables( fc.getExtraVariables());
+      cfWriter.setExtraVariables(fc.getExtraVariables());
 
       int traj_strlen = 0;
       int prof_strlen = 0;
@@ -299,11 +313,13 @@ public abstract class CFPointWriter implements Closeable {
       for (TrajectoryProfileFeature spf : fc) {
         for (ProfileFeature profile : spf) {
           if (profile.getTime() == null)
-            continue;  // assume this means its a "incomplete multidimensional"
+            continue; // assume this means its a "incomplete multidimensional"
 
           count += cfWriter.writeProfile(spf, profile);
-          if (debug && count % 100 == 0) System.out.printf("%d ", count);
-          if (debug && count % 1000 == 0) System.out.printf("%n ");
+          if (debug && count % 100 == 0)
+            System.out.printf("%d ", count);
+          if (debug && count % 1000 == 0)
+            System.out.printf("%n ");
         }
       }
 
@@ -316,11 +332,11 @@ public abstract class CFPointWriter implements Closeable {
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   // attributes with these names will not be copied to the output file
-  protected static final List<String> reservedGlobalAtts = Arrays.asList(
-          CDM.CONVENTIONS, ACDD.LAT_MIN, ACDD.LAT_MAX, ACDD.LON_MIN, ACDD.LON_MAX, ACDD.TIME_START, ACDD.TIME_END,
-            _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3);
+  protected static final List<String> reservedGlobalAtts =
+      Arrays.asList(CDM.CONVENTIONS, ACDD.LAT_MIN, ACDD.LAT_MAX, ACDD.LON_MIN, ACDD.LON_MAX, ACDD.TIME_START,
+          ACDD.TIME_END, _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3);
 
-  protected static final List<String> reservedVariableAtts = Arrays.asList( CF.SAMPLE_DIMENSION, CF.INSTANCE_DIMENSION);
+  protected static final List<String> reservedVariableAtts = Arrays.asList(CF.SAMPLE_DIMENSION, CF.INSTANCE_DIMENSION);
 
   /////////////////////////////////////////////////
   protected final CFPointWriterConfig config;
@@ -331,18 +347,18 @@ public abstract class CFPointWriter implements Closeable {
   protected String altitudeCoordinateName = altName;
 
   protected final boolean noTimeCoverage;
-  protected final boolean noUnlimitedDimension;  // experimental , netcdf-3
+  protected final boolean noUnlimitedDimension; // experimental , netcdf-3
   protected final boolean isExtendedModel;
   protected boolean useAlt = true;
   protected int nfeatures, id_strlen;
 
   private Map<String, Dimension> dimMap = new HashMap<>();
-  protected Structure record;  // used for netcdf3 and netcdf4 extended
+  protected Structure record; // used for netcdf3 and netcdf4 extended
   protected Dimension recordDim;
-  protected Map<String, Variable> dataMap  = new HashMap<>();
+  protected Map<String, Variable> dataMap = new HashMap<>();
   protected List<VariableSimpleIF> dataVars;
 
-  private Map<String, Variable> extraMap;  // added as variables just as they are
+  private Map<String, Variable> extraMap; // added as variables just as they are
   protected List<Variable> extra;
 
   protected LatLonRect llbb = null;
@@ -356,19 +372,21 @@ public abstract class CFPointWriter implements Closeable {
 
   /**
    * Ctor
-   * @param fileOut             name of the output file
-   * @param atts                global attributes to be added
-   * @param config              configure
+   * 
+   * @param fileOut name of the output file
+   * @param atts global attributes to be added
+   * @param config configure
    */
   protected CFPointWriter(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
-                          CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+      CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     createWriter(fileOut, config);
     this.dataVars = dataVars;
     this.timeUnit = timeUnit;
     this.altUnits = altUnits;
     this.config = config;
     this.noTimeCoverage = config.noTimeCoverage;
-    this.noUnlimitedDimension = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0;   // LOOK NOT USED
+    this.noUnlimitedDimension =
+        (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0; // LOOK NOT USED
     this.isExtendedModel = writer.getVersion().isExtendedModel();
 
     addGlobalAtts(atts);
@@ -382,7 +400,9 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   protected VariableSimpleIF getDataVar(String name) {
-    for (VariableSimpleIF v : dataVars) if (v.getShortName().equals(name)) return v;
+    for (VariableSimpleIF v : dataVars)
+      if (v.getShortName().equals(name))
+        return v;
     return null;
   }
 
@@ -431,11 +451,13 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   protected abstract void makeFeatureVariables(StructureData featureData, boolean isExtended);
+
   protected void makeMiddleVariables(StructureData middleData, boolean isExtended) {
     // NOOP
   }
 
-  protected void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData obsData, String coordNames) throws IOException {
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData obsData,
+      String coordNames) throws IOException {
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
 
     addExtraVariables();
@@ -458,7 +480,8 @@ public abstract class CFPointWriter implements Closeable {
     writeExtraVariables();
   }
 
-  protected void writeHeader2(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData middleData, StructureData obsData, String coordNames) throws IOException {
+  protected void writeHeader2(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData middleData,
+      StructureData obsData, String coordNames) throws IOException {
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
 
     addExtraVariables();
@@ -484,8 +507,10 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   protected void addExtraVariables() {
-    if (extra == null) return;
-    if (extraMap == null) extraMap = new HashMap<>();
+    if (extra == null)
+      return;
+    if (extraMap == null)
+      extraMap = new HashMap<>();
 
     addDimensionsClassic(extra, dimMap);
 
@@ -499,11 +524,13 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   protected void writeExtraVariables() throws IOException {
-    if (extra == null) return;
+    if (extra == null)
+      return;
 
     for (Variable v : extra) {
       Variable mv = extraMap.get(v.getShortName());
-      if (mv == null) continue; // may be removed
+      if (mv == null)
+        continue; // may be removed
       try {
         writer.write(mv, v.read());
       } catch (InvalidRangeException e) {
@@ -512,15 +539,16 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-   // added as variables with the unlimited (record) dimension
-  protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords, Map<String, Variable> varMap) {
+  // added as variables with the unlimited (record) dimension
+  protected void addCoordinatesClassic(Dimension recordDim, List<VariableSimpleIF> coords,
+      Map<String, Variable> varMap) {
     addDimensionsClassic(coords, dimMap);
 
     for (VariableSimpleIF oldVar : coords) {
       List<Dimension> dims = makeDimensionList(dimMap, oldVar.getDimensions());
       dims.add(0, recordDim);
       Variable newVar;
-      if (oldVar.getDataType().equals(DataType.STRING)  && !writer.getVersion().isExtendedModel()) {
+      if (oldVar.getDataType().equals(DataType.STRING) && !writer.getVersion().isExtendedModel()) {
         if (oldVar instanceof Variable)
           newVar = writer.addStringVariable(null, (Variable) oldVar, dims);
         else
@@ -530,7 +558,7 @@ public abstract class CFPointWriter implements Closeable {
       }
 
       if (newVar == null) {
-        logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
+        logger.warn("Variable already exists =" + oldVar.getShortName()); // LOOK barf
         continue;
       }
 
@@ -548,7 +576,7 @@ public abstract class CFPointWriter implements Closeable {
       Variable member = writer.addStructureMember(parent, vs.getShortName(), vs.getDataType(), dims);
 
       if (member == null) {
-        logger.warn("Variable already exists =" + vs.getShortName());  // LOOK barf
+        logger.warn("Variable already exists =" + vs.getShortName()); // LOOK barf
         continue;
       }
 
@@ -557,44 +585,46 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-   // added as variables with the unlimited (record) dimension
-  protected void addDataVariablesClassic(Dimension recordDim, StructureData stnData, Map<String, Variable> varMap, String coordVars) {
+  // added as variables with the unlimited (record) dimension
+  protected void addDataVariablesClassic(Dimension recordDim, StructureData stnData, Map<String, Variable> varMap,
+      String coordVars) {
     addDimensionsClassic(dataVars, dimMap);
 
     for (StructureMembers.Member m : stnData.getMembers()) {
       VariableSimpleIF oldVar = getDataVar(m.getName());
-      if (oldVar == null) continue;
+      if (oldVar == null)
+        continue;
 
-      //if (writer.findVariable(oldVar.getShortName()) != null)
-      //  continue;  // eliminate coordinate variables
+      // if (writer.findVariable(oldVar.getShortName()) != null)
+      // continue; // eliminate coordinate variables
 
       List<Dimension> dims = makeDimensionList(dimMap, oldVar.getDimensions());
       dims.add(0, recordDim);
 
-      //if (oldVar.getShortName().equals("PRES"))
-      //  System.out.printf("HEY%n");
+      // if (oldVar.getShortName().equals("PRES"))
+      // System.out.printf("HEY%n");
 
       Variable newVar;
-       if (oldVar.getDataType().equals(DataType.STRING)  && !writer.getVersion().isExtendedModel()) {
-         if (oldVar instanceof Variable)
+      if (oldVar.getDataType().equals(DataType.STRING) && !writer.getVersion().isExtendedModel()) {
+        if (oldVar instanceof Variable)
           newVar = writer.addStringVariable(null, (Variable) oldVar, dims);
         else
           newVar = writer.addStringVariable(null, oldVar.getShortName(), dims, 20); // LOOK barf
 
-       } else {
-         VariableSimpleIF prevVar = writer.findVariable(oldVar.getShortName());
-         if (prevVar != null) {
-           if (extraMap.get(oldVar.getShortName()) != null) { // this is normal, extra got added but not actually needed
-             writer.deleteVariable(oldVar.getShortName());
-             extraMap.remove(oldVar.getShortName());
-           }
-         }
-         newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
-         if (newVar == null) {
-           logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK WHY?
-           continue;
-         }
-       }
+      } else {
+        VariableSimpleIF prevVar = writer.findVariable(oldVar.getShortName());
+        if (prevVar != null) {
+          if (extraMap.get(oldVar.getShortName()) != null) { // this is normal, extra got added but not actually needed
+            writer.deleteVariable(oldVar.getShortName());
+            extraMap.remove(oldVar.getShortName());
+          }
+        }
+        newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
+        if (newVar == null) {
+          logger.warn("Variable already exists =" + oldVar.getShortName()); // LOOK WHY?
+          continue;
+        }
+      }
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
@@ -603,7 +633,7 @@ public abstract class CFPointWriter implements Closeable {
           newVar.addAttribute(att);
       }
 
-      newVar.addAttribute( new Attribute(CF.COORDINATES, coordVars));
+      newVar.addAttribute(new Attribute(CF.COORDINATES, coordVars));
 
       varMap.put(newVar.getShortName(), newVar);
     }
@@ -615,7 +645,8 @@ public abstract class CFPointWriter implements Closeable {
 
     for (StructureMembers.Member m : obsData.getMembers()) {
       VariableSimpleIF oldVar = getDataVar(m.getName());
-      if (oldVar == null) continue;
+      if (oldVar == null)
+        continue;
 
       // skip duplicates
       // if (record.findVariable(oldVar.getShortName()) != null) continue;
@@ -623,14 +654,16 @@ public abstract class CFPointWriter implements Closeable {
       // make dimension list
       StringBuilder dimNames = new StringBuilder();
       for (Dimension d : oldVar.getDimensions()) {
-        if (d.isUnlimited()) continue;
+        if (d.isUnlimited())
+          continue;
         if (d.getShortName() == null || !d.getShortName().equals(recordDimName))
-          dimNames.append(" ").append(d.getLength());  // anonymous
+          dimNames.append(" ").append(d.getLength()); // anonymous
       }
 
-      Variable newVar = writer.addStructureMember(record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
+      Variable newVar =
+          writer.addStructureMember(record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
       if (newVar == null) {
-        logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
+        logger.warn("Variable already exists =" + oldVar.getShortName()); // LOOK barf
         continue;
       }
 
@@ -685,18 +718,19 @@ public abstract class CFPointWriter implements Closeable {
    * that its name is {@code null}, we return a default name: {@code "len" + dim.getLength()}. Otherwise, we return the
    * dimension's existing name.
    *
-   * @param dim  a dimension.
-   * @return  a name that is suitable for a shared dimension, i.e. not {@code null}.
+   * @param dim a dimension.
+   * @return a name that is suitable for a shared dimension, i.e. not {@code null}.
    */
   public static String getSharedDimName(Dimension dim) {
-    if (dim.getShortName() == null) {  // Dim is anonymous.
+    if (dim.getShortName() == null) { // Dim is anonymous.
       return "len" + dim.getLength();
     } else {
       return dim.getShortName();
     }
   }
 
-  protected int writeStructureData(int recno, Structure s, StructureData sdata, Map<String, Variable> varMap) throws IOException {
+  protected int writeStructureData(int recno, Structure s, StructureData sdata, Map<String, Variable> varMap)
+      throws IOException {
 
     // write the recno record
     int[] origin = new int[1];
@@ -704,11 +738,11 @@ public abstract class CFPointWriter implements Closeable {
     try {
       if (isExtendedModel) {
         if (s.isUnlimited())
-          return writer.appendStructureData(s, sdata);  // can write it all at once along unlimited dimension
+          return writer.appendStructureData(s, sdata); // can write it all at once along unlimited dimension
         else {
           ArrayStructureW as = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
           as.setStructureData(sdata, 0);
-          writer.write(s, origin, as);  // can write it all at once along regular dimension
+          writer.write(s, origin, as); // can write it all at once along regular dimension
           return recno + 1;
         }
 
@@ -721,25 +755,26 @@ public abstract class CFPointWriter implements Closeable {
       throw new IllegalStateException(e);
     }
 
-    return recno+1;
+    return recno + 1;
   }
 
-  protected int writeStructureDataClassic(Map<String, Variable> varMap, int[] origin, StructureData sdata) throws IOException, InvalidRangeException {
+  protected int writeStructureDataClassic(Map<String, Variable> varMap, int[] origin, StructureData sdata)
+      throws IOException, InvalidRangeException {
     for (StructureMembers.Member m : sdata.getMembers()) {
       Variable mv = varMap.get(m.getName());
       if (mv == null)
-        continue;     // LOOK OK??
+        continue; // LOOK OK??
 
       Array org = sdata.getArray(m);
-      if (m.getDataType() == DataType.STRING) {  // convert to ArrayChar
+      if (m.getDataType() == DataType.STRING) { // convert to ArrayChar
         org = ArrayChar.makeFromStringArray((ArrayObject) org);
       }
 
-      Array orgPlus1 = Array.makeArrayRankPlusOne(org);  // add dimension on the left (slow)
+      Array orgPlus1 = Array.makeArrayRankPlusOne(org); // add dimension on the left (slow)
       int[] useOrigin = origin;
 
-      if (org.getRank() > 0) {                          // if rank 0 (common case, this is a nop, so skip
-        useOrigin = new int[org.getRank()+1];
+      if (org.getRank() > 0) { // if rank 0 (common case, this is a nop, so skip
+        useOrigin = new int[org.getRank() + 1];
         useOrigin[0] = origin[0]; // the rest are 0
       }
 
@@ -761,8 +796,10 @@ public abstract class CFPointWriter implements Closeable {
     }
 
     // date is handled specially
-    if ((minDate == null) || minDate.isAfter(obsDate)) minDate = obsDate;
-    if ((maxDate == null) || maxDate.isBefore(obsDate)) maxDate = obsDate;
+    if ((minDate == null) || minDate.isAfter(obsDate))
+      minDate = obsDate;
+    if ((maxDate == null) || maxDate.isBefore(obsDate))
+      maxDate = obsDate;
   }
 
   public void finish() throws IOException {
@@ -774,8 +811,10 @@ public abstract class CFPointWriter implements Closeable {
     }
 
     if (!noTimeCoverage) {
-      if (minDate == null) minDate = CalendarDate.present();
-      if (maxDate == null) maxDate = CalendarDate.present();
+      if (minDate == null)
+        minDate = CalendarDate.present();
+      if (maxDate == null)
+        maxDate = CalendarDate.present();
       writer.updateAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));
       writer.updateAttribute(null, new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(maxDate)));
     }
@@ -797,20 +836,20 @@ public abstract class CFPointWriter implements Closeable {
     @Parameter(names = {"-o", "--output"}, description = "Output file.", required = true)
     public File outputFile;
 
-    @Parameter(names = {"-f", "--format"}, description = "Output file format. Allowed values = " +
-                    "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
+    @Parameter(names = {"-f", "--format"}, description = "Output file format. Allowed values = "
+        + "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
     public NetcdfFileWriter.Version format = NetcdfFileWriter.Version.netcdf3;
 
-    @Parameter(names = {"-st", "--strategy"}, description = "Chunking strategy. Only used in NetCDF 4. " +
-            "Allowed values = [standard, grib, none]")
+    @Parameter(names = {"-st", "--strategy"},
+        description = "Chunking strategy. Only used in NetCDF 4. " + "Allowed values = [standard, grib, none]")
     public Nc4Chunking.Strategy strategy = Nc4Chunking.Strategy.standard;
 
-    @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. " +
-            "Allowed values = 0 (no compression, fast) to 9 (max compression, slow)")
+    @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. "
+        + "Allowed values = 0 (no compression, fast) to 9 (max compression, slow)")
     public int deflateLevel = 5;
 
-    @Parameter(names = {"-sh", "--shuffle"}, description = "Enable the shuffle filter, which may improve compression. " +
-            "Only used in NetCDF 4. This option is ignored unless a non-zero deflate level is specified.")
+    @Parameter(names = {"-sh", "--shuffle"}, description = "Enable the shuffle filter, which may improve compression. "
+        + "Only used in NetCDF 4. This option is ignored unless a non-zero deflate level is specified.")
     public boolean shuffle = true;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
@@ -819,8 +858,8 @@ public abstract class CFPointWriter implements Closeable {
 
     private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
       // Display parameters in this order in the usage information.
-      private final List<String> orderedParamNames = Arrays.asList(
-              "--input", "--output", "--format", "--strategy", "--deflateLevel", "--shuffle", "--help");
+      private final List<String> orderedParamNames =
+          Arrays.asList("--input", "--output", "--format", "--strategy", "--deflateLevel", "--shuffle", "--help");
 
       @Override
       public int compare(ParameterDescription p0, ParameterDescription p1) {
@@ -837,8 +876,8 @@ public abstract class CFPointWriter implements Closeable {
     private final JCommander jc;
 
     public CommandLine(String progName, String[] args) throws ParameterException {
-      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
-      jc.setProgramName(progName);           // Displayed in the usage information.
+      this.jc = new JCommander(this, args); // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName); // Displayed in the usage information.
 
       // Set the ordering of of parameters in the usage information.
       jc.setParameterDescriptionComparator(new ParameterDescriptionComparator());
@@ -874,7 +913,7 @@ public abstract class CFPointWriter implements Closeable {
       Formatter errlog = new Formatter();
 
       try (FeatureDatasetPoint fdPoint =
-              (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, location, cancel, errlog)) {
+          (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, location, cancel, errlog)) {
         if (fdPoint == null) {
           System.err.println(errlog.toString());
         } else {

@@ -5,7 +5,6 @@
 package ucar.nc2.ft2.coverage;
 
 import ucar.unidata.util.Format;
-
 import javax.annotation.concurrent.Immutable;
 
 /**

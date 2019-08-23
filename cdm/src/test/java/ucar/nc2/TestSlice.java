@@ -16,7 +16,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import static org.junit.Assert.assertEquals;
 
 public class TestSlice {

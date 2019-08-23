@@ -13,7 +13,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.StructurePseudo;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
-
 import java.io.*;
 import java.util.*;
 import java.text.ParseException;
@@ -34,7 +33,8 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
-    if (conv == null) return false;
+    if (conv == null)
+      return false;
 
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
@@ -55,8 +55,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     return new CFstationObsDataset(ncd);
   }
 
-  public CFstationObsDataset() {
-  }
+  public CFstationObsDataset() {}
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -99,7 +98,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
 
     hasForwardLinkedList = (firstVar != null) && (nextVar != null);
     hasBackwardLinkedList = (lastVar != null) && (prevVar != null);
-    hasContiguousList =  (firstVar != null) && (numChildrenVar != null); // ??
+    hasContiguousList = (firstVar != null) && (numChildrenVar != null); // ??
 
     // station variables
     stationIdVar = UnidataObsDatasetHelper.findVariable(ds, "station_id");
@@ -111,7 +110,8 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
 
     // fire up the record helper - LOOK assumes its the record dimension
     recordHelper = new RecordDatasetHelper(ds, timeVar.getShortName(), null, dataVariables, parseInfo);
-    recordHelper.setStationInfo(stationIndexVar.getShortName(), stationDescVar == null ? null : stationDescVar.getShortName());
+    recordHelper.setStationInfo(stationIndexVar.getShortName(),
+        stationDescVar == null ? null : stationDescVar.getShortName());
 
     removeDataVariable(stationIndexVar.getShortName());
     removeDataVariable(timeVar.getShortName());
@@ -141,17 +141,13 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     else
       nstations = stationDim.getLength();
 
-    recordHelper.stnHash = new HashMap<Object,ucar.unidata.geoloc.Station>(2 * nstations);
-    for (int i=0; i<nstations; i++) {
+    recordHelper.stnHash = new HashMap<Object, ucar.unidata.geoloc.Station>(2 * nstations);
+    for (int i = 0; i < nstations; i++) {
       StructureData sdata = stationData.getStructureData(i);
 
-      CFStationImpl bean = new CFStationImpl(
-              sdata.getScalarString(stationIdVar.getShortName()),
-              sdata.getScalarString(stationDescVar.getShortName()),
-              sdata.convertScalarDouble(latVar.getShortName()),
-              sdata.convertScalarDouble(lonVar.getShortName()),
-              sdata.convertScalarDouble(altVar.getShortName())
-      );
+      CFStationImpl bean = new CFStationImpl(sdata.getScalarString(stationIdVar.getShortName()),
+          sdata.getScalarString(stationDescVar.getShortName()), sdata.convertScalarDouble(latVar.getShortName()),
+          sdata.convertScalarDouble(lonVar.getShortName()), sdata.convertScalarDouble(altVar.getShortName()));
 
       stations.add(bean);
       recordHelper.stnHash.put(i, bean);
@@ -173,105 +169,100 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     else
       nstations = stationDim.getLength();
 
-    recordHelper.stnHash = new HashMap<Object,ucar.unidata.geoloc.Station>(2 * nstations);
-    for (int i=0; i<nstations; i++) {
+    recordHelper.stnHash = new HashMap<Object, ucar.unidata.geoloc.Station>(2 * nstations);
+    for (int i = 0; i < nstations; i++) {
       StructureData sdata = stationData.getStructureData(i);
 
-      CFStationImpl bean = new CFStationImpl(
-              sdata.getScalarString(stationIdVar.getShortName()),
-              sdata.getScalarString(stationDescVar.getShortName()),
-              sdata.convertScalarDouble(latVar.getShortName()),
-              sdata.convertScalarDouble(lonVar.getShortName()),
-              sdata.convertScalarDouble(altVar.getShortName())
-      );
+      CFStationImpl bean = new CFStationImpl(sdata.getScalarString(stationIdVar.getShortName()),
+          sdata.getScalarString(stationDescVar.getShortName()), sdata.convertScalarDouble(latVar.getShortName()),
+          sdata.convertScalarDouble(lonVar.getShortName()), sdata.convertScalarDouble(altVar.getShortName()));
 
       stations.add(bean);
       recordHelper.stnHash.put(i, bean);
     }
   }
 
-  /* private void readStations() throws IOException {
+  /*
+   * private void readStations() throws IOException {
+   * 
+   * // get min, max date
+   * startDate = UnidataObsDatasetHelper.getStartDate(ncfile);
+   * endDate = UnidataObsDatasetHelper.getEndDate(ncfile);
+   * boundingBox = UnidataObsDatasetHelper.getBoundingBox(ncfile);
+   * if (null == boundingBox)
+   * setBoundingBox();
+   * 
+   * // kludge Robb not following spec
+   * if (null == startDate) {
+   * Variable minTimeVar = ds.findVariable("minimum_time_observation");
+   * int minTimeValue = minTimeVar.readScalarInt();
+   * startDate = timeUnit.makeDate(minTimeValue);
+   * }
+   * 
+   * if (null == endDate) {
+   * Variable maxTimeVar = ds.findVariable("maximum_time_observation");
+   * int maxTimeValue = maxTimeVar.readScalarInt();
+   * endDate = timeUnit.makeDate(maxTimeValue);
+   * }
+   * 
+   * Array stationIdArray = stationIdVar.read();
+   * ArrayChar stationDescArray = null;
+   * if (stationDescVar != null)
+   * stationDescArray = (ArrayChar) stationDescVar.read();
+   * 
+   * Array latArray = latVar.read();
+   * Array lonArray = lonVar.read();
+   * Array elevArray = (altVar != null) ? altVar.read() : null;
+   * Array firstRecordArray = (isForwardLinkedList || isContiguousList) ? firstVar.read() : lastVar.read();
+   * 
+   * Array numChildrenArray = null;
+   * if (numChildrenVar != null)
+   * numChildrenArray = numChildrenVar.read();
+   * 
+   * // how many are valid stations ?
+   * Dimension stationDim = UnidataObsDatasetHelper.findDimension(ncfile, "station");
+   * int n = 0;
+   * if (numStationsVar != null)
+   * n = numStationsVar.readScalarInt();
+   * else
+   * n = stationDim.getLength();
+   * 
+   * // loop over stations
+   * Index ima = latArray.getIndex();
+   * recordHelper.stnHash = new HashMap(2 * n);
+   * for (int i = 0; i < n; i++) {
+   * ima.set(i);
+   * 
+   * String stationName;
+   * String stationDesc;
+   * if (stationIdArray instanceof ArrayChar) {
+   * stationName = ((ArrayChar) stationIdArray).getString(i).trim();
+   * stationDesc = (stationDescVar != null) ? stationDescArray.getString(i) : null;
+   * if (stationDesc != null) stationDesc = stationDesc.trim();
+   * } else {
+   * stationName = (String) stationIdArray.getObject(ima);
+   * stationDesc = (stationDescVar != null) ? (String) stationDescArray.getObject(ima) : null;
+   * }
+   * 
+   * UnidataStationImpl bean = new UnidataStationImpl(stationName, stationDesc,
+   * latArray.getFloat(ima),
+   * lonArray.getFloat(ima),
+   * (altVar != null) ? elevArray.getFloat(ima) : Double.NaN,
+   * firstRecordArray.getInt(ima),
+   * (numChildrenVar != null) ? numChildrenArray.getInt(ima) : -1
+   * );
+   * 
+   * stations.add(bean);
+   * recordHelper.stnHash.put(new Integer(i), bean);
+   * }
+   * }
+   */
 
-    // get min, max date
-    startDate = UnidataObsDatasetHelper.getStartDate(ncfile);
-    endDate = UnidataObsDatasetHelper.getEndDate(ncfile);
-    boundingBox = UnidataObsDatasetHelper.getBoundingBox(ncfile);
-    if (null == boundingBox)
-      setBoundingBox();
+  protected void setTimeUnits() {}
 
-    // kludge Robb not following spec
-    if (null == startDate) {
-      Variable minTimeVar = ds.findVariable("minimum_time_observation");
-      int minTimeValue = minTimeVar.readScalarInt();
-      startDate = timeUnit.makeDate(minTimeValue);
-    }
+  protected void setStartDate() {}
 
-    if (null == endDate) {
-      Variable maxTimeVar = ds.findVariable("maximum_time_observation");
-      int maxTimeValue = maxTimeVar.readScalarInt();
-      endDate = timeUnit.makeDate(maxTimeValue);
-    }
-
-    Array stationIdArray = stationIdVar.read();
-    ArrayChar stationDescArray = null;
-    if (stationDescVar != null)
-      stationDescArray = (ArrayChar) stationDescVar.read();
-
-    Array latArray = latVar.read();
-    Array lonArray = lonVar.read();
-    Array elevArray = (altVar != null) ? altVar.read() : null;
-    Array firstRecordArray = (isForwardLinkedList || isContiguousList) ? firstVar.read() : lastVar.read();
-
-    Array numChildrenArray = null;
-    if (numChildrenVar != null)
-      numChildrenArray = numChildrenVar.read();
-
-    // how many are valid stations ?
-    Dimension stationDim = UnidataObsDatasetHelper.findDimension(ncfile, "station");
-    int n = 0;
-    if (numStationsVar != null)
-      n = numStationsVar.readScalarInt();
-    else
-      n = stationDim.getLength();
-
-    // loop over stations
-    Index ima = latArray.getIndex();
-    recordHelper.stnHash = new HashMap(2 * n);
-    for (int i = 0; i < n; i++) {
-      ima.set(i);
-
-      String stationName;
-      String stationDesc;
-      if (stationIdArray instanceof ArrayChar) {
-        stationName = ((ArrayChar) stationIdArray).getString(i).trim();
-        stationDesc = (stationDescVar != null) ? stationDescArray.getString(i) : null;
-        if (stationDesc != null) stationDesc = stationDesc.trim();
-      } else {
-        stationName = (String) stationIdArray.getObject(ima);
-        stationDesc = (stationDescVar != null) ? (String) stationDescArray.getObject(ima) : null;
-      }
-
-      UnidataStationImpl bean = new UnidataStationImpl(stationName, stationDesc,
-              latArray.getFloat(ima),
-              lonArray.getFloat(ima),
-              (altVar != null) ? elevArray.getFloat(ima) : Double.NaN,
-              firstRecordArray.getInt(ima),
-              (numChildrenVar != null) ? numChildrenArray.getInt(ima) : -1
-      );
-
-      stations.add(bean);
-      recordHelper.stnHash.put(new Integer(i), bean);
-    }
-  } */
-
-  protected void setTimeUnits() {
-  }
-
-  protected void setStartDate() {
-  }
-
-  protected void setEndDate() {
-  }
+  protected void setEndDate() {}
 
   protected void setBoundingBox() {
     boundingBox = stationHelper.getBoundingBox();
@@ -280,13 +271,15 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
   public List getData(CancelTask cancel) throws IOException {
     ArrayList allData = new ArrayList();
     int n = getDataCount();
-    /*for (int i = 0; i < n; i++) {
-      StationObsDatatype obs = makeObs(i, false, null);
-      if (obs != null)
-        allData.add(obs);
-      if ((cancel != null) && cancel.isCancel())
-        return null;
-    }*/
+    /*
+     * for (int i = 0; i < n; i++) {
+     * StationObsDatatype obs = makeObs(i, false, null);
+     * if (obs != null)
+     * allData.add(obs);
+     * if ((cancel != null) && cancel.isCancel())
+     * return null;
+     * }
+     */
     return allData;
   }
 
@@ -316,29 +309,33 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
           // deal with files that are updating
           if (recno > getDataCount()) {
             int n = getDataCount();
-            netcdfDataset.syncExtend();  // LOOK kludge?
+            netcdfDataset.syncExtend(); // LOOK kludge?
             log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
           }
           StructureData sdata = recordVar.readStructure(recno);
-          /* if (isContiguousList) {
-            if (nextRecord++ > end)
-              break;
-          } else {
-            nextRecord = sdata.getScalarInt(next.getName());
-          }
-          double obsTime = getTime(timeVar, sdata);
-          double nomTime = getTime(timeNominalVar, sdata); */
+          /*
+           * if (isContiguousList) {
+           * if (nextRecord++ > end)
+           * break;
+           * } else {
+           * nextRecord = sdata.getScalarInt(next.getName());
+           * }
+           * double obsTime = getTime(timeVar, sdata);
+           * double nomTime = getTime(timeNominalVar, sdata);
+           */
 
-          //obs.add(recordHelper.new RecordStationObs(this, obsTime, nomTime, recno));
+          // obs.add(recordHelper.new RecordStationObs(this, obsTime, nomTime, recno));
           recno = nextRecord;
 
         } catch (ucar.ma2.InvalidRangeException e) {
           log.error("UnidataStationObsDataset.readObservation recno=" + recno, e);
           throw new IOException(e.getMessage());
 
-        /* } catch (ParseException e) {
-          log.error("UnidataStationObsDataset.readObservation recno=" + recno, e);
-          throw new IOException(e.getMessage()); */
+          /*
+           * } catch (ParseException e) {
+           * log.error("UnidataStationObsDataset.readObservation recno=" + recno, e);
+           * throw new IOException(e.getMessage());
+           */
         }
       }
 
@@ -360,8 +357,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       double startTime, endTime;
       boolean hasDateRange;
 
-      StationIterator() {
-      }
+      StationIterator() {}
 
       StationIterator(Date start, Date end) {
         startTime = timeUnit.makeValue(start);
@@ -376,15 +372,18 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       public Object nextData() throws IOException {
         RecordDatasetHelper.RecordStationObs sobs = makeObs(nextRecno, true, null);
         if (!sobs.getStation().getName().equals(getName()))
-          throw new IllegalStateException("BAD Station link ("+nextRecno+") station name="+sobs.getStation().getName()+" should be "+getName());
+          throw new IllegalStateException("BAD Station link (" + nextRecno + ") station name="
+              + sobs.getStation().getName() + " should be " + getName());
 
-        /* if (isContiguousList) {
-          nextRecno++;
-          if (nextRecno > last)
-            nextRecno = -1;
-        } else {
-          nextRecno = sobs.sdata.getScalarInt(next.getName());
-        } */
+        /*
+         * if (isContiguousList) {
+         * nextRecno++;
+         * if (nextRecno > last)
+         * nextRecno = -1;
+         * } else {
+         * nextRecno = sobs.sdata.getScalarInt(next.getName());
+         * }
+         */
         if (hasDateRange) {
           double timeValue = sobs.getObservationTime();
           if ((timeValue < startTime) || (timeValue > endTime))
@@ -408,12 +407,13 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     }
   }
 
-  protected RecordDatasetHelper.RecordStationObs makeObs(int recno, boolean storeData, StructureData sdata) throws IOException {
+  protected RecordDatasetHelper.RecordStationObs makeObs(int recno, boolean storeData, StructureData sdata)
+      throws IOException {
     try {
       // deal with files that are updating
       if (recno > getDataCount()) {
         int n = getDataCount();
-        netcdfDataset.syncExtend();  // LOOK kludge?
+        netcdfDataset.syncExtend(); // LOOK kludge?
         log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
       }
 

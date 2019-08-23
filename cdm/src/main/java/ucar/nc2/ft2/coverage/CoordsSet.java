@@ -8,7 +8,6 @@ import ucar.ma2.Index;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,20 +17,22 @@ import java.util.List;
  * An iterator over the coordinates in a set of CoverageCoordAxis.
  * The independent axes are used to iterate.
  * Attached dependent axes are used to generate values also. Two cases handled so far:
- *   1) ConstantForecast: runtime (ind), timeOffset (dep), time (scalar)
- *   1) Best: time (ind), runtime (dep)
+ * 1) ConstantForecast: runtime (ind), timeOffset (dep), time (scalar)
+ * 1) Best: time (ind), runtime (dep)
  *
- *  Grib: If theres a time offset, then there must be a runtime coordinate, and the time offset is reletive to that.
- *  LOOK only used by Grib
+ * Grib: If theres a time offset, then there must be a runtime coordinate, and the time offset is reletive to that.
+ * LOOK only used by Grib
  */
 @Immutable
 public class CoordsSet implements Iterable<SubsetParams> {
-  /* public static final String runDate = "runDate";                 // CalendarDate
-  public static final String timeOffsetCoord = "timeOffsetCoord";   // Double or double[] (intv)
-  public static final String timeOffsetDate = "timeOffsetDate";   // CalendarDate (validation only)
-  // public static final String timeCoord = "timeCoord";   // Double or double[] (intv)
-  public static final String vertCoord = "vertCoord";   // Double or double[] (intv)
-  public static final String ensCoord = "ensCoord";   // Double */
+  /*
+   * public static final String runDate = "runDate"; // CalendarDate
+   * public static final String timeOffsetCoord = "timeOffsetCoord"; // Double or double[] (intv)
+   * public static final String timeOffsetDate = "timeOffsetDate"; // CalendarDate (validation only)
+   * // public static final String timeCoord = "timeCoord"; // Double or double[] (intv)
+   * public static final String vertCoord = "vertCoord"; // Double or double[] (intv)
+   * public static final String ensCoord = "ensCoord"; // Double
+   */
 
   public static CoordsSet factory(boolean constantForecast, List<CoverageCoordAxis> axes) {
     return new CoordsSet(constantForecast, axes);
@@ -39,8 +40,8 @@ public class CoordsSet implements Iterable<SubsetParams> {
 
   ///////////////////////////////////////////////////////
   private final boolean constantForecast;
-  private final List<CoverageCoordAxis> axes;     // all axes
-  private final int[] shape;                      // only independent
+  private final List<CoverageCoordAxis> axes; // all axes
+  private final int[] shape; // only independent
 
   private CoordsSet(boolean constantForecast, List<CoverageCoordAxis> axes) {
     this.constantForecast = constantForecast;
@@ -48,8 +49,8 @@ public class CoordsSet implements Iterable<SubsetParams> {
     int rank = 0;
 
     for (CoverageCoordAxis axis : axes) {
-      if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent)  // independent or scalar
-        indAxes.add( (CoverageCoordAxis1D) axis);
+      if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent) // independent or scalar
+        indAxes.add((CoverageCoordAxis1D) axis);
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
         rank++;
     }
@@ -71,7 +72,7 @@ public class CoordsSet implements Iterable<SubsetParams> {
     int[] result = new int[getRank() + 2];
     System.arraycopy(shape, 0, result, 0, shape.length);
     result[shape.length] = y.length();
-    result[shape.length+1] = x.length();
+    result[shape.length + 1] = x.length();
     return result;
   }
 
@@ -101,7 +102,8 @@ public class CoordsSet implements Iterable<SubsetParams> {
     public SubsetParams next() {
       SubsetParams next = currentElement();
       done++;
-      if (done < total) incr(); // increment for next call
+      if (done < total)
+        incr(); // increment for next call
       return next;
     }
 
@@ -123,7 +125,8 @@ public class CoordsSet implements Iterable<SubsetParams> {
       int odoIndex = 0;
       CalendarDate runtime = null;
       for (CoverageCoordAxis axis : axes) {
-        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
+        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent)
+          continue;
         CoverageCoordAxis1D axis1D = (CoverageCoordAxis1D) axis;
 
         int coordIdx = (axis.getDependenceType() == CoverageCoordAxis.DependenceType.scalar) ? 0 : odo[odoIndex];
@@ -152,11 +155,11 @@ public class CoordsSet implements Iterable<SubsetParams> {
 
         else if (axis.getAxisType().isVert()) {
           if (coord instanceof Double)
-            result.setVertCoord( (Double) coord);
+            result.setVertCoord((Double) coord);
           else if (coord instanceof double[])
             result.setVertCoordIntv((double[]) coord);
           else
-            throw new IllegalStateException("unknow vert coord type "+coord.getClass().getName());
+            throw new IllegalStateException("unknow vert coord type " + coord.getClass().getName());
         }
 
         else if (axis.getAxisType() == AxisType.Ensemble)
@@ -164,13 +167,14 @@ public class CoordsSet implements Iterable<SubsetParams> {
 
         else if (!constantForecast && axis.getAxisType() == AxisType.TimeOffset) {
           if (coord instanceof Double)
-            result.setTimeOffset( (Double) coord);
+            result.setTimeOffset((Double) coord);
           else if (coord instanceof double[])
             result.setTimeOffsetIntv((double[]) coord);
           else
-            throw new IllegalStateException("unknow time coord type "+coord.getClass().getName());
+            throw new IllegalStateException("unknow time coord type " + coord.getClass().getName());
 
-          double val = axis.isInterval() ? (axis1D.getCoordEdge1(coordIdx) + axis1D.getCoordEdge2(coordIdx)) / 2.0  : axis1D.getCoordMidpoint(coordIdx);
+          double val = axis.isInterval() ? (axis1D.getCoordEdge1(coordIdx) + axis1D.getCoordEdge2(coordIdx)) / 2.0
+              : axis1D.getCoordMidpoint(coordIdx);
           assert runtime != null;
           result.set(SubsetParams.timeOffsetDate, axis.makeDateInTimeUnits(runtime, val)); // validation
           result.set(SubsetParams.timeOffsetUnit, axis.getCalendarDateUnit()); // validation
@@ -184,7 +188,8 @@ public class CoordsSet implements Iterable<SubsetParams> {
 
   }
 
-  private void addAdjustedTimeCoords(SubsetParams result, CoverageCoordAxis1D axis, int coordIdx, CalendarDate runtime) {
+  private void addAdjustedTimeCoords(SubsetParams result, CoverageCoordAxis1D axis, int coordIdx,
+      CalendarDate runtime) {
     // this must be adjusted to be offset from the runtime.
     // adjust = end - start
     // axisCoordOffset + axis.reftime = offset + runtime
@@ -194,9 +199,9 @@ public class CoordsSet implements Iterable<SubsetParams> {
     // therefore: end = reftime, start = runtime
     double adjust = axis.getOffsetInTimeUnits(runtime, axis.getRefDate());
     if (axis.isInterval()) {
-      double[] adjustVal = new double[] {axis.getCoordEdge1(coordIdx)+adjust, axis.getCoordEdge2(coordIdx)+adjust};
+      double[] adjustVal = new double[] {axis.getCoordEdge1(coordIdx) + adjust, axis.getCoordEdge2(coordIdx) + adjust};
       result.setTimeOffsetIntv(adjustVal);
-      double mid = (adjustVal[0]+adjustVal[1]) / 2.0;
+      double mid = (adjustVal[0] + adjustVal[1]) / 2.0;
       result.set(SubsetParams.timeOffsetUnit, axis.makeDateInTimeUnits(runtime, mid)); // validation
       result.set(SubsetParams.timeOffsetUnit, axis.getCalendarDateUnit()); // validation
     } else {
@@ -208,7 +213,7 @@ public class CoordsSet implements Iterable<SubsetParams> {
   }
 
   // find the dependent axis that depend on independentAxis
-  private CoverageCoordAxis1D  findDependent( CoverageCoordAxis independentAxis, AxisType axisType) {
+  private CoverageCoordAxis1D findDependent(CoverageCoordAxis independentAxis, AxisType axisType) {
     for (CoverageCoordAxis axis : axes) {
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
         for (String axisName : axis.dependsOn) {

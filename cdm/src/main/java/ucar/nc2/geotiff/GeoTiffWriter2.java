@@ -13,11 +13,11 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.*;
-
 import java.io.IOException;
 
 /**
  * This allows writing non-regular data, eg swath data.
+ * 
  * @author caron
  * @since 3/15/13
  */
@@ -29,7 +29,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
 
   // variant on writing a subsetted grid as a geotiff file
   // seems to handle swath as well ??
-  public void writeGrid(String gridDataset_filename, String gridName, int time, int level, boolean greyScale, LatLonRect pt) throws IOException {
+  public void writeGrid(String gridDataset_filename, String gridName, int time, int level, boolean greyScale,
+      LatLonRect pt) throws IOException {
     try (GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(gridDataset_filename)) {
       GridDatatype grid = dataset.findGridDatatype(gridName);
       if (grid == null) {
@@ -41,7 +42,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
 
       if (!gcs.isRegularSpatial()) {
         Attribute att = dataset.findGlobalAttributeIgnoreCase("datasetId");
-        if (att != null && att.getStringValue().contains("DMSP")) {  // LOOK!!
+        if (att != null && att.getStringValue().contains("DMSP")) { // LOOK!!
           writeSwathGrid(gridDataset_filename, gridName, time, level, greyScale, pt);
           return;
         } else {
@@ -94,8 +95,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
         ProjectionPoint pjp0 = proj.latLonToProj(maxLat, minLon);
         x1 = getXIndex(lon, pjp0.getX(), 0);
         y1 = getYIndex(lat, pjp0.getY(), 0);
-        yStart = pjp0.getY() * 1000.0;  //latArray[y1];
-        xStart = pjp0.getX() * 1000.0;  //lonArray[x1];
+        yStart = pjp0.getY() * 1000.0; // latArray[y1];
+        xStart = pjp0.getX() * 1000.0; // lonArray[x1];
         ProjectionPoint pjpn = proj.latLonToProj(minLat, maxLon);
         x2 = getXIndex(lon, pjpn.getX(), 1);
         y2 = getYIndex(lat, pjpn.getY(), 1);
@@ -129,15 +130,16 @@ public class GeoTiffWriter2 extends GeotiffWriter {
   /**
    * Write Swath Grid data to the geotiff file.
    *
-   * @param fileName  _more_
-   * @param gridName  _more_
-   * @param time      _more_
-   * @param level     _more_
+   * @param fileName _more_
+   * @param gridName _more_
+   * @param time _more_
+   * @param level _more_
    * @param greyScale _more_
-   * @param llr       _more_
+   * @param llr _more_
    * @throws IOException _more_
    */
-  private void writeSwathGrid(String fileName, String gridName, int time, int level, boolean greyScale, LatLonRect llr) throws IOException {
+  private void writeSwathGrid(String fileName, String gridName, int time, int level, boolean greyScale, LatLonRect llr)
+      throws IOException {
 
     GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
     GridDatatype grid = dataset.findGridDatatype(gridName);
@@ -157,10 +159,10 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     // units may need to be scaled to meters
     double scaler = (xaxis.getUnitsString().equalsIgnoreCase("km")) ? 1000.0 : 1.0;
 
-    //if (yaxis.getCoordValue(0, 0) < yaxis.getCoordValue(0, 1)) {//???
+    // if (yaxis.getCoordValue(0, 0) < yaxis.getCoordValue(0, 1)) {//???
     data = data.flip(0);
-    //lat = lat.flip(0);
-    //}
+    // lat = lat.flip(0);
+    // }
 
     if (gcs.isLatLon()) {
       data = geoShiftDataAtLon(data, lon);
@@ -172,7 +174,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     double maxLon;
     double maxLat;
     double xStart;
-    double yStart;  //upper right point
+    double yStart; // upper right point
 
     double xInc = swathInfo[0] * scaler;
     double yInc = swathInfo[1] * scaler;
@@ -183,7 +185,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     int y1;
     int y2;
 
-    if (llr == null)  { //get the whole area
+    if (llr == null) { // get the whole area
       minLon = swathInfo[4];
       minLat = swathInfo[2];
       maxLon = swathInfo[5];
@@ -195,29 +197,22 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       x2 = (int) ((maxLon - minLon) / xInc + 0.5);
       y2 = (int) ((maxLat - minLat) / yInc + 0.5);
 
-    } else {           //assign the special area  surrounded by the llr
+    } else { // assign the special area surrounded by the llr
       LatLonPointImpl llp0 = llr.getLowerLeftPoint();
       LatLonPointImpl llpn = llr.getUpperRightPoint();
-      minLon = (llp0.getLongitude() < swathInfo[4])
-              ? swathInfo[4]
-              : llp0.getLongitude();
-      minLat = (llp0.getLatitude() < swathInfo[2])
-              ? swathInfo[2]
-              : llp0.getLatitude();
-      maxLon = (llpn.getLongitude() > swathInfo[5])
-              ? swathInfo[5]
-              : llpn.getLongitude();
-      maxLat = (llpn.getLatitude() > swathInfo[3])
-              ? swathInfo[3]
-              : llpn.getLatitude();
+      minLon = (llp0.getLongitude() < swathInfo[4]) ? swathInfo[4] : llp0.getLongitude();
+      minLat = (llp0.getLatitude() < swathInfo[2]) ? swathInfo[2] : llp0.getLatitude();
+      maxLon = (llpn.getLongitude() > swathInfo[5]) ? swathInfo[5] : llpn.getLongitude();
+      maxLat = (llpn.getLatitude() > swathInfo[3]) ? swathInfo[3] : llpn.getLatitude();
 
-      //construct the swath  LatLonRect
+      // construct the swath LatLonRect
       LatLonPointImpl pUpLeft = new LatLonPointImpl(swathInfo[3], swathInfo[4]);
       LatLonPointImpl pDownRight = new LatLonPointImpl(swathInfo[2], swathInfo[5]);
       LatLonRect swathLLR = new LatLonRect(pUpLeft, pDownRight);
       LatLonRect bIntersect = swathLLR.intersect(llr);
       if (bIntersect == null) {
-        throw new IllegalArgumentException("The assigned extent of latitude and longitude is unvalid. No intersection with the swath extent");
+        throw new IllegalArgumentException(
+            "The assigned extent of latitude and longitude is unvalid. No intersection with the swath extent");
       }
 
       xStart = minLon;
@@ -232,19 +227,19 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       ProjectionPoint pjp0 = proj.latLonToProj(maxLat, minLon);
       x1 = getXIndex(lon, pjp0.getX(), 0);
       y1 = getYIndex(lat, pjp0.getY(), 0);
-      yStart = pjp0.getY() * scaler;  //latArray[y1];
-      xStart = pjp0.getX() * scaler;  //lonArray[x1];
+      yStart = pjp0.getY() * scaler; // latArray[y1];
+      xStart = pjp0.getX() * scaler; // lonArray[x1];
       ProjectionPoint pjpn = proj.latLonToProj(minLat, maxLon);
       x2 = getXIndex(lon, pjpn.getX(), 1);
       y2 = getYIndex(lat, pjpn.getY(), 1);
     } else {
-      //calculate the x1, x2, y1, y2, xstart, ystart.
+      // calculate the x1, x2, y1, y2, xstart, ystart.
     }
 
     Array targetImage = getTargetImagerFromSwath(lat, lon, data, swathInfo);
     Array interpolatedImage = interpolation(targetImage);
     Array clippedImage = getClippedImageFromInterpolation(interpolatedImage, x1, x2, y1, y2);
-    //Array clippedImage = getYXDataInBox(interpolatedImage, x1, x2, y1, y2);
+    // Array clippedImage = getYXDataInBox(interpolatedImage, x1, x2, y1, y2);
 
     if (pageNumber > 1) {
       geotiff.initTags();
@@ -314,7 +309,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     int count = 0;
     int isInd = 0;
 
-    //LatLonPoint p0 = new LatLonPointImpl(lat.getFloat(ind.set(0)), 0);
+    // LatLonPoint p0 = new LatLonPointImpl(lat.getFloat(ind.set(0)), 0);
 
     double xlat = latIter.getFloatNext();
     if (xlat == value) {
@@ -440,9 +435,9 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     int srcDataWidth = data.getShape()[1];
     int BBoxHeight = (int) ((swathInfo[3] - swathInfo[2]) / swathInfo[1] + 0.5);
     int BBoxWidth = (int) ((swathInfo[5] - swathInfo[4]) / swathInfo[0] + 0.5);
-    int[] BBoxShape = {BBoxHeight, BBoxWidth};  //[height, width]
+    int[] BBoxShape = {BBoxHeight, BBoxWidth}; // [height, width]
     Array bBoxArray = Array.factory(DataType.FLOAT, BBoxShape);
-    double startLon, startLat;  //upper left and lower right
+    double startLon, startLat; // upper left and lower right
     startLon = swathInfo[4];
     startLat = swathInfo[3];
 
@@ -451,23 +446,20 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     IndexIterator lonIter = lon.getIndexIterator();
     for (int i = 0; i < srcDataHeight; i++) {
       for (int j = 0; j < srcDataWidth; j++) {
-        while (latIter.hasNext() && lonIter.hasNext()
-                && dataIter.hasNext()) {
+        while (latIter.hasNext() && lonIter.hasNext() && dataIter.hasNext()) {
           float curLat = latIter.getFloatNext();
           float curLon = lonIter.getFloatNext();
           float curPix = dataIter.getFloatNext();
           float alreadyValue;
-          int curPixelInBBoxIndex =
-                  getIndexOfBBFromLatlonOfOri(startLat, startLon,
-                          swathInfo[1], swathInfo[0], curLat, curLon,
-                          BBoxHeight, BBoxWidth);
+          int curPixelInBBoxIndex = getIndexOfBBFromLatlonOfOri(startLat, startLon, swathInfo[1], swathInfo[0], curLat,
+              curLon, BBoxHeight, BBoxWidth);
           try {
             alreadyValue = bBoxArray.getFloat(curPixelInBBoxIndex);
           } catch (Exception e) {
             alreadyValue = 0;
           }
 
-          if (alreadyValue > 0) {  //This pixel had been filled. So calculate the average
+          if (alreadyValue > 0) { // This pixel had been filled. So calculate the average
             bBoxArray.setFloat(curPixelInBBoxIndex, (curPix + alreadyValue) / 2);
           } else {
             bBoxArray.setFloat(curPixelInBBoxIndex, curPix);
@@ -478,10 +470,10 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     return bBoxArray;
   }
 
-  private int getIndexOfBBFromLatlonOfOri(double sLat, double sLon,  //LatLon of the start point
-                                  double latInc, double lonInc,  //The increment in Lat/Lon direction
-                                  double curLat, double curLon,  //The current Lat/Lon read from the swath image
-                                  int bbHeight, int bbWidth)  //The width and height of target image
+  private int getIndexOfBBFromLatlonOfOri(double sLat, double sLon, // LatLon of the start point
+      double latInc, double lonInc, // The increment in Lat/Lon direction
+      double curLat, double curLon, // The current Lat/Lon read from the swath image
+      int bbHeight, int bbWidth) // The width and height of target image
   {
     double lonDelta = Math.abs((curLon - sLon) / lonInc);
     double latDelta = Math.abs((curLat - sLat) / latInc);
@@ -521,11 +513,11 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       for (int j = 0; j < width; j++) {
         int curIndex = i * width + j;
         float curValue = arr.getFloat(curIndex);
-        if (curValue == 0)  //Black hole. Need to fill.
+        if (curValue == 0) // Black hole. Need to fill.
         {
           float tempPixelSum = 0;
           int numNeighborHasValue = 0;
-          //Get the values of eight neighborhood
+          // Get the values of eight neighborhood
           if ((curIndex - 1 >= 0) && (curIndex - 1 < pixelNum)) {
             float left = arr.getFloat(curIndex - 1);
             if (left > 0) {
@@ -583,7 +575,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
             }
           }
           if (tempPixelSum > 0) {
-            float val =  numNeighborHasValue == 0 ? 0 : tempPixelSum / numNeighborHasValue;
+            float val = numNeighborHasValue == 0 ? 0 : tempPixelSum / numNeighborHasValue;
             interpolatedArray.setFloat(curIndex, val);
           }
         } else {
@@ -621,10 +613,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     int numScan = (lat.getShape())[0];
     int numSample = (lat.getShape())[1];
 
-    double maxLat = -91,
-            minLat = 91,
-            maxLon = -181,
-            minLon = 181;
+    double maxLat = -91, minLat = 91, maxLon = -181, minLon = 181;
 
     float firstLineStartLat = 0;
     float firstLineStartLon = 0;
@@ -659,26 +648,18 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     double[] edgeLat = {firstLineStartLat, firstLineEndLat, lastLineStartLat, lastLineEndLat};
     double[] edgeLon = {firstLineStartLon, firstLineEndLon, lastLineStartLon, lastLineEndLon};
     for (int i = 0; i < edgeLat.length; i++) {
-      maxLat = ((maxLat > edgeLat[i])
-              ? maxLat
-              : edgeLat[i]);
-      minLat = ((minLat < edgeLat[i])
-              ? minLat
-              : edgeLat[i]);
-      maxLon = ((maxLon > edgeLon[i])
-              ? maxLon
-              : edgeLon[i]);
-      minLon = ((minLon < edgeLon[i])
-              ? minLon
-              : edgeLon[i]);
+      maxLat = ((maxLat > edgeLat[i]) ? maxLat : edgeLat[i]);
+      minLat = ((minLat < edgeLat[i]) ? minLat : edgeLat[i]);
+      maxLon = ((maxLon > edgeLon[i]) ? maxLon : edgeLon[i]);
+      minLon = ((minLon < edgeLon[i]) ? minLon : edgeLon[i]);
     }
 
     double xInc1 = Math.abs((firstLineEndLon - firstLineStartLon) / numSample);
-    //double xInc2 = Math.abs((lastLineEndLon - lastLineStartLon)/numSample);
+    // double xInc2 = Math.abs((lastLineEndLon - lastLineStartLon)/numSample);
     double yInc1 = Math.abs((lastLineStartLat - firstLineStartLat) / numScan);
-    //double yInc2 = Math.abs((lastLineEndLat - firstLineEndLat)/numScan);
-    increment[0] = xInc1;  // > xInc2 ? xInc1 : xInc2;
-    increment[1] = yInc1;  // > yInc2 ? yInc1 : yInc2;
+    // double yInc2 = Math.abs((lastLineEndLat - firstLineEndLat)/numScan);
+    increment[0] = xInc1; // > xInc2 ? xInc1 : xInc2;
+    increment[1] = yInc1; // > yInc2 ? yInc1 : yInc2;
     increment[2] = minLat;
     increment[3] = maxLat;
     increment[4] = minLon;
@@ -692,7 +673,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     int count = 0;
     Index lonIndex = lon.getIndex();
     int[] lonShape = lon.getShape();
-    ArrayFloat slon = new ArrayFloat(new int[]{lonShape[0]});
+    ArrayFloat slon = new ArrayFloat(new int[] {lonShape[0]});
     Index slonIndex = slon.getIndex();
     IndexIterator lonIter = lon.getIndexIterator();
     LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(lonIndex.set(lonShape[0] - 1)));
@@ -705,7 +686,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       }
     }
 
-    //checking if the 0 point and the N point are the same point
+    // checking if the 0 point and the N point are the same point
     int spoint;
     if (p0.getLongitude() == pN.getLongitude()) {
       spoint = lonShape[0] - count - 1;
@@ -743,7 +724,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     Index ima = data.getIndex();
     Index ilon = lon.getIndex();
     int[] lonShape = lon.getShape();
-    ArrayFloat adata = new ArrayFloat(new int[]{shape[0], shape[1]});
+    ArrayFloat adata = new ArrayFloat(new int[] {shape[0], shape[1]});
     Index imaa = adata.getIndex();
     IndexIterator lonIter = lon.getIndexIterator();
 
@@ -757,7 +738,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       }
     }
 
-    //checking if the 0 point and the N point are the same point
+    // checking if the 0 point and the N point are the same point
     int spoint;
     if (p0.getLongitude() == pN.getLongitude()) {
       spoint = shape[1] - count - 1;

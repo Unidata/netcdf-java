@@ -18,7 +18,6 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -41,7 +40,8 @@ public class TestCoverageFMRCnonOrthogonal {
 
     // FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog
     Formatter errlog = new Formatter();
-    try (FeatureDatasetCoverage fdc = (FeatureDatasetCoverage) FeatureDatasetFactoryManager.open(null, filename, null, errlog)) {
+    try (FeatureDatasetCoverage fdc =
+        (FeatureDatasetCoverage) FeatureDatasetFactoryManager.open(null, filename, null, errlog)) {
       Assert.assertNotNull(errlog.toString(), fdc);
 
       VariableSimpleIF vs = fdc.getDataVariable(gridName);
@@ -53,7 +53,7 @@ public class TestCoverageFMRCnonOrthogonal {
       Coverage cov = cc.findCoverage(gridName);
       Assert.assertNotNull(gridName, cov);
 
-      int[] expectShape = new int[] {4,4,1,689,1073};
+      int[] expectShape = new int[] {4, 4, 1, 689, 1073};
       Assert.assertArrayEquals(expectShape, cov.getShape());
 
       CoverageCoordSys gcs = cov.getCoordSys();
@@ -62,7 +62,7 @@ public class TestCoverageFMRCnonOrthogonal {
       CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
       Assert.assertNotNull(reftime);
       Assert.assertEquals(4, reftime.getNcoords());
-      double[] want = new double[]{0., 12., 24., 36.};
+      double[] want = new double[] {0., 12., 24., 36.};
       CompareNetcdf2 cn = new CompareNetcdf2();
       assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
 
@@ -71,8 +71,8 @@ public class TestCoverageFMRCnonOrthogonal {
       Assert.assertTrue(time instanceof TimeAxis2DFmrc);
       Assert.assertEquals(16, time.getNcoords());
 
-      //double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
-      //assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+      // double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
+      // assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
     }
   }
 }

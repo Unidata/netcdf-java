@@ -5,7 +5,6 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
-
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.ft.PointFeature;
@@ -34,7 +33,7 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
    * Constructor
    *
    * @param structIter original iterator
-   * @param filter     optional filter
+   * @param filter optional filter
    */
   public PointIteratorFromStructureData(StructureDataIterator structIter, PointFeatureIterator.Filter filter) {
     this.structIter = structIter;
@@ -46,9 +45,11 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     try {
       while (true) {
         StructureData sdata = nextStructureData();
-        if (sdata == null) break;
+        if (sdata == null)
+          break;
         feature = makeFeature(structIter.getCurrentRecno(), sdata);
-        if (feature == null) continue;
+        if (feature == null)
+          continue;
         if (feature.getLocation().isMissing()) {
           continue;
         }
@@ -68,14 +69,16 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
 
   @Override
   public PointFeature next() {
-    if (feature == null) return null;
+    if (feature == null)
+      return null;
     calcBounds(feature);
     return feature;
   }
 
   @Override
   public void close() {
-    if (finished) return;
+    if (finished)
+      return;
     finishCalcBounds();
     finished = true;
     structIter.close();

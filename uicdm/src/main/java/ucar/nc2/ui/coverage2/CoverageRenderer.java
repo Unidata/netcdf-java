@@ -15,7 +15,6 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.Debug;
-
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
@@ -41,24 +40,24 @@ public class CoverageRenderer {
 
   private ColorScale colorScale = null;
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
-  private ProjectionImpl drawProjection = null;    // current drawing Projection
-  private ProjectionImpl dataProjection = null;    // current data Projection
+  private ProjectionImpl drawProjection = null; // current drawing Projection
+  private ProjectionImpl dataProjection = null; // current data Projection
 
   // data stuff
   private DataState dataState;
   private GeoReferencedArray dataH;
   private Array geodata; // reduced to 2D
   private double useLevel;
-  private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
+  private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1; // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
-  private int lastLevel = -1, lastTime = -1, lastStride = -1;   // last data read
-  private int lastRunTime = -1, lastEnsemble = -1;   // last data read
+  private int lastLevel = -1, lastTime = -1, lastStride = -1; // last data read
+  private int lastRunTime = -1, lastEnsemble = -1; // last data read
   private Coverage lastGrid = null;
 
   // drawing optimization
   private boolean useModeForProjections = false; // use colorMode optimization for different projections
   private boolean sameProjection = true;
-  private LatLonProjection projectll;       // special handling for LatLonProjection
+  private LatLonProjection projectll; // special handling for LatLonProjection
 
   private static final boolean debugHorizDraw = false, debugMiss = false;
   private boolean debugPts = false, debugPathShape = true;
@@ -67,7 +66,7 @@ public class CoverageRenderer {
    * constructor
    */
   public CoverageRenderer(PreferencesExt store) {
-    //rects[0] = new ProjectionRect();
+    // rects[0] = new ProjectionRect();
   }
 
   ///// bean properties
@@ -126,7 +125,7 @@ public class CoverageRenderer {
     this.drawGridLines = drawGrid;
   }
 
-  /* set whether countours  should be drawn */
+  /* set whether countours should be drawn */
   public void setDrawContours(boolean drawContours) {
     this.drawContours = drawContours;
   }
@@ -179,6 +178,7 @@ public class CoverageRenderer {
    * Get the data value at this projection (x,y) point.
    *
    * @param loc : point in display projection coordinates (plan view)
+   * 
    * @return String representation of value
    */
   public String getXYvalueStr(ProjectionPoint loc) {
@@ -222,39 +222,43 @@ public class CoverageRenderer {
 
   //////// data routines
 
-  /* get an x,y,z data volume for the given time
- private void makeDataVolume( GridDatatype g, int time) {
-   try {
-     dataVolume = g.readVolumeData( time);
-   } catch (java.io.IOException e) {
-     System.out.println("Error reading netcdf file "+e);
-     dataVolume = null;
-   }
-   lastGrid = g;
-   lastTime = time;
-   lastLevel = -1;  // invalidate
-   lastSlice = -1;  // invalidate
-   dataVolumeChanged = true;
- } */
+  /*
+   * get an x,y,z data volume for the given time
+   * private void makeDataVolume( GridDatatype g, int time) {
+   * try {
+   * dataVolume = g.readVolumeData( time);
+   * } catch (java.io.IOException e) {
+   * System.out.println("Error reading netcdf file "+e);
+   * dataVolume = null;
+   * }
+   * lastGrid = g;
+   * lastTime = time;
+   * lastLevel = -1; // invalidate
+   * lastSlice = -1; // invalidate
+   * dataVolumeChanged = true;
+   * }
+   */
 
   private GeoReferencedArray readHSlice(int level, int time, int ensemble, int runtime) {
 
-    /* make sure x, y exists
-    CoverageCS gcs = useG.getCoordinateSystem();
-    CoordinateAxis xaxis = gcs.getXHorizAxis();
-    CoordinateAxis yaxis = gcs.getYHorizAxis();
-    if ((xaxis == null) || (yaxis == null))    // doesnt exist
-      return null;
-    if ((xaxis.getSize() <= 1) || (yaxis.getSize() <= 1)) // LOOK ??
-      return null;   */
+    /*
+     * make sure x, y exists
+     * CoverageCS gcs = useG.getCoordinateSystem();
+     * CoordinateAxis xaxis = gcs.getXHorizAxis();
+     * CoordinateAxis yaxis = gcs.getYHorizAxis();
+     * if ((xaxis == null) || (yaxis == null)) // doesnt exist
+     * return null;
+     * if ((xaxis.getSize() <= 1) || (yaxis.getSize() <= 1)) // LOOK ??
+     * return null;
+     */
 
     // make sure we need new one
     if (dataState.grid.equals(lastGrid) && (time == lastTime) && (level == lastLevel) && (horizStride == lastStride)
-            && (ensemble == lastEnsemble) && (runtime == lastRunTime))
+        && (ensemble == lastEnsemble) && (runtime == lastRunTime))
       return dataH; // nothing changed
 
     // get the data slice
-    //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
+    // dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
     SubsetParams subset = new SubsetParams();
     if (level >= 0 && dataState.zaxis != null) {
       double levelVal = dataState.zaxis.getCoordMidpoint(level);
@@ -275,7 +279,7 @@ public class CoverageRenderer {
       subset.set(SubsetParams.ensCoord, ensVal);
     }
     if (horizStride != 1)
-      subset.setHorizStride( horizStride);
+      subset.setHorizStride(horizStride);
 
     try {
       dataH = dataState.grid.readData(subset);
@@ -293,59 +297,62 @@ public class CoverageRenderer {
     lastStride = horizStride;
 
     /*
-    CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-    if ((zaxis == null) || (zaxis.getSize() < 1)) {
-      dataH = dataVolume;  // volume is xy plane
-    } else {
-      dataH = dataVolume.slice(0, level);  // if z exists, always first (logical) dimension
-    }
-
-    if (debugArrayShape) {
-      System.out.println("Horiz shape = ");
-      for (int i = 0; i < dataH.getRank(); i++)
-        System.out.println("   shape = " + dataH.getShape()[i]);
-    } */
+     * CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+     * if ((zaxis == null) || (zaxis.getSize() < 1)) {
+     * dataH = dataVolume; // volume is xy plane
+     * } else {
+     * dataH = dataVolume.slice(0, level); // if z exists, always first (logical) dimension
+     * }
+     * 
+     * if (debugArrayShape) {
+     * System.out.println("Horiz shape = ");
+     * for (int i = 0; i < dataH.getRank(); i++)
+     * System.out.println("   shape = " + dataH.getShape()[i]);
+     * }
+     */
 
     return dataH;
   }
 
- /*  private Array makeVSlice(Coverage g, int vSlice, int time, int ensemble, int runtime) {
-    // make sure we have x, z
-    CoverageCS gcs = g.getCoordinateSystem();
-    CoordinateAxis xaxis = gcs.getXHorizAxis();
-    CoordinateAxis zaxis = gcs.getVerticalAxis();
-    if ((xaxis == null) || (zaxis == null))    // doesnt exist
-      return null;
-    if ((xaxis.getSize() <= 1) || (zaxis.getSize() <= 1)) // LOOK ??
-      return null;
-
-    // make sure we need it
-    if (g.equals(lastGrid) && (time == lastTime) && (vSlice == lastSlice)
-            && (ensemble == lastEnsemble) && (runtime == lastRunTime))
-      return dataV; // nothing changed
-
-    // get the slice
-    try {
-      dataV = g.readDataSlice(runtime, ensemble, time, -1, -1, vSlice);
-    } catch (java.io.IOException e) {
-      System.out.println("GridRender.readHSlice Error reading netcdf file= " + e);
-      return null;
-    }
-
-    lastGrid = g;
-    lastTime = time;
-    lastSlice = vSlice;
-    lastEnsemble = ensemble;
-    lastRunTime = runtime;
-
-    if (debugArrayShape) {
-      System.out.println("Vert shape = ");
-      for (int i = 0; i < dataV.getRank(); i++)
-        System.out.println("   shape = " + dataV.getShape()[i]);
-    }
-
-    return dataV;
-  }   */
+  /*
+   * private Array makeVSlice(Coverage g, int vSlice, int time, int ensemble, int runtime) {
+   * // make sure we have x, z
+   * CoverageCS gcs = g.getCoordinateSystem();
+   * CoordinateAxis xaxis = gcs.getXHorizAxis();
+   * CoordinateAxis zaxis = gcs.getVerticalAxis();
+   * if ((xaxis == null) || (zaxis == null)) // doesnt exist
+   * return null;
+   * if ((xaxis.getSize() <= 1) || (zaxis.getSize() <= 1)) // LOOK ??
+   * return null;
+   * 
+   * // make sure we need it
+   * if (g.equals(lastGrid) && (time == lastTime) && (vSlice == lastSlice)
+   * && (ensemble == lastEnsemble) && (runtime == lastRunTime))
+   * return dataV; // nothing changed
+   * 
+   * // get the slice
+   * try {
+   * dataV = g.readDataSlice(runtime, ensemble, time, -1, -1, vSlice);
+   * } catch (java.io.IOException e) {
+   * System.out.println("GridRender.readHSlice Error reading netcdf file= " + e);
+   * return null;
+   * }
+   * 
+   * lastGrid = g;
+   * lastTime = time;
+   * lastSlice = vSlice;
+   * lastEnsemble = ensemble;
+   * lastRunTime = runtime;
+   * 
+   * if (debugArrayShape) {
+   * System.out.println("Vert shape = ");
+   * for (int i = 0; i < dataV.getRank(); i++)
+   * System.out.println("   shape = " + dataV.getShape()[i]);
+   * }
+   * 
+   * return dataV;
+   * }
+   */
 
   //////////// Renderer stuff
 
@@ -372,8 +379,8 @@ public class CoverageRenderer {
 
     GeoReferencedArray dataArr = readHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
 
-    //else
-    //  dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
+    // else
+    // dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
 
     if (dataArr != null) {
       MAMath.MinMax minmax = MAMath.getMinMaxSkipMissingData(dataArr.getData(), dataState.grid);
@@ -385,87 +392,89 @@ public class CoverageRenderer {
   /*
    * Do the rendering to the given Graphics2D object.
    *
-   * @param g      Graphics2D object: has clipRect and AffineTransform set.
+   * @param g Graphics2D object: has clipRect and AffineTransform set.
+   * 
    * @param dFromN transforms "Normalized Device" to Device coordinates
    *
-  public void renderVertView(java.awt.Graphics2D g, AffineTransform dFromN) {
-    if ((stridedGrid == null) || (cs == null) || (drawProjection == null))
-      return;
-
-    if (!drawGrid && !drawContours)
-      return;
-
-    dataV = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
-    if (dataV == null)
-      return;
-
-    if (Debug.isSet("GridRenderer/vert"))
-      System.out.println("GridRenderer/vert: redraw grid");
-
-    CoverageCS geocs = stridedGrid.getCoordinateSystem();
-    CoordinateAxis1D zaxis = geocs.getVerticalAxis();
-    CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
-    if ((yaxis == null) || (zaxis == null))
-      return;
-    int nz = (int) zaxis.getSize();
-    int ny = (int) yaxis.getSize();
-
-    if (drawGrid) {
-      int count = 0;
-      Index imaV = dataV.getIndex();
-      for (int z = 0; z < nz; z++) {
-        double zbeg = zaxis.getCoordEdge(z);
-        double zend = zaxis.getCoordEdge(z + 1);
-
-        for (int y = 0; y < ny; y++) {
-          double ybeg = yaxis.getCoordEdge(y);
-          double yend = yaxis.getCoordEdge(y + 1);
-
-          double val = dataV.getDouble(imaV.set(z, y));
-          int thisColor = cs.getIndexFromValue(val);
-          count += drawRect(g, thisColor, ybeg, zbeg, yend, zend, false);
-        }
-      }
-    }
-
-    if (drawContours) {
-      double[] zedges = zaxis.getCoordValues();
-      double[] yedges = yaxis.getCoordValues();
-
-      int nlevels = cs.getNumColors();
-      ArrayList levels = new ArrayList(nlevels);
-      for (int i = 1; i < nlevels - 1; i++)
-        levels.add(new Double(cs.getEdge(i)));
-
-      long startTime = System.currentTimeMillis();
-      ContourFeatureRenderer contourRendererV;
-      try {
-        ContourGrid conGrid = new ContourGrid(dataV.transpose(0, 1), levels, yedges, zedges, stridedGrid);
-        contourRendererV = new ContourFeatureRenderer(conGrid, null);
-
-        //contourRendererV.setProjection(drawProjection);
-        contourRendererV.setColor(Color.black);
-        contourRendererV.setShowLabels(drawContourLabels);
-        contourRendererV.draw(g, dFromN);
-      } catch (Exception e) {
-        System.out.println("draw Contours Vert exception = " + e);
-        e.printStackTrace(System.err);
-      }
-      if (Debug.isSet("timing/contourDraw")) {
-        long tookTime = System.currentTimeMillis() - startTime;
-        System.out.println("timing/contourDraw: Vert:" + tookTime * .001 + " seconds");
-      }
-    }
-
-    if ((lastLevel >= 0) && (lastLevel < nz))
-      drawXORline(g, yaxis.getCoordEdge(0), zaxis.getCoordValue(lastLevel),
-              yaxis.getCoordEdge(ny), zaxis.getCoordValue(lastLevel));
-  } */
+   * public void renderVertView(java.awt.Graphics2D g, AffineTransform dFromN) {
+   * if ((stridedGrid == null) || (cs == null) || (drawProjection == null))
+   * return;
+   * 
+   * if (!drawGrid && !drawContours)
+   * return;
+   * 
+   * dataV = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
+   * if (dataV == null)
+   * return;
+   * 
+   * if (Debug.isSet("GridRenderer/vert"))
+   * System.out.println("GridRenderer/vert: redraw grid");
+   * 
+   * CoverageCS geocs = stridedGrid.getCoordinateSystem();
+   * CoordinateAxis1D zaxis = geocs.getVerticalAxis();
+   * CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
+   * if ((yaxis == null) || (zaxis == null))
+   * return;
+   * int nz = (int) zaxis.getSize();
+   * int ny = (int) yaxis.getSize();
+   * 
+   * if (drawGrid) {
+   * int count = 0;
+   * Index imaV = dataV.getIndex();
+   * for (int z = 0; z < nz; z++) {
+   * double zbeg = zaxis.getCoordEdge(z);
+   * double zend = zaxis.getCoordEdge(z + 1);
+   * 
+   * for (int y = 0; y < ny; y++) {
+   * double ybeg = yaxis.getCoordEdge(y);
+   * double yend = yaxis.getCoordEdge(y + 1);
+   * 
+   * double val = dataV.getDouble(imaV.set(z, y));
+   * int thisColor = cs.getIndexFromValue(val);
+   * count += drawRect(g, thisColor, ybeg, zbeg, yend, zend, false);
+   * }
+   * }
+   * }
+   * 
+   * if (drawContours) {
+   * double[] zedges = zaxis.getCoordValues();
+   * double[] yedges = yaxis.getCoordValues();
+   * 
+   * int nlevels = cs.getNumColors();
+   * ArrayList levels = new ArrayList(nlevels);
+   * for (int i = 1; i < nlevels - 1; i++)
+   * levels.add(new Double(cs.getEdge(i)));
+   * 
+   * long startTime = System.currentTimeMillis();
+   * ContourFeatureRenderer contourRendererV;
+   * try {
+   * ContourGrid conGrid = new ContourGrid(dataV.transpose(0, 1), levels, yedges, zedges, stridedGrid);
+   * contourRendererV = new ContourFeatureRenderer(conGrid, null);
+   * 
+   * //contourRendererV.setProjection(drawProjection);
+   * contourRendererV.setColor(Color.black);
+   * contourRendererV.setShowLabels(drawContourLabels);
+   * contourRendererV.draw(g, dFromN);
+   * } catch (Exception e) {
+   * System.out.println("draw Contours Vert exception = " + e);
+   * e.printStackTrace(System.err);
+   * }
+   * if (Debug.isSet("timing/contourDraw")) {
+   * long tookTime = System.currentTimeMillis() - startTime;
+   * System.out.println("timing/contourDraw: Vert:" + tookTime * .001 + " seconds");
+   * }
+   * }
+   * 
+   * if ((lastLevel >= 0) && (lastLevel < nz))
+   * drawXORline(g, yaxis.getCoordEdge(0), zaxis.getCoordValue(lastLevel),
+   * yaxis.getCoordEdge(ny), zaxis.getCoordValue(lastLevel));
+   * }
+   */
 
   /**
    * Do the rendering to the given Graphics2D object.
    *
-   * @param g      Graphics2D object: has clipRect and AffineTransform set.
+   * @param g Graphics2D object: has clipRect and AffineTransform set.
    * @param dFromN transforms "Normalized Device" to Device coordinates
    */
   public void renderPlanView(java.awt.Graphics2D g, AffineTransform dFromN) {
@@ -486,8 +495,8 @@ public class CoverageRenderer {
 
     if (drawGrid)
       drawGridHoriz(g, dataH);
-    //if (drawContours)
-    //  drawContours(g, dataH.transpose(0, 1), dFromN);
+    // if (drawContours)
+    // drawContours(g, dataH.transpose(0, 1), dFromN);
     if (drawGridLines)
       drawGridLines(g, dataH);
     if (drawBB)
@@ -519,11 +528,13 @@ public class CoverageRenderer {
     LatLonAxis2D xaxis2D = hcs.getLonAxis2D();
     LatLonAxis2D yaxis2D = hcs.getLatAxis2D();
 
-    /* String stag = geocs.getHorizStaggerType();
-    if (stag != null && stag.equals(CDM.ARAKAWA_E)) {
-      drawGridHorizRotated(g, data, xaxis2D, yaxis2D);
-      return;
-    } */
+    /*
+     * String stag = geocs.getHorizStaggerType();
+     * if (stag != null && stag.equals(CDM.ARAKAWA_E)) {
+     * drawGridHorizRotated(g, data, xaxis2D, yaxis2D);
+     * return;
+     * }
+     */
 
     ArrayDouble.D2 edgex = (ArrayDouble.D2) xaxis2D.getCoordBoundsAsArray();
     ArrayDouble.D2 edgey = (ArrayDouble.D2) yaxis2D.getCoordBoundsAsArray();
@@ -542,7 +553,7 @@ public class CoverageRenderer {
         gp.lineTo((float) edgex.get(y + 1, x + 1), (float) edgey.get(y + 1, x + 1));
         gp.lineTo((float) edgex.get(y + 1, x), (float) edgey.get(y + 1, x));
 
-        double val = data.getDouble(ima.set(y, x));   // ordering LOOK
+        double val = data.getDouble(ima.set(y, x)); // ordering LOOK
         int colorIndex = colorScale.getIndexFromValue(val);
         g.setColor(colorScale.getColor(colorIndex));
         g.fill(gp);
@@ -593,33 +604,35 @@ public class CoverageRenderer {
 
   }
 
-  /* draw using GeneralPath shape
- private GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
- private Shape makeShape(double lon1, double lat1, double lon2, double lat2) {
-   gp.reset();
-   ProjectionPoint pt = drawProjection.latLonToProj( lat1, lon1);
-   gp.moveTo( (float) pt.getX(), (float) pt.getY());
-
-   ptP1.setLocation(pt);
-   pt = drawProjection.latLonToProj( lat1, lon2);
-   gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   if (drawProjection.crossSeam(ptP1, pt))
-     return null;
-
-   ptP1.setLocation(pt);
-   pt = drawProjection.latLonToProj( lat2, lon2);
-   gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   if (drawProjection.crossSeam(ptP1, pt))
-     return null;
-
-   ptP1.setLocation(pt);
-   pt = drawProjection.latLonToProj( lat2, lon1);
-   gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   if (drawProjection.crossSeam(ptP1, pt))
-     return null;
-
-   return gp;
- } */
+  /*
+   * draw using GeneralPath shape
+   * private GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
+   * private Shape makeShape(double lon1, double lat1, double lon2, double lat2) {
+   * gp.reset();
+   * ProjectionPoint pt = drawProjection.latLonToProj( lat1, lon1);
+   * gp.moveTo( (float) pt.getX(), (float) pt.getY());
+   * 
+   * ptP1.setLocation(pt);
+   * pt = drawProjection.latLonToProj( lat1, lon2);
+   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
+   * if (drawProjection.crossSeam(ptP1, pt))
+   * return null;
+   * 
+   * ptP1.setLocation(pt);
+   * pt = drawProjection.latLonToProj( lat2, lon2);
+   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
+   * if (drawProjection.crossSeam(ptP1, pt))
+   * return null;
+   * 
+   * ptP1.setLocation(pt);
+   * pt = drawProjection.latLonToProj( lat2, lon1);
+   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
+   * if (drawProjection.crossSeam(ptP1, pt))
+   * return null;
+   * 
+   * return gp;
+   * }
+   */
 
   private void drawGridHorizRegular(java.awt.Graphics2D g, GeoReferencedArray array) {
     int count = 0;
@@ -641,7 +654,8 @@ public class CoverageRenderer {
     if (drawProjection.isLatLon()) {
       projectll = (LatLonProjection) drawProjection;
       double centerLon = projectll.getCenterLon();
-      if (Debug.isSet("projection/LatLonShift")) System.out.println("projection/LatLonShift: gridDraw = " + centerLon);
+      if (Debug.isSet("projection/LatLonShift"))
+        System.out.println("projection/LatLonShift: gridDraw = " + centerLon);
     }
 
     // find the most common color and fill the entire area with it
@@ -649,10 +663,11 @@ public class CoverageRenderer {
     IndexIterator iiter = array.getData().getIndexIterator();
     while (iiter.hasNext()) {
       double val = iiter.getDoubleNext();
-      colorScale.getIndexFromValue(val);                // accum in histogram
+      colorScale.getIndexFromValue(val); // accum in histogram
     }
     int modeColor = colorScale.getHistMax();
-    if (debugMiss) System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
+    if (debugMiss)
+      System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
 
     if (sameProjection) {
       double xmin = Math.min(xaxis.getCoordEdge1(0), xaxis.getCoordEdgeLast());
@@ -687,10 +702,11 @@ public class CoverageRenderer {
         } else {
           if (sameProjection) {
             if (lastColor != modeColor) // dont have to draw these
-              count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdge2(x), yend, drawProjection.isLatLon());
+              count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdge2(x), yend,
+                  drawProjection.isLatLon());
           } else {
             if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
-              count += drawPathRun(g, lastColor, ybeg, yend, xaxis, xbeg, x-1, debugPts);
+              count += drawPathRun(g, lastColor, ybeg, yend, xaxis, xbeg, x - 1, debugPts);
           }
           xbeg = x;
         }
@@ -700,7 +716,8 @@ public class CoverageRenderer {
       // get the ones at the end
       if (sameProjection) {
         if (lastColor != modeColor)
-          count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdgeLast(), yend, drawProjection.isLatLon());
+          count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdgeLast(), yend,
+              drawProjection.isLatLon());
       } else {
         if (!useModeForProjections || (lastColor != modeColor))
           count += drawPathRun(g, lastColor, ybeg, yend, xaxis, xbeg, nx - 1, false); // needed ?
@@ -708,7 +725,8 @@ public class CoverageRenderer {
 
       // if (debugPts) break;
     }
-    if (debugHorizDraw) System.out.println("debugHorizDraw = " + count);
+    if (debugHorizDraw)
+      System.out.println("debugHorizDraw = " + count);
   }
 
   //// draw using Rectangle when possible
@@ -756,7 +774,8 @@ public class CoverageRenderer {
 
   private GeneralPath gpRun = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 25);
 
-  private int drawPathRun(Graphics2D g, int color, double y1, double y2, CoverageCoordAxis1D xaxis, int x1, int x2, boolean debugPts) {
+  private int drawPathRun(Graphics2D g, int color, double y1, double y2, CoverageCoordAxis1D xaxis, int x1, int x2,
+      boolean debugPts) {
     int nx = xaxis.getNcoords();
     if ((x1 < 0) || (x2 < 0) || (x2 > nx) || (x1 > x2)) // from the recursion
       return 0;
@@ -767,7 +786,8 @@ public class CoverageRenderer {
     // first point
     LatLonPoint llp = dataProjection.projToLatLon(xaxis.getCoordEdge1(x1), y1);
     ProjectionPoint pt = drawProjection.latLonToProj(llp);
-    if (debugPts) System.out.printf("** moveTo = x1=%d (%f, %f)%n", x1, pt.getX(), pt.getY());
+    if (debugPts)
+      System.out.printf("** moveTo = x1=%d (%f, %f)%n", x1, pt.getX(), pt.getY());
     gpRun.moveTo((float) pt.getX(), (float) pt.getY());
 
     ProjectionPointImpl ptP1 = new ProjectionPointImpl();
@@ -776,15 +796,18 @@ public class CoverageRenderer {
     for (int e = x1; e <= x2; e++) {
       llp = dataProjection.projToLatLon(xaxis.getCoordEdge2(e), y1);
       pt = drawProjection.latLonToProj(llp);
- /*   if (drawProjection.crossSeam(ptP1, pt)) { // break it in two & recurse
-        // int x = e - 1;  // which col has to be dropped ?
-        if (debugPathShape) System.out.println("split1 at x = " + e + " " + x1 + " " + x2);
-        int count = 0;
-        count += drawPathRun(g, color, y1, y2, xaxis, x1, e - 1);
-        count += drawPathRun(g, color, y1, y2, xaxis, e + 1, x2);
-        return count;
-      } */
-      if (debugPts) System.out.printf("%d x2=%d lineTo = (%f, %f)%n", count++, e, pt.getX(), pt.getY());
+      /*
+       * if (drawProjection.crossSeam(ptP1, pt)) { // break it in two & recurse
+       * // int x = e - 1; // which col has to be dropped ?
+       * if (debugPathShape) System.out.println("split1 at x = " + e + " " + x1 + " " + x2);
+       * int count = 0;
+       * count += drawPathRun(g, color, y1, y2, xaxis, x1, e - 1);
+       * count += drawPathRun(g, color, y1, y2, xaxis, e + 1, x2);
+       * return count;
+       * }
+       */
+      if (debugPts)
+        System.out.printf("%d x2=%d lineTo = (%f, %f)%n", count++, e, pt.getX(), pt.getY());
       gpRun.lineTo((float) pt.getX(), (float) pt.getY());
       ptP1.setLocation(pt);
     }
@@ -792,15 +815,18 @@ public class CoverageRenderer {
     for (int e = x2; e >= x1; e--) {
       llp = dataProjection.projToLatLon(xaxis.getCoordEdge2(e), y2);
       pt = drawProjection.latLonToProj(llp);
-/*    if (drawProjection.crossSeam(ptP1, pt)) { // break it in two & recurse
-        int x = (e == x2 + 1) ? x2 : e;  // which col has to be dropped ?
-        if (debugPathShape) System.out.println("split2 at x = " + x + " " + x1 + " " + x2);
-        int count = 0;
-        count += drawPathRun(g, color, y1, y2, xaxis, x1, x - 1);
-        count += drawPathRun(g, color, y1, y2, xaxis, x + 1, x2);
-        return count;
-      } */
-      if (debugPts) System.out.printf("%d x2=%d lineTo = (%f, %f)%n", count++, e, pt.getX(), pt.getY());
+      /*
+       * if (drawProjection.crossSeam(ptP1, pt)) { // break it in two & recurse
+       * int x = (e == x2 + 1) ? x2 : e; // which col has to be dropped ?
+       * if (debugPathShape) System.out.println("split2 at x = " + x + " " + x1 + " " + x2);
+       * int count = 0;
+       * count += drawPathRun(g, color, y1, y2, xaxis, x1, x - 1);
+       * count += drawPathRun(g, color, y1, y2, xaxis, x + 1, x2);
+       * return count;
+       * }
+       */
+      if (debugPts)
+        System.out.printf("%d x2=%d lineTo = (%f, %f)%n", count++, e, pt.getX(), pt.getY());
       gpRun.lineTo((float) pt.getX(), (float) pt.getY());
       ptP1.setLocation(pt);
     }
@@ -808,10 +834,11 @@ public class CoverageRenderer {
     // finish
     llp = dataProjection.projToLatLon(xaxis.getCoordEdge1(x1), y2);
     pt = drawProjection.latLonToProj(llp);
-    if (debugPts) System.out.printf("%d (%d,y2) lineTo = [%f, %f]%n", count, x1, pt.getX(), pt.getY());
+    if (debugPts)
+      System.out.printf("%d (%d,y2) lineTo = [%f, %f]%n", count, x1, pt.getX(), pt.getY());
     gpRun.lineTo((float) pt.getX(), (float) pt.getY());
 
-    g.setColor( colorScale.getColor(color));
+    g.setColor(colorScale.getColor(color));
     try {
       g.fill(gpRun);
     } catch (Throwable e) {
@@ -822,110 +849,116 @@ public class CoverageRenderer {
   }
 
 
-/*  private int drawPathShape(Graphics2D g, int color, CoordinateAxis xaxis, CoordinateAxis yaxis) {
-    Point2D pt;
-    gpRun.reset();
-    int nx = xaxis.getNumElements();
-    int ny = yaxis.getNumElements();
-    boolean debugPathShape = true;
-    int x, y;
+  /*
+   * private int drawPathShape(Graphics2D g, int color, CoordinateAxis xaxis, CoordinateAxis yaxis) {
+   * Point2D pt;
+   * gpRun.reset();
+   * int nx = xaxis.getNumElements();
+   * int ny = yaxis.getNumElements();
+   * boolean debugPathShape = true;
+   * int x, y;
+   * 
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(0), xaxis.getCoordValue(0));
+   * gpRun.moveTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * 
+   * y = 0;
+   * for (x=1; x<nx; x++) {
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
+   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
+   * }
+   * 
+   * x = nx-1;
+   * for (y=0; y<ny; y++) {
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
+   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
+   * }
+   * 
+   * y = ny-1;
+   * for (x=nx-1; x>=0; x--) {
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
+   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
+   * }
+   * 
+   * x = 0;
+   * for (y=ny-1; y>=0; y--) {
+   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
+   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
+   * ptP1.set(pt);
+   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
+   * }
+   * 
+   * g.setColor( cs.getColor(color));
+   * //g.fill(gpRun);
+   * return 1;
+   * }
+   */
 
-    pt = drawProjection.latLonToProj( yaxis.getCoordValue(0), xaxis.getCoordValue(0));
-    gpRun.moveTo( (float) pt.getX(), (float) pt.getY());
-    ptP1.set(pt);
-
-    y = 0;
-    for (x=1; x<nx; x++) {
-      pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-      gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      ptP1.set(pt);
-      if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-    }
-
-    x = nx-1;
-    for (y=0; y<ny; y++) {
-      pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-      gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      ptP1.set(pt);
-      if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-    }
-
-    y = ny-1;
-    for (x=nx-1; x>=0; x--) {
-      pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-      gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      ptP1.set(pt);
-      if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-    }
-
-    x = 0;
-    for (y=ny-1; y>=0; y--) {
-      pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-      gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      ptP1.set(pt);
-      if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-    }
-
-    g.setColor( cs.getColor(color));
-    //g.fill(gpRun);
-    return 1;
-  }  */
-
-/*  private void drawLine(Graphics2D g, double lat1, double lon1, double lat2, double lon2) {
-    ptP1.set(drawProjection.latLonToProj( lat1, lon1));
-    Point2D pt2 = drawProjection.latLonToProj( lat2, lon2);
-    if (drawProjection.crossSeam(ptP1, pt2))
-      if (debugSeam) System.out.println( "crossSeam: "+ ptP1+ " to "+ pt2);
-    else {
-      line2D.setLine( ptP1, pt2);
-      g.draw( line2D);
-    }
-  } */
+  /*
+   * private void drawLine(Graphics2D g, double lat1, double lon1, double lat2, double lon2) {
+   * ptP1.set(drawProjection.latLonToProj( lat1, lon1));
+   * Point2D pt2 = drawProjection.latLonToProj( lat2, lon2);
+   * if (drawProjection.crossSeam(ptP1, pt2))
+   * if (debugSeam) System.out.println( "crossSeam: "+ ptP1+ " to "+ pt2);
+   * else {
+   * line2D.setLine( ptP1, pt2);
+   * g.draw( line2D);
+   * }
+   * }
+   */
 
   //////// contouring
 
-  /* private void drawContours(java.awt.Graphics2D g, Array hslice, AffineTransform dFromN) {
-    // make ContourGrid object
-    CoverageCS geocs = stridedGrid.getCoordinateSystem();
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
-    CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
-    double[] xedges = xaxis.getCoordValues();
-    double[] yedges = yaxis.getCoordValues();
-
-    int nlevels = cs.getNumColors();
-    ArrayList levels = new ArrayList(nlevels);
-    for (int i = 1; i < nlevels - 1; i++)
-      levels.add(new Double(cs.getEdge(i)));
-
-    ContourFeatureRenderer contourRenderer;
-    long startTime = System.currentTimeMillis();
-    try {
-      ContourGrid conGrid = new ContourGrid((Array) hslice, levels, xedges, yedges, stridedGrid);
-      contourRenderer = new ContourFeatureRenderer(conGrid, dataProjection);
-    } catch (Exception e) {
-      System.out.println("make Contours exception = " + e);
-      e.printStackTrace(System.out);
-      return;
-    }
-    if (Debug.isSet("timing/contourMake")) {
-      long tookTime = System.currentTimeMillis() - startTime;
-      System.out.println("timing/contourMake: " + tookTime * .001 + " seconds");
-    }
-
-    startTime = System.currentTimeMillis();
-    try {
-      contourRenderer.setProjection(drawProjection);
-      contourRenderer.setColor(Color.black);
-      contourRenderer.setShowLabels(drawContourLabels);
-      contourRenderer.draw(g, dFromN);
-    } catch (Exception e) {
-      System.out.println("draw Contours exception = " + e);
-      e.printStackTrace(System.err);
-    }
-    if (Debug.isSet("timing/contourDraw")) {
-      long tookTime = System.currentTimeMillis() - startTime;
-      System.out.println("timing/contourDraw: " + tookTime*.001 + " seconds");
-    }
-  }  */
+  /*
+   * private void drawContours(java.awt.Graphics2D g, Array hslice, AffineTransform dFromN) {
+   * // make ContourGrid object
+   * CoverageCS geocs = stridedGrid.getCoordinateSystem();
+   * CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
+   * CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
+   * double[] xedges = xaxis.getCoordValues();
+   * double[] yedges = yaxis.getCoordValues();
+   * 
+   * int nlevels = cs.getNumColors();
+   * ArrayList levels = new ArrayList(nlevels);
+   * for (int i = 1; i < nlevels - 1; i++)
+   * levels.add(new Double(cs.getEdge(i)));
+   * 
+   * ContourFeatureRenderer contourRenderer;
+   * long startTime = System.currentTimeMillis();
+   * try {
+   * ContourGrid conGrid = new ContourGrid((Array) hslice, levels, xedges, yedges, stridedGrid);
+   * contourRenderer = new ContourFeatureRenderer(conGrid, dataProjection);
+   * } catch (Exception e) {
+   * System.out.println("make Contours exception = " + e);
+   * e.printStackTrace(System.out);
+   * return;
+   * }
+   * if (Debug.isSet("timing/contourMake")) {
+   * long tookTime = System.currentTimeMillis() - startTime;
+   * System.out.println("timing/contourMake: " + tookTime * .001 + " seconds");
+   * }
+   * 
+   * startTime = System.currentTimeMillis();
+   * try {
+   * contourRenderer.setProjection(drawProjection);
+   * contourRenderer.setColor(Color.black);
+   * contourRenderer.setShowLabels(drawContourLabels);
+   * contourRenderer.draw(g, dFromN);
+   * } catch (Exception e) {
+   * System.out.println("draw Contours exception = " + e);
+   * e.printStackTrace(System.err);
+   * }
+   * if (Debug.isSet("timing/contourDraw")) {
+   * long tookTime = System.currentTimeMillis() - startTime;
+   * System.out.println("timing/contourDraw: " + tookTime*.001 + " seconds");
+   * }
+   * }
+   */
 
 }

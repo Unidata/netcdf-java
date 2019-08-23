@@ -28,7 +28,8 @@ public class CoordinateSharerBest {
   private Map<Coordinate, Integer> indexMap;
 
   public void addCoordinates(List<Coordinate> coords) {
-    for (Coordinate coord : coords) addCoordinate(coord);
+    for (Coordinate coord : coords)
+      addCoordinate(coord);
   }
 
   public void addCoordinate(Coordinate coord) {
@@ -39,7 +40,7 @@ public class CoordinateSharerBest {
         if (already == null)
           runtimeBuilders.put(coord, coord);
         else
-          swap.put(coord, already);  // keep track of substitutes
+          swap.put(coord, already); // keep track of substitutes
         break;
 
       case time:
@@ -84,36 +85,36 @@ public class CoordinateSharerBest {
     }
   }
 
-   public List<Coordinate> finish() {
-     // results
-     List<Coordinate> unionCoords = new ArrayList<>(20);
-     unionCoords.addAll(runtimeBuilders.keySet());
-     unionCoords.addAll(time2DBuilders.keySet());
-     unionCoords.addAll(timeBuilders.keySet());
-     unionCoords.addAll(timeIntvBuilders.keySet());
-     unionCoords.addAll(vertBuilders.keySet());
-     unionCoords.addAll(ensBuilders.keySet());
+  public List<Coordinate> finish() {
+    // results
+    List<Coordinate> unionCoords = new ArrayList<>(20);
+    unionCoords.addAll(runtimeBuilders.keySet());
+    unionCoords.addAll(time2DBuilders.keySet());
+    unionCoords.addAll(timeBuilders.keySet());
+    unionCoords.addAll(timeIntvBuilders.keySet());
+    unionCoords.addAll(vertBuilders.keySet());
+    unionCoords.addAll(ensBuilders.keySet());
 
-     indexMap = new HashMap<>();
-     for (int i = 0; i < unionCoords.size(); i++) {
-       indexMap.put(unionCoords.get(i), i);
-     }
+    indexMap = new HashMap<>();
+    for (int i = 0; i < unionCoords.size(); i++) {
+      indexMap.put(unionCoords.get(i), i);
+    }
 
-     return unionCoords;
-   }
+    return unionCoords;
+  }
 
-     // redo the variables against the shared coordinates
-    public List<Integer> reindex(List<Coordinate> coords) {
-     List<Integer> result = new ArrayList<>();
-     for (Coordinate coord : coords) {
-       Coordinate sub = swap.get(coord);
-       Coordinate use = (sub == null) ? coord : sub;
-       Integer idx = indexMap.get(use); // index into unionCoords
-       if (idx == null) {
-         throw new IllegalStateException();
-       }
-       result.add(idx);
-     }
-     return result;
-   }
+  // redo the variables against the shared coordinates
+  public List<Integer> reindex(List<Coordinate> coords) {
+    List<Integer> result = new ArrayList<>();
+    for (Coordinate coord : coords) {
+      Coordinate sub = swap.get(coord);
+      Coordinate use = (sub == null) ? coord : sub;
+      Integer idx = indexMap.get(use); // index into unionCoords
+      if (idx == null) {
+        throw new IllegalStateException();
+      }
+      result.add(idx);
+    }
+    return result;
+  }
 }

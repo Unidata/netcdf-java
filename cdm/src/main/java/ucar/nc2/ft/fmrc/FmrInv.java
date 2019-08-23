@@ -6,14 +6,13 @@
 package ucar.nc2.ft.fmrc;
 
 import ucar.nc2.time.CalendarDate;
-
 import java.util.*;
 
 /**
  * Inventory for a Forecast Model Run - one runtime.
  * Track inventory by coordinate value, not index.
  * Composed of one or more GridDatasets, each described by a GridDatasetInv.
- * For each Grid, the vert, time and ens coordinates are created as the union of the components. 
+ * For each Grid, the vert, time and ens coordinates are created as the union of the components.
  * We make sure we are sharing coordinates across grids where they are equivilent.
  * We are thus making a rectangular array var(time, ens, level).
  * So obviously we have to tolerate missing data.
@@ -24,13 +23,13 @@ import java.util.*;
  * @since Jan 11, 2010
  */
 public class FmrInv implements Comparable<FmrInv> {
-  //static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrInv.class);
+  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrInv.class);
 
   private final List<TimeCoord> timeCoords = new ArrayList<>(); // list of unique TimeCoord
   private final List<EnsCoord> ensCoords = new ArrayList<>(); // list of unique EnsCoord
   private final List<VertCoord> vertCoords = new ArrayList<>(); // list of unique VertCoord
   private final Map<String, GridVariable> uvHash = new HashMap<>(); // hash of FmrInv.Grid
-  private List<GridVariable> gridList;              // sorted list of FmrInv.Grid
+  private List<GridVariable> gridList; // sorted list of FmrInv.Grid
 
   public List<TimeCoord> getTimeCoords() {
     return timeCoords;
@@ -117,7 +116,8 @@ public class FmrInv implements Comparable<FmrInv> {
       if (list.size() > 0) {
         int count = 0;
         for (VertCoord vc : list) {
-          if (count > 0) vc.setName(vc.getName()+count);
+          if (count > 0)
+            vc.setName(vc.getName() + count);
           count++;
         }
       }
@@ -145,7 +145,7 @@ public class FmrInv implements Comparable<FmrInv> {
     EnsCoord ensCoordUnion = null; // union of ens coords NOT USED YET
     TimeCoord timeCoordUnion = null; // union of time coords
     TimeCoord timeExpected = null; // expected time coords
-    //private int countInv, countExpected;
+    // private int countInv, countExpected;
 
     GridVariable(String name) {
       this.name = name;
@@ -155,7 +155,7 @@ public class FmrInv implements Comparable<FmrInv> {
       return name;
     }
 
-    public CalendarDate getRunDate( ) {
+    public CalendarDate getRunDate() {
       return FmrInv.this.getRunDate();
     }
 
@@ -163,11 +163,17 @@ public class FmrInv implements Comparable<FmrInv> {
       gridList.add(grid);
     }
 
-    public List<GridDatasetInv.Grid> getInventory() { return gridList; }
+    public List<GridDatasetInv.Grid> getInventory() {
+      return gridList;
+    }
 
-    public TimeCoord getTimeExpected() { return timeExpected; }
+    public TimeCoord getTimeExpected() {
+      return timeExpected;
+    }
 
-    public TimeCoord getTimeCoord() { return timeCoordUnion; }
+    public TimeCoord getTimeCoord() {
+      return timeCoordUnion;
+    }
 
     public int compareTo(GridVariable o) {
       return name.compareTo(o.name);
@@ -198,15 +204,17 @@ public class FmrInv implements Comparable<FmrInv> {
       EnsCoord ec_union = null;
       for (GridDatasetInv.Grid grid : gridList) {
         EnsCoord ec = grid.ec;
-        if (ec == null) continue;
+        if (ec == null)
+          continue;
         if (ec_union == null)
           ec_union = new EnsCoord(ec);
         else if (!ec_union.equalsData(ec))
           ensList.add(ec);
       }
       if (ec_union != null) {
-        if (ensList.size() > 0) EnsCoord.normalize(ec_union, ensList); // add the other coords
-        ensCoordUnion = EnsCoord.findEnsCoord(getEnsCoords(), ec_union);  // find unique within collection
+        if (ensList.size() > 0)
+          EnsCoord.normalize(ec_union, ensList); // add the other coords
+        ensCoordUnion = EnsCoord.findEnsCoord(getEnsCoords(), ec_union); // find unique within collection
       }
 
       // run over all vertCoords and construct the union
@@ -214,11 +222,13 @@ public class FmrInv implements Comparable<FmrInv> {
       VertCoord vc_union = null;
       for (GridDatasetInv.Grid grid : gridList) {
         VertCoord vc = grid.vc;
-        if (vc == null) continue;
+        if (vc == null)
+          continue;
         if (vc_union == null)
           vc_union = new VertCoord(vc);
         else if (!vc_union.equalsData(vc)) {
-//          System.out.printf("GridVariable %s has different vert coords in file %s %n", grid.getName(), grid.getFile());
+          // System.out.printf("GridVariable %s has different vert coords in file %s %n", grid.getName(),
+          // grid.getFile());
           vertList.add(vc);
         }
       }
@@ -242,9 +252,9 @@ public class FmrInv implements Comparable<FmrInv> {
 
   public Set<GridDatasetInv> getFiles() {
     HashSet<GridDatasetInv> fileSet = new HashSet<>();
-    for (FmrInv.GridVariable grid :getGrids()) {
-      for (GridDatasetInv.Grid inv : grid.getInventory())  {
-        fileSet.add(inv.getFile());  
+    for (FmrInv.GridVariable grid : getGrids()) {
+      for (GridDatasetInv.Grid inv : grid.getInventory()) {
+        fileSet.add(inv.getFile());
       }
     }
     return fileSet;

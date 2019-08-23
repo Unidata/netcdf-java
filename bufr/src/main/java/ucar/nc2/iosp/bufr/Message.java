@@ -37,8 +37,8 @@ public class Message {
   BitCounterUncompressed[] counterDatasets; // uncompressed: one for each dataset
   int msg_nbits;
 
-  public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids, BufrDataDescriptionSection dds,
-                 BufrDataSection dataSection) throws IOException {
+  public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids,
+      BufrDataDescriptionSection dds, BufrDataSection dataSection) throws IOException {
     this.raf = raf;
     this.is = is;
     this.ids = ids;
@@ -52,7 +52,8 @@ public class Message {
   }
 
   public void close() throws IOException {
-    if (raf != null) raf.close();
+    if (raf != null)
+      raf.close();
   }
 
   /**
@@ -131,8 +132,10 @@ public class Message {
 
   private boolean usesLocalTable(DataDescriptor dds) {
     for (DataDescriptor key : dds.getSubKeys()) {
-      if (key.isLocal()) return true;
-      if ((key.getSubKeys() != null) && usesLocalTable(key)) return true;
+      if (key.isLocal())
+        return true;
+      if ((key.getSubKeys() != null) && usesLocalTable(key))
+        return true;
     }
     return false;
   }
@@ -170,7 +173,7 @@ public class Message {
   public boolean isBitCountOk() {
     getRootDataDescriptor(); // make sure root is calculated
     getTotalBits(); // make sure bits are counted
-    //int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
+    // int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
     int nbytesCounted = getCountedDataBytes();
     int nbytesGiven = dataSection.getDataLength();
     return Math.abs(nbytesCounted - nbytesGiven) <= 1; // radiosondes dataLen not even number of bytes
@@ -178,9 +181,11 @@ public class Message {
 
   public int getCountedDataBytes() {
     int msg_nbytes = msg_nbits / 8;
-    if (msg_nbits % 8 != 0) msg_nbytes++;
+    if (msg_nbits % 8 != 0)
+      msg_nbytes++;
     msg_nbytes += 4;
-    if (msg_nbytes % 2 != 0) msg_nbytes++; // LOOK seems to be violated by some messages
+    if (msg_nbytes % 2 != 0)
+      msg_nbytes++; // LOOK seems to be violated by some messages
     return msg_nbytes;
   }
 
@@ -223,7 +228,8 @@ public class Message {
    * @return total number of bits
    */
   public int getTotalBits() {
-    if (msg_nbits == 0) calcTotalBits(null);
+    if (msg_nbits == 0)
+      calcTotalBits(null);
     return msg_nbits;
   }
 
@@ -254,7 +260,7 @@ public class Message {
     int result = 17;
     result += 37 * result + getDDShashcode();
     // result += 37 * result + ids.getCenterId();
-    //result += 37 * result + ids.getSubCenter_id();
+    // result += 37 * result + ids.getSubCenter_id();
     result += 37 * result + ids.getCategory();
     result += 37 * result + ids.getSubCategory();
     return result;
@@ -272,16 +278,20 @@ public class Message {
    * @return true if equals
    */
   public boolean equals(Object obj) {
-    if (!(obj instanceof Message)) return false;
+    if (!(obj instanceof Message))
+      return false;
     Message o = (Message) obj;
-    if (!dds.getDataDescriptors().equals(o.dds.getDataDescriptors())) return false;
-    if (ids.getCenterId() != o.ids.getCenterId()) return false;
-    //if (ids.getSubCenter_id() != o.ids.getSubCenter_id()) return false;
-    if (ids.getCategory() != o.ids.getCategory()) return false;
+    if (!dds.getDataDescriptors().equals(o.dds.getDataDescriptors()))
+      return false;
+    if (ids.getCenterId() != o.ids.getCenterId())
+      return false;
+    // if (ids.getSubCenter_id() != o.ids.getSubCenter_id()) return false;
+    if (ids.getCategory() != o.ids.getCategory())
+      return false;
     return ids.getSubCategory() == o.ids.getSubCategory();
   }
 
-    ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////
   // perhaps move this into a helper class - started from ucar.bufr.Dump
 
 
@@ -292,22 +302,23 @@ public class Message {
   public void dump(Formatter out) { // throws IOException {
 
     int listHash = dds.getDataDescriptors().hashCode();
-    out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] listHash=[0x%x] (%d) %n",
-            is.getBufrEdition(), getReferenceTime(), getHeader(), hashCode(), listHash, listHash);
+    out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] listHash=[0x%x] (%d) %n", is.getBufrEdition(),
+        getReferenceTime(), getHeader(), hashCode(), listHash, listHash);
     out.format("   Category= %s %n", lookup.getCategoryFullName());
     out.format("   Center= %s %n", lookup.getCenterName());
     out.format("   Table= %s %n", lookup.getTableName());
-    out.format("    Table B= wmoTable= %s localTable= %s mode=%s%n", lookup.getWmoTableBName(), lookup.getLocalTableBName(), lookup.getMode());
+    out.format("    Table B= wmoTable= %s localTable= %s mode=%s%n", lookup.getWmoTableBName(),
+        lookup.getLocalTableBName(), lookup.getMode());
     out.format("    Table D= wmoTable= %s localTable= %s%n", lookup.getWmoTableDName(), lookup.getLocalTableDName());
 
     out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b%n", dds.getNumberDatasets(), dds.getDataType(),
-            dds.isObserved(), dds.isCompressed());
+        dds.isObserved(), dds.isCompressed());
 
     long startPos = is.getStartPos();
     long startData = dataSection.getDataPos();
-    out.format("  startPos=%d len=%d endPos=%d dataStart=%d dataLen=%d dataEnd=%d %n",
-            startPos, is.getBufrLength(), (startPos + is.getBufrLength()),
-            startData, dataSection.getDataLength(), startData +dataSection.getDataLength());
+    out.format("  startPos=%d len=%d endPos=%d dataStart=%d dataLen=%d dataEnd=%d %n", startPos, is.getBufrLength(),
+        (startPos + is.getBufrLength()), startData, dataSection.getDataLength(),
+        startData + dataSection.getDataLength());
 
     dumpDesc(out, dds.getDataDescriptors(), lookup, 4);
 
@@ -315,17 +326,21 @@ public class Message {
     DataDescriptor root = new DataDescriptorTreeConstructor().factory(lookup, dds);
     dumpKeys(out, root, 4);
 
-    /* int nbits = m.getTotalBits();
-    int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
-    out.format("  totalBits = %d (%d bytes) outputBytes= %d isVarLen=%s isCompressed=%s\n\n",
-            nbits, nbytes, root.getByteWidthCDM(), root.isVarLength(), m.dds.isCompressed()); */
+    /*
+     * int nbits = m.getTotalBits();
+     * int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
+     * out.format("  totalBits = %d (%d bytes) outputBytes= %d isVarLen=%s isCompressed=%s\n\n",
+     * nbits, nbytes, root.getByteWidthCDM(), root.isVarLength(), m.dds.isCompressed());
+     */
   }
 
   private void dumpDesc(Formatter out, List<Short> desc, BufrTableLookup table, int indent) {
-    if (desc == null) return;
+    if (desc == null)
+      return;
 
     for (Short fxy : desc) {
-      for (int i = 0; i < indent; i++) out.format(" ");
+      for (int i = 0; i < indent; i++)
+        out.format(" ");
       Descriptor.show(out, fxy, table);
       out.format("%n");
       int f = (fxy & 0xC000) >> 14;
@@ -338,7 +353,8 @@ public class Message {
 
   private void dumpKeys(Formatter out, DataDescriptor tree, int indent) {
     for (DataDescriptor key : tree.subKeys) {
-      for (int i = 0; i < indent; i++) out.format(" ");
+      for (int i = 0; i < indent; i++)
+        out.format(" ");
       out.format("%s%n", key);
       if (key.getSubKeys() != null)
         dumpKeys(out, key, indent + 2);
@@ -350,18 +366,18 @@ public class Message {
     out.format(" BUFR edition %d time= %s wmoHeader=%s %n", is.getBufrEdition(), getReferenceTime(), getHeader());
     out.format("   Category= %d %s %s %n", lookup.getCategory(), lookup.getCategoryName(), lookup.getCategoryNo());
     out.format("   Center= %s %s %n", lookup.getCenterName(), lookup.getCenterNo());
-    out.format("   Table= %d.%d local= %d wmoTables= %s,%s localTables= %s,%s %n",
-            ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion(),
-            lookup.getWmoTableBName(), lookup.getWmoTableDName(), lookup.getLocalTableBName(), lookup.getLocalTableDName());
+    out.format("   Table= %d.%d local= %d wmoTables= %s,%s localTables= %s,%s %n", ids.getMasterTableId(),
+        ids.getMasterTableVersion(), ids.getLocalTableVersion(), lookup.getWmoTableBName(), lookup.getWmoTableDName(),
+        lookup.getLocalTableBName(), lookup.getLocalTableDName());
 
     out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b%n", dds.getNumberDatasets(), dds.getDataType(),
-            dds.isObserved(), dds.isCompressed());
+        dds.isObserved(), dds.isCompressed());
   }
 
   public void dumpHeaderShort(Formatter out) {
-    out.format(" %s, Cat= %s, Center= %s (%s), Table= %d.%d.%d %n", getHeader(),
-            lookup.getCategoryName(), lookup.getCenterName(), lookup.getCenterNo(),
-            ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion());
+    out.format(" %s, Cat= %s, Center= %s (%s), Table= %d.%d.%d %n", getHeader(), lookup.getCategoryName(),
+        lookup.getCenterName(), lookup.getCenterNo(), ids.getMasterTableId(), ids.getMasterTableVersion(),
+        ids.getLocalTableVersion());
   }
 
 }

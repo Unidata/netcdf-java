@@ -19,15 +19,18 @@ public class Index1D extends Index {
   /** array shapes */
   private int shape0;
 
-  Index1D() { super(1);}
-  public Index1D( int[] shape) {
+  Index1D() {
+    super(1);
+  }
+
+  public Index1D(int[] shape) {
     super(shape);
     precalc();
   }
 
-   public String toString() {
-     return Integer.toString(curr0);
-   }
+  public String toString() {
+    return Integer.toString(curr0);
+  }
 
   protected void precalc() {
     shape0 = shape[0];
@@ -35,30 +38,30 @@ public class Index1D extends Index {
     curr0 = current[0];
   }
 
- public int [] getCurrentCounter() {
+  public int[] getCurrentCounter() {
     current[0] = curr0;
     return current.clone();
   }
 
   public int currentElement() {
-    return offset + curr0*stride0;
+    return offset + curr0 * stride0;
   }
 
   public int incr() {
     if (++curr0 >= shape0)
-      curr0 = 0;    // rollover !
-    return offset + curr0*stride0;
+      curr0 = 0; // rollover !
+    return offset + curr0 * stride0;
   }
 
 
   public void setDim(int dim, int value) {
-    if (value < 0 || value >= shape[dim])  // check index here
+    if (value < 0 || value >= shape[dim]) // check index here
       throw new ArrayIndexOutOfBoundsException();
     curr0 = value;
   }
 
   public Index set0(int v) {
-    if (v < 0 || v >= shape0)  // check index here
+    if (v < 0 || v >= shape0) // check index here
       throw new ArrayIndexOutOfBoundsException();
     curr0 = v;
     return this;
@@ -69,21 +72,21 @@ public class Index1D extends Index {
     return this;
   }
 
-  public Index set(int[] index){
+  public Index set(int[] index) {
     if (index.length != rank)
       throw new ArrayIndexOutOfBoundsException();
     set0(index[0]);
     return this;
   }
 
- public Object clone() {
-   return super.clone();
- }
+  public Object clone() {
+    return super.clone();
+  }
 
- int setDirect(int v0) {
+  int setDirect(int v0) {
     if (v0 < 0 || v0 >= shape0)
       throw new ArrayIndexOutOfBoundsException();
-    return offset + v0*stride0;
- }
+    return offset + v0 * stride0;
+  }
 
 }

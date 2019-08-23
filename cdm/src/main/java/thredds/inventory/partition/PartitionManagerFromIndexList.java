@@ -9,7 +9,6 @@ import java.util.Collections;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.List;
  * Index Files are already in the cache.
  *
  * @author John
- * @since 2/5/14                   `
+ * @since 2/5/14 `
  */
 public class PartitionManagerFromIndexList extends CollectionAbstract implements PartitionManager {
   private List<MFile> partIndexFiles;
@@ -55,22 +54,21 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
     public MCollection next() {
       MFile nextFile = iter.next();
 
-      MCollection result = new CollectionSingleIndexFile( nextFile, logger);
+      MCollection result = new CollectionSingleIndexFile(nextFile, logger);
       result.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       return result;
     }
 
     @Override
-    public void remove() {
-    }
+    public void remove() {}
   }
 
   @Override
-  public void close() { }
+  public void close() {}
 
   @Override
   public Iterable<MFile> getFilesSorted() {
-    return Collections.emptyList() ;
+    return Collections.emptyList();
   }
 
   @Override
@@ -96,7 +94,7 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
   /////////////////////////////////////////////////////////////
   // partitions can be removed (!)
 
-  public void removePartition( MCollection partition) {
+  public void removePartition(MCollection partition) {
     for (MFile mfile : partIndexFiles) {
       if (mfile.getName().equalsIgnoreCase(partition.getCollectionName())) {
         List<MFile> part = new ArrayList<>(partIndexFiles);

@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -50,18 +50,16 @@ import java.util.List;
  * @author joew
  * @see BoolFunctionClause
  */
-public interface BoolFunction
-        extends ServerSideFunction {
+public interface BoolFunction extends ServerSideFunction {
 
-    /**
-     * Evaluates the function using the argument list given.
-     *
-     * @throws DAP2ServerSideException Thrown if the function
-     *                        cannot evaluate successfully. The exact type of exception is up
-     *                        to the author of the server-side function.
-     */
-    public boolean evaluate(List args)
-            throws DAP2ServerSideException;
+  /**
+   * Evaluates the function using the argument list given.
+   *
+   * @throws DAP2ServerSideException Thrown if the function
+   *         cannot evaluate successfully. The exact type of exception is up
+   *         to the author of the server-side function.
+   */
+  public boolean evaluate(List args) throws DAP2ServerSideException;
 }
 
 

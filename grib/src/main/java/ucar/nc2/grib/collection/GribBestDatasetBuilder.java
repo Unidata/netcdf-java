@@ -21,31 +21,35 @@ import ucar.nc2.grib.coord.CoordinateTimeAbstract;
  */
 public class GribBestDatasetBuilder {
 
-  static void makeDatasetBest(GribCollectionMutable result, List<GribCollectionMutable.GroupGC> groups2D, boolean isComplete) {
-    GribCollectionMutable.Dataset dsBest = result.makeDataset(isComplete ? GribCollectionImmutable.Type.BestComplete : GribCollectionImmutable.Type.Best);
+  static void makeDatasetBest(GribCollectionMutable result, List<GribCollectionMutable.GroupGC> groups2D,
+      boolean isComplete) {
+    GribCollectionMutable.Dataset dsBest =
+        result.makeDataset(isComplete ? GribCollectionImmutable.Type.BestComplete : GribCollectionImmutable.Type.Best);
 
     // int npart = result.getPartitionSize();
 
     // for each 2D group
     for (GribCollectionMutable.GroupGC group2D : groups2D) {
-      GribCollectionMutable.GroupGC groupB = dsBest.addGroupCopy(group2D);  // make copy of group, add to Best dataset
+      GribCollectionMutable.GroupGC groupB = dsBest.addGroupCopy(group2D); // make copy of group, add to Best dataset
       groupB.isTwoD = false;
 
       // for each time2D, create the best time coordinates
       HashMap<Coordinate, CoordinateTimeAbstract> map2DtoBest = new HashMap<>(); // associate 2D coord with best
       CoordinateSharerBest sharer = new CoordinateSharerBest();
       for (Coordinate coord : group2D.coords) {
-        if (coord instanceof CoordinateRuntime) continue; // skip it
+        if (coord instanceof CoordinateRuntime)
+          continue; // skip it
         if (coord instanceof CoordinateTime2D) {
           CoordinateTimeAbstract best = ((CoordinateTime2D) coord).makeBestTimeCoordinate(result.masterRuntime);
-          if (!isComplete) best = best.makeBestFromComplete();
+          if (!isComplete)
+            best = best.makeBestFromComplete();
           sharer.addCoordinate(best);
           map2DtoBest.put(coord, best);
         } else {
           sharer.addCoordinate(coord);
         }
       }
-      groupB.coords = sharer.finish();  // these are the unique coords for group Best
+      groupB.coords = sharer.finish(); // these are the unique coords for group Best
 
       // transfer variables to Best group, set shared Coordinates
       for (GribCollectionMutable.VariableIndex vi2d : group2D.variList) {
@@ -57,7 +61,8 @@ public class GribBestDatasetBuilder {
         List<Coordinate> newCoords = new ArrayList<>();
         for (Integer groupIndex : vi2d.coordIndex) {
           Coordinate coord2D = group2D.coords.get(groupIndex);
-          if (coord2D instanceof CoordinateRuntime) continue; // skip runtime;
+          if (coord2D instanceof CoordinateRuntime)
+            continue; // skip runtime;
           if (coord2D instanceof CoordinateTime2D) {
             newCoords.add(map2DtoBest.get(coord2D)); // add the best coordinate for that CoordinateTime2D
           } else {

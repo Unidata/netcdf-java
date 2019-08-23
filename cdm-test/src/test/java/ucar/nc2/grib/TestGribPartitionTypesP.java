@@ -21,7 +21,6 @@ import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -46,9 +45,9 @@ public class TestGribPartitionTypesP {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{ "gfsConus80_dir", "directory", true});
-    result.add(new Object[]{ "gfsConus80_file", "file", true});
-    result.add(new Object[]{ "gfsConus80_none", "none", false});
+    result.add(new Object[] {"gfsConus80_dir", "directory", true});
+    result.add(new Object[] {"gfsConus80_file", "file", true});
+    result.add(new Object[] {"gfsConus80_none", "none", false});
 
     return result;
   }
@@ -68,39 +67,46 @@ public class TestGribPartitionTypesP {
     Indent indent = new Indent(2);
 
     // create it
-    FeatureCollectionConfig config = new FeatureCollectionConfig(collectionName, "test/" + collectionName, FeatureCollectionType.GRIB1,
-            spec, null, null, null, partitionType, null);
+    FeatureCollectionConfig config = new FeatureCollectionConfig(collectionName, "test/" + collectionName,
+        FeatureCollectionType.GRIB1, spec, null, null, null, partitionType, null);
 
     System.out.printf("============== create %s %n", collectionName);
-    try (GribCollectionImmutable gc = GribCdmIndex.openGribCollection(config, CollectionUpdateType.always, logger)) {  // recreate the index each time
+    try (GribCollectionImmutable gc = GribCdmIndex.openGribCollection(config, CollectionUpdateType.always, logger)) { // recreate
+                                                                                                                      // the
+                                                                                                                      // index
+                                                                                                                      // each
+                                                                                                                      // time
       Assert.assertNotNull(collectionName, gc);
       indent.incr();
       openGC(gc.getLocation(), config, indent);
       indent.decr();
 
-      /* List<GribCollectionImmutable.Dataset> datasets = gc.getDatasets();
-      Assert.assertEquals(isTwoD ? 2 : 1, datasets.size());
-      if (isTwoD) {
-        Assert.assertEquals(datasets.get(0).getType(), datasets.get(0).getType().isTwoD());
-        Assert.assertEquals(GribCollectionImmutable.Type.Best, datasets.get(1).getType());
-      }
-
-      indent.incr();
-      for (GribCollectionImmutable.Dataset dataset : gc.getDatasets()) {
-        System.out.printf("%sdataset = %s %n", indent, dataset.getType());
-      }
-
-      for (MFile mfile : gc.getFiles()) {
-        openGC(mfile.getPath(), config, indent);
-      }
-      indent.decr(); */
+      /*
+       * List<GribCollectionImmutable.Dataset> datasets = gc.getDatasets();
+       * Assert.assertEquals(isTwoD ? 2 : 1, datasets.size());
+       * if (isTwoD) {
+       * Assert.assertEquals(datasets.get(0).getType(), datasets.get(0).getType().isTwoD());
+       * Assert.assertEquals(GribCollectionImmutable.Type.Best, datasets.get(1).getType());
+       * }
+       * 
+       * indent.incr();
+       * for (GribCollectionImmutable.Dataset dataset : gc.getDatasets()) {
+       * System.out.printf("%sdataset = %s %n", indent, dataset.getType());
+       * }
+       * 
+       * for (MFile mfile : gc.getFiles()) {
+       * openGC(mfile.getPath(), config, indent);
+       * }
+       * indent.decr();
+       */
     }
 
     System.out.printf("done%n");
   }
 
   private void openGC(String indexFilename, FeatureCollectionConfig config, Indent indent) throws IOException {
-    if (!indexFilename.endsWith(".ncx4")) return;
+    if (!indexFilename.endsWith(".ncx4"))
+      return;
 
     try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFilename, config, true, logger)) {
       Assert.assertNotNull(indexFilename, gc);

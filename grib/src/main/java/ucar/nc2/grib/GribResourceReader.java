@@ -10,6 +10,7 @@ import java.io.*;
  * Static methods to read resource files.
  *
  * @author caron 07/28/14
+ * 
  * @version 2.0
  */
 public class GribResourceReader {
@@ -35,7 +36,7 @@ public class GribResourceReader {
       return new FileInputStream(f);
 
     // give up
-    throw new FileNotFoundException("Cant find resource "+resourceName);
+    throw new FileNotFoundException("Cant find resource " + resourceName);
   }
 
 }

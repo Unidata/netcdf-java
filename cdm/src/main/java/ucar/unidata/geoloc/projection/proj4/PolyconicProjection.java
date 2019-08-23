@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -33,7 +33,6 @@
 package ucar.unidata.geoloc.projection.proj4;
 
 import java.util.Formatter;
-
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.Earth;
@@ -48,7 +47,7 @@ import ucar.unidata.geoloc.ProjectionPointImpl;
  * This file was semi-automatically converted from the public-domain USGS PROJ source.
  *
  * Bernhard Jenny, 19 September 2010: fixed spherical inverse.
-
+ * 
  * @author ghansham@sac.isro.gov.in 1/8/2012
  */
 public class PolyconicProjection extends ProjectionImpl {
@@ -61,7 +60,7 @@ public class PolyconicProjection extends ProjectionImpl {
   private final static int I_ITER = 20;
   private final static double ITOL = 1.e-12;
 
-  //New variables added
+  // New variables added
   private boolean spherical = true;
   private double projectionLatitude;
   private double projectionLongitude;
@@ -87,7 +86,7 @@ public class PolyconicProjection extends ProjectionImpl {
   public PolyconicProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth ellipsoid) {
     super("Polyconic", false);
 
-    //Initialization
+    // Initialization
     this.projectionLatitude = Math.toRadians(lat0);
     this.projectionLongitude = Math.toRadians(lon0);
     this.ellipsoid = ellipsoid;
@@ -99,7 +98,7 @@ public class PolyconicProjection extends ProjectionImpl {
 
     initialize();
 
-    //Adding parameters
+    // Adding parameters
     addParameter(CF.GRID_MAPPING_NAME, name);
     addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, lat0);
     addParameter(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, lon0);
@@ -128,20 +127,20 @@ public class PolyconicProjection extends ProjectionImpl {
     } else {
 
       /*
-      FORWARD(e_forward); ellipsoid
-      	double  ms, sp, cp;
-
-      	if (fabs(lp.phi) <= TOL) {
-      	  xy.x = lp.lam; xy.y = -P->ml0; }
-      	else {
-      		sp = sin(lp.phi);
-      		ms = fabs(cp = cos(lp.phi)) > TOL ? pj_msfn(sp, cp, P->es) / sp : 0.;
-      		xy.x = ms * sin(lp.lam *= sp); // LOOK
-      		xy.y = (pj_mlfn(lp.phi, sp, cp, P->en) - P->ml0) + ms * (1. - cos(lp.lam));
-      	}
-      	return (xy);
-      }
-      */
+       * FORWARD(e_forward); ellipsoid
+       * double ms, sp, cp;
+       * 
+       * if (fabs(lp.phi) <= TOL) {
+       * xy.x = lp.lam; xy.y = -P->ml0; }
+       * else {
+       * sp = sin(lp.phi);
+       * ms = fabs(cp = cos(lp.phi)) > TOL ? pj_msfn(sp, cp, P->es) / sp : 0.;
+       * xy.x = ms * sin(lp.lam *= sp); // LOOK
+       * xy.y = (pj_mlfn(lp.phi, sp, cp, P->en) - P->ml0) + ms * (1. - cos(lp.lam));
+       * }
+       * return (xy);
+       * }
+       */
       double ms, sp, cp;
 
       if (Math.abs(lpphi) <= TOL) {
@@ -174,9 +173,8 @@ public class PolyconicProjection extends ProjectionImpl {
         i = N_ITER;
         do {
           tp = Math.tan(lpphi);
-          lpphi -= (dphi = (xyy * (lpphi * tp + 1.) - lpphi
-                  - .5 * (lpphi * lpphi + B) * tp)
-                  / ((lpphi - xyy) / tp - 1.));
+          lpphi -=
+              (dphi = (xyy * (lpphi * tp + 1.) - lpphi - .5 * (lpphi * lpphi + B) * tp) / ((lpphi - xyy) / tp - 1.));
         } while (Math.abs(dphi) > CONV && --i > 0);
         if (i == 0) {
           out.setLocation(Double.NaN, Double.NaN);
@@ -205,9 +203,8 @@ public class PolyconicProjection extends ProjectionImpl {
           ml = MapMath.mlfn(lpphi, sp, cp, en);
           mlb = ml * ml + r;
           mlp = (1.0 / es) / (mlp * mlp * mlp);
-          lpphi += (dPhi =
-                  (ml + ml + c * mlb - 2. * xyy * (c * ml + 1.)) / (es * s2ph * (mlb - 2. * xyy * ml) / c
-                          + 2. * (xyy - ml) * (c * mlp - 1. / s2ph) - mlp - mlp));
+          lpphi += (dPhi = (ml + ml + c * mlb - 2. * xyy * (c * ml + 1.))
+              / (es * s2ph * (mlb - 2. * xyy * ml) / c + 2. * (xyy - ml) * (c * mlp - 1. / s2ph) - mlp - mlp));
           if (Math.abs(dPhi) <= ITOL) {
             break;
           }
@@ -236,19 +233,25 @@ public class PolyconicProjection extends ProjectionImpl {
     }
   }
 
-  //   public PolyconicProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth ellipsoid) {
+  // public PolyconicProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth ellipsoid) {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     PolyconicProjection that = (PolyconicProjection) o;
 
-    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
-    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
-    if (Double.compare(that.projectionLatitude, projectionLatitude) != 0) return false;
-    if (Double.compare(that.projectionLongitude, projectionLongitude) != 0) return false;
+    if (Double.compare(that.falseEasting, falseEasting) != 0)
+      return false;
+    if (Double.compare(that.falseNorthing, falseNorthing) != 0)
+      return false;
+    if (Double.compare(that.projectionLatitude, projectionLatitude) != 0)
+      return false;
+    if (Double.compare(that.projectionLongitude, projectionLongitude) != 0)
+      return false;
     return ellipsoid.equals(that.ellipsoid);
 
   }
@@ -275,22 +278,25 @@ public class PolyconicProjection extends ProjectionImpl {
    * Check for equality with the Object in question
    *
    * @param proj object to check
+   * 
    * @return true if they are equal
    *
-  public boolean equals(Object proj) {
-    if (!(proj instanceof PolyconicProjection))
-      return false;
+   * public boolean equals(Object proj) {
+   * if (!(proj instanceof PolyconicProjection))
+   * return false;
+   * 
+   * PolyconicProjection oo = (PolyconicProjection) proj;
+   * if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these
+   * are null
+   * if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
+   * 
+   * return ((this.getOriginLatitude() == oo.getOriginLatitude())
+   * && (this.getOriginLongitude() == oo.getOriginLongitude())
+   * && this.ellipsoid.equals(oo.getEarth()));
+   * }
+   */
 
-    PolyconicProjection oo = (PolyconicProjection) proj;
-    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
-    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
-
-    return ((this.getOriginLatitude() == oo.getOriginLatitude())
-          && (this.getOriginLongitude() == oo.getOriginLongitude())
-          && this.ellipsoid.equals(oo.getEarth()));
-  }  */
-
-  //Beans properties
+  // Beans properties
   public Earth getEarth() {
     return ellipsoid;
   }
@@ -300,7 +306,7 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param lat the origin latitude.
    */
-  public void setOriginLatitude(double lat) { //suppply in degrees
+  public void setOriginLatitude(double lat) { // suppply in degrees
     projectionLatitude = Math.toRadians(lat);
   }
 
@@ -318,7 +324,7 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param lon the origin longitude.
    */
-  public void setOriginLongitude(double lon) {//suppply in degrees
+  public void setOriginLongitude(double lon) {// suppply in degrees
     projectionLongitude = Math.toRadians(lon);
   }
 
@@ -386,7 +392,8 @@ public class PolyconicProjection extends ProjectionImpl {
   @Override
   public String paramsToString() {
     Formatter f = new Formatter();
-    f.format("origin lat=%f, origin lon=%f earth=%s", Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude), ellipsoid);
+    f.format("origin lat=%f, origin lon=%f earth=%s", Math.toDegrees(projectionLatitude),
+        Math.toDegrees(projectionLongitude), ellipsoid);
     return f.toString();
   }
 
@@ -406,8 +413,7 @@ public class PolyconicProjection extends ProjectionImpl {
 
 
     // opposite signed X values, larger then 20,000 kml... similar to LambertConformal Conic
-    return (pt1.getX() * pt2.getX() < 0)
-            && (Math.abs(pt1.getX() - pt2.getX()) > 20000.0);
+    return (pt1.getX() * pt2.getX() < 0) && (Math.abs(pt1.getX() - pt2.getX()) > 20000.0);
 
 
   }
@@ -437,7 +443,7 @@ public class PolyconicProjection extends ProjectionImpl {
    * Convert projection coordinates to a LatLonPoint
    * Note: a new object is not created on each call for the return value.
    *
-   * @param world  convert from these projection coordinates
+   * @param world convert from these projection coordinates
    * @param result the object to write to
    * @return LatLonPoint convert to these lat/lon coordinates
    */
@@ -457,14 +463,15 @@ public class PolyconicProjection extends ProjectionImpl {
       pp.setX(MapMath.normalizeLongitude(pp.getX() + projectionLongitude));
     }
 
-    result.setLatitude( Math.toDegrees(pp.getY()));
-    result.setLongitude( Math.toDegrees(pp.getX()));
+    result.setLatitude(Math.toDegrees(pp.getY()));
+    result.setLongitude(Math.toDegrees(pp.getX()));
     return result;
   }
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result =  new PolyconicProjection(getOriginLatitude(), getOriginLongitude(), getFalseEasting(), getFalseNorthing(), getEarth());
+    ProjectionImpl result = new PolyconicProjection(getOriginLatitude(), getOriginLongitude(), getFalseEasting(),
+        getFalseNorthing(), getEarth());
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;

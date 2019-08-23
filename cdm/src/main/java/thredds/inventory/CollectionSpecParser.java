@@ -7,7 +7,6 @@ package thredds.inventory;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -17,21 +16,27 @@ import java.util.Formatter;
 
 /**
  * Parses the collection specification string.
- * <p>the idea  is that one copies the full path of an example dataset, then edits it</p>
- * <p>Example: "/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/** /GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1$"</p>
+ * <p>
+ * the idea is that one copies the full path of an example dataset, then edits it
+ * </p>
+ * <p>
+ * Example: "/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/** /GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1$"
+ * </p>
  * <ul>
- * <li> rootDir ="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km"/</li>
- * <li>    subdirs=true (because ** is present) </li>
- * <li>    dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm"</li>
- * <li>    regExp='GFS_Alaska_191km_.............\.grib1$</li>
+ * <li>rootDir ="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km"/</li>
+ * <li>subdirs=true (because ** is present)</li>
+ * <li>dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm"</li>
+ * <li>regExp='GFS_Alaska_191km_.............\.grib1$</li>
  * </ul>
- * <p>Example: "Q:/grid/grib/grib1/data/agg/.*\.grb"</p>
+ * <p>
+ * Example: "Q:/grid/grib/grib1/data/agg/.*\.grb"
+ * </p>
  * <ul>
- * <li> rootDir ="Q:/grid/grib/grib1/data/agg/"/</li>
- * <li>    subdirs=false</li>
- * <li>    dateFormatMark=null</li>
- * <li>    useName=yes</li>
- * <li>    regexp= ".*\.grb" (anything ending with .grb)</li>
+ * <li>rootDir ="Q:/grid/grib/grib1/data/agg/"/</li>
+ * <li>subdirs=false</li>
+ * <li>dateFormatMark=null</li>
+ * <li>useName=yes</li>
+ * <li>regexp= ".*\.grb" (anything ending with .grb)</li>
  * </ul>
  *
  * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/collections/CollectionSpecification.html"
@@ -50,7 +55,8 @@ public class CollectionSpecParser {
   /**
    * Single spec : "/topdir/** /#dateFormatMark#regExp"
    * This only allows the dateFormatMark to be in the file name, not anywhere else in the filename path,
-   *  and you cant use any part of the dateFormat to filter on.
+   * and you cant use any part of the dateFormat to filter on.
+   * 
    * @param collectionSpec the collection Spec
    * @param errlog put error messages here, may be null
    */
@@ -120,14 +126,14 @@ public class CollectionSpecParser {
   public CollectionSpecParser(String rootDir, String regExp, Formatter errlog) {
     this.rootDir = StringUtil2.removeFromEnd(rootDir, '/');
     this.subdirs = true;
-    this.spec = this.rootDir +"/" + regExp;
+    this.spec = this.rootDir + "/" + regExp;
     this.filter = Pattern.compile(spec);
     this.dateFormatMark = null;
     this.filterOnName = false;
   }
 
   public PathMatcher getPathMatcher() {
-    if (spec.startsWith("regex:") || spec.startsWith("glob:")) {  // experimental
+    if (spec.startsWith("regex:") || spec.startsWith("glob:")) { // experimental
       return FileSystems.getDefault().getPathMatcher(spec);
     } else {
       return new BySpecp();
@@ -164,12 +170,9 @@ public class CollectionSpecParser {
 
   @Override
   public String toString() {
-    return "CollectionSpecParser{" +
-            "\n   topDir='" + rootDir + '\'' +
-            "\n   subdirs=" + subdirs +
-            "\n   regExp='" + filter + '\'' +
-            "\n   dateFormatMark='" + dateFormatMark + '\'' +
-  //          "\n   useName=" + useName +
-            "\n}";
+    return "CollectionSpecParser{" + "\n   topDir='" + rootDir + '\'' + "\n   subdirs=" + subdirs + "\n   regExp='"
+        + filter + '\'' + "\n   dateFormatMark='" + dateFormatMark + '\'' +
+        // "\n useName=" + useName +
+        "\n}";
   }
 }

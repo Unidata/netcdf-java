@@ -7,7 +7,6 @@ package ucar.nc2.ui.gis.shapefile;
 import ucar.nc2.ui.gis.AbstractGisFeature;
 import ucar.nc2.ui.gis.GisPart;
 import ucar.unidata.io.BeLeDataInputStream;
-
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -31,30 +30,33 @@ import java.util.zip.ZipInputStream;
  */
 public class EsriShapefile {
   // these are only shape types handled by this package, so far
-  enum Type {none, point, polyline, polygon, multipoint}
+  enum Type {
+    none, point, polyline, polygon, multipoint
+  }
 
   private static final int SHAPEFILE_CODE = 9994; // shapefile magic number
   private static final double defaultCoarseness = 0.0;
 
   private BeLeDataInputStream bdis; // the shapefile data stream
-  private int fileBytes;         // bytes in file, according to header
-  private int bytesSeen = 0;         // so far, in bytes.
-  private int version;         // of shapefile format (currently 1000)
+  private int fileBytes; // bytes in file, according to header
+  private int bytesSeen = 0; // so far, in bytes.
+  private int version; // of shapefile format (currently 1000)
   private Type type;
   private boolean debug = false;
 
-  private List<EsriFeature> features;        // EsriFeatures in List
-  private Rectangle2D listBounds;    // bounds from shapefile
-  private double resolution;         // computed from coarseness
+  private List<EsriFeature> features; // EsriFeatures in List
+  private Rectangle2D listBounds; // bounds from shapefile
+  private double resolution; // computed from coarseness
 
   /*
-    * Relative accuracy of plotting.  Larger means coarser but
-    * faster, 0.0 is all available resolution.  Anything less than 1
-    * is wasted sub-pixel plotting, but retains quality for closer
-    * zooming.  Anything over about 2.0 is ugly.  1.50 makes things
-    * faster than 1.0 at the cost of barely discernible ugliness, but
-    * for best quality (without zooms), set to 1.0.  If you still
-    * want quality at 10:1 zooms, set to 1/10, etc.  */
+   * Relative accuracy of plotting. Larger means coarser but
+   * faster, 0.0 is all available resolution. Anything less than 1
+   * is wasted sub-pixel plotting, but retains quality for closer
+   * zooming. Anything over about 2.0 is ugly. 1.50 makes things
+   * faster than 1.0 at the cost of barely discernible ugliness, but
+   * for best quality (without zooms), set to 1.0. If you still
+   * want quality at 10:1 zooms, set to 1/10, etc.
+   */
   private double coarseness;
 
   /**
@@ -62,7 +64,7 @@ public class EsriShapefile {
    * an in-memory structure.
    *
    * @param filename name of ESRI shapefile (typically has ".shp"
-   *                 extension)
+   *        extension)
    */
   public EsriShapefile(String filename) throws IOException {
     this(filename, null);
@@ -83,8 +85,8 @@ public class EsriShapefile {
    * Read an ESRI shapefile and extract all features into
    * an in-memory structure, with control of time versus resolution.
    *
-   * @param filename   name of ESRI shapefile (typically has ".shp"
-   *                   extension)
+   * @param filename name of ESRI shapefile (typically has ".shp"
+   *        extension)
    * @param coarseness to tradeoff plot quality versus speed.
    */
   public EsriShapefile(String filename, double coarseness) throws IOException {
@@ -95,7 +97,7 @@ public class EsriShapefile {
    * Read an ESRI shapefile from a URL and extract all features into
    * an in-memory structure, with control of time versus resolution.
    *
-   * @param url        URL of ESRI shapefile
+   * @param url URL of ESRI shapefile
    * @param coarseness to tradeoff plot quality versus speed.
    */
   public EsriShapefile(URL url, double coarseness) throws IOException {
@@ -107,10 +109,10 @@ public class EsriShapefile {
    * Read an ESRI shapefile and extract the subset of features that have
    * bounding boxes that intersect a specified bounding box
    *
-   * @param url        URL of ESRI shapefile
-   * @param bBox       bounding box specifying which features to select,
-   *                   namely those whose bounding boxes intersect this one. If null,
-   *                   bounding box of whole shapefile is used
+   * @param url URL of ESRI shapefile
+   * @param bBox bounding box specifying which features to select,
+   *        namely those whose bounding boxes intersect this one. If null,
+   *        bounding box of whole shapefile is used
    * @param coarseness to tradeoff plot quality versus speed.
    */
   public EsriShapefile(URL url, Rectangle2D bBox, double coarseness) throws IOException {
@@ -122,10 +124,10 @@ public class EsriShapefile {
    * Read an ESRI shapefile and extract all features into an in-memory
    * structure, with control of time versus resolution.
    *
-   * @param filename   name of ESRI shapefile
-   * @param bBox       bounding box specifying which features to select,
-   *                   namely those whose bounding boxes intersect this one. If null,
-   *                   bounding box of whole shapefile is used
+   * @param filename name of ESRI shapefile
+   * @param bBox bounding box specifying which features to select,
+   *        namely those whose bounding boxes intersect this one. If null,
+   *        bounding box of whole shapefile is used
    * @param coarseness to tradeoff plot quality versus speed.
    */
   public EsriShapefile(String filename, Rectangle2D bBox, double coarseness) throws IOException {
@@ -136,10 +138,10 @@ public class EsriShapefile {
    * Read an ESRI shapefile and extract the subset of features that have
    * bounding boxes that intersect a specified bounding box
    *
-   * @param url  URL of ESRI shapefile
+   * @param url URL of ESRI shapefile
    * @param bBox bounding box specifying which features to select,
-   *             namely those whose bounding boxes intersect this one. If null,
-   *             bounding box of whole shapefile is used
+   *        namely those whose bounding boxes intersect this one. If null,
+   *        bounding box of whole shapefile is used
    */
   public EsriShapefile(URL url, Rectangle2D bBox) throws IOException {
     this(new DataInputStream(url.openStream()), bBox, 0.0f);
@@ -151,9 +153,9 @@ public class EsriShapefile {
    * bounding boxes that intersect a specified bounding box.
    *
    * @param filename name of ESRI shapefile
-   * @param bBox     bounding box specifying which features to select,
-   *                 namely those whose bounding boxes intersect this one. If null,
-   *                 bounding box of whole shapefile is used
+   * @param bBox bounding box specifying which features to select,
+   *        namely those whose bounding boxes intersect this one. If null,
+   *        bounding box of whole shapefile is used
    */
   public EsriShapefile(String filename, Rectangle2D bBox) throws IOException {
     this(new FileInputStream(filename), bBox, 0.0f);
@@ -166,9 +168,9 @@ public class EsriShapefile {
    * with control of time versus resolution.
    *
    * @param iStream input from which to read
-   * @param bBox    bounding box specifying which features to select,
-   *                namely those whose bounding boxes intersect this one. If null,
-   *                bounding box of whole shapefile is used
+   * @param bBox bounding box specifying which features to select,
+   *        namely those whose bounding boxes intersect this one. If null,
+   *        bounding box of whole shapefile is used
    */
   public EsriShapefile(InputStream iStream, Rectangle2D bBox, double coarseness) throws IOException {
     BufferedInputStream bin = new BufferedInputStream(iStream);
@@ -211,7 +213,7 @@ public class EsriShapefile {
     if (fileCode != SHAPEFILE_CODE)
       throw (new IOException("Not a shapefile"));
 
-    skipBytes(20);    // 5 unused ints
+    skipBytes(20); // 5 unused ints
     fileBytes = 2 * readInt();
     version = readLEInt();
 
@@ -232,8 +234,10 @@ public class EsriShapefile {
 
     skipBytes(32); // skip to start of first record header
 
-    /* Read through file, filtering out features that don't
-       intersect bounding box. */
+    /*
+     * Read through file, filtering out features that don't
+     * intersect bounding box.
+     */
     features = new ArrayList<>();
     while (bytesSeen < fileBytes) {
       EsriFeature gf = nextFeature();
@@ -244,11 +248,16 @@ public class EsriShapefile {
 
   private Type assignType(int type) {
     switch (type) {
-      case 1 : return Type.point;
-      case 3 : return Type.polyline;
-      case 5 : return Type.polygon;
-      case 8 : return Type.multipoint;
-      default: return Type.none;
+      case 1:
+        return Type.point;
+      case 3:
+        return Type.polyline;
+      case 5:
+        return Type.polygon;
+      case 8:
+        return Type.multipoint;
+      default:
+        return Type.none;
     }
   }
 
@@ -284,13 +293,14 @@ public class EsriShapefile {
     int startAt = bytesSeen;
     int recordNumber = readInt(); // starts at 1, not 0
     int contentLength = readInt(); // in 16-bit words
-    if (debug) System.out.printf("Shapefile start=%d record=%d len=%d%n", startAt, recordNumber, contentLength);
+    if (debug)
+      System.out.printf("Shapefile start=%d record=%d len=%d%n", startAt, recordNumber, contentLength);
     int type = readLEInt();
     Type featureType = assignType(type);
     switch (featureType) {
       case point:
         return new EsriPoint();
-      case multipoint:    // multipoint, only 1 part
+      case multipoint: // multipoint, only 1 part
         return new EsriMultipoint();
       case polyline:
         return new EsriPolyline();
@@ -298,7 +308,7 @@ public class EsriShapefile {
         return new EsriPolygon();
       default:
         System.out.printf("Skip shapefile record=%d pos =%d len=%d%n", recordNumber, startAt, contentLength);
-        skipBytes(2*(contentLength-2));
+        skipBytes(2 * (contentLength - 2));
         return null;
     }
   }
@@ -326,7 +336,7 @@ public class EsriShapefile {
   private void skipBytes(int n) throws IOException {
     long skipped = 0;
     while (skipped < n)
-      skipped += bdis.skip(n-skipped);
+      skipped += bdis.skip(n - skipped);
     bytesSeen += n;
   }
 
@@ -349,7 +359,7 @@ public class EsriShapefile {
   }
 
   /**
-   * Get a List of all the GisFeatures in the shapefile.  This is
+   * Get a List of all the GisFeatures in the shapefile. This is
    * very fast after the constructor has been called, since it is
    * created during construction.
    *
@@ -361,14 +371,14 @@ public class EsriShapefile {
 
   /**
    * Get a List of all the features in the shapefile that intersect
-   * the specified bounding box.  This requires testing every
+   * the specified bounding box. This requires testing every
    * feature in the List created at construction, so it's faster to
    * just give a bounding box o the constructor if you will only do
    * this once.
    *
    * @param bBox specifying the bounding box with which all
-   *             the returned features bounding boxes have a non-empty
-   *             intersection.
+   *        the returned features bounding boxes have a non-empty
+   *        intersection.
    * @return a new list of features in the shapefile whose bounding
    *         boxes intersect the specified bounding box.
    */
@@ -434,7 +444,7 @@ public class EsriShapefile {
     /**
      * Get the parts of this feature, in the form of an iterator.
      *
-     * @return the iterator over the parts of this feature.  Each part
+     * @return the iterator over the parts of this feature. Each part
      *         is a GisPart.
      */
     public java.util.Iterator getGisParts() {
@@ -443,12 +453,9 @@ public class EsriShapefile {
 
     @Override
     public String toString() {
-      return "EsriFeature{" +
-              "numPoints=" + numPoints +
-              ", numParts=" + numParts +
-      //        ", npartsList=" + partsList +
-              ", bounds=" + bounds +
-              '}';
+      return "EsriFeature{" + "numPoints=" + numPoints + ", numParts=" + numParts +
+      // ", npartsList=" + partsList +
+          ", bounds=" + bounds + '}';
     }
   } // EsriFeature
 
@@ -456,7 +463,7 @@ public class EsriShapefile {
   private double[] xyPoints = new double[100]; // buffer for points input
 
   /**
-   * Discretize elements of array to a lower resolution.  For
+   * Discretize elements of array to a lower resolution. For
    * example, if resolution = 100., the value 3.14159265358979 will
    * be changed to 3.14.
    *
@@ -473,9 +480,9 @@ public class EsriShapefile {
 
   /**
    * Represents a Polygon in an ESRI shapefile as a List of
-   * GisParts.  A Polygon is just an ordered set of vertices of 1 or
+   * GisParts. A Polygon is just an ordered set of vertices of 1 or
    * more parts, where a part is a closed connected sequence of
-   * points.  A state boundary might be represented by a Polygon,
+   * points. A state boundary might be represented by a Polygon,
    * for example, where each part might be the main part or islands.
    * <p/>
    * Created: Sat Feb 20 17:19:53 1999
@@ -483,8 +490,7 @@ public class EsriShapefile {
    * @author Russ Rew
    */
   public class EsriPolygon extends EsriFeature {
-    EsriPolygon()
-            throws java.io.IOException {
+    EsriPolygon() throws java.io.IOException {
       bounds = readBoundingBox();
       numParts = readLEInt();
       numPoints = readLEInt();
@@ -507,8 +513,10 @@ public class EsriShapefile {
         int pointsInPart = parts[part + 1] - parts[part];
         /* remove duplicate discretized points in part constructor */
         GisPart gp = new EsriPart(pointsInPart, xyPoints, ixy);
-        /* Only add a part if it has 2 or more points, after duplicate
-      point removal */
+        /*
+         * Only add a part if it has 2 or more points, after duplicate
+         * point removal
+         */
         if (gp.getNumPoints() > 1) {
           partsList.add(gp);
           numPoints += gp.getNumPoints();
@@ -523,7 +531,7 @@ public class EsriShapefile {
 
   /**
    * Represents a Polyline in an ESRI shapefile as a List of
-   * GisParts.  A Polyline is just an ordered set of vertices of 1
+   * GisParts. A Polyline is just an ordered set of vertices of 1
    * or more parts, where a part is a connected sequence of points.
    * A river including its tributaries might be represented by a
    * Polyine, for example, where each part would be a branch of the
@@ -558,8 +566,10 @@ public class EsriShapefile {
         int pointsInPart = parts[part + 1] - parts[part];
         /* remove duplicate discretized points in part constructor */
         GisPart gp = new EsriPart(pointsInPart, xyPoints, ixy);
-        /* Only add a part if it has 2 or more points, after duplicate
-      point removal */
+        /*
+         * Only add a part if it has 2 or more points, after duplicate
+         * point removal
+         */
         if (gp.getNumPoints() > 1) {
           partsList.add(gp);
           numPoints += gp.getNumPoints();
@@ -573,7 +583,7 @@ public class EsriShapefile {
 
 
   /**
-   * Represents a Multipoint in an ESRI shapefile.  A
+   * Represents a Multipoint in an ESRI shapefile. A
    * Multipoint is a set of 2D points.
    * <p/>
    * Created: Sat Feb 20 17:19:53 1999
@@ -635,9 +645,9 @@ public class EsriShapefile {
      * Construct an EsriPart by eliding duplicates from array
      * representing points.
      *
-     * @param num      number of input points to use
+     * @param num number of input points to use
      * @param xyPoints array containing consecutive (x,y) pair for
-     *                 each point.
+     *        each point.
      * @param xyOffset index in array from which to start
      */
     EsriPart(int num, double[] xyPoints, int xyOffset) {

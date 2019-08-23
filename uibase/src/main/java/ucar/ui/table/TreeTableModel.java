@@ -6,12 +6,12 @@
  * conditions are met:
  *
  * - Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  *
  * - Redistribution in binary form must reproduce the above
- *   copyright notice, this list of conditions and the following
- *   disclaimer in the documentation and/or other materials
- *   provided with the distribution.
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials
+ * provided with the distribution.
  *
  * Neither the name of Sun Microsystems, Inc. or the names of
  * contributors may be used to endorse or promote products derived
@@ -37,6 +37,7 @@
  */
 
 package ucar.ui.table;
+
 import javax.swing.tree.TreeModel;
 
 /**
@@ -50,38 +51,37 @@ import javax.swing.tree.TreeModel;
  * @author Philip Milne
  * @author Scott Violet
  */
-public interface TreeTableModel extends TreeModel
-{
-    /**
-     * Returns the number ofs availible column.
-     */
-    int getColumnCount();
+public interface TreeTableModel extends TreeModel {
+  /**
+   * Returns the number ofs availible column.
+   */
+  int getColumnCount();
 
-    /**
-     * Returns the name for column number <code>column</code>.
-     */
-    String getColumnName(int column);
+  /**
+   * Returns the name for column number <code>column</code>.
+   */
+  String getColumnName(int column);
 
-    /**
-     * Returns the type for column number <code>column</code>.
-     */
-    Class getColumnClass(int column);
+  /**
+   * Returns the type for column number <code>column</code>.
+   */
+  Class getColumnClass(int column);
 
-    /**
-     * Returns the value to be displayed for node <code>node</code>,
-     * at column number <code>column</code>.
-     */
-    Object getValueAt(Object node, int column);
+  /**
+   * Returns the value to be displayed for node <code>node</code>,
+   * at column number <code>column</code>.
+   */
+  Object getValueAt(Object node, int column);
 
-    /**
-     * Indicates whether the the value for node <code>node</code>,
-     * at column number <code>column</code> is editable.
-     */
-    boolean isCellEditable(Object node, int column);
+  /**
+   * Indicates whether the the value for node <code>node</code>,
+   * at column number <code>column</code> is editable.
+   */
+  boolean isCellEditable(Object node, int column);
 
-    /**
-     * Sets the value for node <code>node</code>,
-     * at column number <code>column</code>.
-     */
-    void setValueAt(Object aValue, Object node, int column);
+  /**
+   * Sets the value for node <code>node</code>,
+   * at column number <code>column</code>.
+   */
+  void setValueAt(Object aValue, Object node, int column);
 }

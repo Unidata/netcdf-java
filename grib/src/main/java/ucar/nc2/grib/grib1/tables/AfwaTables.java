@@ -10,7 +10,6 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +21,9 @@ import java.util.Map;
  * @since 7/31/13
  */
 public class AfwaTables extends Grib1Customizer {
-  private static Map<Integer, VertCoordType> levelTypesMap;  // shared by all instances
-  private static Map<Integer, String> genProcessMap;  // shared by all instances
-  private static Map<Integer, String> subcenterMap;  // shared by all instances
+  private static Map<Integer, VertCoordType> levelTypesMap; // shared by all instances
+  private static Map<Integer, String> genProcessMap; // shared by all instances
+  private static Map<Integer, String> subcenterMap; // shared by all instances
 
   AfwaTables(Grib1ParamTables tables) {
     super(57, tables);
@@ -70,14 +69,15 @@ public class AfwaTables extends Grib1Customizer {
     result.put(130, "Patrick AFB OWS Eastern Test Range");
     result.put(150, "IPDS Satellite");
 
-    return Collections.unmodifiableMap(result);  // all at once - thread safe
+    return Collections.unmodifiableMap(result); // all at once - thread safe
   }
 
   // gen process
   @Override
   @Nullable
   public String getGeneratingProcessName(int genProcess) {
-    if (genProcessMap == null) makeGenProcessMap();
+    if (genProcessMap == null)
+      makeGenProcessMap();
     return genProcessMap.get(genProcess);
   }
 
@@ -134,7 +134,7 @@ public class AfwaTables extends Grib1Customizer {
         return new Grib1ParamLevel(this, levelType, (float) pds1112, GribNumbers.MISSING);
 
       case 218:
-         return new Grib1ParamLevel(this, levelType, (float) pds11 + 200, (float) pds12 + 200);
+        return new Grib1ParamLevel(this, levelType, (float) pds11 + 200, (float) pds12 + 200);
 
       default:
         return new Grib1ParamLevel(this, pds);
@@ -143,16 +143,18 @@ public class AfwaTables extends Grib1Customizer {
 
   @Override
   protected VertCoordType getLevelType(int code) {
-    if (levelTypesMap == null) makeLevelTypesMap();
+    if (levelTypesMap == null)
+      makeLevelTypesMap();
     VertCoordType levelType = levelTypesMap.get(code);
-    if (levelType != null) return levelType;
+    if (levelType != null)
+      return levelType;
     return super.getLevelType(code);
   }
-  
+
   private static void makeLevelTypesMap() {
     levelTypesMap = new HashMap<>(100);
     // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
-    levelTypesMap.put(21,  new VertCoordType(21,  "RTNEPH cloud layer", "RTNEPH", "", null, true, true));
+    levelTypesMap.put(21, new VertCoordType(21, "RTNEPH cloud layer", "RTNEPH", "", null, true, true));
     levelTypesMap.put(210, new VertCoordType(210, "Isobaric Surface", "ISBP", "", null, false, false));
     levelTypesMap.put(211, new VertCoordType(211, "Boundary layer cloud bottom level", "BCBL", "", null, false, false));
     levelTypesMap.put(212, new VertCoordType(212, "Boundary layer cloud top level", "BCTL", "", null, false, false));
@@ -160,8 +162,10 @@ public class AfwaTables extends Grib1Customizer {
     levelTypesMap.put(214, new VertCoordType(214, "Low cloud bottom level", "LCBL", "", null, false, false));
     levelTypesMap.put(215, new VertCoordType(215, "Low cloud top level", "LCTL", "", null, false, false));
     levelTypesMap.put(216, new VertCoordType(216, "Low cloud layer", "LCY", "", null, false, true));
-    levelTypesMap.put(217, new VertCoordType(217, "Highest tropospheric freezing level", "HTFL", "K", null, false, false));
-    levelTypesMap.put(218, new VertCoordType(218, "Layer between two temperature levels", "DEGY", "K", null, false, true));
+    levelTypesMap.put(217,
+        new VertCoordType(217, "Highest tropospheric freezing level", "HTFL", "K", null, false, false));
+    levelTypesMap.put(218,
+        new VertCoordType(218, "Layer between two temperature levels", "DEGY", "K", null, false, true));
     levelTypesMap.put(222, new VertCoordType(222, "Middle cloud bottom level", "MCBL", "", null, false, false));
     levelTypesMap.put(223, new VertCoordType(223, "Middle cloud top level", "MCTL", "", null, false, false));
     levelTypesMap.put(224, new VertCoordType(224, "Middle cloud layer", "MCY", "", null, false, true));
@@ -171,9 +175,12 @@ public class AfwaTables extends Grib1Customizer {
     levelTypesMap.put(242, new VertCoordType(242, "Convective cloud bottom level", "CCBL", "", null, false, false));
     levelTypesMap.put(243, new VertCoordType(243, "Convective cloud top level", "CCTL", "", null, false, false));
     levelTypesMap.put(244, new VertCoordType(244, "Convective cloud layer", "CCY", "", null, false, true));
-    levelTypesMap.put(246, new VertCoordType(246, "Specified height level above MSL", "HTIO", "km", "msl", false, false));
-    levelTypesMap.put(251, new VertCoordType(251, "Layer between ground and 850 hPa level", "PTLR", "", null, false, true));
-    levelTypesMap.put(252, new VertCoordType(252, "Layer between lowest soil layer (layer 112) and 800cm", "SBLR", "", null, false, true));
+    levelTypesMap.put(246,
+        new VertCoordType(246, "Specified height level above MSL", "HTIO", "km", "msl", false, false));
+    levelTypesMap.put(251,
+        new VertCoordType(251, "Layer between ground and 850 hPa level", "PTLR", "", null, false, true));
+    levelTypesMap.put(252,
+        new VertCoordType(252, "Layer between lowest soil layer (layer 112) and 800cm", "SBLR", "", null, false, true));
   }
 
 }

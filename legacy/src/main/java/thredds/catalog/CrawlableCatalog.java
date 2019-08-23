@@ -7,17 +7,16 @@ package thredds.catalog;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import ucar.nc2.units.DateType;
-
 import java.util.List;
 import java.util.Date;
 import java.util.ArrayList;
 import java.io.IOException;
-
 import org.jdom2.Element;
 import ucar.nc2.ncml.NcMLReader;
 
 /**
  * A CrawlableDataset from a THREDDS catalog.
+ * 
  * @author caron
  * @since Aug 10, 2007
  */
@@ -33,17 +32,19 @@ public class CrawlableCatalog implements CrawlableDataset {
 
   /**
    * Constructor.
+   * 
    * @param catalogURL the catalog URL
    * @param configObj a JDOM Element, example:
-   *  <pre>
+   * 
+   *        <pre>
    *    <any>
    *      <serviceType>OPENDAP</serviceType>
    *    </any>
-   *  </pre>
+   *        </pre>
    */
   public CrawlableCatalog(String catalogURL, Object configObj) {
     this.catalogURL = catalogURL;
-    
+
     this.configObj = configObj;
     if (configObj instanceof Element) {
       Element configElement = (Element) configObj;
@@ -78,8 +79,9 @@ public class CrawlableCatalog implements CrawlableDataset {
 
   public String getPath() {
     if (serviceType != null) {
-      InvAccess access = dataset.getAccess( serviceType);
-      if (access != null) return access.getStandardUrlName();
+      InvAccess access = dataset.getAccess(serviceType);
+      if (access != null)
+        return access.getStandardUrlName();
     }
     return dataset.getCatalogUrl();
   }
@@ -97,11 +99,11 @@ public class CrawlableCatalog implements CrawlableDataset {
   }
 
   public boolean isCollection() {
-    return isCollection;  //To change body of implemented methods use File | Settings | File Templates.
+    return isCollection; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public CrawlableDataset getDescendant(String relativePath) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null; // To change body of implemented methods use File | Settings | File Templates.
   }
 
   public List<CrawlableDataset> listDatasets() throws IOException {
@@ -110,7 +112,7 @@ public class CrawlableCatalog implements CrawlableDataset {
     List<CrawlableDataset> result = new ArrayList<CrawlableDataset>();
     for (InvDataset d : datasets) {
       if (filter(d))
-        result.add( new CrawlableCatalog(this, (InvDatasetImpl) d));
+        result.add(new CrawlableCatalog(this, (InvDatasetImpl) d));
     }
     return result;
   }
@@ -120,17 +122,20 @@ public class CrawlableCatalog implements CrawlableDataset {
 
     List<CrawlableDataset> result = new ArrayList<CrawlableDataset>();
     for (InvDataset d : datasets) {
-      if (!filter(d)) continue;
+      if (!filter(d))
+        continue;
 
       CrawlableCatalog cc = new CrawlableCatalog(this, (InvDatasetImpl) d);
-      if (filter.accept(cc))  result.add(cc);
+      if (filter.accept(cc))
+        result.add(cc);
     }
     return result;
   }
 
-  private boolean filter( InvDataset d) {
-    if (serviceType == null) return true;
-    return d.getAccess( serviceType) != null;
+  private boolean filter(InvDataset d) {
+    if (serviceType == null)
+      return true;
+    return d.getAccess(serviceType) != null;
   }
 
   public long length() {

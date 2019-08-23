@@ -6,7 +6,6 @@
 package ucar.nc2.ft.point.standard;
 
 import java.io.IOException;
-
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
 import ucar.nc2.Variable;
@@ -27,7 +26,8 @@ public class JoinParentIndex implements Join {
 
   /**
    * Constructor.
-   * @param parentStructure  get data from this Structure
+   * 
+   * @param parentStructure get data from this Structure
    * @param parentIndex name of member variable in leaf StructureData
    */
   public JoinParentIndex(StructureDS parentStructure, String parentIndex) {
@@ -35,7 +35,7 @@ public class JoinParentIndex implements Join {
     this.parentIndex = parentIndex;
 
     try {
-      parentData = (ArrayStructure) parentStructure.read(); // cache entire ArrayStructure  LOOK
+      parentData = (ArrayStructure) parentStructure.read(); // cache entire ArrayStructure LOOK
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -60,9 +60,6 @@ public class JoinParentIndex implements Join {
 
   @Override
   public String toString() {
-    return "JoinParentIndex{" +
-        "parentStructure=" + parentStructure +
-        ", parentIndex='" + parentIndex +
-        '}';
+    return "JoinParentIndex{" + "parentStructure=" + parentStructure + ", parentIndex='" + parentIndex + '}';
   }
 }

@@ -12,7 +12,6 @@ import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -46,28 +45,21 @@ public class Grib2Record {
   /**
    * Construction for Grib2Record.
    *
-   * @param header      Grib header
-   * @param is          Grib2IndicatorSection
-   * @param id          Grib2IdentificationSection
-   * @param lus         raw bytes of local use section
-   * @param gdss        Grib2GridDefinitionSection
-   * @param pdss        Grib2ProductDefinitionSection
-   * @param drs         Grib2SectionDataRepresentation
-   * @param bms         Grib2SectionBitMap
+   * @param header Grib header
+   * @param is Grib2IndicatorSection
+   * @param id Grib2IdentificationSection
+   * @param lus raw bytes of local use section
+   * @param gdss Grib2GridDefinitionSection
+   * @param pdss Grib2ProductDefinitionSection
+   * @param drs Grib2SectionDataRepresentation
+   * @param bms Grib2SectionBitMap
    * @param dataSection Grib2SectionData
    * @param bmsReplaced Grib2SectionData
-   * @param scanMode    from GDS of this record
+   * @param scanMode from GDS of this record
    */
-  public Grib2Record(byte[] header, Grib2SectionIndicator is,
-                     Grib2SectionIdentification id,
-                     Grib2SectionLocalUse lus,
-                     Grib2SectionGridDefinition gdss,
-                     Grib2SectionProductDefinition pdss,
-                     Grib2SectionDataRepresentation drs,
-                     Grib2SectionBitMap bms,
-                     Grib2SectionData dataSection,
-                     boolean bmsReplaced,
-                     int scanMode) {
+  public Grib2Record(byte[] header, Grib2SectionIndicator is, Grib2SectionIdentification id, Grib2SectionLocalUse lus,
+      Grib2SectionGridDefinition gdss, Grib2SectionProductDefinition pdss, Grib2SectionDataRepresentation drs,
+      Grib2SectionBitMap bms, Grib2SectionData dataSection, boolean bmsReplaced, int scanMode) {
 
     this.header = header;
     this.is = is;
@@ -80,7 +72,8 @@ public class Grib2Record {
     this.dataSection = dataSection;
     this.bmsReplaced = bmsReplaced;
 
-    // stored in index file after 4.5 2/6/2014, otherwise equals Grib2Index.ScanModeMissing, so get it from the GDS, which may have wrong one
+    // stored in index file after 4.5 2/6/2014, otherwise equals Grib2Index.ScanModeMissing, so get it from the GDS,
+    // which may have wrong one
     this.scanMode = scanMode;
     if (scanMode == Grib2Index.ScanModeMissing && gdss != null) {
       this.scanMode = gdss.getGDS().getScanMode();
@@ -214,22 +207,10 @@ public class Grib2Record {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("is", is)
-        .add("id", id)
-        .add("lus", lus)
-        .add("gdss", gdss)
-        .add("pdss", pdss)
-        .add("drss", drss)
-        .add("bms", bms)
-        .add("dataSection", dataSection)
-        .add("pds2", pds2)
-        .add("header", header)
-        .add("file", file)
-        .add("bmsReplaced", bmsReplaced)
-        .add("scanMode", scanMode)
-        .add("repeat", repeat)
-        .toString();
+    return MoreObjects.toStringHelper(this).add("is", is).add("id", id).add("lus", lus).add("gdss", gdss)
+        .add("pdss", pdss).add("drss", drss).add("bms", bms).add("dataSection", dataSection).add("pds2", pds2)
+        .add("header", header).add("file", file).add("bmsReplaced", bmsReplaced).add("scanMode", scanMode)
+        .add("repeat", repeat).toString();
   }
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
@@ -237,14 +218,15 @@ public class Grib2Record {
     Grib2Gds gds = getGDS();
 
     Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
-            getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
+        getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drss.getDrs(raf);
 
     float[] data = reader.getData(raf, bms, gdrs);
 
     if (gds.isThin())
-      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), GribData.getInterpolationMethod());
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(),
+          GribData.getInterpolationMethod());
 
     lastRecordRead = this;
     return data;
@@ -256,7 +238,7 @@ public class Grib2Record {
     Grib2Gds gds = getGDS();
 
     Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
-            getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
+        getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drss.getDrs(raf);
 
@@ -269,7 +251,7 @@ public class Grib2Record {
     Grib2Gds gds = getGDS();
 
     Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
-            getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
+        getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drss.getDrs(raf);
     if (gdrs instanceof Grib2Drs.Type40) {
@@ -282,7 +264,7 @@ public class Grib2Record {
   /**
    * Read data array
    *
-   * @param raf    from this RandomAccessFile
+   * @param raf from this RandomAccessFile
    * @param drsPos Grib2SectionDataRepresentation starts here
    * @return data as float[] array
    * @throws IOException on read error
@@ -295,14 +277,15 @@ public class Grib2Record {
 
     Grib2Gds gds = getGDS();
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
-            getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
+        getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drs.getDrs(raf);
 
     float[] data = reader.getData(raf, bms, gdrs);
 
     if (gds.isThin())
-      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(), GribData.getInterpolationMethod());
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(),
+          GribData.getInterpolationMethod());
 
     lastRecordRead = this;
     return data;
@@ -311,16 +294,17 @@ public class Grib2Record {
   /**
    * Read data array: use when you want to be independent of the GribRecord
    *
-   * @param raf             from this RandomAccessFile
-   * @param drsPos          Grib2SectionDataRepresentation starts here
-   * @param bmsPos          if non-zero, use the bms that starts here
+   * @param raf from this RandomAccessFile
+   * @param drsPos Grib2SectionDataRepresentation starts here
+   * @param bmsPos if non-zero, use the bms that starts here
    * @param gdsNumberPoints gdss.getNumberPoints()
-   * @param scanMode        gds.scanMode
-   * @param nx              gds.nx
+   * @param scanMode gds.scanMode
+   * @param nx gds.nx
    * @return data as float[] array
    * @throws IOException on read error
    */
-  public static float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine) throws IOException {
+  public static float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode,
+      int nx, int ny, int[] nptsInLine) throws IOException {
     raf.seek(drsPos);
     Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(raf);
     Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
@@ -329,8 +313,8 @@ public class Grib2Record {
     if (bmsPos > 0)
       bms = Grib2SectionBitMap.factory(raf, bmsPos);
 
-    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
-            scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
+    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(), scanMode,
+        nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drs.getDrs(raf);
 
@@ -350,16 +334,19 @@ public class Grib2Record {
     long endPos = is.getEndPos();
 
     if (endPos > raf.length()) {
-      f.format("End of GRIB message (start=%d len=%d) end=%d > file.length=%d for %s%n", startPos, messLen , endPos, raf.length(), raf.getLocation());
+      f.format("End of GRIB message (start=%d len=%d) end=%d > file.length=%d for %s%n", startPos, messLen, endPos,
+          raf.length(), raf.getLocation());
       return;
     }
 
-    raf.seek(endPos-4);
+    raf.seek(endPos - 4);
     for (int i = 0; i < 4; i++) {
       if (raf.read() != 55) {
         String clean = StringUtil2.cleanup(header);
-        if (clean.length() > 40) clean = clean.substring(0,40) + "...";
-        f.format("Missing End of GRIB message (start=%d len=%d) end=%d header= %s for %s (len=%d)%n", startPos, messLen, endPos, clean, raf.getLocation(), raf.length());
+        if (clean.length() > 40)
+          clean = clean.substring(0, 40) + "...";
+        f.format("Missing End of GRIB message (start=%d len=%d) end=%d header= %s for %s (len=%d)%n", startPos, messLen,
+            endPos, clean, raf.getLocation(), raf.length());
         break;
       }
     }
@@ -369,12 +356,14 @@ public class Grib2Record {
     long dataEnd = dataStart + dataLen;
 
     if (dataEnd > raf.length()) {
-      f.format("GRIB data section (start=%d len=%d) end=%d > file.length=%d for %s%n", dataStart, dataLen, dataEnd, raf.length(), raf.getLocation());
+      f.format("GRIB data section (start=%d len=%d) end=%d > file.length=%d for %s%n", dataStart, dataLen, dataEnd,
+          raf.length(), raf.getLocation());
       return;
     }
 
     if (dataEnd > endPos) {
-      f.format("GRIB data section (start=%d len=%d) end=%d > message end=%d for %s%n", dataStart, dataLen, dataEnd, endPos, raf.getLocation());
+      f.format("GRIB data section (start=%d len=%d) end=%d > message end=%d for %s%n", dataStart, dataLen, dataEnd,
+          endPos, raf.getLocation());
     }
 
   }

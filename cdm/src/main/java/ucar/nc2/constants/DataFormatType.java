@@ -12,34 +12,14 @@ package ucar.nc2.constants;
  * @since 1/7/2015
  */
 public enum DataFormatType {
-  BUFR(null),
-  ESML(null),
-  GEMPAK(null),
-  GINI(null),
-  GRIB1("GRIB-1"),
-  GRIB2("GRIB-2"),
-  HDF4(null),
-  HDF5(null),
-  MCIDAS_AREA("McIDAS-AREA"),
-  NCML("NcML"),
-  NETCDF("NetCDF"),
-  NETCDF4("NetCDF-4"),
-  NEXRAD2(null),
-  NIDS(null),
+  BUFR(null), ESML(null), GEMPAK(null), GINI(null), GRIB1("GRIB-1"), GRIB2("GRIB-2"), HDF4(null), HDF5(
+      null), MCIDAS_AREA("McIDAS-AREA"), NCML("NcML"), NETCDF("NetCDF"), NETCDF4("NetCDF-4"), NEXRAD2(null), NIDS(null),
 
-  GIF("image/gif"),
-  JPEG("image/jpeg"),
-  TIFF("image/tiff"),
+  GIF("image/gif"), JPEG("image/jpeg"), TIFF("image/tiff"),
 
-  CSV("text/csv"),
-  HTML("text/html"),
-  PLAIN("text/plain"),
-  TSV("text/tab-separated-values"),
-  XML("text/xml"),
+  CSV("text/csv"), HTML("text/html"), PLAIN("text/plain"), TSV("text/tab-separated-values"), XML("text/xml"),
 
-  MPEG("video/mpeg"),
-  QUICKTIME("video/quicktime"),
-  REALTIME("video/realtime");
+  MPEG("video/mpeg"), QUICKTIME("video/quicktime"), REALTIME("video/realtime");
 
   private final String desc;
 
@@ -49,11 +29,12 @@ public enum DataFormatType {
 
   // case insensitive
   public static DataFormatType getType(String name) {
-    if (name == null) return null;
+    if (name == null)
+      return null;
     for (DataFormatType m : values()) {
-      if (m.desc.equalsIgnoreCase( name))
+      if (m.desc.equalsIgnoreCase(name))
         return m;
-      if (m.toString().equalsIgnoreCase( name))
+      if (m.toString().equalsIgnoreCase(name))
         return m;
     }
     return null;

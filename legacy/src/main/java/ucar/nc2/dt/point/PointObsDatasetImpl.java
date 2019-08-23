@@ -14,7 +14,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.StructureData;
 import ucar.ma2.DataType;
-
 import java.util.List;
 import java.util.Date;
 import java.io.IOException;
@@ -32,11 +31,12 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
 
   /**
    * Get conversion factor for this unit into meters.
+   * 
    * @param unitsString unit you want to convert
    * @return conversion factor : value in meters = factor * (value in units)
    * @throws Exception if not valid unit, or not convertible to meters
    */
-  protected static double getMetersConversionFactor( String unitsString) throws Exception {
+  protected static double getMetersConversionFactor(String unitsString) throws Exception {
     SimpleUnit unit = SimpleUnit.factoryWithExceptions(unitsString);
     return unit.convertTo(1.0, SimpleUnit.meterUnit);
   }
@@ -52,7 +52,7 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
   }
 
   public PointObsDatasetImpl(NetcdfDataset ncfile) {
-    super( ncfile);
+    super(ncfile);
   }
 
   protected abstract void setTimeUnits(); // reminder for subclasses to set this
@@ -84,30 +84,33 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
   }
 
   public List getData() throws IOException {
-    return getData( (CancelTask) null);
+    return getData((CancelTask) null);
   }
 
-  public List getData( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
-    return getData( boundingBox, null);
+  public List getData(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+    return getData(boundingBox, null);
   }
 
-  public List getData( ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end) throws IOException {
-    return getData( boundingBox, start, end, null);
+  public List getData(ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end) throws IOException {
+    return getData(boundingBox, start, end, null);
   }
 
   protected DateFormatter formatter;
+
   protected double getTime(Variable timeVar, StructureData sdata) throws ParseException {
-    if (timeVar == null) return 0.0;
+    if (timeVar == null)
+      return 0.0;
 
     if ((timeVar.getDataType() == DataType.CHAR) || (timeVar.getDataType() == DataType.STRING)) {
       String time = sdata.getScalarString(timeVar.getShortName());
-      if (null == formatter) formatter = new DateFormatter();
+      if (null == formatter)
+        formatter = new DateFormatter();
       Date date = formatter.getISODate(time);
       return date.getTime() / 1000.0;
     } else {
       return sdata.convertScalarFloat(timeVar.getShortName());
     }
   }
-  
+
 }
 

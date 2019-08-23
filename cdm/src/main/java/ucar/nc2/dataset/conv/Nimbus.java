@@ -15,11 +15,11 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableEnhanced;
-
 import java.io.IOException;
 
 /**
  * NCAR RAF / NIMBUS
+ * 
  * @see "http://www.eol.ucar.edu/raf/Software/netCDF.html"
  * @author caron
  * @since Dec 31, 2008
@@ -37,7 +37,7 @@ public class Nimbus extends COARDSConvention {
 
   @Override
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    ds.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.FeatureType.TRAJECTORY.name()));  // deprecated
+    ds.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.FeatureType.TRAJECTORY.name())); // deprecated
     ds.addAttribute(null, new Attribute(CF.FEATURE_TYPE, ucar.nc2.constants.FeatureType.TRAJECTORY.name()));
 
     if (!setAxisType(ds, "LATC", AxisType.Lat))
@@ -56,7 +56,7 @@ public class Nimbus extends COARDSConvention {
       hasTime = setAxisType(ds, "time", AxisType.Time);
 
     // do we need to version this ?
-    // String version =  ds.findAttValueIgnoreCase(null, "version", null);
+    // String version = ds.findAttValueIgnoreCase(null, "version", null);
 
     if (!hasTime) {
       Variable time = ds.findVariable("time_offset");
@@ -92,7 +92,8 @@ public class Nimbus extends COARDSConvention {
 
   private boolean setAxisType(NetcdfDataset ds, String varName, AxisType atype) {
     Variable v = ds.findVariable(varName);
-    if (v == null) return false;
+    if (v == null)
+      return false;
 
     v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString()));
     return true;

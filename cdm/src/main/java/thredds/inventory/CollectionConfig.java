@@ -22,6 +22,7 @@ public class CollectionConfig {
 
   /**
    * Constructor
+   * 
    * @param name name of collection
    * @param dirName top directory name
    * @param wantSubdirs if want subdirectories
@@ -37,7 +38,8 @@ public class CollectionConfig {
   }
 
   public CollectionConfig subdir(MFile child) {
-    return new CollectionConfig( name+"/"+child.getName(), dirName+"/"+child.getName(), wantSubdirs, ff, child.getAuxInfo());
+    return new CollectionConfig(name + "/" + child.getName(), dirName + "/" + child.getName(), wantSubdirs, ff,
+        child.getAuxInfo());
   }
 
   public String getName() {
@@ -63,12 +65,8 @@ public class CollectionConfig {
 
   @Override
   public String toString() {
-    return "MCollection{" +
-        "name='" + name + '\'' +
-        ", dirName='" + dirName + '\'' +
-        ", wantSubdirs=" + wantSubdirs +
-        ", filter=" + ff +
-        '}';
+    return "MCollection{" + "name='" + name + '\'' + ", dirName='" + dirName + '\'' + ", wantSubdirs=" + wantSubdirs
+        + ", filter=" + ff + '}';
   }
 
 

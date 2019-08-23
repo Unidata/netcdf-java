@@ -9,7 +9,6 @@ import com.google.re2j.Pattern;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.BufferedReader;
@@ -17,7 +16,6 @@ import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.nio.charset.Charset;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.iosp.bufr.Descriptor;
@@ -35,25 +33,16 @@ public class CompareTableB {
   static String robbt = "C:/dev/tds/bufr/resources/resources/bufr/tables/B4M-000-013-B";
 
   String diffTableDir = "C:/dev/tds/bufr/resources/resources/bufr/tables/";
-  String[] diffTable = {
-          "B2M-000-002-B.diff",
-          "B3M-000-003-B.diff",
-          "B3M-000-004-B.diff",
-          "B3M-000-005-B.diff",
-          "B3M-000-006-B.diff",
-          "B3M-000-007-B.diff",
-          "B3M-000-008-B.diff",
-          "B3M-000-009-B.diff",
-          "B3M-000-010-B.diff",
-          "B3M-000-011-B.diff",
-          "B3M-000-012-B.diff"};
+  String[] diffTable = {"B2M-000-002-B.diff", "B3M-000-003-B.diff", "B3M-000-004-B.diff", "B3M-000-005-B.diff",
+      "B3M-000-006-B.diff", "B3M-000-007-B.diff", "B3M-000-008-B.diff", "B3M-000-009-B.diff", "B3M-000-010-B.diff",
+      "B3M-000-011-B.diff", "B3M-000-012-B.diff"};
 
-  //String robbxml = "file:C:\\dev\\tds\\bufr\\resources\\resources\\source\\wmo\\xml/B4M-000-013-B.xml";
+  // String robbxml = "file:C:\\dev\\tds\\bufr\\resources\\resources\\source\\wmo\\xml/B4M-000-013-B.xml";
 
   Pattern pattern = Pattern.compile("(.*)\\([sS]ee [nN]ote.*");
 
   //////////////////////////////////////////////////////////////////////
-  // read British met table  XML format
+  // read British met table XML format
 
   static Map<Integer, Feature> bmTable = new TreeMap<Integer, Feature>();
 
@@ -66,12 +55,14 @@ public class CompareTableB {
       int count = makeBmtTable(root.getChildren("featureCatalogue"));
       System.out.println(" bmt count= " + count);
 
-      /* Format pretty = Format.getPrettyFormat();
-
-      // wierd - cant pretty print ??!!
-      XMLOutputter fmt = new XMLOutputter(pretty);
-      //Writer pw = new FileWriter("C:/docs/bufr/wmo/wordNice.txt");
-      fmt.output(doc, new PrintWriter(System.out)); */
+      /*
+       * Format pretty = Format.getPrettyFormat();
+       * 
+       * // wierd - cant pretty print ??!!
+       * XMLOutputter fmt = new XMLOutputter(pretty);
+       * //Writer pw = new FileWriter("C:/docs/bufr/wmo/wordNice.txt");
+       * fmt.output(doc, new PrintWriter(System.out));
+       */
 
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
@@ -150,17 +141,20 @@ public class CompareTableB {
   //////////////////////////////////////////////////////////////
   // Read WMO csv format
   void readWmoCsv(String filename, Map<Integer, Feature> map) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF8")));
+    BufferedReader dataIS =
+        new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF8")));
     int avg = 0;
     int count = 0;
     while (true) {
       String line = dataIS.readLine();
       count++;
 
-      if (line == null) break;
-      if (line.startsWith("#")) continue;
+      if (line == null)
+        break;
+      if (line.startsWith("#"))
+        continue;
 
-      if (count==1) {
+      if (count == 1) {
         System.out.println("header line == " + line);
         continue;
       }
@@ -168,10 +162,11 @@ public class CompareTableB {
       // commas embedded in quotes - replace with blanks for now
       int pos1 = line.indexOf('"');
       if (pos1 >= 0) {
-        int pos2 = line.indexOf('"', pos1+1);
+        int pos2 = line.indexOf('"', pos1 + 1);
         StringBuffer sb = new StringBuffer(line);
-        for (int i=pos1; i<pos2; i++)
-          if(sb.charAt(i)==',') sb.setCharAt(i, ' ');
+        for (int i = pos1; i < pos2; i++)
+          if (sb.charAt(i) == ',')
+            sb.setCharAt(i, ' ');
         line = sb.toString();
       }
 
@@ -193,7 +188,7 @@ public class CompareTableB {
 
         int x = xy / 1000;
         int y = xy % 1000;
-        int fxy = (x << 8) + y;  // f always 0
+        int fxy = (x << 8) + y; // f always 0
         Feature feat = new Feature(fxy, norm(name), units, scale, reference, width);
         map.put(fxy, feat);
         avg += name.length();
@@ -203,17 +198,17 @@ public class CompareTableB {
       }
     }
     int n = map.values().size();
-    System.out.printf("%s lines=%d elems=%d avg name len=%d%n", filename, count, n, avg/n);
+    System.out.printf("%s lines=%d elems=%d avg name len=%d%n", filename, count, n, avg / n);
   }
 
   static public void main(String args[]) throws IOException {
     CompareTableB ct = new CompareTableB();
     Map<Integer, Feature> wmoMap = new TreeMap<Integer, Feature>();
     ct.readWmoCsv("C:/docs/BC_TableB.csv", wmoMap);
-    
+
     Map<Integer, Feature> robbMap = new TreeMap<Integer, Feature>();
     ct.readTable(robbt, robbMap);
-    //ct.readBmt();
+    // ct.readBmt();
 
     System.out.printf("Compare ours to wmo %n");
     ct.compare(robbt, robbMap, wmoMap);
@@ -224,12 +219,15 @@ public class CompareTableB {
   //////////////////////////////////////////////////////////////
   // Read robbs format
   public void readTable(String filename, Map<Integer, Feature> map) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF8")));
+    BufferedReader dataIS =
+        new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF8")));
     int count = 0;
     while (true) {
       String line = dataIS.readLine();
-      if (line == null) break;
-      if (line.startsWith("#")) continue;
+      if (line == null)
+        break;
+      if (line.startsWith("#"))
+        continue;
 
       String[] flds = line.split("; ");
       if (flds.length < 8) {
@@ -260,42 +258,45 @@ public class CompareTableB {
   //////////////////////////////////////////////////////////
   // compare tables, accumulate problem messages
 
-  /* public void readTableXML() throws IOException {
-    org.jdom2.Document doc;
-    try {
-      SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(robbxml);
-      Element root = doc.getRootElement();
-      int count = makeTableXML(root.getChildren("element"));
-      System.out.println(" robb count= "+count);
-
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
-    }
-  }
-
-  public int makeTableXML(List<Element> elemList) {
-    int count = 0;
-    for (Element elem : elemList) {
-      int f = Integer.parseInt(elem.getAttributeValue("F"));
-      int x = Integer.parseInt(elem.getAttributeValue("X"));
-      int y = Integer.parseInt(elem.getAttributeValue("Y"));
-      String name = elem.getChildTextNormalize("name");
-      String units = elem.getChildTextNormalize("units");
-      int scale = Integer.parseInt(elem.getChildText("scale"));
-      int reference = Integer.parseInt(elem.getChildText("reference"));
-      int width = Integer.parseInt(elem.getChildText("width"));
-      int fxy = (f << 16) + (x << 8) + y;
-      Feature feat = new Feature(fxy, norm(name), units, scale, reference, width);
-      map.put(fxy, feat);
-      count++;
-    }
-    return count;
-  }  */
+  /*
+   * public void readTableXML() throws IOException {
+   * org.jdom2.Document doc;
+   * try {
+   * SAXBuilder builder = new SAXBuilder();
+   * doc = builder.build(robbxml);
+   * Element root = doc.getRootElement();
+   * int count = makeTableXML(root.getChildren("element"));
+   * System.out.println(" robb count= "+count);
+   * 
+   * } catch (JDOMException e) {
+   * throw new IOException(e.getMessage());
+   * }
+   * }
+   * 
+   * public int makeTableXML(List<Element> elemList) {
+   * int count = 0;
+   * for (Element elem : elemList) {
+   * int f = Integer.parseInt(elem.getAttributeValue("F"));
+   * int x = Integer.parseInt(elem.getAttributeValue("X"));
+   * int y = Integer.parseInt(elem.getAttributeValue("Y"));
+   * String name = elem.getChildTextNormalize("name");
+   * String units = elem.getChildTextNormalize("units");
+   * int scale = Integer.parseInt(elem.getChildText("scale"));
+   * int reference = Integer.parseInt(elem.getChildText("reference"));
+   * int width = Integer.parseInt(elem.getChildText("width"));
+   * int fxy = (f << 16) + (x << 8) + y;
+   * Feature feat = new Feature(fxy, norm(name), units, scale, reference, width);
+   * map.put(fxy, feat);
+   * count++;
+   * }
+   * return count;
+   * }
+   */
 
   String norm(String s) {
     Matcher matcher = pattern.matcher(s);
-    if (!matcher.matches()) return s;
+    if (!matcher.matches())
+      return s;
     return matcher.group(1);
   }
 
@@ -317,11 +318,11 @@ public class CompareTableB {
       if (f2 == null)
         System.out.printf("%n No key %s in second table %n", fxy(key));
       else {
-         if (!equiv(f1.name,f2.name))
+        if (!equiv(f1.name, f2.name))
           System.out.printf("%n key %s name%n  %s%n  %s%n", fxy(key), f1.name, f2.name);
-        if (!equiv(f1.units,f2.units))
+        if (!equiv(f1.units, f2.units))
           System.out.printf("%n key %s units%n  %s%n  %s%n", fxy(key), f1.units, f2.units); // */
-        
+
         if (f1.scale != f2.scale) {
           System.out.printf("%n key %s scale %d != %d %n", fxy(key), f1.scale, f2.scale);
           addProblem(fname, key, "scale " + f1.scale + " != " + f2.scale);
@@ -340,6 +341,7 @@ public class CompareTableB {
 
   char[] remove = new char[] {'(', ')', ' ', '"', ',', '*', '-'};
   String[] replace = new String[] {"", "", "", "", "", "", ""};
+
   boolean equiv(String org1, String org2) {
     String s1 = StringUtil2.replace(org1, remove, replace).toLowerCase();
     String s2 = StringUtil2.replace(org2, remove, replace).toLowerCase();
@@ -364,9 +366,9 @@ public class CompareTableB {
       this.fxy = fxy; // short
       this.name = name.trim();
       this.units = units.trim(); // most are common - Code Table, Flag Table, Numeric, CCITT IA5
-      this.scale = scale;  // 0-13
+      this.scale = scale; // 0-13
       this.reference = reference; // int 62M to -1G
-      this.width = width;  // 0-256
+      this.width = width; // 0-256
     }
   }
 
@@ -419,7 +421,8 @@ public class CompareTableB {
     void showSingles() {
       if (descList.size() < 2) { // skip if only wmo
         String where0 = whereList.get(0);
-        if (where0.equals("WHO")) return;
+        if (where0.equals("WHO"))
+          return;
       }
 
       for (int i = 0; i < descList.size(); i++) {
@@ -450,7 +453,8 @@ public class CompareTableB {
 
     for (TableB.Descriptor d : desc) {
       short fxy = d.getId();
-      if (!Descriptor.isWmoRange(fxy)) continue;
+      if (!Descriptor.isWmoRange(fxy))
+        continue;
 
       DescTrack f = mapAll.get(fxy);
       if (f == null) {
@@ -470,11 +474,11 @@ public class CompareTableB {
     tables[3] = new TableName("ECMWF", "B4L-098-013-B.diff");
     tables[4] = new TableName("FNMOC", "B4L-058-013-B.diff");
     tables[5] = new TableName("Eumetsat", "B3L-254-011-B.diff");
-    int[] want = new int[]{0, 1};
+    int[] want = new int[] {0, 1};
 
     Map<Short, DescTrack> mapAll = new TreeMap<Short, DescTrack>();
 
-    //for (int i : want) {
+    // for (int i : want) {
     for (int i = 0; i < tables.length; i++) {
       addToMap(tables[i], mapAll);
     }
@@ -487,9 +491,11 @@ public class CompareTableB {
     for (Short key : sortKeys) {
       DescTrack dtrack = mapAll.get(key);
 
-      if (dtrack.descList.size() < 2) continue;
+      if (dtrack.descList.size() < 2)
+        continue;
       String where0 = dtrack.whereList.get(0);
-      if (!where0.equals("WMO")) continue; // must have WMO
+      if (!where0.equals("WMO"))
+        continue; // must have WMO
 
       TableB.Descriptor wmo = null;
       System.out.printf("%nFxy=%s%n", Descriptor.makeString(key));
@@ -497,8 +503,10 @@ public class CompareTableB {
         TableB.Descriptor bdesc = dtrack.descList.get(i);
         String where = dtrack.whereList.get(i);
         System.out.printf(" %s == %s%n", bdesc, where);
-        if (i == 0) wmo = bdesc;
-        else System.out.printf("**%s%n", compare(wmo, bdesc));
+        if (i == 0)
+          wmo = bdesc;
+        else
+          System.out.printf("**%s%n", compare(wmo, bdesc));
       }
     }
 
@@ -509,7 +517,8 @@ public class CompareTableB {
       DescTrack dtrack = mapAll.get(key);
 
       String where0 = dtrack.whereList.get(0);
-      if (where0.equals("WMO")) continue; // must not have WMO
+      if (where0.equals("WMO"))
+        continue; // must not have WMO
 
       System.out.printf("%nFxy=%s%n", Descriptor.makeString(key));
       for (int i = 0; i < dtrack.descList.size(); i++) {

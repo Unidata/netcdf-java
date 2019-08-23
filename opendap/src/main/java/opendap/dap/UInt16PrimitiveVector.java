@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -51,47 +51,47 @@ import java.io.*;
  * @see PrimitiveVector
  */
 public class UInt16PrimitiveVector extends Int16PrimitiveVector {
-    /**
-     * Constructs a new <code>UInt16PrimitiveVector</code>.
-     */
-    public UInt16PrimitiveVector(BaseType var) {
-        super(var);
-    }
+  /**
+   * Constructs a new <code>UInt16PrimitiveVector</code>.
+   */
+  public UInt16PrimitiveVector(BaseType var) {
+    super(var);
+  }
 
-    /**
-     * Prints the value of all variables in this vector.  This
-     * method is primarily intended for debugging OPeNDAP applications and
-     * text-based clients such as geturl.
-     *
-     * @param os    the <code>PrintWriter</code> on which to print the value.
-     * @param space this value is passed to the <code>printDecl</code> method,
-     *              and controls the leading spaces of the output.
-     * @see BaseType#printVal(PrintWriter, String, boolean)
-     */
-    public void printVal(PrintWriter os, String space) {
-        int len = getLength();
-        for (int i = 0; i < len - 1; i++) {
-            // to print properly, cast to long and convert to unsigned
-            os.print(((long) getValue(i)) & 0xFFFFL);
-            os.print(", ");
-        }
-        // print last value, if any, without trailing comma
-        if (len > 0)
-            os.print(((long) getValue(len - 1)) & 0xFFFFL);
+  /**
+   * Prints the value of all variables in this vector. This
+   * method is primarily intended for debugging OPeNDAP applications and
+   * text-based clients such as geturl.
+   *
+   * @param os the <code>PrintWriter</code> on which to print the value.
+   * @param space this value is passed to the <code>printDecl</code> method,
+   *        and controls the leading spaces of the output.
+   * @see BaseType#printVal(PrintWriter, String, boolean)
+   */
+  public void printVal(PrintWriter os, String space) {
+    int len = getLength();
+    for (int i = 0; i < len - 1; i++) {
+      // to print properly, cast to long and convert to unsigned
+      os.print(((long) getValue(i)) & 0xFFFFL);
+      os.print(", ");
     }
+    // print last value, if any, without trailing comma
+    if (len > 0)
+      os.print(((long) getValue(len - 1)) & 0xFFFFL);
+  }
 
-    /**
-     * Prints the value of a single variable in this vector.
-     * method is used by <code>DArray</code>'s <code>printVal</code> method.
-     *
-     * @param os    the <code>PrintWriter</code> on which to print the value.
-     * @param index the index of the variable to print.
-     * @see DArray#printVal(PrintWriter, String, boolean)
-     */
-    public void printSingleVal(PrintWriter os, int index) {
-        // to print properly, cast to long and convert to unsigned
-        os.print(((long) getValue(index)) & 0xFFFFL);
-    }
+  /**
+   * Prints the value of a single variable in this vector.
+   * method is used by <code>DArray</code>'s <code>printVal</code> method.
+   *
+   * @param os the <code>PrintWriter</code> on which to print the value.
+   * @param index the index of the variable to print.
+   * @see DArray#printVal(PrintWriter, String, boolean)
+   */
+  public void printSingleVal(PrintWriter os, int index) {
+    // to print properly, cast to long and convert to unsigned
+    os.print(((long) getValue(index)) & 0xFFFFL);
+  }
 }
 
 

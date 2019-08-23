@@ -19,17 +19,21 @@ import java.nio.ShortBuffer;
  */
 public class ArrayShort extends Array {
 
-   // package private. use Array.factory()
+  // package private. use Array.factory()
   static ArrayShort factory(Index index, boolean isUnsigned) {
     return ArrayShort.factory(index, isUnsigned, null);
   }
 
-  /* create new ArrayShort with given indexImpl and backing store.
+  /*
+   * create new ArrayShort with given indexImpl and backing store.
+   * 
    * @param index use this Index
+   * 
    * @param stor. use this storage. if null, allocate.
+   * 
    * @return. new ArrayShort.D<rank> or ArrayShort object.
    */
-  static ArrayShort factory( Index index, boolean isUnsigned, short[] storage) {
+  static ArrayShort factory(Index index, boolean isUnsigned, short[] storage) {
     if (index instanceof Index0D) {
       return new ArrayShort.D0(index, isUnsigned, storage);
     } else if (index instanceof Index1D) {
@@ -69,14 +73,16 @@ public class ArrayShort extends Array {
    * Create a new Array using the given IndexArray and backing store.
    * used for sections. Trusted package private.
    *
-   * @param ima  use this IndexArray as the index
+   * @param ima use this IndexArray as the index
    * @param data use this as the backing store
    */
   ArrayShort(Index ima, boolean isUnsigned, short[] data) {
     super(isUnsigned ? DataType.USHORT : DataType.SHORT, ima);
-    /* replace by something better
-    if (ima.getSize() != data.length)
-      throw new IllegalArgumentException("bad data length"); */
+    /*
+     * replace by something better
+     * if (ima.getSize() != data.length)
+     * throw new IllegalArgumentException("bad data length");
+     */
     if (data != null)
       storage = data;
     else
@@ -89,6 +95,7 @@ public class ArrayShort extends Array {
   protected Array createView(Index index) {
     return ArrayShort.factory(index, isUnsigned(), storage);
   }
+
   /* Get underlying primitive array storage. CAUTION! You may invalidate your warrentee! */
   public Object getStorage() {
     return storage;
@@ -97,7 +104,8 @@ public class ArrayShort extends Array {
   // copy from javaArray to storage using the iterator: used by factory( Object);
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     short[] ja = (short[]) javaArray;
-    for (short aJa : ja) iter.setShortNext(aJa);
+    for (short aJa : ja)
+      iter.setShortNext(aJa);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
@@ -107,13 +115,14 @@ public class ArrayShort extends Array {
       ja[i] = iter.getShortNext();
   }
 
-  public ByteBuffer getDataAsByteBuffer() {return getDataAsByteBuffer(null);}
+  public ByteBuffer getDataAsByteBuffer() {
+    return getDataAsByteBuffer(null);
+  }
 
-    public ByteBuffer getDataAsByteBuffer(ByteOrder order)
-    {
-      ByteBuffer bb = super.getDataAsByteBuffer((int) (2 * getSize()), order);
-      ShortBuffer ib = bb.asShortBuffer();
-      ib.put((short[]) get1DJavaArray(getDataType())); // make sure its in canonical order
+  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {
+    ByteBuffer bb = super.getDataAsByteBuffer((int) (2 * getSize()), order);
+    ShortBuffer ib = bb.asShortBuffer();
+    ib.put((short[]) get1DJavaArray(getDataType())); // make sure its in canonical order
     return bb;
   }
 
@@ -126,6 +135,7 @@ public class ArrayShort extends Array {
 
   /**
    * Get the value at the specified index.
+   * 
    * @param i the index
    * @return the value at the specified index.
    */
@@ -135,6 +145,7 @@ public class ArrayShort extends Array {
 
   /**
    * Set the value at the specified index.
+   * 
    * @param i the index
    * @param value set to this value
    */
@@ -310,7 +321,7 @@ public class ArrayShort extends Array {
     private Index0D ix;
 
     public D0(boolean isUnsigned) {
-      super(new int[]{}, isUnsigned);
+      super(new int[] {}, isUnsigned);
       ix = (Index0D) indexCalc;
     }
 
@@ -335,7 +346,7 @@ public class ArrayShort extends Array {
     private Index1D ix;
 
     public D1(int len0, boolean isUnsigned) {
-      super(new int[]{len0}, isUnsigned);
+      super(new int[] {len0}, isUnsigned);
       ix = (Index1D) indexCalc;
     }
 
@@ -360,7 +371,7 @@ public class ArrayShort extends Array {
     private Index2D ix;
 
     public D2(int len0, int len1, boolean isUnsigned) {
-      super(new int[]{len0, len1}, isUnsigned);
+      super(new int[] {len0, len1}, isUnsigned);
       ix = (Index2D) indexCalc;
     }
 
@@ -385,7 +396,7 @@ public class ArrayShort extends Array {
     private Index3D ix;
 
     public D3(int len0, int len1, int len2, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2}, isUnsigned);
+      super(new int[] {len0, len1, len2}, isUnsigned);
       ix = (Index3D) indexCalc;
     }
 
@@ -410,7 +421,7 @@ public class ArrayShort extends Array {
     private Index4D ix;
 
     public D4(int len0, int len1, int len2, int len3, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2, len3}, isUnsigned);
+      super(new int[] {len0, len1, len2, len3}, isUnsigned);
       ix = (Index4D) indexCalc;
     }
 
@@ -435,7 +446,7 @@ public class ArrayShort extends Array {
     private Index5D ix;
 
     public D5(int len0, int len1, int len2, int len3, int len4, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2, len3, len4}, isUnsigned);
+      super(new int[] {len0, len1, len2, len3, len4}, isUnsigned);
       ix = (Index5D) indexCalc;
     }
 
@@ -460,7 +471,7 @@ public class ArrayShort extends Array {
     private Index6D ix;
 
     public D6(int len0, int len1, int len2, int len3, int len4, int len5, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2, len3, len4, len5}, isUnsigned);
+      super(new int[] {len0, len1, len2, len3, len4, len5}, isUnsigned);
       ix = (Index6D) indexCalc;
     }
 
@@ -485,7 +496,7 @@ public class ArrayShort extends Array {
     private Index7D ix;
 
     public D7(int len0, int len1, int len2, int len3, int len4, int len5, int len6, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2, len3, len4, len5, len6}, isUnsigned);
+      super(new int[] {len0, len1, len2, len3, len4, len5, len6}, isUnsigned);
       ix = (Index7D) indexCalc;
     }
 

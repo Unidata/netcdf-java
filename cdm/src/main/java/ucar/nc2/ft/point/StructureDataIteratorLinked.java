@@ -7,7 +7,6 @@ package ucar.nc2.ft.point;
 import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
-
 import java.io.IOException;
 
 /**
@@ -51,8 +50,8 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
     } else {
       nextRecno = sdata.getScalarInt(linkVarName);
       if (currRecno == nextRecno) // infinite loop
-        throw new IllegalStateException("Infinite loop in linked list at recno= "+nextRecno);
-     }
+        throw new IllegalStateException("Infinite loop in linked list at recno= " + nextRecno);
+    }
 
     return sdata;
   }

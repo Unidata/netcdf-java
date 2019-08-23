@@ -58,10 +58,8 @@ public class VertCoordValue implements Comparable<VertCoordValue> {
       return false;
     }
     VertCoordValue that = (VertCoordValue) o;
-    return Double.compare(that.value1, value1) == 0 &&
-        Double.compare(that.value2, value2) == 0 &&
-        Double.compare(that.mid, mid) == 0 &&
-        isLayer == that.isLayer;
+    return Double.compare(that.value1, value1) == 0 && Double.compare(that.value2, value2) == 0
+        && Double.compare(that.mid, mid) == 0 && isLayer == that.isLayer;
   }
 
   @Override

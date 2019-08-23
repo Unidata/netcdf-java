@@ -5,13 +5,11 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.ncml.NcMLReader;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -20,21 +18,21 @@ import java.lang.invoke.MethodHandles;
 public class TestNcMLModifyVars extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestNcMLModifyVars( String name) {
+  public TestNcMLModifyVars(String name) {
     super(name);
   }
 
   NetcdfFile ncfile = null;
 
   public void setUp() {
-    String filename = "file:"+TestNcML.topDir + "modifyVars.xml";
+    String filename = "file:" + TestNcML.topDir + "modifyVars.xml";
 
     try {
       ncfile = NcMLReader.readNcML(filename, null);
     } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = "+e);
+      System.out.println("bad URL error = " + e);
     } catch (IOException e) {
-      System.out.println("IO error = "+e);
+      System.out.println("IO error = " + e);
       e.printStackTrace();
     }
   }
@@ -95,7 +93,8 @@ public class TestNcMLModifyVars extends TestCase {
       assert close(dataI.getDoubleNext(), 0.1);
       assert close(dataI.getDoubleNext(), 0.1);
       assert close(dataI.getDoubleNext(), 0.01);
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
 
   }
 
@@ -133,7 +132,8 @@ public class TestNcMLModifyVars extends TestCase {
       assert close(dataI.getDoubleNext(), 41.0);
       assert close(dataI.getDoubleNext(), 40.0);
       assert close(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
 
   }
 
@@ -191,7 +191,8 @@ public class TestNcMLModifyVars extends TestCase {
       assert dataI.getIntNext() == 3;
       assert dataI.getIntNext() == 4;
       assert dataI.getIntNext() == 5;
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
   }
 
   public void testReadSlice() {
@@ -298,17 +299,18 @@ public class TestNcMLModifyVars extends TestCase {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert close( dataI.getDoubleNext(),1.0);
-      assert close( dataI.getDoubleNext(),2.0);
-      assert close( dataI.getDoubleNext(),3.0);
-      assert close( dataI.getDoubleNext(),4.0);
-      assert close( dataI.getDoubleNext(),2.0);
-    } catch (IOException io) {}
+      assert close(dataI.getDoubleNext(), 1.0);
+      assert close(dataI.getDoubleNext(), 2.0);
+      assert close(dataI.getDoubleNext(), 3.0);
+      assert close(dataI.getDoubleNext(), 4.0);
+      assert close(dataI.getDoubleNext(), 2.0);
+    } catch (IOException io) {
+    }
   }
 
-  boolean close( double d1, double d2) {
-    //System.out.println(d1+" "+d2);
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
+  boolean close(double d1, double d2) {
+    // System.out.println(d1+" "+d2);
+    return Math.abs((d1 - d2) / d1) < 1.0e-5;
   }
 
 }

@@ -15,8 +15,7 @@ import java.io.IOException;
  * @author edavis
  * @since Jun 23, 2005T10:29:26 PM
  */
-public class CrawlableDatasetFactory
-{
+public class CrawlableDatasetFactory {
 
 
   private static String defaultClassName = "thredds.crawlabledataset.CrawlableDatasetFile";
@@ -30,7 +29,7 @@ public class CrawlableDatasetFactory
    * thredds.crawlabledataset.CrawlableDataset. The given class must also
    * supply a public constructor with a single String argument. The String
    * argument is the path for the CrawlableDataset being constructed.
-   *  
+   * 
    * If className is null, thredds.crawlabledataset.CrawlableDatasetFile will
    * be used.
    *
@@ -47,7 +46,8 @@ public class CrawlableDatasetFactory
    *
    * @throws IOException if a CrawlableDataset cannot be created due to IO problems.
    * @throws ClassNotFoundException if the given CrawlableDataset implementation was not found.
-   * @throws NoSuchMethodException if the given CrawlableDataset implementation does not have a constructor with a single String parameter which is required.
+   * @throws NoSuchMethodException if the given CrawlableDataset implementation does not have a constructor with a
+   *         single String parameter which is required.
    * @throws IllegalAccessException if the constructor is inaccessible due to Java language access control.
    * @throws InvocationTargetException if the constructor throws an exception.
    * @throws InstantiationException if the given CrawlableDataset implementation is an abstract class.
@@ -55,45 +55,40 @@ public class CrawlableDatasetFactory
    * @throws NullPointerException if the given path is null.
    * @throws IllegalArgumentException if the given class name is not an implementation of CrawlableDataset.
    */
-  public static CrawlableDataset createCrawlableDataset( String path, String className, Object configObj )
-          throws IOException,
-                 ClassNotFoundException, NoSuchMethodException,
-                 IllegalAccessException, InvocationTargetException,
-                 InstantiationException, IllegalArgumentException, NullPointerException
-          // throws CrDsException, IllegalArgumentException
+  public static CrawlableDataset createCrawlableDataset(String path, String className, Object configObj)
+      throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+      InvocationTargetException, InstantiationException, IllegalArgumentException, NullPointerException
+  // throws CrDsException, IllegalArgumentException
   {
-    if ( path == null ) throw new NullPointerException( "Given path must not be null.");
-    String tmpClassName = ( className == null
-                            ? defaultClassName
-                            : className );
+    if (path == null)
+      throw new NullPointerException("Given path must not be null.");
+    String tmpClassName = (className == null ? defaultClassName : className);
 
     // @todo Remove alias until sure how to handle things like ".scour*" being a regular file.
-//    if ( CrawlableDatasetAlias.isAlias( tmpPath) )
-//        return new CrawlableDatasetAlias( tmpPath, tmpClassName, configObj );
+    // if ( CrawlableDatasetAlias.isAlias( tmpPath) )
+    // return new CrawlableDatasetAlias( tmpPath, tmpClassName, configObj );
 
     // Get the Class instance for desired CrawlableDataset implementation.
-    Class crDsClass = Class.forName( tmpClassName );
+    Class crDsClass = Class.forName(tmpClassName);
 
     // Check that the Class is a CrawlableDataset.
-    if ( ! CrawlableDataset.class.isAssignableFrom( crDsClass ) )
-    {
-      throw new IllegalArgumentException( "Requested class <" + className + "> not an implementation of thredds.crawlabledataset.CrawlableDataset.");
+    if (!CrawlableDataset.class.isAssignableFrom(crDsClass)) {
+      throw new IllegalArgumentException(
+          "Requested class <" + className + "> not an implementation of thredds.crawlabledataset.CrawlableDataset.");
     }
 
     // Instantiate the desired CrawlableDataset.
-    Class [] argTypes = { String.class, Object.class };
-    Object [] args = { path, configObj };
-    Constructor constructor = crDsClass.getDeclaredConstructor( argTypes );
+    Class[] argTypes = {String.class, Object.class};
+    Object[] args = {path, configObj};
+    Constructor constructor = crDsClass.getDeclaredConstructor(argTypes);
 
-    try
-    {
-      return (CrawlableDataset) constructor.newInstance( args );
-    }
-    catch ( InvocationTargetException e )
-    {
-      if ( IOException.class.isAssignableFrom( e.getCause().getClass()) )
+    try {
+      return (CrawlableDataset) constructor.newInstance(args);
+    } catch (InvocationTargetException e) {
+      if (IOException.class.isAssignableFrom(e.getCause().getClass()))
         throw (IOException) e.getCause();
-      else throw e;
+      else
+        throw e;
     }
   }
 
@@ -109,17 +104,17 @@ public class CrawlableDatasetFactory
    * @return the normalized path.
    * @throws NullPointerException if path is null.
    */
-  public static String normalizePath( String path )
-  {
+  public static String normalizePath(String path) {
     // Replace any occurance of a backslash ("\") with a slash ("/").
     // NOTE: Both String and Pattern escape backslash, so need four backslashes to find one.
-    // NOTE: No longer replace multiple backslashes with one slash, which allows for UNC pathnames (Windows LAN addresses).
-    //       Was path.replaceAll( "\\\\+", "/");
-    String newPath = path.replaceAll( "\\\\", "/");
+    // NOTE: No longer replace multiple backslashes with one slash, which allows for UNC pathnames (Windows LAN
+    // addresses).
+    // Was path.replaceAll( "\\\\+", "/");
+    String newPath = path.replaceAll("\\\\", "/");
 
     // Remove trailing slashes.
-    while ( newPath.endsWith( "/") && ! newPath.equals("/") )
-      newPath = newPath.substring( 0, newPath.length() - 1 );
+    while (newPath.endsWith("/") && !newPath.equals("/"))
+      newPath = newPath.substring(0, newPath.length() - 1);
 
     return newPath;
   }

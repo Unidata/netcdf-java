@@ -8,23 +8,26 @@ package thredds.ui.monitor;
 import ucar.httpservices.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.net.HttpClientManager;
-
 import java.io.*;
 import javax.swing.*;
 
 /**
  * Download files from TDS, must have remote management turned on.
+ * 
  * <pre>
  *   1) log files
  *   2) roots
  * </pre>
+ * 
  * @author caron
  * @since Apr 24, 2009
  */
 public class TdsDownloader {
   private static final String latestServletLog = "threddsServlet.log";
 
-  public enum Type {access, thredds}
+  public enum Type {
+    access, thredds
+  }
 
   private ManageForm.Data config;
   private Type type;
@@ -52,14 +55,14 @@ public class TdsDownloader {
   public void getRemoteFiles(final CancelTask _cancel) {
     this.cancel = _cancel;
 
-    String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/";
+    String urls = config.getServerPrefix() + "/thredds/admin/log/" + type + "/";
     ta.append(String.format("Download URL = %s%n", urls));
 
     String contents = null;
     try (HTTPMethod method = HTTPFactory.Get(session, urls)) {
-        int statusCode = method.execute();
-        if (statusCode == 200)
-          contents = method.getResponseAsString();
+      int statusCode = method.execute();
+      if (statusCode == 200)
+        contents = method.getResponseAsString();
 
       if ((contents == null) || (contents.length() == 0)) {
         ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
@@ -73,7 +76,7 @@ public class TdsDownloader {
       return;
     }
 
-    // update text area in background  http://technobuz.com/2009/05/update-jtextarea-dynamically/
+    // update text area in background http://technobuz.com/2009/05/update-jtextarea-dynamically/
     final String list = contents;
     SwingWorker worker = new SwingWorker<String, Void>() {
 
@@ -119,26 +122,28 @@ public class TdsDownloader {
 
       localFile = new File(localDir, name);
       if (!localFile.exists() || (localFile.length() > size) || name.equals(latestServletLog)) {
-        ta.append(String.format("Read RemoteLog length=%6d Kb for %s%n", size/1000, name));
+        ta.append(String.format("Read RemoteLog length=%6d Kb for %s%n", size / 1000, name));
         read();
       } else if (localFile.length() < size) {
-        ta.append(String.format("Append RemoteLog length=%6d Kb to local=%6d Kb for %s%n", size/1000, localFile.length()/1000, name));
+        ta.append(String.format("Append RemoteLog length=%6d Kb to local=%6d Kb for %s%n", size / 1000,
+            localFile.length() / 1000, name));
         append();
       } else {
-        ta.append(String.format("Ok RemoteLog length=%6d local=%6d (kb) for %s%n", size/1000, localFile.length()/1000, name));
+        ta.append(String.format("Ok RemoteLog length=%6d local=%6d (kb) for %s%n", size / 1000,
+            localFile.length() / 1000, name));
       }
-      ta.setCaretPosition(ta.getText().length());   // needed to get the text to update ?
+      ta.setCaretPosition(ta.getText().length()); // needed to get the text to update ?
 
     }
 
     void read() throws IOException {
-      String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
+      String urls = config.getServerPrefix() + "/thredds/admin/log/" + type + "/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
       HttpClientManager.copyUrlContentsToFile(session, urls, localFile);
     }
 
     void append() throws IOException {
-      String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
+      String urls = config.getServerPrefix() + "/thredds/admin/log/" + type + "/" + name;
       long start = localFile.length();
       long want = size - start;
       long got = HttpClientManager.appendUrlContentsToFile(session, urls, localFile, start, size);
@@ -150,10 +155,7 @@ public class TdsDownloader {
 
     @Override
     public String toString() {
-      return "RemoteLog{" +
-              "name='" + name + '\'' +
-              ", size=" + size +
-              '}';
+      return "RemoteLog{" + "name='" + name + '\'' + ", size=" + size + '}';
     }
   }
 

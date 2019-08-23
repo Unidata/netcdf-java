@@ -21,11 +21,9 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
@@ -56,7 +54,8 @@ public class CdmrFeatureDataset {
     try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
       method.setFollowRedirects(true);
       int statusCode = method.execute();
-      if (statusCode != 200) return null;
+      if (statusCode != 200)
+        return null;
       String content = method.getResponseAsString();
       return FeatureType.getType(content);
 
@@ -73,30 +72,34 @@ public class CdmrFeatureDataset {
     FeatureType featureType;
     try {
       featureType = isCdmrfEndpoint(endpoint);
-      if (featureType == null) return Optional.empty("Not a valid CdmrFeatureDataset endpoint="+endpoint);
+      if (featureType == null)
+        return Optional.empty("Not a valid CdmrFeatureDataset endpoint=" + endpoint);
 
     } catch (IOException ioe) {
-      return Optional.empty(String.format("Error opening CdmrFeatureDataset endpoint=%s err=%s", endpoint, ioe.getMessage()));
+      return Optional
+          .empty(String.format("Error opening CdmrFeatureDataset endpoint=%s err=%s", endpoint, ioe.getMessage()));
     }
 
     if (!FeatureDatasetFactoryManager.featureTypeOk(wantFeatureType, featureType))
-      return Optional.empty(String.format("Not a compatible featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint));
+      return Optional.empty(String.format("Not a compatible featureType=%s, want=%s, endpoint=%s", featureType,
+          wantFeatureType, endpoint));
 
     if (featureType.isCoverageFeatureType()) {
       CdmrfReader reader = new CdmrfReader(endpoint);
       CoverageCollection covColl = reader.open();
-      return Optional.of( new FeatureDatasetCoverage(endpoint, covColl, covColl));
+      return Optional.of(new FeatureDatasetCoverage(endpoint, covColl, covColl));
     }
 
     if (featureType.isPointFeatureType()) {
       Document doc = getCapabilities(endpoint);
       Element root = doc.getRootElement();
       Element elem = root.getChild("featureDataset");
-      String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
+      String fType = elem.getAttribute("type").getValue(); // LOOK, may be multiple types
 
       endpoint = elem.getAttribute("url").getValue();
       wantFeatureType = FeatureType.getType(fType);
-      if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= '%s' url=%s%n", endpoint, fType, endpoint);
+      if (debug)
+        System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= '%s' url=%s%n", endpoint, fType, endpoint);
 
       List<VariableSimpleIF> dataVars = FeatureDatasetCapabilitiesWriter.getDataVariables(doc);
       LatLonRect bb = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc);
@@ -107,14 +110,15 @@ public class CdmrFeatureDataset {
       return Optional.of(new PointDatasetRemote(wantFeatureType, endpoint, timeUnit, altUnits, dataVars, bb, dr));
     }
 
-    return Optional.empty(String.format("Unimplemented featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint));
+    return Optional.empty(
+        String.format("Unimplemented featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint));
   }
 
   static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
     org.jdom2.Document doc;
     try (InputStream in = CdmRemote.sendQuery(null, endpoint, "req=capabilities")) {
       SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(in);  // LOOK closes in when done ??
+      doc = builder.build(in); // LOOK closes in when done ??
 
     } catch (Throwable t) {
       throw new IOException(t);

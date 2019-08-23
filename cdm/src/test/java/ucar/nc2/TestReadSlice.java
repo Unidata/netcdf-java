@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.unidata.util.test.UtilsMa2Test;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
@@ -23,7 +22,7 @@ public class TestReadSlice extends TestCase {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     Variable temp = null;
-    assert(null != (temp = ncfile.findVariable("temperature")));
+    assert (null != (temp = ncfile.findVariable("temperature")));
     int[] shape = temp.getShape();
 
     Variable tempSlice = temp.slice(0, 12);
@@ -35,7 +34,7 @@ public class TestReadSlice extends TestCase {
     } catch (IOException e) {
       System.err.println("ERROR reading file");
       e.printStackTrace();
-      assert(false);
+      assert (false);
       return;
     }
     assert Asection.getRank() == 1;
@@ -47,26 +46,26 @@ public class TestReadSlice extends TestCase {
       A = temp.read();
     } catch (IOException e) {
       System.err.println("ERROR reading file");
-      assert(false);
+      assert (false);
       return;
     }
     assert (A.getRank() == 2);
 
     // compare
-    Array Asection2 = A.slice( 0, 12);
+    Array Asection2 = A.slice(0, 12);
     assert (Asection2.getRank() == 1);
 
     UtilsMa2Test.testEquals(Asection, Asection2);
 
     ncfile.close();
-    System.out.println( "*** testReadSlice1 done");
+    System.out.println("*** testReadSlice1 done");
   }
 
   public void testReadSlice2() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     Variable temp = null;
-    assert(null != (temp = ncfile.findVariable("temperature")));
+    assert (null != (temp = ncfile.findVariable("temperature")));
     int[] shape = temp.getShape();
 
     Variable tempSlice = temp.slice(1, 55);
@@ -78,7 +77,7 @@ public class TestReadSlice extends TestCase {
     } catch (IOException e) {
       System.err.println("ERROR reading file");
       e.printStackTrace();
-      assert(false);
+      assert (false);
       return;
     }
     assert Asection.getRank() == 1;
@@ -90,19 +89,19 @@ public class TestReadSlice extends TestCase {
       A = temp.read();
     } catch (IOException e) {
       System.err.println("ERROR reading file");
-      assert(false);
+      assert (false);
       return;
     }
     assert (A.getRank() == 2);
 
     // compare
-    Array Asection2 = A.slice( 1, 55);
+    Array Asection2 = A.slice(1, 55);
     assert (Asection2.getRank() == 1);
 
     UtilsMa2Test.testEquals(Asection, Asection2);
 
     ncfile.close();
-    System.out.println( "*** testReadSlice2 done");
+    System.out.println("*** testReadSlice2 done");
   }
 
   public void testReadSliceCompose() throws InvalidRangeException, IOException {
@@ -126,10 +125,10 @@ public class TestReadSlice extends TestCase {
     } catch (IOException e) {
       System.err.println("ERROR reading file");
       e.printStackTrace();
-      assert(false);
+      assert (false);
       return;
     }
-    //assert Asection.getRank() == 0;  // this is returning a rank1 (length 1)
+    // assert Asection.getRank() == 0; // this is returning a rank1 (length 1)
 
     // read entire array
     Array A;
@@ -137,20 +136,20 @@ public class TestReadSlice extends TestCase {
       A = temp.read();
     } catch (IOException e) {
       System.err.println("ERROR reading file");
-      assert(false);
+      assert (false);
       return;
     }
     assert (A.getRank() == 2);
 
     // compare
-    Array data = A.slice( 1, 55);
-    data = data.slice( 0, 12);
+    Array data = A.slice(1, 55);
+    data = data.slice(0, 12);
     assert (data.getRank() == 0);
 
     UtilsMa2Test.testEquals(Asection, data);
 
     ncfile.close();
-    System.out.println( "*** testReadSliceCompose done");
+    System.out.println("*** testReadSliceCompose done");
   }
 
 }

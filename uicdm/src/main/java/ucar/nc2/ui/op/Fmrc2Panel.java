@@ -20,7 +20,6 @@ import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -63,40 +62,45 @@ public class Fmrc2Panel extends JPanel {
   public Fmrc2Panel(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    fmrTable = new BeanTable(
-            FmrBean.class, (PreferencesExt) prefs.node("DatasetBean"), false, "FmrInv", fmrBeanDesc, null);
+    fmrTable =
+        new BeanTable(FmrBean.class, (PreferencesExt) prefs.node("DatasetBean"), false, "FmrInv", fmrBeanDesc, null);
     fmrTable.addListSelectionListener(e -> {
-        FmrBean fmrBean = (FmrBean) fmrTable.getSelectedBean();
-        setFmr(fmrBean.fmr);
+      FmrBean fmrBean = (FmrBean) fmrTable.getSelectedBean();
+      setFmr(fmrBean.fmr);
     });
 
-    invTable = new BeanTable(
-            InvBean.class, (PreferencesExt) prefs.node("DataBean"), false, "GridDatasetInv", dataBeanDesc, null);
-    /* invTable.addListSelectionListener(e -> {
-        invTable.getSelectedBean();
-        //setCoords(invBean.fmrInv);
-        //setGrids(invBean.fmrInv);
-    }); */
+    invTable = new BeanTable(InvBean.class, (PreferencesExt) prefs.node("DataBean"), false, "GridDatasetInv",
+        dataBeanDesc, null);
+    /*
+     * invTable.addListSelectionListener(e -> {
+     * invTable.getSelectedBean();
+     * //setCoords(invBean.fmrInv);
+     * //setGrids(invBean.fmrInv);
+     * });
+     */
 
-    coordTable = new BeanTable(
-            CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Time,Vert coords", coordBeanDesc, null);
-    /* coordTable.addListSelectionListener(e -> {
-        coordTable.getSelectedBean();
-    }); */
+    coordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Time,Vert coords",
+        coordBeanDesc, null);
+    /*
+     * coordTable.addListSelectionListener(e -> {
+     * coordTable.getSelectedBean();
+     * });
+     */
     coordTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-    gridTable = new BeanTable(
-            GridBean.class, (PreferencesExt) prefs.node("GridBean"), false, "UberGrids", gridBeanDesc, null);
+    gridTable =
+        new BeanTable(GridBean.class, (PreferencesExt) prefs.node("GridBean"), false, "UberGrids", gridBeanDesc, null);
     gridTable.addListSelectionListener(e -> {
-        GridBean gridBean = (GridBean) gridTable.getSelectedBean();
-        setSelectedCoord(gridBean);
+      GridBean gridBean = (GridBean) gridTable.getSelectedBean();
+      setSelectedCoord(gridBean);
     });
 
     PopupMenu varPopup = new PopupMenu(invTable.getJTable(), "Options");
     varPopup.addAction("Open in NetcdfFile Viewer", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         InvBean dsb = (InvBean) invTable.getSelectedBean();
-        if (dsb == null) return;
+        if (dsb == null)
+          return;
         Fmrc2Panel.this.firePropertyChange("openNetcdfFile", null, dsb.fmrInv.getLocation());
       }
     });
@@ -104,7 +108,8 @@ public class Fmrc2Panel extends JPanel {
     varPopup.addAction("Open in CoordSys tab", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         InvBean dsb = (InvBean) invTable.getSelectedBean();
-        if (dsb == null) return;
+        if (dsb == null)
+          return;
         Fmrc2Panel.this.firePropertyChange("openCoordSys", null, dsb.fmrInv.getLocation());
       }
     });
@@ -112,7 +117,8 @@ public class Fmrc2Panel extends JPanel {
     varPopup.addAction("Open in GridDataset tab", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         InvBean dsb = (InvBean) invTable.getSelectedBean();
-        if (dsb == null) return;
+        if (dsb == null)
+          return;
         Fmrc2Panel.this.firePropertyChange("openGridDataset", null, dsb.fmrInv.getLocation());
       }
     });
@@ -120,7 +126,8 @@ public class Fmrc2Panel extends JPanel {
     varPopup.addAction("show GridInventory XML", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         InvBean dsb = (InvBean) invTable.getSelectedBean();
-        if (dsb == null) return;
+        if (dsb == null)
+          return;
         infoTA.setText(dsb.fmrInv.writeXML(null));
         infoWindow.show();
       }
@@ -130,7 +137,8 @@ public class Fmrc2Panel extends JPanel {
     varPopup.addAction("Show Inv", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordBean bean = (CoordBean) coordTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         showCoordInv(bean);
       }
     });
@@ -139,7 +147,8 @@ public class Fmrc2Panel extends JPanel {
     varPopup.addAction("Show Inv Coords", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GridBean bean = (GridBean) gridTable.getSelectedBean();
-        if (bean == null) return;
+        if (bean == null)
+          return;
         showGridInv(bean);
       }
     });
@@ -174,7 +183,8 @@ public class Fmrc2Panel extends JPanel {
   }
 
   public void closeOpenFiles() throws IOException {
-    if (fmrc != null) fmrc.close();
+    if (fmrc != null)
+      fmrc.close();
     fmrc = null;
   }
 
@@ -190,14 +200,14 @@ public class Fmrc2Panel extends JPanel {
     }
 
     long took = System.currentTimeMillis() - start;
-    System.out.printf("that took %f secs%n", ((double)took)/1000);    
+    System.out.printf("that took %f secs%n", ((double) took) / 1000);
   }
 
   private void setFmrcFromConfig(String configFile) throws IOException {
     errlog = new Formatter();
     FeatureCollectionConfigBuilder builder = new FeatureCollectionConfigBuilder(errlog);
 
-      // input is xml file with just the <featureCollection>
+    // input is xml file with just the <featureCollection>
     FeatureCollectionConfig config = builder.readConfigFromFile(configFile);
     if (config == null) {
       infoTA.setText(errlog.toString());
@@ -236,7 +246,7 @@ public class Fmrc2Panel extends JPanel {
       return;
 
     debug = new Formatter();
-    fmrcInv = fmrc.getFmrcInv( debug);
+    fmrcInv = fmrc.getFmrcInv(debug);
     lite = new FmrcInvLite(fmrcInv);
 
     List<FmrBean> beanList = new ArrayList<>();
@@ -266,7 +276,7 @@ public class Fmrc2Panel extends JPanel {
 
     infoTA.clear();
 
-    try( MCollection cm = fmrc.getManager()) {
+    try (MCollection cm = fmrc.getManager()) {
       infoTA.appendLine("CollectionManager= ");
       infoTA.appendLine(cm.toString());
 
@@ -274,12 +284,11 @@ public class Fmrc2Panel extends JPanel {
       infoTA.appendLine("Files found=");
       try {
         for (MFile mfile : cm.getFilesSorted()) {
-          infoTA.appendLine(
-              " " + mfile.getPath() + " " + new Date(mfile.getLastModified()) + " " + mfile.getLength());
+          infoTA.appendLine(" " + mfile.getPath() + " " + new Date(mfile.getLastModified()) + " " + mfile.getLength());
           count++;
         }
       } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
       }
       infoTA.appendLine("total files=" + count);
     }
@@ -290,15 +299,18 @@ public class Fmrc2Panel extends JPanel {
   }
 
   private Fmrc2Dialog dialog = null;
+
   public void showDataset() throws IOException {
-    if (fmrcInv == null) return;
+    if (fmrcInv == null)
+      return;
     if (dialog == null) {
       dialog = new Fmrc2Dialog(null);
       dialog.pack();
       dialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
           Fmrc2Dialog.Data data = (Fmrc2Dialog.Data) evt.getNewValue();
-          if ((data.type == null) || (data.where == null)) return;
+          if ((data.type == null) || (data.where == null))
+            return;
           try {
             processDialog(data);
           } catch (IOException e) {
@@ -314,7 +326,8 @@ public class Fmrc2Panel extends JPanel {
   private void processDialog(Fmrc2Dialog.Data data) throws IOException {
     if (data.where.startsWith("Selected UberGrid")) {
       GridBean bean = (GridBean) gridTable.getSelectedBean();
-      if (bean == null) return;
+      if (bean == null)
+        return;
       showGridInv(data, bean);
       return;
     }
@@ -362,7 +375,8 @@ public class Fmrc2Panel extends JPanel {
     } catch (IOException e) {
       e.printStackTrace();
     } finally {
-      if (gds != null) gds.close();
+      if (gds != null)
+        gds.close();
     }
   }
 
@@ -374,7 +388,8 @@ public class Fmrc2Panel extends JPanel {
   }
 
   private void setFmr(FmrInv fmr) {
-    if (fmr == null) return;
+    if (fmr == null)
+      return;
     List<InvBean> beanList = new ArrayList<>();
     for (GridDatasetInv fmrInv : fmr.getInventoryList()) {
       beanList.add(new InvBean(fmrInv));
@@ -384,7 +399,8 @@ public class Fmrc2Panel extends JPanel {
   }
 
   private void setCoords(FmrcInv fmrInv) {
-    if (fmrInv == null) return;
+    if (fmrInv == null)
+      return;
     List<CoordBean> beanList = new ArrayList<>();
     for (FmrcInv.RunSeq tc : fmrInv.getRunSeqs())
       beanList.add(new TimeCoordBean(tc));
@@ -395,7 +411,8 @@ public class Fmrc2Panel extends JPanel {
   }
 
   private void setGrids(FmrcInv fmrInv) {
-    if (fmrInv == null) return;
+    if (fmrInv == null)
+      return;
     List<GridBean> beanList = new ArrayList<>();
     for (FmrcInv.UberGrid grid : fmrInv.getUberGrids()) {
       beanList.add(new GridBean(grid));
@@ -404,16 +421,18 @@ public class Fmrc2Panel extends JPanel {
     gridTable.setBeans(beanList);
   }
 
-  /* private void setGrids(GridDatasetInv fmrInv) {
-    if (fmrInv == null) return;
-    List<GridBean> beanList = new ArrayList<GridBean>();
-    for (TimeCoord tc : fmrInv.getTimeCoords()) {
-      for (GridDatasetInv.Grid grid : tc.getGrids())
-        beanList.add(new GridBean(grid));
-    }
-
-   gridTable.setBeans(beanList);
-  } */
+  /*
+   * private void setGrids(GridDatasetInv fmrInv) {
+   * if (fmrInv == null) return;
+   * List<GridBean> beanList = new ArrayList<GridBean>();
+   * for (TimeCoord tc : fmrInv.getTimeCoords()) {
+   * for (GridDatasetInv.Grid grid : tc.getGrids())
+   * beanList.add(new GridBean(grid));
+   * }
+   * 
+   * gridTable.setBeans(beanList);
+   * }
+   */
 
   private void setSelectedCoord(GridBean gridBean) {
     List<CoordBean> beans = coordTable.getBeans();
@@ -441,7 +460,7 @@ public class Fmrc2Panel extends JPanel {
         if (tc == null)
           out.format(" NULL%n");
         else
-        out.format(" %s : 0x%x %n", tc, tc.hashCode());
+          out.format(" %s : 0x%x %n", tc, tc.hashCode());
       }
 
       out.format("%n Used by Grids:%n");
@@ -475,9 +494,9 @@ public class Fmrc2Panel extends JPanel {
     if (debug != null)
       result.format("%s%n", debug.toString());
     if (fmrc != null) {
-      //lite.showRuntimeOffsetMatrix(result);
-      //lite.showBest(result);
-      //lite.showBest2(result);
+      // lite.showRuntimeOffsetMatrix(result);
+      // lite.showBest(result);
+      // lite.showBest2(result);
       fmrc.showDetails(result);
     }
   }
@@ -489,11 +508,11 @@ public class Fmrc2Panel extends JPanel {
 
     // show actual inventory
     TimeCoord union = ugrid.getUnionTimeCoord();
-    //int w = union.isInterval() ? 4 : 6;
+    // int w = union.isInterval() ? 4 : 6;
     int w2 = union.isInterval() ? 9 : 6;
     out.format("                              ");
-    for (int i=0; i<union.getNCoords(); i++)
-      out.format("%"+w2+"d ", i);
+    for (int i = 0; i < union.getNCoords(); i++)
+      out.format("%" + w2 + "d ", i);
     out.format("%n");
     out.format("     RunTime             Total ");
     showCoords(union, out);
@@ -523,7 +542,7 @@ public class Fmrc2Panel extends JPanel {
     out.format("%3d ", inv.countTotal());
 
     if (tc.isInterval()) {
-      for (int i=0; i<union.getNCoords(); i++) {
+      for (int i = 0; i < union.getNCoords(); i++) {
         boolean hasInventory = tc.findInterval(union.getBound1()[i], union.getBound2()[i]) >= 0;
         if (hasInventory)
           out.format("%" + w + "d ", nverts);
@@ -532,7 +551,7 @@ public class Fmrc2Panel extends JPanel {
 
       }
     } else {
-      for (int i=0; i<union.getNCoords(); i++) {
+      for (int i = 0; i < union.getNCoords(); i++) {
         boolean hasInventory = tc.findIndex(union.getOffsetTimes()[i]) >= 0;
         if (hasInventory)
           out.format("%" + w + "d ", nverts);
@@ -550,7 +569,7 @@ public class Fmrc2Panel extends JPanel {
     } else {
       double[] bound1 = tc.getBound1();
       double[] bound2 = tc.getBound2();
-      for (int i=0; i<bound1.length; i++)
+      for (int i = 0; i < bound1.length; i++)
         f.format("%4.0f-%4.0f,", bound1[i], bound2[i]);
     }
   }
@@ -561,8 +580,8 @@ public class Fmrc2Panel extends JPanel {
         out.format("%9.0f,", rc);
       }
     } else {
-       for (int i=0; i<timeCoords.bounds.length; i+=2) {
-        out.format("%4.0f-%4.0f,", timeCoords.bounds[i], timeCoords.bounds[i+1]);
+      for (int i = 0; i < timeCoords.bounds.length; i += 2) {
+        out.format("%4.0f-%4.0f,", timeCoords.bounds[i], timeCoords.bounds[i + 1]);
       }
     }
   }
@@ -572,10 +591,10 @@ public class Fmrc2Panel extends JPanel {
     FmrcInv.UberGrid ugrid = bean.grid;
     FmrcInvLite.Gridset gset = lite.findGridset(ugrid.getName());
     if (gset == null) {
-        out.format("showGridInv(): gset is null!");
-        infoTA.setText(out.toString());
-        infoWindow.show();
-        return;
+      out.format("showGridInv(): gset is null!");
+      infoTA.setText(out.toString());
+      infoWindow.show();
+      return;
     }
 
     TimeInventory ti = null;
@@ -615,7 +634,7 @@ public class Fmrc2Panel extends JPanel {
     double[] offsetCoords = ti.getOffsetCoords(gset);
 
     out.format("                ");
-    for (int i=0; i< ti.getTimeLength(gset); i++)
+    for (int i = 0; i < ti.getTimeLength(gset); i++)
       out.format("%9d,", i);
     out.format("%n");
 
@@ -653,7 +672,7 @@ public class Fmrc2Panel extends JPanel {
           out.format(" %3d: MISSING%n", i);
       }
     } else {
-        out.format("showGridInv(): grid is null!");
+      out.format("showGridInv(): grid is null!");
     }
 
     infoTA.setText(out.toString());
@@ -661,53 +680,54 @@ public class Fmrc2Panel extends JPanel {
   }
 
 
-  /* for a given offset hour and GridVariable, find the expected and actual inventory
-  private FmrcInv.Inventory getInventory(FmrInv.GridVariable grid, double hour) {
-    int actual = 0, expected = 0;
-      TimeCoord tExpect = grid.getTimeExpected();
-      if (tExpect.findIndex(hour) >= 0)
-        expected += grid.getNVerts();
-
-      for (GridDatasetInv.Grid inv : grid.getInventory()) {
-        TimeCoord tc = inv.getTimeCoord();
-        if (tc.findIndex(hour) >= 0)
-          actual += inv.getVertCoordLength();
-      }
-
-    return new FmrcInv.Inventory(actual, expected);
-  }
-
-
-  private int showCount(GridDatasetInv.Grid inv, double[] offsets, TimeCoord expected, Formatter out) {
-
-    int count = 0;
-    TimeCoord tc = inv.getTimeCoord();
-    int nverts = inv.getVertCoordLength();
-    out.format("%3d ", inv.countTotal());
-    for (double wantOffset : offsets) {
-      boolean hasExpected = expected.findIndex(wantOffset) >= 0;
-      boolean hasInventory = tc.findIndex(wantOffset) >= 0;
-      if (hasExpected && hasInventory)
-        out.format("%6d ", nverts);
-      else if (hasExpected && !hasInventory) {
-        out.format("%6s ", "0/" + nverts);
-      } else if (!hasExpected && hasInventory)
-        out.format("%6s ", nverts + "/0");
-      else
-        out.format("       "); // blank
-
-      int ninv = hasInventory ? nverts : 0;
-      count += ninv;
-    }
-    return count;
-  }   */
+  /*
+   * for a given offset hour and GridVariable, find the expected and actual inventory
+   * private FmrcInv.Inventory getInventory(FmrInv.GridVariable grid, double hour) {
+   * int actual = 0, expected = 0;
+   * TimeCoord tExpect = grid.getTimeExpected();
+   * if (tExpect.findIndex(hour) >= 0)
+   * expected += grid.getNVerts();
+   * 
+   * for (GridDatasetInv.Grid inv : grid.getInventory()) {
+   * TimeCoord tc = inv.getTimeCoord();
+   * if (tc.findIndex(hour) >= 0)
+   * actual += inv.getVertCoordLength();
+   * }
+   * 
+   * return new FmrcInv.Inventory(actual, expected);
+   * }
+   * 
+   * 
+   * private int showCount(GridDatasetInv.Grid inv, double[] offsets, TimeCoord expected, Formatter out) {
+   * 
+   * int count = 0;
+   * TimeCoord tc = inv.getTimeCoord();
+   * int nverts = inv.getVertCoordLength();
+   * out.format("%3d ", inv.countTotal());
+   * for (double wantOffset : offsets) {
+   * boolean hasExpected = expected.findIndex(wantOffset) >= 0;
+   * boolean hasInventory = tc.findIndex(wantOffset) >= 0;
+   * if (hasExpected && hasInventory)
+   * out.format("%6d ", nverts);
+   * else if (hasExpected && !hasInventory) {
+   * out.format("%6s ", "0/" + nverts);
+   * } else if (!hasExpected && hasInventory)
+   * out.format("%6s ", nverts + "/0");
+   * else
+   * out.format("       "); // blank
+   * 
+   * int ninv = hasInventory ? nverts : 0;
+   * count += ninv;
+   * }
+   * return count;
+   * }
+   */
 
   public class FmrBean {
     FmrInv fmr;
 
     // no-arg constructor
-    public FmrBean() {
-    }
+    public FmrBean() {}
 
     // create from a dataset
     public FmrBean(FmrInv fmr) {
@@ -718,9 +738,11 @@ public class Fmrc2Panel extends JPanel {
       return fmr.getRunDate();
     }
 
-    /* public String getName() {
-      return fmr.getName();
-    } */
+    /*
+     * public String getName() {
+     * return fmr.getName();
+     * }
+     */
 
   }
 
@@ -728,17 +750,18 @@ public class Fmrc2Panel extends JPanel {
     GridDatasetInv fmrInv;
 
     // no-arg constructor
-    public InvBean() {
-    }
+    public InvBean() {}
 
     // create from a dataset
     public InvBean(GridDatasetInv fmr) {
       this.fmrInv = fmr;
     }
 
-    /* public String getName() {
-      return fmrInv.getName();
-    }  */
+    /*
+     * public String getName() {
+     * return fmrInv.getName();
+     * }
+     */
 
     public String getLocation() {
       return fmrInv.getLocation();
@@ -750,8 +773,7 @@ public class Fmrc2Panel extends JPanel {
     FmrcInv.UberGrid grid;
 
     // no-arg constructor
-    public GridBean() {
-    }
+    public GridBean() {}
 
     // create from a dataset
     public GridBean(FmrcInv.UberGrid grid) {
@@ -785,8 +807,7 @@ public class Fmrc2Panel extends JPanel {
 
   public abstract class CoordBean {
     // no-arg constructor
-    public CoordBean() {
-    }
+    public CoordBean() {}
 
     public abstract String getType();
 
@@ -799,8 +820,7 @@ public class Fmrc2Panel extends JPanel {
     FmrcInv.RunSeq runSeq;
 
     // no-arg constructor
-    public TimeCoordBean() {
-    }
+    public TimeCoordBean() {}
 
     // create from a dataset
     public TimeCoordBean(FmrcInv.RunSeq tc) {
@@ -824,7 +844,7 @@ public class Fmrc2Panel extends JPanel {
       } else {
         double[] bound1 = tc.getBound1();
         double[] bound2 = tc.getBound2();
-        for (int i=0; i<bound1.length; i++)
+        for (int i = 0; i < bound1.length; i++)
           sb.format("(%f %f),", bound1[i], bound2[i]);
       }
       return sb.toString();
@@ -835,8 +855,7 @@ public class Fmrc2Panel extends JPanel {
     VertCoord vc;
 
     // no-arg constructor
-    public VertCoordBean() {
-    }
+    public VertCoordBean() {}
 
     // create from a dataset
     public VertCoordBean(VertCoord tc) {

@@ -12,6 +12,7 @@ import ucar.nc2.dataset.ProjectionCT;
 /**
  * Create a RotatedPole Projection from the information in the Coordinate Transform Variable.
  * This is from CF. Grib is RotatedLatLon
+ * 
  * @author caron
  */
 public class RotatedPole extends AbstractTransformBuilder implements HorizTransformBuilderIF {
@@ -21,10 +22,10 @@ public class RotatedPole extends AbstractTransformBuilder implements HorizTransf
   }
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double lon = readAttributeDouble( ctv, CF.GRID_NORTH_POLE_LONGITUDE, Double.NaN);
-    double lat = readAttributeDouble( ctv, CF.GRID_NORTH_POLE_LATITUDE, Double.NaN);
+    double lon = readAttributeDouble(ctv, CF.GRID_NORTH_POLE_LONGITUDE, Double.NaN);
+    double lat = readAttributeDouble(ctv, CF.GRID_NORTH_POLE_LATITUDE, Double.NaN);
 
-    ucar.unidata.geoloc.projection.RotatedPole proj = new ucar.unidata.geoloc.projection.RotatedPole( lat, lon);
+    ucar.unidata.geoloc.projection.RotatedPole proj = new ucar.unidata.geoloc.projection.RotatedPole(lat, lon);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 

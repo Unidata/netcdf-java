@@ -13,7 +13,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
@@ -87,7 +86,8 @@ public class TestFileCacheConcurrent {
         }
       }
     } finally {
-      if (pool != null) pool.shutdownNow();
+      if (pool != null)
+        pool.shutdownNow();
       FileCache.shutdown();
     }
   }
@@ -98,7 +98,8 @@ public class TestFileCacheConcurrent {
   private FileFactory factory = new MyFileFactory();
 
   class MyFileFactory implements FileFactory {
-    public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+    public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage)
+        throws IOException {
       return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
     }
   }
@@ -118,18 +119,19 @@ public class TestFileCacheConcurrent {
         DatasetUrl durl = new DatasetUrl(null, location);
         FileCacheable fc = cache.acquire(factory, durl);
         NetcdfFile ncfile = (NetcdfFile) fc;
-        //assert ncfile.isLocked();
+        // assert ncfile.isLocked();
         assert (null != ncfile.getIosp());
         Thread.sleep(wait);
         ncfile.close();
         int d = done.incrementAndGet();
-        if (d % PRINT_EVERY == 0) System.out.printf(" done %d%n", d);
+        if (d % PRINT_EVERY == 0)
+          System.out.printf(" done %d%n", d);
 
       } catch (InterruptedException e) {
-        System.out.println(" InterruptedException="+e.getMessage());
+        System.out.println(" InterruptedException=" + e.getMessage());
 
       } catch (Throwable e) {
-        System.out.println(" fail="+e.getMessage());
+        System.out.println(" fail=" + e.getMessage());
         e.printStackTrace();
         assert false;
       }

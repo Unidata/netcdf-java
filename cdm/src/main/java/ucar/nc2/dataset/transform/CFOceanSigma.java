@@ -17,7 +17,7 @@ import ucar.unidata.util.Parameter;
  * @author caron
  */
 public class CFOceanSigma extends AbstractTransformBuilder implements VertTransformBuilderIF {
-  private String sigma,eta,depth;
+  private String sigma, eta, depth;
 
   public String getTransformName() {
     return VerticalCT.Type.OceanSigma.name();
@@ -25,33 +25,40 @@ public class CFOceanSigma extends AbstractTransformBuilder implements VertTransf
 
   public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
-    if (null == formula_terms) return null;
+    if (null == formula_terms)
+      return null;
 
     String[] values = parseFormula(formula_terms, "sigma eta depth");
-    if (values == null) return null;
-    
+    if (values == null)
+      return null;
+
     sigma = values[0];
     eta = values[1];
     depth = values[2];
 
-    VerticalCT rs = new VerticalCT("OceanSigma_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
+    VerticalCT rs =
+        new VerticalCT("OceanSigma_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(n,j,i) + sigma(k)*(depth(j,i)+eta(n,j,i))")));
 
-    if (!addParameter(rs, OceanSigma.SIGMA, ds, sigma)) return null;
-    if (!addParameter(rs, OceanSigma.ETA, ds, eta)) return null;
-    if (!addParameter(rs, OceanSigma.DEPTH, ds, depth)) return null;
+    if (!addParameter(rs, OceanSigma.SIGMA, ds, sigma))
+      return null;
+    if (!addParameter(rs, OceanSigma.ETA, ds, eta))
+      return null;
+    if (!addParameter(rs, OceanSigma.DEPTH, ds, depth))
+      return null;
 
     return rs;
   }
 
 
   public String toString() {
-    return "OceanS:" + " sigma:"+ sigma + " eta:"+eta + " depth:"+depth;
+    return "OceanS:" + " sigma:" + sigma + " eta:" + eta + " depth:" + depth;
   }
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+      VerticalCT vCT) {
     return new OceanSigma(ds, timeDim, vCT.getParameters());
   }
 }

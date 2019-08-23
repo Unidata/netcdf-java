@@ -7,7 +7,6 @@ package ucar.nc2.util.xml;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.*;
 import ucar.unidata.util.Format;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -42,16 +41,16 @@ public class TimeJdomReading {
 
     System.out.println("Read from NetCDF; # metars= " + count);
     double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(" that took = " + took + " sec; "+ Format.d(count/took,0)+" metars/sec");
-    System.out.println(" memory= "+Runtime.getRuntime().totalMemory());
+    System.out.println(" that took = " + took + " sec; " + Format.d(count / took, 0) + " metars/sec");
+    System.out.println(" memory= " + Runtime.getRuntime().totalMemory());
 
     for (MetarField f : MetarField.fields.values())
-      System.out.println(" "+f.name+ " = "+f.sum);
+      System.out.println(" " + f.name + " = " + f.sum);
 
   }
 
   public static void main(String args[]) throws IOException {
     String dir = "C:/doc/metarEncoding/save/";
-    new TimeJdomReading(dir+"xmlC.xml");
+    new TimeJdomReading(dir + "xmlC.xml");
   }
 }

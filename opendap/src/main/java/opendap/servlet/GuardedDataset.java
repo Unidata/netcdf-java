@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -60,7 +60,9 @@ import opendap.dap.DAS;
  * <p/>
  * Example use:
  * <p/>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  * public void doGetDAS(HttpServletRequest request,
  * HttpServletResponse response,
  * ReqState rs)
@@ -88,7 +90,8 @@ import opendap.dap.DAS;
  * if (ds != null) ds.release();
  * }
  * }
- * </code></pre>
+ * </code>
+ * </pre>
  * <p/>
  * Its important that the DDS or DAS not be used after release() is called.
  * <p/>
@@ -102,30 +105,30 @@ import opendap.dap.DAS;
 
 public interface GuardedDataset {
 
-    /**
-     * Get the DDS for this Dataset.
-     *
-     * @return the ServerDDS
-     * @throws opendap.dap.DAP2Exception
-     * @throws ParseException
-     */
-    public ServerDDS getDDS() throws opendap.dap.DAP2Exception, ParseException;
+  /**
+   * Get the DDS for this Dataset.
+   *
+   * @return the ServerDDS
+   * @throws opendap.dap.DAP2Exception
+   * @throws ParseException
+   */
+  public ServerDDS getDDS() throws opendap.dap.DAP2Exception, ParseException;
 
-    /**
-     * Get the DAS for this Dataset.
-     *
-     * @return the DAS
-     * @throws opendap.dap.DAP2Exception
-     * @throws ParseException
-     */
-    public DAS getDAS() throws opendap.dap.DAP2Exception, ParseException;
+  /**
+   * Get the DAS for this Dataset.
+   *
+   * @return the DAS
+   * @throws opendap.dap.DAP2Exception
+   * @throws ParseException
+   */
+  public DAS getDAS() throws opendap.dap.DAP2Exception, ParseException;
 
-    /**
-     * Release the lock, if any, on this dataset.
-     */
-    public void release();
+  /**
+   * Release the lock, if any, on this dataset.
+   */
+  public void release();
 
-    public void close();
+  public void close();
 
 
 }

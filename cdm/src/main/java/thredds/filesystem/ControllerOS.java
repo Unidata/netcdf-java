@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -35,7 +35,6 @@ package thredds.filesystem;
 import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.util.*;
@@ -54,8 +53,7 @@ public class ControllerOS implements MController {
 
   ////////////////////////////////////////
 
-  public ControllerOS() {
-  }
+  public ControllerOS() {}
 
   @Override
   public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
@@ -65,8 +63,10 @@ public class ControllerOS implements MController {
     }
 
     File cd = new File(path);
-    if (!cd.exists()) return null;
-    if (!cd.isDirectory()) return null;
+    if (!cd.exists())
+      return null;
+    if (!cd.isDirectory())
+      return null;
     return new FilteredIterator(mc, new MFileIteratorAll(cd), false);
   }
 
@@ -78,9 +78,11 @@ public class ControllerOS implements MController {
     }
 
     File cd = new File(path);
-    if (!cd.exists()) return null;
-    if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIterator(cd), false);  // removes subdirs
+    if (!cd.exists())
+      return null;
+    if (!cd.isDirectory())
+      return null;
+    return new FilteredIterator(mc, new MFileIterator(cd), false); // removes subdirs
   }
 
   public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
@@ -90,14 +92,15 @@ public class ControllerOS implements MController {
     }
 
     File cd = new File(path);
-    if (!cd.exists()) return null;
-    if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIterator(cd), true);  // return only subdirs
+    if (!cd.exists())
+      return null;
+    if (!cd.isDirectory())
+      return null;
+    return new FilteredIterator(mc, new MFileIterator(cd), true); // return only subdirs
   }
 
 
-  public void close() {
-  } // NOOP
+  public void close() {} // NOOP
 
 
   ////////////////////////////////////////////////////////////
@@ -117,12 +120,13 @@ public class ControllerOS implements MController {
     }
 
     public boolean hasNext() {
-      next = nextFilteredFile();  /// 7
+      next = nextFilteredFile(); /// 7
       return (next != null);
     }
 
     public MFile next() {
-      if (next == null) throw new NoSuchElementException();
+      if (next == null)
+        throw new NoSuchElementException();
       return next;
     }
 
@@ -131,12 +135,15 @@ public class ControllerOS implements MController {
     }
 
     private MFile nextFilteredFile() {
-      if (orgIter == null) return null;
-      if (!orgIter.hasNext()) return null;
+      if (orgIter == null)
+        return null;
+      if (!orgIter.hasNext())
+        return null;
 
       MFile pdata = orgIter.next();
-      while ((pdata.isDirectory() != wantDirs) || !mc.accept(pdata)) {  // skip directories, and filter
-        if (!orgIter.hasNext()) return null;  /// 6
+      while ((pdata.isDirectory() != wantDirs) || !mc.accept(pdata)) { // skip directories, and filter
+        if (!orgIter.hasNext())
+          return null; /// 6
         pdata = orgIter.next();
       }
       return pdata;
@@ -217,13 +224,14 @@ public class ControllerOS implements MController {
           File nextDir = currTraversal.subdirIterator.next(); /// NCDC gets null
 
           traverse.add(currTraversal); // keep track of current traversal
-          currTraversal = new Traversal(nextDir);   /// 2
+          currTraversal = new Traversal(nextDir); /// 2
           return getNextIterator();
 
         } else {
-          if (traverse.peek() == null) return null;
+          if (traverse.peek() == null)
+            return null;
           currTraversal = traverse.remove();
-          return getNextIterator();  // 3 and 4  iteration
+          return getNextIterator(); // 3 and 4 iteration
         }
       }
     }
@@ -233,27 +241,31 @@ public class ControllerOS implements MController {
     }
   }
 
- // traversal of one directory
+  // traversal of one directory
   private static class Traversal {
-    List<File> fileList;  // list of files
-    Iterator<File> subdirIterator;  // list of subdirs
-    boolean leavesAreDone = false;   // when all the files are done, start on the subdirs
+    List<File> fileList; // list of files
+    Iterator<File> subdirIterator; // list of subdirs
+    boolean leavesAreDone = false; // when all the files are done, start on the subdirs
 
     Traversal(File dir) {
       fileList = new ArrayList<>();
-      if (dir == null) return;  // LOOK WHY
-      if (dir.listFiles() == null) return;
+      if (dir == null)
+        return; // LOOK WHY
+      if (dir.listFiles() == null)
+        return;
 
-      if (logger.isTraceEnabled()) logger.trace("List Directory "+dir);
+      if (logger.isTraceEnabled())
+        logger.trace("List Directory " + dir);
       List<File> subdirList = new ArrayList<>();
       File[] files = dir.listFiles();
       if (files != null)
-        for (File f : files) {  /// 1
+        for (File f : files) { /// 1
           if (f == null) {
-            logger.warn("  NULL FILE in directory "+dir);
+            logger.warn("  NULL FILE in directory " + dir);
             continue;
           }
-          if (logger.isTraceEnabled()) logger.trace("  File "+f);
+          if (logger.isTraceEnabled())
+            logger.trace("  File " + f);
 
           if (f.isDirectory())
             subdirList.add(f);

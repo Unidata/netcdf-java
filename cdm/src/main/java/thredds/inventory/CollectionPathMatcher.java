@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import ucar.nc2.util.CloseableIterator;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -18,6 +17,7 @@ import java.util.*;
 /**
  * A collection defined by the collection spec (not directory sensitive)
  * May have by regexp: or glob: (experimental)
+ * 
  * @author caron
  * @since 12/23/2014
  */
@@ -38,14 +38,14 @@ public class CollectionPathMatcher extends CollectionAbstract {
       setDateExtractor(extract);
 
     putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-    matcher = specp.getPathMatcher();                       // LOOK still need to decide what you are matching on name, path, etc
+    matcher = specp.getPathMatcher(); // LOOK still need to decide what you are matching on name, path, etc
 
     this.rootPath = Paths.get(this.root);
-    this.olderThanMillis = parseOlderThanString( config.olderThan);
+    this.olderThanMillis = parseOlderThanString(config.olderThan);
   }
 
   @Override
-  public void close() { }
+  public void close() {}
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {
@@ -57,7 +57,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
     return new AllFilesIterator();
   }
 
-  // could also use  Files.walkFileTree
+  // could also use Files.walkFileTree
   // returns everything defined by specp, checking olderThanMillis, descends into subdirs as needed
   private class AllFilesIterator implements CloseableIterator<MFile> {
     Queue<OneDirIterator> subdirs = new LinkedList<>();
@@ -81,13 +81,15 @@ public class CollectionPathMatcher extends CollectionAbstract {
     }
 
     public MFile next() {
-      if (current == null) throw new NoSuchElementException();
+      if (current == null)
+        throw new NoSuchElementException();
       return current.next();
     }
 
     public void remove() {
       throw new UnsupportedOperationException();
     }
+
     public void close() throws IOException {
       if (current != null)
         current.close();
@@ -104,7 +106,8 @@ public class CollectionPathMatcher extends CollectionAbstract {
 
     OneDirIterator(Path dir, Queue<OneDirIterator> subdirs) throws IOException {
       this.subdirs = subdirs;
-      dirStream = Files.newDirectoryStream(dir); // , new MyStreamFilter());  LOOK dont use the  DirectoryStream.Filter<Path>
+      dirStream = Files.newDirectoryStream(dir); // , new MyStreamFilter()); LOOK dont use the
+                                                 // DirectoryStream.Filter<Path>
       dirStreamIterator = dirStream.iterator();
       now = System.currentTimeMillis();
     }
@@ -121,13 +124,13 @@ public class CollectionPathMatcher extends CollectionAbstract {
           Path nextPath = dirStreamIterator.next();
           BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
 
-          if (wantSubdirs && attr.isDirectory()) {                                // dont filter subdirectories
+          if (wantSubdirs && attr.isDirectory()) { // dont filter subdirectories
             subdirs.add(new OneDirIterator(nextPath, subdirs));
             continue;
           }
 
-          if (!matcher.matches(nextPath))                                         // otherwise apply the filter specified by the specp
-             continue;
+          if (!matcher.matches(nextPath)) // otherwise apply the filter specified by the specp
+            continue;
 
           if (olderThanMillis > 0) {
             FileTime last = attr.lastModifiedTime();
@@ -145,7 +148,8 @@ public class CollectionPathMatcher extends CollectionAbstract {
     }
 
     public MFile next() {
-      if (nextMFile == null) throw new NoSuchElementException();
+      if (nextMFile == null)
+        throw new NoSuchElementException();
       return nextMFile;
     }
 

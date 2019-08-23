@@ -33,15 +33,17 @@ public class WmoCodeFlagTables {
     @Nullable
     String[] getElemNames() {
       if (this == GRIB2_22_0_0) {
-        return new String[]{"GRIB2_22_0_0_CodeFlag_exp_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en",
-            "UnitComments_en"};
+        return new String[] {"GRIB2_22_0_0_CodeFlag_exp_en", "Title_en", "SubTitle_en",
+            "MeaningParameterDescription_en", "UnitComments_en"};
       }
 
       return null;
     }
   }
 
-  public enum TableType {param, code, flag, cat}
+  public enum TableType {
+    param, code, flag, cat
+  }
 
   private static WmoCodeFlagTables instance = null;
 
@@ -58,7 +60,7 @@ public class WmoCodeFlagTables {
     return instance;
   }
 
-/////////////////////////////////////////
+  /////////////////////////////////////////
 
   private ImmutableList<WmoTable> wmoTables;
   private ImmutableMap<String, WmoTable> wmoTableMap;
@@ -106,45 +108,47 @@ public class WmoCodeFlagTables {
   }
 
   /*
-  Param Table:
-  <GRIB2_22_0_0_CodeFlag_exp_en>
-    <No>524</No>
-    <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
-    <SubTitle_en>Product discipline 0 - Meteorological products, parameter category 1: moisture</SubTitle_en>
-    <CodeFlag>101</CodeFlag>
-    <MeaningParameterDescription_en>Specific number concentration of snow</MeaningParameterDescription_en>
-    <UnitComments_en>kg-1</UnitComments_en>
-    <ElementDescription_en>Number of particles per unit mass of air</ElementDescription_en>
-    <Status>Operational</Status>
-  </GRIB2_22_0_0_CodeFlag_exp_en>
-
-  Code Table:
-  <GRIB2_22_0_0_CodeFlag_exp_en>
-    <No>2</No>
-    <Title_en>Code table 0.0 - Discipline of processed data in the GRIB message, number of GRIB Master table</Title_en>
-    <CodeFlag>1</CodeFlag>
-    <MeaningParameterDescription_en>Hydrological products</MeaningParameterDescription_en>
-    <Status>Operational</Status>
-  </GRIB2_22_0_0_CodeFlag_exp_en>
-
-  FlagTable:
-  <GRIB2_22_0_0_CodeFlag_exp_en>
-    <No>168</No>
-    <Title_en>Flag table 3.4 - Scanning mode</Title_en>
-    <CodeFlag>1</CodeFlag>
-    <Value>0</Value>
-    <MeaningParameterDescription_en>Points of first row or column scan in the +i (+x) direction</MeaningParameterDescription_en>
-    <Status>Operational</Status>
-  </GRIB2_22_0_0_CodeFlag_exp_en>
-  <GRIB2_22_0_0_CodeFlag_exp_en>
-    <No>169</No>
-    <Title_en>Flag table 3.4 - Scanning mode</Title_en>
-    <CodeFlag>1</CodeFlag>
-    <Value>1</Value>
-    <MeaningParameterDescription_en>Points of first row or column scan in the -i (-x) direction</MeaningParameterDescription_en>
-    <Status>Operational</Status>
-  </GRIB2_22_0_0_CodeFlag_exp_en>
-  */
+   * Param Table:
+   * <GRIB2_22_0_0_CodeFlag_exp_en>
+   * <No>524</No>
+   * <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
+   * <SubTitle_en>Product discipline 0 - Meteorological products, parameter category 1: moisture</SubTitle_en>
+   * <CodeFlag>101</CodeFlag>
+   * <MeaningParameterDescription_en>Specific number concentration of snow</MeaningParameterDescription_en>
+   * <UnitComments_en>kg-1</UnitComments_en>
+   * <ElementDescription_en>Number of particles per unit mass of air</ElementDescription_en>
+   * <Status>Operational</Status>
+   * </GRIB2_22_0_0_CodeFlag_exp_en>
+   * 
+   * Code Table:
+   * <GRIB2_22_0_0_CodeFlag_exp_en>
+   * <No>2</No>
+   * <Title_en>Code table 0.0 - Discipline of processed data in the GRIB message, number of GRIB Master table</Title_en>
+   * <CodeFlag>1</CodeFlag>
+   * <MeaningParameterDescription_en>Hydrological products</MeaningParameterDescription_en>
+   * <Status>Operational</Status>
+   * </GRIB2_22_0_0_CodeFlag_exp_en>
+   * 
+   * FlagTable:
+   * <GRIB2_22_0_0_CodeFlag_exp_en>
+   * <No>168</No>
+   * <Title_en>Flag table 3.4 - Scanning mode</Title_en>
+   * <CodeFlag>1</CodeFlag>
+   * <Value>0</Value>
+   * <MeaningParameterDescription_en>Points of first row or column scan in the +i (+x)
+   * direction</MeaningParameterDescription_en>
+   * <Status>Operational</Status>
+   * </GRIB2_22_0_0_CodeFlag_exp_en>
+   * <GRIB2_22_0_0_CodeFlag_exp_en>
+   * <No>169</No>
+   * <Title_en>Flag table 3.4 - Scanning mode</Title_en>
+   * <CodeFlag>1</CodeFlag>
+   * <Value>1</Value>
+   * <MeaningParameterDescription_en>Points of first row or column scan in the -i (-x)
+   * direction</MeaningParameterDescription_en>
+   * <Status>Operational</Status>
+   * </GRIB2_22_0_0_CodeFlag_exp_en>
+   */
 
   private void readGribCodes(Version version) throws IOException {
     String[] elems = version.getElemNames();
@@ -197,7 +201,7 @@ public class WmoCodeFlagTables {
         WmoTable wmoTable = map.computeIfAbsent(tableName, name -> new WmoTable(name, finalType));
 
         String code = elem.getChildTextNormalize("CodeFlag");
-        String value = elem.getChildTextNormalize("Value");    // Flag table only
+        String value = elem.getChildTextNormalize("Value"); // Flag table only
         String meaning = elem.getChildTextNormalize(elems[3]); // MeaningParameterDescription_en
 
         Element unitElem = elem.getChild(elems[4]); // "UnitComments_en"
@@ -322,8 +326,7 @@ public class WmoCodeFlagTables {
       private final int number, value;
       private final String code, meaning, name, unit, status;
 
-      WmoEntry(String line, String code, String valueS, String meaning, String unit,
-          String status) {
+      WmoEntry(String line, String code, String valueS, String meaning, String unit, String status) {
         this.line = Integer.parseInt(line);
         this.code = code;
         this.meaning = meaning;
@@ -428,121 +431,122 @@ public class WmoCodeFlagTables {
   }
 
   /*
-
-
-  @Nullable
-  public static String getTableValue(String tableId, int value) {
-    if (wmoTables == null)
-      try {
-        wmoTables = getWmoStandard();
-      } catch (IOException e) {
-        throw new IllegalStateException("cant open WMO tables");
-      }
-
-    WmoCodeTable table = wmoTables.map.get(tableId);
-    if (table == null) return null;
-    TableEntry entry = table.get(value);
-    if (entry == null) return null;
-    return entry.meaning;
-  }
-
-  @Nullable
-  private static TableEntry getTableEntry(String tableId, int value) {
-    if (wmoTables == null)
-      try {
-        wmoTables = getWmoStandard();
-      } catch (IOException e) {
-        throw new IllegalStateException("cant open wmo tables");
-      }
-
-    WmoCodeTable table = wmoTables.map.get(tableId);
-    if (table == null) return null;
-    return table.get(value);
-  }
-
-  void wtf(Formatter f) {
-
-    int total = 0;
-    int nsame = 0;
-    int nsameIgn = 0;
-    int ndiff = 0;
-    int unknown = 0;
-
-    f.format("DIFFERENCES between %s and %s%n", gt1.name, gt2.name);
-    for (WmoCodeTable gc1 : gt1.list) {
-
-    WmoCodeTable gc2 = gt2.map.get(gc1.tableName);
-    if (gc2 == null) {
-      f.format("1 table %s not found in %s%n", gc1.getTableId(), gt2.name);
-      continue;
-    }
-
-    for (TableEntry p1 : gc1.entries) {
-      TableEntry p2 = gc2.get(p1.start);
-      if (p2 == null) {
-        f.format("2 code %s not found in %s%n", p1.getId(), gt2.name);
-        continue;
-      }
-
-      if (showDiff && !p1.equals(p2)) {
-        f.format("3 %s not equal%n  %s%n%n", p1, p2);
-      }
-    }
-  }
-    f.format("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
-}
-
-
-  /* public static void showDiffFromCurrent(List<WmoCodeTable> tlist) throws IOException {
-    int total = 0;
-    int nsame = 0;
-    int nsameIgn = 0;
-    int ndiff = 0;
-    int unknown = 0;
-
-    f.format("DIFFERENCES with current parameter table (now,org) %n");
-    for (WmoCodeTable gt : tlist) {
-      if (!gt.isParameter) continue;
-      for (TableEntry p : gt.entries) {
-        if (p.meaning.equalsIgnoreCase("Missing")) continue;
-        if (p.start != p.stop) continue;
-
-        GridParameter gp = ParameterTable.getParameter(gt.discipline, gt.category, p.start);
-        String paramOrg = gp.getDescription();
-        if (paramOrg.startsWith("Unknown")) {
-          unknown++;
-          continue;
-        }
-
-        String paramOrgM = munge(paramOrg);
-        String paramM = munge(p.name);
-        boolean same = paramOrgM.equals(paramM);
-        if (same) nsame++;
-        boolean sameIgnore = paramOrgM.equalsIgnoreCase(paramM);
-        if (sameIgnore) nsameIgn++;
-        else ndiff++;
-        total++;
-        String state = same ? "  " : (sameIgnore ? "* " : "**");
-        if (!same && !sameIgnore)
-          f.format("%s%d %d %d%n %s%n %s%n", state, gt.discipline, gt.category, p.start, p.name, paramOrg);
-      }
-    }
-    f.format("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
-  }
-
-  static String munge(String org) {
-    String result = StringUtil2.remove(org, "_");
-    result = StringUtil2.remove(result, "-");
-    return result;
-  }
-
-  public static void showTable(List<WmoCodeTable> tlist,  Formatter f) {
-    for (WmoCodeTable gt : tlist) {
-      f.format("%d.%d (%d,%d) %s %n", gt.m1, gt.m2, gt.discipline, gt.category, gt.tableName);
-      for (TableEntry p : gt.entries) {
-        f.format("  %s (%d-%d) = %s %n", p.code, p.start, p.stop, p.meaning);
-      }
-    }
-  } */
+   * 
+   * 
+   * @Nullable
+   * public static String getTableValue(String tableId, int value) {
+   * if (wmoTables == null)
+   * try {
+   * wmoTables = getWmoStandard();
+   * } catch (IOException e) {
+   * throw new IllegalStateException("cant open WMO tables");
+   * }
+   * 
+   * WmoCodeTable table = wmoTables.map.get(tableId);
+   * if (table == null) return null;
+   * TableEntry entry = table.get(value);
+   * if (entry == null) return null;
+   * return entry.meaning;
+   * }
+   * 
+   * @Nullable
+   * private static TableEntry getTableEntry(String tableId, int value) {
+   * if (wmoTables == null)
+   * try {
+   * wmoTables = getWmoStandard();
+   * } catch (IOException e) {
+   * throw new IllegalStateException("cant open wmo tables");
+   * }
+   * 
+   * WmoCodeTable table = wmoTables.map.get(tableId);
+   * if (table == null) return null;
+   * return table.get(value);
+   * }
+   * 
+   * void wtf(Formatter f) {
+   * 
+   * int total = 0;
+   * int nsame = 0;
+   * int nsameIgn = 0;
+   * int ndiff = 0;
+   * int unknown = 0;
+   * 
+   * f.format("DIFFERENCES between %s and %s%n", gt1.name, gt2.name);
+   * for (WmoCodeTable gc1 : gt1.list) {
+   * 
+   * WmoCodeTable gc2 = gt2.map.get(gc1.tableName);
+   * if (gc2 == null) {
+   * f.format("1 table %s not found in %s%n", gc1.getTableId(), gt2.name);
+   * continue;
+   * }
+   * 
+   * for (TableEntry p1 : gc1.entries) {
+   * TableEntry p2 = gc2.get(p1.start);
+   * if (p2 == null) {
+   * f.format("2 code %s not found in %s%n", p1.getId(), gt2.name);
+   * continue;
+   * }
+   * 
+   * if (showDiff && !p1.equals(p2)) {
+   * f.format("3 %s not equal%n  %s%n%n", p1, p2);
+   * }
+   * }
+   * }
+   * f.format("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
+   * }
+   * 
+   * 
+   * /* public static void showDiffFromCurrent(List<WmoCodeTable> tlist) throws IOException {
+   * int total = 0;
+   * int nsame = 0;
+   * int nsameIgn = 0;
+   * int ndiff = 0;
+   * int unknown = 0;
+   * 
+   * f.format("DIFFERENCES with current parameter table (now,org) %n");
+   * for (WmoCodeTable gt : tlist) {
+   * if (!gt.isParameter) continue;
+   * for (TableEntry p : gt.entries) {
+   * if (p.meaning.equalsIgnoreCase("Missing")) continue;
+   * if (p.start != p.stop) continue;
+   * 
+   * GridParameter gp = ParameterTable.getParameter(gt.discipline, gt.category, p.start);
+   * String paramOrg = gp.getDescription();
+   * if (paramOrg.startsWith("Unknown")) {
+   * unknown++;
+   * continue;
+   * }
+   * 
+   * String paramOrgM = munge(paramOrg);
+   * String paramM = munge(p.name);
+   * boolean same = paramOrgM.equals(paramM);
+   * if (same) nsame++;
+   * boolean sameIgnore = paramOrgM.equalsIgnoreCase(paramM);
+   * if (sameIgnore) nsameIgn++;
+   * else ndiff++;
+   * total++;
+   * String state = same ? "  " : (sameIgnore ? "* " : "**");
+   * if (!same && !sameIgnore)
+   * f.format("%s%d %d %d%n %s%n %s%n", state, gt.discipline, gt.category, p.start, p.name, paramOrg);
+   * }
+   * }
+   * f.format("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
+   * }
+   * 
+   * static String munge(String org) {
+   * String result = StringUtil2.remove(org, "_");
+   * result = StringUtil2.remove(result, "-");
+   * return result;
+   * }
+   * 
+   * public static void showTable(List<WmoCodeTable> tlist, Formatter f) {
+   * for (WmoCodeTable gt : tlist) {
+   * f.format("%d.%d (%d,%d) %s %n", gt.m1, gt.m2, gt.discipline, gt.category, gt.tableName);
+   * for (TableEntry p : gt.entries) {
+   * f.format("  %s (%d-%d) = %s %n", p.code, p.start, p.stop, p.meaning);
+   * }
+   * }
+   * }
+   */
 
 }

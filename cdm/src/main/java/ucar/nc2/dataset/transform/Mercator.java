@@ -23,19 +23,19 @@ public class Mercator extends AbstractTransformBuilder implements HorizTransform
 
   @Override
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double par = readAttributeDouble( ctv, CF.STANDARD_PARALLEL, Double.NaN);
+    double par = readAttributeDouble(ctv, CF.STANDARD_PARALLEL, Double.NaN);
     if (Double.isNaN(par)) {
-      double scale = readAttributeDouble( ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
+      double scale = readAttributeDouble(ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
       if (Double.isNaN(scale))
-        throw new IllegalArgumentException("Mercator projection must have attribute " +
-                CF.STANDARD_PARALLEL + " or " + CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN);
+        throw new IllegalArgumentException("Mercator projection must have attribute " + CF.STANDARD_PARALLEL + " or "
+            + CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN);
       par = ucar.unidata.geoloc.projection.Mercator.convertScaleToStandardParallel(scale);
     }
 
     readStandardParams(ctv, geoCoordinateUnits);
 
     ucar.unidata.geoloc.projection.Mercator proj =
-            new ucar.unidata.geoloc.projection.Mercator( lon0, par, false_easting, false_northing, earth_radius);
+        new ucar.unidata.geoloc.projection.Mercator(lon0, par, false_easting, false_northing, earth_radius);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

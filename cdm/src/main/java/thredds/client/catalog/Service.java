@@ -5,7 +5,6 @@
 package thredds.client.catalog;
 
 import ucar.nc2.util.Indent;
-
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 import java.util.ArrayList;
@@ -13,13 +12,13 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- *  Client catalog service
+ * Client catalog service
  *
  * @author caron
  * @since 1/7/2015
  */
 @Immutable
-public class Service {            // (7)
+public class Service { // (7)
   private final String name;
   private final String base;
   private final String typeS;
@@ -29,7 +28,8 @@ public class Service {            // (7)
   private final List<Service> nestedServices;
   private final List<Property> properties;
 
-  public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties, String accessType) {
+  public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices,
+      List<Property> properties, String accessType) {
     this.name = name;
     this.base = base; // (base.length() == 0 || base.endsWith("/")) ? base : base + "/";
     this.typeS = typeS;
@@ -51,6 +51,7 @@ public class Service {            // (7)
   public String getServiceTypeName() {
     return typeS;
   }
+
   public ServiceType getType() {
     return ServiceType.getServiceTypeIgnoreCase(typeS);
   }
@@ -59,7 +60,9 @@ public class Service {            // (7)
     return desc;
   }
 
-  public String getAccessType() { return accessType; }
+  public String getAccessType() {
+    return accessType;
+  }
 
   public String getSuffix() {
     return suffix == null ? "" : suffix;
@@ -75,6 +78,7 @@ public class Service {            // (7)
 
   /**
    * See if the service Base is reletive
+   * 
    * @return true if the service Base is reletive
    */
   public boolean isRelativeBase() {
@@ -92,8 +96,10 @@ public class Service {            // (7)
   protected String toString(Indent indent) {
     Formatter f = new Formatter();
     f.format("%sService{ name=%s, base=%s, typeS=%s", indent, name, base, typeS);
-    if (desc != null) f.format(",desc=%s", desc);
-    if (suffix != null) f.format(",suffix=%s", suffix);
+    if (desc != null)
+      f.format(",desc=%s", desc);
+    if (suffix != null)
+      f.format(",suffix=%s", suffix);
 
     if (properties != null) {
       f.format("%n");
@@ -124,17 +130,25 @@ public class Service {            // (7)
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Service service = (Service) o;
 
-    if (base != null ? !base.equals(service.base) : service.base != null) return false;
-    if (desc != null ? !desc.equals(service.desc) : service.desc != null) return false;
-    if (name != null ? !name.equals(service.name) : service.name != null) return false;
-    if (nestedServices != null ? !nestedServices.equals(service.nestedServices) : service.nestedServices != null) return false;
-    if (properties != null ? !properties.equals(service.properties) : service.properties != null) return false;
-    if (suffix != null ? !suffix.equals(service.suffix) : service.suffix != null) return false;
+    if (base != null ? !base.equals(service.base) : service.base != null)
+      return false;
+    if (desc != null ? !desc.equals(service.desc) : service.desc != null)
+      return false;
+    if (name != null ? !name.equals(service.name) : service.name != null)
+      return false;
+    if (nestedServices != null ? !nestedServices.equals(service.nestedServices) : service.nestedServices != null)
+      return false;
+    if (properties != null ? !properties.equals(service.properties) : service.properties != null)
+      return false;
+    if (suffix != null ? !suffix.equals(service.suffix) : service.suffix != null)
+      return false;
     return typeS != null ? typeS.equals(service.typeS) : service.typeS == null;
 
   }

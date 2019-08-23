@@ -13,7 +13,6 @@ import ucar.ma2.DataType;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -26,89 +25,89 @@ public class TestAttributes {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     // global attributes
-    assert("face".equals(ncfile.findAttValueIgnoreCase(null, "yo", "barf")));
+    assert ("face".equals(ncfile.findAttValueIgnoreCase(null, "yo", "barf")));
 
     Variable temp = null;
-    assert(null != (temp = ncfile.findVariable("temperature")));
-    assert("K".equals(ncfile.findAttValueIgnoreCase(temp, "units", "barf")));
+    assert (null != (temp = ncfile.findVariable("temperature")));
+    assert ("K".equals(ncfile.findAttValueIgnoreCase(temp, "units", "barf")));
 
     Attribute att = temp.findAttribute("scale");
-    assert( null != att);
-    assert( att.isArray());
-    assert( 3 == att.getLength());
-    assert( 3 == att.getNumericValue(2).intValue());
+    assert (null != att);
+    assert (att.isArray());
+    assert (3 == att.getLength());
+    assert (3 == att.getNumericValue(2).intValue());
 
     Array aa = att.getValues();
-    assert(att.getDataType() == DataType.INT);
-    assert(aa.getElementType() == int.class);
-    assert(aa.getSize() == 3);
+    assert (att.getDataType() == DataType.INT);
+    assert (aa.getElementType() == int.class);
+    assert (aa.getSize() == 3);
 
     att = temp.findAttribute("versionD");
-    assert( null != att);
-    assert( !att.isArray());
-    assert( 1 == att.getLength());
-    assert( 1.2 == att.getNumericValue().doubleValue());
-    assert( DataType.DOUBLE == att.getDataType());
+    assert (null != att);
+    assert (!att.isArray());
+    assert (1 == att.getLength());
+    assert (1.2 == att.getNumericValue().doubleValue());
+    assert (DataType.DOUBLE == att.getDataType());
 
     aa = att.getValues();
-    assert(att.getDataType() == DataType.DOUBLE);
-    assert(aa.getElementType() == double.class);
-    assert(aa.getSize() == 1);
+    assert (att.getDataType() == DataType.DOUBLE);
+    assert (aa.getElementType() == double.class);
+    assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionF");
-    assert( null != att);
-    assert( !att.isArray());
-    assert( 1 == att.getLength());
-    assert( 1.2f == att.getNumericValue().floatValue());
-    assert( Misc.nearlyEquals(1.2, att.getNumericValue().doubleValue(), 1.0e-5));
-    assert( DataType.FLOAT == att.getDataType());
+    assert (null != att);
+    assert (!att.isArray());
+    assert (1 == att.getLength());
+    assert (1.2f == att.getNumericValue().floatValue());
+    assert (Misc.nearlyEquals(1.2, att.getNumericValue().doubleValue(), 1.0e-5));
+    assert (DataType.FLOAT == att.getDataType());
 
     aa = att.getValues();
-    assert(att.getDataType() == DataType.FLOAT);
-    assert(aa.getElementType() == float.class);
-    assert(aa.getSize() == 1);
+    assert (att.getDataType() == DataType.FLOAT);
+    assert (aa.getElementType() == float.class);
+    assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionI");
-    assert( null != att);
-    assert( !att.isArray());
-    assert( 1 == att.getLength());
-    assert( 1 == att.getNumericValue().intValue());
-    assert( DataType.INT == att.getDataType());
+    assert (null != att);
+    assert (!att.isArray());
+    assert (1 == att.getLength());
+    assert (1 == att.getNumericValue().intValue());
+    assert (DataType.INT == att.getDataType());
 
     aa = att.getValues();
-    assert(att.getDataType() == DataType.INT);
-    assert(aa.getElementType() == int.class);
-    assert(aa.getSize() == 1);
+    assert (att.getDataType() == DataType.INT);
+    assert (aa.getElementType() == int.class);
+    assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionS");
-    assert( null != att);
-    assert( !att.isArray());
-    assert( 1 == att.getLength());
-    assert( 2 == att.getNumericValue().shortValue());
-    assert( DataType.SHORT == att.getDataType());
+    assert (null != att);
+    assert (!att.isArray());
+    assert (1 == att.getLength());
+    assert (2 == att.getNumericValue().shortValue());
+    assert (DataType.SHORT == att.getDataType());
 
     aa = att.getValues();
-    assert(att.getDataType() == DataType.SHORT);
-    assert(aa.getElementType() == short.class);
-    assert(aa.getSize() == 1);
+    assert (att.getDataType() == DataType.SHORT);
+    assert (aa.getElementType() == short.class);
+    assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionB");
-    assert( null != att);
-    assert( !att.isArray());
-    assert( 1 == att.getLength());
-    assert( 3 == att.getNumericValue().byteValue());
-    assert( DataType.BYTE == att.getDataType());
+    assert (null != att);
+    assert (!att.isArray());
+    assert (1 == att.getLength());
+    assert (3 == att.getNumericValue().byteValue());
+    assert (DataType.BYTE == att.getDataType());
 
     aa = att.getValues();
-    assert(att.getDataType() == DataType.BYTE);
-    assert(aa.getElementType() == byte.class);
-    assert(aa.getSize() == 1);
+    assert (att.getDataType() == DataType.BYTE);
+    assert (aa.getElementType() == byte.class);
+    assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionString");
-    assert( null != att);
-    assert( !att.isArray());
-    assert( 1 == att.getLength());
-    assert( DataType.STRING == att.getDataType());
+    assert (null != att);
+    assert (!att.isArray());
+    assert (1 == att.getLength());
+    assert (DataType.STRING == att.getDataType());
 
     Number n = att.getNumericValue();
     assert (n != null);
@@ -120,7 +119,7 @@ public class TestAttributes {
   @Test
   public void testLargeLongValue() {
     Attribute att = new Attribute("name", N3iosp.NC_FILL_INT64); // which is -9223372036854775806L
-    long result = att.getNumericValue().longValue();             // returned -9223372036854775808L, before bug fix.
+    long result = att.getNumericValue().longValue(); // returned -9223372036854775808L, before bug fix.
 
     Assert.assertEquals(N3iosp.NC_FILL_INT64, result);
   }

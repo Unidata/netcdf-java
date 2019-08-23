@@ -175,7 +175,7 @@ public class Parameter implements java.io.Serializable {
    * Create a String-valued param.
    *
    * @param name name of new Parameter.
-   * @param val  value of Parameter
+   * @param val value of Parameter
    */
   public Parameter(String name, String val) {
     this.name = name;
@@ -186,7 +186,7 @@ public class Parameter implements java.io.Serializable {
   /**
    * Create a scalar double-valued param.
    *
-   * @param name  name of new Parameter.
+   * @param name name of new Parameter.
    * @param value value of Parameter
    */
   public Parameter(String name, double value) {
@@ -198,7 +198,7 @@ public class Parameter implements java.io.Serializable {
   /**
    * Create a array double-valued param.
    *
-   * @param name  name of new Parameter.
+   * @param name name of new Parameter.
    * @param value value of Parameter
    */
   public Parameter(String name, double[] value) {

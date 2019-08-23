@@ -10,13 +10,13 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**
  * Grib runtime coordinate
  * Effectively Immutable
+ * 
  * @author caron
  * @since 11/24/13
  */
@@ -26,7 +26,7 @@ public class CoordinateRuntime implements Coordinate {
   final CalendarDate firstDate;
   final CalendarPeriod timeUnit;
   final String periodName;
-  private String name = "reftime";   // yeah yeah, not final, bugger off
+  private String name = "reftime"; // yeah yeah, not final, bugger off
 
   public CoordinateRuntime(List<Long> runtimeSorted, CalendarPeriod timeUnit) {
     this.runtimes = new long[runtimeSorted.size()];
@@ -39,7 +39,7 @@ public class CoordinateRuntime implements Coordinate {
 
     CalendarPeriod.Field cf = this.timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar "+ cf.toString();
+      this.periodName = "calendar " + cf.toString();
     else
       this.periodName = cf.toString();
   }
@@ -62,13 +62,14 @@ public class CoordinateRuntime implements Coordinate {
 
   /**
    * Get offsets from firstDate, in units of timeUnit
+   * 
    * @return for each runtime, a list of values from firstdate
    */
   public List<Double> getOffsetsInTimeUnits() {
     double start = firstDate.getMillis();
 
     List<Double> result = new ArrayList<>(runtimes.length);
-    for (int idx=0; idx<runtimes.length; idx++) {
+    for (int idx = 0; idx < runtimes.length; idx++) {
       double runtime = (double) getRuntime(idx);
       double msecs = (runtime - start);
       result.add(msecs / timeUnit.getValueInMillisecs());
@@ -102,7 +103,7 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public String getUnit() {
-    return periodName+" since "+firstDate.toString();
+    return periodName + " since " + firstDate.toString();
   }
 
   @Override
@@ -110,13 +111,16 @@ public class CoordinateRuntime implements Coordinate {
     return name;
   }
 
-  public void setName(String name) {  // LOOK need to get this in the constructor to make the name final
-    if (!this.name.equals("reftime")) throw new IllegalStateException("Cant modify");
+  public void setName(String name) { // LOOK need to get this in the constructor to make the name final
+    if (!this.name.equals("reftime"))
+      throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 
   @Override
-  public int getCode() { return 0; }
+  public int getCode() {
+    return 0;
+  }
 
   public CalendarDate getFirstDate() {
     return firstDate;
@@ -129,7 +133,8 @@ public class CoordinateRuntime implements Coordinate {
   @Override
   public List<?> getValues() {
     List<Long> result = new ArrayList<>(runtimes.length);
-    for (long val : runtimes) result.add(val);
+    for (long val : runtimes)
+      result.add(val);
     return result;
   }
 
@@ -140,7 +145,7 @@ public class CoordinateRuntime implements Coordinate {
     if (val instanceof CalendarDate)
       want = ((CalendarDate) val).getMillis();
     else if (val instanceof Number)
-      want = ((Number)val).longValue();
+      want = ((Number) val).longValue();
     else
       throw new IllegalArgumentException(val.getClass().getName());
 
@@ -155,7 +160,7 @@ public class CoordinateRuntime implements Coordinate {
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
-    for (int idx=0; idx<getSize(); idx++)
+    for (int idx = 0; idx < getSize(); idx++)
       info.format(" %s,", getRuntimeDate(idx));
     info.format(" (%d) %n", runtimes.length);
   }
@@ -165,7 +170,7 @@ public class CoordinateRuntime implements Coordinate {
     info.format("Run Times: %s (%s)%n", getName(), getUnit());
     List<Double> udunits = getOffsetsInTimeUnits();
     int count = 0;
-    for (int idx=0; idx<getSize(); idx++)
+    for (int idx = 0; idx < getSize(); idx++)
       info.format("   %s (%f)%n", getRuntimeDate(idx), udunits.get(count++));
   }
 
@@ -185,12 +190,15 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     CoordinateRuntime that = (CoordinateRuntime) o;
 
-    if (!periodName.equals(that.periodName)) return false;
+    if (!periodName.equals(that.periodName))
+      return false;
     return Arrays.equals(runtimes, that.runtimes);
 
   }
@@ -242,7 +250,8 @@ public class CoordinateRuntime implements Coordinate {
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<Long> runtimeSorted = new ArrayList<>(values.size());
-      for (Object val : values) runtimeSorted.add((Long) val);
+      for (Object val : values)
+        runtimeSorted.add((Long) val);
       Collections.sort(runtimeSorted);
       return new CoordinateRuntime(runtimeSorted, timeUnit);
     }

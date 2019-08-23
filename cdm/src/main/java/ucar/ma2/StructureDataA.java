@@ -5,7 +5,6 @@
 package ucar.ma2;
 
 import ucar.nc2.util.Indent;
-
 import java.util.Formatter;
 
 /**
@@ -21,7 +20,7 @@ public class StructureDataA extends StructureData {
   /**
    * Constructor.
    *
-   * @param sa    StructureData is always contained in a StructureArray.
+   * @param sa StructureData is always contained in a StructureArray.
    * @param recno the recno in the StructureArray.
    */
   public StructureDataA(ArrayStructure sa, int recno) {
@@ -193,24 +192,26 @@ public class StructureDataA extends StructureData {
    * For more efficiency, use getScalarString(StructureMembers.Member m) if possible.
    *
    * @param memberName name of member Variable.
+   * 
    * @throws IllegalArgumentException if name is not legal member name.
    *
-  public String getScalarString(String memberName) {
-    StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
-    if ((m.getDataType() == DataType.CHAR) || (m.getDataType() == DataType.STRING))
-      return sa.getScalarString(recno, m);
-
-    Array a = getArray(m);
-    if (a == null) throw new IllegalArgumentException("illegal member name =" + memberName);
-    if (a instanceof ArrayChar.D1)
-      return ((ArrayChar.D1) a).getString();
-
-    assert (a instanceof ArrayObject.D0);
-    Object data = ((ArrayObject.D0) a).get();
-    assert (data instanceof String) : data.getClass().getName();
-    return (String) data;
-  }  */
+   * public String getScalarString(String memberName) {
+   * StructureMembers.Member m = findMember(memberName);
+   * if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
+   * if ((m.getDataType() == DataType.CHAR) || (m.getDataType() == DataType.STRING))
+   * return sa.getScalarString(recno, m);
+   * 
+   * Array a = getArray(m);
+   * if (a == null) throw new IllegalArgumentException("illegal member name =" + memberName);
+   * if (a instanceof ArrayChar.D1)
+   * return ((ArrayChar.D1) a).getString();
+   * 
+   * assert (a instanceof ArrayObject.D0);
+   * Object data = ((ArrayObject.D0) a).get();
+   * assert (data instanceof String) : data.getClass().getName();
+   * return (String) data;
+   * }
+   */
 
   // LOOK can we optimize ??
   public String[] getJavaArrayString(StructureMembers.Member m) {

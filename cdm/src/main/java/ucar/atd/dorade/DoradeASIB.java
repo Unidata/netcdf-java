@@ -20,7 +20,7 @@ class DoradeASIB extends DoradeDescriptor {
   private float rollAngle;
   private float pitchAngle;
   private float yawAngle;
-  private float antennaScanAngle;  // deg clockwise from up w.r.t. airframe
+  private float antennaScanAngle; // deg clockwise from up w.r.t. airframe
   private float antennaFixedAngle; // deg toward nose
   private float uWind; // m/s
   private float vWind; // m/s
@@ -29,8 +29,7 @@ class DoradeASIB extends DoradeDescriptor {
   private float pitchChangeRate; // deg/s
 
 
-  public DoradeASIB(RandomAccessFile file, boolean littleEndianData)
-          throws DescriptorException {
+  public DoradeASIB(RandomAccessFile file, boolean littleEndianData) throws DescriptorException {
     byte[] data = readDescriptor(file, littleEndianData, "ASIB");
 
     //

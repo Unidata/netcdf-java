@@ -54,7 +54,7 @@ public class LayoutRegular implements Layout {
 
   public Chunk next() {
     IndexChunker.Chunk chunk = chunker.next();
-    chunk.setSrcPos( startPos + chunk.getSrcElem() * elemSize);
+    chunk.setSrcPos(startPos + chunk.getSrcElem() * elemSize);
     return chunk;
   }
 }

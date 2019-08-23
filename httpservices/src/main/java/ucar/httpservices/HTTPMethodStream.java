@@ -30,61 +30,65 @@ import java.io.InputStream;
  *
  */
 
-public class HTTPMethodStream extends FilterInputStream implements Closeable
-{
-    //////////////////////////////////////////////////////////////////////////
-    static public org.slf4j.Logger log = HTTPSession.log;
+public class HTTPMethodStream extends FilterInputStream implements Closeable {
+  //////////////////////////////////////////////////////////////////////////
+  static public org.slf4j.Logger log = HTTPSession.log;
 
-    //////////////////////////////////////////////////////////////////////////
-    HTTPMethod method = null;
-    InputStream stream = null; // in case someone wants to retrieve it
-    boolean closed = false;
+  //////////////////////////////////////////////////////////////////////////
+  HTTPMethod method = null;
+  InputStream stream = null; // in case someone wants to retrieve it
+  boolean closed = false;
 
-    HTTPMethodStream(InputStream stream, HTTPMethod method)
-    {
-	super(stream);
-	this.method = method;
-	this.stream = stream;
+  HTTPMethodStream(InputStream stream, HTTPMethod method) {
+    super(stream);
+    this.method = method;
+    this.stream = stream;
+  }
+
+  boolean getClosed() {
+    return closed;
+  }
+
+  InputStream getStream() {
+    return stream;
+  }
+
+  /**
+   * Closes this input stream and releases any system resources associated
+   * with the stream; closes the method also.
+   *
+   * @exception IOException if an I/O error occurs; but not if close
+   *            is called twice.
+   */
+  @Override
+  public void close() throws IOException {
+    if (closed)
+      return; /* Allow multiple close calls */
+    closed = true;
+    try {
+      consume();
+    } finally {
+      super.close();
     }
+    if (method != null)
+      method.close();
+  }
 
-    boolean getClosed() {return closed;}
-
-    InputStream getStream() {return stream;}
-
-    /**
-       * Closes this input stream and releases any system resources associated
-       * with the stream; closes the method also.
-       *
-       * @exception  IOException  if an I/O error occurs; but not if close
-       *                          is called twice.
-       */
-    @Override
-    public void close() throws IOException
-    {
-        if(closed)
-            return; /* Allow multiple close calls */
-        closed = true;
-        try {
-            consume();
-        } finally {
-            super.close();
-        }
-        if(method != null) method.close();
-    }
-
-    void consume()
-    {
-        try {
-            long consumed = 0;
-            long available;
-            while ((available = available()) > 0) {
-            consumed += skip(available);
-            }
-            if (consumed > 0) {
-                log.debug("HTTPMethodStream: unconsumed data");
-            }
-        } catch (IOException ioe) {/*ignore*/};
+  void consume() {
+    try {
+      long consumed = 0;
+      long available;
+      while ((available = available()) > 0) {
+        consumed += skip(available);
       }
+      if (consumed > 0) {
+        log.debug("HTTPMethodStream: unconsumed data");
+      }
+    } catch (IOException ioe) {
+      /* ignore */} ;
+  }
 
-    public boolean isClosed() {return closed;}
+  public boolean isClosed() {
+    return closed;
+  }
 }

@@ -14,7 +14,6 @@ import ucar.nc2.grib.grib1.Grib1SectionGridDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 
 /**
@@ -27,8 +26,8 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
 
   // read in the index, index raf already open; return null on failure
   @Nullable
-  static Grib1Collection readFromIndex(String name, RandomAccessFile raf,
-      FeatureCollectionConfig config, org.slf4j.Logger logger) {
+  static Grib1Collection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config,
+      org.slf4j.Logger logger) {
 
     Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -44,7 +43,8 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
 
   // read in the index, index raf already open; return null on failure
   @Nullable
-  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config,
+      org.slf4j.Logger logger) {
 
     Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -58,18 +58,19 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     return builder.gc;
   }
 
- ////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
 
   protected Grib1Customizer cust; // gets created in readIndex, after center etc is read in
 
-  Grib1CollectionBuilderFromIndex(String name, FeatureCollectionConfig config,
-      org.slf4j.Logger logger) {
-    super( new GribCollectionMutable(name, null, config, true), config, logger);  // directory will be set in readFromIndex
+  Grib1CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+    super(new GribCollectionMutable(name, null, config, true), config, logger); // directory will be set in
+                                                                                // readFromIndex
   }
 
   protected int getVersion() {
     return Grib1CollectionWriter.version;
   }
+
   protected int getMinVersion() {
     return Grib1CollectionWriter.minVersion;
   }
@@ -81,9 +82,17 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     return Grib1CollectionWriter.MAGIC_START;
   }
 
-  protected GribTables makeCustomizer()  throws IOException {
-    Grib1ParamTables ptables = (config.gribConfig.paramTable != null) ? Grib1ParamTables.factory(config.gribConfig.paramTable) :
-            Grib1ParamTables.factory(config.gribConfig.paramTablePath, config.gribConfig.lookupTablePath); // so an iosp message must be received before the open()
+  protected GribTables makeCustomizer() throws IOException {
+    Grib1ParamTables ptables =
+        (config.gribConfig.paramTable != null) ? Grib1ParamTables.factory(config.gribConfig.paramTable)
+            : Grib1ParamTables.factory(config.gribConfig.paramTablePath, config.gribConfig.lookupTablePath); // so an
+                                                                                                             // iosp
+                                                                                                             // message
+                                                                                                             // must be
+                                                                                                             // received
+                                                                                                             // before
+                                                                                                             // the
+                                                                                                             // open()
     this.cust = Grib1Customizer.factory(gc.center, gc.subcenter, gc.version, ptables);
     return cust;
   }
@@ -107,7 +116,7 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     }
 
     GdsHorizCoordSys hcs = gds.makeHorizCoordSys();
-    String hcsName = (hcs == null) ? gds.getClass().getName() :  makeHorizCoordSysName(hcs);
+    String hcsName = (hcs == null) ? gds.getClass().getName() : makeHorizCoordSysName(hcs);
 
     // check for user defined group names
     String desc = null;

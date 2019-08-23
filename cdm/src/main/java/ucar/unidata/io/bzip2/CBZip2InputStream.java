@@ -1,7 +1,7 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2001-2003 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001-2003 The Apache Software Foundation. All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,33 +9,33 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
  *
  * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
+ * any, must include the following acknowlegement:
+ * "This product includes software developed by the
+ * Apache Software Foundation (http://www.apache.org/)."
+ * Alternately, this acknowlegement may appear in the software itself,
+ * if and wherever such third-party acknowlegements normally appear.
  *
  * 4. The names "Ant" and "Apache Software
- *    Foundation" must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written
- *    permission, please contact apache@apache.org.
+ * Foundation" must not be used to endorse or promote products derived
+ * from this software without prior written permission. For written
+ * permission, please contact apache@apache.org.
  *
  * 5. Products derived from this software may not be called "Apache"
- *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
+ * nor may "Apache" appear in their names without prior written
+ * permission of the Apache Group.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * DISCLAIMED. IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
  * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
@@ -47,7 +47,7 @@
  * ====================================================================
  *
  * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
+ * individuals on behalf of the Apache Software Foundation. For more
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
@@ -61,7 +61,7 @@
 /*
  * There has been further modification of this class by Unidata to
  * support setting the inputstream. This saves many extra memory
- * allocations when doing lots of uncompressions.  The read method
+ * allocations when doing lots of uncompressions. The read method
  * may throw a BZip2ReadException instead of an IOException because
  * the superclass catches and discards IOExceptions.
  */
@@ -87,20 +87,20 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   private static final int NO_RAND_PART_C_STATE = 7;
 
   /*
-    index of the last char in the block, so
-    the block size == last + 1.
-  */
+   * index of the last char in the block, so
+   * the block size == last + 1.
+   */
   private int last;
 
   /*
-    index in zptr[] of original string after sorting.
-  */
+   * index in zptr[] of original string after sorting.
+   */
   private int origPtr;
 
   /*
-    always: in the range 0 .. 9.
-    The current block size is 100000 * this number.
-  */
+   * always: in the range 0 .. 9.
+   * The current block size is 100000 * this number.
+   */
   private int blockSize100k;
 
   private boolean blockRandomised;
@@ -122,9 +122,9 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   private char[] ll8;
 
   /*
-    freq table collected to save a pass over the data
-    during decompression.
-  */
+   * freq table collected to save a pass over the data
+   * during decompression.
+   */
   private int[] unzftab = new int[256];
 
   private int[][] limit = new int[N_GROUPS][MAX_ALPHA_SIZE];
@@ -148,8 +148,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   int j2;
   char z;
 
-  public CBZip2InputStream() {
-  }
+  public CBZip2InputStream() {}
 
 
   public CBZip2InputStream(InputStream zStream) {
@@ -161,35 +160,36 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
       byte[] bzString = new byte[2];
       int ret = zStream.read(bzString);
       if (ret == -1)
-          throw new IOException("End of stream reached skipping bytes");
+        throw new IOException("End of stream reached skipping bytes");
     }
     setStream(zStream);
   }
+
   /**
    * Added 5-30-2006 to allow for resetting of the input used
    * by this object. This saves in memory allocation costs
    */
   public void setStream(InputStream zStream) {
-    last=0;
-    origPtr=0;
-    blockSize100k=0;
-    blockRandomised=false;
-    bsBuff=0;
-    bsLive=0;
+    last = 0;
+    origPtr = 0;
+    blockSize100k = 0;
+    blockRandomised = false;
+    bsBuff = 0;
+    bsLive = 0;
     mCrc = new CRC();
-    nInUse=0;
-    bsStream=null;
+    nInUse = 0;
+    bsStream = null;
     streamEnd = false;
     currentChar = -1;
     currentState = START_BLOCK_STATE;
-    storedBlockCRC= storedCombinedCRC=0;
-    computedBlockCRC= computedCombinedCRC=0;
-    i2= count= chPrev= ch2=0;
-    i= tPos=0;
+    storedBlockCRC = storedCombinedCRC = 0;
+    computedBlockCRC = computedCombinedCRC = 0;
+    i2 = count = chPrev = ch2 = 0;
+    i = tPos = 0;
     rNToGo = 0;
     rTPos = 0;
-    j2=0;
-    z=0;
+    j2 = 0;
+    z = 0;
 
     bsSetStream(zStream);
     initialize();
@@ -203,7 +203,8 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
   /**
    * Reads the stream.
-   * @throws BZip2ReadException if there is a problem.  InputStream does
+   * 
+   * @throws BZip2ReadException if there is a problem. InputStream does
    *         not throw an IOException, so we throw a RuntimeException.
    */
   public int read() {
@@ -254,14 +255,12 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     magic4 = bsGetUChar();
     magic5 = bsGetUChar();
     magic6 = bsGetUChar();
-    if (magic1 == 0x17 && magic2 == 0x72 && magic3 == 0x45
-            && magic4 == 0x38 && magic5 == 0x50 && magic6 == 0x90) {
+    if (magic1 == 0x17 && magic2 == 0x72 && magic3 == 0x45 && magic4 == 0x38 && magic5 == 0x50 && magic6 == 0x90) {
       complete();
       return;
     }
 
-    if (magic1 != 0x31 || magic2 != 0x41 || magic3 != 0x59
-            || magic4 != 0x26 || magic5 != 0x53 || magic6 != 0x59) {
+    if (magic1 != 0x31 || magic2 != 0x41 || magic3 != 0x59 || magic4 != 0x26 || magic5 != 0x53 || magic6 != 0x59) {
       badBlockHeader();
       streamEnd = true;
       return;
@@ -271,7 +270,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
     blockRandomised = bsR(1) == 1;
 
-    //        currBlockNo++;
+    // currBlockNo++;
     getAndMoveToFrontDecode();
 
     mCrc.initialiseCRC();
@@ -286,8 +285,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
       cadvise("CRC error: storedBlockCRC != computedBlockCRC");
     }
 
-    computedCombinedCRC = (computedCombinedCRC << 1)
-            | (computedCombinedCRC >>> 31);
+    computedCombinedCRC = (computedCombinedCRC << 1) | (computedCombinedCRC >>> 31);
     computedCombinedCRC ^= computedBlockCRC;
   }
 
@@ -323,7 +321,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         }
       }
     } catch (IOException ioe) {
-      //ignore
+      // ignore
     }
   }
 
@@ -375,9 +373,8 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     return bsGetint();
   }
 
-  private void hbCreateDecodeTables(int[] limit, int[] base,
-          int[] perm, char[] length,
-          int minLen, int maxLen, int alphaSize) {
+  private void hbCreateDecodeTables(int[] limit, int[] base, int[] perm, char[] length, int minLen, int maxLen,
+      int alphaSize) {
     int pp, i, j, vec;
 
     pp = 0;
@@ -502,8 +499,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
           minLen = len[t][i];
         }
       }
-      hbCreateDecodeTables(limit[t], base[t], perm[t], len[t], minLen,
-              maxLen, alphaSize);
+      hbCreateDecodeTables(limit[t], base[t], perm[t], len[t], minLen, maxLen, alphaSize);
       minLens[t] = minLen;
     }
   }
@@ -522,11 +518,11 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     groupPos = 0;
 
     /*
-      Setting up the unzftab entries here is not strictly
-      necessary, but it does save having to do it later
-      in a separate pass, and so saves a block's worth of
-      cache misses.
-    */
+     * Setting up the unzftab entries here is not strictly
+     * necessary, but it does save having to do it later
+     * in a separate pass, and so saves a block's worth of
+     * cache misses.
+     */
     for (i = 0; i <= 255; i++) {
       unzftab[i] = 0;
     }
@@ -652,11 +648,11 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         ll8[last] = seqToUnseq[tmp];
 
         /*
-          This loop is hammered during decompression,
-          hence the unrolling.
-
-          for (j = nextSym-1; j > 0; j--) yy[j] = yy[j-1];
-        */
+         * This loop is hammered during decompression,
+         * hence the unrolling.
+         * 
+         * for (j = nextSym-1; j > 0; j--) yy[j] = yy[j-1];
+         */
 
         j = nextSym - 1;
         for (; j > 3; j -= 4) {
@@ -728,7 +724,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
     count = 0;
     i2 = 0;
-    ch2 = 256;   /* not a char and not EOF */
+    ch2 = 256; /* not a char and not EOF */
 
     if (blockRandomised) {
       rNToGo = 0;
@@ -858,8 +854,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   }
 
   private void setDecompressStructureSizes(int newSize100k) {
-    if (!(0 <= newSize100k && newSize100k <= 9 && 0 <= blockSize100k
-            && blockSize100k <= 9)) {
+    if (!(0 <= newSize100k && newSize100k <= 9 && 0 <= blockSize100k && blockSize100k <= 9)) {
       // throw new IOException("Invalid block size");
     }
 
@@ -869,7 +864,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
       return;
     }
 
-    //Modified  5-30-2006 by unidata to allow for reuse of the ll8 and tt buffers
+    // Modified 5-30-2006 by unidata to allow for reuse of the ll8 and tt buffers
 
     int n = baseBlockSize * newSize100k;
 
@@ -892,7 +887,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
   private void cadvise() {
     System.out.println("CRC Error");
-    //throw new CCoruptionError();
+    // throw new CCoruptionError();
   }
 
   private void cadvise(String msg) {

@@ -12,7 +12,6 @@ import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.*;
 import ucar.ma2.*;
 import ucar.nc2.util.Misc;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -32,7 +31,8 @@ public class CompareNetcdf {
     return compareFiles(org, copy, false, false, false);
   }
 
-  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare, boolean _showEach) {
+  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare,
+      boolean _showEach) {
     CompareNetcdf tc = new CompareNetcdf(_showCompare, _showEach, _compareData);
     return tc.compare(org, copy, new Formatter(System.out));
   }
@@ -70,7 +70,8 @@ public class CompareNetcdf {
     boolean ok = true;
 
     for (Variable orgV : org.getVariables()) {
-      if (orgV.isCoordinateVariable()) continue;
+      if (orgV.isCoordinateVariable())
+        continue;
       Variable copyVar = copy.findVariable(orgV.getShortName());
       if (copyVar == null) {
         f.format(" MISSING '%s' in 2nd file%n", orgV.getFullName());
@@ -81,14 +82,15 @@ public class CompareNetcdf {
         if (!compare(dims1, dims2)) {
           f.format(" %s != %s%n", orgV.getNameAndDimensions(), copyVar.getNameAndDimensions());
         } else {
-          // f.format("   ok %s%n", orgV.getName());
+          // f.format(" ok %s%n", orgV.getName());
         }
       }
     }
 
     f.format("%n");
     for (Variable orgV : copy.getVariables()) {
-      if (orgV.isCoordinateVariable()) continue;
+      if (orgV.isCoordinateVariable())
+        continue;
       Variable copyVar = org.findVariable(orgV.getShortName());
       if (copyVar == null) {
         f.format(" MISSING '%s' in 1st file%n", orgV.getFullName());
@@ -102,18 +104,21 @@ public class CompareNetcdf {
   }
 
   private boolean compare(List<Dimension> dims1, List<Dimension> dims2) {
-    if (dims1.size() != dims2.size()) return false;
-    for (int i=0; i<dims1.size(); i++) {
+    if (dims1.size() != dims2.size())
+      return false;
+    for (int i = 0; i < dims1.size(); i++) {
       Dimension dim1 = dims1.get(i);
       Dimension dim2 = dims2.get(i);
-      //if (!dim1.getName().equals(dim2.getName())) return false;
-      if (dim1.getLength() != dim2.getLength()) return false;
+      // if (!dim1.getName().equals(dim2.getName())) return false;
+      if (dim1.getLength() != dim2.getLength())
+        return false;
     }
     return true;
   }
 
   private boolean compareGroups(Group org, Group copy, Formatter f) {
-    if (showCompare) f.format("compare Group %s to %s %n", org.getFullName(), copy.getFullName());
+    if (showCompare)
+      f.format("compare Group %s to %s %n", org.getFullName(), copy.getFullName());
     boolean ok = true;
 
     if (!org.getFullName().equals(copy.getFullName())) {
@@ -167,7 +172,8 @@ public class CompareNetcdf {
   private boolean compareVariables(Variable org, Variable copy, boolean compareData, Formatter f) {
     boolean ok = true;
 
-    if (showCompare) f.format("compare Variable %s to %s %n", org.getFullName(), copy.getFullName());
+    if (showCompare)
+      f.format("compare Variable %s to %s %n", org.getFullName(), copy.getFullName());
     if (!org.getFullName().equals(copy.getFullName())) {
       f.format(" ** names are different %s != %s %n", org.getFullName(), copy.getFullName());
       ok = false;
@@ -223,8 +229,8 @@ public class CompareNetcdf {
     for (Object want1 : wantList) {
       int index2 = container.indexOf(want1);
       if (index2 < 0) {
-         f.format("  ** %s %s missing %n", want1.getClass().getName(), want1);
-         ok = false;
+        f.format("  ** %s %s missing %n", want1.getClass().getName(), want1);
+        ok = false;
       }
     }
 
@@ -249,7 +255,8 @@ public class CompareNetcdf {
   }
 
   // check that want is in both list1 and list2, using object.equals()
-  private boolean checkEach(Object want1, String name1, List list1, String name2, List list2, List result, Formatter f) {
+  private boolean checkEach(Object want1, String name1, List list1, String name2, List list2, List result,
+      Formatter f) {
     boolean ok = true;
     try {
       int index2 = list2.indexOf(want1);
@@ -269,7 +276,8 @@ public class CompareNetcdf {
             f.format("  ** %s %s (%s) not equal to %s (%s) %n", want1.getClass().getName(), want1, name1, want2, name2);
             ok = false;
           } else {
-            if (showEach) f.format("  OK <%s> equals <%s>%n", want1, want2);
+            if (showEach)
+              f.format("  OK <%s> equals <%s>%n", want1, want2);
             if (result != null) {
               result.add(want1);
               result.add(want2);
@@ -285,14 +293,17 @@ public class CompareNetcdf {
     return ok;
   }
 
-  static private void compareVariableData(Variable var1, Variable var2, boolean showCompare, Formatter f) throws IOException {
+  static private void compareVariableData(Variable var1, Variable var2, boolean showCompare, Formatter f)
+      throws IOException {
     Array data1 = var1.read();
     Array data2 = var2.read();
 
     if (showCompare)
-      f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(), data1.getSize());
+      f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(),
+          data1.getSize());
     compareData(data1, data2);
-    if (showCompare) f.format("   ok%n");
+    if (showCompare)
+      f.format("   ok%n");
   }
 
   static public void compareData(Array data1, Array data2) {
@@ -300,8 +311,8 @@ public class CompareNetcdf {
   }
 
   static public void compareData(Array data1, double[] data2) {
-    Array data2a = Array.factory(DataType.DOUBLE, new int[]{data2.length}, data2);
-    compareData( data1, data2a, false);
+    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
+    compareData(data1, data2a, false);
   }
 
   static private void compareData(Array data1, Array data2, boolean checkType) {
@@ -318,15 +329,15 @@ public class CompareNetcdf {
       while (iter1.hasNext() && iter2.hasNext()) {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
-        assert Misc.nearlyEquals(v1, v2) : String.format("%f != %f;  count = %s, absDiff = %f, relDiff = %f",
-                v1, v2, iter1, Misc.absoluteDifference(v1, v2), Misc.relativeDifference(v1, v2));
+        assert Misc.nearlyEquals(v1, v2) : String.format("%f != %f;  count = %s, absDiff = %f, relDiff = %f", v1, v2,
+            iter1, Misc.absoluteDifference(v1, v2), Misc.relativeDifference(v1, v2));
       }
     } else if (dt == DataType.FLOAT) {
       while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
-        assert Misc.nearlyEquals(v1, v2) : String.format("%f != %f;  count = %s, absDiff = %f, relDiff = %f",
-                v1, v2, iter1, Misc.absoluteDifference(v1, v2), Misc.relativeDifference(v1, v2));
+        assert Misc.nearlyEquals(v1, v2) : String.format("%f != %f;  count = %s, absDiff = %f, relDiff = %f", v1, v2,
+            iter1, Misc.absoluteDifference(v1, v2), Misc.relativeDifference(v1, v2));
       }
     } else if (dt.getPrimitiveClassType() == int.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
@@ -365,7 +376,8 @@ public class CompareNetcdf {
     assert sm1.getMembers().size() == sm2.getMembers().size();
 
     for (StructureMembers.Member m1 : sm1.getMembers()) {
-      if (m1.getName().equals("time")) continue;
+      if (m1.getName().equals("time"))
+        continue;
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
       Array data1 = sdata1.getArray(m1);
       Array data2 = sdata2.getArray(m2);

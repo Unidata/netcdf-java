@@ -15,12 +15,12 @@ package ucar.ma2;
 public class StructureDataProxy extends StructureData {
   protected StructureData org;
 
-  protected StructureDataProxy( StructureData org) {
+  protected StructureDataProxy(StructureData org) {
     super(org.getStructureMembers());
     this.org = org;
   }
 
-  public StructureDataProxy( StructureMembers members, StructureData org) {
+  public StructureDataProxy(StructureMembers members, StructureData org) {
     super(members);
     this.org = org;
   }
@@ -125,7 +125,7 @@ public class StructureDataProxy extends StructureData {
     return org.getArraySequence(m.getName());
   }
 
-  public Object getScalarObject( StructureMembers.Member m) {
+  public Object getScalarObject(StructureMembers.Member m) {
     return org.getScalarObject(m.getName());
   }
 }

@@ -5,32 +5,32 @@
 package ucar.nc2.ui.geoloc;
 
 import ucar.unidata.geoloc.*;
-
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
-/** Consider this a private inner class of NavigatedPanel.
-    Handle display to world coordinate transformation, always linear.
-    Call np.newMapAreaEvent() when MapArea changes.
-    setMapArea() trigger a NewMapAreaEvent also.
-
+/**
+ * Consider this a private inner class of NavigatedPanel.
+ * Handle display to world coordinate transformation, always linear.
+ * Call np.newMapAreaEvent() when MapArea changes.
+ * setMapArea() trigger a NewMapAreaEvent also.
+ * 
  * @author John Caron
  **/
 
-public class Navigation  {
+public class Navigation {
   private NavigatedPanel np;
 
-    // fundamental quantities
-  private double pwidth = 0, pheight = 0;       // current display size
-  private double pix_per_world = 1.0;           // scale always the same in both directions
-  private double pix_x0 = 0.0, pix_y0 = 0.0;    // offset from world origin, in pixels
+  // fundamental quantities
+  private double pwidth = 0, pheight = 0; // current display size
+  private double pix_per_world = 1.0; // scale always the same in both directions
+  private double pix_x0 = 0.0, pix_y0 = 0.0; // offset from world origin, in pixels
 
-    // derived
-  private ProjectionRect bb;                    // current world bounding box
-  private AffineTransform at;                   // affine transform for graphics2D
-    //misc
-  private boolean mapAreaIsSet = false;         // cant initialize until screen size is known
-  private boolean screenSizeIsSet = false;      // and initial bounding box is known
+  // derived
+  private ProjectionRect bb; // current world bounding box
+  private AffineTransform at; // affine transform for graphics2D
+  // misc
+  private boolean mapAreaIsSet = false; // cant initialize until screen size is known
+  private boolean screenSizeIsSet = false; // and initial bounding box is known
   private ZoomStack zoom = new ZoomStack();
 
   private static boolean debug = false, debugZoom = false, debugTransform = false;
@@ -43,21 +43,28 @@ public class Navigation  {
   }
 
   // screen size
-  public double getScreenWidth() { return pwidth; }
-  public double getScreenHeight() { return pheight; }
+  public double getScreenWidth() {
+    return pwidth;
+  }
+
+  public double getScreenHeight() {
+    return pheight;
+  }
+
   public void setScreenSize(double pwidth, double pheight) {
     if ((pwidth == 0) || (pheight == 0))
       return;
 
     if (mapAreaIsSet && screenSizeIsSet) {
       // make sure bb is current
-      bb.setRect( getMapArea( null));
+      bb.setRect(getMapArea(null));
     }
 
     this.pwidth = pwidth;
     this.pheight = pheight;
     screenSizeIsSet = true;
-    if (debugRecalc) System.out.println("navigation/setScreenSize "+ pwidth+" "+pheight);
+    if (debugRecalc)
+      System.out.println("navigation/setScreenSize " + pwidth + " " + pheight);
 
     if (mapAreaIsSet) {
       recalcFromBoundingBox();
@@ -66,90 +73,97 @@ public class Navigation  {
     fireMapAreaEvent();
   }
 
-    /** Get the affine transform based on screen size and world bounding box */
+  /** Get the affine transform based on screen size and world bounding box */
   public AffineTransform getTransform() {
-    at.setTransform( pix_per_world, 0.0, 0.0, -pix_per_world, pix_x0, pix_y0);
+    at.setTransform(pix_per_world, 0.0, 0.0, -pix_per_world, pix_x0, pix_y0);
 
     if (debug) {
-      System.out.println("Navigation getTransform = "+ pix_per_world +" "+ pix_x0+" "+ pix_y0);
-      System.out.println("  transform = "+ at);
+      System.out.println("Navigation getTransform = " + pix_per_world + " " + pix_x0 + " " + pix_y0);
+      System.out.println("  transform = " + at);
     }
     return at;
   }
-    // calculate if we want to rotate based on aspect ratio
+
+  // calculate if we want to rotate based on aspect ratio
   public boolean wantRotate(double displayWidth, double displayHeight) {
-    getMapArea( bb); // current world bounding box
+    getMapArea(bb); // current world bounding box
     boolean aspectDisplay = displayHeight < displayWidth;
     boolean aspectWorldBB = bb.getHeight() < bb.getWidth();
     return (aspectDisplay ^ aspectWorldBB); // aspects are different
- }
+  }
 
-  /** Calculate an affine transform based on the display size parameters - used for printing.
+  /**
+   * Calculate an affine transform based on the display size parameters - used for printing.
+   * 
    * @param rotate should the page be rotated?
-   * @param displayX            upper right corner of display area
-   * @param displayY            upper right corner of display area
-   * @param displayWidth   display area
-   * @param displayHeight   display area
+   * @param displayX upper right corner of display area
+   * @param displayY upper right corner of display area
+   * @param displayWidth display area
+   * @param displayHeight display area
    *
-   * see Navigation.calcTransform
+   *        see Navigation.calcTransform
    */
-  public AffineTransform calcTransform(boolean rotate, double displayX, double displayY, double displayWidth, double displayHeight) {
-    getMapArea( bb); // current world bounding box
-       // scale to limiting dimension
+  public AffineTransform calcTransform(boolean rotate, double displayX, double displayY, double displayWidth,
+      double displayHeight) {
+    getMapArea(bb); // current world bounding box
+    // scale to limiting dimension
     double pxpsx, pypsy;
     if (rotate) {
-      pxpsx = displayHeight/bb.getWidth();
-      pypsy = displayWidth/bb.getHeight();
+      pxpsx = displayHeight / bb.getWidth();
+      pypsy = displayWidth / bb.getHeight();
     } else {
-      pxpsx = displayWidth/bb.getWidth();
-      pypsy = displayHeight/bb.getHeight();
+      pxpsx = displayWidth / bb.getWidth();
+      pypsy = displayHeight / bb.getHeight();
     }
-    double pps = Math.min( pxpsx, pypsy);
+    double pps = Math.min(pxpsx, pypsy);
 
-      // calc offset: based on center point staying in center
-    double wx0 = bb.getX() + bb.getWidth()/2;  // world midpoint
-    double wy0 = bb.getY() + bb.getHeight()/2;
-    double x0 = displayX + displayWidth/2 - pps * wx0;
-    double y0 = displayY + displayHeight/2 + pps * wy0;
+    // calc offset: based on center point staying in center
+    double wx0 = bb.getX() + bb.getWidth() / 2; // world midpoint
+    double wy0 = bb.getY() + bb.getHeight() / 2;
+    double x0 = displayX + displayWidth / 2 - pps * wx0;
+    double y0 = displayY + displayHeight / 2 + pps * wy0;
 
     AffineTransform cat = new AffineTransform(pps, 0.0, 0.0, -pps, x0, y0);
 
     // rotate if we need to
     if (rotate)
-        cat.rotate(Math.PI/2, wx0, wy0);
+      cat.rotate(Math.PI / 2, wx0, wy0);
 
     if (debug) {
-      System.out.println("Navigation calcTransform = "+ displayX +" "+ displayY+
-                " "+ displayWidth+" "+displayHeight);
-      System.out.println("  world = "+ bb);
-      System.out.println("  scale/origin = "+ pps +" "+ x0+" "+ y0);
-      System.out.println("  transform = "+ cat);
+      System.out.println(
+          "Navigation calcTransform = " + displayX + " " + displayY + " " + displayWidth + " " + displayHeight);
+      System.out.println("  world = " + bb);
+      System.out.println("  scale/origin = " + pps + " " + x0 + " " + y0);
+      System.out.println("  transform = " + cat);
     }
     return cat;
   }
 
-    /** Get current MapArea .
-     * @param rect : place results here, or null to create new Object
-     */
+  /**
+   * Get current MapArea .
+   * 
+   * @param rect : place results here, or null to create new Object
+   */
   public ProjectionRect getMapArea(ProjectionRect rect) {
     if (rect == null)
       rect = new ProjectionRect();
 
-    double width = pwidth/pix_per_world;
-    double height = pheight/pix_per_world;
+    double width = pwidth / pix_per_world;
+    double height = pheight / pix_per_world;
 
-        // center point
-    double wx0 = (pwidth/2-pix_x0)/pix_per_world;
-    double wy0 = (pix_y0-pheight/2)/pix_per_world;
+    // center point
+    double wx0 = (pwidth / 2 - pix_x0) / pix_per_world;
+    double wy0 = (pix_y0 - pheight / 2) / pix_per_world;
 
-    rect.setRect(wx0-width/2, wy0-height/2,             // minx, miny
-             width, height);                            // width, height
+    rect.setRect(wx0 - width / 2, wy0 - height / 2, // minx, miny
+        width, height); // width, height
 
     return rect;
   }
 
   public void setMapArea(ProjectionRect ma) {
-    if (debugRecalc) System.out.println("navigation/setMapArea "+ ma);
+    if (debugRecalc)
+      System.out.println("navigation/setMapArea " + ma);
 
     bb.setRect(ma);
     zoom.push();
@@ -160,53 +174,56 @@ public class Navigation  {
       fireMapAreaEvent();
     }
   }
+
   // kludgy thing used to deal with cylindrical seams: package private
-  void setWorldCenterX( double wx_center) {
-    pix_x0 = pwidth/2 - pix_per_world * wx_center;
+  void setWorldCenterX(double wx_center) {
+    pix_x0 = pwidth / 2 - pix_per_world * wx_center;
   }
 
-    /** convert a world coordinate to a display point */
+  /** convert a world coordinate to a display point */
   public Point2D worldToScreen(ProjectionPointImpl w, Point2D p) {
-    p.setLocation( pix_per_world*w.getX() + pix_x0,
-                   -pix_per_world*w.getY() + pix_y0);
+    p.setLocation(pix_per_world * w.getX() + pix_x0, -pix_per_world * w.getY() + pix_y0);
     return p;
   }
 
-    /** convert a display point to a world coordinate */
+  /** convert a display point to a world coordinate */
   public ProjectionPointImpl screenToWorld(Point2D p, ProjectionPointImpl w) {
-    w.setLocation((p.getX() - pix_x0) / pix_per_world,
-                  (pix_y0 - p.getY()) / pix_per_world);
+    w.setLocation((p.getX() - pix_x0) / pix_per_world, (pix_y0 - p.getY()) / pix_per_world);
     return w;
   }
 
-  public double getPixPerWorld() { return pix_per_world; }
+  public double getPixPerWorld() {
+    return pix_per_world;
+  }
 
-    /** convert screen Rectangle to a projection (world) rectangle */
+  /** convert screen Rectangle to a projection (world) rectangle */
   public ProjectionRect screenToWorld(Point2D start, Point2D end) {
     ProjectionPointImpl p1 = new ProjectionPointImpl();
     ProjectionPointImpl p2 = new ProjectionPointImpl();
 
-    screenToWorld( start, p1);
-    screenToWorld( end, p2);
+    screenToWorld(start, p1);
+    screenToWorld(end, p2);
 
     return new ProjectionRect(p1.getX(), p1.getY(), p2.getX(), p2.getY());
   }
 
-    /** convert a projection (world) rectangle to a screen Rectangle */
+  /** convert a projection (world) rectangle to a screen Rectangle */
   public java.awt.Rectangle worldToScreen(ProjectionRect projRect) {
     Point2D p1 = new Point2D.Double();
     Point2D p2 = new Point2D.Double();
 
-    worldToScreen( (ProjectionPointImpl) projRect.getMaxPoint(), p1);
-    worldToScreen( (ProjectionPointImpl) projRect.getMinPoint(), p2);
-    return new java.awt.Rectangle((int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
+    worldToScreen((ProjectionPointImpl) projRect.getMaxPoint(), p1);
+    worldToScreen((ProjectionPointImpl) projRect.getMinPoint(), p2);
+    return new java.awt.Rectangle((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
   }
 
   /////////////// domain changing calls
 
-  /** call this to change the center of the screen's world coordinates.
-     deltax, deltay in display coordinates */
-  public void pan( double deltax, double deltay) {
+  /**
+   * call this to change the center of the screen's world coordinates.
+   * deltax, deltay in display coordinates
+   */
+  public void pan(double deltax, double deltay) {
     zoom.push();
 
     pix_x0 -= deltax;
@@ -214,34 +231,40 @@ public class Navigation  {
     fireMapAreaEvent();
   }
 
-  /** call this to zoom into a subset of the screen.
-    startx, starty are the upper left corner of the box in display coords
-    width, height the size of the box in display coords */
+  /**
+   * call this to zoom into a subset of the screen.
+   * startx, starty are the upper left corner of the box in display coords
+   * width, height the size of the box in display coords
+   */
   public void zoom(double startx, double starty, double width, double height) {
     if (debugZoom)
-      System.out.println("zoom "+ startx+ " "+starty+ " "+width+ " "+height+ " ");
+      System.out.println("zoom " + startx + " " + starty + " " + width + " " + height + " ");
 
     if ((width < 5) || (height < 5))
       return;
     zoom.push();
 
-    pix_x0 -= startx+width/2 - pwidth/2;
-    pix_y0 -= starty+height/2 - pheight/2;
+    pix_x0 -= startx + width / 2 - pwidth / 2;
+    pix_y0 -= starty + height / 2 - pheight / 2;
     zoom(pwidth / width);
   }
 
   public void zoomIn(double x, double y) {
     zoomIn();
   }
+
   public void zoomOut(double x, double y) {
     zoomOut();
   }
+
   public void zoomIn() {
     zoom(2.0);
   }
+
   public void zoomOut() {
     zoom(.5);
   }
+
   private void zoom(double scale) {
     zoom.push();
 
@@ -249,35 +272,40 @@ public class Navigation  {
     // get these equations by solving for pix_x0, pix_y0
     // that leaves center point invariant
     double fac = (1 - scale);
-    pix_x0 = scale*pix_x0 + fac*pwidth/2;
-    pix_y0 = scale*pix_y0 + fac*pheight/2;
+    pix_x0 = scale * pix_x0 + fac * pwidth / 2;
+    pix_y0 = scale * pix_y0 + fac * pheight / 2;
     pix_per_world *= scale;
     fireMapAreaEvent();
   }
+
   public void moveDown() {
     zoom.push();
 
-    pix_y0 -= pheight/2;
+    pix_y0 -= pheight / 2;
     fireMapAreaEvent();
   }
+
   public void moveUp() {
     zoom.push();
 
-    pix_y0 += pheight/2;
+    pix_y0 += pheight / 2;
     fireMapAreaEvent();
   }
+
   public void moveRight() {
     zoom.push();
 
-    pix_x0 -= pwidth/2;
+    pix_x0 -= pwidth / 2;
     fireMapAreaEvent();
   }
+
   public void moveLeft() {
     zoom.push();
 
-    pix_x0 += pwidth/2;
+    pix_x0 += pwidth / 2;
     fireMapAreaEvent();
   }
+
   public void zoomPrevious() {
     zoom.pop();
     fireMapAreaEvent();
@@ -286,30 +314,30 @@ public class Navigation  {
   /////////////////////////////////////////////////////////////////
   // private methods
 
-     // calculate scale and offset based on the current screen size and bounding box
-     // adjust bounding box to fit inside the screen size
+  // calculate scale and offset based on the current screen size and bounding box
+  // adjust bounding box to fit inside the screen size
   private void recalcFromBoundingBox() {
     if (debugRecalc) {
-      System.out.println("Navigation recalcFromBoundingBox= "+ bb);
-      System.out.println("  "+ pwidth +" "+ pheight);
+      System.out.println("Navigation recalcFromBoundingBox= " + bb);
+      System.out.println("  " + pwidth + " " + pheight);
     }
 
-      // decide which dimension is limiting
+    // decide which dimension is limiting
     double pixx_per_wx = (bb.getWidth() == 0.0) ? 1 : pwidth / bb.getWidth();
     double pixy_per_wy = (bb.getHeight() == 0.0) ? 1 : pheight / bb.getHeight();
     pix_per_world = Math.min(pixx_per_wx, pixy_per_wy);
 
-      // calc the center point
-    double wx0 = bb.getX() + bb.getWidth()/2;
-    double wy0 = bb.getY() + bb.getHeight()/2;
+    // calc the center point
+    double wx0 = bb.getX() + bb.getWidth() / 2;
+    double wy0 = bb.getY() + bb.getHeight() / 2;
 
-      // calc offset based on center point
-    pix_x0 = pwidth/2 - pix_per_world * wx0;
-    pix_y0 = pheight/2 + pix_per_world * wy0;
+    // calc offset based on center point
+    pix_x0 = pwidth / 2 - pix_per_world * wx0;
+    pix_y0 = pheight / 2 + pix_per_world * wy0;
 
     if (debugRecalc) {
-      System.out.println("Navigation recalcFromBoundingBox done= "+ pix_per_world +" "+ pix_x0+" "+ pix_y0);
-      System.out.println("  "+ pwidth +" "+ pheight+" "+ bb);
+      System.out.println("Navigation recalcFromBoundingBox done= " + pix_per_world + " " + pix_x0 + " " + pix_y0);
+      System.out.println("  " + pwidth + " " + pheight + " " + bb);
     }
   }
 
@@ -322,19 +350,20 @@ public class Navigation  {
   // this should probably be made into a circular buffer
   private class ZoomStack extends java.util.ArrayList {
     private int current = -1;
+
     ZoomStack() {
       super(20); // stack size
     }
 
     void push() {
       current++;
-      add( current, new Zoom( pix_per_world, pix_x0, pix_y0));
+      add(current, new Zoom(pix_per_world, pix_x0, pix_y0));
     }
 
     void pop() {
       if (current < 0)
         return;
-      Zoom zoom = (Zoom) get( current);
+      Zoom zoom = (Zoom) get(current);
       pix_per_world = zoom.pix_per_world;
       pix_x0 = zoom.pix_x0;
       pix_y0 = zoom.pix_y0;
@@ -345,6 +374,7 @@ public class Navigation  {
       double pix_per_world;
       double pix_x0;
       double pix_y0;
+
       Zoom(double p1, double p2, double p3) {
         pix_per_world = p1;
         pix_x0 = p2;

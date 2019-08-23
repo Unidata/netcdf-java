@@ -6,7 +6,6 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.util.Indent;
-
 import java.util.Formatter;
 
 /**

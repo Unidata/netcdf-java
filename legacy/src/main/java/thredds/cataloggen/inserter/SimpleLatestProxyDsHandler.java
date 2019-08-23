@@ -10,7 +10,6 @@ import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.cataloggen.InvCrawlablePair;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -20,10 +19,9 @@ import java.util.*;
  * @author edavis
  * @since Nov 29, 2005 12:12:53 PM
  */
-public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler
-{
-//  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( LatestCompleteProxyDsHandler.class );
+public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler {
+  // private static org.slf4j.Logger log =
+  // org.slf4j.LoggerFactory.getLogger( LatestCompleteProxyDsHandler.class );
 
   private String latestName;
   private boolean locateAtTopOrBottom;
@@ -38,134 +36,118 @@ public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler
    * locateAtTopOrBottom (true - locate on top; false - locate on bottom).
    *
    * @param latestName the name to be used for all latest dataset, if null, the default is "latest.xml".
-   * @param locateAtTopOrBottom indicates where to locate the latest dataset (true - locate on top; false - locate on bottom).
+   * @param locateAtTopOrBottom indicates where to locate the latest dataset (true - locate on top; false - locate on
+   *        bottom).
    * @param service the InvService used by the created dataset.
    */
-  public SimpleLatestProxyDsHandler( String latestName, boolean locateAtTopOrBottom,
-                                     InvService service, boolean isResolver )
-  {
+  public SimpleLatestProxyDsHandler(String latestName, boolean locateAtTopOrBottom, InvService service,
+      boolean isResolver) {
     this.latestName = latestName;
     this.locateAtTopOrBottom = locateAtTopOrBottom;
     this.service = service;
     this.isResolver = isResolver;
   }
 
-  public boolean isLocateAtTopOrBottom() { return locateAtTopOrBottom; }
+  public boolean isLocateAtTopOrBottom() {
+    return locateAtTopOrBottom;
+  }
 
-  public Object getConfigObject() { return null; }
+  public Object getConfigObject() {
+    return null;
+  }
 
-  public String getProxyDatasetName()
-  {
+  public String getProxyDatasetName() {
     return this.latestName;
   }
 
-  public CrawlableDataset createProxyDataset( CrawlableDataset parent )
-  {
-    return new MyCrawlableDataset( parent, this.latestName );
+  public CrawlableDataset createProxyDataset(CrawlableDataset parent) {
+    return new MyCrawlableDataset(parent, this.latestName);
   }
 
-  public InvService getProxyDatasetService( CrawlableDataset parent )
-  {
+  public InvService getProxyDatasetService(CrawlableDataset parent) {
     return service;
   }
 
-  public int getProxyDatasetLocation( CrawlableDataset parent, int collectionDatasetSize )
-  {
-    if ( locateAtTopOrBottom )
+  public int getProxyDatasetLocation(CrawlableDataset parent, int collectionDatasetSize) {
+    if (locateAtTopOrBottom)
       return 0;
     else
       return collectionDatasetSize;
   }
 
-  public boolean isProxyDatasetResolver()
-  {
+  public boolean isProxyDatasetResolver() {
     return this.isResolver;
   }
 
-  public InvCrawlablePair getActualDataset( List atomicDsInfo )
-  {
-    if ( atomicDsInfo == null || atomicDsInfo.isEmpty() )
+  public InvCrawlablePair getActualDataset(List atomicDsInfo) {
+    if (atomicDsInfo == null || atomicDsInfo.isEmpty())
       return null;
 
     // Get the maximum item according to lexigraphic comparison of InvDataset names.
-    return (InvCrawlablePair) Collections.max( atomicDsInfo, new Comparator()
-    {
-      public int compare( Object obj1, Object obj2 )
-      {
+    return (InvCrawlablePair) Collections.max(atomicDsInfo, new Comparator() {
+      public int compare(Object obj1, Object obj2) {
         InvCrawlablePair dsInfo1 = (InvCrawlablePair) obj1;
         InvCrawlablePair dsInfo2 = (InvCrawlablePair) obj2;
-        return ( dsInfo1.getInvDataset().getName().compareTo( dsInfo2.getInvDataset().getName() ) );
+        return (dsInfo1.getInvDataset().getName().compareTo(dsInfo2.getInvDataset().getName()));
       }
-    } );
+    });
   }
 
-  public String getActualDatasetName( InvCrawlablePair actualDataset, String baseName )
-  {
-    if ( baseName == null ) baseName = "";
-    return baseName.equals( "" ) ? "Latest" : "Latest " + baseName;
+  public String getActualDatasetName(InvCrawlablePair actualDataset, String baseName) {
+    if (baseName == null)
+      baseName = "";
+    return baseName.equals("") ? "Latest" : "Latest " + baseName;
   }
 
   /**
    *
    */
-  private static class MyCrawlableDataset implements CrawlableDataset
-  {
+  private static class MyCrawlableDataset implements CrawlableDataset {
     private CrawlableDataset parent;
     private String name;
 
-    MyCrawlableDataset( CrawlableDataset parent, String name )
-    {
+    MyCrawlableDataset(CrawlableDataset parent, String name) {
       this.parent = parent;
       this.name = name;
     }
 
-    public Object getConfigObject()
-    {
+    public Object getConfigObject() {
       return null;
     }
 
-    public String getPath()
-    {
+    public String getPath() {
       return parent.getPath() + "/" + name;
     }
 
-    public String getName()
-    {
+    public String getName() {
       return name;
     }
 
-    public CrawlableDataset getParentDataset()
-    {
+    public CrawlableDataset getParentDataset() {
       return parent;
     }
 
-    public boolean exists()
-    {
+    public boolean exists() {
       return true; // @todo ????
     }
 
-    public boolean isCollection()
-    {
+    public boolean isCollection() {
       return false;
     }
 
-    public CrawlableDataset getDescendant( String childPath)
-    {
+    public CrawlableDataset getDescendant(String childPath) {
       return null;
     }
 
-    public List listDatasets()
-    {
+    public List listDatasets() {
       return null;
     }
 
-    public List listDatasets( CrawlableDatasetFilter filter )
-    {
+    public List listDatasets(CrawlableDatasetFilter filter) {
       return null;
     }
 
-    public long length()
-    {
+    public long length() {
       return -1;
     }
 

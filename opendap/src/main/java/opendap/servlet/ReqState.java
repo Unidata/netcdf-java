@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -44,7 +44,6 @@ import opendap.dap.DAP2Exception;
 import ucar.httpservices.HTTPSession;
 import ucar.httpservices.HTTPUtil;
 import ucar.unidata.util.StringUtil2;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -112,27 +111,28 @@ public class ReqState {
    *
    * @serial
    */
-  //Coverity[FB.SS_SHOULD_BE_STATIC]
+  // Coverity[FB.SS_SHOULD_BE_STATIC]
   private String defaultSchemaLocation;
 
   private String dataSetName;
   private String requestSuffix;
-  private String CE;   // encoded
+  private String CE; // encoded
   private Object obj;
   private String serverClassName;
-  private String requestURL;   // encoded
+  private String requestURL; // encoded
 
   private ServletConfig myServletConfig = null;
   private ServletContext myServletContext = null;
 
   private HttpServletRequest myHttpRequest;
   private HttpServletResponse response;
-  //private ServletConfig myServletConfig;
-  //private ServletContext myServletContext;
+  // private ServletConfig myServletConfig;
+  // private ServletContext myServletContext;
   private String rootpath;
 
-    // this is used by OpendapServlet
-  public ReqState(HttpServletRequest myRequest, HttpServletResponse response, String dataPath, String encodedurl, String encodedquery) {
+  // this is used by OpendapServlet
+  public ReqState(HttpServletRequest myRequest, HttpServletResponse response, String dataPath, String encodedurl,
+      String encodedquery) {
     this.myHttpRequest = myRequest;
     this.response = response;
     this.dataSetName = dataPath;
@@ -142,7 +142,7 @@ public class ReqState {
     int pos = dataPath.lastIndexOf(".");
     if (pos > 0) {
       int len = dataPath.length();
-      this.requestSuffix = dataPath.substring(pos+1, len);
+      this.requestSuffix = dataPath.substring(pos + 1, len);
       this.dataSetName = dataPath.substring(0, pos);
     } else {
       this.requestSuffix = "";
@@ -152,43 +152,43 @@ public class ReqState {
 
   // this is used by DTS
   public ReqState(AbstractServlet sv, HttpServletRequest myRequest, HttpServletResponse response, String rootPath2,
-                  String encodedurl, String encodedquery)
-    throws DAP2Exception
-  {
+      String encodedurl, String encodedquery) throws DAP2Exception {
     try {
-    this.myServletConfig = sv.getServletConfig();
-    this.myServletContext = sv.getServletContext();
-    //this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
-    this.myHttpRequest = myRequest;
-    this.response = response;
-    this.rootpath = StringUtil2.replace(rootPath2, "\\", "/");
-    this.serverClassName = serverClassName;
-    this.CE = encodedquery;
+      this.myServletConfig = sv.getServletConfig();
+      this.myServletContext = sv.getServletContext();
+      // this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
+      this.myHttpRequest = myRequest;
+      this.response = response;
+      this.rootpath = StringUtil2.replace(rootPath2, "\\", "/");
+      this.serverClassName = serverClassName;
+      this.CE = encodedquery;
 
-    // If there was simply no constraint then getQuery() should have returned null
-    if (this.CE == null) this.CE = "";
+      // If there was simply no constraint then getQuery() should have returned null
+      if (this.CE == null)
+        this.CE = "";
 
-    processDodsURL();
-    AbstractServlet.log.debug("datasetname=|" + this.dataSetName + "|");
+      processDodsURL();
+      AbstractServlet.log.debug("datasetname=|" + this.dataSetName + "|");
 
-    defaultDDXcache = rootpath + testdatasetspath + "/ddx";
-    defaultDDScache = rootpath + testdatasetspath + "/dds";
-    defaultDAScache = rootpath + testdatasetspath + "/das";
-    defaultINFOcache = rootpath + testdatasetspath + "/info";
+      defaultDDXcache = rootpath + testdatasetspath + "/ddx";
+      defaultDDScache = rootpath + testdatasetspath + "/dds";
+      defaultDAScache = rootpath + testdatasetspath + "/das";
+      defaultINFOcache = rootpath + testdatasetspath + "/info";
 
-    StringBuffer url = myHttpRequest.getRequestURL();
-    if (url == null || url.length() == 0)
-      AbstractServlet.log.error("ReqState: no url specified");
-    else {
-      int index = url.lastIndexOf(myHttpRequest.getServletPath());
-      if (index < 0) index = url.length(); //Use whole thing
-      defaultSchemaLocation = url.substring(0, index) + "/schema/" + defaultSchemaName;
-    }
+      StringBuffer url = myHttpRequest.getRequestURL();
+      if (url == null || url.length() == 0)
+        AbstractServlet.log.error("ReqState: no url specified");
+      else {
+        int index = url.lastIndexOf(myHttpRequest.getServletPath());
+        if (index < 0)
+          index = url.length(); // Use whole thing
+        defaultSchemaLocation = url.substring(0, index) + "/schema/" + defaultSchemaName;
+      }
 
-    requestURL = (encodedurl);
+      requestURL = (encodedurl);
 
     } catch (Exception e) {
-        throw new DAP2Exception(e);
+      throw new DAP2Exception(e);
     }
   }
 
@@ -294,20 +294,21 @@ public class ReqState {
 
   /**
    * @param realpath path to this servlet's dir in webapps (typically nding in WEB-INF)
-   * @param which    parameter name to check: typically a relative path
-   * @param dfalt    for parameter
+   * @param which parameter name to check: typically a relative path
+   * @param dfalt for parameter
    * @return The absolute path froom the which directory(ending in '/').
    */
   private String getCachedString(String realpath, String which, String dfalt) {
     String dir = getInitParameter(which);
-    if(dir == null)
+    if (dir == null)
       dir = dfalt;
-    if(HTTPUtil.isAbsolutePath(dir))
+    if (HTTPUtil.isAbsolutePath(dir))
       dir = HTTPUtil.canonicalpath(dir);
     else
       dir = HTTPUtil.relpath(dir);
-    dir = HTTPUtil.canonjoin(realpath,dir);
-    if (!dir.endsWith("/")) dir += "/";
+    dir = HTTPUtil.canonjoin(realpath, dir);
+    if (!dir.endsWith("/"))
+      dir += "/";
     return (dir);
   }
 
@@ -344,9 +345,11 @@ public class ReqState {
    * @return The Schema Location.
    */
   public String getSchemaLocation() {
-    /* String cacheDir = getInitParameter("SchemaLocation");
-    if (cacheDir == null)
-      cacheDir = defaultSchemaLocation; */
+    /*
+     * String cacheDir = getInitParameter("SchemaLocation");
+     * if (cacheDir == null)
+     * cacheDir = defaultSchemaLocation;
+     */
     return defaultSchemaLocation;
   }
 
@@ -373,25 +376,25 @@ public class ReqState {
    * space charater. (a single value of 0x20)
    *
    * @param ce The constraint expresion string as collected from the request
-   *           object with <code>getQueryString()</code>
+   *        object with <code>getQueryString()</code>
    * @return A string containing the prepared constraint expression. If there
-   * is a problem with the constraint expression a <code>null</code> is returned.
+   *         is a problem with the constraint expression a <code>null</code> is returned.
    */
   private String prepCE(String ce) {
 
     int index;
 
-    //System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
-    //System.out.println("Prepping: \""+ce+"\"");
+    // System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
+    // System.out.println("Prepping: \""+ce+"\"");
 
     if (ce == null) {
       ce = "";
-      //System.out.println("null Constraint expression.");
+      // System.out.println("null Constraint expression.");
     } else if (!ce.equals("")) {
 
-      //System.out.println("Searching for:  %");
+      // System.out.println("Searching for: %");
       index = ce.indexOf("%");
-      //System.out.println("index of %: "+index);
+      // System.out.println("index of %: "+index);
 
       if (index == -1)
         return (ce);
@@ -400,19 +403,19 @@ public class ReqState {
         return (null);
 
       while (index >= 0) {
-        //System.out.println("Found % at character " + index);
+        // System.out.println("Found % at character " + index);
 
         String specChar = ce.substring(index + 1, index + 3);
-        //System.out.println("specChar: \"" + specChar + "\"");
+        // System.out.println("specChar: \"" + specChar + "\"");
 
         // Convert that bad boy!
         char val = (char) Byte.parseByte(specChar, 16);
-        //System.out.println("                val: '" + val + "'");
-        //System.out.println("String.valueOf(val): \"" + String.valueOf(val) + "\"");
+        // System.out.println(" val: '" + val + "'");
+        // System.out.println("String.valueOf(val): \"" + String.valueOf(val) + "\"");
 
 
         ce = ce.substring(0, index) + String.valueOf(val) + ce.substring(index + 3, ce.length());
-        //System.out.println("ce: \"" + ce + "\"");
+        // System.out.println("ce: \"" + ce + "\"");
 
         index = ce.indexOf("%");
         if (index > (ce.length() - 3))
@@ -420,16 +423,17 @@ public class ReqState {
       }
     }
 
-//      char ca[] = ce.toCharArray();
-//	for(int i=0; i<ca.length ;i++)
-//	    System.out.print("'"+(byte)ca[i]+"' ");
-//	System.out.println("");
-//	System.out.println(ce);
-//	System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
+    // char ca[] = ce.toCharArray();
+    // for(int i=0; i<ca.length ;i++)
+    // System.out.print("'"+(byte)ca[i]+"' ");
+    // System.out.println("");
+    // System.out.println(ce);
+    // System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 
-//        System.out.println("Returning CE: \""+ce+"\"");
+    // System.out.println("Returning CE: \""+ce+"\"");
     return (ce);
   }
+
   /***************************************************************************/
 
 
@@ -439,23 +443,23 @@ public class ReqState {
    * the <code>HttpServletRequest</code>to create a <code>ReqState</code>
    * object in that caches the values for:
    * <ul>
-   * <li> <b>dataSet</b> The data set name.(Accessible using
+   * <li><b>dataSet</b> The data set name.(Accessible using
    * <code> setDataSet() </code>
    * and <code>getDataSet()</code>)</li>
-   * <li> <b>CE</b> The constraint expression.(Accessible using
+   * <li><b>CE</b> The constraint expression.(Accessible using
    * <code> setCE() </code>
    * and <code>getCE()</code>)</li>
-   * <li> <b>requestSuffix</b> The request suffix, used by OPeNDAP DAP2 to
+   * <li><b>requestSuffix</b> The request suffix, used by OPeNDAP DAP2 to
    * indicate the type of response desired by the client.
    * (Accessible using
    * <code> setRequestSuffix() </code>
    * and <code>getRequestSuffix()</code>)</li>
-   * <li> <b>isClientCompressed</b> Does the requesting client
+   * <li><b>isClientCompressed</b> Does the requesting client
    * accept a compressed response?</li>
-   * <li> <b>ServletConfig</b> The <code>ServletConfig</code> object
+   * <li><b>ServletConfig</b> The <code>ServletConfig</code> object
    * for this servlet.</li>
-   * <li> <b>ServerName</b> The class name of this server.</li>
-   * <li> <b>RequestURL</b> THe URL that that was used to call thye servlet.</li>
+   * <li><b>ServerName</b> The class name of this server.</li>
+   * <li><b>RequestURL</b> THe URL that that was used to call thye servlet.</li>
    * </ul>
    *
    * @see ReqState
@@ -464,14 +468,18 @@ public class ReqState {
   protected void processDodsURL() {
 
     String cxtpath = HTTPUtil.canonicalpath(myHttpRequest.getContextPath());
-    if (cxtpath != null && cxtpath.length() == 0) cxtpath = null;
-    if (cxtpath == null) cxtpath = "/"; // we are running as webapps/ROOT
+    if (cxtpath != null && cxtpath.length() == 0)
+      cxtpath = null;
+    if (cxtpath == null)
+      cxtpath = "/"; // we are running as webapps/ROOT
 
     String servletpath = HTTPUtil.canonicalpath(myHttpRequest.getServletPath());
-    if (servletpath != null && servletpath.length() == 0) servletpath = null;
+    if (servletpath != null && servletpath.length() == 0)
+      servletpath = null;
 
     this.dataSetName = HTTPUtil.canonicalpath(myHttpRequest.getPathInfo());
-    if (this.dataSetName != null && this.dataSetName.length() == 0) this.dataSetName = null;
+    if (this.dataSetName != null && this.dataSetName.length() == 0)
+      this.dataSetName = null;
 
     if (this.dataSetName == null) {
       if (servletpath != null) {
@@ -483,13 +491,15 @@ public class ReqState {
         }
       }
     } else {
-      if (dataSetName.startsWith("/dodsC")) dataSetName = dataSetName.substring(6);
+      if (dataSetName.startsWith("/dodsC"))
+        dataSetName = dataSetName.substring(6);
     }
 
     this.requestSuffix = null;
     if (this.dataSetName != null) {
       String name = this.dataSetName;
-      if (name.startsWith("/")) name = name.substring(1); // remove any leading '/'
+      if (name.startsWith("/"))
+        name = name.substring(1); // remove any leading '/'
       String[] pieces = name.split("/");
       if (pieces.length == 0 || pieces[0].length() == 0) {
         requestSuffix = "";
@@ -508,7 +518,7 @@ public class ReqState {
           // suffix which we know exists in the last element
           // of the path.
           this.dataSetName = this.dataSetName.substring(1, this.dataSetName.lastIndexOf('.'));
-        } else {    // strip the leading slash (/) from the dataset name and set the suffix to an empty string
+        } else { // strip the leading slash (/) from the dataset name and set the suffix to an empty string
           requestSuffix = "";
           this.dataSetName = name;
         }
@@ -522,7 +532,7 @@ public class ReqState {
    * sent the request accepts compressed return documents.
    *
    * @return True is the client accpets a compressed return document.
-   * False otherwise.
+   *         False otherwise.
    */
 
   public boolean getAcceptsCompressed() {
@@ -545,9 +555,11 @@ public class ReqState {
    */
 
 
-  /* public Enumeration getInitParameterNames() {
-    return (myServletConfig.getInitParameterNames());
-  } */
+  /*
+   * public Enumeration getInitParameterNames() {
+   * return (myServletConfig.getInitParameterNames());
+   * }
+   */
 
   public String getInitParameter(String name) {
     return (myServletConfig.getInitParameter(name));
@@ -589,7 +601,7 @@ public class ReqState {
     ts.append("  requestSuffix:      '");
     ts.append(requestSuffix);
     ts.append("'\n");
-    //ts += "  blobURL:            '" + getDodsBlobURL() + "'\n";
+    // ts += " blobURL: '" + getDodsBlobURL() + "'\n";
     ts.append("  CE:                 '");
     ts.append(CE);
     ts.append("'\n");
@@ -598,16 +610,18 @@ public class ReqState {
     ts.append("\n");
 
     ts.append("  InitParameters:\n");
-    /* Enumeration e = getInitParameterNames();
-    while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
-      String value = getInitParameter(name);
-      ts.append("    ");
-      ts.append(name);
-      ts.append(": '");
-      ts.append(value);
-      ts.append("'\n");
-    }  */
+    /*
+     * Enumeration e = getInitParameterNames();
+     * while (e.hasMoreElements()) {
+     * String name = (String) e.nextElement();
+     * String value = getInitParameter(name);
+     * ts.append("    ");
+     * ts.append(name);
+     * ts.append(": '");
+     * ts.append(value);
+     * ts.append("'\n");
+     * }
+     */
 
     return (ts.toString());
   }

@@ -8,7 +8,6 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-
 import java.io.PrintWriter;
 import java.io.IOException;
 
@@ -26,7 +25,7 @@ public class CoordRefSysToGML {
 
 
   public static void writeCoordRefSysAsGML(PrintWriter pw, ucar.nc2.dataset.CoordinateSystem coordSys)
-          throws IOException {
+      throws IOException {
     XMLOutputter xmlOutputter = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat());
     xmlOutputter.output(genCoordRefSysAsGML(coordSys), pw);
   }
@@ -37,15 +36,19 @@ public class CoordRefSysToGML {
     if (!coordSys.isGeoReferencing())
       throw new IllegalArgumentException("CoordinateSystem must be a georeferencing CS.");
 
-    /*Element xyCrsElem;
-    if ( coordSys.isGeoXY())
-    {
-      xyCrsElem = genProjectedCRS( coordSys.getProjection());
-    } */
-    /* if (!coordSys.isGeoXY()) {
-      coordSys.getLatAxis();
-      coordSys.getLonAxis();
-    } */
+    /*
+     * Element xyCrsElem;
+     * if ( coordSys.isGeoXY())
+     * {
+     * xyCrsElem = genProjectedCRS( coordSys.getProjection());
+     * }
+     */
+    /*
+     * if (!coordSys.isGeoXY()) {
+     * coordSys.getLatAxis();
+     * coordSys.getLonAxis();
+     * }
+     */
     Element rootElem = new Element("CompoundCRS", gmlNS);
 
     rootElem.addContent("");
@@ -61,10 +64,7 @@ public class CoordRefSysToGML {
   public static Element genProjectedCRS(ucar.unidata.geoloc.Projection proj) {
     Element projElem = new Element("ProjectedCRS", gmlNS);
     projElem.setAttribute("id", "", gmlNS);
-    projElem.addContent(
-            new Element("identifier", gmlNS)
-                    .setAttribute("codeSpace", "", gmlNS)
-                    .addContent(""));
+    projElem.addContent(new Element("identifier", gmlNS).setAttribute("codeSpace", "", gmlNS).addContent(""));
     projElem.addContent(new Element("name", gmlNS).addContent(proj.getName()));
     projElem.addContent(new Element("scope", gmlNS).addContent(""));
     projElem.addContent(new Element("conversion", gmlNS).addContent(""));

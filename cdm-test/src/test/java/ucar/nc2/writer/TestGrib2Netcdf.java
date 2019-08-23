@@ -12,7 +12,6 @@ import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -30,31 +29,36 @@ public class TestGrib2Netcdf {
   static String csvOut;
   static PrintStream fw;
 
- static  void  writeHeader() throws FileNotFoundException {
+  static void writeHeader() throws FileNotFoundException {
     File outDir = new File(dirOut);
     fw = new PrintStream(new File(outDir, csvOut));
-    fw.printf("file, sizeIn(MB), type, shuffle, deflate, sizeOut(MB), sizeOut/sizeIn, dataLen(MB), dataLen/sizeOut, time(secs) %n");
+    fw.printf(
+        "file, sizeIn(MB), type, shuffle, deflate, sizeOut(MB), sizeOut/sizeIn, dataLen(MB), dataLen/sizeOut, time(secs) %n");
   }
 
-  double writeNetcdf(String fileInName, NetcdfFileWriter.Version version,
-                   Nc4Chunking.Strategy chunkerType, int deflateLevel, boolean shuffle) throws IOException {
+  double writeNetcdf(String fileInName, NetcdfFileWriter.Version version, Nc4Chunking.Strategy chunkerType,
+      int deflateLevel, boolean shuffle) throws IOException {
 
     File fin = new File(fileInName);
-    //if (fin.length() > 2000 * 1000 * 1000) {
-   //   System.out.format("   skip %s: %d%n", fin.getName(), fin.length());
-    //  return 0; // skip > 2G
-    //}
+    // if (fin.length() > 2000 * 1000 * 1000) {
+    // System.out.format(" skip %s: %d%n", fin.getName(), fin.length());
+    // return 0; // skip > 2G
+    // }
     Formatter foutf = new Formatter();
     foutf.format("%s", fin.getName());
-    if (deflateLevel > 0) foutf.format(".%d", deflateLevel);
-    if (chunkerType != null) foutf.format(".%s", chunkerType);
-    if (shuffle) foutf.format(".shuffle");
+    if (deflateLevel > 0)
+      foutf.format(".%d", deflateLevel);
+    if (chunkerType != null)
+      foutf.format(".%s", chunkerType);
+    if (shuffle)
+      foutf.format(".shuffle");
     foutf.format("%s", version.getSuffix());
 
     File fout = new File(dirOut, foutf.toString());
 
     ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileInName);
-    Nc4Chunking chunking = (version == NetcdfFileWriter.Version.netcdf3) ? null : Nc4ChunkingStrategy.factory(chunkerType, deflateLevel, shuffle);
+    Nc4Chunking chunking = (version == NetcdfFileWriter.Version.netcdf3) ? null
+        : Nc4ChunkingStrategy.factory(chunkerType, deflateLevel, shuffle);
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, fout.getCanonicalPath(), chunking);
 
     long start = System.currentTimeMillis();
@@ -76,14 +80,12 @@ public class TestGrib2Netcdf {
     lenOut /= 1000 * 1000;
 
     System.out.format("   %10.3f: %s%n", lenOut / lenIn, fout.getCanonicalPath());
-    double took = (System.currentTimeMillis() - start) /1000.0;
+    double took = (System.currentTimeMillis() - start) / 1000.0;
     System.out.format("   that took: %f secs%n", took);
 
     fw.printf("%s,%10.3f, %s,%s, %d, %10.3f,%10.3f,%d,%f,%f%n", fin.getName(), lenIn,
-            (chunkerType != null) ? chunkerType : "nc3",
-            shuffle ? "shuffle" : "",
-            deflateLevel,
-            lenOut, lenOut / lenIn, totalBytes, totalBytes / lenOut , took);
+        (chunkerType != null) ? chunkerType : "nc3", shuffle ? "shuffle" : "", deflateLevel, lenOut, lenOut / lenIn,
+        totalBytes, totalBytes / lenOut, took);
 
     return lenOut;
   }
@@ -108,9 +110,10 @@ public class TestGrib2Netcdf {
     public int doAct(String filename) throws IOException {
 
       TestGrib2Netcdf writer = new TestGrib2Netcdf();
-      for (int level=1; level<8; level++) {
+      for (int level = 1; level < 8; level++) {
         total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, level, true);
-        total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, level, false);
+        total +=
+            writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, level, false);
         fw.flush();
       }
 

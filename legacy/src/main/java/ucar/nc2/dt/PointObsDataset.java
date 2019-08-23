@@ -4,7 +4,8 @@
  */
 package ucar.nc2.dt;
 
-/** A PointCollection of PointObsDatatype.
+/**
+ * A PointCollection of PointObsDatatype.
  * All getData() methods return List of PointObsDatatype.
  *
  * @deprecated use ucar.nc2.ft.*

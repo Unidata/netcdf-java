@@ -11,13 +11,13 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
-
 import java.util.*;
 
 /**
  * GDV Conventions.
  * Deprecated - use CF or _Coordinates.
  * DefaultConvention is now the default Convention
+ * 
  * @author caron
  */
 
@@ -52,10 +52,12 @@ public class GDVConvention extends CSMConvention {
   protected void findCoordinateAxes(NetcdfDataset ds) {
 
     for (VarProcess vp : varList) {
-      if (vp.isCoordinateVariable) continue;
+      if (vp.isCoordinateVariable)
+        continue;
 
       Variable ncvar = vp.v;
-      if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
+      if (!(ncvar instanceof VariableDS))
+        continue; // cant be a structure
 
       String dimName = findAlias(ds, ncvar);
       if (dimName.length() == 0) // none
@@ -88,9 +90,11 @@ public class GDVConvention extends CSMConvention {
 
     // look for variables to turn into axes
     for (VarProcess vp : varList) {
-      if (vp.isCoordinateVariable) continue;
+      if (vp.isCoordinateVariable)
+        continue;
       Variable ncvar = vp.v;
-      if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
+      if (!(ncvar instanceof VariableDS))
+        continue; // cant be a structure
 
       AxisType atype = getAxisType(ds, (VariableEnhanced) vp.v);
       if (atype != null) {
@@ -105,7 +109,7 @@ public class GDVConvention extends CSMConvention {
   /**
    * look for aliases.
    *
-   * @param ds       containing dataset
+   * @param ds containing dataset
    * @param axisType look for this axis type
    * @return name of axis of that type
    */
@@ -138,7 +142,8 @@ public class GDVConvention extends CSMConvention {
     if (vname.equalsIgnoreCase("x") || findAlias(ds, v).equalsIgnoreCase("x"))
       return AxisType.GeoX;
 
-    if (vname.equalsIgnoreCase("lon") || vname.equalsIgnoreCase("longitude") || findAlias(ds, v).equalsIgnoreCase("lon"))
+    if (vname.equalsIgnoreCase("lon") || vname.equalsIgnoreCase("longitude")
+        || findAlias(ds, v).equalsIgnoreCase("lon"))
       return AxisType.Lon;
 
     if (vname.equalsIgnoreCase("y") || findAlias(ds, v).equalsIgnoreCase("y"))
@@ -147,18 +152,18 @@ public class GDVConvention extends CSMConvention {
     if (vname.equalsIgnoreCase("lat") || vname.equalsIgnoreCase("latitude") || findAlias(ds, v).equalsIgnoreCase("lat"))
       return AxisType.Lat;
 
-    if (vname.equalsIgnoreCase("lev") || findAlias(ds, v).equalsIgnoreCase("lev") ||
-            (vname.equalsIgnoreCase("level") || findAlias(ds, v).equalsIgnoreCase("level")))
+    if (vname.equalsIgnoreCase("lev") || findAlias(ds, v).equalsIgnoreCase("lev")
+        || (vname.equalsIgnoreCase("level") || findAlias(ds, v).equalsIgnoreCase("level")))
       return AxisType.GeoZ;
 
-    if (vname.equalsIgnoreCase("z") || findAlias(ds, v).equalsIgnoreCase("z") ||
-            (vname.equalsIgnoreCase("altitude") || vname.equalsIgnoreCase("depth")))
+    if (vname.equalsIgnoreCase("z") || findAlias(ds, v).equalsIgnoreCase("z")
+        || (vname.equalsIgnoreCase("altitude") || vname.equalsIgnoreCase("depth")))
       return AxisType.Height;
 
     if (vname.equalsIgnoreCase("time") || findAlias(ds, v).equalsIgnoreCase("time"))
       return AxisType.Time;
 
-     return super.getAxisType(ds, ve);
+    return super.getAxisType(ds, ve);
   }
 
   // look for an coord_axis or coord_alias attribute
@@ -177,7 +182,8 @@ public class GDVConvention extends CSMConvention {
       return null;
     }
     String params = ds.findAttValueIgnoreCase(null, "projection_params", null);
-    if (null == params) params = ds.findAttValueIgnoreCase(null, "proj_params", null);
+    if (null == params)
+      params = ds.findAttValueIgnoreCase(null, "proj_params", null);
     if (null == params) {
       parseInfo.format("GDV Conventions error: NO projection parameters found %n");
       return null;
@@ -202,7 +208,7 @@ public class GDVConvention extends CSMConvention {
 
     }
 
-    parseInfo.format("GDV Conventions projection %s params = %f %f %f %f%n", projection, p[0],p[1],p[2],p[3]);
+    parseInfo.format("GDV Conventions projection %s params = %f %f %f %f%n", projection, p[0], p[1], p[2], p[3]);
 
     ProjectionImpl proj;
     if (projection.equalsIgnoreCase("LambertConformal"))

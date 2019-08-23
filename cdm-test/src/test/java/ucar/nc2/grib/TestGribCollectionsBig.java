@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -46,7 +46,6 @@ import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -63,8 +62,8 @@ import java.util.Formatter;
 public class TestGribCollectionsBig {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
-  // String topdir =  "B:/rdavm";  // use for local windows to get around samba bug
+  String topdir = TestDir.cdmUnitTestDir + "gribCollections/rdavm";
+  // String topdir = "B:/rdavm"; // use for local windows to get around samba bug
 
   @BeforeClass
   static public void before() {
@@ -98,7 +97,8 @@ public class TestGribCollectionsBig {
     System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
     System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
     System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
-    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
+    System.out.printf(" total files needed=%7d%n",
+        GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
     FileCache.shutdown();
     RandomAccessFile.setGlobalFileCache(null);
@@ -109,10 +109,11 @@ public class TestGribCollectionsBig {
 
   @Test
   public void testSRC() throws IOException {
-    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx4");
+    TestGribCollectionMissing.Count count =
+        TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx4");
 
-    // roberto:    that took 6 secs total, 0.196227 msecs per record
-    // jenkins:    that took 2 secs total, 0.083042 msecs per record
+    // roberto: that took 6 secs total, 0.196227 msecs per record
+    // jenkins: that took 2 secs total, 0.083042 msecs per record
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
@@ -123,10 +124,11 @@ public class TestGribCollectionsBig {
   @Ignore("total == 366994/418704")
   @Test
   public void testTP() throws IOException {
-    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx4");
+    TestGribCollectionMissing.Count count =
+        TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx4");
 
     // roberto:
-    // jenkins:  that took 32 secs total, 0.077869 msecs per record
+    // jenkins: that took 32 secs total, 0.077869 msecs per record
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     // LOOK 0/366994/418704
@@ -138,16 +140,17 @@ public class TestGribCollectionsBig {
   @Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation.ncx4");
+    TestGribCollectionMissing.Count count =
+        TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation.ncx4");
 
     // ROBERTO (local drive only, samba fails) that took that took 2177 secs total, 0.156383 msecs per record
-    // 2D only      486523/6476133
+    // 2D only 486523/6476133
     // jenkems : that took 560 secs total, 0.079659 msecs per record
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     assert count.nerrs == 0;
-    assert count.nmiss == 492158;       // 6032888/7034124  vs 973046/13925312 LOOK   6035386/7038851 // 0/984316/14077702
+    assert count.nmiss == 492158; // 6032888/7034124 vs 973046/13925312 LOOK 6035386/7038851 // 0/984316/14077702
     assert count.nread == 7038851;
   }
 

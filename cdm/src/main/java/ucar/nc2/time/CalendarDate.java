@@ -8,7 +8,6 @@ import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -32,51 +31,61 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * Get a CalendarDate representing the present moment
+   * 
    * @return CalendarDate representing the present moment in UTC
    */
   static public CalendarDate present() {
-     return new CalendarDate(null, new DateTime());
+    return new CalendarDate(null, new DateTime());
   }
 
   static public CalendarDate present(Calendar cal) {
-     return new CalendarDate(cal, new DateTime());
+    return new CalendarDate(cal, new DateTime());
   }
 
   /**
    * Get Calendar date from fields. Uses UTZ time zone
+   * 
    * @param cal calendar to use, or null for default
    * @param year any integer
    * @param monthOfYear 1-12
    * @param dayOfMonth 1-31
-   * @param hourOfDay  0-23
+   * @param hourOfDay 0-23
    * @param minuteOfHour 0-59
    * @param secondOfMinute 0-59
    * @return CalendarDate
    */
-  public static CalendarDate of(Calendar cal, int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute) {
+  public static CalendarDate of(Calendar cal, int year, int monthOfYear, int dayOfMonth, int hourOfDay,
+      int minuteOfHour, int secondOfMinute) {
     Chronology base = Calendar.getChronology(cal);
-    /* if (base == null)
-      base = ISOChronology.getInstanceUTC(); // already in UTC
-    else
-      base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC  */
+    /*
+     * if (base == null)
+     * base = ISOChronology.getInstanceUTC(); // already in UTC
+     * else
+     * base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC
+     */
 
     DateTime dt = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, base);
-    if (!Calendar.isDefaultChronology(cal)) dt = dt.withChronology(Calendar.getChronology(cal));
+    if (!Calendar.isDefaultChronology(cal))
+      dt = dt.withChronology(Calendar.getChronology(cal));
     dt = dt.withZone(DateTimeZone.UTC);
     return new CalendarDate(cal, dt);
   }
 
-  public static CalendarDate withDoy(Calendar cal, int year, int doy, int hourOfDay, int minuteOfHour, int secondOfMinute) {
+  public static CalendarDate withDoy(Calendar cal, int year, int doy, int hourOfDay, int minuteOfHour,
+      int secondOfMinute) {
     Chronology base = Calendar.getChronology(cal);
-    /* if (base == null)
-      base = ISOChronology.getInstanceUTC(); // already in UTC
-    else
-      base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC  */
+    /*
+     * if (base == null)
+     * base = ISOChronology.getInstanceUTC(); // already in UTC
+     * else
+     * base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC
+     */
 
     DateTime dt = new DateTime(year, 1, 1, hourOfDay, minuteOfHour, secondOfMinute, base);
     dt = dt.withZone(DateTimeZone.UTC);
     dt = dt.withDayOfYear(doy);
-    if (!Calendar.isDefaultChronology(cal)) dt = dt.withChronology(Calendar.getChronology(cal));
+    if (!Calendar.isDefaultChronology(cal))
+      dt = dt.withChronology(Calendar.getChronology(cal));
 
     return new CalendarDate(cal, dt);
   }
@@ -84,44 +93,49 @@ public class CalendarDate implements Comparable<CalendarDate> {
   /**
    * Create CalendarDate from a java.util.Date.
    * Uses standard Calendar.
+   * 
    * @param date java.util.Date
    * @return CalendarDate in UTC
    */
   public static CalendarDate of(java.util.Date date) {
-    DateTime dt = new DateTime(date, DateTimeZone.UTC) ;
+    DateTime dt = new DateTime(date, DateTimeZone.UTC);
     return new CalendarDate(null, dt);
   }
 
   /**
    * Create CalendarDate from msecs since epoch
    * Uses standard Calendar.
+   * 
    * @param msecs milliseconds from 1970-01-01T00:00:00Z
    * @return CalendarDate in UTC
    */
   public static CalendarDate of(long msecs) {
-    // Constructs an instance set to the milliseconds from 1970-01-01T00:00:00Z using ISOChronology in the specified time zone.
-    DateTime dt = new DateTime(msecs, DateTimeZone.UTC) ;
+    // Constructs an instance set to the milliseconds from 1970-01-01T00:00:00Z using ISOChronology in the specified
+    // time zone.
+    DateTime dt = new DateTime(msecs, DateTimeZone.UTC);
     return new CalendarDate(null, dt);
   }
 
   /**
    * Create CalendarDate from msecs since epoch
-   * Uses the given  Calendar.
+   * Uses the given Calendar.
+   * 
    * @param cal calendar to use, or null for default
    * @param msecs milliseconds from 1970-01-01T00:00:00Z
    * @return CalendarDate in UTC time zone.
    */
   public static CalendarDate of(Calendar cal, long msecs) {
     Chronology base = Calendar.getChronology(cal);
-    DateTime dt = new DateTime(msecs, base) ;
+    DateTime dt = new DateTime(msecs, base);
     return new CalendarDate(cal, dt);
   }
 
   /**
    * Get CalendarDate from ISO date string
+   * 
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
    * @param isoOrUdunits ISO or udunits date string
-   * @return  CalendarDate or null if not valid
+   * @return CalendarDate or null if not valid
    */
   @Nullable
   public static CalendarDate parseUdunitsOrIso(String calendarName, String isoOrUdunits) {
@@ -132,7 +146,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
       try {
         result = parseUdunits(calendarName, isoOrUdunits);
       } catch (Exception e2) {
-        return  null;
+        return null;
       }
     }
     return result;
@@ -142,27 +156,31 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * Get CalendarDate from ISO date string
+   * 
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
    * @param isoDateString ISO date string
-   * @return  CalendarDate
+   * @return CalendarDate
    */
   public static CalendarDate parseISOformat(String calendarName, String isoDateString) {
     Calendar cal = Calendar.get(calendarName);
-    if (cal == null) cal = Calendar.getDefault();
-	  return CalendarDateFormatter.isoStringToCalendarDate(cal, isoDateString);
+    if (cal == null)
+      cal = Calendar.getDefault();
+    return CalendarDateFormatter.isoStringToCalendarDate(cal, isoDateString);
   }
 
   /**
    * Get CalendarDate from udunit date string
+   * 
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
    * @param udunits must be value (space) udunits string
-   * @return  CalendarDate
+   * @return CalendarDate
    */
   public static CalendarDate parseUdunits(String calendarName, String udunits) {
     int pos = udunits.indexOf(' ');
-    if (pos < 0) return null;
+    if (pos < 0)
+      return null;
     String valString = udunits.substring(0, pos).trim();
-    String unitString = udunits.substring(pos+1).trim();
+    String unitString = udunits.substring(pos + 1).trim();
 
     CalendarDateUnit cdu = CalendarDateUnit.of(calendarName, unitString);
     double val = Double.parseDouble(valString);
@@ -171,7 +189,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   // internal use only
   static CalendarDate of(Calendar cal, DateTime dateTime) {
-     return new CalendarDate(cal, dateTime);
+    return new CalendarDate(cal, dateTime);
   }
 
   ////////////////////////////////////////////////
@@ -208,18 +226,20 @@ public class CalendarDate implements Comparable<CalendarDate> {
     return dateTime.compareTo(o.dateTime);
   }
 
-  public boolean isAfter( CalendarDate o) {
+  public boolean isAfter(CalendarDate o) {
     return dateTime.isAfter(o.dateTime);
   }
 
-  public boolean isBefore( CalendarDate o) {
+  public boolean isBefore(CalendarDate o) {
     return dateTime.isBefore(o.dateTime);
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof CalendarDate)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof CalendarDate))
+      return false;
     CalendarDate other = (CalendarDate) o;
     return other.cal == cal && other.dateTime.equals(dateTime);
   }
@@ -235,6 +255,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * ISO formatted string
+   * 
    * @return ISO8601 format (yyyy-MM-ddTHH:mm:ss.SSSZ)
    */
   @Override
@@ -244,14 +265,16 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * udunits formatting
+   * 
    * @return udunits formatted date
    */
-  public String getTimeUnits(){
-	  return CalendarDateFormatter.toTimeUnits(this);
+  public String getTimeUnits() {
+    return CalendarDateFormatter.toTimeUnits(this);
   }
-  
+
   /**
    * Get the hour of day (0-23) field for this chronology.
+   * 
    * @return hour of day (0-23)
    */
   public int getHourOfDay() {
@@ -259,20 +282,28 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   /*
-      Millisec(PeriodType.millis()), Second(PeriodType.seconds()), Minute(PeriodType.minutes()), Hour(PeriodType.hours()),
-    Day(PeriodType.days()), Month(PeriodType.months()), Year(PeriodType.years())
+   * Millisec(PeriodType.millis()), Second(PeriodType.seconds()), Minute(PeriodType.minutes()),
+   * Hour(PeriodType.hours()),
+   * Day(PeriodType.days()), Month(PeriodType.months()), Year(PeriodType.years())
    */
   public int getFieldValue(CalendarPeriod.Field fld) {
     switch (fld) {
-      case Day: return dateTime.get(DateTimeFieldType.dayOfMonth());
-      case Hour: return dateTime.get(DateTimeFieldType.hourOfDay());
-      case Millisec: return dateTime.get(DateTimeFieldType.millisOfSecond());
-      case Minute: return dateTime.get(DateTimeFieldType.minuteOfHour());
-      case Month: return dateTime.get(DateTimeFieldType.monthOfYear());
-      case Second: return dateTime.get(DateTimeFieldType.secondOfMinute());
-      case Year: return dateTime.get(DateTimeFieldType.year());
+      case Day:
+        return dateTime.get(DateTimeFieldType.dayOfMonth());
+      case Hour:
+        return dateTime.get(DateTimeFieldType.hourOfDay());
+      case Millisec:
+        return dateTime.get(DateTimeFieldType.millisOfSecond());
+      case Minute:
+        return dateTime.get(DateTimeFieldType.minuteOfHour());
+      case Month:
+        return dateTime.get(DateTimeFieldType.monthOfYear());
+      case Second:
+        return dateTime.get(DateTimeFieldType.secondOfMinute());
+      case Year:
+        return dateTime.get(DateTimeFieldType.year());
     }
-    throw new IllegalArgumentException("unimplemented "+fld);
+    throw new IllegalArgumentException("unimplemented " + fld);
   }
 
   public int getDayOfMonth() {
@@ -299,10 +330,10 @@ public class CalendarDate implements Comparable<CalendarDate> {
         return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_DAY)));
       case Month: // LOOK should we throw warning ?
         return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_MONTH)));
-      case Year:  // LOOK should we throw warning ?
+      case Year: // LOOK should we throw warning ?
         return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_YEAR)));
     }
-    throw new UnsupportedOperationException("period units = "+unit);
+    throw new UnsupportedOperationException("period units = " + unit);
   }
 
   // calendar date field
@@ -323,7 +354,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
       case Year:
         return new CalendarDate(cal, dateTime.plusYears(period.getValue()));
     }
-    throw new UnsupportedOperationException("period units = "+period);
+    throw new UnsupportedOperationException("period units = " + period);
   }
 
   // calendar date field
@@ -344,21 +375,24 @@ public class CalendarDate implements Comparable<CalendarDate> {
       case Year:
         return new CalendarDate(cal, dateTime.minusYears(period.getValue()));
     }
-    throw new UnsupportedOperationException("period units = "+period);
+    throw new UnsupportedOperationException("period units = " + period);
   }
 
   /**
    * truncate the CalendarDate, by zeroing all the fields that are less than the field.
    * So 2013-03-01T19:30 becomes 2013-03-01T00:00 if the field is "day"
+   * 
    * @param fld set to 0 all fields less than this one
    * @return truncated result
    */
   public CalendarDate truncate(CalendarPeriod.Field fld) {
     switch (fld) {
       case Minute:
-        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), dateTime.getHourOfDay(), dateTime.getMinuteOfHour(), 0);
+        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(),
+            dateTime.getHourOfDay(), dateTime.getMinuteOfHour(), 0);
       case Hour:
-        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), dateTime.getHourOfDay(), 0, 0);
+        return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(),
+            dateTime.getHourOfDay(), 0, 0);
       case Day:
         return CalendarDate.of(cal, dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), 0, 0, 0);
       case Month:
@@ -371,6 +405,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * Get the equivilent java.util.Date
+   * 
    * @return the equivalent Date
    */
   public java.util.Date toDate() {
@@ -379,8 +414,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * Get difference between two calendar dates in millisecs
-   * @param o  other calendar date
-   * @return  (this minus o) difference in millisecs
+   * 
+   * @param o other calendar date
+   * @return (this minus o) difference in millisecs
    */
   public long getDifferenceInMsecs(CalendarDate o) {
     return dateTime.getMillis() - o.dateTime.getMillis();
@@ -388,8 +424,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * Get difference between two calendar dates in given Field units
-   * @param o  other calendar date
-   * @return  (this minus o) difference in units of this Field
+   * 
+   * @param o other calendar date
+   * @return (this minus o) difference in units of this Field
    */
   public long getDifference(CalendarDate o, CalendarPeriod.Field fld) {
     switch (fld) {
@@ -408,7 +445,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
         int tmonth = getFieldValue(CalendarPeriod.Field.Month);
         int omonth = o.getFieldValue(CalendarPeriod.Field.Month);
         int years = (int) this.getDifference(o, CalendarPeriod.Field.Year);
-        return tmonth-omonth + 12 * years;
+        return tmonth - omonth + 12 * years;
 
       case Year:
         int tyear = getFieldValue(CalendarPeriod.Field.Year);

@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,16 +80,18 @@ public class NcepRfcTables extends NcepTables {
   }
 
   ///////////////////////////////////////////////////////////////////////
-  /* TABLE C - SUB-CENTERS FOR CENTER 9  US NWS FIELD STATIONS
-  * from bdgparm.f John Halquist <John.Halquist@noaa.gov> 9/12/2011
-  * These are not in the WMO common tables like NCEP's are
-  */
+  /*
+   * TABLE C - SUB-CENTERS FOR CENTER 9 US NWS FIELD STATIONS
+   * from bdgparm.f John Halquist <John.Halquist@noaa.gov> 9/12/2011
+   * These are not in the WMO common tables like NCEP's are
+   */
   @Override
   @Nullable
   public String getSubCenterName(int subcenter) {
     if (nwsoSubCenter == null)
       nwsoSubCenter = readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
-    if (nwsoSubCenter == null) return null;
+    if (nwsoSubCenter == null)
+      return null;
 
     return nwsoSubCenter.get(subcenter);
   }
@@ -101,7 +102,7 @@ public class NcepRfcTables extends NcepTables {
     Map<Integer, String> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path);
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
       while (true) {
         String line = br.readLine();
         if (line == null) {
@@ -120,7 +121,7 @@ public class NcepRfcTables extends NcepTables {
 
         result.put(val, name);
       }
-      return Collections.unmodifiableMap(result);  // all at once - thread safe
+      return Collections.unmodifiableMap(result); // all at once - thread safe
 
     } catch (IOException ioError) {
       logger.warn("An error occurred in Grib1Tables while trying to open the table " + path + " : " + ioError);

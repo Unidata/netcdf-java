@@ -21,7 +21,7 @@ import java.util.Random;
 public class ImageFactoryRandom {
   private java.util.List<File> holdList;
   private java.util.List<File> fileList;
-  private Random random = new Random( System.currentTimeMillis());
+  private Random random = new Random(System.currentTimeMillis());
 
   public ImageFactoryRandom(File topDir) {
     if (!topDir.exists())
@@ -29,8 +29,8 @@ public class ImageFactoryRandom {
 
     fileList = new ArrayList<>(1000);
     addToList(topDir, fileList);
-    System.out.println("nfiles= "+ fileList.size());
-    holdList = new ArrayList<>( fileList);
+    System.out.println("nfiles= " + fileList.size());
+    holdList = new ArrayList<>(fileList);
   }
 
   private void addToList(File dir, List<File> list) {
@@ -43,20 +43,21 @@ public class ImageFactoryRandom {
   }
 
   File nextFile = null;
+
   public BufferedImage getNextImage() {
     if (holdList.size() == 0)
-      holdList = new ArrayList<>( fileList);
+      holdList = new ArrayList<>(fileList);
 
-    int next = random.nextInt( holdList.size());
+    int next = random.nextInt(holdList.size());
     nextFile = holdList.get(next);
-    holdList.remove( nextFile); // random draw without replacement
+    holdList.remove(nextFile); // random draw without replacement
 
     try {
       System.out.printf("next %d %s %n", next, nextFile);
       return javax.imageio.ImageIO.read(nextFile);
     } catch (IOException e) {
       System.out.println("Failed to open image " + nextFile);
-      fileList.remove( nextFile);
+      fileList.remove(nextFile);
       return getNextImage();
     }
 
@@ -64,9 +65,10 @@ public class ImageFactoryRandom {
 
   // remove last file
   public boolean delete() {
-    if (nextFile == null) return false;
-    fileList.remove( nextFile);
-    File f = new File("C:/tmp/deleted/"+nextFile.getName());
+    if (nextFile == null)
+      return false;
+    fileList.remove(nextFile);
+    File f = new File("C:/tmp/deleted/" + nextFile.getName());
     return nextFile.renameTo(f);
   }
 

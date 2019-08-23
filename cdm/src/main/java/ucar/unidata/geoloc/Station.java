@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 
 /**
  * A named location on the earth.
+ * 
  * @author caron
  * @since Feb 18, 2008
  */
@@ -15,6 +16,7 @@ public interface Station extends EarthLocation, Comparable<Station> {
 
   /**
    * Station name or id. Must be unique within the collection
+   * 
    * @return station name or id. May not be null.
    */
   @Nonnull
@@ -22,18 +24,21 @@ public interface Station extends EarthLocation, Comparable<Station> {
 
   /**
    * Station description
+   * 
    * @return station description or null
    */
   String getDescription();
 
   /**
    * WMO station id.
+   * 
    * @return WMO station id, or null.
    */
   String getWmoId();
 
   /**
    * get Number of obs at this station
+   * 
    * @return Number of obs or -1 if unknown
    */
   int getNobs();

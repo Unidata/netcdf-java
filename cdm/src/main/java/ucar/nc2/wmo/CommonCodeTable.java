@@ -16,7 +16,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -37,8 +36,9 @@ import java.io.InputStream;
   COMMON CODE TABLE C–12:  Sub-centres of originating centres defined by entries in Common code tables C–1 or C–11
   COMMON CODE TABLE C–13:  Data sub-categories of categories defined by entries in BUFR Table A
   COMMON CODE TABLE C–14:  Atmospheric chemical or physical constituent type
-
+ * 
  * </pre>
+ * 
  * @author caron
  * @since 3/29/11
  */
@@ -48,46 +48,56 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   private static final String version = "_20181107_en";
 
   //////////////////////////////////////////////////////////////////////////
-/*
-<Common_C13_20130508_en>
-<No>35</No>
-<CodeFigure_DataCategories>2</CodeFigure_DataCategories>
-<Name_DataCategories_en>Vertical soundings (other than satellite)</Name_DataCategories_en>
-<CodeFigure_InternationalDataSubcategories>21</CodeFigure_InternationalDataSubcategories>
-<Name_InternationalDataSubcategories_en>Profiles of atmospheric constituents concentrations</Name_InternationalDataSubcategories_en>
-<Status>Operational</Status>
-</Common_C13_20130508_en>
-
-<Common_C01_20141105_en>
-<No>6</No>
-<CodeFigureForF1F2>04</CodeFigureForF1F2>
-<CodeFigureForF3F3F3>004</CodeFigureForF3F3F3>
-<Octet5GRIB1_Octet6BUFR3>4</Octet5GRIB1_Octet6BUFR3>
-<OriginatingGeneratingCentres_en>Moscow</OriginatingGeneratingCentres_en>
-<Status>Operational</Status>
-</Common_C01_20141105_en>
-
+  /*
+   * <Common_C13_20130508_en>
+   * <No>35</No>
+   * <CodeFigure_DataCategories>2</CodeFigure_DataCategories>
+   * <Name_DataCategories_en>Vertical soundings (other than satellite)</Name_DataCategories_en>
+   * <CodeFigure_InternationalDataSubcategories>21</CodeFigure_InternationalDataSubcategories>
+   * <Name_InternationalDataSubcategories_en>Profiles of atmospheric constituents
+   * concentrations</Name_InternationalDataSubcategories_en>
+   * <Status>Operational</Status>
+   * </Common_C13_20130508_en>
+   * 
+   * <Common_C01_20141105_en>
+   * <No>6</No>
+   * <CodeFigureForF1F2>04</CodeFigureForF1F2>
+   * <CodeFigureForF3F3F3>004</CodeFigureForF3F3F3>
+   * <Octet5GRIB1_Octet6BUFR3>4</Octet5GRIB1_Octet6BUFR3>
+   * <OriginatingGeneratingCentres_en>Moscow</OriginatingGeneratingCentres_en>
+   * <Status>Operational</Status>
+   * </Common_C01_20141105_en>
+   * 
    */
-  public enum Table {                              // code                code2                  value
-    C1("Centers-GRIB1,BUFR3",    1, 1, new String[]{"CodeFigureForF1F2", "CodeFigureForF3F3F3", "OriginatingGeneratingCentres_en"}),
-    // C2("Radiosondes",            2, 1, new String[]{"CodeFigureForBUFR", null, "RadiosondeSoundingSystemUsed_en"}),
-    C3("Water temperature profile instrument", 3, 1, new String[]{"CodeFigureForBUFR", null, "InstrumentMakeAndType_en"}),
-    C4("Water temperature profile recorder",   4, 1, new String[]{"CodeFigureForBUFR", null, "Meaning_en"}),
-    C5("Satellite identifier",   5, 1, new String[]{"CodeFigureForBUFR", null, "SatelliteName_en"}),
-    C7("Satellite tracking",     7, 1, new String[]{"CodeFigureForBUFR", null, "TrackingTechniquesStatusOfSystemUsed_en"}),
-    C8("Satellite instruments",  8, 1, new String[]{"Code", null, "InstrumentLongName_en", "InstrumentShortName_en"}),
-    C11("Centers-GRIB2,BUFR4",    11,1, new String[]{"GRIB2_BUFR4", null, "OriginatingGeneratingCentre_en"}),
-                                                    // code                            value                       code2                  value2
-    C12("Subcenters",             12,2, new String[]{"CodeFigure_OriginatingCentres", "Name_OriginatingCentres_en", "CodeFigure_SubCentres", "Name_SubCentres_en"}),
-    C13("Data sub-categories",    13,2, new String[]{"CodeFigure_DataCategories", "Name_DataCategories_en", "CodeFigure_InternationalDataSubcategories", "Name_InternationalDataSubcategories_en"}),
-    C14("Atmospheric chemical or physical constituent type",14,2, new String[]{"CodeFigure", "ChemicalFormula", null, "Meaning_en"}),
-    ;
+  public enum Table { // code code2 value
+    C1("Centers-GRIB1,BUFR3", 1, 1,
+        new String[] {"CodeFigureForF1F2", "CodeFigureForF3F3F3", "OriginatingGeneratingCentres_en"}),
+    // C2("Radiosondes", 2, 1, new String[]{"CodeFigureForBUFR", null, "RadiosondeSoundingSystemUsed_en"}),
+    C3("Water temperature profile instrument", 3, 1,
+        new String[] {"CodeFigureForBUFR", null, "InstrumentMakeAndType_en"}), C4("Water temperature profile recorder",
+            4, 1, new String[] {"CodeFigureForBUFR", null, "Meaning_en"}), C5("Satellite identifier", 5, 1,
+                new String[] {"CodeFigureForBUFR", null, "SatelliteName_en"}), C7("Satellite tracking", 7, 1,
+                    new String[] {"CodeFigureForBUFR", null, "TrackingTechniquesStatusOfSystemUsed_en"}), C8(
+                        "Satellite instruments", 8, 1,
+                        new String[] {"Code", null, "InstrumentLongName_en", "InstrumentShortName_en"}), C11(
+                            "Centers-GRIB2,BUFR4", 11, 1,
+                            new String[] {"GRIB2_BUFR4", null, "OriginatingGeneratingCentre_en"}),
+    // code value code2 value2
+    C12("Subcenters", 12, 2,
+        new String[] {"CodeFigure_OriginatingCentres", "Name_OriginatingCentres_en", "CodeFigure_SubCentres",
+            "Name_SubCentres_en"}), C13(
+                "Data sub-categories", 13, 2,
+                new String[] {"CodeFigure_DataCategories", "Name_DataCategories_en",
+                    "CodeFigure_InternationalDataSubcategories", "Name_InternationalDataSubcategories_en"}), C14(
+                        "Atmospheric chemical or physical constituent type", 14, 2,
+                        new String[] {"CodeFigure", "ChemicalFormula", null, "Meaning_en"}),;
 
     String name;
     String[] elems; // type 1: 0 = code, 1 = code2 (may be null), 2 = value
                     // type 2: 0 = code1, 1 = comment , 2 = code3 (may be null), 3 = value
     int num, type; // type 1 = 1 code, type 2 = 2 codes
     String num0;
+
     Table(String name, int num, int type, String[] elems) {
       this.name = name;
       this.num = num;
@@ -100,7 +110,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     }
 
     public String getResourceName() {
-      return "/resources/wmo/Common_C" + this.num0 + version +".xml";
+      return "/resources/wmo/Common_C" + this.num0 + version + ".xml";
     }
 
     public String getRootElemName() {
@@ -133,8 +143,10 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    */
   public static String getCenterName(int center_id, int edition) {
     String result = (edition == 1) ? getTableValue(1, center_id) : getTableValue(11, center_id);
-    if (result != null) return result;
-    if (center_id == 0) return "WMO standard table";
+    if (result != null)
+      return result;
+    if (center_id == 0)
+      return "WMO standard table";
     return "Unknown center=" + center_id;
   }
 
@@ -147,15 +159,17 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    */
   public static String getCenterNameBufr(int center_id, int edition) {
     String result = (edition < 4) ? getTableValue(1, center_id) : getTableValue(11, center_id);
-    if (result != null) return result;
-    if (center_id == 0) return "WMO standard table";
+    if (result != null)
+      return result;
+    if (center_id == 0)
+      return "WMO standard table";
     return "Unknown center=" + center_id;
   }
 
   /**
    * Subcenter name, from table C-12
    *
-   * @param center_id    center id
+   * @param center_id center id
    * @param subcenter_id subcenter id
    * @return subcenter name, or null if not found
    */
@@ -167,7 +181,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   /**
    * data subcategory name, from table C-13
    *
-   * @param cat    data category
+   * @param cat data category
    * @param subcat data subcategory
    * @return subcategory name, or null if not found
    */
@@ -179,23 +193,23 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   public static CommonCodeTable getTable(int tableNo) {
     CommonCodeTable cct = tableMap.get(tableNo);
 
-     if (cct == null) {
-       Table want = null;
-       for (Table t : Table.values())
-         if (t.num == tableNo) {
-           want = t;
-           break;
-         }
-       if (want == null)
-         throw new IllegalStateException("Unknown wmo common code table number= "+tableNo);
+    if (cct == null) {
+      Table want = null;
+      for (Table t : Table.values())
+        if (t.num == tableNo) {
+          want = t;
+          break;
+        }
+      if (want == null)
+        throw new IllegalStateException("Unknown wmo common code table number= " + tableNo);
 
-       try {
-         cct = readCommonCodes(want);
-         tableMap.put(tableNo, cct);
-       } catch (IOException e) {
-         throw new IllegalStateException("Cant open wmo common code table "+want);
-       }
-     }
+      try {
+        cct = readCommonCodes(want);
+        tableMap.put(tableNo, cct);
+      } catch (IOException e) {
+        throw new IllegalStateException("Cant open wmo common code table " + want);
+      }
+    }
 
     return cct;
   }
@@ -207,16 +221,18 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
       logger.error("WMO common table {} is not implemented", tableNo);
       return null;
     }
-    TableEntry te =  cct.get(code);
-    if (te == null) return null;
+    TableEntry te = cct.get(code);
+    if (te == null)
+      return null;
     return te.value;
   }
 
   @Nullable
   public static String getTableValue(int tableNo, int code, int code2) {
     CommonCodeTable cct = getTable(tableNo);
-    TableEntry te =  cct.get(code, code2);
-    if (te == null) return null;
+    TableEntry te = cct.get(code, code2);
+    if (te == null)
+      return null;
     return te.value;
   }
 
@@ -248,10 +264,12 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
           String code = elem.getChildTextNormalize(elems[0]);
           String code2 = (elems[1] != null) ? elem.getChildTextNormalize(elems[1]) : null;
           String value = elem.getChildTextNormalize(elems[2]);
-          //if ((value == null || value.length() == 0) && elems[3] != null) value = elem.getChildTextNormalize(elems[3]);  WTF ?
+          // if ((value == null || value.length() == 0) && elems[3] != null) value =
+          // elem.getChildTextNormalize(elems[3]); WTF ?
           Element statusElem = elem.getChild("Status");
           String status = (statusElem == null) ? null : statusElem.getTextNormalize();
-          if (value != null && value.equals(")")) value = previousValue;
+          if (value != null && value.equals(")"))
+            value = previousValue;
           ct.add(line, code, code2, value, status);
           previousValue = value;
 
@@ -300,7 +318,8 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   @Nullable
   TableEntry get(int code) {
     for (TableEntry p : entries) {
-      if (p.code == code) return p;
+      if (p.code == code)
+        return p;
     }
     return null;
   }
@@ -308,7 +327,8 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   @Nullable
   TableEntry get(int code, int code2) {
     for (TableEntry p : entries) {
-      if ((p.code == code) && (p.code2 == code2))return p;
+      if ((p.code == code) && (p.code2 == code2))
+        return p;
     }
     return null;
   }
@@ -337,12 +357,16 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     int max = 0;
     int dups = 0;
     for (TableEntry entry : entries) {
-      if (entry.comment != null) continue;
-      if (entry.code > max) max = entry.code;
-      if (set.contains(entry.code)) dups++;
-      else set.add(entry.code);
+      if (entry.comment != null)
+        continue;
+      if (entry.code > max)
+        max = entry.code;
+      if (set.contains(entry.code))
+        dups++;
+      else
+        set.add(entry.code);
     }
-    return "density= "+entries.size() + "/" + max+"; dups= "+dups;
+    return "density= " + entries.size() + "/" + max + "; dups= " + dups;
   }
 
   public class TableEntry implements Comparable<TableEntry> {
@@ -350,7 +374,8 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     public String value, status, comment;
 
     int parse(String s) {
-      if (s == null) return -1;
+      if (s == null)
+        return -1;
       try {
         return Integer.parseInt(s);
       } catch (NumberFormatException e2) {
@@ -386,30 +411,26 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
         return Integer.compare(code, o.code);
       else {
         int diff = Integer.compare(code, o.code);
-        return (diff == 0) ?  Integer.compare(code2, o.code2) : diff;
+        return (diff == 0) ? Integer.compare(code2, o.code2) : diff;
       }
     }
 
     @Override
     public String toString() {
       if (comment != null)
-        return "TableEntry{" +
-              ", line=" + line +
-              ", comment=" + comment +
-                '}';
+        return "TableEntry{" + ", line=" + line + ", comment=" + comment + '}';
 
-      else return "TableEntry{" +
-              ", line=" + line +
-              ", code=" + code +
-              ", value='" + value + '\'' +
-              ", status='" + status + '\'' +
-              '}';
+      else
+        return "TableEntry{" + ", line=" + line + ", code=" + code + ", value='" + value + '\'' + ", status='" + status
+            + '\'' + '}';
     }
   }
 
   private static final char badDash = 173;
+
   private String filter(String s) {
-    if (s == null) return "";
+    if (s == null)
+      return "";
     return StringUtil2.replace(s, badDash, "-");
   }
 }

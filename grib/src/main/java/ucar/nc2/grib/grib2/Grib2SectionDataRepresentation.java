@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -32,7 +31,7 @@ public class Grib2SectionDataRepresentation {
     if (length == 0)
       throw new IllegalArgumentException("Not a GRIB-2 Data representation section");
 
-   // octet 5
+    // octet 5
     int section = raf.read();
     if (section != 5)
       throw new IllegalArgumentException("Not a GRIB-2 Data representation section");
@@ -44,7 +43,7 @@ public class Grib2SectionDataRepresentation {
     int dt = GribNumbers.uint2(raf);
     dataTemplate = (dt == 40000) ? 40 : dt; // ?? NCEP bug ??
 
-    raf.seek(startingPosition+length);
+    raf.seek(startingPosition + length);
   }
 
   public Grib2SectionDataRepresentation(long startingPosition, int dataPoints, int dataTemplate) {
@@ -55,8 +54,8 @@ public class Grib2SectionDataRepresentation {
   }
 
   /*
-  Number of data points where one or more values are specified in Section 7 when a bit map
-  is present, total number of data points when a bit map is absent.
+   * Number of data points where one or more values are specified in Section 7 when a bit map
+   * is present, total number of data points when a bit map is absent.
    */
   public int getDataPoints() {
     return dataPoints;
@@ -80,7 +79,7 @@ public class Grib2SectionDataRepresentation {
   }
 
   public Grib2Drs getDrs(RandomAccessFile raf) throws IOException {
-    raf.seek(startingPosition+11);
+    raf.seek(startingPosition + 11);
     return Grib2Drs.factory(dataTemplate, raf);
   }
 }

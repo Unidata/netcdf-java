@@ -50,7 +50,7 @@ public class HtmlBrowser extends JPanel {
 
   private boolean eventsOK = true;
 
-    // ui
+  // ui
   private JEditorPane htmlViewer;
   private ComboBox cbox;
   private JLabel statusText;
@@ -62,12 +62,13 @@ public class HtmlBrowser extends JPanel {
 
   private boolean debug = false, debugDoc = false, showEvent = false;
 
-  /* Implementation notes:
-     1. The JEditorPane contains a Document, which is replaced only when the content type changes.
-        This causes some history effects. Currently seems to be related only to the Document properties
-        dumped out by Page.showDoc().
-     2. The "charset=iso-8859-1" makes the document unshowable unless "IgnoreCharsetDirective" = true.
-     3. The setText does not reset "stream", so the view may not refresh if it thinks the stream hasnt changed.
+  /*
+   * Implementation notes:
+   * 1. The JEditorPane contains a Document, which is replaced only when the content type changes.
+   * This causes some history effects. Currently seems to be related only to the Document properties
+   * dumped out by Page.showDoc().
+   * 2. The "charset=iso-8859-1" makes the document unshowable unless "IgnoreCharsetDirective" = true.
+   * 3. The setText does not reset "stream", so the view may not refresh if it thinks the stream hasnt changed.
    */
 
   /**
@@ -78,78 +79,82 @@ public class HtmlBrowser extends JPanel {
 
     // combo box holds Page object
     cbox = new ComboBox(null);
-    cbox.setAction( new AbstractAction() {
+    cbox.setAction(new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        //System.out.println("From catListBox Action " + e+" "+eventsOK);
-        if (!eventsOK) return;
+        // System.out.println("From catListBox Action " + e+" "+eventsOK);
+        if (!eventsOK)
+          return;
         System.out.println("cbox= " + cbox.getSelectedItem());
         if (e.getActionCommand().equals("comboBoxChanged")) {
           Object selected = cbox.getSelectedItem();
           if (selected instanceof String)
-            setUrlString( (String) selected); // user typed it in
+            setUrlString((String) selected); // user typed it in
           if (selected instanceof Page)
             setCurrentPage((Page) selected);
         }
       }
-     });
+    });
 
     // top buttons
-    topButtons = new JPanel( new FlowLayout(FlowLayout.LEFT, 5, 0));
+    topButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     backAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) { decrCurrentPage(); }
+      public void actionPerformed(ActionEvent e) {
+        decrCurrentPage();
+      }
     };
-    BAMutil.setActionProperties( backAction, "Left", "Back", false, 'B', 0);
-    BAMutil.addActionToContainer( topButtons, backAction);
+    BAMutil.setActionProperties(backAction, "Left", "Back", false, 'B', 0);
+    BAMutil.addActionToContainer(topButtons, backAction);
 
     forwardAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) { incrCurrentPage(); }
+      public void actionPerformed(ActionEvent e) {
+        incrCurrentPage();
+      }
     };
-    BAMutil.setActionProperties( forwardAction, "Right", "Forward", false, 'F', 0);
-    BAMutil.addActionToContainer( topButtons, forwardAction);
+    BAMutil.setActionProperties(forwardAction, "Right", "Forward", false, 'F', 0);
+    BAMutil.addActionToContainer(topButtons, forwardAction);
     enableActions();
 
     // top panel
-    JPanel topPanel = new JPanel( new BorderLayout());
-    //topPanel.add(new JLabel("URL"), BorderLayout.WEST);
+    JPanel topPanel = new JPanel(new BorderLayout());
+    // topPanel.add(new JLabel("URL"), BorderLayout.WEST);
     topPanel.add(topButtons, BorderLayout.WEST);
     topPanel.add(cbox, BorderLayout.CENTER);
 
     // html Viewer
     htmlViewer = new JEditorPane();
-    //htmlViewer.setEditorKit(kit);
+    // htmlViewer.setEditorKit(kit);
     htmlViewer.setContentType("text/html; charset=iso-8859-1");
-    //setUrlString("http://www.unidata.ucar.edu/staff/caron/");
+    // setUrlString("http://www.unidata.ucar.edu/staff/caron/");
 
     htmlViewer.setEditable(false);
-    htmlViewer.addHyperlinkListener( new HyperlinkListener() {
+    htmlViewer.addHyperlinkListener(new HyperlinkListener() {
       public void hyperlinkUpdate(HyperlinkEvent e) {
         // System.out.println("hyperlinkUpdate event "+e.getEventType()+" "+e.getDescription());
         if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
-          statusText.setText( e.getDescription());
+          statusText.setText(e.getDescription());
 
         } else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
-          statusText.setText( "");
+          statusText.setText("");
 
         } else if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
           JEditorPane pane = (JEditorPane) e.getSource();
           if (showEvent || Debug.isSet("HtmlBrowser/showEvent"))
-            System.out.println("HyperlinkEvent= "+e.getURL()+" == "+e.getDescription());
+            System.out.println("HyperlinkEvent= " + e.getURL() + " == " + e.getDescription());
 
           if (e instanceof HTMLFrameHyperlinkEvent) {
             HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
             HTMLDocument doc = (HTMLDocument) pane.getDocument();
             doc.processHTMLFrameHyperlinkEvent(evt);
-          }
-          else {
+          } else {
             // a little ad-hoc klugerama
             String desc = e.getDescription();
             if (desc.startsWith("dataset:")) {
               String urlString = desc.substring(8);
-              firePropertyChangeEvent( new PropertyChangeEvent(this, "datasetURL", null, urlString));
+              firePropertyChangeEvent(new PropertyChangeEvent(this, "datasetURL", null, urlString));
 
             } else if (desc.startsWith("catref:")) {
               String urlString = desc.substring(7);
-              firePropertyChangeEvent( new PropertyChangeEvent(this, "catrefURL", null, urlString));
+              firePropertyChangeEvent(new PropertyChangeEvent(this, "catrefURL", null, urlString));
 
             } else
               setURL(e.getURL());
@@ -158,15 +163,15 @@ public class HtmlBrowser extends JPanel {
       }
     });
 
-      //status label
-    JPanel statusPanel = new JPanel( new BorderLayout());
+    // status label
+    JPanel statusPanel = new JPanel(new BorderLayout());
     statusText = new JLabel("status text");
     statusPanel.add(statusText, BorderLayout.WEST);
 
-   // put it all together
+    // put it all together
     setLayout(new BorderLayout());
     add(topPanel, BorderLayout.NORTH);
-    add( new JScrollPane(htmlViewer), BorderLayout.CENTER);
+    add(new JScrollPane(htmlViewer), BorderLayout.CENTER);
     add(statusPanel, BorderLayout.SOUTH);
   }
 
@@ -185,61 +190,77 @@ public class HtmlBrowser extends JPanel {
   }
 
   // set new content from outside
-  public void setUrlString(String urlString) { addNewPage( new Page( urlString)); }
-  public void setURL(URL url) { addNewPage( new Page( url)); }
-  public void setContent(String title, String content) { addNewPage( new Page( title, content)); }
+  public void setUrlString(String urlString) {
+    addNewPage(new Page(urlString));
+  }
 
-    // always add at the end
-  private void addNewPage( Page page) {
+  public void setURL(URL url) {
+    addNewPage(new Page(url));
+  }
+
+  public void setContent(String title, String content) {
+    addNewPage(new Page(title, content));
+  }
+
+  // always add at the end
+  private void addNewPage(Page page) {
     // if not at end, chop off extra when new page arrives
-    if (currentPage < nav.size()-1) {
+    if (currentPage < nav.size() - 1) {
       ArrayList nn = new ArrayList();
-      for (int i=0; i <= currentPage; i++)
-        nn.add( nav.get(i));
+      for (int i = 0; i <= currentPage; i++)
+        nn.add(nav.get(i));
       nav = nn;
     }
 
-    nav.add( page);
-    currentPage = nav.size()-1;
+    nav.add(page);
+    currentPage = nav.size() - 1;
     showCurrentPage();
     enableActions();
-    if (debug) System.out.println("---addNewPage done="+currentPage+" "+page);
+    if (debug)
+      System.out.println("---addNewPage done=" + currentPage + " " + page);
   }
 
   private void incrCurrentPage() {
-    if (currentPage < nav.size()-1) {
+    if (currentPage < nav.size() - 1) {
       currentPage++;
       showCurrentPage();
     }
   }
+
   private void decrCurrentPage() {
     if (currentPage > 0) {
       currentPage--;
       showCurrentPage();
     }
   }
+
   private void showCurrentPage() {
     Page p = (Page) nav.get(currentPage);
     p.show();
-    if (debug) System.out.println("showCurrentPage current="+currentPage+" "+p);
+    if (debug)
+      System.out.println("showCurrentPage current=" + currentPage + " " + p);
     enableActions();
 
     // add to the combobox; if already exists, bring to top of combo box
     eventsOK = false;
-    cbox.addItem( p);
+    cbox.addItem(p);
     eventsOK = true;
   }
+
   // make this page the current one, dont change stack
   private void setCurrentPage(Page page) {
     int i = nav.indexOf(page);
-    if (i < 0) return;
-    if (debug) System.out.println("setCurrentPage to="+i);
+    if (i < 0)
+      return;
+    if (debug)
+      System.out.println("setCurrentPage to=" + i);
     currentPage = i;
     showCurrentPage();
   }
+
   private void enableActions() {
-    backAction.setEnabled( currentPage > 0);
-    forwardAction.setEnabled( currentPage < nav.size()-1);
+    backAction.setEnabled(currentPage > 0);
+    forwardAction.setEnabled(currentPage < nav.size() - 1);
   }
 
   private class Page {
@@ -247,14 +268,17 @@ public class HtmlBrowser extends JPanel {
     String title;
     String content;
     URL url;
+
     Page(String urlString) {
       this.title = urlString;
       this.type = "urlString";
     }
+
     Page(URL url) {
       this.url = url;
       this.type = "url";
     }
+
     Page(String title, String content) {
       this.title = title;
       this.content = content;
@@ -266,19 +290,19 @@ public class HtmlBrowser extends JPanel {
       htmlViewer.setContentType("text/html; charset=iso-8859-1");
       htmlViewer.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
       htmlViewer.getDocument().putProperty("stream", null);
-      //htmlViewer.setEditable(false);
+      // htmlViewer.setEditable(false);
 
       if (debugDoc) {
-        System.out.println("--show page starts with content type = "+htmlViewer.getContentType()+
-          " kit="+htmlViewer.getEditorKit());
+        System.out.println("--show page starts with content type = " + htmlViewer.getContentType() + " kit="
+            + htmlViewer.getEditorKit());
         HTMLEditorKit hkit = (HTMLEditorKit) htmlViewer.getEditorKit();
-        System.out.println("   Css="+hkit.getStyleSheet().hashCode());
+        System.out.println("   Css=" + hkit.getStyleSheet().hashCode());
 
         if (htmlViewer.getDocument() instanceof HTMLDocument)
-          showDoc( (HTMLDocument) htmlViewer.getDocument());
+          showDoc((HTMLDocument) htmlViewer.getDocument());
       }
 
-      //htmlViewer.setEditorKit(kit);
+      // htmlViewer.setEditorKit(kit);
       try {
         switch (type) {
           case "urlString":
@@ -294,52 +318,53 @@ public class HtmlBrowser extends JPanel {
         htmlViewer.setCaretPosition(0);
 
         if (debugDoc) {
-          System.out.println(" show page ends with content type = " +
-                             htmlViewer.getContentType() +
-                             " kit=" + htmlViewer.getEditorKit());
-        HTMLEditorKit hkit = (HTMLEditorKit) htmlViewer.getEditorKit();
-        System.out.println("   Css="+hkit.getStyleSheet().hashCode());
-        if (htmlViewer.getDocument() instanceof HTMLDocument)
-            showDoc( (HTMLDocument) htmlViewer.getDocument());
+          System.out.println(" show page ends with content type = " + htmlViewer.getContentType() + " kit="
+              + htmlViewer.getEditorKit());
+          HTMLEditorKit hkit = (HTMLEditorKit) htmlViewer.getEditorKit();
+          System.out.println("   Css=" + hkit.getStyleSheet().hashCode());
+          if (htmlViewer.getDocument() instanceof HTMLDocument)
+            showDoc((HTMLDocument) htmlViewer.getDocument());
           htmlViewer.repaint();
         }
-      }
-      catch (IOException ioe) {
+      } catch (IOException ioe) {
         statusText.setText("Error: " + ioe.getMessage());
         ioe.printStackTrace();
       }
     }
 
     public String toString() {
-      if (title != null) return title;
-      if (url != null) return url.toString();
+      if (title != null)
+        return title;
+      if (url != null)
+        return url.toString();
       return "huh?";
     }
 
-    void showDoc( HTMLDocument doc) {
-      System.out.println(" Doc base="+doc.getBase()); // +" ss="+doc.getStyleSheet());
+    void showDoc(HTMLDocument doc) {
+      System.out.println(" Doc base=" + doc.getBase()); // +" ss="+doc.getStyleSheet());
 
       Dictionary dict = doc.getDocumentProperties();
       Enumeration e = dict.keys();
       System.out.println(" DocumentProperties");
       while (e.hasMoreElements()) {
         Object key = e.nextElement();
-        System.out.println("  key= "+key+" value="+dict.get(key));
+        System.out.println("  key= " + key + " value=" + dict.get(key));
       }
     }
   }
 
- ////////////////////////////////////////////////////////////////////////////////////////////
- // LOOK Factor this out
- /** Wrap this in a JDialog component.
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // LOOK Factor this out
+  /**
+   * Wrap this in a JDialog component.
    *
-   * @param parent      JFrame (application) or JApplet (applet) or null
-   * @param title       dialog window title
-   * @param modal     is modal
+   * @param parent JFrame (application) or JApplet (applet) or null
+   * @param title dialog window title
+   * @param modal is modal
    */
-  public JDialog makeDialog( RootPaneContainer parent, String title, boolean modal) {
+  public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {
     this.parent = parent;
-    return new Dialog( parent, title, modal);
+    return new Dialog(parent, title, modal);
   }
 
   private class Dialog extends JDialog {
@@ -348,10 +373,10 @@ public class HtmlBrowser extends JPanel {
       super(parent instanceof Frame ? (Frame) parent : null, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener( new PropertyChangeListener() {
-        public void propertyChange( PropertyChangeEvent e) {
+      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI( HtmlBrowser.Dialog.this);
+            SwingUtilities.updateComponentTreeUI(HtmlBrowser.Dialog.this);
         }
       });
 
@@ -361,10 +386,10 @@ public class HtmlBrowser extends JPanel {
 
       dismissButton.addActionListener(e -> setVisible(false));
 
-     // add it to contentPane
+      // add it to contentPane
       Container cp = getContentPane();
       cp.setLayout(new BorderLayout());
-      cp.add( HtmlBrowser.this, BorderLayout.CENTER);
+      cp.add(HtmlBrowser.this, BorderLayout.CENTER);
       pack();
     }
   }

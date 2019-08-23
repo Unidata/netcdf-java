@@ -20,6 +20,7 @@ public interface PointCollection {
 
   /**
    * The getData() methods return objects of this Class
+   * 
    * @return Class of the data
    */
   public Class getDataClass();
@@ -28,6 +29,7 @@ public interface PointCollection {
    * Get the units of Calendar time.
    * To get a Date, from a time value, call DateUnit.makeDate(double value).
    * To get units as a String, call DateUnit.getUnitsString().
+   * 
    * @return the units of Calendar time.
    */
   public ucar.nc2.units.DateUnit getTimeUnits();
@@ -60,6 +62,7 @@ public interface PointCollection {
   /**
    * Get estimate of number of data records (may not be exact).
    * Return -1 if not able to estimate.
+   * 
    * @return number of data records or -1
    */
   public int getDataCount();
@@ -108,7 +111,8 @@ public interface PointCollection {
    * @see #getDataIterator as a (possibly) more efficient alternative
    * @throws java.io.IOException on io error
    */
-  public List getData(ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
+  public List getData(ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end, ucar.nc2.util.CancelTask cancel)
+      throws IOException;
 
   /**
    * Get an efficient iterator over all the data in the Collection. You must fully process the
@@ -119,9 +123,12 @@ public interface PointCollection {
    * This will return an iterator over type getDataClass(), and the actual data has already been read
    * into memory, that is, dataType.getData() will not incur any I/O.
    * This is accomplished by buffering bufferSize amount of data at once.
-   * <p> We dont need a cancelTask, just stop the iteration if the user want to cancel.
+   * <p>
+   * We dont need a cancelTask, just stop the iteration if the user want to cancel.
    * <p/>
-   * <pre>Example for point observations:
+   * 
+   * <pre>
+   * Example for point observations:
    * <p/>
    * Iterator iter = pointObsDataset.getDataIterator();
    * while (iter.hasNext()) {
@@ -137,12 +144,16 @@ public interface PointCollection {
    */
   public DataIterator getDataIterator(int bufferSize) throws IOException;
 
-  /** Get an efficient iterator over all the data within the specified bounding box.
+  /**
+   * Get an efficient iterator over all the data within the specified bounding box.
+   * 
    * @return iterator over type getDataClass() *
-  public DataIterator getDataIterator( ucar.unidata.geoloc.LatLonRect boundingBox, int bufferSize) throws IOException;
-
-  /** Get an efficient iterator over all the data within the specified bounding box and date range.
+   *         public DataIterator getDataIterator( ucar.unidata.geoloc.LatLonRect boundingBox, int bufferSize) throws
+   *         IOException;
+   * 
+   *         /** Get an efficient iterator over all the data within the specified bounding box and date range.
    * @return iterator over type getDataClass() *
-  public DataIterator getDataIterator( ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end, int bufferSize) throws IOException;
+   *         public DataIterator getDataIterator( ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end, int
+   *         bufferSize) throws IOException;
    */
 }

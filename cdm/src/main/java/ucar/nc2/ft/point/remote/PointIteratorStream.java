@@ -34,17 +34,19 @@ public class PointIteratorStream extends PointIteratorAbstract {
     this.in = in;
     this.featureMaker = featureMaker;
     CollectionInfo info = dsg.getInfo();
-    if (!info.isComplete()) setCalculateBounds(info);
+    if (!info.isComplete())
+      setCalculateBounds(info);
   }
 
   @Override
   public void close() {
-    if (finished) return;
+    if (finished)
+      return;
     if (in != null)
       try {
         in.close();
       } catch (IOException ioe) {
-        //coverity[FB.DE_MIGHT_IGNORE]
+        // coverity[FB.DE_MIGHT_IGNORE]
       }
     in = null;
     finishCalcBounds();
@@ -53,7 +55,8 @@ public class PointIteratorStream extends PointIteratorAbstract {
 
   @Override
   public boolean hasNext() {
-    if (finished) return false;
+    if (finished)
+      return false;
 
     try {
       PointStream.MessageType mtype = PointStream.readMagic(in);
@@ -95,7 +98,8 @@ public class PointIteratorStream extends PointIteratorAbstract {
 
   @Override
   public PointFeature next() {
-    if (null == pf) return null;
+    if (null == pf)
+      return null;
     calcBounds(pf);
     return pf;
   }

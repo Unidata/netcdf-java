@@ -11,7 +11,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -33,22 +32,23 @@ public class TestJoinNewWithGroups {
     String location = TestDir.cdmUnitTestDir + "agg/groups/groupsJoinNew.ncml";
     GridDataset ncd = null;
     try {
-      ncd = GridDataset.open(location);  // fails here
-      
-      GridDatatype v = ncd.findGridDatatype("All_Data/Lifted_Index");  // the only agg var
+      ncd = GridDataset.open(location); // fails here
+
+      GridDatatype v = ncd.findGridDatatype("All_Data/Lifted_Index"); // the only agg var
       assert v != null;
       assert v.getRank() == 3;
       Section s = new Section(v.getShape());
-      //assert s.equals(new Section(new int[] {2, 44, 60})) : s ;
-      
-      v = ncd.findGridDatatype("All_Data/CAPE");  // random non-agg var
+      // assert s.equals(new Section(new int[] {2, 44, 60})) : s ;
+
+      v = ncd.findGridDatatype("All_Data/CAPE"); // random non-agg var
       assert v != null;
       assert v.getRank() == 2;
       Array a = v.readVolumeData(0);
       System.out.printf("array section for %s = %s%n", v, new Section(a.getShape()));
 
     } finally {
-      if (ncd != null) ncd.close();
+      if (ncd != null)
+        ncd.close();
     }
   }
 }

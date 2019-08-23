@@ -10,73 +10,78 @@ import java.util.*;
 
 public class PublicInterfaceGenerator {
 
-  static void generate( Class c, boolean doAllMethods, PrintStream out) throws SecurityException {
+  static void generate(Class c, boolean doAllMethods, PrintStream out) throws SecurityException {
 
     Class sc = c.getSuperclass();
 
-    out.print( "public class "+ makeClassName(c));
+    out.print("public class " + makeClassName(c));
     if (sc != Object.class)
-      out.print(" extends "+makeClassName(sc));
+      out.print(" extends " + makeClassName(sc));
     out.println(" {");
 
     ArrayList allMethods = new ArrayList();
-    addAllMethods( allMethods, c, doAllMethods);
+    addAllMethods(allMethods, c, doAllMethods);
     allMethods.sort(new MethodComparator());
     for (Object allMethod : allMethods) {
       genMethod((Method) allMethod, out);
     }
 
-    out.println( "}");
+    out.println("}");
   }
 
-  private static void addAllMethods( ArrayList allMethods, Class c, boolean doAllMethods) {
-    if (c == null) return;
-    if (c == Object.class) return;
+  private static void addAllMethods(ArrayList allMethods, Class c, boolean doAllMethods) {
+    if (c == null)
+      return;
+    if (c == Object.class)
+      return;
     Method[] methodsArray = doAllMethods ? c.getMethods() : c.getDeclaredMethods();
-    allMethods.addAll( Arrays.asList(methodsArray));
+    allMethods.addAll(Arrays.asList(methodsArray));
 
-    //addAllMethods( allMethods, c.getSuperclass());
+    // addAllMethods( allMethods, c.getSuperclass());
   }
 
-  static void genMethod( Method m, PrintStream out) throws SecurityException {
+  static void genMethod(Method m, PrintStream out) throws SecurityException {
     int mods = m.getModifiers();
-    if (Modifier.isPrivate( mods) || Modifier.isProtected( mods))
+    if (Modifier.isPrivate(mods) || Modifier.isProtected(mods))
       return;
 
-    out.print( "  "+Modifier.toString(mods));
-    out.print( " "+makeClassName(m.getReturnType()));
-    out.print( " "+m.getName()+"(");
+    out.print("  " + Modifier.toString(mods));
+    out.print(" " + makeClassName(m.getReturnType()));
+    out.print(" " + m.getName() + "(");
 
     Class[] params = m.getParameterTypes();
-    for (int i=0; i < params.length; i++) {
-      if (i > 0) out.print(", ");
-      out.print( makeClassName(params[i])+" p"+i);
+    for (int i = 0; i < params.length; i++) {
+      if (i > 0)
+        out.print(", ");
+      out.print(makeClassName(params[i]) + " p" + i);
     }
-    out.print( ")");
+    out.print(")");
 
     Class[] ex = m.getExceptionTypes();
     if (ex.length > 0) {
       out.print(" throws ");
       for (int i = 0; i < ex.length; i++) {
-        if (i > 0) out.print(", ");
+        if (i > 0)
+          out.print(", ");
         out.print(ex[i].getName());
       }
     }
 
-    out.println( ";");
+    out.println(";");
   }
 
-   static String makeClassName( Class c) {
-     if (c.isArray()) {
-       return makeClassName(c.getComponentType()) +"[]";
-     }
+  static String makeClassName(Class c) {
+    if (c.isArray()) {
+      return makeClassName(c.getComponentType()) + "[]";
+    }
 
-     String name = c.getName();
-     Package p = c.getPackage();
-     if (p == null) return name;
-     String packageName = p.getName();
-     return name.substring( packageName.length()+1);
-   }
+    String name = c.getName();
+    Package p = c.getPackage();
+    if (p == null)
+      return name;
+    String packageName = p.getName();
+    return name.substring(packageName.length() + 1);
+  }
 
   public static class MethodComparator implements java.util.Comparator {
     public int compare(Object o1, Object o2) {
@@ -90,9 +95,9 @@ public class PublicInterfaceGenerator {
     }
   }
 
-  static public void showMethods( Class c, PrintStream out) {
+  static public void showMethods(Class c, PrintStream out) {
 
-    out.println( "Methods for class "+ c.getName());
+    out.println("Methods for class " + c.getName());
 
     Method[] methodsArray = c.getDeclaredMethods();
 

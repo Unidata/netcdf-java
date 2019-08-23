@@ -12,7 +12,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +26,13 @@ import java.util.List;
  * If the coordinates are regularly spaced, <i>isRegular()</i> is true, and the values are equal to
  * <i>getStart()</i> + i * <i>getIncrement()</i>.
  * <p>
- * This will also set "cell bounds" for this axis. By default, the cell bounds are midway between the coordinates values,
+ * This will also set "cell bounds" for this axis. By default, the cell bounds are midway between the coordinates
+ * values,
  * and are therefore contiguous, and can be accessed though getCoordEdge(i).
- * The only way the bounds can be set is if the coordinate variable has an attribute "bounds" that points to another variable
- * bounds(ncoords,2). These contain the cell bounds, and must be ascending or descending as the coordinate values are. In
+ * The only way the bounds can be set is if the coordinate variable has an attribute "bounds" that points to another
+ * variable
+ * bounds(ncoords,2). These contain the cell bounds, and must be ascending or descending as the coordinate values are.
+ * In
  * this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
  *
  * @author john caron
@@ -40,7 +42,7 @@ import java.util.List;
 public class CoordinateAxis1D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
-  private boolean wasRead = false; // have the data values been  read
+  private boolean wasRead = false; // have the data values been read
   private boolean wasBoundsDone = false; // have we created the bounds arrays if exists ?
   private boolean isInterval = false; // is this an interval coordinates - then should use bounds
   private boolean isAscending;
@@ -106,16 +108,16 @@ public class CoordinateAxis1D extends CoordinateAxis {
   /**
    * Constructor when theres no underlying variable. You better set the values too!
    *
-   * @param ds        the containing dataset.
-   * @param group     the containing group; if null, use rootGroup
+   * @param ds the containing dataset.
+   * @param group the containing group; if null, use rootGroup
    * @param shortName axis name.
-   * @param dataType  data type
-   * @param dims      list of dimension names
-   * @param units     units of coordinates, preferably udunit compatible.
-   * @param desc      long name.
+   * @param dataType data type
+   * @param dims list of dimension names
+   * @param units units of coordinates, preferably udunit compatible.
+   * @param desc long name.
    */
-  public CoordinateAxis1D(NetcdfDataset ds, Group group, String shortName,
-                          DataType dataType, String dims, String units, String desc) {
+  public CoordinateAxis1D(NetcdfDataset ds, Group group, String shortName, DataType dataType, String dims, String units,
+      String desc) {
 
     super(ds, group, shortName, dataType, dims, units, desc);
   }
@@ -191,8 +193,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   @Override
   public CoordinateAxis copyNoCache() {
-    CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
-            getUnitsString(), getDescription());
+    CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroup(), getShortName(), getDataType(),
+        getDimensionsString(), getUnitsString(), getDescription());
 
     // other state
     axis.axisType = this.axisType;
@@ -226,7 +228,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return the ith coordinate value as a String
    */
   public String getCoordName(int index) {
-    if (!wasRead) doRead();
+    if (!wasRead)
+      doRead();
     if (isNumeric())
       return Format.d(getCoordValue(index), 5, 8);
     else
@@ -244,7 +247,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double getCoordValue(int index) {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead) doRead();
+    if (!wasRead)
+      doRead();
     return coords[index];
   }
 
@@ -252,7 +256,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double getMinValue() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead) doRead();
+    if (!wasRead)
+      doRead();
 
     return Math.min(coords[0], coords[coords.length - 1]);
   }
@@ -261,25 +266,30 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double getMaxValue() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead) doRead();
+    if (!wasRead)
+      doRead();
 
     return Math.max(coords[0], coords[coords.length - 1]);
   }
 
   public double getMinEdgeValue() {
-    if (edge == null) return getMinValue();
+    if (edge == null)
+      return getMinValue();
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead) doRead();
+    if (!wasRead)
+      doRead();
 
     return Math.min(edge[0], edge[edge.length - 1]);
   }
 
   public double getMaxEdgeValue() {
-    if (edge == null) return getMaxValue();
+    if (edge == null)
+      return getMaxValue();
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead) doRead();
+    if (!wasRead)
+      doRead();
 
     return Math.max(edge[0], edge[edge.length - 1]);
   }
@@ -290,12 +300,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * from "belonging to" coordinate value i-1 to "belonging to" coordinate value i.
    * In some grids, this may not be well defined, and so should be considered an
    * approximation or a visualization hint.
-   * <p><pre>
+   * <p>
+   * 
+   * <pre>
    *  Coordinate edges must be strictly monotonic:
    *    coordEdge(0) < coordValue(0) < coordEdge(1) < coordValue(1) ...
    *    ... coordEdge(i) < coordValue(i) < coordEdge(i+1) < coordValue(i+1) ...
    *    ... coordEdge(n-1) < coordValue(n-1) < coordEdge(n)
-   *  </pre>
+   * </pre>
    *
    * @param index which coordinate. Between 0 and getNumElements() inclusive.
    * @return coordinate edge.
@@ -304,7 +316,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double getCoordEdge(int index) {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdge() on non-numeric");
-    if (!wasBoundsDone) makeBounds();
+    if (!wasBoundsDone)
+      makeBounds();
     return edge[index];
   }
 
@@ -317,7 +330,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double[] getCoordValues() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValues() on non-numeric");
-    if (!wasRead) doRead();
+    if (!wasRead)
+      doRead();
     return coords.clone();
   }
 
@@ -331,13 +345,15 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double[] getCoordEdges() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdges() on non-numeric");
-    if (!wasBoundsDone) makeBounds();
+    if (!wasBoundsDone)
+      makeBounds();
     return edge.clone();
   }
 
   @Override
   public boolean isContiguous() {
-    if (!wasBoundsDone) makeBounds();  // this sets isContiguous
+    if (!wasBoundsDone)
+      makeBounds(); // this sets isContiguous
     return isContiguous;
   }
 
@@ -350,7 +366,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return true if coordinate has interval values
    */
   public boolean isInterval() {
-    if (!wasBoundsDone) makeBounds();      // this sets isInterval
+    if (!wasBoundsDone)
+      makeBounds(); // this sets isInterval
     return isInterval;
   }
 
@@ -365,15 +382,17 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double[] getBound1() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
-    if (!wasBoundsDone) makeBounds();
-    if (bound1 == null) makeBoundsFromEdges();
+    if (!wasBoundsDone)
+      makeBounds();
+    if (bound1 == null)
+      makeBoundsFromEdges();
     assert bound1 != null;
     return bound1.clone();
   }
 
   /**
    * Get the coordinate bound1 as a double array.
-   * bound1[i] # coordValue[i] # bound2[i],  where # is < if increasing (bound1[i] < bound1[i+1])
+   * bound1[i] # coordValue[i] # bound2[i], where # is < if increasing (bound1[i] < bound1[i+1])
    * else < if decreasing.
    *
    * @return coordinate bound2.
@@ -382,8 +401,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double[] getBound2() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
-    if (!wasBoundsDone) makeBounds();
-    if (bound2 == null) makeBoundsFromEdges();
+    if (!wasBoundsDone)
+      makeBounds();
+    if (bound2 == null)
+      makeBoundsFromEdges();
     assert bound2 != null;
     return bound2.clone();
   }
@@ -396,7 +417,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return double[2] edges for ith coordinate
    */
   public double[] getCoordBounds(int i) {
-    if (!wasBoundsDone) makeBounds();
+    if (!wasBoundsDone)
+      makeBounds();
 
     double[] e = new double[2];
     if (isContiguous()) {
@@ -411,12 +433,13 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   public double getCoordBoundsMidpoint(int i) {
     double[] bounds = getCoordBounds(i);
-    return (bounds[0]+bounds[1])/2;
+    return (bounds[0] + bounds[1]) / 2;
   }
 
   /**
    * Given a coordinate value, find what grid element contains it.
    * This means that
+   * 
    * <pre>
    * edge[i] <= value < edge[i+1] (if values are ascending)
    * edge[i] > value >= edge[i+1] (if values are descending)
@@ -448,7 +471,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new UnsupportedOperationException("CoordinateAxis.findCoordElementBounded() on non-numeric");
 
     // the scalar or len-1 case:
-    if (this.getSize() == 1) return 0;
+    if (this.getSize() == 1)
+      return 0;
 
     if (isRegular())
       return findCoordElementRegular(coordVal, true);
@@ -477,9 +501,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * from jon blower's ncWMS.
    *
    * @param coordValue The value along this coordinate axis
-   * @param bounded    if false and not in range, return -1, else nearest index
+   * @param bounded if false and not in range, return -1, else nearest index
    * @return the index that is nearest to this point, or -1 if the point is
-   * out of range for the axis
+   *         out of range for the axis
    */
   private int findCoordElementRegular(double coordValue, boolean bounded) {
     int n = (int) this.getSize();
@@ -489,20 +513,22 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return 0;
     }
 
-  /*  if (axisType == AxisType.Lon) {
-      double maxValue = this.start + this.increment * n;
-      if (betweenLon(coordValue, this.start, maxValue)) {
-        double distance = LatLonPointImpl.getClockwiseDistanceTo(this.start, coordValue);
-        double exactNumSteps = distance / this.increment;
-        // This axis might wrap, so we make sure that the returned index is within range
-        return ((int) Math.round(exactNumSteps)) % (int) this.getSize();
-
-      } else if (coordValue < this.start) {
-        return bounded ? 0 : -1;
-      } else {
-        return bounded ? n - 1 : -1;
-      }
-    } */
+    /*
+     * if (axisType == AxisType.Lon) {
+     * double maxValue = this.start + this.increment * n;
+     * if (betweenLon(coordValue, this.start, maxValue)) {
+     * double distance = LatLonPointImpl.getClockwiseDistanceTo(this.start, coordValue);
+     * double exactNumSteps = distance / this.increment;
+     * // This axis might wrap, so we make sure that the returned index is within range
+     * return ((int) Math.round(exactNumSteps)) % (int) this.getSize();
+     * 
+     * } else if (coordValue < this.start) {
+     * return bounded ? 0 : -1;
+     * } else {
+     * return bounded ? n - 1 : -1;
+     * }
+     * }
+     */
 
     double distance = coordValue - this.start;
     double exactNumSteps = distance / this.increment;
@@ -515,7 +541,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private boolean betweenLon(double lon, double lonBeg, double lonEnd) {
-    while (lon < lonBeg) lon += 360;
+    while (lon < lonBeg)
+      lon += 360;
     return (lon >= lonBeg) && (lon <= lonEnd);
   }
 
@@ -523,10 +550,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * Performs a binary search to find the index of the element of the array
    * whose value is contained in the interval, so must be contiguous.
    *
-   * @param target  The value to search for
+   * @param target The value to search for
    * @param bounded if false, and not in range, return -1, else nearest index
    * @return the index of the element in values whose value is closest to target,
-   * or -1 if the target is out of range
+   *         or -1 if the target is out of range
    */
   private int findCoordElementIrregular(double target, boolean bounded) {
     int n = (int) this.getSize();
@@ -545,9 +572,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
       while (high > low + 1) {
         mid = (low + high) / 2;
         double midVal = this.edge[mid];
-        if (midVal == target) return mid;
-        else if (midVal < target) low = mid;
-        else high = mid;
+        if (midVal == target)
+          return mid;
+        else if (midVal < target)
+          low = mid;
+        else
+          high = mid;
       }
 
       return low;
@@ -565,9 +595,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
       while (high > low + 1) {
         mid = (low + high) / 2;
         double midVal = this.edge[mid];
-        if (midVal == target) return mid;
-        else if (midVal < target) high = mid;
-        else low = mid;
+        if (midVal == target)
+          return mid;
+        else if (midVal < target)
+          high = mid;
+        else
+          low = mid;
       }
 
       return high - 1;
@@ -580,15 +613,16 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * This algorithm does a linear search in the bound1[] amd bound2[] array.
    * <p>
    * This means that
+   * 
    * <pre>
    * edge[i] <= pos < edge[i+1] (if values are ascending)
    * edge[i] > pos >= edge[i+1] (if values are descending)
    * </pre>
    *
-   * @param target  The value to search for
+   * @param target The value to search for
    * @param bounded if false, and not in range, return -1, else nearest index
    * @return the index of the element in values whose value is closest to target,
-   * or -1 if the target is out of range
+   *         or -1 if the target is out of range
    */
   private int findCoordElementNonContiguous(double target, boolean bounded) {
 
@@ -604,8 +638,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
         return bounded ? n - 1 : -1;
 
       int[] idx = findSingleHit(bounds1, bounds2, target);
-      if (idx[0] == 0 && !bounded) return -1;  // no hits
-      if (idx[0] == 1) return idx[1];          // one hit
+      if (idx[0] == 0 && !bounded)
+        return -1; // no hits
+      if (idx[0] == 1)
+        return idx[1]; // one hit
 
       // multiple hits = choose closest to the midpoint i guess
       return findClosest(coords, target);
@@ -619,8 +655,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
         return bounded ? n - 1 : -1;
 
       int[] idx = findSingleHit(bounds2, bounds1, target);
-      if (idx[0] == 0 && !bounded) return -1;  // no hits
-      if (idx[0] == 1) return idx[1];
+      if (idx[0] == 0 && !bounded)
+        return -1; // no hits
+      if (idx[0] == 1)
+        return idx[1];
 
       // multiple hits = choose closest to the midpoint i guess
       return findClosest(getCoordValues(), target);
@@ -643,11 +681,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   // return index of closest value to target
   private int findClosest(double[] values, double target) {
-    double minDiff =  Double.MAX_VALUE;
+    double minDiff = Double.MAX_VALUE;
     int idxFound = -1;
     int n = values.length;
     for (int i = 0; i < n; i++) {
-      double diff =  Math.abs(values[i]-target);
+      double diff = Math.abs(values[i] - target);
       if (diff < minDiff) {
         minDiff = diff;
         idxFound = i;
@@ -690,8 +728,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private void calcIsRegular() {
-    if (wasCalcRegular) return;
-    if (!wasRead) doRead();
+    if (wasCalcRegular)
+      return;
+    if (!wasRead)
+      doRead();
 
     if (!isNumeric())
       isRegular = false;
@@ -723,7 +763,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
         isAscending = true;
       else
         isAscending = getCoordValue(0) < getCoordValue(1);
-      //  calcIsRegular(); */
+      // calcIsRegular(); */
     } else if (getDataType() == DataType.STRING) {
       readStringValues();
       wasRead = true;
@@ -740,8 +780,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return;
     }
 
-    if (!wasRead) doRead();
-    if (!wasBoundsDone) makeBounds();
+    if (!wasRead)
+      doRead();
+    if (!wasBoundsDone)
+      makeBounds();
 
     boolean monotonic = true;
     for (int i = 0; i < coords.length - 1; i++)
@@ -751,13 +793,15 @@ public class CoordinateAxis1D extends CoordinateAxis {
       boolean cross = false;
       if (isAscending) {
         for (int i = 0; i < coords.length; i++) {
-          if (cross) coords[i] += 360;
+          if (cross)
+            coords[i] += 360;
           if (!cross && (i < coords.length - 1) && (coords[i] > coords[i + 1]))
             cross = true;
         }
       } else {
         for (int i = 0; i < coords.length; i++) {
-          if (cross) coords[i] -= 360;
+          if (cross)
+            coords[i] -= 360;
           if (!cross && (i < coords.length - 1) && (coords[i] < coords[i + 1]))
             cross = true;
         }
@@ -820,17 +864,18 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new IllegalStateException(ioe);
     }
 
-    coords = (double []) data.get1DJavaArray(DataType.DOUBLE);
-    //IndexIterator iter = data.getIndexIterator();
-    //while (iter.hasNext())
-    //  coords[count++] = iter.getDoubleNext();
+    coords = (double[]) data.get1DJavaArray(DataType.DOUBLE);
+    // IndexIterator iter = data.getIndexIterator();
+    // while (iter.hasNext())
+    // coords[count++] = iter.getDoubleNext();
   }
 
   /**
    * Calculate bounds, set isInterval, isContiguous
    */
   private void makeBounds() {
-    if (!wasRead) doRead();
+    if (!wasRead)
+      doRead();
     if (isNumeric()) {
       if (!makeBoundsFromAux()) {
         makeEdges();
@@ -841,18 +886,23 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   private boolean makeBoundsFromAux() {
     Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
-    if ((null == boundsAtt) || !boundsAtt.isString()) return false;
+    if ((null == boundsAtt) || !boundsAtt.isString())
+      return false;
     String boundsVarName = boundsAtt.getStringValue();
     VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
-    if (null == boundsVar) return false;
-    if (2 != boundsVar.getRank()) return false;
+    if (null == boundsVar)
+      return false;
+    if (2 != boundsVar.getRank())
+      return false;
 
-    if (getDimension(0) != boundsVar.getDimension(0)) return false;
-    if (2 != boundsVar.getDimension(1).getLength()) return false;
+    if (getDimension(0) != boundsVar.getDimension(0))
+      return false;
+    if (2 != boundsVar.getDimension(1).getLength())
+      return false;
 
     Array data;
     try {
-      boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing);  // Don't convert missing values to NaN.
+      boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing); // Don't convert missing values to NaN.
       data = boundsVar.read();
     } catch (IOException e) {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);
@@ -872,20 +922,23 @@ public class CoordinateAxis1D extends CoordinateAxis {
       value2[i] = data.getDouble(ima.set1(1));
     }
 
-    /* flip if needed
-    boolean firstLower = true; // in the first interval, is lower < upper ?
-    for (int i = 0; i < value1.length; i++) {
-      if (Misc.nearlyEquals(value1[i], value2[i])) continue; // skip when lower == upper
-      firstLower = value1[i] < value2[i];
-      break;
-    }
-    // check first against last : lower, unless all lower equal then upper
-    boolean goesUp = (n < 2) || value1[n - 1] > value1[0] || (Misc.nearlyEquals(value1[n - 1], value2[0]) && value2[n - 1] > value2[0]);
-    if (goesUp != firstLower) {
-      double[] temp = value1;
-      value1 = value2;
-      value2 = temp;
-    } */
+    /*
+     * flip if needed
+     * boolean firstLower = true; // in the first interval, is lower < upper ?
+     * for (int i = 0; i < value1.length; i++) {
+     * if (Misc.nearlyEquals(value1[i], value2[i])) continue; // skip when lower == upper
+     * firstLower = value1[i] < value2[i];
+     * break;
+     * }
+     * // check first against last : lower, unless all lower equal then upper
+     * boolean goesUp = (n < 2) || value1[n - 1] > value1[0] || (Misc.nearlyEquals(value1[n - 1], value2[0]) && value2[n
+     * - 1] > value2[0]);
+     * if (goesUp != firstLower) {
+     * double[] temp = value1;
+     * value1 = value2;
+     * value2 = temp;
+     * }
+     */
 
     // decide if they are contiguous
     boolean contig = true;
@@ -899,7 +952,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       edge[0] = value1[0];
       for (int i = 1; i < n + 1; i++)
         edge[i] = value2[i - 1];
-    } else {                           // what does edge mean when not contiguous ??
+    } else { // what does edge mean when not contiguous ??
       edge = new double[n + 1];
       edge[0] = value1[0];
       for (int i = 1; i < n; i++)
@@ -918,7 +971,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private void makeEdges() {
     int size = (int) getSize();
     edge = new double[size + 1];
-    if (size < 1) return;
+    if (size < 1)
+      return;
     for (int i = 1; i < size; i++)
       edge[i] = (coords[i - 1] + coords[i]) / 2;
     edge[0] = coords[0] - (edge[1] - coords[0]);
@@ -928,7 +982,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   private void makeBoundsFromEdges() {
     int size = (int) getSize();
-    if (size == 0) return;
+    if (size == 0)
+      return;
 
     bound1 = new double[size];
     bound2 = new double[size];

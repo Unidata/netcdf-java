@@ -14,19 +14,16 @@ import thredds.cataloggen.InvCrawlablePair;
  * @author edavis
  * @since Dec 6, 2005 3:42:55 PM
  */
-public class BooleanCatalogRefExpander implements CatalogRefExpander
-{
+public class BooleanCatalogRefExpander implements CatalogRefExpander {
 
 
   private boolean expandAll = false;
 
-  public BooleanCatalogRefExpander( boolean expandAll )
-  {
+  public BooleanCatalogRefExpander(boolean expandAll) {
     this.expandAll = expandAll;
   }
 
-  public boolean expandCatalogRef( InvCrawlablePair catRefInfo )
-  {
-    return expandAll;  
+  public boolean expandCatalogRef(InvCrawlablePair catRefInfo) {
+    return expandAll;
   }
 }

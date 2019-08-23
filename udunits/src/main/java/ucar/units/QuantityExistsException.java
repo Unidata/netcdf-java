@@ -10,22 +10,22 @@ package ucar.units;
  * @author Steven R. Emmerson
  */
 public class QuantityExistsException extends UnitException {
-	private static final long	serialVersionUID	= 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs from the base quantity being redefined.
-	 */
-	public QuantityExistsException(final BaseQuantity quantity) {
-		this("Base quantity \"" + quantity + " already exists");
-	}
+  /**
+   * Constructs from the base quantity being redefined.
+   */
+  public QuantityExistsException(final BaseQuantity quantity) {
+    this("Base quantity \"" + quantity + " already exists");
+  }
 
-	/**
-	 * Constructs from an error message.
-	 * 
-	 * @param msg
-	 *            The error message.
-	 */
-	private QuantityExistsException(final String msg) {
-		super(msg);
-	}
+  /**
+   * Constructs from an error message.
+   * 
+   * @param msg
+   *        The error message.
+   */
+  private QuantityExistsException(final String msg) {
+    super(msg);
+  }
 }

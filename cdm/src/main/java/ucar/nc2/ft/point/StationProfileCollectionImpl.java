@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureCCIterator;
@@ -23,14 +22,16 @@ import ucar.unidata.geoloc.Station;
 /**
  * Abstract superclass for StationProfileFeatureCollection
  * Subclasses must implement getNestedPointFeatureCollection
+ * 
  * @author caron
  * @since Mar 20, 2008
  */
-public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl implements StationProfileFeatureCollection {
+public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl
+    implements StationProfileFeatureCollection {
   private volatile StationHelper stationHelper;
 
   public StationProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
-    super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
+    super(name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 
   // Double-check idiom for lazy initialization of instance fields. See Effective Java 2nd Ed, p. 283.
@@ -88,7 +89,8 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
 
   @Override
   public StationProfileCollectionImpl subset(List<StationFeature> stations) {
-    if (stations == null) return this;
+    if (stations == null)
+      return this;
     return new StationProfileFeatureCollectionSubset(this, stations);
   }
 
@@ -118,16 +120,17 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   }
 
   public int compareTo(Station so) {
-    return name.compareTo( so.getName());
+    return name.compareTo(so.getName());
   }
 
-  // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
+  // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the
+  // Station
   private static class StationProfileFeatureCollectionSubset extends StationProfileCollectionImpl {
     private final StationProfileCollectionImpl from;
     private final List<StationFeature> stations;
 
     StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<StationFeature> stations) {
-      super( from.getName(), from.getTimeUnit(), from.getAltUnits());
+      super(from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.stations = stations;
     }
@@ -139,7 +142,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
 
     @Override
     public PointFeatureCCIterator getNestedPointFeatureCollectionIterator() throws IOException {
-      return new PointFeatureCCIteratorFiltered( from.getNestedPointFeatureCollectionIterator(), new Filter());
+      return new PointFeatureCCIteratorFiltered(from.getNestedPointFeatureCollectionIterator(), new Filter());
     }
 
     @Override
@@ -206,7 +209,8 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
 
   @Override
   public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
+    if (localIterator == null)
+      resetIteration();
     return localIterator.hasNext();
   }
 

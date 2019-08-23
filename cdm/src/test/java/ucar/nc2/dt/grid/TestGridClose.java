@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -44,7 +44,6 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -82,8 +81,8 @@ public class TestGridClose {
       for (GridDatatype grid : dataset.getGrids()) {
         temp_data = grid.readDataSlice(0, 0, -1, -1);
 
-        assert grid.getMinMaxSkipMissingData(temp_data).min == 0.0;   // min
-        assert grid.getMinMaxSkipMissingData(temp_data).max == 42.0;  // max
+        assert grid.getMinMaxSkipMissingData(temp_data).min == 0.0; // min
+        assert grid.getMinMaxSkipMissingData(temp_data).max == 42.0; // max
       }
     }
   }
@@ -93,9 +92,9 @@ public class TestGridClose {
     try {
       file = NetcdfFileWriter.openExisting(url);
       file.setRedefineMode(true);
-      //Group rootGroup = file.getRootGroup();
-      //Group headerDataGroup = new Group(file, rootGroup, "header_data");
-      //file.addGroup(rootGroup, headerDataGroup);
+      // Group rootGroup = file.getRootGroup();
+      // Group headerDataGroup = new Group(file, rootGroup, "header_data");
+      // file.addGroup(rootGroup, headerDataGroup);
       file.addVariable(null, newVarName, DataType.FLOAT, "z y x");
     } finally {
       if (file != null) {
@@ -108,7 +107,7 @@ public class TestGridClose {
 
   public void checkFile(String url) throws IOException {
     try (NetcdfFile file = NetcdfFile.open(url, null)) {
-      assert file.findVariable(newVarName) != null : "cant find "+newVarName;
+      assert file.findVariable(newVarName) != null : "cant find " + newVarName;
     }
   }
 }

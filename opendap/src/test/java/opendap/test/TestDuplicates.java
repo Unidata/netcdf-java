@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -40,7 +40,6 @@ import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -49,8 +48,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestDuplicates extends UnitTestCommon
-{
+public class TestDuplicates extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestDuplicates() {
@@ -77,25 +75,13 @@ public class TestDuplicates extends UnitTestCommon
 
     List<Result> results = new ArrayList<Result>();
     if (true) {
-      results.add(new Result("Top and field vars have same names",
-              "http://" + testserver + "/dts/structdupname",
-              "netcdf dods://" + testserver + "/dts/structdupname {\n" +
-                      " variables:\n" +
-                      "   int time;\n" +
-                      "Structure {\n" +
-                      "   float time;\n" +
-                      "} record;\n" +
-                      "}"));
+      results.add(new Result("Top and field vars have same names", "http://" + testserver + "/dts/structdupname",
+          "netcdf dods://" + testserver + "/dts/structdupname {\n" + " variables:\n" + "   int time;\n"
+              + "Structure {\n" + "   float time;\n" + "} record;\n" + "}"));
     }
     if (true) {
-      results.add(new Result("TestFailure",
-              "http://" + testserver + "/dts/simplestruct",
-              "netcdf dods://" + testserver + "/dts/simplestruct {\n" +
-                      " variables:\n" +
-                      "Structure {\n" +
-                      "   int i32;\n" +
-                      "} types;\n" +
-                      "}"));
+      results.add(new Result("TestFailure", "http://" + testserver + "/dts/simplestruct", "netcdf dods://" + testserver
+          + "/dts/simplestruct {\n" + " variables:\n" + "Structure {\n" + "   int i32;\n" + "} types;\n" + "}"));
     }
     boolean pass = true;
     for (Result result : results) {
@@ -112,8 +98,7 @@ public class TestDuplicates extends UnitTestCommon
           pw.close();
           ow.close();
         } catch (IOException ioe) {
-        }
-        ;
+        } ;
         StringReader baserdr = new StringReader(result.cdl);
         String captured = ow.toString();
         StringReader resultrdr = new StringReader(captured);

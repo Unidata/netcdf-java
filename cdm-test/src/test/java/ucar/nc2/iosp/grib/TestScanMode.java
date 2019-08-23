@@ -13,7 +13,6 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -53,8 +52,9 @@ public class TestScanMode {
   }
 
   @Test
-  public void testEcmwf() throws IOException {  // scanMode 192
-    String filename = TestDir.cdmUnitTestDir + "formats/grib2/MSG1-SEVI-MSGCLMK-0100-0100-20060102111500.000000000Z-12774.grb.grb";
+  public void testEcmwf() throws IOException { // scanMode 192
+    String filename =
+        TestDir.cdmUnitTestDir + "formats/grib2/MSG1-SEVI-MSGCLMK-0100-0100-20060102111500.000000000Z-12774.grb.grb";
     logger.debug("Reading File {}", filename);
     GridDataset gds = GridDataset.open(filename);
     GeoGrid grid = gds.findGridByName("Cloud_mask");

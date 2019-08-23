@@ -3,9 +3,12 @@
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.geoloc;
-/** Listeners for new Projection events
+
+/**
+ * Listeners for new Projection events
+ * 
  * @author John Caron
  */
 public interface NewProjectionListener extends java.util.EventListener {
-    void actionPerformed(NewProjectionEvent e);
+  void actionPerformed(NewProjectionEvent e);
 }

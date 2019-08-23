@@ -4,26 +4,26 @@
 //
 // Copyright (c) 2010, OPeNDAP, Inc.
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
-// 
+//
 // Author: James Gallagher <jgallagher@opendap.org>
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms,
 // with or without modification, are permitted provided
 // that the following conditions are met:
-// 
+//
 // - Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
+// notice, this list of conditions and the following disclaimer.
+//
 // - Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the distribution.
-// 
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
 // - Neither the name of the OPeNDAP nor the names of its contributors may
-//   be used to endorse or promote products derived from this software
-//   without specific prior written permission.
-// 
+// be used to endorse or promote products derived from this software
+// without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 // TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -43,101 +43,97 @@ package opendap.servlet.ascii;
 
 import java.io.*;
 import java.util.Enumeration;
-
 import opendap.dap.*;
 
 /**
  */
 public class asciiGrid extends DGrid implements toASCII {
 
-    private static boolean _Debug = false;
+  private static boolean _Debug = false;
 
 
-    /**
-     * Constructs a new <code>asciiGrid</code>.
-     */
-    public asciiGrid() {
-        this(null);
+  /**
+   * Constructs a new <code>asciiGrid</code>.
+   */
+  public asciiGrid() {
+    this(null);
+  }
+
+  /**
+   * Constructs a new <code>asciiGrid</code> with name <code>n</code>.
+   *
+   * @param n the name of the variable.
+   */
+  public asciiGrid(String n) {
+    super(n);
+  }
+
+
+  /**
+   * Returns a string representation of the variables value. This
+   * is really foreshadowing functionality for Server types, but
+   * as it may come in useful for clients it is added here. Simple
+   * types (example: DFloat32) will return a single value. DConstuctor
+   * and DVector types will be flattened. DStrings and DURL's will
+   * have double quotes around them.
+   *
+   * @param addName is a flag indicating if the variable name should
+   *        appear at the begining of the returned string.
+   */
+  public void toASCII(PrintWriter pw, boolean addName, String rootName, boolean newLine) {
+
+    if (_Debug)
+      System.out.println("asciiGrid.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getEncodedName());
+
+    if (rootName != null)
+      rootName += "." + getEncodedName();
+    else
+      rootName = getEncodedName();
+
+    boolean firstPass = true;
+    Enumeration e = getVariables();
+    while (e.hasMoreElements()) {
+      toASCII ta = (toASCII) e.nextElement();
+
+      if (!newLine && !firstPass)
+        pw.print(", ");
+
+      ta.toASCII(pw, addName, rootName, newLine);
+
+      firstPass = false;
     }
 
-    /**
-     * Constructs a new <code>asciiGrid</code> with name <code>n</code>.
-     *
-     * @param n the name of the variable.
-     */
-    public asciiGrid(String n) {
-        super(n);
+    if (newLine)
+      pw.print("\n");
+
+  }
+
+  public String toASCIIAddRootName(PrintWriter pw, boolean addName, String rootName) {
+
+    if (addName) {
+      rootName = toASCIIFlatName(rootName);
+      pw.print(rootName);
+    }
+    return (rootName);
+
+  }
+
+  public String toASCIIFlatName(String rootName) {
+
+    StringBuilder s = new StringBuilder();
+    boolean firstPass = true;
+    Enumeration e = getVariables();
+    while (e.hasMoreElements()) {
+      toASCII ta = (toASCII) e.nextElement();
+      if (!firstPass)
+        s.append(", ");
+      s.append(ta.toASCIIFlatName(rootName));
+      firstPass = false;
     }
 
 
-    /**
-     * Returns a string representation of the variables value. This
-     * is really foreshadowing functionality for Server types, but
-     * as it may come in useful for clients it is added here. Simple
-     * types (example: DFloat32) will return a single value. DConstuctor
-     * and DVector types will be flattened. DStrings and DURL's will
-     * have double quotes around them.
-     *
-     * @param addName is a flag indicating if the variable name should
-     *                appear at the begining of the returned string.
-     */
-    public void toASCII(PrintWriter pw,
-                        boolean addName,
-                        String rootName,
-                        boolean newLine) {
-
-        if (_Debug)
-            System.out.println("asciiGrid.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getEncodedName());
-
-        if (rootName != null)
-            rootName += "." + getEncodedName();
-        else
-            rootName = getEncodedName();
-
-        boolean firstPass = true;
-        Enumeration e = getVariables();
-        while (e.hasMoreElements()) {
-            toASCII ta = (toASCII) e.nextElement();
-
-            if (!newLine && !firstPass)
-                pw.print(", ");
-
-            ta.toASCII(pw, addName, rootName, newLine);
-
-            firstPass = false;
-        }
-
-        if (newLine)
-            pw.print("\n");
-
-    }
-
-    public String toASCIIAddRootName(PrintWriter pw, boolean addName, String rootName) {
-
-        if (addName) {
-            rootName = toASCIIFlatName(rootName);
-            pw.print(rootName);
-        }
-        return (rootName);
-
-    }
-
-    public String toASCIIFlatName(String rootName) {
-
-        StringBuilder s = new StringBuilder();
-        boolean firstPass = true;
-        Enumeration e = getVariables();
-        while (e.hasMoreElements()) {
-            toASCII ta = (toASCII) e.nextElement();
-            if (!firstPass)
-                s.append(", ");
-            s.append(ta.toASCIIFlatName(rootName));
-            firstPass = false;
-        }
-
-
-        return (s.toString());
-    }
+    return (s.toString());
+  }
 
 
 }

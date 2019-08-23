@@ -5,7 +5,6 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -19,13 +18,17 @@ import java.util.ArrayList;
  */
 public class Sequence extends Structure {
 
-  /* Sequence Constructor
-  *
-  * @param ncfile    the containing NetcdfFile.
-  * @param group     the containing group; if null, use rootGroup
-  * @param parent    parent Structure, may be null
-  * @param shortName variable shortName, must be unique within the Group
-  */
+  /*
+   * Sequence Constructor
+   *
+   * @param ncfile the containing NetcdfFile.
+   * 
+   * @param group the containing group; if null, use rootGroup
+   * 
+   * @param parent parent Structure, may be null
+   * 
+   * @param shortName variable shortName, must be unique within the Group
+   */
   public Sequence(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     super(ncfile, group, parent, shortName);
 

@@ -61,7 +61,7 @@ public class CoverageDatasetCapabilities {
    * Write the information as an XML document
    *
    * @param doc write XML for this Document
-   * @param os  write to this output stream
+   * @param os write to this output stream
    * @throws java.io.IOException on write error
    */
   public void writeXML(Document doc, OutputStream os) throws IOException {
@@ -96,12 +96,14 @@ public class CoverageDatasetCapabilities {
       rootElem.addContent(writeCoordTransform(ct));
     }
 
- 		/* global attributes
-     Iterator atts = gds.getGlobalAttributes().iterator();
-     while (atts.hasNext()) {
-       ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-       rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
-     } */
+    /*
+     * global attributes
+     * Iterator atts = gds.getGlobalAttributes().iterator();
+     * while (atts.hasNext()) {
+     * ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+     * rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+     * }
+     */
 
     // add lat/lon bounding box
     LatLonRect bb = gcd.getLatlonBoundingBox();
@@ -140,13 +142,13 @@ public class CoverageDatasetCapabilities {
       varElem.addContent(ncmlWriter.makeAttributeElement(att));
     }
 
-		/*
-        f.format("%s  npts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
-    if (getResolution() != 0.0)
-      f.format(" resolution=%f", resolution);
-    f.format(" %s :", getDependenceType());
-    for (String s : dependsOn)
-		 */
+    /*
+     * f.format("%s  npts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
+     * if (getResolution() != 0.0)
+     * f.format(" resolution=%f", resolution);
+     * f.format(" %s :", getDependenceType());
+     * for (String s : dependsOn)
+     */
 
     Element values = new Element("values");
     if (!axis.isRegular()) {
@@ -181,7 +183,8 @@ public class CoverageDatasetCapabilities {
   private String getShapeString(int[] shape) {
     StringBuilder buf = new StringBuilder();
     for (int i = 0; i < shape.length; i++) {
-      if (i != 0) buf.append(" ");
+      if (i != 0)
+        buf.append(" ");
       buf.append(shape[i]);
     }
     return buf.toString();
@@ -191,16 +194,16 @@ public class CoverageDatasetCapabilities {
   private Element writeBoundingBox(LatLonRect bb) {
 
     Element bbElem = new Element("LatLonBox");
-    //LatLonPoint llpt = bb.getLowerLeftPoint();
-    //LatLonPoint urpt = bb.getUpperRightPoint();
+    // LatLonPoint llpt = bb.getLowerLeftPoint();
+    // LatLonPoint urpt = bb.getUpperRightPoint();
 
-    //bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(llpt.getLongitude(), 4)));
+    // bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(llpt.getLongitude(), 4)));
     bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMin(), 4)));
-    //bbElem.addContent(new Element("east").addContent(ucar.unidata.util.Format.dfrac(urpt.getLongitude(), 4)));
+    // bbElem.addContent(new Element("east").addContent(ucar.unidata.util.Format.dfrac(urpt.getLongitude(), 4)));
     bbElem.addContent(new Element("east").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMax(), 4)));
-    //bbElem.addContent(new Element("south").addContent(ucar.unidata.util.Format.dfrac(llpt.getLatitude(), 4)));
+    // bbElem.addContent(new Element("south").addContent(ucar.unidata.util.Format.dfrac(llpt.getLatitude(), 4)));
     bbElem.addContent(new Element("south").addContent(ucar.unidata.util.Format.dfrac(bb.getLatMin(), 4)));
-    //bbElem.addContent(new Element("north").addContent(ucar.unidata.util.Format.dfrac(urpt.getLatitude(), 4)));
+    // bbElem.addContent(new Element("north").addContent(ucar.unidata.util.Format.dfrac(urpt.getLatitude(), 4)));
     bbElem.addContent(new Element("north").addContent(ucar.unidata.util.Format.dfrac(bb.getLatMax(), 4)));
 
     return bbElem;
@@ -249,25 +252,27 @@ public class CoverageDatasetCapabilities {
     return csElem;
   }
 
- 	/* private Element writeCoordSys(GridCoordSystem cs) {
-     Element csElem = new Element("coordSys");
-     csElem.setAttribute("name", cs.getName());
-     List axes = cs.getCoordinateAxes();
-     for (int i = 0; i < axes.size(); i++) {
-       CoordinateAxis axis = (CoordinateAxis) axes.get(i);
-       Element axisElem = new Element("axisRef");
-       axisElem.setAttribute("name", axis.getName());
-       csElem.addContent(axisElem);
-     }
-     List cts = cs.getCoordinateTransforms();
-     for (int j = 0; j < cts.size(); j++) {
-       CoordinateTransform ct = (CoordinateTransform) cts.get(j);
-       Element elem = new Element("coordTransRef");
-       elem.setAttribute("name", ct.getName());
-       csElem.addContent(elem);
-     }
-     return csElem;
-   } */
+  /*
+   * private Element writeCoordSys(GridCoordSystem cs) {
+   * Element csElem = new Element("coordSys");
+   * csElem.setAttribute("name", cs.getName());
+   * List axes = cs.getCoordinateAxes();
+   * for (int i = 0; i < axes.size(); i++) {
+   * CoordinateAxis axis = (CoordinateAxis) axes.get(i);
+   * Element axisElem = new Element("axisRef");
+   * axisElem.setAttribute("name", axis.getName());
+   * csElem.addContent(axisElem);
+   * }
+   * List cts = cs.getCoordinateTransforms();
+   * for (int j = 0; j < cts.size(); j++) {
+   * CoordinateTransform ct = (CoordinateTransform) cts.get(j);
+   * Element elem = new Element("coordTransRef");
+   * elem.setAttribute("name", ct.getName());
+   * csElem.addContent(elem);
+   * }
+   * return csElem;
+   * }
+   */
 
   private Element writeCoordTransform(CoverageTransform ct) {
     Element ctElem = new Element("coordTransform");
@@ -288,25 +293,27 @@ public class CoverageDatasetCapabilities {
     String desc = grid.getDescription() != null ? grid.getDescription() : "No description";
     varElem.setAttribute("desc", desc);
 
- 		/* StringBuilder buff = new StringBuilder();
- 		List dims = grid.getDimensions();
- 		for (int i = 0; i < dims.size(); i++) {
- 			Dimension dim = (Dimension) dims.get(i);
- 			if (i > 0) buff.append(" ");
- 			if (dim.isShared())
- 				buff.append(dim.getShortName());
- 			else
- 				buff.append(dim.getLength());
- 		}
- 		if (buff.length() > 0)
- 			varElem.setAttribute("shape", buff.toString()); */
+    /*
+     * StringBuilder buff = new StringBuilder();
+     * List dims = grid.getDimensions();
+     * for (int i = 0; i < dims.size(); i++) {
+     * Dimension dim = (Dimension) dims.get(i);
+     * if (i > 0) buff.append(" ");
+     * if (dim.isShared())
+     * buff.append(dim.getShortName());
+     * else
+     * buff.append(dim.getLength());
+     * }
+     * if (buff.length() > 0)
+     * varElem.setAttribute("shape", buff.toString());
+     */
 
     DataType dt = grid.getDataType();
     if (dt != null)
       varElem.setAttribute("type", dt.toString());
 
-    //GridCoordSystem cs = grid.getCoordinateSystem();
-    //varElem.setAttribute("coordSys", cs.getName());
+    // GridCoordSystem cs = grid.getCoordinateSystem();
+    // varElem.setAttribute("coordSys", cs.getName());
 
     // attributes
     for (ucar.nc2.Attribute att : grid.getAttributes()) {

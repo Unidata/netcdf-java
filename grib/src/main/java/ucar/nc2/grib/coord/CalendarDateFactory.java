@@ -5,7 +5,6 @@
 package ucar.nc2.grib.coord;
 
 import ucar.nc2.time.CalendarDate;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,9 +26,10 @@ public class CalendarDateFactory {
     }
   }
 
-  public CalendarDate get( CalendarDate cd) {
+  public CalendarDate get(CalendarDate cd) {
     CalendarDate cdc = map.get(cd.getMillis());
-    if (cdc != null) return cdc;
+    if (cdc != null)
+      return cdc;
     map.put(cd.getMillis(), cd);
     return cd;
   }

@@ -10,21 +10,20 @@ package ucar.units;
  * @author Steven R. Emmerson
  */
 public class UnitFormatException extends UnitException {
-	private static final long	serialVersionUID	= 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs from nothing.
-	 */
-	public UnitFormatException() {
-	}
+  /**
+   * Constructs from nothing.
+   */
+  public UnitFormatException() {}
 
-	/**
-	 * Constructs from an error message.
-	 * 
-	 * @param message
-	 *            The error message.
-	 */
-	public UnitFormatException(final String message) {
-		super(message);
-	}
+  /**
+   * Constructs from an error message.
+   * 
+   * @param message
+   *        The error message.
+   */
+  public UnitFormatException(final String message) {
+    super(message);
+  }
 }

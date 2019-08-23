@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -44,7 +43,7 @@ public class ScannerPqact extends Scanner {
         try {
           if (!m.isTablesComplete()) {
             bad_tables++;
-            //out.format(" missing table in file %s %n", filename);
+            // out.format(" missing table in file %s %n", filename);
             continue;
           }
         } catch (UnsupportedOperationException e) {
@@ -66,7 +65,7 @@ public class ScannerPqact extends Scanner {
           continue;
         }
 
-        //readBytes += m.is.getBufrLength();
+        // readBytes += m.is.getBufrLength();
 
         // run through the pattern matching
         boolean hasMatch = false;
@@ -96,7 +95,7 @@ public class ScannerPqact extends Scanner {
 
   static void scanMessageTypesPqact(String filename) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      //out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+      // out.format("\n-----\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
       file_size += raf.length();
 
       MessageScanner scan = new MessageScanner(raf);
@@ -114,7 +113,7 @@ public class ScannerPqact extends Scanner {
         try {
           if (!m.isTablesComplete()) {
             bad_tables++;
-            //out.format(" missing table in file %s %n", filename);
+            // out.format(" missing table in file %s %n", filename);
             continue;
           }
         } catch (UnsupportedOperationException e) {
@@ -148,7 +147,7 @@ public class ScannerPqact extends Scanner {
 
         count++;
       }
-      //out.format("total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
+      // out.format("total_msgs= %d good=%d total_obs = %d\n", scan.getTotalMessages(), count, scan.getTotalObs());
       total_msgs += scan.getTotalMessages();
       good_msgs += count;
       total_obs += scan.getTotalObs();
@@ -158,8 +157,8 @@ public class ScannerPqact extends Scanner {
   static void showTypes() throws IOException {
 
     out.format("\n===============================================%n");
-    out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d %n",
-            total_msgs, good_msgs, bad_msgs, bad_tables, bad_operation);
+    out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d %n", total_msgs, good_msgs,
+        bad_msgs, bad_tables, bad_operation);
     out.format(" nomatch=%d badmatch=%d %n", nomatch, badmatch);
 
     int avg_msg = (int) (file_size / total_msgs);
@@ -172,7 +171,7 @@ public class ScannerPqact extends Scanner {
       out.format("Pqact %s count=%d fileout= %s%n", pqact.pats, pqact.count, pqact.fileout);
       if (pqact.first != null) {
         pqact.first.dumpHeader(out);
-        //out.format("  Example file=%s\n", pqact.exampleFile);
+        // out.format(" Example file=%s\n", pqact.exampleFile);
       }
       out.format("%n");
     }
@@ -187,10 +186,13 @@ public class ScannerPqact extends Scanner {
       int count = 0;
       while (true) {
         String line = dataIS.readLine();
-        if (line == null) break;
+        if (line == null)
+          break;
         line = line.trim();
-        if (line.length() == 0) break;
-        if (line.charAt(0) == '#') continue;
+        if (line.length() == 0)
+          break;
+        if (line.charAt(0) == '#')
+          continue;
 
         int pos = line.indexOf(';');
         if (pos < 0)
@@ -218,18 +220,18 @@ public class ScannerPqact extends Scanner {
     Pqact(String pats) {
       this.pats = pats;
       this.fileout = cleanup(pats);
-      //System.out.println(" add <"+pats+">");
+      // System.out.println(" add <"+pats+">");
       pattern = Pattern.compile(pats);
     }
 
     Pqact(String pats, String fileout) {
       this.pats = pats;
       this.fileout = fileout;
-      //System.out.println(" add <"+pats+">");
+      // System.out.println(" add <"+pats+">");
       pattern = Pattern.compile(pats);
     }
 
-   String cleanup(String pats) {
+    String cleanup(String pats) {
       char[] cc = new char[pats.length()];
       int count = 0;
       for (char c : pats.toCharArray()) {
@@ -241,16 +243,17 @@ public class ScannerPqact extends Scanner {
 
     boolean match(String header, Message m) {
       Matcher matcher = pattern.matcher(header);
-      if (!matcher.matches()) return false;
+      if (!matcher.matches())
+        return false;
 
       if (first == null) {
         first = m;
       } else if (m.hashCode() != first.hashCode()) {
-          System.out.println(" DDS doesnt match pqact= " + pats);
-          first.dumpHeader(out);
-          m.dumpHeader(out);
-          System.out.println();
-          badmatch++;
+        System.out.println(" DDS doesnt match pqact= " + pats);
+        first.dumpHeader(out);
+        m.dumpHeader(out);
+        System.out.println();
+        badmatch++;
         return false;
       }
       count++;
@@ -294,15 +297,17 @@ public class ScannerPqact extends Scanner {
     // for saving messages
     File file = new File("D:/bufr/mlodeSorted/unclaimed.bufr");
     FileOutputStream fos = new FileOutputStream(file);
-    wbc = fos.getChannel();  // */
+    wbc = fos.getChannel(); // */
 
-    /* analyze pqact table
-    test("C:/data/bufr2/mlode/", new MClosure() {
-       public void run(String filename) throws IOException {
-         scanMessageTypesPqact(filename);
-       }
-     });
-    showTypes(); // */
+    /*
+     * analyze pqact table
+     * test("C:/data/bufr2/mlode/", new MClosure() {
+     * public void run(String filename) throws IOException {
+     * scanMessageTypesPqact(filename);
+     * }
+     * });
+     * showTypes(); //
+     */
 
 
     // extract based on pqact table
@@ -311,7 +316,8 @@ public class ScannerPqact extends Scanner {
         extract(filename);
       }
     });
-    out.format(" scanned %d msgs %d Kb, bad_tables %d, write %d msgs %d Kb %n", total_msgs, readBytes/1000, bad_tables, writemsg, writeBytes/1000);
+    out.format(" scanned %d msgs %d Kb, bad_tables %d, write %d msgs %d Kb %n", total_msgs, readBytes / 1000,
+        bad_tables, writemsg, writeBytes / 1000);
 
     for (Pqact pqact : pqactList) {
       pqact.close();
@@ -319,7 +325,8 @@ public class ScannerPqact extends Scanner {
 
     // */
 
-    if (wbc != null) wbc.close();
+    if (wbc != null)
+      wbc.close();
   }
 
 }

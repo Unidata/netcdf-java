@@ -75,7 +75,8 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
 
   @Override
   public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
+    if (localIterator == null)
+      resetIteration();
     return localIterator.hasNext();
   }
 

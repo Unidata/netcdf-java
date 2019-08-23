@@ -12,7 +12,6 @@ import java.io.OutputStream;
 import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -34,55 +33,62 @@ public class NetcdfDatasetInfo implements Closeable {
   private NetcdfDataset ds;
   private CoordSysBuilderIF builder;
 
-  public NetcdfDatasetInfo( String location) throws IOException {
+  public NetcdfDatasetInfo(String location) throws IOException {
     ds = NetcdfDataset.openDataset(location, false, null);
     builder = ds.enhance();
   }
 
-  public NetcdfDatasetInfo( NetcdfDataset ds) throws IOException {
+  public NetcdfDatasetInfo(NetcdfDataset ds) throws IOException {
     File loc = new File(ds.getLocation());
     if (loc.exists()) {
       this.ds = NetcdfDataset.openDataset(ds.getLocation(), false, null); // fresh enhancement
       builder = this.ds.enhance();
-    } else {  // Aggregation, fc may not exist
-      this.ds = ds;  // LOOK what can we do thats better ?
+    } else { // Aggregation, fc may not exist
+      this.ds = ds; // LOOK what can we do thats better ?
       builder = ds.enhance();
     }
   }
 
   public void close() throws IOException {
-    if (ds != null) ds.close();
+    if (ds != null)
+      ds.close();
   }
 
   /**
    * Detailed information when the coordinate systems were parsed
+   * 
    * @return String containing parsing info
    */
-  public String getParseInfo( ) {
+  public String getParseInfo() {
     return (builder == null) ? "" : builder.getParseInfo();
   }
+
   /**
    * Specific advice to a user about problems with the coordinate information in the file.
+   * 
    * @return String containing advice to a user about problems with the coordinate information in the file.
    */
-  public String getUserAdvice( ) {
+  public String getUserAdvice() {
     return (builder == null) ? "" : builder.getUserAdvice();
   }
 
   /**
    * Get the name of the CoordSysBuilder that parses this file.
+   * 
    * @return the name of the CoordSysBuilder that parses this file.
    */
-  public String getConventionUsed( ) {
+  public String getConventionUsed() {
     return (builder == null) ? "None" : builder.getConventionUsed();
   }
 
-  /** Write the information as an XML document
+  /**
+   * Write the information as an XML document
+   * 
    * @return String containing netcdfDatasetInfo XML
    */
-  public String writeXML( )  {
-    XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
-    return fmt.outputString( makeDocument());
+  public String writeXML() {
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    return fmt.outputString(makeDocument());
   }
 
   public GridCoordSys getGridCoordSys(VariableEnhanced ve) {
@@ -96,18 +102,20 @@ public class NetcdfDatasetInfo implements Closeable {
   }
 
   public void writeXML(OutputStream os) throws IOException {
-    XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
-    fmt.output( makeDocument(), os);
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    fmt.output(makeDocument(), os);
   }
 
-  /** Create an XML document from this info
+  /**
+   * Create an XML document from this info
+   * 
    * @return netcdfDatasetInfo XML document
    */
   public Document makeDocument() {
     Element rootElem = new Element("netcdfDatasetInfo");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", ds.getLocation());
-    rootElem.addContent( new Element("convention").setAttribute("name", getConventionUsed()));
+    rootElem.addContent(new Element("convention").setAttribute("name", getConventionUsed()));
 
     int nDataVariables = 0;
     int nOtherVariables = 0;
@@ -180,7 +188,8 @@ public class NetcdfDatasetInfo implements Closeable {
 
     for (Variable var : ds.getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) var;
-      if (ve instanceof CoordinateAxis) continue;
+      if (ve instanceof CoordinateAxis)
+        continue;
       GridCoordSys gcs = getGridCoordSys(ve);
       if (null != gcs) {
         nDataVariables++;
@@ -198,8 +207,9 @@ public class NetcdfDatasetInfo implements Closeable {
     }
 
     for (Variable var : ds.getVariables()) {
-      VariableEnhanced ve =  (VariableEnhanced) var;
-      if (ve instanceof CoordinateAxis) continue;
+      VariableEnhanced ve = (VariableEnhanced) var;
+      if (ve instanceof CoordinateAxis)
+        continue;
       GridCoordSys gcs = getGridCoordSys(ve);
       if (null == gcs) {
         nOtherVariables++;
@@ -217,34 +227,35 @@ public class NetcdfDatasetInfo implements Closeable {
     }
 
     if (nDataVariables > 0) {
-      rootElem.addContent( new Element("userAdvice").addContent( "Dataset contains useable gridded data."));
+      rootElem.addContent(new Element("userAdvice").addContent("Dataset contains useable gridded data."));
       if (nOtherVariables > 0)
-        rootElem.addContent( new Element("userAdvice").addContent( "Some variables are not gridded fields; check that is what you expect."));
+        rootElem.addContent(new Element("userAdvice")
+            .addContent("Some variables are not gridded fields; check that is what you expect."));
     } else {
       if (nCoordAxes == 0)
-         rootElem.addContent( new Element("userAdvice").addContent( "No Coordinate Axes were found."));
+        rootElem.addContent(new Element("userAdvice").addContent("No Coordinate Axes were found."));
       else
-        rootElem.addContent( new Element("userAdvice").addContent( "No gridded data variables were found."));
+        rootElem.addContent(new Element("userAdvice").addContent("No gridded data variables were found."));
     }
 
     String userAdvice = getUserAdvice();
     if (userAdvice.length() > 0) {
       StringTokenizer toker = new StringTokenizer(userAdvice, "\n");
       while (toker.hasMoreTokens())
-        rootElem.addContent( new Element("userAdvice").addContent( toker.nextToken()));
+        rootElem.addContent(new Element("userAdvice").addContent(toker.nextToken()));
     }
 
     return doc;
   }
 
-  private String getDecl( VariableEnhanced ve) {
+  private String getDecl(VariableEnhanced ve) {
     Formatter sb = new Formatter();
     sb.format("%s ", ve.getDataType().toString());
     ve.getNameAndDimensions(sb, true, true);
     return sb.toString();
   }
 
-  private String getCoordSys( VariableEnhanced ve) {
+  private String getCoordSys(VariableEnhanced ve) {
     List csList = ve.getCoordinateSystems();
     if (csList.size() == 1) {
       CoordinateSystem cs = (CoordinateSystem) csList.get(0);
@@ -253,7 +264,8 @@ public class NetcdfDatasetInfo implements Closeable {
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < csList.size(); i++) {
         CoordinateSystem cs = (CoordinateSystem) csList.get(i);
-        if (i > 0) sb.append(";");
+        if (i > 0)
+          sb.append(";");
         sb.append(cs.getName());
       }
       return sb.toString();
@@ -261,7 +273,7 @@ public class NetcdfDatasetInfo implements Closeable {
     return " ";
   }
 
- private String isUdunits(String unit) {
+  private String isUdunits(String unit) {
     try {
       new DateUnit(unit);
       return "date";
@@ -270,7 +282,8 @@ public class NetcdfDatasetInfo implements Closeable {
     }
 
     SimpleUnit su = SimpleUnit.factory(unit);
-    if (null == su) return "false";
+    if (null == su)
+      return "false";
     return su.getCanonicalString();
   }
 }

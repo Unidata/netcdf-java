@@ -12,14 +12,20 @@ package ucar.unidata.geoloc;
 public class EarthLocationImpl implements EarthLocation {
   protected double lat, lon, alt;
 
-  public double getLatitude() { return lat; }
+  public double getLatitude() {
+    return lat;
+  }
 
-  public double getLongitude() { return lon; }
+  public double getLongitude() {
+    return lon;
+  }
 
-  public double getAltitude() { return alt; }
+  public double getAltitude() {
+    return alt;
+  }
 
   public LatLonPoint getLatLon() {
-    return new LatLonPointImpl( lat, lon);
+    return new LatLonPointImpl(lat, lon);
   }
 
   public boolean isMissing() {
@@ -28,17 +34,27 @@ public class EarthLocationImpl implements EarthLocation {
 
   protected EarthLocationImpl() {}
 
-  public EarthLocationImpl( double lat, double lon, double alt) {
+  public EarthLocationImpl(double lat, double lon, double alt) {
     this.lat = lat;
     this.lon = lon;
     this.alt = alt;
   }
 
-  protected void setLatitude(double lat) { this.lat = lat; }
-  protected void setLongitude(double lon) { this.lon = lon; }
-  protected void setAltitude(double alt) { this.alt = alt; }
+  protected void setLatitude(double lat) {
+    this.lat = lat;
+  }
 
-  public String toString() { return "lat="+lat+" lon="+lon+" alt="+alt; }
+  protected void setLongitude(double lon) {
+    this.lon = lon;
+  }
+
+  protected void setAltitude(double alt) {
+    this.alt = alt;
+  }
+
+  public String toString() {
+    return "lat=" + lat + " lon=" + lon + " alt=" + alt;
+  }
 
 
 }

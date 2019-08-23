@@ -7,7 +7,6 @@ package ucar.nc2.dt;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.FeatureDataset;
-
 import java.io.IOException;
 import java.util.Date;
 
@@ -100,7 +99,7 @@ public interface RadialDatasetSweep extends FeatureDataset {
     Sweep getSweep(int sweepNum);
 
     /**
-     * @return data, of length getNumSweep()  by getNumRadials() by getNumGates()
+     * @return data, of length getNumSweep() by getNumRadials() by getNumGates()
      * @throws java.io.IOException on io error
      */
     float[] readAllData() throws java.io.IOException;
@@ -152,7 +151,7 @@ public interface RadialDatasetSweep extends FeatureDataset {
      * Get the radial length of each data gate.
      * The radial distance to the ith gate = getRangeToFirstGate() + getGateSize() * i
      *
-     * @return gate size in meters,  for all radials
+     * @return gate size in meters, for all radials
      */
     float getGateSize();
 
@@ -266,7 +265,8 @@ public interface RadialDatasetSweep extends FeatureDataset {
      * @return DataType or null if no match.
      */
     public static Type getType(String name) {
-      if (name == null) return null;
+      if (name == null)
+        return null;
       for (Type m : members) {
         if (m.name.equalsIgnoreCase(name))
           return m;

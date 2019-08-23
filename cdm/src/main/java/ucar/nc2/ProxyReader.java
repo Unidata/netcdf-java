@@ -9,7 +9,6 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.util.CancelTask; // ??
-
 import java.io.IOException;
 
 /**
@@ -18,10 +17,10 @@ import java.io.IOException;
  * @author caron
  */
 public interface ProxyReader {
-  
+
   /**
    * Read all the data for a Variable.
-
+   * 
    * @param client the client Variable
    * @param cancelTask user may cancel
    * @return memory resident Array containing the data. Will have same shape as the Variable.

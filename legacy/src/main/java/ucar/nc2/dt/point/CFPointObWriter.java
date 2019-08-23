@@ -50,13 +50,14 @@ public class CFPointObWriter {
   /**
    * Constructor
    *
-   * @param stream     write to this stream
+   * @param stream write to this stream
    * @param globalAtts optional list of global attributes (may be null)
-   * @param altUnits   optional altitude units (set to null if no altitude variable)
-   * @param dataVars   the set of data variables: first the double values, then the String values
+   * @param altUnits optional altitude units (set to null if no altitude variable)
+   * @param dataVars the set of data variables: first the double values, then the String values
    * @throws IOException if write error
    */
-  public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits, List<PointObVar> dataVars, int numrec) throws IOException {
+  public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits,
+      List<PointObVar> dataVars, int numrec) throws IOException {
     ncWriter = new WriterCFPointDataset(stream, globalAtts, altUnits);
 
     List<VariableSimpleIF> vars = new ArrayList<VariableSimpleIF>(dataVars.size());
@@ -69,15 +70,16 @@ public class CFPointObWriter {
   /**
    * Add one data point to the file
    *
-   * @param lat   latitude value in units of degrees_north
-   * @param lon   longitude value in units of degrees_east
-   * @param alt   altitude value in units of altUnits (may be NaN)
-   * @param time  time value as a date
-   * @param vals  list of data values, matching dataVars in the constructor
+   * @param lat latitude value in units of degrees_north
+   * @param lon longitude value in units of degrees_east
+   * @param alt altitude value in units of altUnits (may be NaN)
+   * @param time time value as a date
+   * @param vals list of data values, matching dataVars in the constructor
    * @param svals list of String values, matching dataVars in the constructor
    * @throws IOException if write error
    */
-  public void addPoint(double lat, double lon, double alt, Date time, double[] vals, String[] svals) throws IOException {
+  public void addPoint(double lat, double lon, double alt, Date time, double[] vals, String[] svals)
+      throws IOException {
     ncWriter.writeRecord(lat, lon, alt, time, vals, svals);
   }
 
@@ -123,13 +125,14 @@ public class CFPointObWriter {
     }
 
     public int[] getShape() {
-      return (pov.getLen() > 1) ? new int[]{pov.getLen()} : new int[0];
+      return (pov.getLen() > 1) ? new int[] {pov.getLen()} : new int[0];
     }
 
     public List<Dimension> getDimensions() {
       if (pov.getLen() > 1) {
         List<Dimension> dims = new ArrayList<Dimension>(1);
-        String suffix = (pov.getDataType() == DataType.STRING) || (pov.getDataType() == DataType.CHAR) ? "_strlen" : "_len";
+        String suffix =
+            (pov.getDataType() == DataType.STRING) || (pov.getDataType() == DataType.CHAR) ? "_strlen" : "_len";
         dims.add(new Dimension(pov.getName() + suffix, pov.getLen(), false, false, false));
         return dims;
       } else
@@ -143,9 +146,11 @@ public class CFPointObWriter {
     public List<Attribute> getAttributes() {
       if (atts == null)
         atts = new ArrayList<Attribute>(2);
-      
-      if (pov.getDesc() != null) atts.add(new Attribute(CDM.LONG_NAME, pov.getDesc()));
-      if (pov.getUnits() != null) atts.add(new Attribute(CDM.UNITS, pov.getUnits()));
+
+      if (pov.getDesc() != null)
+        atts.add(new Attribute(CDM.LONG_NAME, pov.getDesc()));
+      if (pov.getUnits() != null)
+        atts.add(new Attribute(CDM.UNITS, pov.getUnits()));
       return atts;
     }
 
@@ -164,8 +169,8 @@ public class CFPointObWriter {
   /**
    * Open a ucar.nc2.dt.PointObsDataset, write out in CF point format.
    *
-   * @param fileIn   open through TypedDatasetFactory.open(FeatureType.POINT, ..)
-   * @param fileOut  write to this netcdf-3 file
+   * @param fileIn open through TypedDatasetFactory.open(FeatureType.POINT, ..)
+   * @param fileOut write to this netcdf-3 file
    * @param inMemory if true, read file into memory for efficiency
    * @return true on success
    * @throws IOException on read/write error
@@ -181,7 +186,8 @@ public class CFPointObWriter {
 
     StringBuilder errlog = new StringBuilder();
     PointObsDataset pobsDataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, ncd, null, errlog);
-    if (pobsDataset == null) return false;
+    if (pobsDataset == null)
+      return false;
 
     writePointObsDataset(pobsDataset, fileOut);
     pobsDataset.close();
@@ -195,7 +201,7 @@ public class CFPointObWriter {
    * write data from a ucar.nc2.dt.PointObsDataset into CF point format.
    *
    * @param pobsDataset rewrite data from here
-   * @param fileOut     write to tehis netcdf-3 file
+   * @param fileOut write to tehis netcdf-3 file
    * @throws IOException on read/write error
    */
   public static void writePointObsDataset(PointObsDataset pobsDataset, String fileOut) throws IOException {
@@ -262,8 +268,8 @@ public class CFPointObWriter {
   /**
    * Open a ucar.nc2.ft.PointFeatureCollection, write out in CF point format.
    *
-   * @param fileIn   open through TypedDatasetFactory.open(FeatureType.POINT, ..)
-   * @param fileOut  write to this netcdf-3 file
+   * @param fileIn open through TypedDatasetFactory.open(FeatureType.POINT, ..)
+   * @param fileOut write to this netcdf-3 file
    * @param inMemory if true, read file into memory for efficiency
    * @return true on success
    * @throws IOException on read/write error
@@ -279,7 +285,8 @@ public class CFPointObWriter {
 
     Formatter errlog = new Formatter();
     FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.ANY_POINT, ncd, null, errlog);
-    if (fd == null) return false;
+    if (fd == null)
+      return false;
 
     if (fd instanceof FeatureDatasetPoint) {
       writePointFeatureCollection((FeatureDatasetPoint) fd, fileOut);
@@ -297,7 +304,7 @@ public class CFPointObWriter {
    * Write a ucar.nc2.ft.PointFeatureCollection in CF point format.
    *
    * @param pfDataset find the first PointFeatureCollection, and write all data from it
-   * @param fileOut   write to this netcdf-3 file
+   * @param fileOut write to this netcdf-3 file
    * @return number of records written
    * @throws IOException on read/write error, or if no PointFeatureCollection in pfDataset
    */
@@ -318,18 +325,20 @@ public class CFPointObWriter {
     DataOutputStream out = new DataOutputStream(new BufferedOutputStream(fos, 10000));
     WriterCFPointDataset writer = null;
 
-    /* LOOK BAD
-    List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
-    ucar.nc2.NetcdfFile ncfile = pfDataset.getNetcdfFile();
-    if ((ncfile == null) || !(ncfile instanceof NetcdfDataset))  {
-      dataVars.addAll(pfDataset.getDataVariables());
-    } else {
-      NetcdfDataset ncd = (NetcdfDataset) ncfile;
-      for (VariableSimpleIF vs : pfDataset.getDataVariables()) {
-        if (ncd.findCoordinateAxis(vs.getName()) == null)
-          dataVars.add(vs);
-      }
-    } */
+    /*
+     * LOOK BAD
+     * List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
+     * ucar.nc2.NetcdfFile ncfile = pfDataset.getNetcdfFile();
+     * if ((ncfile == null) || !(ncfile instanceof NetcdfDataset)) {
+     * dataVars.addAll(pfDataset.getDataVariables());
+     * } else {
+     * NetcdfDataset ncd = (NetcdfDataset) ncfile;
+     * for (VariableSimpleIF vs : pfDataset.getDataVariables()) {
+     * if (ncd.findCoordinateAxis(vs.getName()) == null)
+     * dataVars.add(vs);
+     * }
+     * }
+     */
 
     int count = 0;
     for (PointFeature pointFeature : pointFeatureCollection) {
@@ -365,7 +374,8 @@ public class CFPointObWriter {
     dataVars.add(new PointObVar("test1", "units1", "desc1", DataType.CHAR, 4));
     dataVars.add(new PointObVar("test2", "units2", "desc3", DataType.CHAR, 4));
 
-    //   public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits, List<PointObVar> dataVars) throws IOException {
+    // public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits, List<PointObVar>
+    // dataVars) throws IOException {
 
     FileOutputStream fos = new FileOutputStream("C:/temp/test.out");
     DataOutputStream out = new DataOutputStream(new BufferedOutputStream(fos, 10000));

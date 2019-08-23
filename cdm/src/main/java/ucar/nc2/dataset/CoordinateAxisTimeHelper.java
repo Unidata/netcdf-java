@@ -31,7 +31,7 @@ public class CoordinateAxisTimeHelper {
 
   public CalendarDate makeCalendarDateFromOffset(double offset) {
     return dateUnit.makeCalendarDate(offset);
-}
+  }
 
   public CalendarDate makeCalendarDateFromOffset(String offset) {
     return CalendarDateFormatter.isoStringToCalendarDate(calendar, offset);

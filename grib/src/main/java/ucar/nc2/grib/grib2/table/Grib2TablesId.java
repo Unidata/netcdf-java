@@ -5,7 +5,9 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class Grib2TablesId {
-  public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev, eccodes}
+  public enum Type {
+    wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev, eccodes
+  }
 
   public final int center, subCenter, masterVersion, localVersion, genProcessId;
 
@@ -18,24 +20,34 @@ public class Grib2TablesId {
   }
 
   boolean match(Grib2TablesId id) {
-    if (id.center != center) return false; // must match center
-    if (subCenter != -1 && id.subCenter != subCenter) return false;
-    if (masterVersion != -1 && id.masterVersion != masterVersion) return false;
-    if (localVersion != -1 && id.localVersion != localVersion) return false;
+    if (id.center != center)
+      return false; // must match center
+    if (subCenter != -1 && id.subCenter != subCenter)
+      return false;
+    if (masterVersion != -1 && id.masterVersion != masterVersion)
+      return false;
+    if (localVersion != -1 && id.localVersion != localVersion)
+      return false;
     return genProcessId == -1 || id.genProcessId == genProcessId;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Grib2TablesId that = (Grib2TablesId) o;
 
-    if (center != that.center) return false;
-    if (genProcessId != that.genProcessId) return false;
-    if (localVersion != that.localVersion) return false;
-    if (masterVersion != that.masterVersion) return false;
+    if (center != that.center)
+      return false;
+    if (genProcessId != that.genProcessId)
+      return false;
+    if (localVersion != that.localVersion)
+      return false;
+    if (masterVersion != that.masterVersion)
+      return false;
     return subCenter == that.subCenter;
 
   }
@@ -52,12 +64,8 @@ public class Grib2TablesId {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("center", center)
-        .add("subCenter", subCenter)
-        .add("masterVersion", masterVersion)
-        .add("localVersion", localVersion)
-        .add("genProcessId", genProcessId)
+    return MoreObjects.toStringHelper(this).add("center", center).add("subCenter", subCenter)
+        .add("masterVersion", masterVersion).add("localVersion", localVersion).add("genProcessId", genProcessId)
         .toString();
   }
 }

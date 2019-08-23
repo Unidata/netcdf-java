@@ -21,7 +21,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsContentRoot;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -65,14 +64,12 @@ public class TestCDF5Reading extends UnitTestCommon {
         String testresult = dump.replace('r', ' ').replace('\n', ' ').trim();
         visual("CDF Read", testresult);
       }
-      Assert.assertTrue(String.format("***Fail: data mismatch"),
-          MAMath.nearlyEquals(data, BASELINE));
+      Assert.assertTrue(String.format("***Fail: data mismatch"), MAMath.nearlyEquals(data, BASELINE));
       System.err.println("***Pass");
     }
   }
 
-  private Array read(NetcdfFile ncfile, String vname, String section)
-      throws IOException, InvalidRangeException {
+  private Array read(NetcdfFile ncfile, String vname, String section) throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable(vname);
     assert v != null;
     return v.read(section);

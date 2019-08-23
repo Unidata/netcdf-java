@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.coord.VertCoordType;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -24,7 +23,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Read  NCEP html files to extract the GRIB tables.
+ * Read NCEP html files to extract the GRIB tables.
  *
  * @author caron
  * @since 11/21/11
@@ -35,7 +34,7 @@ public class NcepHtmlScraper {
   private static final boolean debug = false;
   private static final boolean show = false;
 
- //////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
   // LOOK the table is hand edited to add the units (!)
   void parseTable3() throws IOException {
@@ -70,9 +69,9 @@ public class NcepHtmlScraper {
             if (abbrevSet.contains(abbrev))
               System.out.printf("DUPLICATE ABBREV %s%n", abbrev);
             else
-            stuff.add(new VertCoordType(pnum, desc, abbrev, null, null, false, false));
+              stuff.add(new VertCoordType(pnum, desc, abbrev, null, null, false, false));
           }
-          //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
+          // result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
         } catch (NumberFormatException e) {
           System.out.printf("*** Cant parse %s == %s%n", snum, row.text());
         }
@@ -82,72 +81,81 @@ public class NcepHtmlScraper {
     writeTable3Xml("NCEP GRIB-1 Table 3", url, "ncepTable3.xml", stuff);
   }
 
-  private void writeTable3Xml(String name, String source, String filename, List<VertCoordType> stuff) throws IOException {
-     org.jdom2.Element rootElem = new org.jdom2.Element("table3");
-     org.jdom2.Document doc = new org.jdom2.Document(rootElem);
-     rootElem.addContent(new org.jdom2.Element("title").setText(name));
-     rootElem.addContent(new org.jdom2.Element("source").setText(source));
+  private void writeTable3Xml(String name, String source, String filename, List<VertCoordType> stuff)
+      throws IOException {
+    org.jdom2.Element rootElem = new org.jdom2.Element("table3");
+    org.jdom2.Document doc = new org.jdom2.Document(rootElem);
+    rootElem.addContent(new org.jdom2.Element("title").setText(name));
+    rootElem.addContent(new org.jdom2.Element("source").setText(source));
 
-     for (VertCoordType p : stuff) {
-       org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
-       paramElem.setAttribute("code", Integer.toString(p.getCode()));
-       paramElem.addContent(new org.jdom2.Element("description").setText(p.getDesc()));
-       paramElem.addContent(new org.jdom2.Element("abbrev").setText(p.getAbbrev()));
-       String units = p.getUnits();
-       if (units == null) units = handcodedUnits(p.getCode());
-       if (units != null) paramElem.addContent(new org.jdom2.Element("units").setText(units));
-       if (p.getDatum() != null) paramElem.addContent(new org.jdom2.Element("datum").setText(p.getDatum()));
-       if (p.isPositiveUp()) paramElem.addContent(new org.jdom2.Element("isPositiveUp").setText("true"));
-       if (p.isLayer()) paramElem.addContent(new org.jdom2.Element("isLayer").setText("true"));
-       rootElem.addContent(paramElem);
-     }
+    for (VertCoordType p : stuff) {
+      org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
+      paramElem.setAttribute("code", Integer.toString(p.getCode()));
+      paramElem.addContent(new org.jdom2.Element("description").setText(p.getDesc()));
+      paramElem.addContent(new org.jdom2.Element("abbrev").setText(p.getAbbrev()));
+      String units = p.getUnits();
+      if (units == null)
+        units = handcodedUnits(p.getCode());
+      if (units != null)
+        paramElem.addContent(new org.jdom2.Element("units").setText(units));
+      if (p.getDatum() != null)
+        paramElem.addContent(new org.jdom2.Element("datum").setText(p.getDatum()));
+      if (p.isPositiveUp())
+        paramElem.addContent(new org.jdom2.Element("isPositiveUp").setText("true"));
+      if (p.isLayer())
+        paramElem.addContent(new org.jdom2.Element("isLayer").setText("true"));
+      rootElem.addContent(paramElem);
+    }
 
-     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-     String x = fmt.outputString(doc);
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    String x = fmt.outputString(doc);
 
-     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-       fout.write(x.getBytes(CDM.utf8Charset));
-     }
+    try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
+      fout.write(x.getBytes(CDM.utf8Charset));
+    }
 
-     if (show) System.out.printf("%s%n", x);
-   }
+    if (show)
+      System.out.printf("%s%n", x);
+  }
 
   private String handcodedUnits(int code) {
     switch (code) {
-      case 216 :
-      case 217 :
+      case 216:
+      case 217:
       case 237:
       case 238:
         return "m";
-      case 235 :
+      case 235:
         return ".1 degC";
     }
     return null;
   }
 
-   /*  Grib1LevelTypeTable will go away soon
-   void writeWmoTable3() throws IOException {
-
-     Set<String> abbrevSet = new HashSet<String>();
-     List<Grib1Tables.LevelType> stuff = new ArrayList<Grib1Tables.LevelType>();
-     for (int code = 1; code < 255; code++) {
-       String desc = Grib1LevelTypeTable.getLevelDescription(code);
-       if (desc.startsWith("Unknown")) continue;
-       String abbrev = Grib1LevelTypeTable.getNameShort(code);
-       String units = Grib1LevelTypeTable.getUnits(code);
-       String datum = Grib1LevelTypeTable.getDatum(code);
-
-       if (abbrevSet.contains(abbrev))
-         System.out.printf("DUPLICATE ABBREV %s%n", abbrev);
-
-       Grib1Tables.LevelType level = new Grib1Tables.LevelType(code, desc, abbrev, units, datum);
-       level.isLayer = Grib1LevelTypeTable.isLayer(code);
-       level.isPositiveUp = Grib1LevelTypeTable.isPositiveUp(code);
-       stuff.add(level);
-     }
-
-     writeTable3Xml("WMO GRIB-1 Table 3", "Unidata transcribe WMO306_Vol_I.2_2010_en.pdf", "wmoTable3.xml", stuff);
-   }  */
+  /*
+   * Grib1LevelTypeTable will go away soon
+   * void writeWmoTable3() throws IOException {
+   * 
+   * Set<String> abbrevSet = new HashSet<String>();
+   * List<Grib1Tables.LevelType> stuff = new ArrayList<Grib1Tables.LevelType>();
+   * for (int code = 1; code < 255; code++) {
+   * String desc = Grib1LevelTypeTable.getLevelDescription(code);
+   * if (desc.startsWith("Unknown")) continue;
+   * String abbrev = Grib1LevelTypeTable.getNameShort(code);
+   * String units = Grib1LevelTypeTable.getUnits(code);
+   * String datum = Grib1LevelTypeTable.getDatum(code);
+   * 
+   * if (abbrevSet.contains(abbrev))
+   * System.out.printf("DUPLICATE ABBREV %s%n", abbrev);
+   * 
+   * Grib1Tables.LevelType level = new Grib1Tables.LevelType(code, desc, abbrev, units, datum);
+   * level.isLayer = Grib1LevelTypeTable.isLayer(code);
+   * level.isPositiveUp = Grib1LevelTypeTable.isPositiveUp(code);
+   * stuff.add(level);
+   * }
+   * 
+   * writeTable3Xml("WMO GRIB-1 Table 3", "Unidata transcribe WMO306_Vol_I.2_2010_en.pdf", "wmoTable3.xml", stuff);
+   * }
+   */
 
   //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
@@ -155,13 +163,14 @@ public class NcepHtmlScraper {
   void parseTableA() throws IOException {
     String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html";
     String base = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/";
-//    File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\ON388.TableA.htm");
-    //Document doc = Jsoup.parse(input, "UTF-8", base);
-    //System.out.printf("%s%n", doc);
+    // File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\ON388.TableA.htm");
+    // Document doc = Jsoup.parse(input, "UTF-8", base);
+    // System.out.printf("%s%n", doc);
     Document doc = Jsoup.parse(new URL(source), 10 * 1000);
 
     Element table = doc.select("table").first();
-    if (table == null) return;
+    if (table == null)
+      return;
     List<Stuff> stuff = new ArrayList<>();
     Elements rows = table.select("tr");
     for (Element row : rows) {
@@ -184,7 +193,7 @@ public class NcepHtmlScraper {
             System.out.printf("%d == %s%n", pnum, desc);
             stuff.add(new Stuff(pnum, desc));
           }
-          //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
+          // result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
         } catch (NumberFormatException e) {
           System.out.printf("*** Cant parse %s == %s%n", snum, row.text());
         }
@@ -224,31 +233,34 @@ public class NcepHtmlScraper {
       fout.write(x.getBytes(CDM.utf8Charset));
     }
 
-    if (show) System.out.printf("%s%n", x);
+    if (show)
+      System.out.printf("%s%n", x);
   }
 
 
 
   //////////////////////////////////////////////////////////////////
-  private int[] tableVersions = new int[]{2, 0, 128, 129, 130, 131, 133, 140, 0, 0, 141};
+  private int[] tableVersions = new int[] {2, 0, 128, 129, 130, 131, 133, 140, 0, 0, 141};
 
   void parseTable2() throws IOException {
     String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html";
-    //File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\on388.2011-11-18.htm");
-    //Document doc = Jsoup.parse(input, "UTF-8", "http://www.nco.ncep.noaa.gov/pmb/docs/on388/");
-    //System.out.printf("%s%n", doc);
-    Document doc = Jsoup.parse(new URL(source), 10*1000);
+    // File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\on388.2011-11-18.htm");
+    // Document doc = Jsoup.parse(input, "UTF-8", "http://www.nco.ncep.noaa.gov/pmb/docs/on388/");
+    // System.out.printf("%s%n", doc);
+    Document doc = Jsoup.parse(new URL(source), 10 * 1000);
 
     int count = 0;
     for (Element e : doc.select("big"))
       System.out.printf("%d == %s%n=%n", count++, e.text());
 
     Element body = doc.select("body").first();
-    if (body == null) return;
+    if (body == null)
+      return;
 
     Elements tables = body.select("table");
     for (int i = 0; i < tableVersions.length; i++) {
-      if (tableVersions[i] == 0) continue;
+      if (tableVersions[i] == 0)
+        continue;
       Element table = tables.select("table").get(i);
       List<Param> params = readTable2(table);
 
@@ -329,7 +341,8 @@ public class NcepHtmlScraper {
       fout.write(x.getBytes(CDM.utf8Charset));
     }
 
-    if (show) System.out.printf("%s%n", x);
+    if (show)
+      System.out.printf("%s%n", x);
   }
 
   private void writeTable2Wgrib(String name, String source, String filename, List<Param> params) throws IOException {
@@ -343,13 +356,14 @@ public class NcepHtmlScraper {
       fout.write(f.toString().getBytes(CDM.utf8Charset));
     }
 
-    if (show) System.out.printf("%s%n", f);
+    if (show)
+      System.out.printf("%s%n", f);
   }
 
   public static void main(String[] args) throws IOException {
     NcepHtmlScraper scraper = new NcepHtmlScraper();
-    //scraper.parseTable2();
-    //scraper.parseTableA();
+    // scraper.parseTable2();
+    // scraper.parseTableA();
     scraper.parseTable3();
   }
 }

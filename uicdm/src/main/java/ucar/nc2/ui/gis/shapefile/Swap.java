@@ -18,7 +18,7 @@ public class Swap {
    * Returns the short resulting from swapping 2 bytes at a specified
    * offset in a byte array.
    *
-   * @param b      the byte array
+   * @param b the byte array
    * @param offset the offset of the first byte
    * @return the short represented by the bytes
    *         <code>b[offset+1], b[offset]</code>
@@ -34,7 +34,7 @@ public class Swap {
    * Returns the int resulting from reversing 4 bytes at a specified
    * offset in a byte array.
    *
-   * @param b      the byte array
+   * @param b the byte array
    * @param offset the offset of the first byte
    * @return the int represented by the bytes
    *         <code>b[offset+3], b[offset+2], ..., b[offset]</code>
@@ -51,7 +51,7 @@ public class Swap {
    * Returns the long resulting from reversing 8 bytes at a specified
    * offset in a byte array.
    *
-   * @param b      the byte array
+   * @param b the byte array
    * @param offset the offset of the first byte
    * @return the long represented by the bytes
    *         <code>b[offset+7], b[offset+6], ..., b[offset]</code>
@@ -71,7 +71,7 @@ public class Swap {
    * Returns the float resulting from reversing 4 bytes at a specified
    * offset in a byte array.
    *
-   * @param b      the byte array
+   * @param b the byte array
    * @param offset the offset of the first byte
    * @return the float represented by the bytes
    *         <code>b[offset+3], b[offset+2], ..., b[offset]</code>
@@ -87,7 +87,7 @@ public class Swap {
    * Returns the double resulting from reversing 8 bytes at a specified
    * offset in a byte array.
    *
-   * @param b      the byte array
+   * @param b the byte array
    * @param offset the offset of the first byte
    * @return the double represented by the bytes
    *         <code>b[offset+7], b[offset+6], ..., b[offset]</code>
@@ -106,7 +106,7 @@ public class Swap {
    * Returns the char resulting from swapping 2 bytes at a specified
    * offset in a byte array.
    *
-   * @param b      the byte array
+   * @param b the byte array
    * @param offset the offset of the first byte
    * @return the char represented by the bytes
    *         <code>b[offset+1], b[offset]</code>

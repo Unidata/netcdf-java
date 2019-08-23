@@ -11,32 +11,33 @@ package ucar.nc2.iosp.hdf4;
 public class TagEnum {
   private static java.util.Map<Short, TagEnum> hash = new java.util.HashMap<>(100);
 
-  public static int SPECIAL_LINKED = 1;    /* Fixed-size Linked blocks */
-  public static int SPECIAL_EXT = 2;       /* External */
-  public static int SPECIAL_COMP = 3;      /* Compressed */
-  public static int SPECIAL_VLINKED = 4;   /* Variable-length linked blocks */
-  public static int SPECIAL_CHUNKED = 5;   /* chunked element */
-  public static int SPECIAL_BUFFERED = 6;  /* Buffered element */
-  public static int SPECIAL_COMPRAS = 7;   /* Compressed Raster element */
+  public static int SPECIAL_LINKED = 1; /* Fixed-size Linked blocks */
+  public static int SPECIAL_EXT = 2; /* External */
+  public static int SPECIAL_COMP = 3; /* Compressed */
+  public static int SPECIAL_VLINKED = 4; /* Variable-length linked blocks */
+  public static int SPECIAL_CHUNKED = 5; /* chunked element */
+  public static int SPECIAL_BUFFERED = 6; /* Buffered element */
+  public static int SPECIAL_COMPRAS = 7; /* Compressed Raster element */
 
   /*
-typedef enum
-  {
-      COMP_CODE_NONE = 0,       /* don't encode at all, just store
-      COMP_CODE_RLE,            /* for simple RLE encoding
-      COMP_CODE_NBIT,           /* for N-bit encoding
-      COMP_CODE_SKPHUFF,        /* for Skipping huffman encoding
-      COMP_CODE_DEFLATE,        /* for gzip 'deflate' encoding
-      COMP_CODE_SZIP,		        /* for szip encoding
-      COMP_CODE_INVALID,        /* invalid last code, for range checking
-      COMP_CODE_JPEG            /* _Ugly_ hack to allow JPEG images to be created with GRsetcompress
-  }  */
-  public static int COMP_CODE_NONE = 0;    // don't encode at all, just store
-  public static int COMP_CODE_RLE = 1;     // for simple RLE encoding
-  public static int COMP_CODE_NBIT = 2;    // for N-bit encoding
+   * typedef enum
+   * {
+   * COMP_CODE_NONE = 0, /* don't encode at all, just store
+   * COMP_CODE_RLE, /* for simple RLE encoding
+   * COMP_CODE_NBIT, /* for N-bit encoding
+   * COMP_CODE_SKPHUFF, /* for Skipping huffman encoding
+   * COMP_CODE_DEFLATE, /* for gzip 'deflate' encoding
+   * COMP_CODE_SZIP, /* for szip encoding
+   * COMP_CODE_INVALID, /* invalid last code, for range checking
+   * COMP_CODE_JPEG /* _Ugly_ hack to allow JPEG images to be created with GRsetcompress
+   * }
+   */
+  public static int COMP_CODE_NONE = 0; // don't encode at all, just store
+  public static int COMP_CODE_RLE = 1; // for simple RLE encoding
+  public static int COMP_CODE_NBIT = 2; // for N-bit encoding
   public static int COMP_CODE_SKPHUFF = 3; // for Skipping huffman encoding
   public static int COMP_CODE_DEFLATE = 4; // for gzip 'deflate' encoding
-  public static int COMP_CODE_SZIP = 5;    // for szip encoding
+  public static int COMP_CODE_SZIP = 5; // for szip encoding
 
   public final static TagEnum NONE = new TagEnum("NONE", "", (short) 0);
   public final static TagEnum NULL = new TagEnum("NULL", "", (short) 1);
@@ -54,7 +55,7 @@ typedef enum
   public final static TagEnum VLINKED = new TagEnum("VLINKED", "Variable-len linked-block header", (short) 50);
   public final static TagEnum VLINKED_DATA = new TagEnum("VLINKED_DATA", "Variable-len linked-block data", (short) 51);
   public final static TagEnum CHUNKED = new TagEnum("CHUNKED", "Chunked special element header", (short) 60);
-  public final static TagEnum CHUNK = new TagEnum("CHUNK", "Chunk element", (short) 61);  // 0x3d
+  public final static TagEnum CHUNK = new TagEnum("CHUNK", "Chunk element", (short) 61); // 0x3d
 
   public final static TagEnum FID = new TagEnum("FID", "File identifier", (short) 100);
   public final static TagEnum FD = new TagEnum("FD", "File description", (short) 101);
@@ -94,7 +95,7 @@ typedef enum
   public final static TagEnum T14 = new TagEnum("T14", "TEK 4014 data", (short) 602);
   public final static TagEnum T105 = new TagEnum("T105", "TEK 4105 data", (short) 603);
 
-  public final static TagEnum SDG = new TagEnum("SDG", "Scientific Data Group", (short) 700);  // obsolete
+  public final static TagEnum SDG = new TagEnum("SDG", "Scientific Data Group", (short) 700); // obsolete
   public final static TagEnum SDD = new TagEnum("SDD", "Scientific Data DimRec", (short) 701);
   public final static TagEnum SD = new TagEnum("SD", "Scientific Data", (short) 702);
   public final static TagEnum SDS = new TagEnum("SDS", "Scales", (short) 703);
@@ -126,10 +127,21 @@ typedef enum
     hash.put(code, this);
   }
 
-  public String getDesc() { return desc; }
-  public String getName() { return name; }
-  public short getCode() { return code; }
-  public String toString() { return name+" ("+code+") "+desc; }
+  public String getDesc() {
+    return desc;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public short getCode() {
+    return code;
+  }
+
+  public String toString() {
+    return name + " (" + code + ") " + desc;
+  }
 
   /**
    * Find the Tag that matches the code.
@@ -139,7 +151,8 @@ typedef enum
    */
   public static TagEnum getTag(short code) {
     TagEnum te = hash.get(code);
-    if (te == null) te = new TagEnum("UNKNOWN", "UNKNOWN", code);
+    if (te == null)
+      te = new TagEnum("UNKNOWN", "UNKNOWN", code);
     return te;
   }
 }

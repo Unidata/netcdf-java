@@ -8,12 +8,13 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.util.CancelTask;
-
 import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * FeatureDatasetFactory for Grids, using standard coord sys analysis and ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder
+ * FeatureDatasetFactory for Grids, using standard coord sys analysis and
+ * ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder
+ * 
  * @author caron
  * @since Dec 30, 2008
  */
@@ -21,19 +22,23 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
 
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     DtCoverageCSBuilder dtCoverage = DtCoverageCSBuilder.classify(ncd, errlog);
-    if (dtCoverage == null || dtCoverage.getCoverageType() == null) return null;
-    if (!match(wantFeatureType, dtCoverage.getCoverageType())) return null;
+    if (dtCoverage == null || dtCoverage.getCoverageType() == null)
+      return null;
+    if (!match(wantFeatureType, dtCoverage.getCoverageType()))
+      return null;
     return dtCoverage;
   }
 
   private boolean match(FeatureType wantFeatureType, FeatureType covType) {
-    if (wantFeatureType == null || wantFeatureType == FeatureType.ANY) return true;
+    if (wantFeatureType == null || wantFeatureType == FeatureType.ANY)
+      return true;
     // LOOK ever have to return false?
     return true;
   }
 
-  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
-    return new ucar.nc2.dt.grid.GridDataset( ncd);
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog)
+      throws IOException {
+    return new ucar.nc2.dt.grid.GridDataset(ncd);
   }
 
   public FeatureType[] getFeatureTypes() {

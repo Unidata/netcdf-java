@@ -15,6 +15,7 @@ import java.awt.event.*;
 /**
  * Wraps a field to make it resizeable by the user. Should be package private.
  * To make rubberbanding work, we need it to know what component contains it.
+ * 
  * @deprecated
  */
 
@@ -69,11 +70,10 @@ class FieldResizable extends Field {
           glassPane.remove(dragButt);
           resizeMode = false;
 
-          //JComponent comp = delegate.getEditComponent();
+          // JComponent comp = delegate.getEditComponent();
           int newWidth = (int) (comp.getWidth() + pt.getX() - startx);
           if (debug)
-            System.out.println(
-                "***FieldResizable width= " + comp.getWidth() + "  new width= " + newWidth);
+            System.out.println("***FieldResizable width= " + comp.getWidth() + "  new width= " + newWidth);
 
           Dimension d = comp.getSize();
           d.setSize(newWidth, (int) d.getHeight());
@@ -115,10 +115,12 @@ class FieldResizable extends Field {
       }
     }); // end addMouseListener
 
-    /* comp = new MyJPanel();
-    comp.setLayout(null);
-    comp.add( delegate.getEditComponent());
-    comp.add( resizeButt); */
+    /*
+     * comp = new MyJPanel();
+     * comp.setLayout(null);
+     * comp.add( delegate.getEditComponent());
+     * comp.add( resizeButt);
+     */
 
     comp = new MyPanel();
     comp.setLayout(new BorderLayout());
@@ -126,8 +128,8 @@ class FieldResizable extends Field {
     // comp.setLayout( null);
     comp.add(delegate.getEditComponent(), BorderLayout.CENTER);
     comp.add(resizeButt, BorderLayout.EAST);
-    //comp.add( delegate.getEditComponent(), new LayoutM.Constraint(null,0,0)); // , BorderLayout.CENTER);
-    //comp.add( resizeButt, new LayoutM.Constraint(delegate.getEditComponent(),1,0)); // , BorderLayout.EAST);
+    // comp.add( delegate.getEditComponent(), new LayoutM.Constraint(null,0,0)); // , BorderLayout.CENTER);
+    // comp.add( resizeButt, new LayoutM.Constraint(delegate.getEditComponent(),1,0)); // , BorderLayout.EAST);
   }
 
   /**
@@ -366,33 +368,27 @@ class FieldResizable extends Field {
     }
 
     public Rectangle getBounds() {
-      return new Rectangle(stretchedPt.x < anchorPt.x ?
-          stretchedPt.x : anchorPt.x,
-          stretchedPt.y < anchorPt.y ?
-              stretchedPt.y : anchorPt.y,
-          Math.abs(stretchedPt.x - anchorPt.x),
+      return new Rectangle(stretchedPt.x < anchorPt.x ? stretchedPt.x : anchorPt.x,
+          stretchedPt.y < anchorPt.y ? stretchedPt.y : anchorPt.y, Math.abs(stretchedPt.x - anchorPt.x),
           Math.abs(stretchedPt.y - anchorPt.y));
     }
 
     public Rectangle lastBounds() {
-      return new Rectangle(
-          lastPt.x < anchorPt.x ? lastPt.x : anchorPt.x,
-          lastPt.y < anchorPt.y ? lastPt.y : anchorPt.y,
-          Math.abs(lastPt.x - anchorPt.x),
-          Math.abs(lastPt.y - anchorPt.y));
+      return new Rectangle(lastPt.x < anchorPt.x ? lastPt.x : anchorPt.x, lastPt.y < anchorPt.y ? lastPt.y : anchorPt.y,
+          Math.abs(lastPt.x - anchorPt.x), Math.abs(lastPt.y - anchorPt.y));
     }
-  }   // RubberbandRectangle
+  } // RubberbandRectangle
 
   // debug
   private static class MyPanel extends JPanel {
 
     public void setPreferredSize(Dimension preferredSize) {
-      //System.out.println("MyPanel: setPreferredSize = "+preferredSize);
+      // System.out.println("MyPanel: setPreferredSize = "+preferredSize);
       super.setPreferredSize(preferredSize);
     }
 
     public Dimension getPreferredSize() {
-      //System.out.println("MyPanel: getPreferredSize = "+super.getPreferredSize());
+      // System.out.println("MyPanel: getPreferredSize = "+super.getPreferredSize());
       return super.getPreferredSize();
     }
   }

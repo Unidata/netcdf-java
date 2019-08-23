@@ -6,7 +6,6 @@ package thredds.client.catalog;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,12 +36,15 @@ public class Property {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Property property = (Property) o;
 
-    if (!name.equals(property.name)) return false;
+    if (!name.equals(property.name))
+      return false;
     return !(value != null ? !value.equals(property.value) : property.value != null);
   }
 
@@ -57,7 +59,7 @@ public class Property {
   public static List<Property> removeDups(List<Property> org) {
     List<Property> result = new ArrayList<>(org.size());
     for (Property p : org)
-      if (!result.contains(p))  // O(n**2)
+      if (!result.contains(p)) // O(n**2)
         result.add(p);
     return result;
   }
@@ -71,9 +73,6 @@ public class Property {
 
   @Override
   public String toString() {
-    return "Property{" +
-            "name='" + name + '\'' +
-            ", value='" + value + '\'' +
-            '}';
+    return "Property{" + "name='" + name + '\'' + ", value='" + value + '\'' + '}';
   }
 }

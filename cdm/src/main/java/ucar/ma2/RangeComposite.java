@@ -5,7 +5,6 @@
 package ucar.ma2;
 
 import javax.annotation.concurrent.Immutable;
-
 import java.util.*;
 
 /**
@@ -36,7 +35,8 @@ public class RangeComposite implements RangeIterator {
 
   @Override
   public RangeIterator setName(String name) {
-    if (name.equals(this.getName())) return this;
+    if (name.equals(this.getName()))
+      return this;
     return new RangeComposite(name, ranges);
   }
 
@@ -68,8 +68,10 @@ public class RangeComposite implements RangeIterator {
 
     @Override
     public boolean hasNext() {
-      if (current.hasNext()) return true;
-      if (!iters.hasNext()) return false;
+      if (current.hasNext())
+        return true;
+      if (!iters.hasNext())
+        return false;
       current = iters.next().iterator();
       return hasNext();
     }

@@ -32,8 +32,10 @@ public class ProxyGenerator {
   }
 
   private static void addAllMethods(ArrayList allMethods, Class c) {
-    if (c == null) return;
-    if (c == Object.class) return;
+    if (c == null)
+      return;
+    if (c == Object.class)
+      return;
     Method[] methodsArray = c.getDeclaredMethods();
     allMethods.addAll(Arrays.asList(methodsArray));
 
@@ -51,7 +53,8 @@ public class ProxyGenerator {
 
     Class[] params = m.getParameterTypes();
     for (int i = 0; i < params.length; i++) {
-      if (i > 0) out.print(", ");
+      if (i > 0)
+        out.print(", ");
       out.print(makeClassName(params[i]) + " p" + i);
     }
     out.print(")");
@@ -60,7 +63,8 @@ public class ProxyGenerator {
     if (ex.length > 0) {
       out.print(" throws ");
       for (int i = 0; i < ex.length; i++) {
-        if (i > 0) out.print(", ");
+        if (i > 0)
+          out.print(", ");
         out.print(ex[i].getName());
       }
     }
@@ -73,7 +77,8 @@ public class ProxyGenerator {
 
     out.print("proxy." + m.getName() + "(");
     for (int i = 0; i < params.length; i++) {
-      if (i > 0) out.print(",");
+      if (i > 0)
+        out.print(",");
       out.print(" p" + i);
     }
     out.println(");");

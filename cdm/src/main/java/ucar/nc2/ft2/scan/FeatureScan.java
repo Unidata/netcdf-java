@@ -11,7 +11,6 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -58,11 +57,13 @@ public class FeatureScan {
   }
 
   private void scanDirectory(File dir, java.util.List<FeatureScan.Bean> result) {
-    if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))return;
+    if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))
+      return;
 
     // get list of files
-    File[] fila= dir.listFiles();
-    if (fila == null) return;
+    File[] fila = dir.listFiles();
+    if (fila == null)
+      return;
 
     List<File> files = new ArrayList<>();
     for (File f : fila) {
@@ -81,25 +82,30 @@ public class FeatureScan {
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.contains(".gbx") || name.contains(".ncx") ||
-                name.endsWith(".xml") || name.endsWith(".pdf") || name.endsWith(".txt") || name.endsWith(".tar")) {
+        if (name.contains(".gbx") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
+            || name.endsWith(".txt") || name.endsWith(".tar")) {
           files2.remove(f);
 
         } else if (prev != null) {
 
           if (name.endsWith(".ncml")) {
             if (prev.getName().equals(stem) || prev.getName().equals(stem + ".nc"))
-               files2.remove(prev);
+              files2.remove(prev);
           } else if (name.endsWith(".bz2")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
+            if (prev.getName().equals(stem))
+              files2.remove(f);
           } else if (name.endsWith(".gz")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
+            if (prev.getName().equals(stem))
+              files2.remove(f);
           } else if (name.endsWith(".gzip")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
+            if (prev.getName().equals(stem))
+              files2.remove(f);
           } else if (name.endsWith(".zip")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
+            if (prev.getName().equals(stem))
+              files2.remove(f);
           } else if (name.endsWith(".Z")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
+            if (prev.getName().equals(stem))
+              files2.remove(f);
           }
         }
         prev = f;
@@ -141,14 +147,14 @@ public class FeatureScan {
     DtCoverageCSBuilder builder; // LOOK replace with CoverageDataset
 
     // no-arg constructor
-    public Bean() {
-    }
+    public Bean() {}
 
     public Bean(File f) {
       this.f = f;
 
-      if (debug) System.out.printf(" featureScan=%s%n", f.getPath());
-      try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())){
+      if (debug)
+        System.out.printf(" featureScan=%s%n", f.getPath());
+      try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())) {
         fileType = ds.getFileTypeId();
         coordSysBuilder = ds.findAttValueIgnoreCase(null, _Coordinate._CoordSysBuilder, "none");
 
@@ -213,9 +219,11 @@ public class FeatureScan {
     }
 
     public void setCoordMap() {
-      if (builder == null) return;
+      if (builder == null)
+        return;
       DtCoverageCS cs = builder.makeCoordSys();
-      if (cs == null || cs.getCoverageType() == null) return;
+      if (cs == null || cs.getCoverageType() == null)
+        return;
       coordMap = "f:D(" + cs.getDomainRank() + ")->R(" + cs.getRangeRank() + ")";
     }
 
@@ -228,9 +236,11 @@ public class FeatureScan {
       return ftype;
     }
 
-    /* public String getFeatureImpl() {
-      return ftImpl;
-    } */
+    /*
+     * public String getFeatureImpl() {
+     * return ftImpl;
+     * }
+     */
 
     public String getCoverage() {
       return builder == null ? "" : builder.showSummary();
@@ -238,7 +248,8 @@ public class FeatureScan {
 
     public void toString(Formatter f, boolean showInfo) {
       f.format("%s%n %s%n map = '%s'%n", getName(), getFileType(), getCoordMap());
-      if (builder != null) f.format("%n%s%n", builder.toString());
+      if (builder != null)
+        f.format("%n%s%n", builder.toString());
       // f.format("%s%n", builder.makeCoordSys()); LOOK would have to reopen
 
       if (showInfo && info != null) {
@@ -285,7 +296,8 @@ public class FeatureScan {
 
     for (int i = 1; i < arg.length; i++) {
       String s = arg[i];
-      if (s.equalsIgnoreCase("-subdirs")) subdirs = true;
+      if (s.equalsIgnoreCase("-subdirs"))
+        subdirs = true;
     }
 
     FeatureScan scanner = new FeatureScan(arg[0], subdirs);

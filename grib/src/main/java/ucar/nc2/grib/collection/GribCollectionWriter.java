@@ -40,10 +40,10 @@ class GribCollectionWriter {
   }
 
   /*
-    message Gds {
-      bytes gds = 1;                        // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
-      uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes; need center, subcenter to interpret
-    }
+   * message Gds {
+   * bytes gds = 1; // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
+   * uint32 predefinedGridDefinition = 2; // only grib1; instead of gds raw bytes; need center, subcenter to interpret
+   * }
    */
   static GribCollectionProto.Gds writeGdsProto(byte[] rawGds, int predefinedGridDefinition) {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
@@ -57,23 +57,23 @@ class GribCollectionWriter {
     return b.build();
   }
 
-    /*
-  message Coord {
-    GribAxisType axisType = 1;
-    int32 code = 2;   // time unit; level type
-    string unit = 3;
-    repeated float values = 4;
-    repeated float bound = 5; // only used if interval, then = (value, bound)
-    repeated int64 msecs = 6; // calendar date
+  /*
+   * message Coord {
+   * GribAxisType axisType = 1;
+   * int32 code = 2; // time unit; level type
+   * string unit = 3;
+   * repeated float values = 4;
+   * repeated float bound = 5; // only used if interval, then = (value, bound)
+   * repeated int64 msecs = 6; // calendar date
    */
-    GribCollectionProto.Coord writeCoordProto(CoordinateRuntime coord) {
+  GribCollectionProto.Coord writeCoordProto(CoordinateRuntime coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setAxisType( convertAxisType (coord.getType()));
+    b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
     if (coord.getUnit() != null)
       b.setUnit(coord.getUnit());
 
-    for (int idx=0; idx<coord.getSize(); idx++) {
+    for (int idx = 0; idx < coord.getSize(); idx++) {
       long runtime = coord.getRuntime(idx);
       b.addMsecs(runtime);
     }
@@ -99,7 +99,7 @@ class GribCollectionWriter {
 
   GribCollectionProto.Coord writeCoordProto(CoordinateTimeIntv coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setAxisType( convertAxisType (coord.getType()));
+    b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
     b.addMsecs(coord.getRefDate().getMillis());
@@ -122,7 +122,8 @@ class GribCollectionWriter {
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
 
-    if (coord.getUnit() != null) b.setUnit(coord.getUnit());
+    if (coord.getUnit() != null)
+      b.setUnit(coord.getUnit());
     for (VertCoordValue level : coord.getLevelSorted()) {
       if (coord.isLayer()) {
         b.addValues((float) level.getValue1());
@@ -139,9 +140,10 @@ class GribCollectionWriter {
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
 
-    if (coord.getUnit() != null) b.setUnit(coord.getUnit());
+    if (coord.getUnit() != null)
+      b.setUnit(coord.getUnit());
     for (EnsCoordValue level : coord.getEnsSorted()) {
-      b.addValues((float) level.getCode());       // lame
+      b.addValues((float) level.getCode()); // lame
       b.addBound((float) level.getEnsMember());
     }
     return b.build();
@@ -153,7 +155,7 @@ class GribCollectionWriter {
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
     CoordinateRuntime runtimeCoord = coord.getRuntimeCoordinate();
-    for (int idx=0; idx<runtimeCoord.getSize(); idx++) {
+    for (int idx = 0; idx < runtimeCoord.getSize(); idx++) {
       long runtime = runtimeCoord.getRuntime(idx);
       b.addMsecs(runtime);
     }
@@ -162,9 +164,9 @@ class GribCollectionWriter {
     b.setIsRegular(coord.isRegular());
     for (Coordinate time : coord.getTimesForSerialization()) {
       if (time.getType() == Coordinate.Type.time)
-        b.addTimes(writeCoordProto((CoordinateTime)time));
+        b.addTimes(writeCoordProto((CoordinateTime) time));
       else
-        b.addTimes(writeCoordProto((CoordinateTimeIntv)time));
+        b.addTimes(writeCoordProto((CoordinateTimeIntv) time));
     }
 
     int[] time2runtime = coord.getTime2runtime();
@@ -176,104 +178,108 @@ class GribCollectionWriter {
   }
 
   ///////////////////////////////////////////////////////
-  /* not currently used
-
-  protected GribCollectionProto.FcConfig writeConfig(FeatureCollectionConfig config) throws IOException {
-    GribCollectionProto.FcConfig.Builder b = GribCollectionProto.FcConfig.newBuilder();
-    b.setName(config.collectionName);
-    b.setCollectionSpec(config.spec);
-    b.setPartitionType(config.ptype.toString());
-    if (config.dateFormatMark != null)
-      b.setDateFormatMark(config.dateFormatMark);
-
-    FeatureCollectionConfig.GribConfig gribConfig = config.gribConfig;
-    if (gribConfig.gdsHash != null) {
-      for (Map.Entry<Integer, Integer> entry : gribConfig.gdsHash.entrySet()) {
-        GribCollectionProto.IntMap.Builder bIntMap = GribCollectionProto.IntMap.newBuilder();
-        bIntMap.setFrom(entry.getKey());
-        bIntMap.setTo(entry.getValue());
-        b.addGdsConvert(bIntMap);
-      }
-    }
-
-    b.setPdsUseGenType(gribConfig.useGenType);
-    b.setPdsUseTableVersion(gribConfig.useTableVersion);
-    b.setPdsIntvMerge(gribConfig.intvMerge);
-    b.setPdsUseCenter(gribConfig.useCenter);
-
-    if (gribConfig.intvFilter != null) {
-      b.setIntvExcludeZero(gribConfig.intvFilter.isZeroExcluded());
-      for (FeatureCollectionConfig.GribIntvFilterParam intvFilter : gribConfig.intvFilter.filterList) {
-        GribCollectionProto.IntvFilter.Builder bIntv = GribCollectionProto.IntvFilter.newBuilder();
-        bIntv.setVariableId(intvFilter.id);
-        bIntv.setIntvLength(intvFilter.intvLength);
-        bIntv.setIntvProb(intvFilter.prob);
-        b.addIntvFilter(bIntv);
-      }
-    }
-
-    // time unit convert
-    if (gribConfig.tuc != null) {
-      for (Map.Entry<Integer, Integer> entry : gribConfig.tuc.map.entrySet()) {
-        GribCollectionProto.IntMap.Builder bIntMap = GribCollectionProto.IntMap.newBuilder();
-        bIntMap.setFrom(entry.getKey());
-        bIntMap.setTo(entry.getValue());
-        b.addTimeUnitConvert(bIntMap);
-      }
-    }
-
-    if (gribConfig.userTimeUnit != null)
-      b.setUserTimeUnit(gribConfig.userTimeUnit.toString());
-
-    return b.build();
-  }
-
-  protected FeatureCollectionConfig readConfig(boolean isGrib1, GribCollectionProto.FcConfig pconfig) throws IOException {
-
-    FeatureCollectionConfig config = new FeatureCollectionConfig();
-    config.name = pconfig.getName();
-    config.collectionName = pconfig.getName();
-    config.type = isGrib1 ? FeatureCollectionType.GRIB1 : FeatureCollectionType.GRIB2;
-    config.spec = pconfig.getCollectionSpec();
-    config.ptype = FeatureCollectionConfig.PartitionType.valueOf(pconfig.getPartitionType());
-    if (pconfig.getDateFormatMark().length() > 0)
-      config.dateFormatMark = pconfig.getDateFormatMark();
-
-    if ( pconfig.getGdsConvertCount() > 0) {
-      config.gribConfig.gdsHash =  new HashMap<>();
-      for (GribCollectionProto.IntMap pIntMap : pconfig.getGdsConvertList()) {
-        config.gribConfig.gdsHash.put(pIntMap.getFrom(), pIntMap.getTo());
-      }
-    }
-
-    config.gribConfig.useGenType = pconfig.getPdsUseGenType();
-    config.gribConfig.useTableVersion = pconfig.getPdsUseTableVersion();
-    config.gribConfig.intvMerge = pconfig.getPdsIntvMerge();
-    config.gribConfig.useCenter = pconfig.getPdsUseCenter();
-
-    boolean isZeroExcluded = pconfig.getIntvExcludeZero();
-    if ( isZeroExcluded || pconfig.getIntvFilterCount() > 0) {
-      config.gribConfig.intvFilter =  new FeatureCollectionConfig.GribIntvFilter();
-      config.gribConfig.intvFilter.isZeroExcluded = isZeroExcluded;
-      config.gribConfig.intvFilter.filterList = new ArrayList<>();
-      for (GribCollectionProto.IntvFilter pi :  pconfig.getIntvFilterList()) {
-        int prob =  pi.getIntvProb();
-        config.gribConfig.intvFilter.filterList.add(new FeatureCollectionConfig.GribIntvFilterParam(pi.getVariableId(), pi.getIntvLength(), prob));
-      }
-    }
-
-    if ( pconfig.getTimeUnitConvertCount() > 0) {
-      config.gribConfig.tuc =  new FeatureCollectionConfig.TimeUnitConverterHash();
-      for (GribCollectionProto.IntMap pIntMap :  pconfig.getTimeUnitConvertList()) {
-        config.gribConfig.tuc.map.put(pIntMap.getFrom(), pIntMap.getTo());
-      }
-    }
-
-    if (pconfig.getDateFormatMark().length() > 0)
-      config.gribConfig.setUserTimeUnit(pconfig.getDateFormatMark());
-
-    return config;
-  } */
+  /*
+   * not currently used
+   * 
+   * protected GribCollectionProto.FcConfig writeConfig(FeatureCollectionConfig config) throws IOException {
+   * GribCollectionProto.FcConfig.Builder b = GribCollectionProto.FcConfig.newBuilder();
+   * b.setName(config.collectionName);
+   * b.setCollectionSpec(config.spec);
+   * b.setPartitionType(config.ptype.toString());
+   * if (config.dateFormatMark != null)
+   * b.setDateFormatMark(config.dateFormatMark);
+   * 
+   * FeatureCollectionConfig.GribConfig gribConfig = config.gribConfig;
+   * if (gribConfig.gdsHash != null) {
+   * for (Map.Entry<Integer, Integer> entry : gribConfig.gdsHash.entrySet()) {
+   * GribCollectionProto.IntMap.Builder bIntMap = GribCollectionProto.IntMap.newBuilder();
+   * bIntMap.setFrom(entry.getKey());
+   * bIntMap.setTo(entry.getValue());
+   * b.addGdsConvert(bIntMap);
+   * }
+   * }
+   * 
+   * b.setPdsUseGenType(gribConfig.useGenType);
+   * b.setPdsUseTableVersion(gribConfig.useTableVersion);
+   * b.setPdsIntvMerge(gribConfig.intvMerge);
+   * b.setPdsUseCenter(gribConfig.useCenter);
+   * 
+   * if (gribConfig.intvFilter != null) {
+   * b.setIntvExcludeZero(gribConfig.intvFilter.isZeroExcluded());
+   * for (FeatureCollectionConfig.GribIntvFilterParam intvFilter : gribConfig.intvFilter.filterList) {
+   * GribCollectionProto.IntvFilter.Builder bIntv = GribCollectionProto.IntvFilter.newBuilder();
+   * bIntv.setVariableId(intvFilter.id);
+   * bIntv.setIntvLength(intvFilter.intvLength);
+   * bIntv.setIntvProb(intvFilter.prob);
+   * b.addIntvFilter(bIntv);
+   * }
+   * }
+   * 
+   * // time unit convert
+   * if (gribConfig.tuc != null) {
+   * for (Map.Entry<Integer, Integer> entry : gribConfig.tuc.map.entrySet()) {
+   * GribCollectionProto.IntMap.Builder bIntMap = GribCollectionProto.IntMap.newBuilder();
+   * bIntMap.setFrom(entry.getKey());
+   * bIntMap.setTo(entry.getValue());
+   * b.addTimeUnitConvert(bIntMap);
+   * }
+   * }
+   * 
+   * if (gribConfig.userTimeUnit != null)
+   * b.setUserTimeUnit(gribConfig.userTimeUnit.toString());
+   * 
+   * return b.build();
+   * }
+   * 
+   * protected FeatureCollectionConfig readConfig(boolean isGrib1, GribCollectionProto.FcConfig pconfig) throws
+   * IOException {
+   * 
+   * FeatureCollectionConfig config = new FeatureCollectionConfig();
+   * config.name = pconfig.getName();
+   * config.collectionName = pconfig.getName();
+   * config.type = isGrib1 ? FeatureCollectionType.GRIB1 : FeatureCollectionType.GRIB2;
+   * config.spec = pconfig.getCollectionSpec();
+   * config.ptype = FeatureCollectionConfig.PartitionType.valueOf(pconfig.getPartitionType());
+   * if (pconfig.getDateFormatMark().length() > 0)
+   * config.dateFormatMark = pconfig.getDateFormatMark();
+   * 
+   * if ( pconfig.getGdsConvertCount() > 0) {
+   * config.gribConfig.gdsHash = new HashMap<>();
+   * for (GribCollectionProto.IntMap pIntMap : pconfig.getGdsConvertList()) {
+   * config.gribConfig.gdsHash.put(pIntMap.getFrom(), pIntMap.getTo());
+   * }
+   * }
+   * 
+   * config.gribConfig.useGenType = pconfig.getPdsUseGenType();
+   * config.gribConfig.useTableVersion = pconfig.getPdsUseTableVersion();
+   * config.gribConfig.intvMerge = pconfig.getPdsIntvMerge();
+   * config.gribConfig.useCenter = pconfig.getPdsUseCenter();
+   * 
+   * boolean isZeroExcluded = pconfig.getIntvExcludeZero();
+   * if ( isZeroExcluded || pconfig.getIntvFilterCount() > 0) {
+   * config.gribConfig.intvFilter = new FeatureCollectionConfig.GribIntvFilter();
+   * config.gribConfig.intvFilter.isZeroExcluded = isZeroExcluded;
+   * config.gribConfig.intvFilter.filterList = new ArrayList<>();
+   * for (GribCollectionProto.IntvFilter pi : pconfig.getIntvFilterList()) {
+   * int prob = pi.getIntvProb();
+   * config.gribConfig.intvFilter.filterList.add(new FeatureCollectionConfig.GribIntvFilterParam(pi.getVariableId(),
+   * pi.getIntvLength(), prob));
+   * }
+   * }
+   * 
+   * if ( pconfig.getTimeUnitConvertCount() > 0) {
+   * config.gribConfig.tuc = new FeatureCollectionConfig.TimeUnitConverterHash();
+   * for (GribCollectionProto.IntMap pIntMap : pconfig.getTimeUnitConvertList()) {
+   * config.gribConfig.tuc.map.put(pIntMap.getFrom(), pIntMap.getTo());
+   * }
+   * }
+   * 
+   * if (pconfig.getDateFormatMark().length() > 0)
+   * config.gribConfig.setUserTimeUnit(pconfig.getDateFormatMark());
+   * 
+   * return config;
+   * }
+   */
 
   public static GribCollectionProto.GribAxisType convertAxisType(Coordinate.Type type) {
     switch (type) {

@@ -7,7 +7,6 @@ package ucar.nc2.stream;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-
 import java.io.*;
 import java.nio.ByteOrder;
 
@@ -32,8 +31,10 @@ public class NcStreamWriter {
 
     NcStreamProto.Header.Builder headerBuilder = NcStreamProto.Header.newBuilder();
     headerBuilder.setLocation(location == null ? ncfile.getLocation() : location);
-    if (ncfile.getTitle() != null) headerBuilder.setTitle(ncfile.getTitle());
-    if (ncfile.getId() != null) headerBuilder.setId(ncfile.getId());
+    if (ncfile.getTitle() != null)
+      headerBuilder.setTitle(ncfile.getTitle());
+    if (ncfile.getId() != null)
+      headerBuilder.setId(ncfile.getId());
     headerBuilder.setRoot(rootBuilder);
     headerBuilder.setVersion(currentVersion);
 
@@ -55,17 +56,21 @@ public class NcStreamWriter {
     size += writeBytes(out, NcStream.MAGIC_HEADER);
     byte[] b = header.toByteArray();
     size += NcStream.writeVInt(out, b.length); // len
-    if (show) System.out.println("Write Header len=" + b.length);
+    if (show)
+      System.out.println("Write Header len=" + b.length);
 
     // payload
     size += writeBytes(out, b);
-    if (show) System.out.println(" header size=" + size);
+    if (show)
+      System.out.println(" header size=" + size);
 
     return size;
   }
 
-  public long sendData(Variable v, Section section, OutputStream out, NcStreamCompression compress) throws IOException, InvalidRangeException {
-    if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
+  public long sendData(Variable v, Section section, OutputStream out, NcStreamCompression compress)
+      throws IOException, InvalidRangeException {
+    if (show)
+      System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
     // length of data uncompressed
     long uncompressedLength = section.computeSize();
@@ -85,7 +90,7 @@ public class NcStreamWriter {
       assert (v instanceof Structure);
       int count = 0;
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
-      //coverity[FB.BC_UNCONFIRMED_CAST]
+      // coverity[FB.BC_UNCONFIRMED_CAST]
       try (StructureDataIterator iter = seq.getStructureIterator(-1)) {
         while (iter.hasNext()) {
           size += writeBytes(out, NcStream.MAGIC_VDATA); // magic
@@ -96,31 +101,35 @@ public class NcStreamWriter {
         }
       }
       size += writeBytes(out, NcStream.MAGIC_VEND);
-      if (show) System.out.printf(" NcStreamWriter sent %d seqData bytes = %d%n", count, size);
+      if (show)
+        System.out.printf(" NcStreamWriter sent %d seqData bytes = %d%n", count, size);
       return size;
     }
 
     // version < 3
     if (v.getDataType() == DataType.STRUCTURE) {
-      ArrayStructure abb = (ArrayStructure) v.read();   // read all - LOOK break this up into chunks if needed
-      //coverity[FB.BC_UNCONFIRMED_CAST]
+      ArrayStructure abb = (ArrayStructure) v.read(); // read all - LOOK break this up into chunks if needed
+      // coverity[FB.BC_UNCONFIRMED_CAST]
       size += NcStream.encodeArrayStructure(abb, bo, out);
-      if (show) System.out.printf(" NcStreamWriter sent ArrayStructure bytes = %d%n", size);
+      if (show)
+        System.out.printf(" NcStreamWriter sent ArrayStructure bytes = %d%n", size);
       return size;
     }
 
     // Writing the size of the block is handled for us.
-    out = compress.setupStream(out, (int)uncompressedLength);
+    out = compress.setupStream(out, (int) uncompressedLength);
     size += v.readToStream(section, out);
     out.flush();
     return size;
   }
 
   // LOOK compression not used
-  public long sendData2(Variable v, Section section, OutputStream out, NcStreamCompression compress) throws IOException, InvalidRangeException {
-    if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
+  public long sendData2(Variable v, Section section, OutputStream out, NcStreamCompression compress)
+      throws IOException, InvalidRangeException {
+    if (show)
+      System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
-    boolean isVlen = v.isVariableLength(); //  && v.getRank() > 1;
+    boolean isVlen = v.isVariableLength(); // && v.getRank() > 1;
     if (isVlen)
       v.read(section);
     NcStreamDataCol encoder = new NcStreamDataCol();
@@ -146,7 +155,8 @@ public class NcStreamWriter {
   public long streamAll(OutputStream out) throws IOException, InvalidRangeException {
     long size = writeBytes(out, NcStream.MAGIC_START);
     size += sendHeader(out);
-    if (show) System.out.printf(" data starts at= %d%n", size);
+    if (show)
+      System.out.printf(" data starts at= %d%n", size);
 
     for (Variable v : ncfile.getVariables()) {
       NcStreamCompression compress;
@@ -156,7 +166,8 @@ public class NcStreamWriter {
         if (compType.equalsIgnoreCase(CDM.COMPRESS_DEFLATE)) {
           compress = NcStreamCompression.deflate();
         } else {
-          if (show) System.out.printf(" Unknown compression type %s. Defaulting to none.%n", compType);
+          if (show)
+            System.out.printf(" Unknown compression type %s. Defaulting to none.%n", compType);
           compress = NcStreamCompression.none();
         }
       } else {
@@ -164,8 +175,9 @@ public class NcStreamWriter {
       }
 
       long vsize = v.getSize() * v.getElementSize();
-      //if (vsize < sizeToCache) continue; // in the header;
-      if (show) System.out.printf(" var %s len=%d starts at= %d%n", v.getFullName(), vsize, size);
+      // if (vsize < sizeToCache) continue; // in the header;
+      if (show)
+        System.out.printf(" var %s len=%d starts at= %d%n", v.getFullName(), vsize, size);
 
       if (vsize > maxChunk) {
         size += copyChunks(out, v, maxChunk, compress);
@@ -175,11 +187,13 @@ public class NcStreamWriter {
     }
 
     size += writeBytes(out, NcStream.MAGIC_END);
-    if (show) System.out.printf("total size= %d%n", size);
+    if (show)
+      System.out.printf("total size= %d%n", size);
     return size;
   }
 
-  private long copyChunks(OutputStream out, Variable oldVar, long maxChunkSize, NcStreamCompression compress) throws IOException {
+  private long copyChunks(OutputStream out, Variable oldVar, long maxChunkSize, NcStreamCompression compress)
+      throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(oldVar.getShape());
     long size = 0;

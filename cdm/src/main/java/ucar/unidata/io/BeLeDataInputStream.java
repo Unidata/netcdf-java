@@ -13,7 +13,7 @@ import java.net.URL;
 
 /**
  * Big-endian little-endian data input stream, from which numbers in
- * both big- and little-endian representations can be read.  This is
+ * both big- and little-endian representations can be read. This is
  * needed for ESRI shapefiles, for example, since they contain both
  * big- and little-endian representations.
  *
@@ -61,13 +61,9 @@ public class BeLeDataInputStream extends DataInputStream {
    *
    * @return int created from next 4 bytes in stream, in littleEndian order
    */
-  public int readLEInt()
-          throws IOException {
+  public int readLEInt() throws IOException {
     readFully(w, 0, 4);
-    return (w[3] & 0xff) << 24 |
-            (w[2] & 0xff) << 16 |
-            (w[1] & 0xff) << 8 |
-            (w[0] & 0xff);
+    return (w[3] & 0xff) << 24 | (w[2] & 0xff) << 16 | (w[1] & 0xff) << 8 | (w[0] & 0xff);
   }
 
   /**
@@ -82,7 +78,8 @@ public class BeLeDataInputStream extends DataInputStream {
   /**
    * Reads <code>n</code> little-endian doubles from a random access file.
    * <p/>
-   * <p> This method is provided for speed when accessing a number
+   * <p>
+   * This method is provided for speed when accessing a number
    * of consecutive values of the same type.
    *
    * @param d the buffer into which the doubles are read
@@ -111,26 +108,21 @@ public class BeLeDataInputStream extends DataInputStream {
    */
   public long readLELong() throws IOException {
     readFully(w, 0, 8);
-    return
-            (long) (w[7] & 0xff) << 56 |
-                    (long) (w[6] & 0xff) << 48 |
-                    (long) (w[5] & 0xff) << 40 |
-                    (long) (w[4] & 0xff) << 32 |
-                    (long) (w[3] & 0xff) << 24 |
-                    (long) (w[2] & 0xff) << 16 |
-                    (long) (w[1] & 0xff) << 8 |
-                    (long) (w[0] & 0xff);
+    return (long) (w[7] & 0xff) << 56 | (long) (w[6] & 0xff) << 48 | (long) (w[5] & 0xff) << 40
+        | (long) (w[4] & 0xff) << 32 | (long) (w[3] & 0xff) << 24 | (long) (w[2] & 0xff) << 16
+        | (long) (w[1] & 0xff) << 8 | (long) (w[0] & 0xff);
   }
 
 
   /**
    * Reads <code>n</code> little-endian longs from a random access file.
    * <p/>
-   * <p> This method is provided for speed when accessing a number
+   * <p>
+   * This method is provided for speed when accessing a number
    * of consecutive values of the same type.
    *
    * @param lbuf the buffer into which the longs are read
-   * @param n    the number of little-endian longs to read
+   * @param n the number of little-endian longs to read
    */
   public final void readLELongs(long[] lbuf, int n) throws IOException {
     int nLeft = n;
@@ -142,15 +134,10 @@ public class BeLeDataInputStream extends DataInputStream {
       readFully(byteWorkSpace, 0, 8 * nToRead);
       int j = 0;
       for (int i = 0; i < nToRead; i++) {
-        lbuf[lCount++] =
-                (long) (byteWorkSpace[j] & 0xff) |
-                        (long) (byteWorkSpace[j + 1] & 0xff) << 8 |
-                        (long) (byteWorkSpace[j + 2] & 0xff) << 16 |
-                        (long) (byteWorkSpace[j + 3] & 0xff) << 24 |
-                        (long) (byteWorkSpace[j + 4] & 0xff) << 32 |
-                        (long) (byteWorkSpace[j + 5] & 0xff) << 40 |
-                        (long) (byteWorkSpace[j + 6] & 0xff) << 48 |
-                        (long) (byteWorkSpace[j + 7] & 0xff) << 56;
+        lbuf[lCount++] = (long) (byteWorkSpace[j] & 0xff) | (long) (byteWorkSpace[j + 1] & 0xff) << 8
+            | (long) (byteWorkSpace[j + 2] & 0xff) << 16 | (long) (byteWorkSpace[j + 3] & 0xff) << 24
+            | (long) (byteWorkSpace[j + 4] & 0xff) << 32 | (long) (byteWorkSpace[j + 5] & 0xff) << 40
+            | (long) (byteWorkSpace[j + 6] & 0xff) << 48 | (long) (byteWorkSpace[j + 7] & 0xff) << 56;
         j += 8;
       }
       nLeft -= nToRead;

@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -18,6 +17,7 @@ import java.nio.channels.WritableByteChannel;
 
 /**
  * Test scan bufr messages
+ * 
  * @author caron
  * @since May 9, 2008
  */
@@ -54,22 +54,28 @@ public class Scanner {
     Collections.sort(list);
 
     for (File f : list) {
-      if (f.getName().endsWith("bfx")) continue;
-      if (f.getName().endsWith("txt")) continue;
-      if (f.getName().endsWith("zip")) continue;
-      if (f.getName().endsWith("csh")) continue;
-      if (f.getName().endsWith("rtf")) continue;
+      if (f.getName().endsWith("bfx"))
+        continue;
+      if (f.getName().endsWith("txt"))
+        continue;
+      if (f.getName().endsWith("zip"))
+        continue;
+      if (f.getName().endsWith("csh"))
+        continue;
+      if (f.getName().endsWith("rtf"))
+        continue;
 
       if (f.isDirectory()) {
-        if (subdirs) testAllInDir(f, subdirs, closure);
+        if (subdirs)
+          testAllInDir(f, subdirs, closure);
       } else {
-          try {
-            closure.run(f.getPath());
-          } catch (Exception ioe) {
-            System.out.println("Failed on " + f.getPath() + ": " + ioe.getMessage());
-            ioe.printStackTrace();
-          }
+        try {
+          closure.run(f.getPath());
+        } catch (Exception ioe) {
+          System.out.println("Failed on " + f.getPath() + ": " + ioe.getMessage());
+          ioe.printStackTrace();
         }
+      }
     }
   }
 
@@ -84,7 +90,8 @@ public class Scanner {
       int count = 0;
       while (scan.hasNext()) {
         Message m = scan.next();
-        if (m == null) continue;
+        if (m == null)
+          continue;
         m.dump(out);
 
         if (!m.isTablesComplete()) {
@@ -92,11 +99,11 @@ public class Scanner {
         }
 
         long startPos = m.is.getStartPos();
-        out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d\n",
-                count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
-                (m.dataSection.getDataPos() + m.dataSection.getDataLength()));
-        out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
-                m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
+        out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d\n", count, m.getReferenceTime(), startPos,
+            m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
+            (m.dataSection.getDataPos() + m.dataSection.getDataLength()));
+        out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n", m.getNumberDatasets(),
+            m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
 
         count++;
         break;
@@ -116,8 +123,9 @@ public class Scanner {
       int count = 0;
       while (scan.hasNext()) {
         Message m = scan.next();
-        if (m == null) continue;
-        //if (count == 0) new BufrDump2().dump(out, m);
+        if (m == null)
+          continue;
+        // if (count == 0) new BufrDump2().dump(out, m);
 
         if (!m.isTablesComplete()) {
           out.format("**INCOMPLETE ");
@@ -125,11 +133,11 @@ public class Scanner {
 
         if (mode >= 0) {
           long startPos = m.is.getStartPos();
-          out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]%n",
-                  count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
-                  (m.dataSection.getDataPos() + m.dataSection.getDataLength()), m.hashCode());
-          out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s%n",
-                  m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
+          out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]%n", count, m.getReferenceTime(),
+              startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
+              (m.dataSection.getDataPos() + m.dataSection.getDataLength()), m.hashCode());
+          out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s%n", m.getNumberDatasets(),
+              m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
         }
 
         if (mode == 2)
@@ -137,13 +145,15 @@ public class Scanner {
         else if (mode == 1)
           m.dumpHeader(out);
 
-        if (mode >= 0) out.format("%n");
+        if (mode >= 0)
+          out.format("%n");
         count++;
       }
 
       long took = (System.nanoTime() - start);
       double rate = (took > 0) ? ((double) (1000 * 1000) * count / took) : 0.0;
-      out.format(" nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec%n", count, scan.getTotalObs(), took / (1000 * 1000), rate);
+      out.format(" nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec%n", count, scan.getTotalObs(),
+          took / (1000 * 1000), rate);
       return scan.getTotalObs();
     }
   }
@@ -159,8 +169,9 @@ public class Scanner {
       int count = 0;
       while (scan.hasNext()) {
         Message m = scan.next();
-        if (m == null) continue;
-        //if (count == 0) new BufrDump2().dump(out, m);
+        if (m == null)
+          continue;
+        // if (count == 0) new BufrDump2().dump(out, m);
 
         out.format(" %s time=%s%n", m.getHeader(), m.getReferenceTime());
         count++;
@@ -174,7 +185,8 @@ public class Scanner {
 
   static void scanMixedMessageTypes(String filename) throws IOException {
 
-    //RandomAccessFile raf = new RandomAccessFile("C:\\data\\bufr\\edition3\\idd\\radiosonde\\SoundingVerticalRadiosonde4.bufr", "r");
+    // RandomAccessFile raf = new
+    // RandomAccessFile("C:\\data\\bufr\\edition3\\idd\\radiosonde\\SoundingVerticalRadiosonde4.bufr", "r");
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
       out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
 
@@ -182,12 +194,14 @@ public class Scanner {
       int count = 0;
       while (scan.hasNext()) {
         Message m = scan.next();
-        if (m == null) continue;
+        if (m == null)
+          continue;
 
         List<String> desc = m.dds.getDescriptors();
         String key = mixedSet.get(desc);
         if (null == key) {
-          out.format(" new Message Type msg=%d <%s> ndesc=%d hashCode=%d%n", count, m.getHeader(), desc.size(), desc.hashCode());
+          out.format(" new Message Type msg=%d <%s> ndesc=%d hashCode=%d%n", count, m.getHeader(), desc.size(),
+              desc.hashCode());
           m.getRootDataDescriptor();
           m.dump(out);
           mixedSet.put(desc, filename);
@@ -210,7 +224,8 @@ public class Scanner {
       int count = 0;
       while (scan.hasNext()) {
         Message m = scan.next();
-        if (m == null) continue;
+        if (m == null)
+          continue;
         if (!m.isTablesComplete()) {
           out.format("Message " + count + " INCOMPLETE TABLES%n");
           count++;
@@ -224,20 +239,25 @@ public class Scanner {
         int nbitsCounted = m.getTotalBits();
         int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
 
-        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number of bytes
+        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not
+                                                                                             // even number of bytes
 
-        if (!ok) out.format("*** BAD ");
+        if (!ok)
+          out.format("*** BAD ");
         long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
-        out.format("Message %d nds=%d compressed=%s vlen=%s countBits= %d givenBits=%d data start=0x%x end=0x%x",
-                count, m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
-                nbitsCounted, nbitsGiven, m.dataSection.getDataPos(), last);
+        out.format("Message %d nds=%d compressed=%s vlen=%s countBits= %d givenBits=%d data start=0x%x end=0x%x", count,
+            m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(), nbitsCounted, nbitsGiven,
+            m.dataSection.getDataPos(), last);
         out.format(" countBytes= %d dataSize=%d", m.getCountedDataBytes(), m.dataSection.getDataLength());
         out.format("%n");
-      
-      /* if (m.getCountedDataBytes() != m.dataSection.dataLength) {
-        out.format(" extra=");
-        showBytes(out, raf, m.dataSection.dataPos + m.getCountedDataBytes(), m.dataSection.dataLength - m.getCountedDataBytes());
-      } */
+
+        /*
+         * if (m.getCountedDataBytes() != m.dataSection.dataLength) {
+         * out.format(" extra=");
+         * showBytes(out, raf, m.dataSection.dataPos + m.getCountedDataBytes(), m.dataSection.dataLength -
+         * m.getCountedDataBytes());
+         * }
+         */
         count++;
       }
       out.format("nmsgs= %d nobs = %d%n", count, scan.getTotalObs());
@@ -261,7 +281,7 @@ public class Scanner {
 
   static void scanMessageTypes(String filename) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      //out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
+      // out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
       file_size += raf.length();
 
       MessageScanner scan = new MessageScanner(raf);
@@ -284,7 +304,7 @@ public class Scanner {
             }
             nbad[0]++;
             bad_tables++;
-            //continue; dont exclude
+            // continue; dont exclude
           }
         } catch (UnsupportedOperationException e) {
           m.dumpHeader(out);
@@ -302,17 +322,17 @@ public class Scanner {
         // map dds -> wmoheader
         Map<String, Counter> keys = typeMap.get(m);
         if (null == keys) {
-          //out.format("  new Descriptor Type msg %d ttaaii=%s hashCode=%d cat=%s%n",
-          //        count, ttaaii, m.hashCode(), m.getCategory());
-          //new BufrDump2().dump(out, m);
+          // out.format(" new Descriptor Type msg %d ttaaii=%s hashCode=%d cat=%s%n",
+          // count, ttaaii, m.hashCode(), m.getCategory());
+          // new BufrDump2().dump(out, m);
           keys = new HashMap<String, Counter>();
           keys.put(ttaaii, new Counter(ttaaii));
           typeMap.put(m, keys);
         }
         Counter c = keys.get(ttaaii);
         if (c == null) {
-          //out.format("  msg %d has different ttaaii = %s hashcode=%d cat=%s%n",
-          //        count, ttaaii, m.hashCode(), m.getCategory());
+          // out.format(" msg %d has different ttaaii = %s hashcode=%d cat=%s%n",
+          // count, ttaaii, m.hashCode(), m.getCategory());
           c = new Counter(ttaaii);
           keys.put(ttaaii, c);
         }
@@ -326,7 +346,8 @@ public class Scanner {
           headerMap.put(ttaaii, mtypes);
           mtypes.add(m);
         } else if (!mtypes.contains(m)) {
-          //out.format(" Different desc for header %s hashCode=%d prev hashcode=%d%n", ttaaii, desc.hashCode(), hdesc.hashCode());
+          // out.format(" Different desc for header %s hashCode=%d prev hashcode=%d%n", ttaaii, desc.hashCode(),
+          // hdesc.hashCode());
           mtypes.add(m);
           total_different++;
         }
@@ -341,7 +362,8 @@ public class Scanner {
 
         count++;
       }
-      out.format(filename + " total_msgs= %d good=%d total_obs = %d%n", scan.getTotalMessages(), count, scan.getTotalObs());
+      out.format(filename + " total_msgs= %d good=%d total_obs = %d%n", scan.getTotalMessages(), count,
+          scan.getTotalObs());
       total_msgs += scan.getTotalMessages();
       good_msgs += count;
       total_obs += scan.getTotalObs();
@@ -352,7 +374,7 @@ public class Scanner {
 
     out.format("%n===============================================%n");
     out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d total_obs=%d%n",
-            total_msgs, good_msgs, bad_msgs, bad_tables, bad_operation, total_obs);
+        total_msgs, good_msgs, bad_msgs, bad_tables, bad_operation, total_obs);
     int avg_msg = (int) (file_size / total_msgs);
     int avg_obs = (int) (total_obs / total_msgs);
     out.format("total_bytes=%d avg_msg_size=%d avg_obs/msg=%d %n", file_size, avg_msg, avg_obs);
@@ -360,8 +382,8 @@ public class Scanner {
     int good_dds = typeMap.keySet().size();
     int bad_dds = badMap.keySet().size();
     int total_wmo = headerMap.keySet().size();
-    out.format(" good_dds=%d good_msgs=%d%n",good_dds, good_msgs);
-    out.format(" incomplete_dds=%d incomplete_msgs=%d%n",bad_dds, bad_tables);
+    out.format(" good_dds=%d good_msgs=%d%n", good_dds, good_msgs);
+    out.format(" incomplete_dds=%d incomplete_msgs=%d%n", bad_dds, bad_tables);
     out.format(" wmoHeaders=%d bad_wmo=%d wmo_multipleDDS=%d%n", total_wmo, bad_wmo, total_different);
 
     out.format("%nIncomplete Tables%n");
@@ -382,7 +404,8 @@ public class Scanner {
     for (Message m : typeMap.keySet()) {
       out.format(" [0x%x] ", m.hashCode());
       m.dumpHeaderShort(out);
-      //out.format("Message Type %d ndesc=%d cat = %s%n", m.hashCode(), m.dds.getDescriptors().size(), m.getCategory());
+      // out.format("Message Type %d ndesc=%d cat = %s%n", m.hashCode(), m.dds.getDescriptors().size(),
+      // m.getCategory());
       int totalm = 0, totalo = 0;
       Map<String, Counter> keys = typeMap.get(m);
       for (String key : keys.keySet()) {
@@ -392,9 +415,9 @@ public class Scanner {
         totalo += cc.countObs;
       }
       if (csv != null)
-        csv.format("Ox%x, %s, %d, %d, %s, %s, %s, %s, %s %n",
-          m.hashCode(), extractWMO(m.getHeader()), totalm, totalo, m.isTablesComplete(),
-          m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.is.getBufrEdition(), m.getLookup().getCategoryNo());
+        csv.format("Ox%x, %s, %d, %d, %s, %s, %s, %s, %s %n", m.hashCode(), extractWMO(m.getHeader()), totalm, totalo,
+            m.isTablesComplete(), m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.is.getBufrEdition(),
+            m.getLookup().getCategoryNo());
     }
 
     int nwmo = 0;
@@ -406,12 +429,13 @@ public class Scanner {
     Collections.sort(headers);
     for (String wmo : headers) {
       List<Message> msgs = headerMap.get(wmo);
-      if (msgs.size() > 1) continue;
+      if (msgs.size() > 1)
+        continue;
       Message m = msgs.get(0);
-      Counter hc = headerCount.get( extractWMO(m.getHeader()));
+      Counter hc = headerCount.get(extractWMO(m.getHeader()));
       int count = (hc == null) ? 0 : hc.count;
-      out.format(" WMO %s (%d) cat= %s (%s), center = %s (%s) [0x%x]%n", wmo, count,
-              m.getLookup().getCategoryName(), m.getLookup().getCategoryNo(), m.getLookup().getCenterName(), m.getLookup().getCenterNo(), m.hashCode());
+      out.format(" WMO %s (%d) cat= %s (%s), center = %s (%s) [0x%x]%n", wmo, count, m.getLookup().getCategoryName(),
+          m.getLookup().getCategoryNo(), m.getLookup().getCenterName(), m.getLookup().getCenterNo(), m.hashCode());
       total_wmo_count += count;
       nwmo++;
     }
@@ -420,13 +444,15 @@ public class Scanner {
     out.format("%nMap wmoHeaders -> dds (multiple)%n");
     for (String wmo : headers) {
       List<Message> msgs = headerMap.get(wmo);
-      if (msgs.size() <= 1) continue;
+      if (msgs.size() <= 1)
+        continue;
       out.format("--WMO %s has %d types %n", wmo, msgs.size());
     }
 
     for (String wmo : headers) {
       List<Message> msgs = headerMap.get(wmo);
-      if (msgs.size() <= 1) continue;
+      if (msgs.size() <= 1)
+        continue;
 
       out.format("--WMO %s has %d types %n", wmo, msgs.size());
       for (Message m : msgs) {
@@ -441,7 +467,8 @@ public class Scanner {
   static String extractWMO2(String header) {
     // default is to get second space-delineated token
     StringTokenizer stoker = new StringTokenizer(header);
-    if (stoker.hasMoreTokens()) stoker.nextToken();
+    if (stoker.hasMoreTokens())
+      stoker.nextToken();
     if (stoker.hasMoreTokens()) {
       String result = stoker.nextToken();
       char first = result.charAt(0);
@@ -462,21 +489,23 @@ public class Scanner {
 
     out.format("***header= %s%n", header);
     return null;
-    /* int pos = header.indexOf('I');
-    if (pos > 0)
-      header = header.substring(pos);
-    pos = header.indexOf(' ');
-    if (pos > 0)
-      header = header.substring(0, pos);
-    return header; */
+    /*
+     * int pos = header.indexOf('I');
+     * if (pos > 0)
+     * header = header.substring(pos);
+     * pos = header.indexOf(' ');
+     * if (pos > 0)
+     * header = header.substring(0, pos);
+     * return header;
+     */
   }
 
   private static final Pattern wmoPattern = Pattern.compile(".*([IJ]..... ....) .*");
 
   static String extractWMO(String header) {
-    Matcher matcher = wmoPattern.matcher( header);
+    Matcher matcher = wmoPattern.matcher(header);
     if (!matcher.matches()) {
-      //out.format("***header failed= %s%n", header);
+      // out.format("***header failed= %s%n", header);
       return null;
     }
     return matcher.group(1);
@@ -494,9 +523,9 @@ public class Scanner {
       return null;
     }
     header = header.substring(pos);
-    //pos = header.indexOf(' ');
-    //if (pos > 0)
-    //  header = header.substring(0, pos);
+    // pos = header.indexOf(' ');
+    // if (pos > 0)
+    // header = header.substring(0, pos);
     return header;
   }
 
@@ -515,7 +544,8 @@ public class Scanner {
     }
 
     public boolean equals(Object o) {
-      if (!(o instanceof Counter)) return false;
+      if (!(o instanceof Counter))
+        return false;
       Counter oo = (Counter) o;
       return s.equals(oo.s);
     }
@@ -530,7 +560,7 @@ public class Scanner {
   static Set<Message> messSet = new HashSet<Message>();
 
   static void writeUniqueDDS(String filename, WritableByteChannel wbc) throws IOException {
-    System.out.printf("open %s ",filename);
+    System.out.printf("open %s ", filename);
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
 
       MessageScanner scan = new MessageScanner(raf);
@@ -565,7 +595,7 @@ public class Scanner {
 
   static void scanMessageDDS(String filename) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      //out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
+      // out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
       file_size += raf.length();
 
       MessageScanner scan = new MessageScanner(raf);
@@ -588,7 +618,7 @@ public class Scanner {
             }
             nbad[0]++;
             bad_tables++;
-            //continue;
+            // continue;
           }
         } catch (UnsupportedOperationException e) {
           m.dumpHeader(out);
@@ -620,14 +650,14 @@ public class Scanner {
     }
   }
 
-  static void addDDS( String ttaaii, Message m, DataDescriptor parent) {
+  static void addDDS(String ttaaii, Message m, DataDescriptor parent) {
     for (DataDescriptor dkey : parent.getSubKeys()) {
-      Counter c = ddsMap.get( dkey.fxy);
+      Counter c = ddsMap.get(dkey.fxy);
       if (null == c) {
         c = new Counter(ttaaii);
         c.dkey = dkey;
         c.m = m;
-        ddsMap.put( dkey.fxy, c);
+        ddsMap.put(dkey.fxy, c);
       }
       c.count++;
 
@@ -637,7 +667,8 @@ public class Scanner {
   }
 
   static private List<DataDescriptor> addDesc(Message m, List<String> keyDesc) {
-    if (keyDesc == null) return null;
+    if (keyDesc == null)
+      return null;
     BufrTableLookup lookup = m.getLookup();
 
     List<DataDescriptor> keys = new ArrayList<DataDescriptor>();
@@ -645,11 +676,11 @@ public class Scanner {
       short key = Descriptor.getFxy(desc);
       DataDescriptor dd = new DataDescriptor(key, lookup);
 
-      Counter c = descMap.get( dd.fxy);
+      Counter c = descMap.get(dd.fxy);
       if (null == c) {
         c = new Counter(desc);
         c.m = m;
-        descMap.put( dd.fxy, c);
+        descMap.put(dd.fxy, c);
       }
       c.count++;
 
@@ -666,14 +697,14 @@ public class Scanner {
 
     out.format("%n===============================================%n");
     out.format("total_msgs=%d good_msgs=%d bad_msgs=%d incomplete_tables=%d bad_operation=%d total_obs=%d%n",
-            total_msgs, good_msgs, bad_msgs, bad_tables, bad_operation, total_obs);
+        total_msgs, good_msgs, bad_msgs, bad_tables, bad_operation, total_obs);
     int avg_msg = (int) (file_size / total_msgs);
     int avg_obs = (int) (total_obs / total_msgs);
     out.format("total_bytes=%d avg_msg_size=%d avg_obs/msg=%d %n", file_size, avg_msg, avg_obs);
 
     int good_dds = messMap.keySet().size();
     int bad_dds = badMap.keySet().size();
-    out.format(" good_dds=%d good_msgs=%d%n",good_dds, good_msgs);
+    out.format(" good_dds=%d good_msgs=%d%n", good_dds, good_msgs);
     out.format(" incomplete_dds=%d incomplete_msgs=%d%n", bad_dds, bad_tables);
 
     List<Counter> cc = new ArrayList<Counter>(messMap.values());
@@ -685,12 +716,13 @@ public class Scanner {
     for (Counter c : cc) {
       c.m.dumpHeader(out);
       out.format(" %s [0x%x] ", c.s, c.m.hashCode());
-      //out.format("Message Type %d ndesc=%d cat = %s%n", m.hashCode(), m.dds.getDescriptors().size(), m.getCategory());
+      // out.format("Message Type %d ndesc=%d cat = %s%n", m.hashCode(), m.dds.getDescriptors().size(),
+      // m.getCategory());
       out.format(" Count msg=%d obs=%d bytes=%d %n%n", c.count, c.countObs, c.countBytes);
       if (messCsv != null) {
-        messCsv.format("%s, %d, %d, %d, 0x%x, %s, %s, %s, %s %n",
-            c.s, c.count, c.countObs, c.countBytes/1000, c.m.hashCode(),
-            scrub(c.m.getLookup().getCenterName()), c.m.getLookup().getTableName(), c.m.is.getBufrEdition(), scrub(c.m.getLookup().getCategoryFullName()));
+        messCsv.format("%s, %d, %d, %d, 0x%x, %s, %s, %s, %s %n", c.s, c.count, c.countObs, c.countBytes / 1000,
+            c.m.hashCode(), scrub(c.m.getLookup().getCenterName()), c.m.getLookup().getTableName(),
+            c.m.is.getBufrEdition(), scrub(c.m.getLookup().getCategoryFullName()));
       }
     }
 
@@ -698,7 +730,7 @@ public class Scanner {
     Collections.sort(ddsCollection, new CompareDDS());
     out.format("DataDescriptors%n");
     for (Counter c : ddsCollection) {
-      out.format(" %d %10s %s [0x%x] %n",  c.count, c.dkey.getFxyName(), c.s, c.m.hashCode());
+      out.format(" %d %10s %s [0x%x] %n", c.count, c.dkey.getFxyName(), c.s, c.m.hashCode());
     }
 
     List<Short> descCollection = new ArrayList<>(descMap.keySet());
@@ -706,19 +738,19 @@ public class Scanner {
     out.format("%n%nRaw Descriptors%n");
     if (ddsCsv != null)
       ddsCsv.format("fxy, name, count, header, table, center %n");
-    for (Short fxy: descCollection) {
+    for (Short fxy : descCollection) {
       Counter c = descMap.get(fxy);
-      out.format(" %5d %-10s %n",  c.count, Descriptor.makeString(fxy));
+      out.format(" %5d %-10s %n", c.count, Descriptor.makeString(fxy));
       if (ddsCsv != null) {
         ddsCsv.format("'%s', %s, %d, %s, %s, %s%n", Descriptor.makeString(fxy),
-            scrub(Descriptor.getName(fxy.shortValue(), c.m.getLookup())),
-            c.count, extractWMO(c.m.getHeader()), c.m.getLookup().getTableName(), scrub(c.m.getLookup().getCenterName()));
+            scrub(Descriptor.getName(fxy.shortValue(), c.m.getLookup())), c.count, extractWMO(c.m.getHeader()),
+            c.m.getLookup().getTableName(), scrub(c.m.getLookup().getCenterName()));
       }
     }
   }
 
   static private String scrub(String s) {
-    return s.replace(',',' ');
+    return s.replace(',', ' ');
   }
 
   static private String makeName(String name) {
@@ -766,8 +798,8 @@ public class Scanner {
   // extract the msgno-th message to fileOut
   static void extractNthMessage(String filein, int msgno, String fileout) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filein, "r");
-         FileOutputStream fos = new FileOutputStream(fileout);
-         WritableByteChannel wbc = fos.getChannel()) {
+        FileOutputStream fos = new FileOutputStream(fileout);
+        WritableByteChannel wbc = fos.getChannel()) {
       MessageScanner scan = new MessageScanner(raf);
       int count = 0;
       while (scan.hasNext()) {
@@ -786,8 +818,8 @@ public class Scanner {
   // extract the message matching listHash
   static void extractMessageByListhash(String filein, int want, String fileout) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filein, "r");
-         FileOutputStream fos = new FileOutputStream(fileout);
-         WritableByteChannel wbc = fos.getChannel()) {
+        FileOutputStream fos = new FileOutputStream(fileout);
+        WritableByteChannel wbc = fos.getChannel()) {
       int count = 0;
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
@@ -809,8 +841,8 @@ public class Scanner {
   // extract n messages to fileOut
   static void extractNMessages(String filein, int n, String fileout) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(filein, "r");
-         FileOutputStream fos = new FileOutputStream(fileout);
-         WritableByteChannel wbc = fos.getChannel()) {
+        FileOutputStream fos = new FileOutputStream(fileout);
+        WritableByteChannel wbc = fos.getChannel()) {
       MessageScanner scan = new MessageScanner(raf);
       int count = 0;
       while (scan.hasNext() && (count < n)) {
@@ -825,8 +857,8 @@ public class Scanner {
   static void extractFirstMessageWithHeader(String filein, String header, String fileout) throws IOException {
 
     try (RandomAccessFile raf = new RandomAccessFile(filein, "r");
-         FileOutputStream fos = new FileOutputStream(fileout);
-         WritableByteChannel wbc = fos.getChannel()) {
+        FileOutputStream fos = new FileOutputStream(fileout);
+        WritableByteChannel wbc = fos.getChannel()) {
 
       MessageScanner scan = new MessageScanner(raf);
       int count = 0;
@@ -843,9 +875,9 @@ public class Scanner {
     }
   }
 
-    // extract all messages that contains the header string to fileOut
+  // extract all messages that contains the header string to fileOut
   static void extractAllWithHeader(String filein, Pattern p, WritableByteChannel wbc) throws IOException {
-    System.out.println("extract "+filein);
+    System.out.println("extract " + filein);
     try (RandomAccessFile raf = new RandomAccessFile(filein, "r")) {
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
@@ -863,105 +895,124 @@ public class Scanner {
 
   // LOOK turn this into a test
   public void testStuff() throws IOException {
-    //extractNMessages("D:/formats/bufr/tmp/dispatch/KNES-ISXX03.bufr", 3, "D:/formats/bufr/tmp/ISXX03-3.bufr");
-    extractMessageByListhash("C:\\data\\formats\\bufrRoy/US058MCUS-BUFtdp.SPOUT_00011_sfc_ship_20091101042700.bufr", 1118454047, "C:\\data\\formats\\bufrRoy/out.bufr");
-    
-    //extract("D:/bufr/dispatch/EGRR-IUAD01.bufr", 0, "D:/bufr/out/EGRR-IUAD01-1.bufr");
-    //extract("D:/bufr/dispatch/IUPT0KBOU.bufr", 0, "D:/bufr/out/IUPT0KBOU-1.bufr");
-    //extract("D:/bufr/mlodeRaw/20080709_0200.bufr", "IUAD01 EGRR", "D:/bufr/out/IUAD01EGRR-1.bufr");
+    // extractNMessages("D:/formats/bufr/tmp/dispatch/KNES-ISXX03.bufr", 3, "D:/formats/bufr/tmp/ISXX03-3.bufr");
+    extractMessageByListhash("C:\\data\\formats\\bufrRoy/US058MCUS-BUFtdp.SPOUT_00011_sfc_ship_20091101042700.bufr",
+        1118454047, "C:\\data\\formats\\bufrRoy/out.bufr");
 
-    /* extract messages
-    FileOutputStream fos = new FileOutputStream("D:/bufr/out/JSMF14KWNO.bufr");
-    final WritableByteChannel wbc = fos.getChannel();
-    final Pattern p = Pattern.compile(".*JSMF14 KWNO.*");
-    test("D:\\bufr\\mlodeRaw", new MClosure() {
-      public void run(String filename) throws IOException {
-        extract(filename, p, wbc);
-      }
-    });
-    wbc.close();
-    fos.close();
-    // */
+    // extract("D:/bufr/dispatch/EGRR-IUAD01.bufr", 0, "D:/bufr/out/EGRR-IUAD01-1.bufr");
+    // extract("D:/bufr/dispatch/IUPT0KBOU.bufr", 0, "D:/bufr/out/IUPT0KBOU-1.bufr");
+    // extract("D:/bufr/mlodeRaw/20080709_0200.bufr", "IUAD01 EGRR", "D:/bufr/out/IUAD01EGRR-1.bufr");
 
-    /* dump messages
-    test("D:/formats/bufr/idd/", new MClosure() {
-      public void run(String filename) throws IOException {
-        dumpMessages(filename, -1);
-      }
-    }); // */
+    /*
+     * extract messages
+     * FileOutputStream fos = new FileOutputStream("D:/bufr/out/JSMF14KWNO.bufr");
+     * final WritableByteChannel wbc = fos.getChannel();
+     * final Pattern p = Pattern.compile(".*JSMF14 KWNO.*");
+     * test("D:\\bufr\\mlodeRaw", new MClosure() {
+     * public void run(String filename) throws IOException {
+     * extract(filename, p, wbc);
+     * }
+     * });
+     * wbc.close();
+     * fos.close();
+     * //
+     */
+
+    /*
+     * dump messages
+     * test("D:/formats/bufr/idd/", new MClosure() {
+     * public void run(String filename) throws IOException {
+     * dumpMessages(filename, -1);
+     * }
+     * }); //
+     */
 
     // look for mixed message types in the files
-    /* also for missing table entries R:/testdata2/bufr/edition3/idd/singleLevelSatellite/
-    test("R:/testdata2/bufr/edition3/newIdd", new MClosure() {
-       public void run(String filename) throws IOException {
-         scanMixedMessageTypes(filename);
-       }
-     }); // */
+    /*
+     * also for missing table entries R:/testdata2/bufr/edition3/idd/singleLevelSatellite/
+     * test("R:/testdata2/bufr/edition3/newIdd", new MClosure() {
+     * public void run(String filename) throws IOException {
+     * scanMixedMessageTypes(filename);
+     * }
+     * }); //
+     */
 
-    /* look for all message types in the files
-     test("D:/formats/bufr/idd/", new MClosure() {
-        public void run(String filename) throws IOException {
-          scanMessageTypes(filename);
-        }
-      });
-    Formatter ddsCsv = new Formatter( new FileOutputStream("D:/formats/bufr/tmp/idd.csv"));
-    showTypes(ddsCsv);
-    ddsCsv.close(); // */
+    /*
+     * look for all message types in the files
+     * test("D:/formats/bufr/idd/", new MClosure() {
+     * public void run(String filename) throws IOException {
+     * scanMessageTypes(filename);
+     * }
+     * });
+     * Formatter ddsCsv = new Formatter( new FileOutputStream("D:/formats/bufr/tmp/idd.csv"));
+     * showTypes(ddsCsv);
+     * ddsCsv.close(); //
+     */
 
-     /* see if we can count bits
-     //final Formatter showDetails = new Formatter( new FileOutputStream("C:/tmp/scan.txt"));
-     final Formatter showDetails = new Formatter( System.out);
-     test("C:/data/bufr2/asampleAll.bufr", new MClosure() {
-       public void run(String filename) throws IOException {
-         scanMessageSizes(filename, showDetails);
-       }
-     }); // */
+    /*
+     * see if we can count bits
+     * //final Formatter showDetails = new Formatter( new FileOutputStream("C:/tmp/scan.txt"));
+     * final Formatter showDetails = new Formatter( System.out);
+     * test("C:/data/bufr2/asampleAll.bufr", new MClosure() {
+     * public void run(String filename) throws IOException {
+     * scanMessageSizes(filename, showDetails);
+     * }
+     * }); //
+     */
 
-    /* extract unique DDS
-    FileOutputStream fos = new FileOutputStream("D:/formats/bufr/uniqueExamples.bufr");
-    final WritableByteChannel wbc = fos.getChannel();
-    test("D:/formats/bufr/examples/", true, new MClosure() {
-       public void run(String filename) throws IOException {
-         writeUniqueDDS(filename, wbc);
-       }
-     });
-    System.out.printf("# messages = %d %n",messSet.size());
-    wbc.close();  */
+    /*
+     * extract unique DDS
+     * FileOutputStream fos = new FileOutputStream("D:/formats/bufr/uniqueExamples.bufr");
+     * final WritableByteChannel wbc = fos.getChannel();
+     * test("D:/formats/bufr/examples/", true, new MClosure() {
+     * public void run(String filename) throws IOException {
+     * writeUniqueDDS(filename, wbc);
+     * }
+     * });
+     * System.out.printf("# messages = %d %n",messSet.size());
+     * wbc.close();
+     */
 
-     /* extract unique DDS  // 20080707_1900.bufr
-     test("D:/formats/bufr/brasil/", true, new MClosure() {
-       public void run(String filename) throws IOException {
-         scanMessageDDS(filename);
-       }
-     });
-    Formatter messCsv = new Formatter( new FileOutputStream("D:/formats/bufr/brasil/mess.csv"));
-    Formatter ddsCsv = new Formatter( new FileOutputStream("D:/formats/bufr/brasil/dds.csv"));
-    showDDS(messCsv, ddsCsv);
-    //showDDS(null, null);
-    ddsCsv.close();
-    messCsv.close();
-    // */
+    /*
+     * extract unique DDS // 20080707_1900.bufr
+     * test("D:/formats/bufr/brasil/", true, new MClosure() {
+     * public void run(String filename) throws IOException {
+     * scanMessageDDS(filename);
+     * }
+     * });
+     * Formatter messCsv = new Formatter( new FileOutputStream("D:/formats/bufr/brasil/mess.csv"));
+     * Formatter ddsCsv = new Formatter( new FileOutputStream("D:/formats/bufr/brasil/dds.csv"));
+     * showDDS(messCsv, ddsCsv);
+     * //showDDS(null, null);
+     * ddsCsv.close();
+     * messCsv.close();
+     * //
+     */
 
-    /* dump DDS
-     test("D:/bad/", new MClosure() {
-       public void run(String filename) throws IOException {
-         scanDDS(filename);
-       }
-     }); // */
+    /*
+     * dump DDS
+     * test("D:/bad/", new MClosure() {
+     * public void run(String filename) throws IOException {
+     * scanDDS(filename);
+     * }
+     * }); //
+     */
 
     // new reader
-    /* test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
-    test("D:/formats/bufr/tmp/split/", false, new MClosure() {
-      public void run(String filename) throws IOException {
-        if (!(filename.endsWith(".bufr"))) return;
-        try {
-          scanReader2(filename);
-        } catch (Exception e) {
-          System.err.printf("ERROR %s %n", filename);
-          e.printStackTrace();
-        }
-      }
-    }); // */
+    /*
+     * test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
+     * test("D:/formats/bufr/tmp/split/", false, new MClosure() {
+     * public void run(String filename) throws IOException {
+     * if (!(filename.endsWith(".bufr"))) return;
+     * try {
+     * scanReader2(filename);
+     * } catch (Exception e) {
+     * System.err.printf("ERROR %s %n", filename);
+     * e.printStackTrace();
+     * }
+     * }
+     * }); //
+     */
   }
 
 }

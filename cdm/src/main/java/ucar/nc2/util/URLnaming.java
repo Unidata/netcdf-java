@@ -5,7 +5,6 @@
 package ucar.nc2.util;
 
 import ucar.unidata.util.StringUtil2;
-
 import java.io.File;
 import java.net.URI;
 
@@ -23,7 +22,7 @@ public class URLnaming {
       if (refURI.isAbsolute())
         return location;
     } catch (Exception e) {
-      //return "file:" + location;
+      // return "file:" + location;
     }
     return "file:" + location;
   }
@@ -32,17 +31,20 @@ public class URLnaming {
    * This augments URI.resolve(), by also dealing with file: URIs.
    * If baseURi is not a file: scheme, then URI.resolve is called.
    * Otherwise the last "/" is found in the base, and the ref is appended to it.
-   * <p> For file: baseURLS: only reletive URLS not starting with / are supported. This is
+   * <p>
+   * For file: baseURLS: only reletive URLS not starting with / are supported. This is
    * apparently different from the behavior of URI.resolve(), so may be trouble,
    * but it allows NcML absolute location to be specified without the file: prefix.
    * <p/>
-   * Example : <pre>
+   * Example :
+   * 
+   * <pre>
    * base:     file://my/guide/collections/designfaq.ncml
    * ref:      sub/my.nc
    * resolved: file://my/guide/collections/sub/my.nc
    * </pre>
    *
-   * @param baseUri     base URI as a Strng
+   * @param baseUri base URI as a Strng
    * @param relativeUri reletive URI, as a String
    * @return the resolved URI as a String
    */
@@ -86,27 +88,30 @@ public class URLnaming {
 
     // non-file URLs
 
-    //relativeUri = canonicalizeRead(relativeUri);
+    // relativeUri = canonicalizeRead(relativeUri);
     try {
       URI relativeURI = URI.create(relativeUri);
       if (relativeURI.isAbsolute())
         return relativeUri;
 
-      //otherwise let the URI class resolve it
+      // otherwise let the URI class resolve it
       URI baseURI = URI.create(baseUri);
       URI resolvedURI = baseURI.resolve(relativeURI);
       return resolvedURI.toASCIIString();
 
     } catch (IllegalArgumentException e) {
-      return  relativeUri;
+      return relativeUri;
     }
   }
 
   public static String resolveFile(String baseDir, String filepath) {
-    if (baseDir == null) return filepath;
-    if (filepath == null) return null;
+    if (baseDir == null)
+      return filepath;
+    if (filepath == null)
+      return null;
     File file = new File(filepath);
-    if (file.isAbsolute()) return filepath;
+    if (file.isAbsolute())
+      return filepath;
 
     if (baseDir.startsWith("file:"))
       baseDir = baseDir.substring(5);
@@ -114,7 +119,8 @@ public class URLnaming {
     File base = new File(baseDir);
     if (!base.isDirectory())
       base = base.getParentFile();
-    if (base == null) return filepath;
+    if (base == null)
+      return filepath;
     return base.getAbsolutePath() + "/" + filepath;
   }
 

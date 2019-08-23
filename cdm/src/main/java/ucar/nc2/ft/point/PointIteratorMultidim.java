@@ -6,7 +6,6 @@ package ucar.nc2.ft.point;
 
 import java.io.IOException;
 import java.util.List;
-
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -61,7 +60,8 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
       StructureData sdata = nextStructureData();
       feature = makeFeature(count, sdata);
       count++;
-      if (filter != null && !filter.filter(feature)) continue;
+      if (filter != null && !filter.filter(feature))
+        continue;
       return true;
     }
     feature = null;

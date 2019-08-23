@@ -20,7 +20,6 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -49,13 +48,13 @@ public class TestGribCollectionReadingIosp {
 
       Variable time = ds.findVariable("Best/time3");
       Array timeData = time.read();
-      for (int i=0; i< timeData.getSize(); i++)
+      for (int i = 0; i < timeData.getSize(); i++)
         logger.debug("time({}) = {}", i, timeData.getDouble(i));
       logger.debug("{}", time.findAttribute("units"));
 
-      Array data = v.read("30,0,:,:"); // Time  coord : 180 == 2014-10-31T12:00:00Z
+      Array data = v.read("30,0,:,:"); // Time coord : 180 == 2014-10-31T12:00:00Z
       float first = data.getFloat(0);
-      float last = data.getFloat((int)data.getSize()-1);
+      float last = data.getFloat((int) data.getSize() - 1);
       logger.debug("data first = {} last = {}", first, last);
       Assert2.assertNearlyEquals(300.33002f, first);
       Assert2.assertNearlyEquals(279.49f, last);
@@ -73,7 +72,7 @@ public class TestGribCollectionReadingIosp {
       assert data.getRank() == 3;
       assert data.getDataType() == DataType.FLOAT;
       assert data.getSize() == 2;
-      float[] got = (float []) data.copyTo1DJavaArray();
+      float[] got = (float[]) data.copyTo1DJavaArray();
       float[] expect = new float[] {103031.914f, 103064.164f};
       Assert.assertArrayEquals(expect, got, (float) Misc.defaultMaxRelativeDiffFloat);
     }
@@ -95,7 +94,7 @@ public class TestGribCollectionReadingIosp {
         float val = data.nextFloat();
         assert !Float.isNaN(val);
       }
-      float[] got = (float []) data.copyTo1DJavaArray();
+      float[] got = (float[]) data.copyTo1DJavaArray();
       float[] expect = new float[] {68.0f, 74.0f};
       Assert.assertArrayEquals(expect, got, (float) Misc.defaultMaxRelativeDiffFloat);
     }
@@ -117,7 +116,7 @@ public class TestGribCollectionReadingIosp {
         float val = data.nextFloat();
         assert !Float.isNaN(val);
       }
-      float[] got = (float []) data.copyTo1DJavaArray();
+      float[] got = (float[]) data.copyTo1DJavaArray();
       float[] expect = new float[] {57.8f, 53.1f, 91.3f, 85.5f, 80.0f, 69.3f, 32.8f, 41.8f, 88.9f, 81.3f, 70.9f, 70.6f};
       Assert.assertArrayEquals(expect, got, (float) Misc.defaultMaxRelativeDiffFloat);
     }

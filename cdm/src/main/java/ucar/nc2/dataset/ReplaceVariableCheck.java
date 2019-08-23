@@ -11,5 +11,5 @@ import ucar.nc2.Variable;
  * public by accident
  */
 public interface ReplaceVariableCheck {
-  boolean replace( Variable v);
+  boolean replace(Variable v);
 }

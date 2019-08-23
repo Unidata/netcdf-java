@@ -25,25 +25,32 @@ class Bean {
   }
 
   // create a bean from an XML element
-  public Bean(org.xml.sax.Attributes atts) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+  public Bean(org.xml.sax.Attributes atts)
+      throws ClassNotFoundException, InstantiationException, IllegalAccessException {
     String className = atts.getValue("class");
     // LOOK debug occasional failure
     System.out.printf("ClassForName %s", className);
     Class<?> c = Class.forName(className);
     o = c.newInstance();
-    p = BeanParser.getParser( c);
+    p = BeanParser.getParser(c);
     p.readProperties(o, atts);
   }
 
   // write XML using the bean properties of the contained object
   public void writeProperties(PrintWriter out) throws IOException {
-    if (p == null) p = BeanParser.getParser( o.getClass());
+    if (p == null)
+      p = BeanParser.getParser(o.getClass());
     p.writeProperties(o, out);
   }
 
   // get the wrapped object
-  public Object getObject() { return o; }
-  public Class<?> getBeanClass() { return o.getClass(); }
+  public Object getObject() {
+    return o;
+  }
+
+  public Class<?> getBeanClass() {
+    return o.getClass();
+  }
 
   static class Collection {
     private java.util.Collection<Object> collect; // the underlying collection
@@ -61,10 +68,11 @@ class Bean {
     }
 
     // create a bean collection from an XML element
-    Collection(org.xml.sax.Attributes atts) throws ClassNotFoundException { // , InstantiationException, IllegalAccessException {
+    Collection(org.xml.sax.Attributes atts) throws ClassNotFoundException { // , InstantiationException,
+                                                                            // IllegalAccessException {
       String className = atts.getValue("class");
-      beanClass = Class.forName( className);
-      p = BeanParser.getParser( beanClass);
+      beanClass = Class.forName(className);
+      p = BeanParser.getParser(beanClass);
       collect = new ArrayList<>();
     }
 
@@ -74,10 +82,15 @@ class Bean {
     }
 
     // get the underlying java.util.Collection
-    public java.util.Collection getCollection() { return collect; }
-    public Class<?> getBeanClass() { return beanClass; }
+    public java.util.Collection getCollection() {
+      return collect;
+    }
 
-      // write XML using the bean properties of the contained object
+    public Class<?> getBeanClass() {
+      return beanClass;
+    }
+
+    // write XML using the bean properties of the contained object
     public Object readProperties(org.xml.sax.Attributes atts) throws InstantiationException, IllegalAccessException {
       Object o = beanClass.newInstance();
       p.readProperties(o, atts);
@@ -102,6 +115,7 @@ class Bean {
 
     private Map<String, PropertyDescriptor> properties = new TreeMap<>();
     private Object[] args = new Object[1];
+
     BeanParser(Class<?> beanClass) {
 
       // get bean info
@@ -114,7 +128,7 @@ class Bean {
       }
 
       if (debugBean)
-        System.out.println( "Bean "+beanClass.getName());
+        System.out.println("Bean " + beanClass.getName());
 
       // properties must have read and write method
       PropertyDescriptor[] pds = info.getPropertyDescriptors();

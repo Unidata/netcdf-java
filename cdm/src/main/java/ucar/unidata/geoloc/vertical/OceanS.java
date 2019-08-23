@@ -8,7 +8,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.Parameter;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -73,9 +72,9 @@ public class OceanS extends VerticalTransformImpl {
   /**
    * Create a new vertical transform for Ocean S coordinates
    *
-   * @param ds      dataset
+   * @param ds dataset
    * @param timeDim time dimension
-   * @param params  list of transformation Parameters
+   * @param params list of transformation Parameters
    */
   public OceanS(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
 
@@ -102,10 +101,10 @@ public class OceanS extends VerticalTransformImpl {
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
-   * @throws IOException           problem reading data
+   * @throws IOException problem reading data
    * @throws InvalidRangeException _more_
    */
-  public ArrayDouble.D3 getCoordinateArray(int timeIndex)  throws IOException, InvalidRangeException {
+  public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array etaArray = readArray(etaVar, timeIndex);
     Array sArray = readArray(sVar, timeIndex);
     Array depthArray = readArray(depthVar, timeIndex);
@@ -125,10 +124,10 @@ public class OceanS extends VerticalTransformImpl {
    * the specified X,Y index for Lat-Lon point.
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @param xIndex    the x index
-   * @param yIndex    the y index
+   * @param xIndex the x index
+   * @param yIndex the y index
    * @return vertical coordinate array
-   * @throws IOException           problem reading data
+   * @throws IOException problem reading data
    * @throws InvalidRangeException _more_
    */
   public ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
@@ -161,7 +160,8 @@ public class OceanS extends VerticalTransformImpl {
   private Array makeC(Array s, double a, double b) {
     int nz = (int) s.getSize();
     Index sIndex = s.getIndex();
-    if (a == 0) return s;  // per R. Signell, USGS
+    if (a == 0)
+      return s; // per R. Signell, USGS
 
     ArrayDouble.D1 c = new ArrayDouble.D1(nz);
 
@@ -172,8 +172,7 @@ public class OceanS extends VerticalTransformImpl {
     for (int i = 0; i < nz; i++) {
       double sz = s.getDouble(sIndex.set(i));
       double term1 = fac1 * Math.sinh(a * sz) * denom1;
-      double term2 = b * (Math.tanh(a * (sz + 0.5))
-          * denom2 - 0.5);
+      double term2 = b * (Math.tanh(a * (sz + 0.5)) * denom2 - 0.5);
       c.set(i, term1 + term2);
     }
 
@@ -183,21 +182,21 @@ public class OceanS extends VerticalTransformImpl {
 
   /**
    * Make height from the given data. <br>
-   * old equationn:  height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) + (depth(x,y)-depth_c)*C(z)
+   * old equationn: height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) + (depth(x,y)-depth_c)*C(z)
    * <p/>
    * <p/>
    * /* -sachin 03/23/09
    * The new corrected equation according to Hernan Arango (Rutgers)
-   * height(x,y,z) =  S(x,y,z) + eta(x,y) * (1 + S(x,y,z) / depth(x,y) )
+   * height(x,y,z) = S(x,y,z) + eta(x,y) * (1 + S(x,y,z) / depth(x,y) )
    * <p/>
    * where,
    * S(x,y,z) = depth_c*s(z) + (depth(x,y)-depth_c)*C(z)
    * /
    *
-   * @param eta     eta Array
-   * @param s       s Array
-   * @param depth   depth Array
-   * @param c       c Array
+   * @param eta eta Array
+   * @param s s Array
+   * @param depth depth Array
+   * @param c c Array
    * @param depth_c value of depth_c
    * @return hieght data
    */
@@ -222,7 +221,7 @@ public class OceanS extends VerticalTransformImpl {
 
       for (int y = 0; y < ny; y++) {
         for (int x = 0; x < nx; x++) {
-          //-sachin 03/23/09  modifications according to corrected equation.
+          // -sachin 03/23/09 modifications according to corrected equation.
           double fac1 = depth.getDouble(depthIndex.set(y, x));
           double term2 = (fac1 - depth_c) * cz;
 
@@ -242,10 +241,10 @@ public class OceanS extends VerticalTransformImpl {
   }
 
 
-  // Modify method 'makeHeight' as  new method for getting vertical coordinate array for single point.
-  //- sachin
-  private ArrayDouble.D1 makeHeight1D(Array eta, Array s, Array depth,
-                                      Array c, double depth_c, int x_index, int y_index) {
+  // Modify method 'makeHeight' as new method for getting vertical coordinate array for single point.
+  // - sachin
+  private ArrayDouble.D1 makeHeight1D(Array eta, Array s, Array depth, Array c, double depth_c, int x_index,
+      int y_index) {
     int nz = (int) s.getSize();
     Index sIndex = s.getIndex();
     Index cIndex = c.getIndex();
@@ -261,7 +260,7 @@ public class OceanS extends VerticalTransformImpl {
       double cz = c.getDouble(cIndex.set(z));
 
       double term1 = depth_c * sz;
-      //-sachin 03/06/09  modifications according to corrected equation.
+      // -sachin 03/06/09 modifications according to corrected equation.
 
       double fac1 = depth.getDouble(depthIndex.set(y_index, x_index));
       double term2 = (fac1 - depth_c) * cz;

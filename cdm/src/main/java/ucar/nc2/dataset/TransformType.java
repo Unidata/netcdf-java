@@ -12,6 +12,5 @@ package ucar.nc2.dataset;
  */
 
 public enum TransformType {
-  Projection,
-  Vertical
+  Projection, Vertical
 }

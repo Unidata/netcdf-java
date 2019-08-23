@@ -14,33 +14,36 @@ import com.google.common.collect.Iterables;
  */
 public class StructureDataFactory {
 
-  /* static public StructureData make(String name, String value) {
-    StructureMembers members = new StructureMembers("");
-    StructureMembers.Member m = members.addMember(name, null, null, DataType.STRING, new int[]{1});
-    StructureDataW sw = new StructureDataW(members);
-    Array dataArray = Array.factory(DataType.STRING, new int[]{1});
-    dataArray.setObject(dataArray.getIndex(), value);
-    sw.setMemberData(m, dataArray);
-    return sw;
-  } */
+  /*
+   * static public StructureData make(String name, String value) {
+   * StructureMembers members = new StructureMembers("");
+   * StructureMembers.Member m = members.addMember(name, null, null, DataType.STRING, new int[]{1});
+   * StructureDataW sw = new StructureDataW(members);
+   * Array dataArray = Array.factory(DataType.STRING, new int[]{1});
+   * dataArray.setObject(dataArray.getIndex(), value);
+   * sw.setMemberData(m, dataArray);
+   * return sw;
+   * }
+   */
 
   static public StructureData make(String name, Object value) {
     StructureMembers members = new StructureMembers("");
-    DataType dtype = DataType.getType(value.getClass(), false);  // LOOK unsigned
-    StructureMembers.Member m = members.addMember(name, null, null, dtype, new int[]{1});
+    DataType dtype = DataType.getType(value.getClass(), false); // LOOK unsigned
+    StructureMembers.Member m = members.addMember(name, null, null, dtype, new int[] {1});
     StructureDataW sw = new StructureDataW(members);
-    Array dataArray = Array.factory(dtype, new int[]{1});
+    Array dataArray = Array.factory(dtype, new int[] {1});
     dataArray.setObject(dataArray.getIndex(), value);
     sw.setMemberData(m, dataArray);
     return sw;
   }
 
   static public StructureData make(StructureData s1, StructureData s2) {
-    return make(new StructureData[]{s1, s2});
+    return make(new StructureData[] {s1, s2});
   }
 
   static public StructureData make(StructureData[] sdatas) {
-    if (sdatas.length == 1) return sdatas[0];
+    if (sdatas.length == 1)
+      return sdatas[0];
 
     // look for sole
     int count = 0;
@@ -51,7 +54,8 @@ public class StructureDataFactory {
         result = sdata;
       }
     }
-    if (count == 1) return result;
+    if (count == 1)
+      return result;
 
     // combine
     StructureDataComposite result2 = new StructureDataComposite();
@@ -72,7 +76,8 @@ public class StructureDataFactory {
         result = sdata;
       }
     }
-    if (count == 1) return result;
+    if (count == 1)
+      return result;
 
     // if multiple, combine into StructureDataComposite
     StructureDataComposite result2 = new StructureDataComposite();

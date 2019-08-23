@@ -9,9 +9,7 @@ package ucar.nc2.iosp.grads;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -196,13 +194,15 @@ public class GradsDataDescriptorFile {
   static private final KMPMatch matchdset = new KMPMatch("dset".getBytes(CDM.utf8Charset));
   static private final KMPMatch matchENDVARS = new KMPMatch("ENDVARS".getBytes(CDM.utf8Charset));
   static private final KMPMatch matchendvars = new KMPMatch("endvars".getBytes(CDM.utf8Charset));
+
   public static boolean failFast(RandomAccessFile raf) throws IOException {
     raf.seek(0);
     boolean ok = raf.searchForward(matchDSET, 1000); // look in first 1K
     if (!ok) {
       raf.seek(0);
       ok = raf.searchForward(matchdset, 1000); // look in first 1K
-      if (!ok) return true;
+      if (!ok)
+        return true;
     }
 
     long pos = raf.getFilePointer();
@@ -367,7 +367,8 @@ public class GradsDataDescriptorFile {
   public GradsDataDescriptorFile(String filename, int maxLines) throws IOException {
     ddFile = filename;
     parseDDF(maxLines);
-    if (error) return;
+    if (error)
+      return;
     getFileNames();
   }
 
@@ -378,7 +379,7 @@ public class GradsDataDescriptorFile {
    */
   private void parseDDF(int maxLines) throws IOException {
 
-    //long start2 = System.currentTimeMillis();
+    // long start2 = System.currentTimeMillis();
 
     variableList = new ArrayList<>();
     dimList = new ArrayList<>();
@@ -419,14 +420,14 @@ public class GradsDataDescriptorFile {
         if (inEnsSection) {
           if (line.startsWith(ENDEDEF.toLowerCase())) {
             inEnsSection = false;
-            continue;  // done skipping ensemble definitions
+            continue; // done skipping ensemble definitions
           }
           // parse the ensemble info
         }
         if (inVarSection) {
           if (line.startsWith(ENDVARS.toLowerCase())) {
             inVarSection = false;
-            continue;  // done parsing variables
+            continue; // done parsing variables
           }
           GradsVariable var = new GradsVariable(original);
           int numLevels = var.getNumLevels();
@@ -558,17 +559,16 @@ public class GradsDataDescriptorFile {
           }
         }
 
-      }  // end parsing loop
-      //System.out.println("Time to parse file = "
-      //                   + (System.currentTimeMillis() - start2));
+      } // end parsing loop
+      // System.out.println("Time to parse file = "
+      // + (System.currentTimeMillis() - start2));
 
       // update the units for the zDimension if they are specified as
       // an attribute
       if (zDim != null) {
         for (GradsAttribute attr : attrList) {
-          if (attr.getVariable().equalsIgnoreCase(ZDEF) &&
-                  attr.getType().equalsIgnoreCase(GradsAttribute.STRING) &&
-                  attr.getName().equalsIgnoreCase("units")) {
+          if (attr.getVariable().equalsIgnoreCase(ZDEF) && attr.getType().equalsIgnoreCase(GradsAttribute.STRING)
+              && attr.getName().equalsIgnoreCase("units")) {
             zDim.setUnit(attr.getValue());
             break;
           }
@@ -588,11 +588,11 @@ public class GradsDataDescriptorFile {
     // NB: we are setting bigEndian to be opposite the system arch
     String arch = System.getProperty("os.arch");
 
-    bigEndian = arch.equals("x86") ||   // Windows, Linux
-        arch.equals("arm") ||          // Window CE
-        arch.equals("x86_64") ||      // Windows64, Mac OS-X
-        arch.equals("amd64") ||      // Linux64?
-        arch.equals("alpha");       // Utrix, VAX, DECOS
+    bigEndian = arch.equals("x86") || // Windows, Linux
+        arch.equals("arm") || // Window CE
+        arch.equals("x86_64") || // Windows64, Mac OS-X
+        arch.equals("amd64") || // Linux64?
+        arch.equals("alpha"); // Utrix, VAX, DECOS
   }
 
   /**
@@ -713,11 +713,11 @@ public class GradsDataDescriptorFile {
     if (chsubs != null) {
       for (Chsub ch : chsubs) {
         if (filename.contains(ch.subString)) {
-          return new int[]{ch.numTimes, ch.startTimeIndex};
+          return new int[] {ch.numTimes, ch.startTimeIndex};
         }
       }
     }
-    return new int[]{timeStepsPerFile, 0};
+    return new int[] {timeStepsPerFile, 0};
   }
 
 
@@ -821,7 +821,7 @@ public class GradsDataDescriptorFile {
   }
 
   /**
-   * Get the data type.  Only support raw binary
+   * Get the data type. Only support raw binary
    *
    * @return type or null
    */
@@ -889,9 +889,9 @@ public class GradsDataDescriptorFile {
     if (fileNames == null) {
       fileNames = new ArrayList<>();
       timeStepsPerFile = tDim.getSize();
-      if (!isTemplate()) {  // single file
+      if (!isTemplate()) { // single file
         fileNames.add(getFullPath(getDataFile()));
-      } else {               // figure out template type
+      } else { // figure out template type
         long start = System.currentTimeMillis();
         List<String> fileSet = new ArrayList<>();
         String template = getDataFile();
@@ -901,7 +901,7 @@ public class GradsDataDescriptorFile {
           } else {
             templateType = TIME_TEMPLATE;
           }
-        } else {  // not time - either ens or chsub
+        } else { // not time - either ens or chsub
           if (template.contains(GradsEnsembleDimension.ENS_TEMPLATE_ID)) {
             templateType = ENS_TEMPLATE;
           } else {
@@ -910,15 +910,10 @@ public class GradsDataDescriptorFile {
         }
         if (templateType == ENS_TEMPLATE) {
           for (int e = 0; e < eDim.getSize(); e++) {
-            fileSet.add(
-                    getFullPath(
-                            eDim.replaceFileTemplate(template, e)));
+            fileSet.add(getFullPath(eDim.replaceFileTemplate(template, e)));
           }
-        } else if ((templateType == TIME_TEMPLATE)
-                || (templateType == ENS_TIME_TEMPLATE)) {
-          int numens = (templateType == TIME_TEMPLATE)
-                  ? 1
-                  : eDim.getSize();
+        } else if ((templateType == TIME_TEMPLATE) || (templateType == ENS_TIME_TEMPLATE)) {
+          int numens = (templateType == TIME_TEMPLATE) ? 1 : eDim.getSize();
           for (int t = 0; t < tDim.getSize(); t++) {
             for (int e = 0; e < numens; e++) {
               String file = getFileName(e, t);
@@ -928,14 +923,13 @@ public class GradsDataDescriptorFile {
             }
           }
           // this'll be a bogus number if chsub was used
-          timeStepsPerFile = tDim.getSize()
-                  / (fileSet.size() / numens);
+          timeStepsPerFile = tDim.getSize() / (fileSet.size() / numens);
         }
-        //System.out.println("Time to generate file list = "
-        //                   + (System.currentTimeMillis() - start));
+        // System.out.println("Time to generate file list = "
+        // + (System.currentTimeMillis() - start));
         fileNames.addAll(fileSet);
       }
-      //long start2 = System.currentTimeMillis();
+      // long start2 = System.currentTimeMillis();
       // now make sure they exist
       for (String file : fileNames) {
         File f = new File(file);
@@ -944,8 +938,8 @@ public class GradsDataDescriptorFile {
           throw new IOException("File: " + f + " does not exist");
         }
       }
-      //System.out.println("Time to check file list = "
-      //                   + (System.currentTimeMillis() - start2));
+      // System.out.println("Time to check file list = "
+      // + (System.currentTimeMillis() - start2));
     }
     return fileNames;
   }
@@ -961,9 +955,7 @@ public class GradsDataDescriptorFile {
       if (lastSlash < 0) {
         lastSlash = ddFile.lastIndexOf(File.separator);
       }
-      pathToDDF = (lastSlash < 0)
-              ? ""
-              : ddFile.substring(0, lastSlash + 1);
+      pathToDDF = (lastSlash < 0) ? "" : ddFile.substring(0, lastSlash + 1);
 
 
     }
@@ -1036,12 +1028,12 @@ public class GradsDataDescriptorFile {
      * Create a new Chsub
      *
      * @param start the start index (1 based)
-     * @param end   the start index (1 based)
-     * @param sub   the subsitution string
+     * @param end the start index (1 based)
+     * @param sub the subsitution string
      */
     Chsub(int start, int end, String sub) {
-      startTimeIndex = start - 1;  // zero based
-      endTimeIndex = end - 1;    // zero based
+      startTimeIndex = start - 1; // zero based
+      endTimeIndex = end - 1; // zero based
       numTimes = endTimeIndex - startTimeIndex + 1;
       subString = sub;
     }
@@ -1052,8 +1044,7 @@ public class GradsDataDescriptorFile {
      * @return a String representation of this CHSUB
      */
     public String toString() {
-      return "CHSUB " + startTimeIndex + " " + endTimeIndex + " "
-              + subString;
+      return "CHSUB " + startTimeIndex + " " + endTimeIndex + " " + subString;
     }
   }
 

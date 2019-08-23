@@ -6,7 +6,6 @@
 package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GdsHorizCoordSys;
-
 import java.util.Formatter;
 
 /**
@@ -18,6 +17,7 @@ import java.util.Formatter;
 public class GdsSpherical extends Grib2Gds {
 
   private int j, k, m, type, mode;
+
   protected GdsSpherical(byte[] data, int template) {
     super(data);
     this.template = template;

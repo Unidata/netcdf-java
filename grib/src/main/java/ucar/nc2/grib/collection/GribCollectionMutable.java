@@ -31,7 +31,6 @@ import ucar.nc2.time.CalendarTimeZone;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.Closeable;
 import java.io.File;
@@ -54,10 +53,12 @@ public class GribCollectionMutable implements Closeable {
 
   static MFile makeIndexMFile(String collectionName, File directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return new GcMFile(directory, nameNoBlanks + GribCdmIndex.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size. can it be added later?
+    return new GcMFile(directory, nameNoBlanks + GribCdmIndex.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size.
+                                                                                       // can it be added later?
   }
 
-  private static final CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
+  private static final CalendarDateFormatter cf =
+      new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
 
   static String makeName(String collectionName, CalendarDate runtime) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
@@ -73,17 +74,18 @@ public class GribCollectionMutable implements Closeable {
 
   // set by the builder
   public int version; // the ncx version
-  public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
+  public int center, subcenter, master, local; // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
-  public List<Parameter> params;          // not used
-  protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
+  public List<Parameter> params; // not used
+  protected Map<Integer, MFile> fileMap; // all the files used in the GC; key is the index in original collection, GC
+                                         // has subset of them
   protected List<Dataset> datasets;
   protected CoordinateRuntime masterRuntime;
   protected GribTables cust;
   protected int indexVersion;
 
   void setCalendarDateRange(long startMsecs, long endMsecs) {
-    this.dateRange = CalendarDateRange.of( CalendarDate.of(startMsecs), CalendarDate.of(endMsecs));
+    this.dateRange = CalendarDateRange.of(CalendarDate.of(startMsecs), CalendarDate.of(endMsecs));
   }
 
   protected CalendarDateRange dateRange;
@@ -128,7 +130,8 @@ public class GribCollectionMutable implements Closeable {
   }
 
   public String getLocation() {
-    if (indexRaf != null) return indexRaf.getLocation();
+    if (indexRaf != null)
+      return indexRaf.getLocation();
     return getIndexFilepathInCache();
   }
 
@@ -156,7 +159,8 @@ public class GribCollectionMutable implements Closeable {
 
   @Nullable
   File getIndexParentFile() {
-    if (indexRaf == null) return null;
+    if (indexRaf == null)
+      return null;
     Path index = Paths.get(indexRaf.getLocation());
     Path parent = index.getParent();
     return parent.toFile();
@@ -178,7 +182,8 @@ public class GribCollectionMutable implements Closeable {
 
   GribCollectionMutable.Dataset getDatasetCanonical() {
     for (GribCollectionMutable.Dataset ds : datasets) {
-      if (ds.gctype != GribCollectionImmutable.Type.Best) return ds;
+      if (ds.gctype != GribCollectionImmutable.Type.Best)
+        return ds;
     }
     throw new IllegalStateException("GC.getDatasetCanonical failed on=" + name);
   }
@@ -237,7 +242,7 @@ public class GribCollectionMutable implements Closeable {
 
   public class Dataset {
     public GribCollectionImmutable.Type gctype;
-    List<GroupGC> groups;  // must be kept in order, because PartitionForVariable2D has index into it
+    List<GroupGC> groups; // must be kept in order, because PartitionForVariable2D has index into it
 
     public Dataset(GribCollectionImmutable.Type type) {
       this.gctype = type;
@@ -263,10 +268,10 @@ public class GribCollectionMutable implements Closeable {
   public class GroupGC implements Comparable<GroupGC> {
     GribHorizCoordSystem horizCoordSys;
     final List<VariableIndex> variList;
-    List<Coordinate> coords;      // shared coordinates
-    int[] filenose;               // key for GC.fileMap
+    List<Coordinate> coords; // shared coordinates
+    int[] filenose; // key for GC.fileMap
     HashMap<GribCollectionMutable.VariableIndex, GribCollectionMutable.VariableIndex> varMap;
-    boolean isTwoD = true;        // true except for Best (?)
+    boolean isTwoD = true; // true except for Best (?)
 
     GroupGC() {
       this.variList = new ArrayList<>();
@@ -275,9 +280,9 @@ public class GribCollectionMutable implements Closeable {
 
     // copy constructor for PartitionBuilder
     GroupGC(GroupGC from) {
-      this.horizCoordSys = from.horizCoordSys;     // reference
-      this.variList = new ArrayList<>(from.variList.size());  // empty list
-      this.coords = new ArrayList<>(from.coords.size());      // empty list
+      this.horizCoordSys = from.horizCoordSys; // reference
+      this.variList = new ArrayList<>(from.variList.size()); // empty list
+      this.coords = new ArrayList<>(from.coords.size()); // empty list
       this.isTwoD = from.isTwoD;
     }
 
@@ -313,8 +318,8 @@ public class GribCollectionMutable implements Closeable {
     }
 
     public Object getGdsHash() {
-       return horizCoordSys.getGdsHash();
-     }
+      return horizCoordSys.getGdsHash();
+    }
 
     @Override
     public int compareTo(@Nonnull GroupGC o) {
@@ -323,7 +328,8 @@ public class GribCollectionMutable implements Closeable {
 
     public List<MFile> getFiles() {
       List<MFile> result = new ArrayList<>();
-      if (filenose == null) return result;
+      if (filenose == null)
+        return result;
       for (int fileno : filenose)
         result.add(fileMap.get(fileno));
       Collections.sort(result);
@@ -332,7 +338,8 @@ public class GribCollectionMutable implements Closeable {
 
     public List<String> getFilenames() {
       List<String> result = new ArrayList<>();
-      if (filenose == null) return result;
+      if (filenose == null)
+        return result;
       for (int fileno : filenose)
         result.add(fileMap.get(fileno).getPath());
       Collections.sort(result);
@@ -365,8 +372,10 @@ public class GribCollectionMutable implements Closeable {
             case time2D:
               CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
               CalendarDateRange range = time.makeCalendarDateRange(null);
-              if (result == null) result = range;
-              else result = result.extend(range);
+              if (result == null)
+                result = range;
+              else
+                result = result.extend(range);
           }
         }
         dateRange = result;
@@ -375,7 +384,8 @@ public class GribCollectionMutable implements Closeable {
     }
 
     public int getNFiles() {
-      if (filenose == null) return 0;
+      if (filenose == null)
+        return 0;
       return filenose.length;
     }
 
@@ -387,20 +397,13 @@ public class GribCollectionMutable implements Closeable {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("horizCoordSys", horizCoordSys)
-          .add("variList", variList)
-          .add("coords", coords)
-          .add("filenose", filenose)
-          .add("varMap", varMap)
-          .add("isTwoD", isTwoD)
-          .add("dateRange", dateRange)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("horizCoordSys", horizCoordSys).add("variList", variList)
+          .add("coords", coords).add("filenose", filenose).add("varMap", varMap).add("isTwoD", isTwoD)
+          .add("dateRange", dateRange).toString();
     }
   }
 
-  GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, GribTables customizer,
-      int discipline, int center,
+  GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, GribTables customizer, int discipline, int center,
       int subcenter, byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
     return new VariableIndex(g, customizer, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
   }
@@ -412,19 +415,19 @@ public class GribCollectionMutable implements Closeable {
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
-    public final GroupGC group;     // belongs to this group
-    public final int tableVersion;   // grib1 only : can vary by variable
-    public final int discipline, center, subcenter;     // grib2 only
-    public final byte[] rawPds;      // grib1 or grib2
-    public final long recordsPos;    // where the records array is stored in the index. 0 means no records
+    public final GroupGC group; // belongs to this group
+    public final int tableVersion; // grib1 only : can vary by variable
+    public final int discipline, center, subcenter; // grib2 only
+    public final byte[] rawPds; // grib1 or grib2
+    public final long recordsPos; // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
-    public Object gribVariable;    // use this to test for object equality
+    public Object gribVariable; // use this to test for object equality
 
-    List<Integer> coordIndex;  // indexes into group.coords
+    List<Integer> coordIndex; // indexes into group.coords
 
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
-    private String intvName;  // eg "mixed intervals, 3 Hour, etc"
+    private String intvName; // eg "mixed intervals, 3 Hour, etc"
     public final String probabilityName;
     public final boolean isLayer, isEnsemble;
     public final int genProcessType;
@@ -437,7 +440,7 @@ public class GribCollectionMutable implements Closeable {
     List<Coordinate> coords;
 
     private VariableIndex(GroupGC g, GribTables customizer, int discipline, int center, int subcenter, byte[] rawPds,
-                          List<Integer> index, long recordsPos, int recordsLen) {
+        List<Integer> index, long recordsPos, int recordsLen) {
       this.group = g;
       this.discipline = discipline;
       this.rawPds = rawPds;
@@ -473,7 +476,8 @@ public class GribCollectionMutable implements Closeable {
         this.spatialStatType = -1;
 
         // LOOK config vs serialized config
-        gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), config.gribConfig.useTableVersion, config.gribConfig.intvMerge, config.gribConfig.useCenter);
+        gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), config.gribConfig.useTableVersion,
+            config.gribConfig.intvMerge, config.gribConfig.useCenter);
 
       } else {
         Grib2Tables cust2 = (Grib2Tables) customizer;
@@ -517,7 +521,8 @@ public class GribCollectionMutable implements Closeable {
         }
 
         // LOOK config vs serialized config
-        gribVariable = new Grib2Variable (cust2, discipline, center, subcenter, (Grib2Gds) g.getGdsHash(), pds, config.gribConfig.intvMerge, config.gribConfig.useGenType);
+        gribVariable = new Grib2Variable(cust2, discipline, center, subcenter, (Grib2Gds) g.getGdsHash(), pds,
+            config.gribConfig.intvMerge, config.gribConfig.useGenType);
       }
     }
 
@@ -570,7 +575,8 @@ public class GribCollectionMutable implements Closeable {
 
     @Nullable
     public String getTimeIntvName() {
-      if (intvName != null) return intvName;
+      if (intvName != null)
+        return intvName;
       CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) getCoordinate(Coordinate.Type.timeIntv);
       if (timeiCoord != null) {
         intvName = timeiCoord.getTimeIntervalName();
@@ -578,7 +584,8 @@ public class GribCollectionMutable implements Closeable {
       }
 
       CoordinateTime2D time2DCoord = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
-      if (time2DCoord == null || !time2DCoord.isTimeInterval()) return null;
+      if (time2DCoord == null || !time2DCoord.isTimeInterval())
+        return null;
       intvName = time2DCoord.getTimeIntervalName();
       return intvName;
     }
@@ -593,48 +600,22 @@ public class GribCollectionMutable implements Closeable {
     }
 
     @Override
-     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("tableVersion", tableVersion)
-          .add("discipline", discipline)
-          .add("category", category)
-          .add("parameter", parameter)
-          .add("levelType", levelType)
-          .add("intvType", intvType)
-          .add("ensDerivedType", ensDerivedType)
-          .add("probType", probType)
-          .add("intvName", intvName)
-          .add("probabilityName", probabilityName)
-          .add("isLayer", isLayer)
-          .add("genProcessType", genProcessType)
-          .add("cdmHash", gribVariable.hashCode())
-          .toString();
+    public String toString() {
+      return MoreObjects.toStringHelper(this).add("tableVersion", tableVersion).add("discipline", discipline)
+          .add("category", category).add("parameter", parameter).add("levelType", levelType).add("intvType", intvType)
+          .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", intvName)
+          .add("probabilityName", probabilityName).add("isLayer", isLayer).add("genProcessType", genProcessType)
+          .add("cdmHash", gribVariable.hashCode()).toString();
     }
 
     public String toStringComplete() {
-      return MoreObjects.toStringHelper(this)
-          .add("group", group)
-          .add("tableVersion", tableVersion)
-          .add("discipline", discipline)
-          .add("center", center)
-          .add("subcenter", subcenter)
-          .add("recordsPos", recordsPos)
-          .add("recordsLen", recordsLen)
-          .add("gribVariable", gribVariable)
-          .add("coordIndex", coordIndex)
-          .add("category", category)
-          .add("parameter", parameter)
-          .add("levelType", levelType)
-          .add("intvType", intvType)
-          .add("ensDerivedType", ensDerivedType)
-          .add("probType", probType)
-          .add("intvName", intvName)
-          .add("probabilityName", probabilityName)
-          .add("isLayer", isLayer)
-          .add("isEnsemble", isEnsemble)
-          .add("genProcessType", genProcessType)
-          .add("spatialStatType", spatialStatType)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("group", group).add("tableVersion", tableVersion)
+          .add("discipline", discipline).add("center", center).add("subcenter", subcenter).add("recordsPos", recordsPos)
+          .add("recordsLen", recordsLen).add("gribVariable", gribVariable).add("coordIndex", coordIndex)
+          .add("category", category).add("parameter", parameter).add("levelType", levelType).add("intvType", intvType)
+          .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", intvName)
+          .add("probabilityName", probabilityName).add("isLayer", isLayer).add("isEnsemble", isEnsemble)
+          .add("genProcessType", genProcessType).add("spatialStatType", spatialStatType).toString();
     }
 
     public String toStringShort() {
@@ -655,22 +636,28 @@ public class GribCollectionMutable implements Closeable {
 
     @Override
     public int compareTo(@Nonnull VariableIndex o) {
-      int r = discipline - o.discipline;  // LOOK add center, subcenter, version?
-      if (r != 0) return r;
+      int r = discipline - o.discipline; // LOOK add center, subcenter, version?
+      if (r != 0)
+        return r;
       r = category - o.category;
-      if (r != 0) return r;
+      if (r != 0)
+        return r;
       r = parameter - o.parameter;
-      if (r != 0) return r;
+      if (r != 0)
+        return r;
       r = levelType - o.levelType;
-      if (r != 0) return r;
+      if (r != 0)
+        return r;
       r = intvType - o.intvType;
       return r;
     }
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof VariableIndex)) return false;
+      if (this == o)
+        return true;
+      if (!(o instanceof VariableIndex))
+        return false;
 
       VariableIndex that = (VariableIndex) o;
       return gribVariable.equals(that.gribVariable);
@@ -681,14 +668,14 @@ public class GribCollectionMutable implements Closeable {
       return gribVariable.hashCode();
     }
 
-  }  // VariableIndex
+  } // VariableIndex
 
   @Immutable
   public static class Record {
-    public final int fileno;    // which file
-    public final long pos;      // offset on file where data starts
-    public final long bmsPos;   // if non-zero, offset where bms starts
-    public final int scanMode;  // from gds
+    public final int fileno; // which file
+    public final long pos; // offset on file where data starts
+    public final long bmsPos; // if non-zero, offset where bms starts
+    public final int scanMode; // from gds
 
     public Record(int fileno, long pos, long bmsPos, int scanMode) {
       this.fileno = fileno;
@@ -699,12 +686,8 @@ public class GribCollectionMutable implements Closeable {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("fileno", fileno)
-          .add("pos", pos)
-          .add("bmsPos", bmsPos)
-          .add("scanMode", scanMode)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("fileno", fileno).add("pos", pos).add("bmsPos", bmsPos)
+          .add("scanMode", scanMode).toString();
     }
   }
 
@@ -734,36 +717,17 @@ public class GribCollectionMutable implements Closeable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("name", name)
-        .add("config", config)
-        .add("isGrib1", isGrib1)
-        .add("directory", directory)
-        .add("orgDirectory", orgDirectory)
-        .add("version", version)
-        .add("center", center)
-        .add("subcenter", subcenter)
-        .add("master", master)
-        .add("local", local)
-        .add("genProcessType", genProcessType)
-        .add("genProcessId", genProcessId)
-        .add("backProcessId", backProcessId)
-        .add("params", params)
-        .add("fileMap", fileMap)
-        .add("datasets", datasets)
-        .add("masterRuntime", masterRuntime)
-        .add("cust", cust)
-        .add("indexVersion", indexVersion)
-        .add("dateRange", dateRange)
-        .add("indexRaf", indexRaf)
-        .add("indexFilename", indexFilename)
-        .add("lastModified", lastModified)
-        .add("fileSize", fileSize)
-        .toString();
+    return MoreObjects.toStringHelper(this).add("name", name).add("config", config).add("isGrib1", isGrib1)
+        .add("directory", directory).add("orgDirectory", orgDirectory).add("version", version).add("center", center)
+        .add("subcenter", subcenter).add("master", master).add("local", local).add("genProcessType", genProcessType)
+        .add("genProcessId", genProcessId).add("backProcessId", backProcessId).add("params", params)
+        .add("fileMap", fileMap).add("datasets", datasets).add("masterRuntime", masterRuntime).add("cust", cust)
+        .add("indexVersion", indexVersion).add("dateRange", dateRange).add("indexRaf", indexRaf)
+        .add("indexFilename", indexFilename).add("lastModified", lastModified).add("fileSize", fileSize).toString();
   }
 
   public String showLocation() {
-    return "name="+name+" directory="+directory;
+    return "name=" + name + " directory=" + directory;
   }
 
   public GroupGC makeGroup() {

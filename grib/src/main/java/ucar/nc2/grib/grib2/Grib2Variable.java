@@ -16,7 +16,8 @@ import ucar.nc2.grib.grib2.table.Grib2Tables;
  */
 public class Grib2Variable {
 
-  public static int cdmVariableHash(Grib2Tables cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge, boolean useGenType) {
+  public static int cdmVariableHash(Grib2Tables cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge,
+      boolean useGenType) {
     Grib2Variable gv = new Grib2Variable(cust, gr, gdsHashOverride, intvMerge, useGenType);
     return gv.hashCode();
   }
@@ -27,16 +28,16 @@ public class Grib2Variable {
   private final int gdsHash;
   private final Grib2Gds gds;
   private final Grib2Pds pds;
-  private final  boolean intvMerge;
+  private final boolean intvMerge;
   private final boolean useGenType;
 
   /**
    * Used when building from gbx9 (full records)
    *
-   * @param cust       customizer
-   * @param gr         the Grib record
-   * @param gdsHashOverride    can override the gdsHash, 0 for no override
-   * @param intvMerge  should intervals be merged? default true
+   * @param cust customizer
+   * @param gr the Grib record
+   * @param gdsHashOverride can override the gdsHash, 0 for no override
+   * @param intvMerge should intervals be merged? default true
    * @param useGenType should genProcessType be used in hash? default false
    */
   public Grib2Variable(Grib2Tables cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge, boolean useGenType) {
@@ -54,13 +55,14 @@ public class Grib2Variable {
   /**
    * Used when building from ncx (full records)
    */
-  public Grib2Variable(Grib2Tables cust, int discipline, int center, int subcenter, Grib2Gds gds, Grib2Pds pds, boolean intvMerge, boolean useGenType) {
+  public Grib2Variable(Grib2Tables cust, int discipline, int center, int subcenter, Grib2Gds gds, Grib2Pds pds,
+      boolean intvMerge, boolean useGenType) {
     this.cust = cust;
     this.discipline = discipline;
     this.center = center;
     this.subcenter = subcenter;
     this.gds = gds;
-    this.gdsHash = gds.hashCode;             // ok because no overridden gds hashCodes have made it into the ncx
+    this.gdsHash = gds.hashCode; // ok because no overridden gds hashCodes have made it into the ncx
     this.pds = pds;
     this.intvMerge = intvMerge;
     this.useGenType = useGenType;
@@ -68,67 +70,89 @@ public class Grib2Variable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Grib2Variable var2 = (Grib2Variable) o;
-    if (gdsHash != var2.gdsHash) return false;
-    if (!gds.equals(var2.gds)) return false;
+    if (gdsHash != var2.gdsHash)
+      return false;
+    if (!gds.equals(var2.gds))
+      return false;
 
     Grib2Pds pds2 = var2.pds;
 
-    if (pds.getParameterNumber() != pds2.getParameterNumber()) return false;
-    if (pds.getParameterCategory() != pds2.getParameterCategory()) return false;
-    if (pds.getTemplateNumber() != pds2.getTemplateNumber()) return false;
-    if (discipline != var2.discipline) return false;
+    if (pds.getParameterNumber() != pds2.getParameterNumber())
+      return false;
+    if (pds.getParameterCategory() != pds2.getParameterCategory())
+      return false;
+    if (pds.getTemplateNumber() != pds2.getTemplateNumber())
+      return false;
+    if (discipline != var2.discipline)
+      return false;
 
-    if (Grib2Utils.isLayer(pds) != Grib2Utils.isLayer(pds2)) return false;
-    if (pds.getLevelType1() != pds2.getLevelType1()) return false;
+    if (Grib2Utils.isLayer(pds) != Grib2Utils.isLayer(pds2))
+      return false;
+    if (pds.getLevelType1() != pds2.getLevelType1())
+      return false;
 
-    if (pds.isTimeInterval() != pds2.isTimeInterval()) return false;
+    if (pds.isTimeInterval() != pds2.isTimeInterval())
+      return false;
     if (pds.isTimeInterval()) {
       if (!intvMerge) {
         double size = cust.getForecastTimeIntervalSizeInHours(pds); // only used to decide on variable identity
         double size2 = cust.getForecastTimeIntervalSizeInHours(pds2);
-        if (size != size2) return false;
+        if (size != size2)
+          return false;
       }
-      if (pds.getStatisticalProcessType() != pds2.getStatisticalProcessType()) return false;
+      if (pds.getStatisticalProcessType() != pds2.getStatisticalProcessType())
+        return false;
     }
 
-    if (pds.isSpatialInterval() != pds2.isSpatialInterval()) return false;
+    if (pds.isSpatialInterval() != pds2.isSpatialInterval())
+      return false;
     if (pds.isSpatialInterval()) {
       Grib2Pds.PdsSpatialInterval pdsSpatial = (Grib2Pds.PdsSpatialInterval) pds;
-      if (pdsSpatial.getSpatialStatisticalProcessType() != pdsSpatial.getSpatialStatisticalProcessType()) return false;
+      if (pdsSpatial.getSpatialStatisticalProcessType() != pdsSpatial.getSpatialStatisticalProcessType())
+        return false;
     }
 
     int ensDerivedType = -1;
-    if (pds.isEnsembleDerived() != pds2.isEnsembleDerived()) return false;
+    if (pds.isEnsembleDerived() != pds2.isEnsembleDerived())
+      return false;
     if (pds.isEnsembleDerived()) {
       Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
       Grib2Pds.PdsEnsembleDerived pdsDerived2 = (Grib2Pds.PdsEnsembleDerived) pds2;
-      if (pdsDerived.getDerivedForecastType() != pdsDerived2.getDerivedForecastType()) return false;
+      if (pdsDerived.getDerivedForecastType() != pdsDerived2.getDerivedForecastType())
+        return false;
       ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
 
     } else {
-      if (pds.isEnsemble() != pds2.isEnsemble()) return false;
+      if (pds.isEnsemble() != pds2.isEnsemble())
+        return false;
     }
 
     int probType = -1;
-    if (pds.isProbability() != pds2.isProbability()) return false;
+    if (pds.isProbability() != pds2.isProbability())
+      return false;
     if (pds.isProbability()) {
       Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
       Grib2Pds.PdsProbability pdsProb2 = (Grib2Pds.PdsProbability) pds2;
-      if (pdsProb.getProbabilityHashcode() != pdsProb2.getProbabilityHashcode()) return false;
+      if (pdsProb.getProbabilityHashcode() != pdsProb2.getProbabilityHashcode())
+        return false;
       probType = pdsProb.getProbabilityType();
     }
 
     // if this uses any local tables, then we have to add the center id, and subcenter if present
     if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
-            || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191)
-            || (ensDerivedType > 191) || (probType > 191)) {
+        || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191) || (ensDerivedType > 191)
+        || (probType > 191)) {
 
-      if (center!= var2.center) return false;
-      if (subcenter != var2.subcenter) return false;
+      if (center != var2.center)
+        return false;
+      if (subcenter != var2.subcenter)
+        return false;
     }
 
     // always use the GenProcessType when "error" (6 or 7) 2/8/2012; added to equals 2/7/2016
@@ -136,7 +160,8 @@ public class Grib2Variable {
     int genType2 = pds2.getGenProcessType();
     boolean error = (genType == 6 || genType == 7);
     boolean error2 = (genType2 == 6 || genType2 == 7);
-    if (error != error2) return false;
+    if (error != error2)
+      return false;
     return !useGenType || (genType == genType2);
 
   }
@@ -148,7 +173,8 @@ public class Grib2Variable {
 
     result += result * 31 + discipline;
     result += result * 31 + pds.getLevelType1();
-    if (Grib2Utils.isLayer(pds)) result += result * 31 + 1;
+    if (Grib2Utils.isLayer(pds))
+      result += result * 31 + 1;
 
     result += result * 31 + this.gdsHash; // the horizontal grid
 
@@ -157,7 +183,8 @@ public class Grib2Variable {
 
     if (pds.isTimeInterval()) {
       if (!intvMerge) {
-        double size = cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make this configurable
+        double size = cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make
+                                                                    // this configurable
         result += result * (int) (31 + (1000 * size)); // create new variable for each interval size - default not
       }
       result += result * 31 + pds.getStatisticalProcessType(); // create new variable for each stat type
@@ -165,13 +192,13 @@ public class Grib2Variable {
 
     if (pds.isSpatialInterval()) {
       Grib2Pds.PdsSpatialInterval pdsSpatial = (Grib2Pds.PdsSpatialInterval) pds;
-       result += result * 31 + pdsSpatial.getSpatialStatisticalProcessType(); // template 15
-     }
+      result += result * 31 + pdsSpatial.getSpatialStatisticalProcessType(); // template 15
+    }
 
-     result += result * 31 + pds.getParameterNumber();
+    result += result * 31 + pds.getParameterNumber();
 
     int ensDerivedType = -1;
-    if (pds.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
+    if (pds.isEnsembleDerived()) { // a derived ensemble must have a derivedForecastType
       Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
       ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
       result += result * 31 + ensDerivedType;
@@ -190,8 +217,8 @@ public class Grib2Variable {
 
     // if this uses any local tables, then we have to add the center id, and subcenter if present
     if ((pds.getParameterCategory() > 191) || (pds.getParameterNumber() > 191) || (pds.getLevelType1() > 191)
-            || (pds.isTimeInterval() && pds.getStatisticalProcessType() > 191)
-            || (ensDerivedType > 191) || (probType > 191)) {
+        || (pds.isTimeInterval() && pds.getStatisticalProcessType() > 191) || (ensDerivedType > 191)
+        || (probType > 191)) {
       result += result * 31 + center;
       if (subcenter > 0)
         result += result * 31 + subcenter;

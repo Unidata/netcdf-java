@@ -20,7 +20,6 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -38,8 +37,8 @@ public class Grib1Collection extends GribCollectionImmutable {
 
   @Override
   @Nullable
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
-                                                         Formatter errlog, org.slf4j.Logger logger) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
+      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
       Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
       NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
@@ -48,8 +47,10 @@ public class Grib1Collection extends GribCollectionImmutable {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
-        if (gc == null) return null;
+        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile,
+            CollectionUpdateType.nocheck, gribConfig, errlog, logger); // LOOK thread-safety : creating ncx
+        if (gc == null)
+          return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
         NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
@@ -61,19 +62,21 @@ public class Grib1Collection extends GribCollectionImmutable {
 
   @Override
   @Nullable
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
-                                                     Formatter errlog, org.slf4j.Logger logger) throws IOException {
+  public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
+      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
       Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation()+"#"+group.getId(), null);
+      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation() + "#" + group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
-        if (gc == null) return null;
+        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile,
+            CollectionUpdateType.nocheck, gribConfig, errlog, logger); // LOOK thread-safety : creating ncx
+        if (gc == null)
+          return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
         NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
@@ -86,8 +89,8 @@ public class Grib1Collection extends GribCollectionImmutable {
 
   @Override
   @Nullable
-  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
-                                                     Formatter errlog, org.slf4j.Logger logger) throws IOException {
+  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
+      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
       GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
       return gribCov.createCoverageCollection();
@@ -95,8 +98,10 @@ public class Grib1Collection extends GribCollectionImmutable {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
-        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
-        if (gc == null) return null;
+        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile,
+            CollectionUpdateType.nocheck, gribConfig, errlog, logger); // LOOK thread-safety : creating ncx
+        if (gc == null)
+          return null;
         GribCoverageDataset gribCov = new GribCoverageDataset(gc, null, null);
         return gribCov.createCoverageCollection();
       }
@@ -114,15 +119,15 @@ public class Grib1Collection extends GribCollectionImmutable {
 
   @Override
   public String makeVariableId(GribCollectionImmutable.VariableIndex v) {
-    return makeVariableId(getCenter(), getSubcenter(), v.getTableVersion(), v.getParameter(),
-            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
+    return makeVariableId(getCenter(), getSubcenter(), v.getTableVersion(), v.getParameter(), v.getLevelType(),
+        v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
-  static String makeVariableId(int center, int subcenter, int tableVersion, int paramNo, int levelType, boolean isLayer, int intvType, String intvName) {
+  static String makeVariableId(int center, int subcenter, int tableVersion, int paramNo, int levelType, boolean isLayer,
+      int intvType, String intvName) {
     try (Formatter f = new Formatter()) {
 
-      f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion,
-          paramNo);  // "VAR_7-15--1-20_L1";
+      f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo); // "VAR_7-15--1-20_L1";
 
       if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
         f.format("_L%d", levelType); // code table 4.5
@@ -151,7 +156,8 @@ public class Grib1Collection extends GribCollectionImmutable {
     addVariableAttributes(v, vindex, this);
   }
 
-  static void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable gc) {
+  static void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex,
+      GribCollectionImmutable gc) {
     Grib1Customizer cust1 = (Grib1Customizer) gc.cust;
 
     // Grib attributes
@@ -160,7 +166,8 @@ public class Grib1Collection extends GribCollectionImmutable {
     v.addAttribute(new Attribute("Grib1_Subcenter", gc.getSubcenter()));
     v.addAttribute(new Attribute("Grib1_TableVersion", vindex.getTableVersion()));
     v.addAttribute(new Attribute("Grib1_Parameter", vindex.getParameter()));
-    Grib1Parameter param = cust1.getParameter(gc.getCenter(), gc.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
+    Grib1Parameter param =
+        cust1.getParameter(gc.getCenter(), gc.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
     if (param != null && param.getName() != null)
       v.addAttribute(new Attribute("Grib1_Parameter_Name", param.getName()));
 
@@ -172,7 +179,7 @@ public class Grib1Collection extends GribCollectionImmutable {
 
 
     String timeTypeName = cust1.getTimeTypeName(vindex.getIntvType());
-    if ( timeTypeName != null && timeTypeName.length() != 0) {
+    if (timeTypeName != null && timeTypeName.length() != 0) {
       v.addAttribute(new Attribute("Grib1_Interval_Type", vindex.getIntvType()));
       v.addAttribute(new Attribute("Grib1_Interval_Name", timeTypeName));
     }

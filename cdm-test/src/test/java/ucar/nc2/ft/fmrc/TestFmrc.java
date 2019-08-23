@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -51,11 +51,11 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Formatter;
+
 /**
  * Test FMRC aggregation
  *
@@ -69,31 +69,36 @@ public class TestFmrc {
   private static String datadir = TestDir.cdmUnitTestDir + "ft/fmrc/";
   private static boolean showDetails = true;
 
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() {
-    return Arrays.asList(new Object[][]{
-            {TestDir.cdmUnitTestDir+"ft/fmrc/fp_precision/sediment_thickness_#yyMMddHHmm#.*\\.nc$", 2, 2, 4, 0, "thickness_of_sediment", 2, 72, 74, false},
+    return Arrays.asList(new Object[][] {
+        {TestDir.cdmUnitTestDir + "ft/fmrc/fp_precision/sediment_thickness_#yyMMddHHmm#.*\\.nc$", 2, 2, 4, 0,
+            "thickness_of_sediment", 2, 72, 74, false},
 
-            // String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes, String gridName, int nruns, int ntimes, int nbest) {
-            {datadir + "toms/hiig_#yyyyMMdd#.nc", 25, 11, 13, 2, "u", 4, 25, 58, true},
-            {TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 17, 6, "Pressure_tropopause", 3, 9, 9, true},
-            {TestDir.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8, true},
-            {datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 10, true},
-            {datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41, true},
-            // {datadir + "rtofs/rtofs.ncml", 9, 6, 10, 1, "N3-D_Temperature", 2, 3, 4, true}, // GRIB
+        // String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes, String gridName, int nruns,
+        // int ntimes, int nbest) {
+        {datadir + "toms/hiig_#yyyyMMdd#.nc", 25, 11, 13, 2, "u", 4, 25, 58, true},
+        {TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 17, 6,
+            "Pressure_tropopause", 3, 9, 9, true},
+        {TestDir.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8, true},
+        {datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 10, true},
+        {datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41, true},
+        // {datadir + "rtofs/rtofs.ncml", 9, 6, 10, 1, "N3-D_Temperature", 2, 3, 4, true}, // GRIB
 
-            // ncml uses FMRC
-            // {TestDir.cdmUnitTestDir + "ncml/AggFmrcGribRunseq.ncml", 13, 4, 10, 2, "Temperature_height_above_ground", 4, 29, 35, true}, // bad idea FMRC on GRIB
-            // {TestDir.cdmUnitTestDir + "ncml/AggFmrcGrib.ncml", 58, 27, 22, 12, "Temperature_height_above_ground", 8, 29, 72, true}, // bad idea FMRC on GRIB
-            {TestDir.cdmUnitTestDir + "ncml/AggFmrcNonuniform.ncml", 48, 12, 17, 6, "Temperature_height_above_ground", 3, 9, 9, true},
-            {TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml", 41, 6, 10, 4, "u", 15, 11, 39, true},
+        // ncml uses FMRC
+        // {TestDir.cdmUnitTestDir + "ncml/AggFmrcGribRunseq.ncml", 13, 4, 10, 2, "Temperature_height_above_ground", 4,
+        // 29, 35, true}, // bad idea FMRC on GRIB
+        // {TestDir.cdmUnitTestDir + "ncml/AggFmrcGrib.ncml", 58, 27, 22, 12, "Temperature_height_above_ground", 8, 29,
+        // 72, true}, // bad idea FMRC on GRIB
+        {TestDir.cdmUnitTestDir + "ncml/AggFmrcNonuniform.ncml", 48, 12, 17, 6, "Temperature_height_above_ground", 3, 9,
+            9, true},
+        {TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml", 41, 6, 10, 4, "u", 15, 11, 39, true},
 
-            // fmrcSingle
-            // {datadir + "nomads/nomads.ncml", 118, 20, 21, 14, "Temperature", 1, 3, 3, true}, GRIB
+        // fmrcSingle
+        // {datadir + "nomads/nomads.ncml", 118, 20, 21, 14, "Temperature", 1, 3, 3, true}, GRIB
 
-            // not regular
-            {datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$", 1, -1, 8, 0, "eta_t", 2, 7, 7, false},
-    });
+        // not regular
+        {datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$", 1, -1, 8, 0, "eta_t", 2, 7, 7, false},});
   }
 
 
@@ -102,7 +107,8 @@ public class TestFmrc {
   String gridName;
   int nruns, ntimes, nbest;
 
-  public TestFmrc(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes, String gridName, int nruns, int ntimes, int nbest, boolean regular) {
+  public TestFmrc(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes, String gridName,
+      int nruns, int ntimes, int nbest, boolean regular) {
     this.pathname = pathname;
     this.ngrids = ngrids;
     this.ncoordSys = ncoordSys;
@@ -170,7 +176,7 @@ public class TestFmrc {
       if (ncoordSys >= 0)
         Assert.assertEquals("Number of CoordSys", ncoordSys, countCoordSys);
 
-      if (ncoordAxes >= 0 && showDetails) { //  && (ncoordAxes != countCoordAxes)) {
+      if (ncoordAxes >= 0 && showDetails) { // && (ncoordAxes != countCoordAxes)) {
         for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
           System.out.printf("axis= %s%n", axis.getNameAndDimensions());
           if (axis.getShortName().startsWith("layer_between")) {
@@ -194,7 +200,7 @@ public class TestFmrc {
 
       if (nruns >= 0)
         Assert.assertEquals("Number of runs", nruns, runtime.getSize());
-        assert runtime.getSize() == nruns : runtime.getSize() + " != " + nruns;
+      assert runtime.getSize() == nruns : runtime.getSize() + " != " + nruns;
       if (nruns >= 0)
         Assert.assertEquals("Time Dimension(0) length", nruns, time.getDimension(0).getLength());
       if (ntimes >= 0)
@@ -203,7 +209,8 @@ public class TestFmrc {
   }
 
   void showArray(Formatter f, double[] array) {
-    for (double d : array) f.format("%f ", d);
+    for (double d : array)
+      f.format("%f ", d);
   }
 
   @Test
@@ -262,7 +269,7 @@ public class TestFmrc {
     }
 
     if (nbest >= 0)
-      Assert.assertEquals("Number of Best times for "+gridName, nbest, time.getDimension(0).getLength());
+      Assert.assertEquals("Number of Best times for " + gridName, nbest, time.getDimension(0).getLength());
 
     gridDs.close();
   }

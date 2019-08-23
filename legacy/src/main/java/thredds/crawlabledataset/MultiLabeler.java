@@ -32,7 +32,8 @@ public class MultiLabeler implements CrawlableDatasetLabeler {
     String name;
     for (CrawlableDatasetLabeler curNamer : labelerList) {
       name = curNamer.getLabel(dataset);
-      if (name != null) return name;
+      if (name != null)
+        return name;
     }
     return null;
   }

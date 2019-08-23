@@ -21,7 +21,6 @@ import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -43,9 +42,11 @@ public class TestFeatureDatasetFactory {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.ANY});
+    // result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf",
+    // FeatureType.ANY});
     // coverage would give FeatureType.CURVILINEAR, but we have reverted
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.CURVILINEAR});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf",
+        FeatureType.CURVILINEAR});
 
     return result;
   }
@@ -63,7 +64,7 @@ public class TestFeatureDatasetFactory {
     System.out.printf("FeatureDatasetFactoryManager.open %s%n", ds);
     Formatter errlog = new Formatter();
     try (FeatureDataset fd = FeatureDatasetFactoryManager.open(what, ds, null, errlog)) {
-      Assert.assertNotNull(errlog.toString()+" "+ds, fd);
+      Assert.assertNotNull(errlog.toString() + " " + ds, fd);
       if (fd.getFeatureType().isCoverageFeatureType())
         testCoverage(ds);
     }

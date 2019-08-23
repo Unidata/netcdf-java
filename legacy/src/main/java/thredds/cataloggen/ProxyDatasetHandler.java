@@ -8,7 +8,6 @@ package thredds.cataloggen;
 import thredds.catalog.InvService;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-
 import java.util.List;
 
 /**
@@ -28,8 +27,7 @@ import java.util.List;
  * @author edavis
  * @since Nov 29, 2005 8:42:37 AM
  */
-public interface ProxyDatasetHandler
-{
+public interface ProxyDatasetHandler {
   /**
    * Return the name of the proxy dataset.
    *
@@ -43,7 +41,7 @@ public interface ProxyDatasetHandler
    * @param parent the collection dataset in which to add the dataset being created.
    * @return A new CrawlableDataset to be added to the parent dataset (in the InvDataset arena).
    */
-  public CrawlableDataset createProxyDataset( CrawlableDataset parent );
+  public CrawlableDataset createProxyDataset(CrawlableDataset parent);
 
   /**
    * Return the InvService to be used by the InvDataset that corresponds to the created dataset.
@@ -51,7 +49,7 @@ public interface ProxyDatasetHandler
    * @param parent the collection dataset in which to add the dataset being created.
    * @return the InvService used by the InvDataset that corresponds to the created dataset.
    */
-  public InvService getProxyDatasetService( CrawlableDataset parent );
+  public InvService getProxyDatasetService(CrawlableDataset parent);
 
   /**
    * Return an integer which indicates the location/index at which
@@ -61,7 +59,7 @@ public interface ProxyDatasetHandler
    * @param collectionDatasetSize the number of datasets currentlyin the parent collection dataset.
    * @return The location at which the new dataset is to be added to the parent collection dataset.
    */
-  public int getProxyDatasetLocation( CrawlableDataset parent, int collectionDatasetSize );
+  public int getProxyDatasetLocation(CrawlableDataset parent, int collectionDatasetSize);
 
   public boolean isProxyDatasetResolver();
 
@@ -72,9 +70,9 @@ public interface ProxyDatasetHandler
    * @param possibleDatasets a list of InvCrawlablePair objects representing a dataset collection.
    * @return the InvCrawlablePair being proxied by this proxy dataset
    */
-  public InvCrawlablePair getActualDataset( List possibleDatasets );
-  
-  public String getActualDatasetName( InvCrawlablePair actualDataset, String baseName );
+  public InvCrawlablePair getActualDataset(List possibleDatasets);
+
+  public String getActualDatasetName(InvCrawlablePair actualDataset, String baseName);
 
   /**
    * Return the configuration object.

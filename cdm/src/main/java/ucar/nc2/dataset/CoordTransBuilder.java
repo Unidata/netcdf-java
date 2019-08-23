@@ -15,13 +15,13 @@ import ucar.ma2.Array;
 import ucar.nc2.ft2.coverage.CoverageTransform;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Formatter;
 
 /**
  * Manager for Coordinate Transforms.
+ * 
  * @author john caron
  */
 public class CoordTransBuilder {
@@ -38,10 +38,11 @@ public class CoordTransBuilder {
     registerTransform("flat_earth", FlatEarth.class);
     registerTransform(CF.GEOSTATIONARY, Geostationary.class);
     registerTransform(CF.LAMBERT_AZIMUTHAL_EQUAL_AREA, LambertAzimuthal.class);
-    registerTransform(CF.LAMBERT_CONFORMAL_CONIC , LambertConformalConic.class);
-    registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA , LambertCylindricalEqualArea.class);
+    registerTransform(CF.LAMBERT_CONFORMAL_CONIC, LambertConformalConic.class);
+    registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA, LambertCylindricalEqualArea.class);
     registerTransform(CF.LATITUDE_LONGITUDE, LatLon.class);
-    registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs visad.jar
+    registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs
+                                                                                              // visad.jar
     registerTransform(CF.MERCATOR, Mercator.class);
     registerTransform("MSGnavigation", MSGnavigation.class);
     registerTransform(CF.ORTHOGRAPHIC, Orthographic.class);
@@ -55,7 +56,8 @@ public class CoordTransBuilder {
     registerTransform("UTM", UTM.class);
     registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
 
-    // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class); // DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
+    // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class); // DO NOT USE: see
+    // CF1Convention.makeAtmLnCoordinate()
     registerTransform("atmosphere_hybrid_height_coordinate", CFHybridHeight.class);
     registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", CFHybridSigmaPressure.class);
     registerTransform("atmosphere_sigma_coordinate", CFSigma.class);
@@ -64,7 +66,7 @@ public class CoordTransBuilder {
     registerTransform("explicit_field", VExplicitField.class);
     registerTransform("existing3DField", VExplicitField.class); // deprecate
 
-    //-sachin 03/25/09
+    // -sachin 03/25/09
     registerTransform("ocean_s_coordinate_g1", VOceanSG1.class);
     registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);
 
@@ -72,77 +74,87 @@ public class CoordTransBuilder {
     userMode = true;
   }
 
-   /**
-    * Register a class that implements a Coordinate Transform.
-    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
-    * @param c class that implements CoordTransBuilderIF.
-    */
-  static public void registerTransform( String transformName, Class c) {
-    if (!(VertTransformBuilderIF.class.isAssignableFrom( c)) && !(HorizTransformBuilderIF.class.isAssignableFrom( c)))
-      throw new IllegalArgumentException("Class "+c.getName()+" must implement VertTransformBuilderIF or HorizTransformBuilderIF");
+  /**
+   * Register a class that implements a Coordinate Transform.
+   * 
+   * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
+   * @param c class that implements CoordTransBuilderIF.
+   */
+  static public void registerTransform(String transformName, Class c) {
+    if (!(VertTransformBuilderIF.class.isAssignableFrom(c)) && !(HorizTransformBuilderIF.class.isAssignableFrom(c)))
+      throw new IllegalArgumentException(
+          "Class " + c.getName() + " must implement VertTransformBuilderIF or HorizTransformBuilderIF");
 
     // fail fast - check newInstance works
     try {
       c.newInstance();
     } catch (InstantiationException e) {
-      throw new IllegalArgumentException("CoordTransBuilderIF Class "+c.getName()+" cannot instantiate, probably need default Constructor");
+      throw new IllegalArgumentException(
+          "CoordTransBuilderIF Class " + c.getName() + " cannot instantiate, probably need default Constructor");
     } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException("CoordTransBuilderIF Class "+c.getName()+" is not accessible");
+      throw new IllegalArgumentException("CoordTransBuilderIF Class " + c.getName() + " is not accessible");
     }
 
     // user stuff gets put at top
     if (userMode)
-      transformList.add( 0, new Transform( transformName, c));
+      transformList.add(0, new Transform(transformName, c));
     else
-      transformList.add( new Transform( transformName, c));
+      transformList.add(new Transform(transformName, c));
 
   }
 
   /**
    * Register a class that implements a Coordinate Transform.
+   * 
    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
    * @param className name of class that implements CoordTransBuilderIF.
    * @throws ClassNotFoundException if Class.forName( className) fails
    */
-  static public void registerTransform( String transformName, String className) throws ClassNotFoundException {
-    Class c = Class.forName( className);
-    registerTransform( transformName, c);
+  static public void registerTransform(String transformName, String className) throws ClassNotFoundException {
+    Class c = Class.forName(className);
+    registerTransform(transformName, c);
   }
 
   /**
    * Register a class that implements a Coordinate Transform.
+   * 
    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
    * @param className name of class that implements CoordTransBuilderIF.
    */
-  static public void registerTransformMaybe( String transformName, String className) {
+  static public void registerTransformMaybe(String transformName, String className) {
     Class c;
     try {
-      c = Class.forName( className);
+      c = Class.forName(className);
     } catch (ClassNotFoundException e) {
-      if (loadWarnings) log.warn("Coordinate Transform Class "+className+" not found.");
+      if (loadWarnings)
+        log.warn("Coordinate Transform Class " + className + " not found.");
       return;
     }
-    registerTransform( transformName, c);
+    registerTransform(transformName, c);
   }
 
   static private class Transform {
     String transName;
     Class transClass;
-    Transform(String transName,  Class transClass) {
+
+    Transform(String transName, Class transClass) {
       this.transName = transName;
       this.transClass = transClass;
     }
   }
 
   /**
-   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or registered CoordTransBuilder.
+   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
+   * registered CoordTransBuilder.
+   * 
    * @param ds enclosing dataset, only used for vertical transforms
    * @param ctv the Coordinate Transform Variable - container for the transform parameters
    * @param parseInfo pass back information about the parsing.
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
-  static public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, AttributeContainer ctv, Formatter parseInfo, Formatter errInfo) {
+  static public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
+      Formatter parseInfo, Formatter errInfo) {
     // standard name
     String transform_name = ctv.findAttValueIgnoreCase("transform_name", null);
     if (null == transform_name)
@@ -174,39 +186,41 @@ public class CoordTransBuilder {
       return null;
     }
 
-         // get an instance of that class
+    // get an instance of that class
     Object builderObject;
     try {
       builderObject = builderClass.newInstance();
     } catch (InstantiationException | IllegalAccessException e) {
-      log.error("Cant create new instance "+builderClass.getName(), e);
+      log.error("Cant create new instance " + builderClass.getName(), e);
       return null;
     }
 
     if (null == builderObject) { // cant happen - because this was tested in registerTransform()
-      parseInfo.format("**Failed to build CoordTransBuilder object from class= %s for Variable= %s%n", builderClass.getName(), ctv);
+      parseInfo.format("**Failed to build CoordTransBuilder object from class= %s for Variable= %s%n",
+          builderClass.getName(), ctv);
       return null;
     }
 
     CoordinateTransform ct;
-    if (builderObject instanceof VertTransformBuilderIF){
+    if (builderObject instanceof VertTransformBuilderIF) {
       VertTransformBuilderIF vertBuilder = (VertTransformBuilderIF) builderObject;
       vertBuilder.setErrorBuffer(errInfo);
       ct = vertBuilder.makeCoordinateTransform(ds, ctv);
 
-    } else if (builderObject instanceof HorizTransformBuilderIF){
+    } else if (builderObject instanceof HorizTransformBuilderIF) {
       HorizTransformBuilderIF horizBuilder = (HorizTransformBuilderIF) builderObject;
       horizBuilder.setErrorBuffer(errInfo);
       String units = AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv); // barfola
       ct = horizBuilder.makeCoordinateTransform(ctv, units);
 
     } else {
-      log.error("Illegals class "+builderClass.getName());
+      log.error("Illegals class " + builderClass.getName());
       return null;
     }
 
     if (ct != null) {
-      parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(), builderObject.getClass().getName());
+      parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(),
+          builderObject.getClass().getName());
     }
 
     return ct;
@@ -217,23 +231,24 @@ public class CoordTransBuilder {
    * Create a "dummy" Coordinate Transform Variable based on the given CoordinateTransform.
    * This creates a scalar Variable with dummy data, and adds the Parameters of the CoordinateTransform
    * as attributes.
+   * 
    * @param ds for this dataset
    * @param ct based on the CoordinateTransform
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
   static public VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
-    VariableDS v = new VariableDS( ds, null, null, ct.getName(), DataType.CHAR, "", null, null);
+    VariableDS v = new VariableDS(ds, null, null, ct.getName(), DataType.CHAR, "", null, null);
     List<Parameter> params = ct.getParameters();
     for (Parameter p : params) {
       if (p.isString())
         v.addAttribute(new Attribute(p.getName(), p.getStringValue()));
       else {
         double[] data = p.getNumericValues();
-        Array dataA = Array.factory(DataType.DOUBLE, new int[]{data.length}, data);
+        Array dataA = Array.factory(DataType.DOUBLE, new int[] {data.length}, data);
         v.addAttribute(new Attribute(p.getName(), dataA));
       }
     }
-    v.addAttribute( new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
+    v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 
     // fake data
     Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] {' '});
@@ -245,6 +260,7 @@ public class CoordTransBuilder {
   /**
    * Make a CoordinateTransform object from the parameters in a GridCoordTransform, using an intrinsic or
    * registered CoordTransBuilder.
+   * 
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
@@ -272,21 +288,22 @@ public class CoordTransBuilder {
       return null;
     }
 
-      // get an instance of that class
+    // get an instance of that class
     HorizTransformBuilderIF builder;
     try {
       builder = (HorizTransformBuilderIF) builderClass.newInstance();
     } catch (InstantiationException | IllegalAccessException e) {
-      log.error("Cant create new instance "+builderClass.getName(), e);
+      log.error("Cant create new instance " + builderClass.getName(), e);
       return null;
     }
     if (null == builder) { // cant happen - because this was tested in registerTransform()
-      errInfo.format("**Failed to build CoordTransBuilder object from class= %s for GridCoordTransform= %s%n", builderClass.getName(), gct);
+      errInfo.format("**Failed to build CoordTransBuilder object from class= %s for GridCoordTransform= %s%n",
+          builderClass.getName(), gct);
       return null;
     }
 
     String units = gct.findAttValueIgnoreCase(CDM.UNITS, null);
-    builder.setErrorBuffer( errInfo);
+    builder.setErrorBuffer(errInfo);
     ProjectionCT ct = builder.makeCoordinateTransform(gct, units);
     assert ct != null;
 

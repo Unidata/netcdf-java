@@ -21,8 +21,8 @@ public class Orthographic extends AbstractTransformBuilder implements HorizTrans
   }
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
 
     ucar.unidata.geoloc.projection.Orthographic proj = new ucar.unidata.geoloc.projection.Orthographic(lat0, lon0);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);

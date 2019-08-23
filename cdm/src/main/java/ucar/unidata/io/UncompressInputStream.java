@@ -15,16 +15,17 @@ import java.io.*;
  * by Peter Jannesen) and the original compress code.
  *
  *
- * <p> This version has been modified from the original 0.3-3 version by the
- *  Unidata Program Center (support@unidata.ucar.edu) to make the constructor
- *  public and to fix a couple of bugs.
- *  Also:
- *   - markSupported() returns false
- *   - add uncompress() static method
+ * <p>
+ * This version has been modified from the original 0.3-3 version by the
+ * Unidata Program Center (support@unidata.ucar.edu) to make the constructor
+ * public and to fix a couple of bugs.
+ * Also:
+ * - markSupported() returns false
+ * - add uncompress() static method
  *
- * @version	0.3-3 06/05/2001
- * @author	Ronald Tschalar
- * @author	Unidata Program Center
+ * @version 0.3-3 06/05/2001
+ * @author Ronald Tschalar
+ * @author Unidata Program Center
  */
 public class UncompressInputStream extends FilterInputStream {
 
@@ -78,14 +79,15 @@ public class UncompressInputStream extends FilterInputStream {
   }
 
   @Override
-  public int read(byte[] buf, int off, int len)
-      throws IOException {
-    if (eof) return -1;
+  public int read(byte[] buf, int off, int len) throws IOException {
+    if (eof)
+      return -1;
     int start = off;
 
-/* Using local copies of various variables speeds things up by as
-	 * much as 30% !
-	 */
+    /*
+     * Using local copies of various variables speeds things up by as
+     * much as 30% !
+     */
     int[] l_tab_prefix = tab_prefix;
     byte[] l_tab_suffix = tab_suffix;
     byte[] l_stack = stack;
@@ -101,7 +103,7 @@ public class UncompressInputStream extends FilterInputStream {
     int l_bit_pos = bit_pos;
 
 
-// empty stack if stuff still left
+    // empty stack if stuff still left
 
     int s_size = l_stack.length - l_stackp;
     if (s_size > 0) {
@@ -118,13 +120,13 @@ public class UncompressInputStream extends FilterInputStream {
     }
 
 
-// loop, filling local buffer until enough data has been decompressed
+    // loop, filling local buffer until enough data has been decompressed
 
     main_loop: do {
-      if (end < EXTRA) fill();
+      if (end < EXTRA)
+        fill();
 
-      int bit_in = (got > 0) ? (end - end % l_n_bits) << 3 :
-          (end << 3) - (l_n_bits - 1);
+      int bit_in = (got > 0) ? (end - end % l_n_bits) << 3 : (end << 3) - (l_n_bits - 1);
 
       while (l_bit_pos < bit_in) {
         // handle 1-byte reads correctly
@@ -146,12 +148,10 @@ public class UncompressInputStream extends FilterInputStream {
 
         if (l_free_ent > l_maxcode) {
           int n_bytes = l_n_bits << 3;
-          l_bit_pos = (l_bit_pos - 1) +
-              n_bytes - (l_bit_pos - 1 + n_bytes) % n_bytes;
+          l_bit_pos = (l_bit_pos - 1) + n_bytes - (l_bit_pos - 1 + n_bytes) % n_bytes;
 
           l_n_bits++;
-          l_maxcode = (l_n_bits == maxbits) ? l_maxmaxcode :
-              (1 << l_n_bits) - 1;
+          l_maxcode = (l_n_bits == maxbits) ? l_maxmaxcode : (1 << l_n_bits) - 1;
 
           if (debug)
             System.err.println("Code-width expanded to " + l_n_bits);
@@ -165,9 +165,8 @@ public class UncompressInputStream extends FilterInputStream {
         // read next code
 
         int pos = l_bit_pos >> 3;
-        int code = (((l_data[pos] & 0xFF) | ((l_data[pos + 1] & 0xFF) << 8) |
-            ((l_data[pos + 2] & 0xFF) << 16))
-            >> (l_bit_pos & 0x7)) & l_bitmask;
+        int code = (((l_data[pos] & 0xFF) | ((l_data[pos + 1] & 0xFF) << 8)
+            | ((l_data[pos + 2] & 0xFF) << 16)) >> (l_bit_pos & 0x7)) & l_bitmask;
         l_bit_pos += l_n_bits;
 
 
@@ -175,8 +174,7 @@ public class UncompressInputStream extends FilterInputStream {
 
         if (l_oldcode == -1) {
           if (code >= 256)
-            throw new IOException("corrupt input: " + code +
-                " > 255");
+            throw new IOException("corrupt input: " + code + " > 255");
           l_finchar = (byte) (l_oldcode = code);
           buf[off++] = l_finchar;
           len--;
@@ -191,13 +189,13 @@ public class UncompressInputStream extends FilterInputStream {
           l_free_ent = TBL_FIRST - 1;
 
           int n_bytes = l_n_bits << 3;
-          l_bit_pos = (l_bit_pos - 1) +
-              n_bytes - (l_bit_pos - 1 + n_bytes) % n_bytes;
+          l_bit_pos = (l_bit_pos - 1) + n_bytes - (l_bit_pos - 1 + n_bytes) % n_bytes;
           l_n_bits = INIT_BITS;
           l_maxcode = (1 << l_n_bits) - 1;
           l_bitmask = l_maxcode;
 
-          if (debug) System.err.println("Code tables reset");
+          if (debug)
+            System.err.println("Code tables reset");
 
           l_bit_pos = resetbuf(l_bit_pos);
           continue main_loop;
@@ -214,8 +212,7 @@ public class UncompressInputStream extends FilterInputStream {
 
         if (code >= l_free_ent) {
           if (code > l_free_ent)
-            throw new IOException("corrupt input: code=" + code +
-                ", free_ent=" + l_free_ent);
+            throw new IOException("corrupt input: code=" + code + ", free_ent=" + l_free_ent);
 
           l_stack[--l_stackp] = l_finchar;
           code = l_oldcode;
@@ -302,7 +299,8 @@ public class UncompressInputStream extends FilterInputStream {
 
   private void fill() throws IOException {
     got = in.read(data, end, data.length - 1 - end);
-    if (got > 0) end += got;
+    if (got > 0)
+      end += got;
   }
 
 
@@ -320,13 +318,14 @@ public class UncompressInputStream extends FilterInputStream {
 
   @Override
   public int available() throws IOException {
-    if (eof) return 0;
+    if (eof)
+      return 0;
 
     // Fred Hansen, 2008
     // the old code follows. it fails because read() can return bytes even after exhausting in.read()
     // return in.available();
 
-    int avail = in.available(); 
+    int avail = in.available();
     return (avail == 0) ? 1 : avail;
   }
 
@@ -340,32 +339,32 @@ public class UncompressInputStream extends FilterInputStream {
   private static final int HDR_BLOCK_MODE = 0x80;
 
   private void parse_header() throws IOException {
-// read in and check magic number
+    // read in and check magic number
 
     int t = in.read();
-    if (t < 0) throw new EOFException("Failed to read magic number");
+    if (t < 0)
+      throw new EOFException("Failed to read magic number");
     int magic = (t & 0xff) << 8;
     t = in.read();
-    if (t < 0) throw new EOFException("Failed to read magic number");
+    if (t < 0)
+      throw new EOFException("Failed to read magic number");
     magic += t & 0xff;
     if (magic != LZW_MAGIC)
-      throw new IOException("Input not in compress format (read " +
-          "magic number 0x" +
-          Integer.toHexString(magic) + ")");
+      throw new IOException(
+          "Input not in compress format (read " + "magic number 0x" + Integer.toHexString(magic) + ")");
 
 
-// read in header byte
+    // read in header byte
 
     int header = in.read();
-    if (header < 0) throw new EOFException("Failed to read header");
+    if (header < 0)
+      throw new EOFException("Failed to read header");
 
     block_mode = (header & HDR_BLOCK_MODE) > 0;
     maxbits = header & HDR_MAXBITS;
 
     if (maxbits > MAX_BITS)
-      throw new IOException("Stream compressed with " + maxbits +
-          " bits, but can only handle " + MAX_BITS +
-          " bits");
+      throw new IOException("Stream compressed with " + maxbits + " bits, but can only handle " + MAX_BITS + " bits");
 
     if ((header & HDR_EXTENDED) > 0)
       throw new IOException("Header extension bit set");
@@ -379,7 +378,7 @@ public class UncompressInputStream extends FilterInputStream {
     }
 
 
-// initialize stuff
+    // initialize stuff
 
     maxmaxcode = 1 << maxbits;
     n_bits = INIT_BITS;
@@ -408,15 +407,16 @@ public class UncompressInputStream extends FilterInputStream {
     return false;
   }
 
-  static public void uncompress( String fileInName, FileOutputStream out) throws IOException {
+  static public void uncompress(String fileInName, FileOutputStream out) throws IOException {
     long start = System.currentTimeMillis();
     int total = 0;
 
-    try (InputStream in = new UncompressInputStream(  new FileInputStream(fileInName))) {
+    try (InputStream in = new UncompressInputStream(new FileInputStream(fileInName))) {
       byte[] buffer = new byte[100000];
       while (true) {
         int bytesRead = in.read(buffer);
-        if (bytesRead == -1) break;
+        if (bytesRead == -1)
+          break;
         out.write(buffer, 0, bytesRead);
         total += bytesRead;
       }

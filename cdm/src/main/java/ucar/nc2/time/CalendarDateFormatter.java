@@ -13,7 +13,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ucar.nc2.units.DateFormatter;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -29,41 +28,43 @@ import java.util.StringTokenizer;
 public class CalendarDateFormatter {
   // these are thread-safe (yeah!)
   private static DateTimeFormatter isof = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
-  private static DateTimeFormatter isof_with_millis_of_second = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC();
+  private static DateTimeFormatter isof_with_millis_of_second =
+      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss'Z'").withZoneUTC();
-  
-  private static DateTimeFormatter dtf_with_millis_of_second = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZoneUTC();
+
+  private static DateTimeFormatter dtf_with_millis_of_second =
+      DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
   private static DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // udunits
 
   static public String toDateTimeStringISO(CalendarDate cd) {
-	
-	 if(cd.getDateTime().getMillisOfSecond() == 0)
-		 return isof.print( cd.getDateTime() );
-	 else
-		 return isof_with_millis_of_second.print(cd.getDateTime());
-	 
+
+    if (cd.getDateTime().getMillisOfSecond() == 0)
+      return isof.print(cd.getDateTime());
+    else
+      return isof_with_millis_of_second.print(cd.getDateTime());
+
   }
 
   static public String toDateTimeStringISO(Date d) {
-	  return toDateTimeStringISO( CalendarDate.of(d) );
+    return toDateTimeStringISO(CalendarDate.of(d));
   }
 
   static public String toDateTimeStringISO(long millisecs) {
- 	  return toDateTimeStringISO( CalendarDate.of(millisecs) );
-   }
-
-   static public String toDateTimeString(CalendarDate cd) {
-
-	  if(cd.getDateTime().getMillisOfSecond()==0)	  
-		  return dtf.print(cd.getDateTime());
-	  else
-		  return dtf_with_millis_of_second.print(cd.getDateTime());
+    return toDateTimeStringISO(CalendarDate.of(millisecs));
   }
-  
+
+  static public String toDateTimeString(CalendarDate cd) {
+
+    if (cd.getDateTime().getMillisOfSecond() == 0)
+      return dtf.print(cd.getDateTime());
+    else
+      return dtf_with_millis_of_second.print(cd.getDateTime());
+  }
+
   static public String toDateTimeString(Date date) {
-	    return toDateTimeString(CalendarDate.of(date));
-  }  
+    return toDateTimeString(CalendarDate.of(date));
+  }
 
   static public String toDateTimeStringPresent() {
     return dtf.print(new DateTime());
@@ -79,24 +80,30 @@ public class CalendarDateFormatter {
 
   /**
    * udunits formatting
-   * @param cd  the calendar date
+   * 
+   * @param cd the calendar date
    * @return udunits formated date
    */
-  static public String toTimeUnits(CalendarDate cd){
-	  return df_units.print(cd.getDateTime());
+  static public String toTimeUnits(CalendarDate cd) {
+    return df_units.print(cd.getDateTime());
   }
 
-  static public String toTimeUnits(Date date){
-	  return df_units.print(date.getTime());
+  static public String toTimeUnits(Date date) {
+    return df_units.print(date.getTime());
   }
 
   static public CalendarDateFormatter factory(CalendarPeriod period) {
     switch (period.getField()) {
-      case Year: return new CalendarDateFormatter("yyyy");
-      case Month: return new CalendarDateFormatter("yyyy-MM");
-      case Day: return new CalendarDateFormatter("yyyy-MM-dd");
-      case Hour: return new CalendarDateFormatter("yyyy-MM-ddTHH");
-      default: return new CalendarDateFormatter("yyyy-MM-ddTHH:mm:ss");
+      case Year:
+        return new CalendarDateFormatter("yyyy");
+      case Month:
+        return new CalendarDateFormatter("yyyy-MM");
+      case Day:
+        return new CalendarDateFormatter("yyyy-MM-dd");
+      case Hour:
+        return new CalendarDateFormatter("yyyy-MM-ddTHH");
+      default:
+        return new CalendarDateFormatter("yyyy-MM-ddTHH:mm:ss");
     }
   }
 
@@ -106,74 +113,82 @@ public class CalendarDateFormatter {
 
   /**
    * Old version using DateFormatter
+   * 
    * @param iso ISO 8601 date String
    * @return equivilent Date
    * 
    * @deprecated As of 4.3.10 use {@link #isoStringToDate(String)} instead
-   *     
+   * 
    */
   @Deprecated
   static public Date parseISODate(String iso) {
     DateFormatter df = new DateFormatter();
     return df.getISODate(iso);
   }
-  
+
   /**
    * Convert an ISO formatted String to a CalendarDate.
+   * 
    * @param calt calendar, may be null for default calendar (Calendar.getDefault())
    * @param iso ISO 8601 date String
-     <pre>possible forms for W3C profile of ISO 8601
-        Year:
-         YYYY (eg 1997)
-      Year and month:
-         YYYY-MM (eg 1997-07)
-      Complete date:
-         YYYY-MM-DD (eg 1997-07-16)
-      Complete date plus hours and minutes:
-         YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-      Complete date plus hours, minutes and seconds:
-         YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
-      Complete date plus hours, minutes, seconds and a decimal fraction of a second
-         YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
-
-   where:
-        YYYY = four-digit year
-        MM   = two-digit month (01=January, etc.)
-        DD   = two-digit day of month (01 through 31)
-        hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
-        mm   = two digits of minute (00 through 59)
-        ss   = two digits of second (00 through 59)
-        s    = one or more digits representing a decimal fraction of a second
-        TZD  = time zone designator (Z or +hh:mm or -hh:mm)
-   except:
-       You may use a space instead of the 'T'
-       The year may be preceeded by a '+' (ignored) or a '-' (makes the date BCE)
-       The date part uses a '-' delimiter instead of a fixed number of digits for each field
-       The time part uses a ':' delimiter instead of a fixed number of digits for each field
-   </pre>
+   * 
+   *        <pre>
+   * possible forms for W3C profile of ISO 8601
+      Year:
+       YYYY (eg 1997)
+    Year and month:
+       YYYY-MM (eg 1997-07)
+    Complete date:
+       YYYY-MM-DD (eg 1997-07-16)
+    Complete date plus hours and minutes:
+       YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
+    Complete date plus hours, minutes and seconds:
+       YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
+    Complete date plus hours, minutes, seconds and a decimal fraction of a second
+       YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
+  
+  where:
+      YYYY = four-digit year
+      MM   = two-digit month (01=January, etc.)
+      DD   = two-digit day of month (01 through 31)
+      hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+      mm   = two digits of minute (00 through 59)
+      ss   = two digits of second (00 through 59)
+      s    = one or more digits representing a decimal fraction of a second
+      TZD  = time zone designator (Z or +hh:mm or -hh:mm)
+  except:
+     You may use a space instead of the 'T'
+     The year may be preceeded by a '+' (ignored) or a '-' (makes the date BCE)
+     The date part uses a '-' delimiter instead of a fixed number of digits for each field
+     The time part uses a ':' delimiter instead of a fixed number of digits for each field
+   *        </pre>
+   * 
    * @return CalendarDate using given calendar
    * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
    * @see "http://www.w3.org/TR/NOTE-datetime"
    */
   static public CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException {
-	  DateTime dt = parseIsoTimeString(calt, iso);
+    DateTime dt = parseIsoTimeString(calt, iso);
     Calendar useCal = Calendar.of(dt.getChronology());
-	  return new CalendarDate(useCal, dt);
+    return new CalendarDate(useCal, dt);
   }
 
   /**
    * Does not handle non-standard Calendars
+   * 
    * @param iso iso formatted string
    * @return Date
    * @deprecated use isoStringToCalendarDate
    */
   static public Date isoStringToDate(String iso) throws IllegalArgumentException {
     CalendarDate dt = isoStringToCalendarDate(null, iso);
-	  return dt.toDate();
+    return dt.toDate();
   }
 
-  //                                                   1                  2            3
-  static public final String isodatePatternString = "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
+  // 1 2 3
+  static public final String isodatePatternString = "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public
+                                                                                                                // for
+                                                                                                                // testing
   // private static final String isodatePatternString = "([\\+\\-\\d]+)[ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
   private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
 
@@ -183,7 +198,7 @@ public class CalendarDateFormatter {
 
     Matcher m = isodatePattern.matcher(iso);
     if (!m.matches()) {
-      //System.out.printf("'%s' does not match regexp '%s'%n", dateUnitString, udunitPatternString);
+      // System.out.printf("'%s' does not match regexp '%s'%n", dateUnitString, udunitPatternString);
       throw new IllegalArgumentException(iso + " does not match regexp " + isodatePatternString);
     }
 
@@ -202,28 +217,34 @@ public class CalendarDateFormatter {
     try {
       boolean isMinus = false;
       if (dateString.startsWith("-")) {
-         isMinus = true;
-         dateString = dateString.substring(1);
-       } else if (dateString.startsWith("+")) {
-         dateString = dateString.substring(1);
-       }
+        isMinus = true;
+        dateString = dateString.substring(1);
+      } else if (dateString.startsWith("+")) {
+        dateString = dateString.substring(1);
+      }
 
       if (dateString.contains("-")) {
         StringTokenizer dateTokenizer = new StringTokenizer(dateString, "-");
-        if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
-        if (dateTokenizer.hasMoreTokens()) month = Integer.parseInt(dateTokenizer.nextToken());
-        if (dateTokenizer.hasMoreTokens()) day = Integer.parseInt(dateTokenizer.nextToken());
+        if (dateTokenizer.hasMoreTokens())
+          year = Integer.parseInt(dateTokenizer.nextToken());
+        if (dateTokenizer.hasMoreTokens())
+          month = Integer.parseInt(dateTokenizer.nextToken());
+        if (dateTokenizer.hasMoreTokens())
+          day = Integer.parseInt(dateTokenizer.nextToken());
       } else {
         int dateLength = dateString.length();
         if (dateLength % 2 != 0) {
-          throw new IllegalArgumentException(dateString + " is ambiguous. Cannot parse uneven " +
-                  "length date strings when no date delimiter is used.");
+          throw new IllegalArgumentException(dateString + " is ambiguous. Cannot parse uneven "
+              + "length date strings when no date delimiter is used.");
         } else {
           // dateString length must be even - only four digit year, two digit month, and
           // two digit day values are allowed when there is no date delimiter.
-          if (dateLength > 3) year = Integer.parseInt(dateString.substring(0, 4));
-          if (dateLength > 5) month = Integer.parseInt(dateString.substring(4, 6));
-          if (dateLength > 7) day = Integer.parseInt(dateString.substring(6, 8));
+          if (dateLength > 3)
+            year = Integer.parseInt(dateString.substring(0, 4));
+          if (dateLength > 5)
+            month = Integer.parseInt(dateString.substring(4, 6));
+          if (dateLength > 7)
+            day = Integer.parseInt(dateString.substring(6, 8));
         }
       }
 
@@ -231,9 +252,12 @@ public class CalendarDateFormatter {
       if (timeString != null && timeString.length() > 0) {
         if (timeString.contains(":")) {
           StringTokenizer timeTokenizer = new StringTokenizer(timeString, ":");
-          if (timeTokenizer.hasMoreTokens()) hour = Integer.parseInt(timeTokenizer.nextToken());
-          if (timeTokenizer.hasMoreTokens()) minute = Integer.parseInt(timeTokenizer.nextToken());
-          if (timeTokenizer.hasMoreTokens()) second = Double.parseDouble(timeTokenizer.nextToken());
+          if (timeTokenizer.hasMoreTokens())
+            hour = Integer.parseInt(timeTokenizer.nextToken());
+          if (timeTokenizer.hasMoreTokens())
+            minute = Integer.parseInt(timeTokenizer.nextToken());
+          if (timeTokenizer.hasMoreTokens())
+            second = Double.parseDouble(timeTokenizer.nextToken());
         } else {
           int timeLengthNoSubseconds = timeString.length();
           // possible this contains a seconds value with subseconds (i.e. 25.125 seconds)
@@ -256,27 +280,31 @@ public class CalendarDateFormatter {
           if (timeLengthNoSubseconds == 1) {
             hour = Integer.parseInt(timeString);
           } else if (timeLengthNoSubseconds % 2 != 0) {
-            throw new IllegalArgumentException(timeString + " is ambiguous. Cannot parse uneven " +
-                    "length time strings (ignoring subseconds) when no time delimiter is used.");
+            throw new IllegalArgumentException(timeString + " is ambiguous. Cannot parse uneven "
+                + "length time strings (ignoring subseconds) when no time delimiter is used.");
           } else {
             // dateString length must be even - only four digit year, two digit month, and
             // two digit day values are allowed when there is no date delimiter.
-            if (timeString.length() > 1) hour = Integer.parseInt(timeString.substring(0, 2));
-            if (timeString.length() > 3) minute = Integer.parseInt(timeString.substring(2, 4));
-            if (timeString.length() > 5) second = Double.parseDouble(timeString.substring(4));
+            if (timeString.length() > 1)
+              hour = Integer.parseInt(timeString.substring(0, 2));
+            if (timeString.length() > 3)
+              minute = Integer.parseInt(timeString.substring(2, 4));
+            if (timeString.length() > 5)
+              second = Double.parseDouble(timeString.substring(4));
           }
         }
       }
 
-      if (isMinus) year = -year;
+      if (isMinus)
+        year = -year;
 
       // kludge to deal with legacy files using year 0. // 10/10/2013 jcaron
       if ((year == 0) && (calt == Calendar.gregorian)) {
         calt = Calendar.proleptic_gregorian;
       }
 
-      //if (year <  -292275054 || year > 292278993)
-      //  throw new IllegalArgumentException(" incorrect date specification = " + iso);
+      // if (year < -292275054 || year > 292278993)
+      // throw new IllegalArgumentException(" incorrect date specification = " + iso);
 
       // Get a DateTime object in this Chronology
       Chronology cron = Calendar.getChronology(calt);
@@ -289,28 +317,29 @@ public class CalendarDateFormatter {
       // Parse the time zone if present
       if (zoneString != null) {
         zoneString = zoneString.trim();
-        if (zoneString.length() > 0 && !zoneString.equalsIgnoreCase("Z") && !zoneString.equalsIgnoreCase("UTC") && !zoneString.equalsIgnoreCase("GMT")) {
+        if (zoneString.length() > 0 && !zoneString.equalsIgnoreCase("Z") && !zoneString.equalsIgnoreCase("UTC")
+            && !zoneString.equalsIgnoreCase("GMT")) {
           isMinus = false;
           if (zoneString.startsWith("-")) {
-             isMinus = true;
-             zoneString = zoneString.substring(1);
-           } else if (zoneString.startsWith("+")) {
-             zoneString = zoneString.substring(1);
-           }
+            isMinus = true;
+            zoneString = zoneString.substring(1);
+          } else if (zoneString.startsWith("+")) {
+            zoneString = zoneString.substring(1);
+          }
 
           // allow 01:00, 1:00, 01 or 0100
           int hourOffset;
           int minuteOffset = 0;
           int posColon = zoneString.indexOf(':');
           if (posColon > 0) {
-            String hourS = zoneString.substring(0,posColon);
-            String minS = zoneString.substring(posColon+1);
+            String hourS = zoneString.substring(0, posColon);
+            String minS = zoneString.substring(posColon + 1);
             hourOffset = Integer.parseInt(hourS);
             minuteOffset = Integer.parseInt(minS);
 
-          } else {   // no colon - assume 2 digit hour, optional minutes
+          } else { // no colon - assume 2 digit hour, optional minutes
             if (zoneString.length() > 2) {
-              String hourS = zoneString.substring(0,2);
+              String hourS = zoneString.substring(0, 2);
               String minS = zoneString.substring(2);
               hourOffset = Integer.parseInt(hourS);
               minuteOffset = Integer.parseInt(minS);
@@ -319,28 +348,29 @@ public class CalendarDateFormatter {
             }
           }
           if (isMinus) {
-            // DateTimeZone.forOffsetHoursMinutes: "If constructed with the values (-2, 30), the resulting zone is '-02:30'.
+            // DateTimeZone.forOffsetHoursMinutes: "If constructed with the values (-2, 30), the resulting zone is
+            // '-02:30'.
             // so i guess dont make minuteOffset negetive
             hourOffset = -hourOffset;
           }
           DateTimeZone dtz = DateTimeZone.forOffsetHoursMinutes(hourOffset, minuteOffset);
 
-          // Apply the time zone offset, retaining the field values.  This
+          // Apply the time zone offset, retaining the field values. This
           // manipulates the millisecond instance.
           dt = dt.withZoneRetainFields(dtz);
           // Now convert to the UTC time zone, retaining the millisecond instant
           dt = dt.withZone(DateTimeZone.UTC);
-        } //else {
-          //dt = dt.withZone(DateTimeZone.UTC);   // default UTC
-        //}
+        } // else {
+          // dt = dt.withZone(DateTimeZone.UTC); // default UTC
+        // }
 
-      //} else {
-      //  dt = dt.withZone(DateTimeZone.UTC);   // default UTC
+        // } else {
+        // dt = dt.withZone(DateTimeZone.UTC); // default UTC
       }
 
       return dt;
-    } catch (Throwable e) {  // catch random joda exceptions
-      throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
+    } catch (Throwable e) { // catch random joda exceptions
+      throw new IllegalArgumentException("Illegal base time specification: '" + dateString + "' " + e.getMessage());
     }
   }
 
@@ -350,13 +380,14 @@ public class CalendarDateFormatter {
   /**
    * Date formatter with specified pattern.
    * NOTE: we are using jodatime patterns right now, but may switch to jsr-310 when thats available in java 8.
-   *  Not sure whether these patterns will still work then, so use this formatter at the risk of having to
-   *  change it eventually. OTOH, its likely that the same functionality will be present in jsr-310.
+   * Not sure whether these patterns will still work then, so use this formatter at the risk of having to
+   * change it eventually. OTOH, its likely that the same functionality will be present in jsr-310.
    * <p>
    * The pattern syntax is mostly compatible with java.text.SimpleDateFormat -
    * time zone names cannot be parsed and a few more symbols are supported.
    * All ASCII letters are reserved as pattern letters, which are defined as follows:
    * </p>
+   * 
    * <pre>
    * Symbol  Meaning                      Presentation  Examples
    * ------  -------                      ------------  -------
@@ -401,7 +432,7 @@ public class CalendarDateFormatter {
   }
 
   public CalendarDateFormatter(String pattern, CalendarTimeZone tz) {
-    dflocal = DateTimeFormat.forPattern(pattern).withZone( tz.getJodaTimeZone());
+    dflocal = DateTimeFormat.forPattern(pattern).withZone(tz.getJodaTimeZone());
   }
 
   public String toString(CalendarDate cd) {

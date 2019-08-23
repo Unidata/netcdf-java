@@ -2,7 +2,6 @@ package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -48,7 +47,7 @@ public class TestCoverageSubsetTime {
     GribDataReader.validator = null;
   }
 
-  @Test  // there is no interval with offset value = 51
+  @Test // there is no interval with offset value = 51
   public void testNoIntervalFound() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
@@ -65,7 +64,7 @@ public class TestCoverageSubsetTime {
       SubsetParams params = new SubsetParams();
       CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
       params.set(SubsetParams.runtime, runtime);
-      double offsetVal = 51.0;  // should fail
+      double offsetVal = 51.0; // should fail
       params.set(SubsetParams.timeOffset, offsetVal);
       logger.debug("  subset {}", params);
 
@@ -77,7 +76,7 @@ public class TestCoverageSubsetTime {
     }
   }
 
-  @Test  // 1 runtime, 1 timeOffset (Time2DCoordSys case 1a)
+  @Test // 1 runtime, 1 timeOffset (Time2DCoordSys case 1a)
   public void test1Runtime1TimeOffset() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
@@ -106,8 +105,9 @@ public class TestCoverageSubsetTime {
   }
 
 
-  // Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
-  @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
+  // Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1)
+  // time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
+  @Test // 1 runtime, 1 time (Time2DCoordSys case 1b)
   public void test1Runtime1TimeIntervalEdge() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
@@ -139,8 +139,9 @@ public class TestCoverageSubsetTime {
   }
 
 
-  // Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T12:00:00Z (1) vert=0.000000 (-1)
-  @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
+  // Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1)
+  // time=2015-03-01T12:00:00Z (1) vert=0.000000 (-1)
+  @Test // 1 runtime, 1 time (Time2DCoordSys case 1b)
   public void test1Runtime1TimeInterval() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
@@ -166,13 +167,14 @@ public class TestCoverageSubsetTime {
 
       Array data = geo.getData();
       Index ai = data.getIndex();
-      float testValue = data.getFloat(ai.set(0,0,2,2));
+      float testValue = data.getFloat(ai.set(0, 0, 2, 2));
       Assert2.assertNearlyEquals(0.073f, testValue);
     }
   }
 
-  // Slice Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T12:00:00Z (2) vert=0.000000 (-1)
-  @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
+  // Slice Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1)
+  // time=2015-03-01T12:00:00Z (2) vert=0.000000 (-1)
+  @Test // 1 runtime, 1 time (Time2DCoordSys case 1b)
   public void test1Runtime1Time() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Total_ozone_entire_atmosphere_single_layer";
@@ -198,12 +200,12 @@ public class TestCoverageSubsetTime {
 
       Array data = geo.getData();
       Index ai = data.getIndex();
-      float testValue = data.getFloat(ai.set(0,0,1,0));
+      float testValue = data.getFloat(ai.set(0, 0, 1, 0));
       Assert2.assertNearlyEquals(371.5, testValue);
     }
   }
 
-  @Test  // 1 runtime, all times (Time2DCoordSys case 1c)
+  @Test // 1 runtime, all times (Time2DCoordSys case 1c)
   public void testConstantRuntime() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
@@ -243,7 +245,7 @@ public class TestCoverageSubsetTime {
     }
   }
 
-  @Test  // all runtimes, 1 timeOffset (Time2DCoordSys case 2a)
+  @Test // all runtimes, 1 timeOffset (Time2DCoordSys case 2a)
   public void testConstantOffset() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
@@ -279,8 +281,8 @@ public class TestCoverageSubsetTime {
       Assert.assertEquals(1, timeAxis.getNcoords());
       CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
       if (timeAxis.isInterval()) {
-        Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge1(0) <= offsetVal);          // lower <= time
-        Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge2(0) >= offsetVal);          // upper >= time
+        Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge1(0) <= offsetVal); // lower <= time
+        Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge2(0) >= offsetVal); // upper >= time
 
       } else {
         Assert2.assertNearlyEquals(offsetVal, timeAxis1D.getCoordMidpoint(0));
@@ -290,7 +292,7 @@ public class TestCoverageSubsetTime {
     }
   }
 
-  @Test  // all runtimes, 1 time (Time2DCoordSys case 2a) not time interval
+  @Test // all runtimes, 1 time (Time2DCoordSys case 2a) not time interval
   public void testConstantForecast() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Pressure_convective_cloud_bottom";
@@ -327,9 +329,9 @@ public class TestCoverageSubsetTime {
         CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
         if (timeAxis.isInterval()) {
           CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
-          Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
+          Assert.assertTrue("time coord lower", !lower.isAfter(time)); // lower <= time
           CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
-          Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
+          Assert.assertTrue("time coord lower", !upper.isBefore(time)); // upper >= time
 
         } else {
           Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoordMidpoint(0)));
@@ -341,7 +343,7 @@ public class TestCoverageSubsetTime {
         Assert.assertTrue(timeOffsetAxis instanceof TimeOffsetAxis);
         Assert.assertEquals(3, timeOffsetAxis.getNcoords());
         Assert.assertEquals(CoverageCoordAxis.DependenceType.dependent, timeOffsetAxis.getDependenceType());
-        Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, timeOffsetAxis.getSpacing());  // LOOK wrong
+        Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, timeOffsetAxis.getSpacing()); // LOOK wrong
       }
     }
   }
@@ -358,28 +360,29 @@ public class TestCoverageSubsetTime {
       Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoordMidpoint(0)));
 
     CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
-    if (timeAxis == null) timeAxis = geoCs.getAxis(AxisType.Time);
+    if (timeAxis == null)
+      timeAxis = geoCs.getAxis(AxisType.Time);
 
     Assert.assertNotNull(timeAxis);
     Assert.assertTrue(timeAxis instanceof CoverageCoordAxis1D);
     Assert.assertEquals(1, timeAxis.getNcoords());
     CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
     if (offsetVal != null)
-       time = timeAxis1D.makeDate(offsetVal);
+      time = timeAxis1D.makeDate(offsetVal);
 
     if (time != null) {
       if (timeAxis.isInterval()) {
         CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
-        Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
+        Assert.assertTrue("time coord lower", !lower.isAfter(time)); // lower <= time
         CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
-        Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
+        Assert.assertTrue("time coord lower", !upper.isBefore(time)); // upper >= time
       } else {
         Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoordMidpoint(0)));
       }
     }
 
     int[] shapeCs = geoCs.getShape();
-    int [] dataShape = geo.getData().getShape();
+    int[] dataShape = geo.getData().getShape();
 
     Assert.assertArrayEquals("geo shape", shapeCs, dataShape);
   }
@@ -546,7 +549,8 @@ public class TestCoverageSubsetTime {
   ///////////////////////////////////////////////////////////////////////////////////////////
   // ENsemble
 
-  //     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC, "geopotential"});
+  // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC,
+  // "geopotential"});
 
 
 }

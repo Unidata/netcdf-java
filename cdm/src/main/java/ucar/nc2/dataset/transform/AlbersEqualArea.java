@@ -23,7 +23,8 @@ public class AlbersEqualArea extends AbstractTransformBuilder implements HorizTr
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double[] pars = readAttributeDouble2(ctv.findAttribute(CF.STANDARD_PARALLEL));
-    if (pars == null) return null;
+    if (pars == null)
+      return null;
 
     readStandardParams(ctv, geoCoordinateUnits);
 
@@ -33,7 +34,8 @@ public class AlbersEqualArea extends AbstractTransformBuilder implements HorizTr
       proj = new AlbersEqualAreaEllipse(lat0, lon0, pars[0], pars[1], false_easting, false_northing, earth);
 
     } else {
-      proj = new ucar.unidata.geoloc.projection.AlbersEqualArea(lat0, lon0, pars[0], pars[1], false_easting, false_northing, earth_radius);
+      proj = new ucar.unidata.geoloc.projection.AlbersEqualArea(lat0, lon0, pars[0], pars[1], false_easting,
+          false_northing, earth_radius);
     }
 
     return new ProjectionCT(ctv.getName(), "FGDC", proj);

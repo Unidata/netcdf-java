@@ -17,7 +17,6 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.TimeUnit;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -34,8 +33,8 @@ public class TestClientCatalog {
   @Test
   public void testResolve() throws IOException {
     Catalog cat = ClientCatalogUtil.open("testCatref.xml");
-    Assert.assertEquals(
-            "catrefURI", ClientCatalogUtil.makeFilepath("test2.xml"), getCatrefURI(cat.getDatasets(), "catref"));
+    Assert.assertEquals("catrefURI", ClientCatalogUtil.makeFilepath("test2.xml"),
+        getCatrefURI(cat.getDatasets(), "catref"));
 
     String catrefURIn = getCatrefNestedURI(cat, "top", "catref-nested");
     assert catrefURIn.equals(ClientCatalogUtil.makeFilepath("test0.xml")) : catrefURIn;
@@ -171,10 +170,10 @@ public class TestClientCatalog {
     logger.debug("tc = {}", tc);
 
     CalendarDate start = tc.getStart().getCalendarDate();
-    assert start.getCalendar() == Calendar.uniform30day;  // Using non-default calendar.
+    assert start.getCalendar() == Calendar.uniform30day; // Using non-default calendar.
 
     // This date is valid in the uniform30day calendar. If we tried it with the standard calendar, we'd get an error:
-    //     Illegal base time specification: '2017-02-30' Value 30 for dayOfMonth must be in the range [1,28]
+    // Illegal base time specification: '2017-02-30' Value 30 for dayOfMonth must be in the range [1,28]
     assert CalendarDateFormatter.toDateString(start).equals("2017-02-30");
 
     CalendarDate end = tc.getEnd().getCalendarDate();
@@ -206,12 +205,13 @@ public class TestClientCatalog {
     ThreddsMetadata.VariableGroup dif = getType(list, "DIF");
     assert dif != null;
     checkVariable(dif, "wind_from_direction",
-            "EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction");
+        "EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction");
   }
 
   ThreddsMetadata.VariableGroup getType(List<ThreddsMetadata.VariableGroup> list, String type) {
     for (ThreddsMetadata.VariableGroup vars : list) {
-      if (vars.getVocabulary().equals(type)) return vars;
+      if (vars.getVocabulary().equals(type))
+        return vars;
     }
     return null;
   }

@@ -6,11 +6,11 @@ package ucar.nc2.ui.geoloc;
 
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
-
 import java.awt.geom.Point2D;
 
 /**
  * Cursor has moved to a new location.
+ * 
  * @author John Caron
  */
 public class CursorMoveEvent extends java.util.EventObject {
@@ -26,7 +26,12 @@ public class CursorMoveEvent extends java.util.EventObject {
     this.world = new ProjectionPointImpl(location.getX(), location.getY());
   }
 
-  public Point2D getLocationPoint() { return new Point2D.Double(world.getX(), world.getY()); }
-  public ProjectionPoint getLocation() { return world; }
+  public Point2D getLocationPoint() {
+    return new Point2D.Double(world.getX(), world.getY());
+  }
+
+  public ProjectionPoint getLocation() {
+    return world;
+  }
 }
 

@@ -10,7 +10,6 @@ import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.table.JTableSorted;
 import ucar.ui.table.TableRowAbstract;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -35,13 +34,14 @@ public class GridTable {
   private boolean debug = false;
 
   public GridTable(String actionName) {
-      // the main delegate
+    // the main delegate
     table = new JTableSorted(colName, list);
 
-         // event management
+    // event management
     actionSource = new ActionSourceListener(actionName) {
-      public void actionPerformed( ActionValueEvent e) {
-        if (list == null) return;
+      public void actionPerformed(ActionValueEvent e) {
+        if (list == null)
+          return;
         String want = e.getValue().toString();
         int count = 0;
         for (Row row : list) {
@@ -56,14 +56,15 @@ public class GridTable {
       }
     };
 
-     // send event when selected row changes
-    table.addListSelectionListener( new ListSelectionListener() {
+    // send event when selected row changes
+    table.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         if (eventOK && !e.getValueIsAdjusting()) {
           // new variable is selected
           Row row = (Row) table.getSelected();
           if (row != null) {
-            if (debug) System.out.println(" GridTable new gg = "+ row.gg.getFullName());
+            if (debug)
+              System.out.println(" GridTable new gg = " + row.gg.getFullName());
             actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, row.gg.getFullName());
           }
         }
@@ -77,7 +78,8 @@ public class GridTable {
   }
 
   public void setDataset(java.util.List<GridDatatype> fields) {
-    if (fields == null) return;
+    if (fields == null)
+      return;
 
     list = new ArrayList<>(fields.size());
     for (GridDatatype gg : fields)
@@ -86,19 +88,24 @@ public class GridTable {
     table.setList(list);
   }
 
-  public JPanel getPanel() { return table; }
+  public JPanel getPanel() {
+    return table;
+  }
 
-      /* better way to do event management */
-  public ActionSourceListener getActionSourceListener() { return actionSource; }
+  /* better way to do event management */
+  public ActionSourceListener getActionSourceListener() {
+    return actionSource;
+  }
 
   /// inner classes
 
   private static String[] colName = {"Name", "Dimensions", "Units", "Long Name"};
+
   private static class Row extends TableRowAbstract {
     GridDatatype gg;
     String dims;
 
-    Row( GridDatatype gg) {
+    Row(GridDatatype gg) {
       this.gg = gg;
       Formatter f = new Formatter();
       for (Dimension dim : gg.getDimensions())
@@ -106,14 +113,22 @@ public class GridTable {
       dims = f.toString();
     }
 
-    public Object getUserObject() { return gg; }
-    public Object getValueAt( int col) {
+    public Object getUserObject() {
+      return gg;
+    }
+
+    public Object getValueAt(int col) {
       switch (col) {
-        case 0: return gg.getFullName();
-        case 1: return dims;
-        case 2: return gg.getUnitsString();
-        case 3: return gg.getDescription();
-        default: return "error";
+        case 0:
+          return gg.getFullName();
+        case 1:
+          return dims;
+        case 2:
+          return gg.getUnitsString();
+        case 3:
+          return gg.getDescription();
+        default:
+          return "error";
       }
     }
   }

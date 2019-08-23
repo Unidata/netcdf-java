@@ -9,16 +9,18 @@ import java.io.IOException;
 
 /**
  * An iterator over StructureData.
-  * Make sure that you call close().
-  * Best to put in a try/finally block like:
-<pre>
-try {
-  while (iter.hasNext())
-   process(iter.next());
- } finally {
-   iter.finish();
- }
-</pre>
+ * Make sure that you call close().
+ * Best to put in a try/finally block like:
+ * 
+ * <pre>
+ * try {
+ *   while (iter.hasNext())
+ *     process(iter.next());
+ * } finally {
+ *   iter.finish();
+ * }
+ * </pre>
+ * 
  * @author caron
  * @since Feb 23, 2008
  */
@@ -47,9 +49,9 @@ public interface StructureDataIterator extends Closeable {
    *
    * @param bytes amount of memory in bytes
    */
-  default void setBufferSize(int bytes)  {
-      // doan do nuthin
-    }
+  default void setBufferSize(int bytes) {
+    // doan do nuthin
+  }
 
   /**
    * Start the iteration over again.
@@ -63,12 +65,13 @@ public interface StructureDataIterator extends Closeable {
   /**
    * Make sure that the iterator is complete, and recover resources.
    * Best to put in a try/finally block like:
+   * 
    * <pre>
-   try (StructureDataIterator iter = obj.getStructureDataIterator()) {
-     while (iter.hasNext())
-      process(iter.next());
-    }
-   </pre>
+   * try (StructureDataIterator iter = obj.getStructureDataIterator()) {
+   *   while (iter.hasNext())
+   *     process(iter.next());
+   * }
+   * </pre>
    */
   default void close() {
     // doan do nuthin
@@ -82,7 +85,6 @@ public interface StructureDataIterator extends Closeable {
   default void finish() {
     close();
   }
-
 
 
 

@@ -11,10 +11,8 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
-
 import java.io.*;
 import java.lang.invoke.MethodHandles;
-
 import ucar.unidata.util.test.TestDir;
 
 /**
@@ -32,8 +30,8 @@ public class TestCDL {
     for (File f : files) {
       String name = f.getAbsolutePath();
       if (name.endsWith(".nc")) {
-        //int pos = name.lastIndexOf(".");
-        //String prefix = name.substring(0,pos);
+        // int pos = name.lastIndexOf(".");
+        // String prefix = name.substring(0,pos);
         testCDL(name, false);
       }
     }
@@ -45,19 +43,24 @@ public class TestCDL {
 
   private void testCDL(String filename, boolean show) throws IOException, InterruptedException {
     NetcdfFile ncfile = NetcdfFile.open(filename, null);
-    System.out.println("File "+filename);
+    System.out.println("File " + filename);
 
     ByteArrayOutputStream bout = new ByteArrayOutputStream(30 * 1000);
-    PrintWriter pw = new PrintWriter( new OutputStreamWriter(bout, CDM.utf8Charset));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(bout, CDM.utf8Charset));
     NCdumpW.print(ncfile, pw, false, false, false, true, null, null);
     String njCDL = bout.toString();
-    if (show) System.out.println("============================================");
-    if (show) System.out.println("njCDL " + njCDL);
-    if (show) System.out.println("---------------------");
+    if (show)
+      System.out.println("============================================");
+    if (show)
+      System.out.println("njCDL " + njCDL);
+    if (show)
+      System.out.println("---------------------");
 
     String cdl = getCDL(filename);
-    if (show) System.out.println("CDL " + cdl);
-    if (show) System.out.println("---------------------");
+    if (show)
+      System.out.println("CDL " + cdl);
+    if (show)
+      System.out.println("---------------------");
 
     String[] ncTokens = njCDL.split("[\\s,;]+");
     String[] cdlTokens = cdl.split("[\\s,;]+");
@@ -67,12 +70,14 @@ public class TestCDL {
 
       if (!ncTokens[countNC].equals(cdlTokens[countCDL])) { // tokens match
         if (matchDoubleToken(ncTokens[countNC], cdlTokens[countCDL])) { // numeric match
-          if (show) System.out.println("ok double "+ncTokens[countNC]+" == "+cdlTokens[countCDL]);
+          if (show)
+            System.out.println("ok double " + ncTokens[countNC] + " == " + cdlTokens[countCDL]);
         } else {
-          System.out.println("mismatch "+ncTokens[countNC]+" != "+cdlTokens[countCDL]);
+          System.out.println("mismatch " + ncTokens[countNC] + " != " + cdlTokens[countCDL]);
         }
       } else {
-        if (show) System.out.println("ok "+ncTokens[countNC]+" == "+cdlTokens[countCDL]);
+        if (show)
+          System.out.println("ok " + ncTokens[countNC] + " == " + cdlTokens[countCDL]);
       }
 
       countNC++;
@@ -86,26 +91,26 @@ public class TestCDL {
       double val2 = Double.parseDouble(toke2);
       return Misc.nearlyEquals(val1, val2);
     } catch (NumberFormatException e) {
-      //System.out.println(e.getMessage());
+      // System.out.println(e.getMessage());
       return false;
     }
   }
 
   private String getCDL(String filename) throws IOException, InterruptedException {
 
-     Runtime run = Runtime.getRuntime();
-     Process p = run.exec(new String[] {"ncdump", "-h", filename});
-     StreamGobbler err = new StreamGobbler(p.getErrorStream(), "ERR");
-     StreamCapture out = new StreamCapture(p.getInputStream());
-     err.start();
-     out.start();
+    Runtime run = Runtime.getRuntime();
+    Process p = run.exec(new String[] {"ncdump", "-h", filename});
+    StreamGobbler err = new StreamGobbler(p.getErrorStream(), "ERR");
+    StreamCapture out = new StreamCapture(p.getInputStream());
+    err.start();
+    out.start();
 
-     // any error???
-     int exitVal = p.waitFor();
-     if (exitVal != 0)
-       throw new IOException("run.exec failed "+filename);
+    // any error???
+    int exitVal = p.waitFor();
+    if (exitVal != 0)
+      throw new IOException("run.exec failed " + filename);
 
-     return out.result.toString();
+    return out.result.toString();
   }
 
   class StreamCapture extends Thread {
@@ -135,10 +140,11 @@ public class TestCDL {
   public void testExec() throws IOException, InterruptedException {
 
     Runtime run = Runtime.getRuntime();
-    //Process p = run.exec(new String[] {"C:\\cdev\\install\\bin\\ncdump.exe", "-h", "C:/data/netcdf4/files/tst_v2.nc"});
+    // Process p = run.exec(new String[] {"C:\\cdev\\install\\bin\\ncdump.exe", "-h",
+    // "C:/data/netcdf4/files/tst_v2.nc"});
     Process p = run.exec(new String[] {"ncdump", "-h", "C:/data/netcdf4/files/tst_v2.nc"});
-    //Process p = run.exec(new String[]{"cmd.exe", "/C", "dir"}, null, new File("C:/data/netcdf4/files/"));
-    //Process p = run.exec(new String[]{"cmd.exe", "/C", "set"}, null, new File("C:/data/netcdf4/files/"));
+    // Process p = run.exec(new String[]{"cmd.exe", "/C", "dir"}, null, new File("C:/data/netcdf4/files/"));
+    // Process p = run.exec(new String[]{"cmd.exe", "/C", "set"}, null, new File("C:/data/netcdf4/files/"));
 
     StreamGobbler err = new StreamGobbler(p.getErrorStream(), "ERR");
     StreamGobbler out = new StreamGobbler(p.getInputStream(), "OUT");
@@ -149,16 +155,18 @@ public class TestCDL {
     int exitVal = p.waitFor();
     System.out.println("ExitValue: " + exitVal);
 
-    /* InputStream err = new BufferedInputStream( p.getErrorStream());
-    //thredds.util.IO.copy(err, System.out);
-    System.out.println("---------------------");
-
-    InputStream in = new BufferedInputStream(p.getInputStream());
-    thredds.util.IO.copy(in, System.out);
-
-    System.out.println("---------------------");
-    int exitVal = p.waitFor();
-    System.out.println("Process exitValue: " + exitVal); */
+    /*
+     * InputStream err = new BufferedInputStream( p.getErrorStream());
+     * //thredds.util.IO.copy(err, System.out);
+     * System.out.println("---------------------");
+     * 
+     * InputStream in = new BufferedInputStream(p.getInputStream());
+     * thredds.util.IO.copy(in, System.out);
+     * 
+     * System.out.println("---------------------");
+     * int exitVal = p.waitFor();
+     * System.out.println("Process exitValue: " + exitVal);
+     */
 
   }
 
@@ -188,7 +196,7 @@ public class TestCDL {
     String test = "abc  hello;;; ;iou";
     String[] tokes = test.split("[\\s;]+");
     for (String t : tokes)
-      System.out.println(" "+t);
+      System.out.println(" " + t);
     System.out.println("dobe");
   }
 }

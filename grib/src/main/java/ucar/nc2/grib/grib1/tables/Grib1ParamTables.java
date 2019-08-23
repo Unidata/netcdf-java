@@ -11,7 +11,6 @@ import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.*;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * This is the interface to manage GRIB-1 Parameter Table lookups.
  * A lookup is a (center, subcenter, version) --> Parameter Table path.
  * The lookups are loaded at startup, but the Parameter Tables arent read until requested,
- *   via getParameter(int center, int subcenter, int tableVersion, int param_number).
+ * via getParameter(int center, int subcenter, int tableVersion, int param_number).
  *
  * These are the tables that are loaded at runtime, matching center and versions.
  * <p/>
@@ -39,7 +38,8 @@ public class Grib1ParamTables {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTables.class);
 
   private static final Object lock = new Object();
-  private static int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions can go first
+  private static int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions
+                                              // can go first
 
   private static Lookup standardLookup;
   private static Grib1ParamTableReader defaultWmoTable;
@@ -54,7 +54,8 @@ public class Grib1ParamTables {
       standardLookup.readLookupTable("resources/grib1/dss/lookupTables.txt");
       // standardLookup.readLookupTable("resources/grib1/ncep/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/wrf/lookupTables.txt"); // */
-      // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt");  // too many problems - must check every one !
+      // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt"); // too many problems - must check every
+      // one !
       standardLookup.tables = new CopyOnWriteArrayList<>(standardLookup.tables); // in case user adds tables
       defaultWmoTable = standardLookup.getParameterTable(0, -1, -1); // user cannot override default
 
@@ -72,8 +73,12 @@ public class Grib1ParamTables {
   /**
    * Set strict mode.
    * <li>If strict:
-   * <ol>Must find a match in the tables. Otherwise, use default</ol>
-   * <ol>Tables cannot override standard WMO parameters. Thus param_no < 128 and version < 128 must use default table</ol>
+   * <ol>
+   * Must find a match in the tables. Otherwise, use default
+   * </ol>
+   * <ol>
+   * Tables cannot override standard WMO parameters. Thus param_no < 128 and version < 128 must use default table
+   * </ol>
    * </li>
    *
    * @param strict true for strict mode.
@@ -88,15 +93,18 @@ public class Grib1ParamTables {
 
   // Make a key from (center, subcenter, version) that provides correct sort order.
   static int makeKey(int center, int subcenter, int version) {
-    if (center < 0) center = 255;
-    if (subcenter < 0) subcenter = 255;
-    if (version < 0) version = 255;
+    if (center < 0)
+      center = 255;
+    if (subcenter < 0)
+      subcenter = 255;
+    if (version < 0)
+      version = 255;
     return center * 1000 * 1000 + subcenter * 1000 + version;
   }
 
   static String showKey(int key) {
-    int center = key/(1000*1000);
-    key = key - center * (1000*1000);
+    int center = key / (1000 * 1000);
+    key = key - center * (1000 * 1000);
     int subcenter = key / (1000);
     key = key - subcenter * 1000;
     int version = key;
@@ -110,13 +118,14 @@ public class Grib1ParamTables {
   /**
    * Get a Grib1ParamTables object, optionally specifying a parameter table or lookup table specific to this dataset.
    *
-   * @param paramTablePath  path to a parameter table, in format Grib1ParamTable can read.
+   * @param paramTablePath path to a parameter table, in format Grib1ParamTable can read.
    * @param lookupTablePath path to a lookup table, in format Lookup.readLookupTable() can read.
    * @return Grib1Tables
    * @throws IOException on read error
    */
   public static Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
-    if (paramTablePath == null && lookupTablePath == null) return new Grib1ParamTables();
+    if (paramTablePath == null && lookupTablePath == null)
+      return new Grib1ParamTables();
     Lookup lookup = null;
     Grib1ParamTableReader override = null;
 
@@ -146,7 +155,8 @@ public class Grib1ParamTables {
    * @return Grib1Tables
    */
   public static Grib1ParamTables factory(org.jdom2.Element paramTableElem) {
-    if (paramTableElem == null) return new Grib1ParamTables();
+    if (paramTableElem == null)
+      return new Grib1ParamTables();
     return new Grib1ParamTables(null, new Grib1ParamTableReader(paramTableElem));
   }
 
@@ -207,7 +217,7 @@ public class Grib1ParamTables {
    * Add all tables in list to standard tables
    *
    * @param lookupFilename filename containing list of tables
-   * @return true if  read ok, false if file not found
+   * @return true if read ok, false if file not found
    * @throws IOException if file found but read error
    */
   public static boolean addParameterTableLookup(String lookupFilename) throws IOException {
@@ -225,9 +235,9 @@ public class Grib1ParamTables {
   /**
    * Add table to standard tables for a specific center, subcenter and version.
    *
-   * @param center        center id
-   * @param subcenter     subcenter id, or -1 for all
-   * @param tableVersion  table verssion, or -1 for all
+   * @param center center id
+   * @param subcenter subcenter id, or -1 for all
+   * @param tableVersion table verssion, or -1 for all
    * @param tableFilename file to read parameter table from
    */
   public static void addParameterTable(int center, int subcenter, int tableVersion, String tableFilename) {
@@ -261,7 +271,7 @@ public class Grib1ParamTables {
     /**
      * read the lookup table from an input stream
      *
-     * @param is         The input stream
+     * @param is The input stream
      * @param lookupFile full pathname of lookup file
      * @return true if successful
      * @throws IOException On badness
@@ -308,8 +318,10 @@ public class Grib1ParamTables {
 
       Grib1ParamTableReader pt = getParameterTable(center, subcenter, tableVersion);
       Grib1Parameter param = null;
-      if (pt != null) param = pt.getParameter(param_number);
-      if (!strict && param == null) param = defaultWmoTable.getParameter(param_number);
+      if (pt != null)
+        param = pt.getParameter(param_number);
+      if (!strict && param == null)
+        param = defaultWmoTable.getParameter(param_number);
       return param;
     }
 
@@ -327,8 +339,10 @@ public class Grib1ParamTables {
       if (table == null) {
         if (strict || defaultWmoTable == null) {
           // table = findParameterTable(center, subcenter, tableVersion); // debug
-          logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
-          throw new UnsupportedOperationException("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
+          logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter
+              + " version: " + tableVersion);
+          throw new UnsupportedOperationException("Could not find a table for GRIB file with center: " + center
+              + " subCenter: " + subcenter + " version: " + tableVersion);
         }
         return defaultWmoTable;
       }
@@ -347,8 +361,8 @@ public class Grib1ParamTables {
       List<Grib1ParamTableReader> localCopy = tables; // thread safe
       for (Grib1ParamTableReader table : localCopy) {
         // look for a match
-        if (center == table.getCenter_id() && subcenter == table.getSubcenter_id() && version == table.getVersion()) {  // match
-          if (table.getParameters() == null) //  see if the parameters for this table have been read in yet.
+        if (center == table.getCenter_id() && subcenter == table.getSubcenter_id() && version == table.getVersion()) { // match
+          if (table.getParameters() == null) // see if the parameters for this table have been read in yet.
             continue; // failed - maybe theres another entry table that matches
 
           // success - initialize other tables with the same path
@@ -370,9 +384,9 @@ public class Grib1ParamTables {
         // look for a match
         if (center == table.getCenter_id()) {
           if ((table.getSubcenter_id() == -1) || (subcenter == table.getSubcenter_id())) {
-            //if ((table.subcenter_id == -1) || (table.subcenter_id == 0) || (subcenter == table.subcenter_id)) {
-            if ((table.getVersion() == -1) || version == table.getVersion()) {  // match
-              //  see if the parameters for this table have been read in yet.
+            // if ((table.subcenter_id == -1) || (table.subcenter_id == 0) || (subcenter == table.subcenter_id)) {
+            if ((table.getVersion() == -1) || version == table.getVersion()) { // match
+              // see if the parameters for this table have been read in yet.
               if (table.getParameters() == null)
                 continue; // failed - maybe theres another entry table that matches
 
@@ -389,6 +403,6 @@ public class Grib1ParamTables {
       return null;
     }
 
-  }  // Lookup
+  } // Lookup
 
 }

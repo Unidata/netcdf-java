@@ -9,7 +9,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -33,10 +32,11 @@ public class TestCachedNcmlData {
       Array data = v.read();
       assert data.getSize() == 50 : data.getSize();
     } finally {
-      if (ncd != null) ncd.close();
+      if (ncd != null)
+        ncd.close();
     }
   }
-  
+
   // doesnt work
   public void testCachedDataWithStructure() throws IOException {
 
@@ -45,7 +45,7 @@ public class TestCachedNcmlData {
       ncd = NetcdfDataset.openFile(TestDir.cdmLocalTestDataDir + "point/profileMultidim.ncml", null);
       boolean ok = (Boolean) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       assert ok;
-      
+
       Variable s = ncd.findVariable("record");
       assert s != null;
       assert s instanceof Structure;
@@ -55,9 +55,10 @@ public class TestCachedNcmlData {
       assert data.getSize() == 5 : data.getSize();
 
     } finally {
-      if (ncd != null) ncd.close();
+      if (ncd != null)
+        ncd.close();
     }
   }
-  
+
 
 }

@@ -10,21 +10,19 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.ma2.*;
-
 import org.jdom2.*;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
-
 import java.io.*;
 import java.util.*;
-
 import ucar.unidata.util.Parameter;
 
 /**
  * Helper class to write NcML-G.
  *
  * @see ucar.nc2.NetcdfFile
- * @see <a href="http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/">http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/</a>
+ * @see <a href=
+ *      "http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/">http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/</a>
  * @author caron
  */
 
@@ -43,9 +41,9 @@ public class NcMLGWriter {
   public void writeXML(NetcdfDataset ncd, OutputStream os, boolean showCoords, String uri) throws IOException {
 
     // Output the document, use standard formatter
-    //XMLOutputter fmt = new XMLOutputter("  ", true);
-    //fmt.setLineSeparator("\n");
-    XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
+    // XMLOutputter fmt = new XMLOutputter(" ", true);
+    // fmt.setLineSeparator("\n");
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     fmt.output(makeDocument(ncd, showCoords, uri), os);
   }
 
@@ -53,10 +51,11 @@ public class NcMLGWriter {
     Element rootElem = new Element("netcdf", thredds.client.catalog.Catalog.ncmlNS);
     Document doc = new Document(rootElem);
 
-      // namespaces
+    // namespaces
     rootElem.addNamespaceDeclaration(thredds.client.catalog.Catalog.ncmlNS);
     rootElem.addNamespaceDeclaration(thredds.client.catalog.Catalog.xsiNS);
-    rootElem.setAttribute("schemaLocation", thredds.client.catalog.Catalog.ncmlNS.getURI()+" "+schemaLocation, thredds.client.catalog.Catalog.xsiNS);
+    rootElem.setAttribute("schemaLocation", thredds.client.catalog.Catalog.ncmlNS.getURI() + " " + schemaLocation,
+        thredds.client.catalog.Catalog.xsiNS);
 
     if (null != ncd.getId())
       rootElem.setAttribute("id", ncd.getId());
@@ -66,7 +65,7 @@ public class NcMLGWriter {
     else
       rootElem.setAttribute("url", ncd.getLocation());
 
-        // dimensions
+    // dimensions
     for (Dimension dim : ncd.getDimensions()) {
       rootElem.addContent(makeDim(dim));
     }
@@ -84,74 +83,76 @@ public class NcMLGWriter {
     // regular variables
     for (Variable var : ncd.getVariables()) {
       if (!(var instanceof CoordinateAxis))
-        rootElem.addContent(makeVariable( (VariableDS) var));
+        rootElem.addContent(makeVariable((VariableDS) var));
     }
 
     ///////////////////////////////////////////////////////////
     // reference systems
 
-      // find common coordinate transforms
+    // find common coordinate transforms
 
-      /* ReferenceSystem rs = cs.getReferenceSystem();
-      int idx = commonRS.indexOf(rs);
-      if (idx >= 0) {
-        cs.setReferenceSystem( (ReferenceSystem) commonRS.get(idx)); // point to common one
-        continue;
-      }
-      for (int j=i+1; j<csys.size(); j++) {
-        CoordinateSystem cs2 = (CoordinateSystem) csys.get(j);
-        ReferenceSystem rs2 = cs2.getReferenceSystem();
-        if (rs.equals(rs2)) { // used more than once
-          commonRS.add( rs);
-          break;
-        }
-      }
-    }
-
-      /* find common reference systems
-    ArrayList commonRS = new ArrayList();
-    List csys = ncd.getCoordinateSystems();
-    for (int i=0; i<csys.size(); i++) {
-      CoordinateSystem cs = (CoordinateSystem) csys.get(i);
-      ReferenceSystem rs = cs.getReferenceSystem();
-      int idx = commonRS.indexOf(rs);
-      if (idx >= 0) {
-        cs.setReferenceSystem( (ReferenceSystem) commonRS.get(idx)); // point to common one
-        continue;
-      }
-      for (int j=i+1; j<csys.size(); j++) {
-        CoordinateSystem cs2 = (CoordinateSystem) csys.get(j);
-        ReferenceSystem rs2 = cs2.getReferenceSystem();
-        if (rs.equals(rs2)) { // used more than once
-          commonRS.add( rs);
-          break;
-        }
-      }
-    }
-
-      // find common horiz reference systems
-    ArrayList commonHRS = new ArrayList();
-    csys = ncd.getCoordinateSystems();
-    for (int i=0; i<csys.size(); i++) {
-      CoordinateSystem cs = (CoordinateSystem) csys.get(i);
-      ReferenceSystem rs = cs.getReferenceSystem();
-      ReferenceSystem.Horiz hrs = rs.getHoriz();
-      int idx = commonHRS.indexOf(hrs);
-      if (idx >= 0) {
-        rs.setHoriz( (ReferenceSystem.Horiz) commonHRS.get(idx)); // point to common one
-        continue;
-      }
-      for (int j=i+1; j<csys.size(); j++) {
-        CoordinateSystem cs2 = (CoordinateSystem) csys.get(j);
-        ReferenceSystem rs2 = cs2.getReferenceSystem();
-        ReferenceSystem.Horiz hrs2 = rs2.getHoriz();
-        if (hrs.equals(hrs2)) { // used more than once
-          commonHRS.add( hrs);
-          hrs.setId( hrs.getProjectionName()); //  wrong
-          break;
-        }
-      }
-    } */
+    /*
+     * ReferenceSystem rs = cs.getReferenceSystem();
+     * int idx = commonRS.indexOf(rs);
+     * if (idx >= 0) {
+     * cs.setReferenceSystem( (ReferenceSystem) commonRS.get(idx)); // point to common one
+     * continue;
+     * }
+     * for (int j=i+1; j<csys.size(); j++) {
+     * CoordinateSystem cs2 = (CoordinateSystem) csys.get(j);
+     * ReferenceSystem rs2 = cs2.getReferenceSystem();
+     * if (rs.equals(rs2)) { // used more than once
+     * commonRS.add( rs);
+     * break;
+     * }
+     * }
+     * }
+     * 
+     * /* find common reference systems
+     * ArrayList commonRS = new ArrayList();
+     * List csys = ncd.getCoordinateSystems();
+     * for (int i=0; i<csys.size(); i++) {
+     * CoordinateSystem cs = (CoordinateSystem) csys.get(i);
+     * ReferenceSystem rs = cs.getReferenceSystem();
+     * int idx = commonRS.indexOf(rs);
+     * if (idx >= 0) {
+     * cs.setReferenceSystem( (ReferenceSystem) commonRS.get(idx)); // point to common one
+     * continue;
+     * }
+     * for (int j=i+1; j<csys.size(); j++) {
+     * CoordinateSystem cs2 = (CoordinateSystem) csys.get(j);
+     * ReferenceSystem rs2 = cs2.getReferenceSystem();
+     * if (rs.equals(rs2)) { // used more than once
+     * commonRS.add( rs);
+     * break;
+     * }
+     * }
+     * }
+     * 
+     * // find common horiz reference systems
+     * ArrayList commonHRS = new ArrayList();
+     * csys = ncd.getCoordinateSystems();
+     * for (int i=0; i<csys.size(); i++) {
+     * CoordinateSystem cs = (CoordinateSystem) csys.get(i);
+     * ReferenceSystem rs = cs.getReferenceSystem();
+     * ReferenceSystem.Horiz hrs = rs.getHoriz();
+     * int idx = commonHRS.indexOf(hrs);
+     * if (idx >= 0) {
+     * rs.setHoriz( (ReferenceSystem.Horiz) commonHRS.get(idx)); // point to common one
+     * continue;
+     * }
+     * for (int j=i+1; j<csys.size(); j++) {
+     * CoordinateSystem cs2 = (CoordinateSystem) csys.get(j);
+     * ReferenceSystem rs2 = cs2.getReferenceSystem();
+     * ReferenceSystem.Horiz hrs2 = rs2.getHoriz();
+     * if (hrs.equals(hrs2)) { // used more than once
+     * commonHRS.add( hrs);
+     * hrs.setId( hrs.getProjectionName()); // wrong
+     * break;
+     * }
+     * }
+     * }
+     */
 
     // coordinate systems
     for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
@@ -177,7 +178,7 @@ public class NcMLGWriter {
     return doc;
   }
 
-  private Element makeAttribute( ucar.nc2.Attribute att, String elementName) {
+  private Element makeAttribute(ucar.nc2.Attribute att, String elementName) {
     Element attElem = new Element(elementName, thredds.client.catalog.Catalog.ncmlNS);
     attElem.setAttribute("name", att.getShortName());
 
@@ -189,24 +190,25 @@ public class NcMLGWriter {
       String value = att.getStringValue();
       String err = org.jdom2.Verifier.checkCharacterData(value);
       if (err != null) {
-        value = "NcMLWriter invalid attribute value, err= "+err;
+        value = "NcMLWriter invalid attribute value, err= " + err;
         System.out.println(value);
       }
       attElem.setAttribute("value", value);
     } else {
 
       StringBuilder buff = new StringBuilder();
-      for (int i=0; i<att.getLength(); i++) {
+      for (int i = 0; i < att.getLength(); i++) {
         Number val = att.getNumericValue(i);
-        if (i > 0) buff.append( " ");
-        buff.append( val.toString());
+        if (i > 0)
+          buff.append(" ");
+        buff.append(val.toString());
       }
       attElem.setAttribute("value", buff.toString());
     }
     return attElem;
   }
 
-  private Element makeAttribute( ucar.unidata.util.Parameter att, String elementName) {
+  private Element makeAttribute(ucar.unidata.util.Parameter att, String elementName) {
     Element attElem = new Element(elementName, thredds.client.catalog.Catalog.ncmlNS);
     attElem.setAttribute("name", att.getName());
 
@@ -214,7 +216,7 @@ public class NcMLGWriter {
       String value = att.getStringValue();
       String err = org.jdom2.Verifier.checkCharacterData(value);
       if (err != null) {
-        value = "NcMLWriter invalid attribute value, err= "+err;
+        value = "NcMLWriter invalid attribute value, err= " + err;
         System.out.println(value);
       }
       attElem.setAttribute("value", value);
@@ -222,9 +224,10 @@ public class NcMLGWriter {
       attElem.setAttribute("type", "double");
 
       StringBuilder buff = new StringBuilder();
-      for (int i=0; i<att.getLength(); i++) {
+      for (int i = 0; i < att.getLength(); i++) {
         double val = att.getNumericValue(i);
-        if (i > 0) buff.append( " ");
+        if (i > 0)
+          buff.append(" ");
         buff.append(val);
       }
       attElem.setAttribute("value", buff.toString());
@@ -232,17 +235,18 @@ public class NcMLGWriter {
     return attElem;
   }
 
-  private Element makeCoordinateAxis( CoordinateAxis var, boolean showCoords) {
+  private Element makeCoordinateAxis(CoordinateAxis var, boolean showCoords) {
 
     Element varElem = new Element("coordinateAxis", thredds.client.catalog.Catalog.ncmlNS);
     varElem.setAttribute("name", var.getFullName());
 
     StringBuilder buff = new StringBuilder();
     List dims = var.getDimensions();
-    for (int i=0; i<dims.size(); i++) {
+    for (int i = 0; i < dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
-      if (i > 0) buff.append( " ");
-      buff.append( dim.getShortName());
+      if (i > 0)
+        buff.append(" ");
+      buff.append(dim.getShortName());
     }
     if (buff.length() > 0)
       varElem.setAttribute("shape", buff.toString());
@@ -250,13 +254,13 @@ public class NcMLGWriter {
     DataType dt = var.getDataType();
     varElem.setAttribute("type", dt.toString());
 
-        // attributes
+    // attributes
     for (Attribute att : var.getAttributes()) {
       varElem.addContent(makeAttribute(att, "attribute"));
     }
 
     if (var.isMetadata() || (showCoords && var.getRank() <= 1))
-      varElem.addContent( makeValues( var));
+      varElem.addContent(makeValues(var));
 
     // coordinate axis
     varElem.setAttribute(CDM.UNITS, var.getUnitsString());
@@ -275,10 +279,11 @@ public class NcMLGWriter {
     List csys = var.getCoordinateSystems();
     if (csys.size() > 0) {
       buff.setLength(0);
-      for (int i=0; i<csys.size(); i++) {
+      for (int i = 0; i < csys.size(); i++) {
         CoordinateSystem cs = (CoordinateSystem) csys.get(i);
-        if (i>0) buff.append(" ");
-        buff.append( cs.getName());
+        if (i > 0)
+          buff.append(" ");
+        buff.append(cs.getName());
       }
       varElem.setAttribute("coordinateSystems", buff.toString());
     }
@@ -286,7 +291,7 @@ public class NcMLGWriter {
     return varElem;
   }
 
-  private Element makeCoordSys( CoordinateSystem cs) {
+  private Element makeCoordSys(CoordinateSystem cs) {
     Element csElem = new Element("coordinateSystem", thredds.client.catalog.Catalog.ncmlNS);
     csElem.setAttribute("name", cs.getName());
 
@@ -299,7 +304,8 @@ public class NcMLGWriter {
     List<CoordinateTransform> transforms = cs.getCoordinateTransforms();
     if (transforms != null)
       for (CoordinateTransform ct : transforms) {
-        if (ct == null) continue;
+        if (ct == null)
+          continue;
         Element tElem = new Element("coordinateTransformRef", thredds.client.catalog.Catalog.ncmlNS);
         tElem.setAttribute("ref", ct.getName());
         csElem.addContent(tElem);
@@ -307,7 +313,7 @@ public class NcMLGWriter {
     return csElem;
   }
 
-  private Element makeCoordTransform( CoordinateTransform coordTransform) {
+  private Element makeCoordTransform(CoordinateTransform coordTransform) {
     Element elem = new Element("coordinateTransform", thredds.client.catalog.Catalog.ncmlNS);
     elem.setAttribute("name", coordTransform.getName());
     elem.setAttribute("authority", coordTransform.getAuthority());
@@ -321,7 +327,7 @@ public class NcMLGWriter {
     return elem;
   }
 
-  private Element makeDim( Dimension dim) {
+  private Element makeDim(Dimension dim) {
     Element dimElem = new Element("dimension", thredds.client.catalog.Catalog.ncmlNS);
     dimElem.setAttribute("name", dim.getShortName());
     dimElem.setAttribute("length", Integer.toString(dim.getLength()));
@@ -330,22 +336,24 @@ public class NcMLGWriter {
     return dimElem;
   }
 
-  /* private Element makeReferenceSys( ReferenceSystem referenceSystem) {
-    Element elem = new Element("referenceCoordinateSystem", thredds.client.catalog.Catalog.ncmlNS);
-    elem.setAttribute("name", referenceSystem.getName());
-    elem.setAttribute("authority", referenceSystem.getAuthority());
-    if (referenceSystem.getReferenceType() != null)
-      elem.setAttribute("type", referenceSystem.getReferenceType().toString());
+  /*
+   * private Element makeReferenceSys( ReferenceSystem referenceSystem) {
+   * Element elem = new Element("referenceCoordinateSystem", thredds.client.catalog.Catalog.ncmlNS);
+   * elem.setAttribute("name", referenceSystem.getName());
+   * elem.setAttribute("authority", referenceSystem.getAuthority());
+   * if (referenceSystem.getReferenceType() != null)
+   * elem.setAttribute("type", referenceSystem.getReferenceType().toString());
+   * 
+   * ArrayList params = referenceSystem.getParameters();
+   * for (int i=0; i<params.size(); i++) {
+   * ucar.nc2.Attribute att = (ucar.nc2.Attribute) params.get(i);
+   * elem.addContent( makeAttribute(att, "parameter"));
+   * }
+   * return elem;
+   * }
+   */
 
-    ArrayList params = referenceSystem.getParameters();
-    for (int i=0; i<params.size(); i++) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) params.get(i);
-      elem.addContent( makeAttribute(att, "parameter"));
-    }
-    return elem;
-  } */
-
-  private Element makeVariable( VariableDS var) {
+  private Element makeVariable(VariableDS var) {
 
     Element varElem = new Element("variable", thredds.client.catalog.Catalog.ncmlNS);
 
@@ -353,10 +361,11 @@ public class NcMLGWriter {
 
     StringBuilder buff = new StringBuilder();
     List dims = var.getDimensions();
-    for (int i=0; i<dims.size(); i++) {
+    for (int i = 0; i < dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
-      if (i > 0) buff.append( " ");
-      buff.append( dim.getShortName());
+      if (i > 0)
+        buff.append(" ");
+      buff.append(dim.getShortName());
     }
     if (buff.length() > 0)
       varElem.setAttribute("shape", buff.toString());
@@ -365,22 +374,23 @@ public class NcMLGWriter {
     if (dt != null)
       varElem.setAttribute("type", dt.toString());
 
-        // attributes
+    // attributes
     for (Attribute att : var.getAttributes()) {
       varElem.addContent(makeAttribute(att, "attribute"));
     }
 
     if (var.isMetadata())
-      varElem.addContent( makeValues( var));
+      varElem.addContent(makeValues(var));
 
     // coordinate systems
     List csys = var.getCoordinateSystems();
     if (csys.size() > 0) {
       buff.setLength(0);
-      for (int i=0; i<csys.size(); i++) {
+      for (int i = 0; i < csys.size(); i++) {
         CoordinateSystem cs = (CoordinateSystem) csys.get(i);
-        if (i>0) buff.append(" ");
-        buff.append( cs.getName());
+        if (i > 0)
+          buff.append(" ");
+        buff.append(cs.getName());
       }
       varElem.setAttribute("coordinateSystems", buff.toString());
     }
@@ -388,7 +398,7 @@ public class NcMLGWriter {
     return varElem;
   }
 
-  private Element makeValues( VariableDS v) {
+  private Element makeValues(VariableDS v) {
     Element elem = new Element("values", thredds.client.catalog.Catalog.ncmlNS);
 
     StringBuilder buff = new StringBuilder();
@@ -400,23 +410,24 @@ public class NcMLGWriter {
     }
 
     if (a instanceof ArrayChar) {
-       //strings
+      // strings
       ArrayChar dataC = (ArrayChar) a;
-      for (int i=0; i<dataC.getShape()[0]; i++) {
-        if (i > 0) buff.append(" ");
+      for (int i = 0; i < dataC.getShape()[0]; i++) {
+        if (i > 0)
+          buff.append(" ");
         buff.append("\"").append(dataC.getString(i)).append("\"");
       }
       elem.setText(buff.toString());
     } else {
-       // numbers
-      if (v instanceof CoordinateAxis1D && ((CoordinateAxis1D)v).isRegular()) {
+      // numbers
+      if (v instanceof CoordinateAxis1D && ((CoordinateAxis1D) v).isRegular()) {
         CoordinateAxis1D axis = (CoordinateAxis1D) v;
         elem.setAttribute("start", Double.toString(axis.getStart()));
         elem.setAttribute("increment", Double.toString(axis.getIncrement()));
         elem.setAttribute("npts", Long.toString(v.getSize()));
 
       } else {
-         // numbers
+        // numbers
         boolean isDouble = (v.getDataType() == DataType.DOUBLE);
         boolean isFloat = (v.getDataType() == DataType.FLOAT);
         IndexIterator iter = a.getIndexIterator();

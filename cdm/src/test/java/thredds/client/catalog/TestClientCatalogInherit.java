@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -26,9 +25,9 @@ import java.util.List;
 public class TestClientCatalogInherit {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static final String urlString = "file:"+TestDir.cdmLocalTestDataDir + "thredds/catalog/TestInherit.1.0.xml";
+  static final String urlString = "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/TestInherit.1.0.xml";
   Catalog cat;
-  
+
   @Before
   public void openCatalog() throws IOException {
     CatalogBuilder builder = new CatalogBuilder();
@@ -48,15 +47,15 @@ public class TestClientCatalogInherit {
 
     Dataset nest1 = cat.findDatasetByID("nest1");
     val = nest1.findProperty("GoodThing");
-    assert val.equals("Where have you gone?")  : val;
+    assert val.equals("Where have you gone?") : val;
 
     Dataset nest2 = cat.findDatasetByID("nest2");
     val = nest2.findProperty("GoodThing");
-    assert val == null  : val;
+    assert val == null : val;
 
     Dataset nest11 = cat.findDatasetByID("nest11");
     val = nest11.findProperty("GoodThing");
-    assert val.equals("Where have you gone?")  : val;
+    assert val.equals("Where have you gone?") : val;
 
     Dataset nest12 = cat.findDatasetByID("nest12");
     Assert.assertTrue(nest12.hasProperty(new Property("GoodThing", "override")));
@@ -167,29 +166,29 @@ public class TestClientCatalogInherit {
     List list;
 
     ds = cat.findDatasetByID("top");
-    list = ds.getMetadata( "NetCDF");
+    list = ds.getMetadata("NetCDF");
     assert list.isEmpty();
 
     ds = cat.findDatasetByID("nest1");
-    list = ds.getMetadata( "NetCDF");
+    list = ds.getMetadata("NetCDF");
     assert (list.size() == 1) : list.size();
     ThreddsMetadata.MetadataOther m = (ThreddsMetadata.MetadataOther) list.get(0);
     assert (m != null) : "nest1";
 
     ds = cat.findDatasetByID("nest11");
-    list = ds.getMetadata( "NetCDF");
+    list = ds.getMetadata("NetCDF");
     assert list.isEmpty();
 
     ds = cat.findDatasetByID("nest12");
-    list = ds.getMetadata( "NetCDF");
+    list = ds.getMetadata("NetCDF");
     assert list.isEmpty();
 
     ds = cat.findDatasetByID("nest121");
-    list = ds.getMetadata( "NetCDF");
+    list = ds.getMetadata("NetCDF");
     assert list.isEmpty();
 
     ds = cat.findDatasetByID("nest2");
-    list = ds.getMetadata( "NetCDF");
+    list = ds.getMetadata("NetCDF");
     assert list.isEmpty();
   }
 

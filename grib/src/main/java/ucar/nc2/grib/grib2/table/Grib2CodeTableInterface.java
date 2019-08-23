@@ -4,11 +4,14 @@ import com.google.common.collect.ImmutableList;
 
 public interface Grib2CodeTableInterface {
   String getName();
+
   String getShortName();
+
   ImmutableList<Entry> getEntries();
 
   /**
    * Find the Entry in this table with the given code.
+   * 
    * @param code unsigned short.
    */
   Entry getEntry(int code);
@@ -16,6 +19,7 @@ public interface Grib2CodeTableInterface {
   interface Entry {
     /** Unsigned short */
     int getCode();
+
     String getName();
   }
 }

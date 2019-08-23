@@ -30,7 +30,8 @@ public class ShapeFileBean extends MapBean {
   }
 
   public Renderer getRenderer() {
-    if (rend == null) fetchMap();
+    if (rend == null)
+      fetchMap();
     return rend;
   }
 

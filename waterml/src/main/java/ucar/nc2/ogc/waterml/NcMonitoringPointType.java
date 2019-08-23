@@ -11,32 +11,32 @@ import ucar.nc2.ogc.spatialsampling.NcShapeType;
  * Created by cwardgar on 2014/02/26.
  */
 public abstract class NcMonitoringPointType {
-    // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/wml2:MonitoringPoint
-    public static MonitoringPointType initMonitoringPointType(
-            MonitoringPointType monitoringPoint, StationTimeSeriesFeature stationFeat) {
-        // @gml:id
-        String id = MarshallingUtil.createIdForType(MonitoringPointType.class);
-        monitoringPoint.setId(id);
+  // wml2:Collection/wml2:observationMember/om:OM_Observation/om:featureOfInterest/wml2:MonitoringPoint
+  public static MonitoringPointType initMonitoringPointType(MonitoringPointType monitoringPoint,
+      StationTimeSeriesFeature stationFeat) {
+    // @gml:id
+    String id = MarshallingUtil.createIdForType(MonitoringPointType.class);
+    monitoringPoint.setId(id);
 
-        // gml:identifier
-        NcCodeWithAuthorityType.initIdentifier(monitoringPoint.addNewIdentifier(), stationFeat);
+    // gml:identifier
+    NcCodeWithAuthorityType.initIdentifier(monitoringPoint.addNewIdentifier(), stationFeat);
 
-        // gml:description
-        NcStringOrRefType.initDescription(monitoringPoint.addNewDescription(), stationFeat);
-        if (monitoringPoint.getDescription().getStringValue() == null ||
-                monitoringPoint.getDescription().getStringValue().isEmpty()) {
-            monitoringPoint.unsetDescription();
-        }
-
-        // sam:sampledFeature
-        monitoringPoint.addNewSampledFeature();
-        monitoringPoint.setNilSampledFeatureArray(0);  // Set the "sam:sampledFeature" we just added to nil.
-
-        // sams:shape
-        NcShapeType.initShape(monitoringPoint.addNewShape(), stationFeat);
-
-        return monitoringPoint;
+    // gml:description
+    NcStringOrRefType.initDescription(monitoringPoint.addNewDescription(), stationFeat);
+    if (monitoringPoint.getDescription().getStringValue() == null
+        || monitoringPoint.getDescription().getStringValue().isEmpty()) {
+      monitoringPoint.unsetDescription();
     }
 
-    private NcMonitoringPointType() { }
+    // sam:sampledFeature
+    monitoringPoint.addNewSampledFeature();
+    monitoringPoint.setNilSampledFeatureArray(0); // Set the "sam:sampledFeature" we just added to nil.
+
+    // sams:shape
+    NcShapeType.initShape(monitoringPoint.addNewShape(), stationFeat);
+
+    return monitoringPoint;
+  }
+
+  private NcMonitoringPointType() {}
 }

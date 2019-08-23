@@ -21,7 +21,7 @@ public abstract class CoordVarExtractor {
   protected CoordVarExtractor(String axisName, int nestingLevel) {
     this.axisName = axisName;
     int pos = axisName.indexOf(".");
-    memberName = (pos > 0) ? axisName.substring(pos+1) : axisName;
+    memberName = (pos > 0) ? axisName.substring(pos + 1) : axisName;
     this.nestingLevel = nestingLevel;
   }
 
@@ -46,13 +46,14 @@ public abstract class CoordVarExtractor {
   }
 
   public String getCoordValueAsString(StructureData sdata) {
-    if (isString()) return getCoordValueString(sdata);
+    if (isString())
+      return getCoordValueString(sdata);
     if (isInt()) {
-      long val = getCoordValueLong( sdata);
+      long val = getCoordValueLong(sdata);
       return Long.toString(val);
     }
 
-    double dval = getCoordValue( sdata);
+    double dval = getCoordValue(sdata);
     return Double.toString(dval);
   }
 

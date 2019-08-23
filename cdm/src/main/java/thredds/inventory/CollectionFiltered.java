@@ -5,7 +5,6 @@
 package thredds.inventory;
 
 import ucar.nc2.util.CloseableIterator;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +24,7 @@ public class CollectionFiltered extends CollectionAbstract {
     super(name, null);
     this.org = org;
     this.filter = filter;
-    setRoot( org.getRoot());
+    setRoot(org.getRoot());
   }
 
   @Override
@@ -42,9 +41,9 @@ public class CollectionFiltered extends CollectionAbstract {
       }
     }
     if (hasDateExtractor()) {
-      list.sort(new DateSorter());  // sort by date
+      list.sort(new DateSorter()); // sort by date
     } else {
-      Collections.sort(list);                    // sort by name
+      Collections.sort(list); // sort by name
     }
     return list;
   }

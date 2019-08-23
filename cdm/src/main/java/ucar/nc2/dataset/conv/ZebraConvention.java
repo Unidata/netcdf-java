@@ -11,7 +11,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
-
 import java.io.IOException;
 
 /**

@@ -8,7 +8,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.image.image.ImageDatasetFactory;
 import ucar.nc2.dt.image.image.ImageFactoryRandom;
 import ucar.ui.widget.BAMutil;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -21,7 +20,8 @@ import java.net.URL;
 import java.util.Random;
 
 /**
- *  *
+ * *
+ * 
  * @author caron
  */
 public class ImageViewPanel extends JPanel {
@@ -35,7 +35,7 @@ public class ImageViewPanel extends JPanel {
   private javax.swing.Timer timer;
   private int delay = 4000; // millisescs
   private JSpinner spinner;
-  private Random random = new Random( System.currentTimeMillis());
+  private Random random = new Random(System.currentTimeMillis());
   private long start = 0;
 
   private boolean fullscreenMode = false;
@@ -45,51 +45,54 @@ public class ImageViewPanel extends JPanel {
   public ImageViewPanel(Container buttPanel) {
     pixPane = new PicturePane();
     setLayout(new BorderLayout());
-    add( pixPane, BorderLayout.CENTER);
+    add(pixPane, BorderLayout.CENTER);
 
     if (buttPanel == null) {
       buttPanel = new JPanel();
-      add( buttPanel, BorderLayout.NORTH);
+      add(buttPanel, BorderLayout.NORTH);
     }
 
-    AbstractAction prevAction =  new AbstractAction() {
+    AbstractAction prevAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        setImage( imageDatasetFactory.getNextImage(false));
+        setImage(imageDatasetFactory.getNextImage(false));
       }
     };
-    BAMutil.setActionProperties( prevAction, "VCRPrevFrame", "previous", false, 'P', -1);
+    BAMutil.setActionProperties(prevAction, "VCRPrevFrame", "previous", false, 'P', -1);
     BAMutil.addActionToContainer(buttPanel, prevAction);
 
-    AbstractAction nextAction =  new AbstractAction() {
+    AbstractAction nextAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-       setImage( imageDatasetFactory.getNextImage(true));
+        setImage(imageDatasetFactory.getNextImage(true));
       }
     };
-    BAMutil.setActionProperties( nextAction, "VCRNextFrame", "next", false, 'N', -1);
+    BAMutil.setActionProperties(nextAction, "VCRNextFrame", "next", false, 'N', -1);
     BAMutil.addActionToContainer(buttPanel, nextAction);
 
     AbstractAction loopAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (movieIsPlaying) {
-          if (timer != null) timer.stop();
+          if (timer != null)
+            timer.stop();
           movieIsPlaying = false;
 
         } else {
-          if (location == null) return;
+          if (location == null)
+            return;
           File f = new File(location);
-          if (!f.exists()) return;
+          if (!f.exists())
+            return;
 
           imageFactoryRandom = new ImageFactoryRandom(f.getParentFile());
 
           timer = new Timer(delay, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
               setImage(imageFactoryRandom.getNextImage());
-              int delayMsecs = delay + random.nextInt() % delay/2;
+              int delayMsecs = delay + random.nextInt() % delay / 2;
               timer.setDelay(delayMsecs);
               long time = System.currentTimeMillis();
               long took = time - start;
               start = time;
-              System.out.printf(" delay=%d; took=%d%n ",delayMsecs, took);
+              System.out.printf(" delay=%d; took=%d%n ", delayMsecs, took);
             }
           });
           timer.start();
@@ -97,33 +100,34 @@ public class ImageViewPanel extends JPanel {
         }
       }
     };
-    BAMutil.setActionProperties( loopAction, "MovieLoop", "loop", true, 'N', -1);
+    BAMutil.setActionProperties(loopAction, "MovieLoop", "loop", true, 'N', -1);
     BAMutil.addActionToContainer(buttPanel, loopAction);
 
-    spinner = new JSpinner( new SpinnerNumberModel(5000, 10, 20000, 1000));
+    spinner = new JSpinner(new SpinnerNumberModel(5000, 10, 20000, 1000));
     spinner.addChangeListener(e -> {
-        Integer value = (Integer) spinner.getModel().getValue();
-        delay = value;
-        if (timer != null) timer.setDelay( delay);
+      Integer value = (Integer) spinner.getModel().getValue();
+      delay = value;
+      if (timer != null)
+        timer.setDelay(delay);
     });
-    buttPanel.add( spinner);
+    buttPanel.add(spinner);
 
     AbstractAction fullscreenAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice device = ge.getDefaultScreenDevice();
-        System.out.println("isFullScreenSupported= "+device.isFullScreenSupported());
+        System.out.println("isFullScreenSupported= " + device.isFullScreenSupported());
 
         fullFrame = new JFrame();
-        fullFrame.setUndecorated( true);
-        fullFrame.getContentPane().add( pixPane);
+        fullFrame.setUndecorated(true);
+        fullFrame.getContentPane().add(pixPane);
 
         fullscreenMode = true;
         device.setFullScreenWindow(fullFrame);
 
         // look for any input - get out of full screen mode
         KeyEventDispatcher dispatcher = new MyKeyEventDispatcher();
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher( dispatcher);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(dispatcher);
       }
     };
     BAMutil.setActionProperties(fullscreenAction, "Export", "fullscreen", true, 'N', -1);
@@ -134,7 +138,7 @@ public class ImageViewPanel extends JPanel {
 
   private class MyKeyEventDispatcher implements java.awt.KeyEventDispatcher {
     public boolean dispatchKeyEvent(KeyEvent e) {
-      System.out.printf(" dispatchKeyEvent=%s code = %d %n",e,e.getKeyCode());
+      System.out.printf(" dispatchKeyEvent=%s code = %d %n", e, e.getKeyCode());
       if (e.getKeyCode() == 127) {
         imageFactoryRandom.delete();
         return false;
@@ -148,58 +152,61 @@ public class ImageViewPanel extends JPanel {
       }
 
       resetPane();
-      if (fullFrame != null) fullFrame.dispose();
+      if (fullFrame != null)
+        fullFrame.dispose();
 
       // deregister yourself
-      KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher( this);
+      KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this);
       return false;
     }
   }
 
   private void resetPane() {
-    add( pixPane, BorderLayout.CENTER);
+    add(pixPane, BorderLayout.CENTER);
     revalidate();
   }
 
-  public void setImageFromGrid( GridDatatype grid) {
-      try {
-        BufferedImage image = imageDatasetFactory.openDataset( grid);
-        setImage( image);
+  public void setImageFromGrid(GridDatatype grid) {
+    try {
+      BufferedImage image = imageDatasetFactory.openDataset(grid);
+      setImage(image);
 
-      } catch (Exception e2) {
-        javax.swing.JOptionPane.showMessageDialog(null, "Error on dataset\n"+ imageDatasetFactory.getErrorMessages());
-        e2.printStackTrace();
-      }
+    } catch (Exception e2) {
+      javax.swing.JOptionPane.showMessageDialog(null, "Error on dataset\n" + imageDatasetFactory.getErrorMessages());
+      e2.printStackTrace();
+    }
   }
 
 
-   public boolean setImageFromUrl( String location) {
-     this.location = location;
+  public boolean setImageFromUrl(String location) {
+    this.location = location;
 
-     if (location.startsWith("http")) {
-       URL url;
-       try {
-         url = new URL( location);
-       } catch (MalformedURLException e) {
-         e.printStackTrace();
-         return false;
-       }
+    if (location.startsWith("http")) {
+      URL url;
+      try {
+        url = new URL(location);
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+        return false;
+      }
 
-       // uses ImageIO.createImageInputStream()
-       pixPane.setPicture( url, "legendParam", 0.0);
-     } else {
+      // uses ImageIO.createImageInputStream()
+      pixPane.setPicture(url, "legendParam", 0.0);
+    } else {
 
       try {
-        BufferedImage image = imageDatasetFactory.open( location);
+        BufferedImage image = imageDatasetFactory.open(location);
         if (image == null) {
-          javax.swing.JOptionPane.showMessageDialog(null, "Cant open dataset as image = "+location+"\n"+ imageDatasetFactory.getErrorMessages());
+          javax.swing.JOptionPane.showMessageDialog(null,
+              "Cant open dataset as image = " + location + "\n" + imageDatasetFactory.getErrorMessages());
           return false;
         }
 
-        setImage( image);
+        setImage(image);
 
       } catch (Exception e2) {
-        javax.swing.JOptionPane.showMessageDialog(null, "Error on dataset = "+location+"\n"+ imageDatasetFactory.getErrorMessages());
+        javax.swing.JOptionPane.showMessageDialog(null,
+            "Error on dataset = " + location + "\n" + imageDatasetFactory.getErrorMessages());
         e2.printStackTrace();
         return false;
       }
@@ -208,10 +215,12 @@ public class ImageViewPanel extends JPanel {
     return true;
   }
 
-  public void setImage( BufferedImage im) {
-    if (im == null) return;
-    if (debug) System.out.println("ImageViewPanel setImage ");
-    pixPane.setBufferedImage( im, "setImage");
+  public void setImage(BufferedImage im) {
+    if (im == null)
+      return;
+    if (debug)
+      System.out.println("ImageViewPanel setImage ");
+    pixPane.setBufferedImage(im, "setImage");
     pixPane.repaint();
   }
 

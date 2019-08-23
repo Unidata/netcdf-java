@@ -15,7 +15,6 @@ import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +31,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   static class PartitionForVariable2D {
     final int partno;
     final int groupno;
-    final int varno; // , flag;     // what the hell is the flag used for ?
+    final int varno; // , flag; // what the hell is the flag used for ?
     GribCollectionMutable.VariableIndex vi;
 
     PartitionForVariable2D(int partno, int groupno, int varno) {
@@ -66,16 +65,17 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
         varno[count] = part.getVarno();
         count++;
       }
-      this.partnoSA =  new SmartArrayInt(partno);
-      this.groupnoSA =  new SmartArrayInt(groupno);
-      this.varnoSA =  new SmartArrayInt(varno);
+      this.partnoSA = new SmartArrayInt(partno);
+      this.groupnoSA = new SmartArrayInt(groupno);
+      this.varnoSA = new SmartArrayInt(varno);
 
       partList = null; // GC
     }
 
     public void finish() {
-      if (partList == null) return;  // nothing to do
-      if (partList.size() > nparts)  // might be smaller due to failed partition
+      if (partList == null)
+        return; // nothing to do
+      if (partList.size() > nparts) // might be smaller due to failed partition
         logger.warn("PartitionCollectionMutable partList.size() > nparts");
 
       int[] partno = new int[nparts];
@@ -88,9 +88,9 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
         varno[count] = part.varno;
         count++;
       }
-      this.partnoSA =  new SmartArrayInt(partno);
-      this.groupnoSA =  new SmartArrayInt(groupno);
-      this.varnoSA =  new SmartArrayInt(varno);
+      this.partnoSA = new SmartArrayInt(partno);
+      this.groupnoSA = new SmartArrayInt(groupno);
+      this.varnoSA = new SmartArrayInt(varno);
 
       partList = null; // GC
     }
@@ -98,7 +98,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     // only used by PartitionBuilder, not PartitionBuilderFromIndex
     void addPartition(int partno, int groupno, int varno, int ndups, int nrecords, int nmissing,
         GribCollectionMutable.VariableIndex vi) {
-      if (partList == null) partList = new ArrayList<>(nparts);
+      if (partList == null)
+        partList = new ArrayList<>(nparts);
       partList.add(new PartitionForVariable2D(partno, groupno, varno));
       this.ndups += ndups;
       this.nrecords += nrecords;
@@ -118,7 +119,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       sb.format("%n");
       int count = 0;
       sb.format("     %7s %3s %3s %6s %3s%n", "N", "dups", "Miss", "density", "partition");
-      for (int i=0; i<nparts; i++) {
+      for (int i = 0; i < nparts; i++) {
         int partWant = this.partnoSA.get(i);
         Partition part = partitions.get(partWant);
         sb.format("   %2d: %7d %s%n", count++, partWant, part.getFilename());
@@ -144,7 +145,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     // GribCollection gc;
 
     // constructor from ncx
-    public Partition(String name, String filename, long lastModified, long fileSize, String directory, CalendarDate partitionDate) {
+    public Partition(String name, String filename, long lastModified, long fileSize, String directory,
+        CalendarDate partitionDate) {
       this.name = name;
       this.filename = filename; // grib collection ncx
       this.lastModified = lastModified;
@@ -170,26 +172,27 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     public boolean isGrib1() {
-      return isGrib1;         // in GribCollection
+      return isGrib1; // in GribCollection
     }
 
     public FeatureCollectionConfig getConfig() {
-      return config;   // in GribCollection
+      return config; // in GribCollection
     }
 
     public org.slf4j.Logger getLogger() {
-      return logger;          // in TimePartition
+      return logger; // in TimePartition
     }
 
     // null if it came from the index
     public MCollection getDcm() {
-      return dcm;            // in GribCollection
+      return dcm; // in GribCollection
     }
 
     private DateExtractor extractor;
+
     private DateExtractor getDateExtractor() {
       if (extractor == null)
-         extractor = config.getDateExtractor();
+        extractor = config.getDateExtractor();
       return extractor;
     }
 
@@ -200,9 +203,11 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       if (existingFile == null) {
         // try reletive to index file
         File parent = getIndexParentFile();
-        if (parent == null) return null;
+        if (parent == null)
+          return null;
         existingFile = new File(parent, filename);
-        if (!existingFile.exists()) return null;
+        if (!existingFile.exists())
+          return null;
       }
       return existingFile.getPath();
     }
@@ -211,27 +216,30 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     public GribCollectionImmutable getGribCollection() throws IOException {
       String path = getIndexFilenameInCache();
       if (path == null) {
-        if (Grib.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
+        if (Grib.debugIndexOnly) { // we are running in debug mode where we only have the indices, not the data files
           // tricky: substitute the current root
           File orgParentDir = new File(directory);
           File currentFile = new File(PartitionCollectionMutable.this.indexFilename);
           File currentParent = currentFile.getParentFile();
           File currentParentWithDir = new File(currentParent, orgParentDir.getName());
-          File nestedIndex = isPartitionOfPartitions ? new File(currentParentWithDir, filename) : new File(currentParent, filename); // JMJ
+          File nestedIndex =
+              isPartitionOfPartitions ? new File(currentParentWithDir, filename) : new File(currentParent, filename); // JMJ
           path = nestedIndex.getPath();
         } else {
-          throw new FileNotFoundException("No index filename for partition= "+this.toString());
+          throw new FileNotFoundException("No index filename for partition= " + this.toString());
         }
       }
 
       // LOOK not cached
-      return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory.open(new DatasetUrl(null, path), -1, null, this);
+      return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory
+          .open(new DatasetUrl(null, path), -1, null, this);
     }
 
     // the children must already exist
     @Nullable
     public GribCollectionMutable makeGribCollection() {
-      GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), config, false, true, logger);
+      GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX),
+          config, false, true, logger);
       if (result == null) {
         logger.error("Failed on openMutableGCFromIndex {}", dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
         return null;
@@ -252,14 +260,9 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     @Override
     public String toString() {
-      return "Partition{" +
-              "dcm=" + dcm +
-              ", name='" + name + '\'' +
-              ", directory='" + directory + '\'' +
-              ", filename='" + filename + '\'' +
-              ", partitionDate='" + partitionDate + '\'' +
-              ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
-              '}';
+      return "Partition{" + "dcm=" + dcm + ", name='" + name + '\'' + ", directory='" + directory + '\''
+          + ", filename='" + filename + '\'' + ", partitionDate='" + partitionDate + '\'' + ", lastModified='"
+          + CalendarDate.of(lastModified) + '\'' + '}';
     }
 
     /////////////////////////////////////////////
@@ -280,13 +283,14 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
       String indexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), '\\', "/");
       if (partitionDate == null) {
-        partitionDate = getDateExtractor().getCalendarDateFromPath(indexFilename);  // LOOK dicey
+        partitionDate = getDateExtractor().getCalendarDateFromPath(indexFilename); // LOOK dicey
       }
 
       // now remove the directory
       if (indexFilename.startsWith(directory)) {
         indexFilename = indexFilename.substring(directory.length());
-        if (indexFilename.startsWith("/")) indexFilename = indexFilename.substring(1);
+        if (indexFilename.startsWith("/"))
+          indexFilename = indexFilename.substring(1);
       }
       filename = indexFilename;
     }
@@ -298,9 +302,10 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   protected final org.slf4j.Logger logger;
   protected List<Partition> partitions;
   protected boolean isPartitionOfPartitions;
-  int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
+  int[] run2part; // masterRuntime.length; which partition to use for masterRuntime i
 
-  protected PartitionCollectionMutable(String name, File directory, FeatureCollectionConfig config, boolean isGrib1, org.slf4j.Logger logger) {
+  protected PartitionCollectionMutable(String name, File directory, FeatureCollectionConfig config, boolean isGrib1,
+      org.slf4j.Logger logger) {
     super(name, directory, config, isGrib1);
     this.logger = logger;
     this.partitions = new ArrayList<>();
@@ -320,8 +325,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     return result;
   }
 
-  Partition addPartition(String name, String filename, long lastModified, long length,
-      String directory, CalendarDate partitionDate) {
+  Partition addPartition(String name, String filename, long lastModified, long length, String directory,
+      CalendarDate partitionDate) {
     Partition partition = new Partition(name, filename, lastModified, length, directory, partitionDate);
     partitions.add(partition);
     return partition;
@@ -329,7 +334,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
   public void addPartition(MCollection dcm) {
     Partition partition = new Partition(dcm);
-    try (GribCollectionMutable gc = partition.makeGribCollection()) {  // make sure we can open the collection
+    try (GribCollectionMutable gc = partition.makeGribCollection()) { // make sure we can open the collection
       if (gc == null)
         logger.warn("failed to open partition {} =skipping", dcm.getCollectionName());
       else
@@ -352,20 +357,20 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   /**
    * Create a VariableIndexPartitioned, add it to the given group
    *
-   * @param group  the new VariableIndexPartitioned is in this group
-   * @param from   copy info from here
+   * @param group the new VariableIndexPartitioned is in this group
+   * @param from copy info from here
    * @param nparts size of partition list
    * @return a new VariableIndexPartitioned
    */
-  VariableIndexPartitioned makeVariableIndexPartitioned(GroupGC group,
-      GribCollectionMutable.VariableIndex from, int nparts) {
+  VariableIndexPartitioned makeVariableIndexPartitioned(GroupGC group, GribCollectionMutable.VariableIndex from,
+      int nparts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, from, nparts);
     group.addVariable(vip);
 
-    if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {    // LOOK dont really understand this
+    if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) { // LOOK dont really understand this
       VariableIndexPartitioned vipFrom = (VariableIndexPartitioned) from;
       assert vipFrom.partList == null; // // check if vipFrom has been finished
-      for (int i=0; i<vipFrom.nparts; i++)
+      for (int i = 0; i < vipFrom.nparts; i++)
         vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i), 0, 0, 0, vipFrom);
     }
 
@@ -381,8 +386,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   }
 
   int getPartitionSize() {
-     return partitions.size();
-   }
+    return partitions.size();
+  }
 
   public void showIndex(Formatter f) {
     super.showIndex(f);
@@ -390,17 +395,18 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     int count = 0;
     f.format("isPartitionOfPartitions=%s%n", isPartitionOfPartitions);
     f.format("Partitions%n");
-    for (Partition p :  getPartitions())
+    for (Partition p : getPartitions())
       f.format("%d:  %s%n", count++, p);
     f.format("%n");
 
-    if (run2part == null) f.format("run2part null%n");
+    if (run2part == null)
+      f.format("run2part null%n");
     else {
       f.format(" master runtime -> partition %n");
-      for (int idx=0; idx<masterRuntime.getSize(); idx++) {
-        int partno =  run2part[idx];
+      for (int idx = 0; idx < masterRuntime.getSize(); idx++) {
+        int partno = run2part[idx];
         Partition part = getPartition(partno);
-        f.format(" %d:  %s -> part %3d %s%n", count, masterRuntime.getRuntimeDate(idx), partno,  part);
+        f.format(" %d:  %s -> part %3d %s%n", count, masterRuntime.getRuntimeDate(idx), partno, part);
         count++;
       }
       f.format("%n");

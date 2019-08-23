@@ -27,7 +27,6 @@ import ucar.nc2.ui.ReportPanel;
 import ucar.nc2.util.Counters;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
-
 import java.io.*;
 import java.util.*;
 
@@ -55,7 +54,8 @@ public class Grib1ReportPanel extends ReportPanel {
   }
 
   @Override
-  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+  protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile,
+      boolean extra) throws IOException {
     cust = null;
 
     switch ((Report) option) {
@@ -89,7 +89,8 @@ public class Grib1ReportPanel extends ReportPanel {
     if (!index.readIndex(path, mf.getLastModified())) {
       // make sure its a grib1 file
       try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
-        if (!Grib1RecordScanner.isValidFile(raf)) return null;
+        if (!Grib1RecordScanner.isValidFile(raf))
+          return null;
         index.makeIndex(path, raf);
       }
     }
@@ -161,7 +162,8 @@ public class Grib1ReportPanel extends ReportPanel {
       Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("GRIB table");
       if (gatt != null) {
         String[] s = gatt.getStringValue().split("-");
-        Grib1ParamTableReader gtable = new Grib1ParamTables().getParameterTable(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
+        Grib1ParamTableReader gtable = new Grib1ParamTables().getParameterTable(Integer.parseInt(s[0]),
+            Integer.parseInt(s[1]), Integer.parseInt(s[2]));
         fm.format("  %s == %s%n", gatt, gtable.getPath());
       }
       for (GridDatatype dt : ncfile.getGrids()) {
@@ -173,7 +175,8 @@ public class Grib1ReportPanel extends ReportPanel {
         if (number >= 128) {
           fm.format("  local parameter = %s (%d) units=%s %n", currName, number, dt.getUnitsString());
           local++;
-          if (currName.startsWith("VAR")) miss++;
+          if (currName.startsWith("VAR"))
+            miss++;
         }
 
       }
@@ -205,9 +208,10 @@ public class Grib1ReportPanel extends ReportPanel {
     counters.show(f);
   }
 
-  private void doCheckTablesWithIndex(Formatter mf, MFile ff,Counters counters) throws IOException {
+  private void doCheckTablesWithIndex(Formatter mf, MFile ff, Counters counters) throws IOException {
     Grib1Index index = createIndex(ff);
-    if (index == null) return;
+    if (index == null)
+      return;
     for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
       doCheckTables(gr, counters);
     }
@@ -223,7 +227,8 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-        if (gr == null) break;
+        if (gr == null)
+          break;
         doCheckTables(gr, counters);
       }
 
@@ -243,14 +248,16 @@ public class Grib1ReportPanel extends ReportPanel {
     if (pds.getParameterNumber() > 127)
       counters.count("local", key);
 
-    Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
+    Grib1ParamTableReader table =
+        new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
     if (table == null || null == table.getParameter(pds.getParameterNumber()))
       counters.count("missing", key);
   }
 
   /////////////////////////////////////////////////////////////////
 
-  private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extraInfo) throws IOException {
+  private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extraInfo)
+      throws IOException {
     Counters countersAll = new Counters();
 
     for (MFile mfile : dcm.getFilesSorted()) {
@@ -276,7 +283,8 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doScanIssuesWithIndex(Formatter fm, MFile ff, boolean extraInfo, Counters counters) throws IOException {
     Grib1Index index = createIndex(ff);
-    if (index == null) return;
+    if (index == null)
+      return;
     for (ucar.nc2.grib.grib1.Grib1Record gr : index.getRecords()) {
       doScanIssues(gr, fm, ff.getPath(), extraInfo, counters);
     }
@@ -292,7 +300,8 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-        if (gr == null) break;
+        if (gr == null)
+          break;
         doScanIssues(gr, fm, path, extraInfo, counters);
       }
 
@@ -303,7 +312,8 @@ public class Grib1ReportPanel extends ReportPanel {
     }
   }
 
-  private void doScanIssues(ucar.nc2.grib.grib1.Grib1Record gr, Formatter fm, String path, boolean extraInfo, Counters counters) throws IOException {
+  private void doScanIssues(ucar.nc2.grib.grib1.Grib1Record gr, Formatter fm, String path, boolean extraInfo,
+      Counters counters) throws IOException {
 
     Grib1SectionGridDefinition gdss = gr.getGDSsection();
     Grib1Gds gds = gdss.getGDS();
@@ -315,7 +325,8 @@ public class Grib1ReportPanel extends ReportPanel {
     counters.count("vertCoord", pds.getLevelType());
     counters.count("referenceDate", pds.getReferenceDate().toString());
 
-    if (cust == null) cust = Grib1Customizer.factory(gr, null);
+    if (cust == null)
+      cust = Grib1Customizer.factory(gr, null);
 
     Grib1ParamTime ptime = cust.getParamTime(pds);
     counters.count("timeCoord", ptime.getTimeCoord());
@@ -323,17 +334,20 @@ public class Grib1ReportPanel extends ReportPanel {
     counters.count("UVisReletiveToEastNorth", gds.getUVisReletiveToEastNorth() ? "true" : "false");
 
     if (gdss.isThin()) {
-      if (extraInfo) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), path);
+      if (extraInfo)
+        fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), path);
       counters.count("thin", gdss.getGridTemplate());
     }
 
     if (!pds.gdsExists()) {
-      if (extraInfo) fm.format("   PREDEFINED GDS= %s%n", path);
+      if (extraInfo)
+        fm.format("   PREDEFINED GDS= %s%n", path);
       counters.count("predefined", gdss.getPredefinedGridDefinition());
     }
 
     if (gdss.hasVerticalCoordinateParameters()) {
-      if (extraInfo) fm.format("   Has vertical coordinates in GDS= %s%n", path);
+      if (extraInfo)
+        fm.format("   Has vertical coordinates in GDS= %s%n", path);
       counters.count("vertCoordInGDS", pds.getLevelType());
     }
 
@@ -362,7 +376,8 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
-        if (gr == null) break;
+        if (gr == null)
+          break;
         GribData.Info info = gr.getBinaryDataInfo(raf);
         counters.count("decimalScale", info.decimalScaleFactor);
         counters.count("binScale", info.binaryScaleFactor);
@@ -452,7 +467,8 @@ public class Grib1ReportPanel extends ReportPanel {
         List<String> newGrids = gridsAll.computeIfAbsent(key, k -> new ArrayList<>());
         if (gmOld.match != null) {
           String keyNew = gmOld.match.grid.getFullName() + " == " + gmOld.match.grid.getDescription();
-          if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
+          if (!newGrids.contains(keyNew))
+            newGrids.add(keyNew);
         }
       }
 
@@ -478,7 +494,8 @@ public class Grib1ReportPanel extends ReportPanel {
       f.format(" OLD %s%n", key);
       List<String> newGrids = gridsAll.get(key);
       Collections.sort(newGrids);
-      if (newGrids.size() > 1) dups++;
+      if (newGrids.size() > 1)
+        dups++;
       for (String newKey : newGrids)
         f.format(" NEW %s%n", newKey);
       f.format("%n");
@@ -532,14 +549,18 @@ public class Grib1ReportPanel extends ReportPanel {
   private GridMatch altMatch(GridMatch want, Collection<GridMatch> test) {
     // look for scale factor errors in prob
     for (GridMatch gm : test) {
-      if (gm.match != null) continue; // already matched
-      if (gm.altMatch(want)) return gm;
+      if (gm.match != null)
+        continue; // already matched
+      if (gm.altMatch(want))
+        return gm;
     }
 
     // give up matching the prob
     for (GridMatch gm : test) {
-      if (gm.match != null) continue; // already matched
-      if (gm.altMatchNoProb(want)) return gm;
+      if (gm.match != null)
+        continue; // already matched
+      if (gm.altMatchNoProb(want))
+        return gm;
     }
 
     return null;
@@ -563,13 +584,16 @@ public class Grib1ReportPanel extends ReportPanel {
 
       GridCoordSystem gcs = grid.getCoordinateSystem();
       CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-      if (zaxis != null) isLayer = zaxis.isInterval();
+      if (zaxis != null)
+        isLayer = zaxis.isInterval();
 
       if (isNew) {
-      /* :Grib1_Center = 7; // int
-       :Grib1_Subcenter = 0; // int
-       :Grib1_TableVersion = 2; // int
-       :Grib1_Parameter = 33; */
+        /*
+         * :Grib1_Center = 7; // int
+         * :Grib1_Subcenter = 0; // int
+         * :Grib1_TableVersion = 2; // int
+         * :Grib1_Parameter = 33;
+         */
         Attribute att = grid.findAttributeIgnoreCase("Grib1_Center");
         param[0] = att.getNumericValue().intValue();
         att = grid.findAttributeIgnoreCase("Grib1_Subcenter");
@@ -584,11 +608,13 @@ public class Grib1ReportPanel extends ReportPanel {
         att = grid.findAttributeIgnoreCase("Grib1_Statistical_Interval_Type");
         if (att != null) {
           int intv = att.getNumericValue().intValue();
-          if (intv != 255) interval = intv;
+          if (intv != 255)
+            interval = intv;
         }
 
         att = grid.findAttributeIgnoreCase("Grib1_Probability_Type"); // ??
-        if (att != null) prob = att.getNumericValue().intValue();
+        if (att != null)
+          prob = att.getNumericValue().intValue();
 
         att = grid.findAttributeIgnoreCase("Grib1_Probability_Name"); // ??
         if (att != null) {
@@ -599,7 +625,8 @@ public class Grib1ReportPanel extends ReportPanel {
         }
 
         att = grid.findAttributeIgnoreCase("Grib1_Ensemble_Derived_Type");
-        if (att != null) ens = att.getNumericValue().intValue();
+        if (att != null)
+          ens = att.getNumericValue().intValue();
 
       } else { // OLD
         Attribute att = grid.findAttributeIgnoreCase("GRIB_center_id");
@@ -618,59 +645,82 @@ public class Grib1ReportPanel extends ReportPanel {
           interval = 4;
 
         att = grid.findAttributeIgnoreCase("GRIB_probability_type");
-        if (att != null) prob = att.getNumericValue().intValue();
+        if (att != null)
+          prob = att.getNumericValue().intValue();
         if (prob == 0) {
           att = grid.findAttributeIgnoreCase("GRIB_probability_lower_limit");
-          if (att != null) probLimit = (int) (1000 * att.getNumericValue().doubleValue());
-          //if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
+          if (att != null)
+            probLimit = (int) (1000 * att.getNumericValue().doubleValue());
+          // if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
         } else if (prob == 1) {
-          att = grid.findAttributeIgnoreCase("GRIB_probability_upper_limit"); // GRIB_probability_upper_limit = 12.89; // double
-          if (att != null) probLimit = (int) (1000 * att.getNumericValue().doubleValue());
-          //if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
+          att = grid.findAttributeIgnoreCase("GRIB_probability_upper_limit"); // GRIB_probability_upper_limit = 12.89;
+                                                                              // // double
+          if (att != null)
+            probLimit = (int) (1000 * att.getNumericValue().doubleValue());
+          // if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
         }
 
         att = grid.findAttributeIgnoreCase("GRIB_ensemble_derived_type");
-        if (att != null) ens = att.getNumericValue().intValue();
+        if (att != null)
+          ens = att.getNumericValue().intValue();
       }
     }
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       GridMatch gridMatch = (GridMatch) o;
 
-      if (!Arrays.equals(param, gridMatch.param)) return false;
-      if (ens != gridMatch.ens) return false;
-      if (interval != gridMatch.interval) return false;
-      if (isError != gridMatch.isError) return false;
-      if (isLayer != gridMatch.isLayer) return false;
-      if (level != gridMatch.level) return false;
-      if (prob != gridMatch.prob) return false;
+      if (!Arrays.equals(param, gridMatch.param))
+        return false;
+      if (ens != gridMatch.ens)
+        return false;
+      if (interval != gridMatch.interval)
+        return false;
+      if (isError != gridMatch.isError)
+        return false;
+      if (isLayer != gridMatch.isLayer)
+        return false;
+      if (level != gridMatch.level)
+        return false;
+      if (prob != gridMatch.prob)
+        return false;
       return probLimit == gridMatch.probLimit;
 
     }
 
     public boolean altMatch(GridMatch gridMatch) {
-      if (!altMatchNoProb(gridMatch)) return false;
+      if (!altMatchNoProb(gridMatch))
+        return false;
 
-      if (probLimit / 1000 == gridMatch.probLimit) return true;
+      if (probLimit / 1000 == gridMatch.probLimit)
+        return true;
       return probLimit == gridMatch.probLimit / 1000;
 
     }
 
     public boolean altMatchNoProb(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
 
       GridMatch gridMatch = (GridMatch) o;
 
-      if (ens != gridMatch.ens) return false;
-      if (interval != gridMatch.interval) return false;
-      if (isError != gridMatch.isError) return false;
-      if (isLayer != gridMatch.isLayer) return false;
-      if (level != gridMatch.level) return false;
+      if (ens != gridMatch.ens)
+        return false;
+      if (interval != gridMatch.interval)
+        return false;
+      if (isError != gridMatch.isError)
+        return false;
+      if (isLayer != gridMatch.isLayer)
+        return false;
+      if (level != gridMatch.level)
+        return false;
       return prob == gridMatch.prob;
 
     }
@@ -701,11 +751,16 @@ public class Grib1ReportPanel extends ReportPanel {
       Formatter f = new Formatter();
       f.format("%d-%d-%d-", param[0], param[1], param[2]);
       f.format("%d", level);
-      if (isLayer) f.format("_layer");
-      if (interval >= 0) f.format("_intv%d", interval);
-      if (prob >= 0) f.format("_prob%d_%d", prob, probLimit);
-      if (ens >= 0) f.format("_ens%d", ens);
-      if (isError) f.format("_error");
+      if (isLayer)
+        f.format("_layer");
+      if (interval >= 0)
+        f.format("_intv%d", interval);
+      if (prob >= 0)
+        f.format("_prob%d_%d", prob, probLimit);
+      if (ens >= 0)
+        f.format("_ens%d", ens);
+      if (isError)
+        f.format("_error");
       return f.toString();
     }
   }
@@ -717,7 +772,8 @@ public class Grib1ReportPanel extends ReportPanel {
         GridMatch gm = new GridMatch(ncfile, dt, true);
         GridMatch dup = grids.get(gm.hashCode());
         if (dup != null)
-          f.format(" DUP NEW (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(), gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
+          f.format(" DUP NEW (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(),
+              gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
         else
           grids.put(gm.hashCode(), gm);
       }
@@ -749,469 +805,473 @@ public class Grib1ReportPanel extends ReportPanel {
   ///////////////////////////////////////////////
 
   /*
-    private void doLocalUseSection(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-      f.format("Show Local Use Section%n");
+   * private void doLocalUseSection(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+   * f.format("Show Local Use Section%n");
+   * 
+   * for (MFile mfile : dcm.getFiles()) {
+   * f.format(" %s%n", mfile.getPath());
+   * doLocalUseSection(mfile, f, useIndex);
+   * }
+   * }
+   * 
+   * private void doLocalUseSection(MFile mf, Formatter f, boolean useIndex) throws IOException {
+   * f.format("File = %s%n", mf);
+   * 
+   * String path = mf.getPath();
+   * GribIndex index = new GribIndex();
+   * if (!index.readIndex(path, mf.getLastModified()))
+   * index.makeIndex(path, f);
+   * 
+   * for (Grib2Record gr : index.getRecords()) {
+   * Grib2SectionLocalUse lus = gr.getLocalUseSection();
+   * if (lus == null || lus.getRawBytes() == null)
+   * f.format(" %10d == none%n", gr.getDataSection().getStartingPosition());
+   * else
+   * f.format(" %10d == %s%n", gr.getDataSection().getStartingPosition(), Misc.showBytes(lus.getRawBytes()));
+   * }
+   * }
+   */
 
-      for (MFile mfile : dcm.getFiles()) {
-        f.format(" %s%n", mfile.getPath());
-        doLocalUseSection(mfile, f, useIndex);
-      }
+  ///////////////////////////////////////////////
+
+  // Look through the collection and find what GDS templates are used.
+  private void doUniqueGds(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
+    f.format("Show Unique GDS%n");
+
+    Map<Integer, GdsList> gdsSet = new HashMap<>();
+    for (MFile mfile : dcm.getFilesSorted()) {
+      f.format(" %s%n", mfile.getPath());
+      doUniqueGds(mfile, gdsSet, f);
     }
 
-    private void doLocalUseSection(MFile mf, Formatter f, boolean useIndex) throws IOException {
-      f.format("File = %s%n", mf);
+    List<GdsList> sorted = new ArrayList<>(gdsSet.values());
+    Collections.sort(sorted);
 
-      String path = mf.getPath();
-      GribIndex index = new GribIndex();
-      if (!index.readIndex(path, mf.getLastModified()))
-        index.makeIndex(path, f);
-
-      for (Grib2Record gr : index.getRecords()) {
-        Grib2SectionLocalUse lus = gr.getLocalUseSection();
-        if (lus == null || lus.getRawBytes() == null)
-          f.format(" %10d == none%n", gr.getDataSection().getStartingPosition());
-        else
-          f.format(" %10d == %s%n", gr.getDataSection().getStartingPosition(), Misc.showBytes(lus.getRawBytes()));
-      }
-    } */
-
-    ///////////////////////////////////////////////
-
-    // Look through the collection and find what GDS templates are used.
-    private void doUniqueGds(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-      f.format("Show Unique GDS%n");
-
-      Map<Integer, GdsList> gdsSet = new HashMap<>();
-      for (MFile mfile : dcm.getFilesSorted()) {
-        f.format(" %s%n", mfile.getPath());
-        doUniqueGds(mfile, gdsSet, f);
-      }
-
-      List<GdsList> sorted = new ArrayList<>(gdsSet.values());
-      Collections.sort(sorted);
-
-      for (GdsList gdsl : sorted) {
-        f.format("%nGDS %s template= %d %n", gdsl.gds.getNameShort(), gdsl.gds.template);
-        for (FileCount fc : gdsl.fileList) {
-          f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
-        }
+    for (GdsList gdsl : sorted) {
+      f.format("%nGDS %s template= %d %n", gdsl.gds.getNameShort(), gdsl.gds.template);
+      for (FileCount fc : gdsl.fileList) {
+        f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
       }
     }
+  }
 
-    private void doUniqueGds(MFile mf, Map<Integer, GdsList> gdsSet, Formatter f) throws IOException {
-      String path = mf.getPath();
-      Grib1Index g1idx = new Grib1Index();
-      boolean ok = g1idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
-      if (!ok) {
-        f.format("**Cant open %s%n", path);
-        return;
-      }
-
-      for (Grib1Record gr : g1idx.getRecords()) {
-        int template = gr.getGDSsection().getGDS().template;
-        gdsSet.computeIfAbsent(template, k -> new GdsList(gr.getGDSsection().getGDS()));
-        GdsList gdsList = gdsSet.get(template);
-        FileCount fc = gdsList.findOrAdd(mf);
-        fc.countRecords++;
-      }
+  private void doUniqueGds(MFile mf, Map<Integer, GdsList> gdsSet, Formatter f) throws IOException {
+    String path = mf.getPath();
+    Grib1Index g1idx = new Grib1Index();
+    boolean ok = g1idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
+    if (!ok) {
+      f.format("**Cant open %s%n", path);
+      return;
     }
 
-    private class GdsList implements Comparable<GdsList> {
-      Grib1Gds gds;
-      java.util.List<FileCount> fileList = new ArrayList<>();
+    for (Grib1Record gr : g1idx.getRecords()) {
+      int template = gr.getGDSsection().getGDS().template;
+      gdsSet.computeIfAbsent(template, k -> new GdsList(gr.getGDSsection().getGDS()));
+      GdsList gdsList = gdsSet.get(template);
+      FileCount fc = gdsList.findOrAdd(mf);
+      fc.countRecords++;
+    }
+  }
 
-      private GdsList(Grib1Gds gds) {
-        this.gds = gds;
-      }
+  private class GdsList implements Comparable<GdsList> {
+    Grib1Gds gds;
+    java.util.List<FileCount> fileList = new ArrayList<>();
 
-      FileCount findOrAdd(MFile f) {
-        for (FileCount fc : fileList) {
-          if (fc.f.getPath().equals(f.getPath()))
-            return fc;
-        }
-
-        FileCount fc = new FileCount(f);
-        fileList.add(fc);
-        return fc;
-      }
-
-      @Override
-      public int compareTo(GdsList o) {
-        return gds.template - o.gds.template;
-      }
+    private GdsList(Grib1Gds gds) {
+      this.gds = gds;
     }
 
-    private class FileCount {
-      private FileCount(MFile f) {
-        this.f = f;
+    FileCount findOrAdd(MFile f) {
+      for (FileCount fc : fileList) {
+        if (fc.f.getPath().equals(f.getPath()))
+          return fc;
       }
 
-      MFile f;
-      int countRecords = 0;
+      FileCount fc = new FileCount(f);
+      fileList.add(fc);
+      return fc;
     }
 
-    ///////////////////////////////////////////////
+    @Override
+    public int compareTo(GdsList o) {
+      return gds.template - o.gds.template;
+    }
+  }
+
+  private class FileCount {
+    private FileCount(MFile f) {
+      this.f = f;
+    }
+
+    MFile f;
+    int countRecords = 0;
+  }
+
+  ///////////////////////////////////////////////
   /*
-
-    private int countPDS, countPDSdup;
-
-    private void doDuplicatePds(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-      countPDS = 0;
-      countPDSdup = 0;
-      f.format("Show Duplicate PDS%n");
-      for (MFile mfile : dcm.getFiles()) {
-        doDuplicatePds(f, mfile);
-      }
-      f.format("Total PDS duplicates = %d / %d%n%n", countPDSdup, countPDS);
-    }
-
-    private void doDuplicatePds(Formatter f, MFile mfile) throws IOException {
-      Set<Long> pdsMap = new HashSet<Long>();
-      int dups = 0;
-      int count = 0;
-
-      RandomAccessFile raf = new RandomAccessFile(mfile.getPath(), "r");
-      Grib2RecordScanner scan = new Grib2RecordScanner(raf);
-      while (scan.hasNext()) {
-        ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
-        Grib2SectionProductDefinition pds = gr.getPDSsection();
-        long crc = pds.calcCRC();
-        if (pdsMap.contains(crc))
-          dups++;
-        else
-          pdsMap.add(crc);
-        count++;
-      }
-      raf.close();
-
-      f.format("PDS duplicates = %d / %d for %s%n%n", dups, count, mfile.getPath());
-      countPDS += count;
-      countPDSdup += dups;
-    }
-
-    ///////////////////////////////////////////////
-
-    private class Counter {
-      Map<Integer, Integer> set = new HashMap<Integer, Integer>();
-      String name;
-
-      private Counter(String name) {
-        this.name = name;
-      }
-
-      void count(int value) {
-        Integer count = set.get(value);
-        if (count == null)
-          set.put(value, 1);
-        else
-          set.put(value, count + 1);
-      }
-
-      void show(Formatter f) {
-        f.format("%n%s%n", name);
-        java.util.List<Integer> list = new ArrayList<Integer>(set.keySet());
-        Collections.sort(list);
-        for (int template : list) {
-          int count = set.get(template);
-          f.format("   %3d: count = %d%n", template, count);
-        }
-      }
-
-    }
-
-    int total = 0;
-    int prob = 0;
-
-    private void doPdsSummary(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-      if (useIndex) {
-        f.format("Check Grib-2 PDS probability and statistical variables%n");
-        total = 0;
-        prob = 0;
-        for (MFile mfile : dcm.getFiles()) {
-          f.format("%n %s%n", mfile.getPath());
-          doPdsSummaryIndexed(f, mfile);
-        }
-        f.format("problems = %d/%d%n", prob, total);
-
-      } else {
-        Counter templateSet = new Counter("template");
-        Counter timeUnitSet = new Counter("timeUnit");
-        Counter statTypeSet = new Counter("statType");
-        Counter NTimeIntervals = new Counter("NTimeIntervals");
-        Counter processId = new Counter("processId");
-
-        for (MFile mfile : dcm.getFiles()) {
-          f.format(" %s%n", mfile.getPath());
-          doPdsSummary(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, processId);
-        }
-
-        templateSet.show(f);
-        timeUnitSet.show(f);
-        statTypeSet.show(f);
-        NTimeIntervals.show(f);
-        processId.show(f);
-      }
-    }
-
-    private void doPdsSummaryIndexed(Formatter fm, MFile ff) throws IOException {
-      String path = ff.getPath();
-
-      //make sure indexes exist
-      GribIndex index = new GribIndex();
-      if (!index.readIndex(path, ff.getLastModified()))
-        index.makeIndex(path, fm);
-      GribCollection gc = GribCollectionBuilder.createFromSingleFile(new File(path), fm);
-      gc.close();
-
-      GridDataset ncfile = null;
-      try {
-        ncfile = GridDataset.open(path + GribCollection.IDX_EXT);
-        for (GridDatatype dt : ncfile.getGrids()) {
-          String currName = dt.getName();
-          total++;
-
-          Attribute att = dt.findAttributeIgnoreCase("Grib_Probability_Type");
-          if (att != null) {
-            fm.format("  %s (PROB) desc=%s %n", currName, dt.getDescription());
-            prob++;
-          }
-
-          att = dt.findAttributeIgnoreCase(GribIosp.GRIB_STAT_TYPE);
-          if (att != null) {
-            int statType = att.getNumericValue().intValue();
-            if ((statType == 7) || (statType == 9)) {
-              fm.format("  %s (STAT type %s) desc=%s %n", currName, statType, dt.getDescription());
-              prob++;
-            }
-          }
-
-          att = dt.findAttributeIgnoreCase("Grib_Ensemble_Derived_Type");
-          if (att != null) {
-            int type = att.getNumericValue().intValue();
-            if ((type > 9)) {
-              fm.format("  %s (DERIVED type %s) desc=%s %n", currName, type, dt.getDescription());
-              prob++;
-            }
-          }
-
-        }
-      } catch (Throwable ioe) {
-        fm.format("Failed on %s == %s%n", path, ioe.getMessage());
-        System.out.printf("Failed on %s%n", path);
-        ioe.printStackTrace();
-
-      } finally {
-        if (ncfile != null) ncfile.close();
-      }
-    }
-
-    private void doPdsSummary(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet, Counter NTimeIntervals,
-                              Counter processId) throws IOException {
-      String path = mf.getPath();
-      GribIndex index = new GribIndex();
-      if (!index.readIndex(path, mf.getLastModified()))
-        index.makeIndex(path, f);
-
-      for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
-        Grib2Pds pds = gr.getPDS();
-        templateSet.count(pds.getTemplateNumber());
-        timeUnitSet.count(pds.getTimeUnit());
-        processId.count(pds.getGenProcessId());
-
-        if (pds instanceof Grib2Pds.PdsInterval) {
-          Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
-          for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals())
-            statTypeSet.count(ti.statProcessType);
-          NTimeIntervals.count(pdsi.getTimeIntervals().length);
-        }
-      }
-    }
-
-    ///////////////////////////////////////////////
-
-    private void doIdProblems(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-      f.format("Look for ID Problems%n");
-
-      Counter disciplineSet = new Counter("discipline");
-      Counter masterTable = new Counter("masterTable");
-      Counter localTable = new Counter("localTable");
-      Counter centerId = new Counter("centerId");
-      Counter subcenterId = new Counter("subcenterId");
-      Counter genProcess = new Counter("genProcess");
-      Counter backProcess = new Counter("backProcess");
-
-      for (MFile mfile : dcm.getFiles()) {
-        f.format(" %s%n", mfile.getPath());
-        doIdProblems(f, mfile, useIndex,
-                disciplineSet, masterTable, localTable, centerId, subcenterId, genProcess, backProcess);
-      }
-
-      disciplineSet.show(f);
-      masterTable.show(f);
-      localTable.show(f);
-      centerId.show(f);
-      subcenterId.show(f);
-      genProcess.show(f);
-      backProcess.show(f);
-    }
-
-    private void doIdProblems(Formatter f, MFile mf, boolean showProblems,
-                              Counter disciplineSet, Counter masterTable, Counter localTable, Counter centerId,
-                              Counter subcenterId, Counter genProcessC, Counter backProcessC) throws IOException {
-      String path = mf.getPath();
-      GribIndex index = new GribIndex();
-      if (!index.readIndex(path, mf.getLastModified()))
-        index.makeIndex(path, f);
-
-      // these should be the same for the entire file
-      int center = -1;
-      int subcenter = -1;
-      int master = -1;
-      int local = -1;
-      int genProcess = -1;
-      int backProcess = -1;
-
-      for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
-        disciplineSet.count(gr.getDiscipline());
-        masterTable.count(gr.getId().getMaster_table_version());
-        localTable.count(gr.getId().getLocal_table_version());
-        centerId.count(gr.getId().getCenter_id());
-        subcenterId.count(gr.getId().getSubcenter_id());
-        genProcessC.count(gr.getPDS().getGenProcessId());
-        backProcessC.count(gr.getPDS().getBackProcessId());
-
-        if (!showProblems) continue;
-
-        if (gr.getDiscipline() == 255) {
-          f.format("  bad discipline= ");
-          gr.show(f);
-          f.format("%n");
-        }
-
-        int val = gr.getId().getCenter_id();
-        if (center < 0) center = val;
-        else if (center != val) {
-          f.format("  center %d != %d ", center, val);
-          gr.show(f);
-          f.format(" %s%n", gr.getId());
-        }
-
-        val = gr.getId().getSubcenter_id();
-        if (subcenter < 0) subcenter = val;
-        else if (subcenter != val) {
-          f.format("  subcenter %d != %d ", subcenter, val);
-          gr.show(f);
-          f.format(" %s%n", gr.getId());
-        }
-
-        val = gr.getId().getMaster_table_version();
-        if (master < 0) master = val;
-        else if (master != val) {
-          f.format("  master %d != %d ", master, val);
-          gr.show(f);
-          f.format(" %s%n", gr.getId());
-        }
-
-        val = gr.getId().getLocal_table_version();
-        if (local < 0) local = val;
-        else if (local != val) {
-          f.format("  local %d != %d ", local, val);
-          gr.show(f);
-          f.format(" %s%n", gr.getId());
-        }
-
-        val = gr.getPDS().getGenProcessId();
-        if (genProcess < 0) genProcess = val;
-        else if (genProcess != val) {
-          f.format("  genProcess %d != %d ", genProcess, val);
-          gr.show(f);
-          f.format(" %s%n", gr.getId());
-        }
-
-        val = gr.getPDS().getBackProcessId();
-        if (backProcess < 0) backProcess = val;
-        else if (backProcess != val) {
-          f.format("  backProcess %d != %d ", backProcess, val);
-          gr.show(f);
-          f.format(" %s%n", gr.getId());
-        }
-
-      }
-    }
-
-    ///////////////////////////////////////////////
-
-    private void doDrsSummary(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-      f.format("Show Unique DRS Templates%n");
-      Counter template = new Counter("DRS template");
-      Counter prob = new Counter("DRS template 40 signed problem");
-
-      for (MFile mfile : dcm.getFiles()) {
-        f.format(" %s%n", mfile.getPath());
-        doDrsSummary(f, mfile, useIndex, template, prob);
-      }
-
-      template.show(f);
-      prob.show(f);
-    }
-
-    private void doDrsSummary(Formatter f, MFile mf, boolean useIndex, Counter templateC, Counter probC) throws IOException {
-      String path = mf.getPath();
-      GribIndex index = new GribIndex();
-      if (!index.readIndex(path, mf.getLastModified()))
-        index.makeIndex(path, f);
-      RandomAccessFile raf = new RandomAccessFile(path, "r");
-
-      for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
-        Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
-        int template = drss.getDataTemplate();
-        templateC.count(template);
-
-        if (useIndex && template == 40) {  // expensive
-          Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
-          if (drs40 != null) {
-            if (drs40.hasSignedProblem())
-              probC.count(1);
-            else
-              probC.count(0);
-          }
-        }
-      }
-      raf.close();
-    }
-
-    ///////////////////////////////////////////////
-
-    private void doGdsTemplate(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-      f.format("Show Unique GDS Templates%n");
-
-      Map<Integer, Integer> drsSet = new HashMap<Integer, Integer>();
-      for (MFile mfile : dcm.getFiles()) {
-        f.format(" %s%n", mfile.getPath());
-        doGdsTemplate(f, mfile, drsSet);
-      }
-
-      for (int template : drsSet.keySet()) {
-        int count = drsSet.get(template);
-        f.format("%nGDS template = %d count = %d%n", template, count);
-      }
-    }
-
-    private void doGdsTemplate(Formatter f, MFile mf, Map<Integer, Integer> gdsSet) throws IOException {
-      String path = mf.getPath();
-      GribIndex index = new GribIndex();
-      if (!index.readIndex(path, mf.getLastModified()))
-        index.makeIndex(path, f);
-
-      for (Grib2SectionGridDefinition gds : index.getGds()) {
-        int template = gds.getGDSTemplateNumber();
-        Integer count = gdsSet.get(template);
-        if (count == null)
-          gdsSet.put(template, 1);
-        else
-          gdsSet.put(template, count + 1);
-      }
-    }   */
+   * 
+   * private int countPDS, countPDSdup;
+   * 
+   * private void doDuplicatePds(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+   * countPDS = 0;
+   * countPDSdup = 0;
+   * f.format("Show Duplicate PDS%n");
+   * for (MFile mfile : dcm.getFiles()) {
+   * doDuplicatePds(f, mfile);
+   * }
+   * f.format("Total PDS duplicates = %d / %d%n%n", countPDSdup, countPDS);
+   * }
+   * 
+   * private void doDuplicatePds(Formatter f, MFile mfile) throws IOException {
+   * Set<Long> pdsMap = new HashSet<Long>();
+   * int dups = 0;
+   * int count = 0;
+   * 
+   * RandomAccessFile raf = new RandomAccessFile(mfile.getPath(), "r");
+   * Grib2RecordScanner scan = new Grib2RecordScanner(raf);
+   * while (scan.hasNext()) {
+   * ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
+   * Grib2SectionProductDefinition pds = gr.getPDSsection();
+   * long crc = pds.calcCRC();
+   * if (pdsMap.contains(crc))
+   * dups++;
+   * else
+   * pdsMap.add(crc);
+   * count++;
+   * }
+   * raf.close();
+   * 
+   * f.format("PDS duplicates = %d / %d for %s%n%n", dups, count, mfile.getPath());
+   * countPDS += count;
+   * countPDSdup += dups;
+   * }
+   * 
+   * ///////////////////////////////////////////////
+   * 
+   * private class Counter {
+   * Map<Integer, Integer> set = new HashMap<Integer, Integer>();
+   * String name;
+   * 
+   * private Counter(String name) {
+   * this.name = name;
+   * }
+   * 
+   * void count(int value) {
+   * Integer count = set.get(value);
+   * if (count == null)
+   * set.put(value, 1);
+   * else
+   * set.put(value, count + 1);
+   * }
+   * 
+   * void show(Formatter f) {
+   * f.format("%n%s%n", name);
+   * java.util.List<Integer> list = new ArrayList<Integer>(set.keySet());
+   * Collections.sort(list);
+   * for (int template : list) {
+   * int count = set.get(template);
+   * f.format("   %3d: count = %d%n", template, count);
+   * }
+   * }
+   * 
+   * }
+   * 
+   * int total = 0;
+   * int prob = 0;
+   * 
+   * private void doPdsSummary(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+   * if (useIndex) {
+   * f.format("Check Grib-2 PDS probability and statistical variables%n");
+   * total = 0;
+   * prob = 0;
+   * for (MFile mfile : dcm.getFiles()) {
+   * f.format("%n %s%n", mfile.getPath());
+   * doPdsSummaryIndexed(f, mfile);
+   * }
+   * f.format("problems = %d/%d%n", prob, total);
+   * 
+   * } else {
+   * Counter templateSet = new Counter("template");
+   * Counter timeUnitSet = new Counter("timeUnit");
+   * Counter statTypeSet = new Counter("statType");
+   * Counter NTimeIntervals = new Counter("NTimeIntervals");
+   * Counter processId = new Counter("processId");
+   * 
+   * for (MFile mfile : dcm.getFiles()) {
+   * f.format(" %s%n", mfile.getPath());
+   * doPdsSummary(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, processId);
+   * }
+   * 
+   * templateSet.show(f);
+   * timeUnitSet.show(f);
+   * statTypeSet.show(f);
+   * NTimeIntervals.show(f);
+   * processId.show(f);
+   * }
+   * }
+   * 
+   * private void doPdsSummaryIndexed(Formatter fm, MFile ff) throws IOException {
+   * String path = ff.getPath();
+   * 
+   * //make sure indexes exist
+   * GribIndex index = new GribIndex();
+   * if (!index.readIndex(path, ff.getLastModified()))
+   * index.makeIndex(path, fm);
+   * GribCollection gc = GribCollectionBuilder.createFromSingleFile(new File(path), fm);
+   * gc.close();
+   * 
+   * GridDataset ncfile = null;
+   * try {
+   * ncfile = GridDataset.open(path + GribCollection.IDX_EXT);
+   * for (GridDatatype dt : ncfile.getGrids()) {
+   * String currName = dt.getName();
+   * total++;
+   * 
+   * Attribute att = dt.findAttributeIgnoreCase("Grib_Probability_Type");
+   * if (att != null) {
+   * fm.format("  %s (PROB) desc=%s %n", currName, dt.getDescription());
+   * prob++;
+   * }
+   * 
+   * att = dt.findAttributeIgnoreCase(GribIosp.GRIB_STAT_TYPE);
+   * if (att != null) {
+   * int statType = att.getNumericValue().intValue();
+   * if ((statType == 7) || (statType == 9)) {
+   * fm.format("  %s (STAT type %s) desc=%s %n", currName, statType, dt.getDescription());
+   * prob++;
+   * }
+   * }
+   * 
+   * att = dt.findAttributeIgnoreCase("Grib_Ensemble_Derived_Type");
+   * if (att != null) {
+   * int type = att.getNumericValue().intValue();
+   * if ((type > 9)) {
+   * fm.format("  %s (DERIVED type %s) desc=%s %n", currName, type, dt.getDescription());
+   * prob++;
+   * }
+   * }
+   * 
+   * }
+   * } catch (Throwable ioe) {
+   * fm.format("Failed on %s == %s%n", path, ioe.getMessage());
+   * System.out.printf("Failed on %s%n", path);
+   * ioe.printStackTrace();
+   * 
+   * } finally {
+   * if (ncfile != null) ncfile.close();
+   * }
+   * }
+   * 
+   * private void doPdsSummary(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet,
+   * Counter NTimeIntervals,
+   * Counter processId) throws IOException {
+   * String path = mf.getPath();
+   * GribIndex index = new GribIndex();
+   * if (!index.readIndex(path, mf.getLastModified()))
+   * index.makeIndex(path, f);
+   * 
+   * for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
+   * Grib2Pds pds = gr.getPDS();
+   * templateSet.count(pds.getTemplateNumber());
+   * timeUnitSet.count(pds.getTimeUnit());
+   * processId.count(pds.getGenProcessId());
+   * 
+   * if (pds instanceof Grib2Pds.PdsInterval) {
+   * Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
+   * for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals())
+   * statTypeSet.count(ti.statProcessType);
+   * NTimeIntervals.count(pdsi.getTimeIntervals().length);
+   * }
+   * }
+   * }
+   * 
+   * ///////////////////////////////////////////////
+   * 
+   * private void doIdProblems(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+   * f.format("Look for ID Problems%n");
+   * 
+   * Counter disciplineSet = new Counter("discipline");
+   * Counter masterTable = new Counter("masterTable");
+   * Counter localTable = new Counter("localTable");
+   * Counter centerId = new Counter("centerId");
+   * Counter subcenterId = new Counter("subcenterId");
+   * Counter genProcess = new Counter("genProcess");
+   * Counter backProcess = new Counter("backProcess");
+   * 
+   * for (MFile mfile : dcm.getFiles()) {
+   * f.format(" %s%n", mfile.getPath());
+   * doIdProblems(f, mfile, useIndex,
+   * disciplineSet, masterTable, localTable, centerId, subcenterId, genProcess, backProcess);
+   * }
+   * 
+   * disciplineSet.show(f);
+   * masterTable.show(f);
+   * localTable.show(f);
+   * centerId.show(f);
+   * subcenterId.show(f);
+   * genProcess.show(f);
+   * backProcess.show(f);
+   * }
+   * 
+   * private void doIdProblems(Formatter f, MFile mf, boolean showProblems,
+   * Counter disciplineSet, Counter masterTable, Counter localTable, Counter centerId,
+   * Counter subcenterId, Counter genProcessC, Counter backProcessC) throws IOException {
+   * String path = mf.getPath();
+   * GribIndex index = new GribIndex();
+   * if (!index.readIndex(path, mf.getLastModified()))
+   * index.makeIndex(path, f);
+   * 
+   * // these should be the same for the entire file
+   * int center = -1;
+   * int subcenter = -1;
+   * int master = -1;
+   * int local = -1;
+   * int genProcess = -1;
+   * int backProcess = -1;
+   * 
+   * for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
+   * disciplineSet.count(gr.getDiscipline());
+   * masterTable.count(gr.getId().getMaster_table_version());
+   * localTable.count(gr.getId().getLocal_table_version());
+   * centerId.count(gr.getId().getCenter_id());
+   * subcenterId.count(gr.getId().getSubcenter_id());
+   * genProcessC.count(gr.getPDS().getGenProcessId());
+   * backProcessC.count(gr.getPDS().getBackProcessId());
+   * 
+   * if (!showProblems) continue;
+   * 
+   * if (gr.getDiscipline() == 255) {
+   * f.format("  bad discipline= ");
+   * gr.show(f);
+   * f.format("%n");
+   * }
+   * 
+   * int val = gr.getId().getCenter_id();
+   * if (center < 0) center = val;
+   * else if (center != val) {
+   * f.format("  center %d != %d ", center, val);
+   * gr.show(f);
+   * f.format(" %s%n", gr.getId());
+   * }
+   * 
+   * val = gr.getId().getSubcenter_id();
+   * if (subcenter < 0) subcenter = val;
+   * else if (subcenter != val) {
+   * f.format("  subcenter %d != %d ", subcenter, val);
+   * gr.show(f);
+   * f.format(" %s%n", gr.getId());
+   * }
+   * 
+   * val = gr.getId().getMaster_table_version();
+   * if (master < 0) master = val;
+   * else if (master != val) {
+   * f.format("  master %d != %d ", master, val);
+   * gr.show(f);
+   * f.format(" %s%n", gr.getId());
+   * }
+   * 
+   * val = gr.getId().getLocal_table_version();
+   * if (local < 0) local = val;
+   * else if (local != val) {
+   * f.format("  local %d != %d ", local, val);
+   * gr.show(f);
+   * f.format(" %s%n", gr.getId());
+   * }
+   * 
+   * val = gr.getPDS().getGenProcessId();
+   * if (genProcess < 0) genProcess = val;
+   * else if (genProcess != val) {
+   * f.format("  genProcess %d != %d ", genProcess, val);
+   * gr.show(f);
+   * f.format(" %s%n", gr.getId());
+   * }
+   * 
+   * val = gr.getPDS().getBackProcessId();
+   * if (backProcess < 0) backProcess = val;
+   * else if (backProcess != val) {
+   * f.format("  backProcess %d != %d ", backProcess, val);
+   * gr.show(f);
+   * f.format(" %s%n", gr.getId());
+   * }
+   * 
+   * }
+   * }
+   * 
+   * ///////////////////////////////////////////////
+   * 
+   * private void doDrsSummary(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+   * f.format("Show Unique DRS Templates%n");
+   * Counter template = new Counter("DRS template");
+   * Counter prob = new Counter("DRS template 40 signed problem");
+   * 
+   * for (MFile mfile : dcm.getFiles()) {
+   * f.format(" %s%n", mfile.getPath());
+   * doDrsSummary(f, mfile, useIndex, template, prob);
+   * }
+   * 
+   * template.show(f);
+   * prob.show(f);
+   * }
+   * 
+   * private void doDrsSummary(Formatter f, MFile mf, boolean useIndex, Counter templateC, Counter probC) throws
+   * IOException {
+   * String path = mf.getPath();
+   * GribIndex index = new GribIndex();
+   * if (!index.readIndex(path, mf.getLastModified()))
+   * index.makeIndex(path, f);
+   * RandomAccessFile raf = new RandomAccessFile(path, "r");
+   * 
+   * for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
+   * Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+   * int template = drss.getDataTemplate();
+   * templateC.count(template);
+   * 
+   * if (useIndex && template == 40) { // expensive
+   * Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
+   * if (drs40 != null) {
+   * if (drs40.hasSignedProblem())
+   * probC.count(1);
+   * else
+   * probC.count(0);
+   * }
+   * }
+   * }
+   * raf.close();
+   * }
+   * 
+   * ///////////////////////////////////////////////
+   * 
+   * private void doGdsTemplate(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+   * f.format("Show Unique GDS Templates%n");
+   * 
+   * Map<Integer, Integer> drsSet = new HashMap<Integer, Integer>();
+   * for (MFile mfile : dcm.getFiles()) {
+   * f.format(" %s%n", mfile.getPath());
+   * doGdsTemplate(f, mfile, drsSet);
+   * }
+   * 
+   * for (int template : drsSet.keySet()) {
+   * int count = drsSet.get(template);
+   * f.format("%nGDS template = %d count = %d%n", template, count);
+   * }
+   * }
+   * 
+   * private void doGdsTemplate(Formatter f, MFile mf, Map<Integer, Integer> gdsSet) throws IOException {
+   * String path = mf.getPath();
+   * GribIndex index = new GribIndex();
+   * if (!index.readIndex(path, mf.getLastModified()))
+   * index.makeIndex(path, f);
+   * 
+   * for (Grib2SectionGridDefinition gds : index.getGds()) {
+   * int template = gds.getGDSTemplateNumber();
+   * Integer count = gdsSet.get(template);
+   * if (count == null)
+   * gdsSet.put(template, 1);
+   * else
+   * gdsSet.put(template, count + 1);
+   * }
+   * }
+   */
 
 }
 

@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
@@ -58,7 +57,7 @@ public class Grib1SectionBitMap {
     int length = GribNumbers.uint3(raf);
 
     // octet 4 unused bits
-    raf.read();   // unused
+    raf.read(); // unused
 
     // octets 5-6
     int bm = raf.readShort();
@@ -67,9 +66,9 @@ public class Grib1SectionBitMap {
       return null;
     }
 
-    // not sure if length is set correctly when pre-define bitmap is used, so  wait until that to test
+    // not sure if length is set correctly when pre-define bitmap is used, so wait until that to test
     // seeing a -1, bail out
-    if (length <= 6 || length > 10e6) {   // look max  ??
+    if (length <= 6 || length > 10e6) { // look max ??
       return null;
     }
 

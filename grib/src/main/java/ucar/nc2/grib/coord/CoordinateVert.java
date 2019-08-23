@@ -15,7 +15,6 @@ import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,7 +79,7 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public int estMemorySize() {
-    return 160 + getSize() * ( 40 + Misc.referenceSize);
+    return 160 + getSize() * (40 + Misc.referenceSize);
   }
 
   @Override
@@ -111,15 +110,16 @@ public class CoordinateVert implements Coordinate {
   }
 
   public void setName(String name) {
-    if (this.name != null) throw new IllegalStateException("Cant modify");
+    if (this.name != null)
+      throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s: ", indent, getType());
-     for (VertCoordValue level : levelSorted)
-       info.format(" %s", level);
+    for (VertCoordValue level : levelSorted)
+      info.format(" %s", level);
     info.format(" (%d)%n", levelSorted.size());
   }
 
@@ -159,12 +159,15 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     CoordinateVert that = (CoordinateVert) o;
 
-    if (code != that.code) return false;
+    if (code != that.code)
+      return false;
     return levelSorted.equals(that.levelSorted);
 
   }
@@ -199,7 +202,8 @@ public class CoordinateVert implements Coordinate {
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<VertCoordValue> levelSorted = new ArrayList<>(values.size());
-      for (Object val : values) levelSorted.add( (VertCoordValue) val);
+      for (Object val : values)
+        levelSorted.add((VertCoordValue) val);
       Collections.sort(levelSorted);
       return new CoordinateVert(code, vunit, levelSorted);
     }
@@ -228,7 +232,8 @@ public class CoordinateVert implements Coordinate {
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<VertCoordValue> levelSorted = new ArrayList<>(values.size());
-      for (Object val : values) levelSorted.add( (VertCoordValue) val);
+      for (Object val : values)
+        levelSorted.add((VertCoordValue) val);
       Collections.sort(levelSorted);
       return new CoordinateVert(code, cust.getVertUnit(code), levelSorted);
     }

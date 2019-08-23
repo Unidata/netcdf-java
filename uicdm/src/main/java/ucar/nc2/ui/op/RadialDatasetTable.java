@@ -17,7 +17,6 @@ import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.image.image.ImageArrayAdapter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -41,8 +40,8 @@ import javax.swing.JTable;
 
 public class RadialDatasetTable extends JPanel {
 
-    private static final org.slf4j.Logger logger
-                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private PreferencesExt prefs;
   private RadialDatasetSweep radialDataset;
@@ -57,8 +56,9 @@ public class RadialDatasetTable extends JPanel {
 
     varTable = new BeanTable(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
     varTable.addListSelectionListener(e -> {
-        VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        if (vb != null) setVariable(vb);
+      VariableBean vb = (VariableBean) varTable.getSelectedBean();
+      if (vb != null)
+        setVariable(vb);
     });
 
     JTable jtable = varTable.getJTable();
@@ -67,9 +67,11 @@ public class RadialDatasetTable extends JPanel {
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        if (vb == null) return;
+        if (vb == null)
+          return;
         VariableSimpleIF v = radialDataset.getDataVariable(vb.getName());
-        if (v == null) return;
+        if (v == null)
+          return;
         infoTA.clear();
         infoTA.appendLine(v.toString());
         infoTA.gotoTop();
@@ -79,7 +81,8 @@ public class RadialDatasetTable extends JPanel {
     csPopup.addAction("Show Info", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        if (vb == null) return;
+        if (vb == null)
+          return;
         Formatter f = new Formatter();
         showInfo(radialDataset, vb.getName(), f);
         infoTA.clear();
@@ -117,8 +120,10 @@ public class RadialDatasetTable extends JPanel {
   public void save() {
     varTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (sweepTable != null) sweepTable.saveState(false);
+    if (split != null)
+      prefs.putInt("splitPos", split.getDividerLocation());
+    if (sweepTable != null)
+      sweepTable.saveState(false);
   }
 
   public void clear() {
@@ -161,16 +166,17 @@ public class RadialDatasetTable extends JPanel {
   private void showInfo(RadialDatasetSweep rds, String varName, Formatter f) {
     f.format("Radial Dataset %s%n", rds.getLocation());
 
-      /* radar information */
-    //String stationID = rds.getRadarID();
+    /* radar information */
+    // String stationID = rds.getRadarID();
     String stationName = rds.getRadarName();
     boolean isVolume = rds.isVolume();
     f.format("  stationName = %s%n", stationName);
     f.format("  isVolume = %s%n", isVolume);
 
-      /* radial variable */
+    /* radial variable */
     RadialDatasetSweep.RadialVariable v = (RadialDatasetSweep.RadialVariable) rds.getDataVariable(varName);
-    if (v == null) return;
+    if (v == null)
+      return;
 
     f.format("  info for variable = %s%n", varName);
     f.format("  number of sweeps = %d%n", v.getNumSweeps());
@@ -204,11 +210,10 @@ public class RadialDatasetTable extends JPanel {
 
     private String name, desc, units, dataType;
     String dims, r, t;
-    //private boolean isCoordVar, isRadial, axis;
+    // private boolean isCoordVar, isRadial, axis;
 
     // no-arg constructor
-    public VariableBean() {
-    }
+    public VariableBean() {}
 
     // create from a dataset
     public VariableBean(RadialDatasetSweep.RadialVariable v) {
@@ -223,7 +228,8 @@ public class RadialDatasetTable extends JPanel {
       StringBuilder buff = new StringBuilder();
       int[] shape = v.getShape();
       for (int j = 0; j < shape.length; j++) {
-        if (j > 0) buff.append(",");
+        if (j > 0)
+          buff.append(",");
         buff.append(shape[j]);
       }
       dims = buff.toString();
@@ -269,8 +275,7 @@ public class RadialDatasetTable extends JPanel {
     RadialDatasetSweep.Sweep sweep;
 
     // no-arg constructor
-    public SweepBean() {
-    }
+    public SweepBean() {}
 
     // create from a dataset
     public SweepBean(RadialDatasetSweep.Sweep sweep) {
@@ -330,22 +335,23 @@ public class RadialDatasetTable extends JPanel {
   private ImageViewPanel imageView = null;
 
   private void showImage(SweepBean bean) {
-    if (bean == null) return;
+    if (bean == null)
+      return;
 
     if (imageWindow == null) {
       imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("nj22/ImageData"));
       imageView = new ImageViewPanel(null);
       imageWindow.setComponent(new JScrollPane(imageView));
-      //imageWindow.setComponent( imageView);
+      // imageWindow.setComponent( imageView);
       Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
-      //System.out.println("bounds in = "+b);
+      // System.out.println("bounds in = "+b);
       imageWindow.setBounds(b);
     }
 
     float[] data;
     try {
       data = bean.sweep.readData();
-      int[] shape = new int[]{bean.getNumRadial(), bean.getNumGates()};
+      int[] shape = new int[] {bean.getNumRadial(), bean.getNumGates()};
       Array arrData = Array.factory(DataType.FLOAT, shape, data);
 
       imageView.setImage(ImageArrayAdapter.makeGrayscaleImage(arrData, null));

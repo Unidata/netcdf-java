@@ -13,7 +13,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
-
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -25,13 +24,13 @@ import java.util.Formatter;
  */
 public class Grib1Partition extends PartitionCollectionImmutable {
 
-  Grib1Partition( PartitionCollectionMutable pc) {
+  Grib1Partition(PartitionCollectionMutable pc) {
     super(pc);
   }
 
   @Override
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
-          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib1Iosp iosp = new ucar.nc2.grib.collection.Grib1Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
@@ -40,7 +39,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
 
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
-          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib1Iosp iosp = new ucar.nc2.grib.collection.Grib1Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
@@ -49,8 +48,8 @@ public class Grib1Partition extends PartitionCollectionImmutable {
   }
 
   @Override
-  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
-          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
+  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig config,
+      Formatter errlog, org.slf4j.Logger logger) {
 
     GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
     return gribCov.createCoverageCollection();
@@ -59,7 +58,8 @@ public class Grib1Partition extends PartitionCollectionImmutable {
   @Override
   public void addGlobalAttributes(AttributeContainer result) {
     String val = cust.getGeneratingProcessName(getGenProcessId());
-    if (val != null) result.addAttribute(new Attribute(GribUtils.GEN_PROCESS, val));
+    if (val != null)
+      result.addAttribute(new Attribute(GribUtils.GEN_PROCESS, val));
     result.addAttribute(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB1.getDescription()));
   }
 
@@ -71,7 +71,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
   @Override
   public String makeVariableId(GribCollectionImmutable.VariableIndex v) {
     return Grib1Collection.makeVariableId(getCenter(), getSubcenter(), v.getTableVersion(), v.getParameter(),
-            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
+        v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
 }

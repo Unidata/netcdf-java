@@ -5,13 +5,18 @@
 package ucar.ma2;
 
 /**
-   Thrown for an attempt to make a forbidden conversion on primitive data values,
-   eg boolean to double.
-  *
+ * Thrown for an attempt to make a forbidden conversion on primitive data values,
+ * eg boolean to double.
+ *
  * @author caron
-*/
+ */
 
 public final class ForbiddenConversionException extends RuntimeException {
-  public ForbiddenConversionException() { super(); }
-  public ForbiddenConversionException(String s) { super(s); }
+  public ForbiddenConversionException() {
+    super();
+  }
+
+  public ForbiddenConversionException(String s) {
+    super(s);
+  }
 }

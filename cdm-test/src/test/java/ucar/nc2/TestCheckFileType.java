@@ -16,7 +16,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsContentRoot;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,19 +27,17 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestCheckFileType extends UnitTestCommon {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   static final String PREFIX = "thredds/public/testdata/";
 
   @Parameterized.Parameters(name = "{1}")
-  static public List<Object[]>
-  getTestParameters() {
+  static public List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    result.add(new Object[]{NCheader.NC_FORMAT_NETCDF3, "testData.nc"});
-    result.add(new Object[]{NCheader.NC_FORMAT_64BIT_OFFSET, "nc_test_cdf2.nc"});
-    result.add(new Object[]{NCheader.NC_FORMAT_64BIT_DATA, "nc_test_cdf5.nc"});
-    result.add(new Object[]{NCheader.NC_FORMAT_HDF5, "group.test2.nc"});  // aka netcdf4
-    result.add(new Object[]{NCheader.NC_FORMAT_HDF4, "nc_test_hdf4.hdf4"});
+    result.add(new Object[] {NCheader.NC_FORMAT_NETCDF3, "testData.nc"});
+    result.add(new Object[] {NCheader.NC_FORMAT_64BIT_OFFSET, "nc_test_cdf2.nc"});
+    result.add(new Object[] {NCheader.NC_FORMAT_64BIT_DATA, "nc_test_cdf5.nc"});
+    result.add(new Object[] {NCheader.NC_FORMAT_HDF5, "group.test2.nc"}); // aka netcdf4
+    result.add(new Object[] {NCheader.NC_FORMAT_HDF4, "nc_test_hdf4.hdf4"});
     return result;
   }
 
@@ -72,8 +69,7 @@ public class TestCheckFileType extends UnitTestCommon {
       String foundname = NCheader.formatName(found);
       String kindname = NCheader.formatName(kind);
       System.err.println("Testing format: " + kindname);
-      Assert.assertTrue(String.format("***Fail: expected=%s found=%s%n", kindname, foundname),
-          kind == found);
+      Assert.assertTrue(String.format("***Fail: expected=%s found=%s%n", kindname, foundname), kind == found);
     }
   }
 

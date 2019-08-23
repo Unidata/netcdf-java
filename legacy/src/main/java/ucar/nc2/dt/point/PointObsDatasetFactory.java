@@ -22,59 +22,64 @@ import thredds.catalog.InvAccess;
 public class PointObsDatasetFactory {
 
   static public PointObsDataset open(InvAccess access, StringBuffer logMessages) throws java.io.IOException {
-    return open( access, null, logMessages);
+    return open(access, null, logMessages);
   }
 
-  static public PointObsDataset open(InvAccess access, ucar.nc2.util.CancelTask task, StringBuffer logMessages) throws java.io.IOException {
-    return open( access.getStandardUrlName(), task, logMessages);
+  static public PointObsDataset open(InvAccess access, ucar.nc2.util.CancelTask task, StringBuffer logMessages)
+      throws java.io.IOException {
+    return open(access.getStandardUrlName(), task, logMessages);
   }
 
-  static public PointObsDataset open( String location) throws java.io.IOException {
+  static public PointObsDataset open(String location) throws java.io.IOException {
     return open(location, null, null);
   }
 
-  static public PointObsDataset open( String location, StringBuffer log) throws java.io.IOException {
+  static public PointObsDataset open(String location, StringBuffer log) throws java.io.IOException {
     return open(location, null, log);
   }
 
-  static public PointObsDataset open( String location, ucar.nc2.util.CancelTask task, StringBuffer log) throws java.io.IOException {
+  static public PointObsDataset open(String location, ucar.nc2.util.CancelTask task, StringBuffer log)
+      throws java.io.IOException {
 
     // otherwise open as netcdf and have a look. use NetcdfDataset in order to deal with scale/enhance, etc.
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-    NetcdfDataset ncfile = NetcdfDataset.acquireDataset( durl, true, task);
+    NetcdfDataset ncfile = NetcdfDataset.acquireDataset(durl, true, task);
 
     // add record variable if there is one.
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    if (UnidataStationObsDataset.isValidFile( ncfile))
-      return new UnidataStationObsDataset( ncfile);
+    if (UnidataStationObsDataset.isValidFile(ncfile))
+      return new UnidataStationObsDataset(ncfile);
 
-    if (UnidataPointObsDataset.isValidFile( ncfile))
-      return new UnidataPointObsDataset( ncfile);
+    if (UnidataPointObsDataset.isValidFile(ncfile))
+      return new UnidataPointObsDataset(ncfile);
 
-    /* if (DapperDataset.isValidFile( ncfile))
-      return DapperDataset.factory( ncfile);
+    /*
+     * if (DapperDataset.isValidFile( ncfile))
+     * return DapperDataset.factory( ncfile);
+     * 
+     * if (SequenceObsDataset.isValidFile( ncfile))
+     * return new SequenceObsDataset( ncfile, task);
+     */
 
-    if (SequenceObsDataset.isValidFile( ncfile))
-      return new SequenceObsDataset( ncfile, task); */
+    if (UnidataStationObsDataset2.isValidFile(ncfile))
+      return new UnidataStationObsDataset2(ncfile);
 
-    if (UnidataStationObsDataset2.isValidFile( ncfile))
-      return new UnidataStationObsDataset2( ncfile);
+    if (NdbcDataset.isValidFile(ncfile))
+      return new NdbcDataset(ncfile);
 
-    if (NdbcDataset.isValidFile( ncfile))
-      return new NdbcDataset( ncfile);
-
-    if (MadisStationObsDataset.isValidFile( ncfile))
-      return new MadisStationObsDataset( ncfile);
+    if (MadisStationObsDataset.isValidFile(ncfile))
+      return new MadisStationObsDataset(ncfile);
 
     if (OldUnidataStationObsDataset.isValidFile(ncfile))
-      return new OldUnidataStationObsDataset( ncfile);
+      return new OldUnidataStationObsDataset(ncfile);
 
     // put at end to minimize false positive
-    if (OldUnidataPointObsDataset.isValidFile( ncfile))
-       return new OldUnidataPointObsDataset( ncfile);
+    if (OldUnidataPointObsDataset.isValidFile(ncfile))
+      return new OldUnidataPointObsDataset(ncfile);
 
-    if (null != log) log.append("Cant find a Point/Station adapter for ").append(location);
+    if (null != log)
+      log.append("Cant find a Point/Station adapter for ").append(location);
     ncfile.close();
     return null;
   }

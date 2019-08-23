@@ -7,12 +7,12 @@ package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
-
 import java.io.IOException;
 import java.util.zip.CRC32;
 
 /**
  * The Grid Definition section 3 for GRIB-2 files
+ * 
  * <pre>
   Octet Contents
   1–4   Length of section in octets (nn)
@@ -24,9 +24,10 @@ import java.util.zip.CRC32;
   13–14 Grid definition template number (= N) (see Code table 3.1)
   15–xx Grid definition template (see Template 3.N, where N is the grid definition template number given in octets 13–14)
   [xx+1]–nn Optional list of numbers defining number of points (see Notes 2, 3 and 4)
- </pre>
+ * </pre>
  *
- *  Effectively immutable, but caching lazy gds
+ * Effectively immutable, but caching lazy gds
+ * 
  * @author caron
  * @since 3/28/11
  */
@@ -50,8 +51,8 @@ public class Grib2SectionGridDefinition {
     // octets 1-4 (Length of GDS)
     int length = GribNumbers.int4(raf);
 
-   // octet 5
-    int section = raf.read();  // This is section 3
+    // octet 5
+    int section = raf.read(); // This is section 3
     if (section != 3)
       throw new IllegalArgumentException("Not a GRIB-2 GDS section");
 
@@ -72,7 +73,7 @@ public class Grib2SectionGridDefinition {
    */
   public Grib2SectionGridDefinition(byte[] rawData) {
     this.rawData = rawData;
-    this.templateNumber = GribNumbers.uint2( getOctet(13), getOctet(14) );
+    this.templateNumber = GribNumbers.uint2(getOctet(13), getOctet(14));
     this.startingPosition = -1;
   }
 
@@ -87,7 +88,8 @@ public class Grib2SectionGridDefinition {
 
   /**
    * Calculate the CRC of the entire byte array
-   * @return CRC  of the entire byte array
+   * 
+   * @return CRC of the entire byte array
    */
   public long calcCRC() {
     CRC32 crc32 = new CRC32();
@@ -106,8 +108,10 @@ public class Grib2SectionGridDefinition {
   /**
    * octet 6
    * source of grid definition (Code Table 3.0)
-   * "If octet 6 is not zero, octets 15–xx (15–nn if octet 11 is zero) may not be supplied. This should be documented with all
-      bits set to 1 (missing value) in the grid definition template number."
+   * "If octet 6 is not zero, octets 15–xx (15–nn if octet 11 is zero) may not be supplied. This should be documented
+   * with all
+   * bits set to 1 (missing value) in the grid definition template number."
+   * 
    * @return source
    */
   public int getSource() {
@@ -140,10 +144,11 @@ public class Grib2SectionGridDefinition {
    * @return byte[index-1] as int
    */
   private int getOctet(int index) {
-    return rawData[index-1] & 0xff;
+    return rawData[index - 1] & 0xff;
   }
 
   private Grib2Gds gds2;
+
   public synchronized Grib2Gds getGDS() {
     if (gds2 == null)
       gds2 = Grib2Gds.factory(templateNumber, rawData);

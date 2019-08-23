@@ -10,7 +10,6 @@ import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -27,7 +26,7 @@ import java.util.List;
 public class LatLonAxis2D extends CoverageCoordAxis {
 
   // can only be set once
-  private int[] shape;        // y, x
+  private int[] shape; // y, x
   private Object userObject;
 
   public LatLonAxis2D(CoverageCoordAxisBuilder builder) {
@@ -38,7 +37,8 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   @Override
   protected void setDataset(CoordSysContainer dataset) {
-    if (this.shape != null) return; // set in constructor
+    if (this.shape != null)
+      return; // set in constructor
 
     List<CoverageCoordAxis> dependentAxes = new ArrayList<>();
     int[] shape = new int[2];
@@ -73,7 +73,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
-    result.add(Range.make(AxisType.Lat.toString(), shape[0]));  // LOOK wrong, need subset Range
+    result.add(Range.make(AxisType.Lat.toString(), shape[0])); // LOOK wrong, need subset Range
     result.add(Range.make(AxisType.Lon.toString(), shape[1]));
     return result;
   }
@@ -92,7 +92,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(SubsetParams params) {  // Handled in HorzCoordSys2D
+  public Optional<CoverageCoordAxis> subset(SubsetParams params) { // Handled in HorzCoordSys2D
     throw new UnsupportedOperationException();
   }
 
@@ -134,7 +134,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     builder.values = svalues;
     builder.isSubset = true;
     builder.ncoords = nx * ny;
-    builder.shape = new int[]{ny, nx};
+    builder.shape = new int[] {ny, nx};
 
     return new LatLonAxis2D(builder);
   }

@@ -14,6 +14,7 @@ import ucar.unidata.util.Parameter;
 /**
  * implementation for CF vertical coordinate "atmosphere_ln_pressure_coordinate".
  * DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
+ * 
  * @author caron
  * @since May 6, 2008
  */
@@ -26,32 +27,38 @@ public class CFLnPressure extends AbstractTransformBuilder implements VertTransf
 
   public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
-    if (null == formula_terms) return null;
+    if (null == formula_terms)
+      return null;
 
-     // parse the formula string
+    // parse the formula string
     String[] values = parseFormula(formula_terms, "p0 lev");
-    if (values == null) return null;
+    if (values == null)
+      return null;
 
     p0 = values[0];
     lev = values[1];
 
-    VerticalCT rs = new VerticalCT("AtmSigma_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.LnPressure, this);
+    VerticalCT rs =
+        new VerticalCT("AtmSigma_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.LnPressure, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter(new Parameter("formula", "pressure(z) = p0 * exp(-lev(k))"));
 
-    if (!addParameter( rs, AtmosLnPressure.P0, ds, p0)) return null;
-    if (!addParameter( rs, AtmosLnPressure.LEV, ds, lev)) return null;
+    if (!addParameter(rs, AtmosLnPressure.P0, ds, p0))
+      return null;
+    if (!addParameter(rs, AtmosLnPressure.LEV, ds, lev))
+      return null;
 
     return rs;
   }
 
   public String toString() {
-    return "AtmLnPressure:" + "p0:"+p0 + " lev:"+lev;
+    return "AtmLnPressure:" + "p0:" + p0 + " lev:" + lev;
   }
 
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+      VerticalCT vCT) {
     return new AtmosLnPressure(ds, timeDim, vCT.getParameters());
   }
 }

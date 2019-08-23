@@ -10,7 +10,6 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.units.DateType;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
     int pos = collectionSpec.indexOf('?');
     if (pos > 0) {
-      this.dateExtractor = new DateExtractorFromName(collectionSpec.substring(pos + 1), true);  // WTF ?
+      this.dateExtractor = new DateExtractorFromName(collectionSpec.substring(pos + 1), true); // WTF ?
       collectionSpec = collectionSpec.substring(0, pos);
     }
 
@@ -77,7 +76,8 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
       crawler.crawl(catalogUrl);
     } finally {
       long took = (System.currentTimeMillis() - start);
-      if (debug) System.out.format("***Done " + catalogUrl + " took = " + took + " msecs%n");
+      if (debug)
+        System.out.format("***Done " + catalogUrl + " took = " + took + " msecs%n");
     }
 
     lastScanned = System.currentTimeMillis();
@@ -156,11 +156,14 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     if (ds.hasAccess()) {
       DataFactory tdataFactory = new DataFactory();
       Access access = tdataFactory.chooseDatasetAccess(ds.getAccess());
-      if (access == null) throw new IllegalStateException();
+      if (access == null)
+        throw new IllegalStateException();
       MFileRemote mfile = new MFileRemote(access);
-      if (mfile.getPath().endsWith(".xml")) return; // eliminate latest.xml  LOOK kludge-o-rama
+      if (mfile.getPath().endsWith(".xml"))
+        return; // eliminate latest.xml LOOK kludge-o-rama
       mfiles.add(mfile);
-      if (debug) System.out.format("add %s %n", mfile.getPath());
+      if (debug)
+        System.out.format("add %s %n", mfile.getPath());
     }
   }
 

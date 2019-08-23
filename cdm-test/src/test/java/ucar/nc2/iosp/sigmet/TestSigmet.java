@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -31,14 +30,12 @@ public class TestSigmet {
     final Collection<Object[]> filenames = new ArrayList<>();
 
     try {
-      TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/sigmet/",
-              new WildcardFileFilter("*IRIS"),
-              new TestDir.Act() {
-                public int doAct(String filename) throws IOException {
-                  filenames.add(new Object[]{filename});
-                  return 1;
-                }
-              }, true);
+      TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/sigmet/", new WildcardFileFilter("*IRIS"), new TestDir.Act() {
+        public int doAct(String filename) throws IOException {
+          filenames.add(new Object[] {filename});
+          return 1;
+        }
+      }, true);
     } catch (IOException e) {
       // JUnit *always* executes a test class's @Parameters method, even if it won't subsequently run the class's tests
       // due to an @Category exclusion. Therefore, we must not let it throw an exception, or else we'll get a build
@@ -47,7 +44,7 @@ public class TestSigmet {
       // Naturally, if we execute a test using that nonsense value, it'll fail. That's fine; we need to deal with the
       // root cause. However, it is more likely that the exception occurred because "!isCdmUnitTestDirAvailable", and
       // as a result, all NeedsCdmUnitTest tests will be excluded.
-      filenames.add(new Object[]{e.getMessage()});
+      filenames.add(new Object[] {e.getMessage()});
     }
 
     return filenames;

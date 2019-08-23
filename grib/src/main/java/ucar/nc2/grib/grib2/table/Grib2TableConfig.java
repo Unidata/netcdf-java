@@ -6,12 +6,10 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.grib.grib2.table.Grib2TablesId.Type;
-
 import com.google.common.collect.ImmutableList;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,9 +36,9 @@ class Grib2TableConfig {
     List<Grib2TableConfig> result = new ArrayList<>();
     ClassLoader cl = Grib2TableConfig.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableMapPath)) {
-      if (is == null) throw new IllegalStateException("Cant find " + tableMapPath);
-      try (BufferedReader dataIS = new BufferedReader(
-          new InputStreamReader(is, Charset.forName("UTF8")))) {
+      if (is == null)
+        throw new IllegalStateException("Cant find " + tableMapPath);
+      try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF8")))) {
         int count = 0;
         while (true) {
           String line = dataIS.readLine();
@@ -67,11 +65,10 @@ class Grib2TableConfig {
             int genProcess = Integer.parseInt(flds[fldidx++].trim());
             String typeName = StringUtil2.remove(flds[fldidx++].trim(), '"');
             String name = StringUtil2.remove(flds[fldidx++].trim(), '"');
-            String resource =
-                (flds.length > 7) ? StringUtil2.remove(flds[fldidx++].trim(), '"') : null;
+            String resource = (flds.length > 7) ? StringUtil2.remove(flds[fldidx++].trim(), '"') : null;
             Type type = Grib2TablesId.Type.valueOf(typeName);
-            Grib2TableConfig table = new Grib2TableConfig(name, center, subcenter, master, local, genProcess,
-                resource, type);
+            Grib2TableConfig table =
+                new Grib2TableConfig(name, center, subcenter, master, local, genProcess, resource, type);
             result.add(table);
 
           } catch (Exception e) {
@@ -83,7 +80,8 @@ class Grib2TableConfig {
       e.printStackTrace();
     }
 
-    standardTable = new Grib2TableConfig("WMO", 0,-1,-1,-1,-1, WmoCodeFlagTables.standard.getResourceName(), Type.wmo);
+    standardTable =
+        new Grib2TableConfig("WMO", 0, -1, -1, -1, -1, WmoCodeFlagTables.standard.getResourceName(), Type.wmo);
     result.add(standardTable);
     return ImmutableList.copyOf(result);
   }
@@ -94,7 +92,8 @@ class Grib2TableConfig {
 
     // first match wins
     for (Grib2TableConfig table : tables) {
-      if (table.id.match(id)) return table;
+      if (table.id.match(id))
+        return table;
     }
 
     // no match
@@ -114,7 +113,8 @@ class Grib2TableConfig {
   private final Grib2TablesId id;
   private String path;
 
-  private Grib2TableConfig(String name, int center, int subCenter, int masterVersion, int localVersion, int genProcessId, String path, Type type) {
+  private Grib2TableConfig(String name, int center, int subCenter, int masterVersion, int localVersion,
+      int genProcessId, String path, Type type) {
     this.name = name;
     this.path = path;
     this.type = type;
@@ -140,14 +140,19 @@ class Grib2TableConfig {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     Grib2TableConfig that = (Grib2TableConfig) o;
 
-    if (!id.equals(that.id)) return false;
-    if (!name.equals(that.name)) return false;
-    if (!Objects.equals(path, that.path)) return false;
+    if (!id.equals(that.id))
+      return false;
+    if (!name.equals(that.name))
+      return false;
+    if (!Objects.equals(path, that.path))
+      return false;
     return type == that.type;
 
   }

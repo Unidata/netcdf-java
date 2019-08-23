@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -42,7 +42,6 @@ import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -65,7 +64,7 @@ public class TestSequence {
       Sequence record = (Sequence) ncfile.findVariable("record");
 
       List<String> expectedMemberNames = Arrays.asList("tsec", "nsec", "lat", "lon", "sgnl", "mult", "fill",
-              "majorAxis", "eccent", "ellipseAngle", "chisqr");
+          "majorAxis", "eccent", "ellipseAngle", "chisqr");
       Assert.assertEquals(Sets.newHashSet(expectedMemberNames), Sets.newHashSet(record.getVariableNames()));
 
       try (StructureDataIterator iter = record.getStructureIterator()) {
@@ -92,9 +91,9 @@ public class TestSequence {
       Sequence obs = (Sequence) ncfile.findVariable("obs");
 
       List<String> expectedMemberNames = Arrays.asList("WMO_block_number", "WMO_station_number", "Type_of_station",
-              "Year", "Month", "Day", "Hour", "Minute", "Latitude_coarse_accuracy", "Longitude_coarse_accuracy",
-              "Height_of_station", "Short_station_or_site_name", "Type_of_measuring_equipment_used",
-              "Time_significance", "Time_period_or_displacement", "seq1");
+          "Year", "Month", "Day", "Hour", "Minute", "Latitude_coarse_accuracy", "Longitude_coarse_accuracy",
+          "Height_of_station", "Short_station_or_site_name", "Type_of_measuring_equipment_used", "Time_significance",
+          "Time_period_or_displacement", "seq1");
       Assert.assertEquals(Sets.newHashSet(expectedMemberNames), Sets.newHashSet(obs.getVariableNames()));
 
       ArraySequence obsArray = (ArraySequence) obs.read();
@@ -106,11 +105,10 @@ public class TestSequence {
 
           // All seq1 records will have the same members, so just examine the first.
           if (obsCount == 0) {
-            List<String> expectedNestedMemberNames = Arrays.asList(
-                "Height_above_station", "Virtual_temperature", "Wind_profiler_quality_control_test_results"
-            );
+            List<String> expectedNestedMemberNames = Arrays.asList("Height_above_station", "Virtual_temperature",
+                "Wind_profiler_quality_control_test_results");
             Assert.assertEquals(Sets.newHashSet(expectedNestedMemberNames),
-                    Sets.newHashSet(nestedSequence.getStructureMemberNames()));
+                Sets.newHashSet(nestedSequence.getStructureMemberNames()));
           }
 
           int seq1Count = 0;
@@ -129,12 +127,12 @@ public class TestSequence {
           }
 
           if (obsCount == 0) {
-            Assert.assertEquals(11, seq1Count);  // Assert that obs[0].seq1 has expected number of records.
+            Assert.assertEquals(11, seq1Count); // Assert that obs[0].seq1 has expected number of records.
           }
         }
       }
 
-      Assert.assertEquals(225, obsCount);  // Assert that obs has expected number of records.
+      Assert.assertEquals(225, obsCount); // Assert that obs has expected number of records.
     }
   }
 
@@ -150,18 +148,19 @@ public class TestSequence {
     // "ncFile.findVariable("obs.struct1.u-component").read()", but we're trying to demonstrate a bug in
     // ArrayStructureMA.factoryMA() that only occurs when we iterate over a Sequence with unknown length ("obs").
     try (NetcdfFile ncFile = NetcdfDataset.openDataset(dataset.getAbsolutePath())) {
-      /* The structure of the file (with irrelevant bits removed) is:
-        netcdf {
-          variables:
-            Sequence {
-              Structure {
-                float u-component;
-              } struct1(14);
-            } obs(*);
-        }
+      /*
+       * The structure of the file (with irrelevant bits removed) is:
+       * netcdf {
+       * variables:
+       * Sequence {
+       * Structure {
+       * float u-component;
+       * } struct1(14);
+       * } obs(*);
+       * }
        */
       Structure obs = (Structure) ncFile.findVariable("obs");
-      ArrayStructure obsArray = (ArrayStructure) obs.read();  // Before the bug fix, this threw a NullPointerException.
+      ArrayStructure obsArray = (ArrayStructure) obs.read(); // Before the bug fix, this threw a NullPointerException.
 
       try (StructureDataIterator obsIter = obsArray.getStructureDataIterator()) {
         Assert.assertTrue(obsIter.hasNext());
@@ -178,9 +177,8 @@ public class TestSequence {
       }
     }
 
-    Array expectedUcomponentValues = Array.makeFromJavaArray(new float[] {
-            -1.1f, -1.0f, -0.7f, -0.8f, -0.5f, -0.2f, 0.0f, 0.3f, 0.5f, 1.3000001f, 1.6f, 1.7f, 2.2f, 2.8f
-    });
+    Array expectedUcomponentValues = Array.makeFromJavaArray(
+        new float[] {-1.1f, -1.0f, -0.7f, -0.8f, -0.5f, -0.2f, 0.0f, 0.3f, 0.5f, 1.3000001f, 1.6f, 1.7f, 2.2f, 2.8f});
     Assert.assertTrue(MAMath.nearlyEquals(expectedUcomponentValues, actualUcomponentValues));
   }
 }

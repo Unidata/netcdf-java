@@ -6,6 +6,7 @@ package ucar.nc2.iosp.bufr.tables;
 
 /**
  * BUFR Table C - Data operators
+ * 
  * @author caron
  * @since Oct 25, 2008
  */
@@ -31,7 +32,8 @@ public class TableC {
   }
 
   static public String getOperatorName(int index) {
-    if ((index < 0 ) || (index >= tableCdesc.length)) return "unknown";
+    if ((index < 0) || (index >= tableCdesc.length))
+      return "unknown";
     return (tableCdesc[index] == null) ? "unknown" : tableCdesc[index];
   }
 

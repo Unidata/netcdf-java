@@ -5,7 +5,6 @@
 package ucar.nc2.dataset;
 
 import ucar.unidata.util.Parameter;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +28,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
   /**
    * Create a Coordinate Transform.
    *
-   * @param name          name of transform, must be unique within the NcML.
-   * @param authority     naming authority
+   * @param name name of transform, must be unique within the NcML.
+   * @param authority naming authority
    * @param transformType type of transform.
    */
   public CoordinateTransform(String name, String authority, TransformType transformType) {
@@ -42,6 +41,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
   /**
    * add a parameter
+   * 
    * @param param add this Parameter
    */
   public void addParameter(Parameter param) {
@@ -50,6 +50,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
   /**
    * get the name
+   * 
    * @return the name
    */
   public String getName() {
@@ -58,6 +59,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
   /**
    * get the naming authority
+   * 
    * @return the naming authority
    */
   public String getAuthority() {
@@ -66,6 +68,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
   /**
    * get the transform type
+   * 
    * @return the transform type
    */
   public TransformType getTransformType() {
@@ -74,6 +77,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
   /**
    * get list of ProjectionParameter objects.
+   * 
    * @return list of ProjectionParameter objects.
    */
   public List<Parameter> getParameters() {
@@ -98,22 +102,29 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
    * Instances which have same name, authority and parameters are equal.
    */
   public boolean equals(Object oo) {
-    if (this == oo) return true;
-    if (!(oo instanceof CoordinateTransform)) return false;
+    if (this == oo)
+      return true;
+    if (!(oo instanceof CoordinateTransform))
+      return false;
 
     CoordinateTransform o = (CoordinateTransform) oo;
-    if (!getName().equals(o.getName())) return false;
-    if (!getAuthority().equals(o.getAuthority())) return false;
-    if (!(getTransformType() == o.getTransformType())) return false;
+    if (!getName().equals(o.getName()))
+      return false;
+    if (!getAuthority().equals(o.getAuthority()))
+      return false;
+    if (!(getTransformType() == o.getTransformType()))
+      return false;
 
     List<Parameter> oparams = o.getParameters();
-    if (params.size() != oparams.size()) return false;
+    if (params.size() != oparams.size())
+      return false;
 
     for (int i = 0; i < params.size(); i++) {
-      Parameter att =  params.get(i);
+      Parameter att = params.get(i);
       Parameter oatt = oparams.get(i);
-      if (!att.getName().equals(oatt.getName())) return false;
-      //if (!att.getValue().equals(oatt.getValue())) return false;
+      if (!att.getName().equals(oatt.getName()))
+        return false;
+      // if (!att.getValue().equals(oatt.getValue())) return false;
     }
     return true;
   }
@@ -129,7 +140,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       result = 37 * result + getTransformType().hashCode();
       for (Parameter att : params) {
         result = 37 * result + att.getName().hashCode();
-        //result = 37*result + att.getValue().hashCode();
+        // result = 37*result + att.getValue().hashCode();
       }
       hashCode = result;
     }

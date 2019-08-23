@@ -7,7 +7,6 @@ package ucar.nc2.ft.point;
 
 import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.StationImpl;
-
 import java.io.IOException;
 
 /**
@@ -19,12 +18,13 @@ import java.io.IOException;
 public class StationFeatureImpl extends StationImpl implements StationFeature {
   private StructureData sdata;
 
-  public StationFeatureImpl( String name, String desc, String wmoId, double lat, double lon, double alt, int nobs, StructureData sdata) {
+  public StationFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, int nobs,
+      StructureData sdata) {
     super(name, desc, wmoId, lat, lon, alt, nobs);
     this.sdata = sdata;
   }
 
-  public StationFeatureImpl( StationFeature from) throws IOException {
+  public StationFeatureImpl(StationFeature from) throws IOException {
     super(from, 0);
     this.sdata = from.getFeatureData();
   }

@@ -8,10 +8,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.units.*;
-
 import java.lang.invoke.MethodHandles;
 import java.util.Date;
-
 import static org.junit.Assert.assertEquals;
 
 public class TestDate {
@@ -64,12 +62,17 @@ public class TestDate {
    * Test the precision of udunits date string conversion. Example from email
    * dated 2008-05-13 from Rich Signell to the netcdf-java email list:
    * <p/>
-   * <p>Subject: Re: [netcdf-java] Data precision while aggregating data</p>
+   * <p>
+   * Subject: Re: [netcdf-java] Data precision while aggregating data
+   * </p>
    * <p/>
-   * <p>http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2008-May/000631.html
+   * <p>
+   * http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2008-May/000631.html
    * <p/>
-   * <p>[snip]
+   * <p>
+   * [snip]
    * <p/>
+   * 
    * <pre>
    * &lt;variable name="time" shape="time" type="double"&gt;
    *   &lt;attribute name="units" value="days since 1858-11-17 00:00:00 UTC"/&gt;
@@ -78,20 +81,26 @@ public class TestDate {
    * &lt;/variable&gt;
    * </pre>
    * <p/>
-   * <p>As Sachin mentioned, the start time for this file is  "05-Dec-1989
+   * <p>
+   * As Sachin mentioned, the start time for this file is "05-Dec-1989
    * 19:00:00", and as proof that we have sufficient precision, when we
    * simply load the time vector in NetCDF-java and do the double precision
    * math in Matlab, we get the right start time:
    * <p/>
-   * <p>datestr(datenum([1858 11 17 0 0 0]) + 47865.791666666511)
+   * <p>
+   * datestr(datenum([1858 11 17 0 0 0]) + 47865.791666666511)
    * <p/>
-   * <p>ans =  05-Dec-1989 19:00:00
+   * <p>
+   * ans = 05-Dec-1989 19:00:00
    * <p/>
-   * <p>but when we use the NetCDF-Java time routines to convert to Gregorian, we get
+   * <p>
+   * but when we use the NetCDF-Java time routines to convert to Gregorian, we get
    * <p/>
-   * <p>05-Dec-1989 18:59:59 GMT
+   * <p>
+   * 05-Dec-1989 18:59:59 GMT
    * <p/>
-   * <p>[snip]
+   * <p>
+   * [snip]
    */
   // @Test
   public void testStandardDatePrecision() {
@@ -100,7 +109,7 @@ public class TestDate {
 
     String expectedValue = "1989-12-05T19:00:00Z";
     assertEquals("Calculated date string [" + isoDateTimeString + "] not as expected [" + expectedValue + "].",
-            expectedValue, isoDateTimeString);
+        expectedValue, isoDateTimeString);
   }
 
   @Test

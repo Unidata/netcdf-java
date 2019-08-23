@@ -7,7 +7,6 @@ package thredds.inventory;
 
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -33,7 +32,7 @@ public class TimedCollection {
    * Manage collections of files that we can assign date ranges to
    *
    * @param manager the collection manager
-   * @param errlog         put error messsages here
+   * @param errlog put error messsages here
    * @see CollectionSpecParser
    * @throws java.io.IOException on read error
    */
@@ -48,8 +47,8 @@ public class TimedCollection {
 
     if (debug) {
       System.out.printf("Datasets in collection=%s%n", manager.getCollectionName());
-      for (TimedCollection.Dataset d: datasets) {
-        System.out.printf(" %s %n",d);
+      for (TimedCollection.Dataset d : datasets) {
+        System.out.printf(" %s %n", d);
       }
       System.out.printf("%n");
     }
@@ -59,7 +58,7 @@ public class TimedCollection {
   public CalendarDateRange update() throws IOException {
     datasets = new ArrayList<>();
     manager.scan(false);
-    for (MFile f :  manager.getFilesSorted())
+    for (MFile f : manager.getFilesSorted())
       datasets.add(new Dataset(f));
 
     if (manager.hasDateExtractor()) {
@@ -72,15 +71,15 @@ public class TimedCollection {
       } else if (datasets.size() > 1) {
 
         for (int i = 0; i < datasets.size() - 1; i++) {
-          Dataset d1 =  datasets.get(i);
-          Dataset d2 =  datasets.get(i + 1);
+          Dataset d1 = datasets.get(i);
+          Dataset d2 = datasets.get(i + 1);
           d1.setDateRange(CalendarDateRange.of(d1.start, d2.start));
           if (i == datasets.size() - 2) // last one
             d2.setDateRange(new CalendarDateRange(d2.start, d1.getDateRange().getDurationInSecs()));
         }
 
-        Dataset first =  datasets.get(0);
-        Dataset last =  datasets.get(datasets.size() - 1);
+        Dataset first = datasets.get(0);
+        Dataset last = datasets.get(datasets.size() - 1);
         dateRange = CalendarDateRange.of(first.getDateRange().getStart(), last.getDateRange().getEnd());
       }
     }
@@ -110,11 +109,12 @@ public class TimedCollection {
   }
 
   public CalendarDateRange getDateRange() {
-    if (dateRange == null) try {
-      update();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    if (dateRange == null)
+      try {
+        update();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     return dateRange;
   }
 
@@ -155,10 +155,7 @@ public class TimedCollection {
 
     @Override
     public String toString() {
-      return "Dataset{" +
-              "location='" + location + '\'' +
-              ", dateRange=" + dateRange +
-              '}';
+      return "Dataset{" + "location='" + location + '\'' + ", dateRange=" + dateRange + '}';
     }
   }
 }

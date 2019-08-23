@@ -18,7 +18,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -36,11 +35,12 @@ public class TestReadingGempak {
     File dir = new File(dirName);
     System.out.printf("%nIn directory %s%n", dir.getPath());
     for (File child : dir.listFiles()) {
-      if (child.isDirectory()) continue;
+      if (child.isDirectory())
+        continue;
       System.out.printf("  Open File %s ", child.getPath());
       long start = System.currentTimeMillis();
 
-      try ( NetcdfFile ncfile = NetcdfDataset.openFile(child.getPath(), null)) {
+      try (NetcdfFile ncfile = NetcdfDataset.openFile(child.getPath(), null)) {
         String ft = ncfile.findAttValueIgnoreCase(null, "featureType", "none");
         String iosp = ncfile.getIosp().getFileTypeId();
         System.out.printf(" iosp=%s ft=%s took =%d ms%n", iosp, ft, (System.currentTimeMillis() - start));
@@ -52,7 +52,8 @@ public class TestReadingGempak {
     }
 
     for (File child : dir.listFiles()) {
-      if (child.isDirectory()) doAll(child.getPath());
+      if (child.isDirectory())
+        doAll(child.getPath());
     }
 
   }

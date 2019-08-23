@@ -23,12 +23,16 @@ public class ArrayByte extends Array {
     return ArrayByte.factory(index, isUnsigned, null);
   }
 
-  /* create new ArrayByte with given Index and backing store.
+  /*
+   * create new ArrayByte with given Index and backing store.
+   * 
    * @param index use this Index
+   * 
    * @param storage use this storage. if null, allocate.
+   * 
    * @return new ArrayByte.D<rank> or ArrayByte object.
    */
-  static ArrayByte factory( Index index, boolean isUnsigned, byte [] storage) {
+  static ArrayByte factory(Index index, boolean isUnsigned, byte[] storage) {
     if (index instanceof Index0D) {
       return new ArrayByte.D0(index, isUnsigned, storage);
     } else if (index instanceof Index1D) {
@@ -68,14 +72,16 @@ public class ArrayByte extends Array {
    * Create a new Array using the given IndexArray and backing store.
    * used for sections. Trusted package private.
    *
-   * @param ima  use this IndexArray as the index
+   * @param ima use this IndexArray as the index
    * @param data use this as the backing store
    */
   ArrayByte(Index ima, boolean isUnsigned, byte[] data) {
     super(isUnsigned ? DataType.UBYTE : DataType.BYTE, ima);
-    /* replace by something better
-    if (ima.getSize() != data.length)
-      throw new IllegalArgumentException("bad data length");  */
+    /*
+     * replace by something better
+     * if (ima.getSize() != data.length)
+     * throw new IllegalArgumentException("bad data length");
+     */
     if (data != null)
       storage = data;
     else
@@ -93,7 +99,8 @@ public class ArrayByte extends Array {
   // copy from javaArray to storage using the iterator: used by factory( Object);
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     byte[] ja = (byte[]) javaArray;
-    for (byte aJa : ja) iter.setByteNext(aJa);
+    for (byte aJa : ja)
+      iter.setByteNext(aJa);
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
@@ -104,7 +111,9 @@ public class ArrayByte extends Array {
   }
 
   @Override
-  public ByteBuffer getDataAsByteBuffer() {return getDataAsByteBuffer(null);}
+  public ByteBuffer getDataAsByteBuffer() {
+    return getDataAsByteBuffer(null);
+  }
 
   public ByteBuffer getDataAsByteBuffer(ByteOrder order) {// order irrelevant here
     return ByteBuffer.wrap((byte[]) get1DJavaArray(getDataType()));
@@ -130,7 +139,7 @@ public class ArrayByte extends Array {
   /**
    * set the value at the sepcified index.
    *
-   * @param i     index
+   * @param i index
    * @param value set to this value
    */
   public void set(Index i, byte value) {
@@ -307,7 +316,7 @@ public class ArrayByte extends Array {
     private Index0D ix;
 
     public D0(boolean isUnsigned) {
-      super(new int[]{}, isUnsigned);
+      super(new int[] {}, isUnsigned);
       ix = (Index0D) indexCalc;
     }
 
@@ -332,7 +341,7 @@ public class ArrayByte extends Array {
     private Index1D ix;
 
     public D1(int len0, boolean isUnsigned) {
-      super(new int[]{len0}, isUnsigned);
+      super(new int[] {len0}, isUnsigned);
       ix = (Index1D) indexCalc;
     }
 
@@ -357,7 +366,7 @@ public class ArrayByte extends Array {
     private Index2D ix;
 
     public D2(int len0, int len1, boolean isUnsigned) {
-      super(new int[]{len0, len1}, isUnsigned);
+      super(new int[] {len0, len1}, isUnsigned);
       ix = (Index2D) indexCalc;
     }
 
@@ -382,7 +391,7 @@ public class ArrayByte extends Array {
     private Index3D ix;
 
     public D3(int len0, int len1, int len2, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2}, isUnsigned);
+      super(new int[] {len0, len1, len2}, isUnsigned);
       ix = (Index3D) indexCalc;
     }
 
@@ -407,7 +416,7 @@ public class ArrayByte extends Array {
     private Index4D ix;
 
     public D4(int len0, int len1, int len2, int len3, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2, len3}, isUnsigned);
+      super(new int[] {len0, len1, len2, len3}, isUnsigned);
       ix = (Index4D) indexCalc;
     }
 
@@ -432,7 +441,7 @@ public class ArrayByte extends Array {
     private Index5D ix;
 
     public D5(int len0, int len1, int len2, int len3, int len4, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2, len3, len4}, isUnsigned);
+      super(new int[] {len0, len1, len2, len3, len4}, isUnsigned);
       ix = (Index5D) indexCalc;
     }
 
@@ -457,7 +466,7 @@ public class ArrayByte extends Array {
     private Index6D ix;
 
     public D6(int len0, int len1, int len2, int len3, int len4, int len5, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2, len3, len4, len5}, isUnsigned);
+      super(new int[] {len0, len1, len2, len3, len4, len5}, isUnsigned);
       ix = (Index6D) indexCalc;
     }
 
@@ -482,7 +491,7 @@ public class ArrayByte extends Array {
     protected Index7D ix;
 
     public D7(int len0, int len1, int len2, int len3, int len4, int len5, int len6, boolean isUnsigned) {
-      super(new int[]{len0, len1, len2, len3, len4, len5, len6}, isUnsigned);
+      super(new int[] {len0, len1, len2, len3, len4, len5, len6}, isUnsigned);
       ix = (Index7D) indexCalc;
     }
 

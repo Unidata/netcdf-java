@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -31,25 +30,36 @@ public class TestReadFormats {
   static int countFail = 0;
   static int countTotal = 0;
   static boolean verbose = true;
-  
+
   List<String> failFiles = new ArrayList<String>();
 
   class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
       countTotal++;
       String name = pathname.getName();
-      if (name.contains(".gbx")) return false;
-      if (name.contains(".ncx")) return false;
-      if (name.endsWith(".java")) return false;
-      if (name.endsWith(".jpg")) return false;
-      if (name.endsWith(".tiff")) return false;
-      if (name.endsWith(".tif")) return false;
-      if (name.endsWith(".TIF")) return false;
-      if (name.endsWith(".txt")) return false;
-      if (name.endsWith(".xml")) return false;
+      if (name.contains(".gbx"))
+        return false;
+      if (name.contains(".ncx"))
+        return false;
+      if (name.endsWith(".java"))
+        return false;
+      if (name.endsWith(".jpg"))
+        return false;
+      if (name.endsWith(".tiff"))
+        return false;
+      if (name.endsWith(".tif"))
+        return false;
+      if (name.endsWith(".TIF"))
+        return false;
+      if (name.endsWith(".txt"))
+        return false;
+      if (name.endsWith(".xml"))
+        return false;
 
-      if (!name.endsWith(".ctl") && pathname.getPath().contains("grads")) return false;
-      if (name.endsWith(".HDR") && pathname.getPath().contains("gtopo")) return false;
+      if (!name.endsWith(".ctl") && pathname.getPath().contains("grads"))
+        return false;
+      if (name.endsWith(".HDR") && pathname.getPath().contains("gtopo"))
+        return false;
       return true;
     }
   }
@@ -59,8 +69,9 @@ public class TestReadFormats {
     openAllInDir(TestDir.cdmUnitTestDir + "/formats", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
-    for (String f : failFiles) System.out.printf("  %s%n", f);
-    assert countFail == 0 : "Failed = "+countFail;
+    for (String f : failFiles)
+      System.out.printf("  %s%n", f);
+    assert countFail == 0 : "Failed = " + countFail;
   }
 
   @Test
@@ -68,8 +79,9 @@ public class TestReadFormats {
     openAllInDir(TestDir.cdmUnitTestDir + "/formats/grib1", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
-    for (String f : failFiles) System.out.printf("  %s%n", f);
-    assert countFail == 0 : "Failed = "+countFail;
+    for (String f : failFiles)
+      System.out.printf("  %s%n", f);
+    assert countFail == 0 : "Failed = " + countFail;
   }
 
   // these are fairly complete hdf4 files from nsidc
@@ -81,30 +93,33 @@ public class TestReadFormats {
 
   @Test
   public void readCinrad() throws IOException {
-    doOne(TestDir.cdmUnitTestDir+"formats/cinrad/CHGZ_2006071512.0300");
+    doOne(TestDir.cdmUnitTestDir + "formats/cinrad/CHGZ_2006071512.0300");
   }
 
   private void doOne(String name) throws IOException {
     NetcdfFile ncfile = null;
     try {
-       ncfile = NetcdfDataset.openFile(name, null);
-       if (verbose) System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
-       countGood++;
-     } catch (Throwable t) {
-       System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());
-       t.printStackTrace();
-     } finally {
-       if (ncfile != null) ncfile.close();
-     }
+      ncfile = NetcdfDataset.openFile(name, null);
+      if (verbose)
+        System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
+      countGood++;
+    } catch (Throwable t) {
+      System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());
+      t.printStackTrace();
+    } finally {
+      if (ncfile != null)
+        ncfile.close();
+    }
 
   }
 
   public void openAllInDir(String dirName, FileFilter ff) throws IOException {
-    if (verbose) System.out.println("---------------Reading directory "+dirName);
-    File allDir = new File( dirName);
+    if (verbose)
+      System.out.println("---------------Reading directory " + dirName);
+    File allDir = new File(dirName);
     File[] allFiles = allDir.listFiles();
     if (null == allFiles) {
-      System.out.println("---------------INVALID "+dirName);
+      System.out.println("---------------INVALID " + dirName);
       return;
     }
     List<File> flist = Arrays.asList(allFiles);
@@ -118,15 +133,17 @@ public class TestReadFormats {
         NetcdfFile ncfile = null;
         try {
           ncfile = NetcdfDataset.openFile(name, null);
-          if (verbose) System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
+          if (verbose)
+            System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
           countGood++;
         } catch (Throwable t) {
           System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());
           t.printStackTrace();
-          failFiles.add(name) ;
+          failFiles.add(name);
           countFail++;
         } finally {
-          if (ncfile != null) ncfile.close();
+          if (ncfile != null)
+            ncfile.close();
         }
       }
     }

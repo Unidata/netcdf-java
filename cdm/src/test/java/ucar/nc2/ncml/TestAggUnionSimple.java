@@ -5,7 +5,6 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -13,7 +12,6 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.util.test.Assert2;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -22,96 +20,96 @@ import java.lang.invoke.MethodHandles;
  */
 
 /*
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-	<attribute name="title" type="string" value="Union cldc and lflx"/>
-  <aggregation type="union">
-    <netcdf location="file:src/test/data/ncml/nc/cldc.mean.nc"/>
-    <netcdf location="file:src/test/data/ncml/nc/lflx.mean.nc"/>
-  </aggregation>
-</netcdf>
-
-netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/cldc.mean.nc {
- dimensions:
-   time = UNLIMITED;   // (456 currently)
-   lat = 21;
-   lon = 360;
- variables:
-   float lat(lat=21);
-     :long_name = "Latitude";
-     :units = "degrees_north";
-     :actual_range = 10.0f, -10.0f; // float
-   float lon(lon=360);
-     :long_name = "Longitude";
-     :units = "degrees_east";
-     :actual_range = 0.5f, 359.5f; // float
-   double time(time=456);
-     :units = "days since 1-1-1 00:00:0.0";
-     :long_name = "Time";
-     :delta_t = "0000-01-00 00:00:00";
-     :avg_period = "0000-01-00 00:00:00";
-     :actual_range = 715511.0, 729360.0; // double
-   short cldc(time=456, lat=21, lon=360);
-     :valid_range = 0.0f, 8.0f; // float
-     :actual_range = 0.0f, 8.0f; // float
-     :units = "okta";
-     :precision = 1s; // short
-     :missing_value = 32766s; // short
-     :_FillValue = 32766s; // short
-     :long_name = "Cloudiness Monthly Mean at Surface";
-     :dataset = "COADS 1-degree Equatorial Enhanced\nAI";
-     :var_desc = "Cloudiness\nC";
-     :level_desc = "Surface\n0";
-     :statistic = "Mean\nM";
-     :parent_stat = "Individual Obs\nI";
-     :add_offset = 3276.5f; // float
-     :scale_factor = 0.1f; // float
-
- :title = "COADS 1-degree Equatorial Enhanced";
- :history = "";
- :Conventions = "COARDS";
-}
-
-netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/lflx.mean.nc {
- dimensions:
-   time = UNLIMITED;   // (456 currently)
-   lat = 21;
-   lon = 360;
- variables:
-   float lat(lat=21);
-     :long_name = "Latitude";
-     :units = "degrees_north";
-     :actual_range = 10.0f, -10.0f; // float
-   float lon(lon=360);
-     :long_name = "Longitude";
-     :units = "degrees_east";
-     :actual_range = 0.5f, 359.5f; // float
-   double time(time=456);
-     :units = "days since 1-1-1 00:00:0.0";
-     :long_name = "Time";
-     :delta_t = "0000-01-00 00:00:00";
-     :avg_period = "0000-01-00 00:00:00";
-     :actual_range = 715511.0, 729360.0; // double
-   short lflx(time=456, lat=21, lon=360);
-     :valid_range = -1000.0f, 1000.0f; // float
-     :actual_range = -88.700005f, 236.1f; // float
-     :units = "grams/kg m/s";
-     :precision = 1s; // short
-     :missing_value = 32766s; // short
-     :_FillValue = 32766s; // short
-     :long_name = "Latent Heat Parameter Monthly Mean at Surface";
-     :dataset = "COADS 1-degree Equatorial Enhanced\nAI";
-     :var_desc = "Latent Heat Parameter\nG";
-     :level_desc = "Surface\n0";
-     :statistic = "Mean\nM";
-     :parent_stat = "Individual Obs\nI";
-     :add_offset = 2276.5f; // float
-     :scale_factor = 0.1f; // float
-
- :title = "COADS 1-degree Equatorial Enhanced";
- :history = "";
- :Conventions = "COARDS";
-}
-*/
+ * <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+ * <attribute name="title" type="string" value="Union cldc and lflx"/>
+ * <aggregation type="union">
+ * <netcdf location="file:src/test/data/ncml/nc/cldc.mean.nc"/>
+ * <netcdf location="file:src/test/data/ncml/nc/lflx.mean.nc"/>
+ * </aggregation>
+ * </netcdf>
+ * 
+ * netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/cldc.mean.nc {
+ * dimensions:
+ * time = UNLIMITED; // (456 currently)
+ * lat = 21;
+ * lon = 360;
+ * variables:
+ * float lat(lat=21);
+ * :long_name = "Latitude";
+ * :units = "degrees_north";
+ * :actual_range = 10.0f, -10.0f; // float
+ * float lon(lon=360);
+ * :long_name = "Longitude";
+ * :units = "degrees_east";
+ * :actual_range = 0.5f, 359.5f; // float
+ * double time(time=456);
+ * :units = "days since 1-1-1 00:00:0.0";
+ * :long_name = "Time";
+ * :delta_t = "0000-01-00 00:00:00";
+ * :avg_period = "0000-01-00 00:00:00";
+ * :actual_range = 715511.0, 729360.0; // double
+ * short cldc(time=456, lat=21, lon=360);
+ * :valid_range = 0.0f, 8.0f; // float
+ * :actual_range = 0.0f, 8.0f; // float
+ * :units = "okta";
+ * :precision = 1s; // short
+ * :missing_value = 32766s; // short
+ * :_FillValue = 32766s; // short
+ * :long_name = "Cloudiness Monthly Mean at Surface";
+ * :dataset = "COADS 1-degree Equatorial Enhanced\nAI";
+ * :var_desc = "Cloudiness\nC";
+ * :level_desc = "Surface\n0";
+ * :statistic = "Mean\nM";
+ * :parent_stat = "Individual Obs\nI";
+ * :add_offset = 3276.5f; // float
+ * :scale_factor = 0.1f; // float
+ * 
+ * :title = "COADS 1-degree Equatorial Enhanced";
+ * :history = "";
+ * :Conventions = "COARDS";
+ * }
+ * 
+ * netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/lflx.mean.nc {
+ * dimensions:
+ * time = UNLIMITED; // (456 currently)
+ * lat = 21;
+ * lon = 360;
+ * variables:
+ * float lat(lat=21);
+ * :long_name = "Latitude";
+ * :units = "degrees_north";
+ * :actual_range = 10.0f, -10.0f; // float
+ * float lon(lon=360);
+ * :long_name = "Longitude";
+ * :units = "degrees_east";
+ * :actual_range = 0.5f, 359.5f; // float
+ * double time(time=456);
+ * :units = "days since 1-1-1 00:00:0.0";
+ * :long_name = "Time";
+ * :delta_t = "0000-01-00 00:00:00";
+ * :avg_period = "0000-01-00 00:00:00";
+ * :actual_range = 715511.0, 729360.0; // double
+ * short lflx(time=456, lat=21, lon=360);
+ * :valid_range = -1000.0f, 1000.0f; // float
+ * :actual_range = -88.700005f, 236.1f; // float
+ * :units = "grams/kg m/s";
+ * :precision = 1s; // short
+ * :missing_value = 32766s; // short
+ * :_FillValue = 32766s; // short
+ * :long_name = "Latent Heat Parameter Monthly Mean at Surface";
+ * :dataset = "COADS 1-degree Equatorial Enhanced\nAI";
+ * :var_desc = "Latent Heat Parameter\nG";
+ * :level_desc = "Surface\n0";
+ * :statistic = "Mean\nM";
+ * :parent_stat = "Individual Obs\nI";
+ * :add_offset = 2276.5f; // float
+ * :scale_factor = 0.1f; // float
+ * 
+ * :title = "COADS 1-degree Equatorial Enhanced";
+ * :history = "";
+ * :Conventions = "COARDS";
+ * }
+ */
 
 public class TestAggUnionSimple extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -123,13 +121,15 @@ public class TestAggUnionSimple extends TestCase {
   static NetcdfFile ncfile = null;
 
   public void setUp() throws IOException {
-    if (ncfile != null) return;
+    if (ncfile != null)
+      return;
     String filename = "file:./" + TestNcML.topDir + "aggUnionSimple.xml";
     ncfile = NetcdfDataset.openDataset(filename, false, null);
   }
 
   public void tearDown() throws IOException {
-    if (ncfile != null) ncfile.close();
+    if (ncfile != null)
+      ncfile.close();
     ncfile = null;
   }
 
@@ -200,13 +200,13 @@ public class TestAggUnionSimple extends TestCase {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = lat.read();
     assert data.getRank() == 1;
     assert data.getSize() == 21;
     assert data.getShape()[0] == 21;
     assert data.getElementType() == float.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 10.0);
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 9.0);
@@ -239,7 +239,7 @@ public class TestAggUnionSimple extends TestCase {
     assert att.getStringValue().equals("grams/kg m/s");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  
+
     Array data = v.read();
     assert data.getRank() == 3;
     assert data.getSize() == 360 * 21 * 456;
@@ -247,7 +247,7 @@ public class TestAggUnionSimple extends TestCase {
     assert data.getShape()[1] == 21;
     assert data.getShape()[2] == 360;
     assert data.getElementType() == short.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     assert 32766 == dataI.getShortNext();
     assert 32766 == dataI.getShortNext();
@@ -259,14 +259,14 @@ public class TestAggUnionSimple extends TestCase {
     Variable v = ncfile.findVariable("lflx");
     int[] origin = {0, 6, 5};
     int[] shape = {1, 2, 3};
-  
+
     Array data = v.read(origin, shape).reduce();
     assert data.getRank() == 2;
     assert data.getSize() == 6;
     assert data.getShape()[0] == 2;
     assert data.getShape()[1] == 3;
     assert data.getElementType() == short.class;
-  
+
     IndexIterator dataI = data.getIndexIterator();
     assert dataI.getShortNext() == -22711;
     assert dataI.getShortNext() == -22239;
@@ -276,11 +276,12 @@ public class TestAggUnionSimple extends TestCase {
     assert dataI.getShortNext() == 32766;
   }
 
-  /* test that scanning gives the exact same result
-  <aggregation type="union">
-    <scan location="file:src/test/data/ncml/nc/" suffix="mean.nc"/>
-  </aggregation>
-  */
+  /*
+   * test that scanning gives the exact same result
+   * <aggregation type="union">
+   * <scan location="file:src/test/data/ncml/nc/" suffix="mean.nc"/>
+   * </aggregation>
+   */
   public void testScan() throws IOException {
     String filename = "file:./" + TestNcML.topDir + "aggUnionScan.xml";
     NetcdfDataset scanFile = NetcdfDataset.openDataset(filename, false, null);

@@ -31,41 +31,11 @@ public interface ExprParserConstants {
   int DEFAULT = 0;
 
   // Restricted print set
-  String[] operatorImage = {
-	    null, null, null, null, null,
-	    "=", "!=", ">", ">=", "<", "<=", "=~",
-	    null, null, null, null, null,
-	    null, null, null, null, null,
-	    null, null, null, null, null};
+  String[] operatorImage = {null, null, null, null, null, "=", "!=", ">", ">=", "<", "<=", "=~", null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null, null};
 
-  String[] tokenImage = {
-    "<EOF>",
-    "\" \"",
-    "\"\\t\"",
-    "\"\\n\"",
-    "\"\\r\"",
-    "\"=\"",
-    "\"!=\"",
-    "\">\"",
-    "\">=\"",
-    "\"<\"",
-    "\"<=\"",
-    "\"=~\"",
-    "\"[\"",
-    "\"]\"",
-    "\":\"",
-    "\",\"",
-    "\"&\"",
-    "\"(\"",
-    "\")\"",
-    "\"{\"",
-    "\"}\"",
-    "\".\"",
-    "<WORD>",
-    "<STRING>",
-    "<NUMBER>",
-    "<VAR>",
-    "<FUNCTION>"
-  };
+  String[] tokenImage = {"<EOF>", "\" \"", "\"\\t\"", "\"\\n\"", "\"\\r\"", "\"=\"", "\"!=\"", "\">\"", "\">=\"",
+      "\"<\"", "\"<=\"", "\"=~\"", "\"[\"", "\"]\"", "\":\"", "\",\"", "\"&\"", "\"(\"", "\")\"", "\"{\"", "\"}\"",
+      "\".\"", "<WORD>", "<STRING>", "<NUMBER>", "<VAR>", "<FUNCTION>"};
 
 }

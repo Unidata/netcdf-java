@@ -12,7 +12,6 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -26,10 +25,10 @@ import java.util.List;
 public class TestTimeCoordinates {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  //@Test
+  // @Test
   // Conventions = "CF-1.0, CW HDF, COARDS"
   public void testConventionsMultiple() throws IOException {
-    //String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
+    // String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
     String filename = "G:/work/lmoxey/PF5_SST_Climatology_Monthly_1982_2008.ncml";
     GridDataset ncd = GridDataset.open(filename);
     Attribute convAtt = ncd.findGlobalAttributeIgnoreCase("Conventions");
@@ -41,13 +40,15 @@ public class TestTimeCoordinates {
     CoordinateAxis1DTime time = gcs.getTimeAxis1D();
     assert time != null;
 
-    /* Variable v = ncd.getDetailInfo("TIME");
-    assert v != null;
-    //assert v.isCoordinateVariable();
-    assert v instanceof CoordinateAxis1DTime;
-    CoordinateAxis1DTime axis = (CoordinateAxis1DTime) v;
-    List<CalendarDate> dates = axis.getCalendarDates();
-    for (CalendarDate d : dates)  System.out.printf("%s%n", d);  */
+    /*
+     * Variable v = ncd.getDetailInfo("TIME");
+     * assert v != null;
+     * //assert v.isCoordinateVariable();
+     * assert v instanceof CoordinateAxis1DTime;
+     * CoordinateAxis1DTime axis = (CoordinateAxis1DTime) v;
+     * List<CalendarDate> dates = axis.getCalendarDates();
+     * for (CalendarDate d : dates) System.out.printf("%s%n", d);
+     */
 
 
     ncd.close();

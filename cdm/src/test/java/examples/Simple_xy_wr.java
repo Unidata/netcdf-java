@@ -1,16 +1,17 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
-   See COPYRIGHT file for conditions of use.
-
-   This is a very simple example which writes a 2D array of
-   sample data. To handle this in netCDF we create two shared
-   dimensions, "x" and "y", and a netCDF variable, called "data".
-
-   This example demonstrates the netCDF Java API.
-
-   Full documentation of the netCDF Java API can be found at:
-   http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm
-*/
+/*
+ * This is part of the netCDF package.
+ * Copyright 2006 University Corporation for Atmospheric Research/Unidata.
+ * See COPYRIGHT file for conditions of use.
+ * 
+ * This is a very simple example which writes a 2D array of
+ * sample data. To handle this in netCDF we create two shared
+ * dimensions, "x" and "y", and a netCDF variable, called "data".
+ * 
+ * This example demonstrates the netCDF Java API.
+ * 
+ * Full documentation of the netCDF Java API can be found at:
+ * http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm
+ */
 
 package examples;
 
@@ -22,7 +23,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;

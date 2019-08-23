@@ -32,38 +32,26 @@ public class TestMoreUdunits {
     t1 = format.parse("years since 1930");
     t1 = format.parse("12 secs since 1970-01-02T00:00:00Z");
     System.out.println("format.parse(\"\") = \"" + format.parse("") + '"');
+    System.out.println("format.parse(\"s\") = \"" + format.parse("s") + '"');
+    System.out.println("format.parse(\"SeCoNd\") = \"" + format.parse("SeCoNd") + '"');
+    System.out.println("format.parse(\"min\") = \"" + format.parse("min") + '"');
+    System.out.println("format.parse(\"min\").toString() = \"" + format.parse("min").toString() + '"');
+    System.out.println("format.parse(\"60 s\") = \"" + format.parse("60 s") + '"');
+    System.out.println("format.parse(\"Cel\") = \"" + format.parse("Cel") + '"');
+    System.out.println("format.parse(\"Cel\").toString() = \"" + format.parse("Cel").toString() + '"');
+    System.out.println(
+        "format.parse(\"min @ 1970-01-01 00:00:00 UTC\") = \"" + format.parse("min @ 1970-01-01 00:00:00 UTC") + '"');
+    System.out.println("format.parse(\"min @ 2000-01-01 00 UTC\").toString() = \""
+        + format.parse("min @ 2000-01-01 00 UTC").toString() + '"');
+    System.out.println("format.parse(\"g/kg\") = \"" + format.parse("g/kg") + '"');
     System.out
-        .println("format.parse(\"s\") = \"" + format.parse("s") + '"');
-    System.out.println("format.parse(\"SeCoNd\") = \""
-        + format.parse("SeCoNd") + '"');
-    System.out.println("format.parse(\"min\") = \"" + format.parse("min")
-        + '"');
-    System.out.println("format.parse(\"min\").toString() = \""
-        + format.parse("min").toString() + '"');
-    System.out.println("format.parse(\"60 s\") = \"" + format.parse("60 s")
-        + '"');
-    System.out.println("format.parse(\"Cel\") = \"" + format.parse("Cel")
-        + '"');
-    System.out.println("format.parse(\"Cel\").toString() = \""
-        + format.parse("Cel").toString() + '"');
-    System.out
-        .println("format.parse(\"min @ 1970-01-01 00:00:00 UTC\") = \""
-            + format.parse("min @ 1970-01-01 00:00:00 UTC") + '"');
-    System.out
-        .println("format.parse(\"min @ 2000-01-01 00 UTC\").toString() = \""
-            + format.parse("min @ 2000-01-01 00 UTC").toString()
-            + '"');
-    System.out.println("format.parse(\"g/kg\") = \"" + format.parse("g/kg")
-        + '"');
-    System.out.println("format.longFormat(format.parse(\"g/kg\")) = \""
-        + format.longFormat(format.parse("g/kg")) + '"');
+        .println("format.longFormat(format.parse(\"g/kg\")) = \"" + format.longFormat(format.parse("g/kg")) + '"');
     final Unit celsius = format.parse("Cel");
     Unit kelvin = format.parse("K");
-    System.out.println("celsius.getConverterTo(kelvin).convert(0) = \""
-        + celsius.getConverterTo(kelvin).convert(0) + '"');
     System.out
-        .println("kelvin.getConverterTo(celsius).convert(273.15) = \""
-            + kelvin.getConverterTo(celsius).convert(273.15) + '"');
+        .println("celsius.getConverterTo(kelvin).convert(0) = \"" + celsius.getConverterTo(kelvin).convert(0) + '"');
+    System.out.println(
+        "kelvin.getConverterTo(celsius).convert(273.15) = \"" + kelvin.getConverterTo(celsius).convert(273.15) + '"');
     myAssert(kelvin.isCompatible(celsius));
     myAssert(!kelvin.equals(celsius));
     myAssert(kelvin.hashCode() != celsius.hashCode());
@@ -72,33 +60,23 @@ public class TestMoreUdunits {
     kelvin = kelvin.clone(UnitName.newUnitName("kelvin"));
     myAssert(kelvin.isCompatible(fahrenheit));
     myAssert(fahrenheit.isCompatible(kelvin));
-    final Unit kelvinUnit = format.parse("kelvin").clone(
-        UnitName.newUnitName("kelvin"));
-    final Unit fahrenUnit = format.parse("fahrenheit").clone(
-        UnitName.newUnitName("fahrenheit"));
+    final Unit kelvinUnit = format.parse("kelvin").clone(UnitName.newUnitName("kelvin"));
+    final Unit fahrenUnit = format.parse("fahrenheit").clone(UnitName.newUnitName("fahrenheit"));
     myAssert(kelvinUnit.isCompatible(fahrenUnit));
     final Unit second = format.parse("s");
     final Unit minute = format.parse("min");
-    System.out.println("second.getConverterTo(minute).convert(60) = \""
-        + second.getConverterTo(minute).convert(60) + '"');
-    System.out.println("minute.getConverterTo(second).convert(1) = \""
-        + minute.getConverterTo(second).convert(1) + '"');
-    final Unit mixingRatio = format.parse("g/kg").clone(
-        UnitName.newUnitName("mixing ratio"));
-    System.out.println("mixingRatio.toString() = \""
-        + mixingRatio.toString() + '"');
-    System.out.println("format.longFormat(mixingRatio) = \""
-        + format.longFormat(mixingRatio) + '"');
     System.out
-        .println("format.longFormat(format.parse(\"(g/kg)/(lb/ton)\")) = \""
-            + format.longFormat(format.parse("(g/kg)/(lb/ton)"))
-            + '"');
+        .println("second.getConverterTo(minute).convert(60) = \"" + second.getConverterTo(minute).convert(60) + '"');
     System.out
-        .println("format.parse(\"(g/mol)/(lb/kmol)\").toString() = \""
-            + format.parse("(g/mol)/(lb/kmol)").toString() + '"');
-    System.out
-        .println("format.longFormat(format.parse(\"(g/mol)/(lb/kmol)\")) = \""
-            + format.longFormat(format.parse("(g/mol)/(lb/kmol)"))
-            + '"');
+        .println("minute.getConverterTo(second).convert(1) = \"" + minute.getConverterTo(second).convert(1) + '"');
+    final Unit mixingRatio = format.parse("g/kg").clone(UnitName.newUnitName("mixing ratio"));
+    System.out.println("mixingRatio.toString() = \"" + mixingRatio.toString() + '"');
+    System.out.println("format.longFormat(mixingRatio) = \"" + format.longFormat(mixingRatio) + '"');
+    System.out.println("format.longFormat(format.parse(\"(g/kg)/(lb/ton)\")) = \""
+        + format.longFormat(format.parse("(g/kg)/(lb/ton)")) + '"');
+    System.out.println(
+        "format.parse(\"(g/mol)/(lb/kmol)\").toString() = \"" + format.parse("(g/mol)/(lb/kmol)").toString() + '"');
+    System.out.println("format.longFormat(format.parse(\"(g/mol)/(lb/kmol)\")) = \""
+        + format.longFormat(format.parse("(g/mol)/(lb/kmol)")) + '"');
   }
 }

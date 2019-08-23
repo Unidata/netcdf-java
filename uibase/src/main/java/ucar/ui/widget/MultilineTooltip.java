@@ -45,6 +45,7 @@ public class MultilineTooltip extends JToolTip {
   protected int fixedwidth = 0;
 }
 
+
 class MultiLineToolTipUI extends BasicToolTipUI {
   static MultiLineToolTipUI sharedInstance = new MultiLineToolTipUI();
   static JToolTip tip;
@@ -77,8 +78,7 @@ class MultiLineToolTipUI extends BasicToolTipUI {
   public void paint(Graphics g, JComponent c) {
     Dimension size = c.getSize();
     textArea.setBackground(c.getBackground());
-    rendererPane.paintComponent(g, textArea, c, 1, 1,
-            size.width - 1, size.height - 1, true);
+    rendererPane.paintComponent(g, textArea, c, 1, 1, size.width - 1, size.height - 1, true);
   }
 
   public Dimension getPreferredSize(JComponent c) {

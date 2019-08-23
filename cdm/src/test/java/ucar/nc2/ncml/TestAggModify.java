@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -33,11 +33,9 @@
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -61,14 +59,10 @@ public class TestAggModify extends TestCase {
   }
 
 
-  String ncml =
-    "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-    "  <remove type='variable' name='P'/>\n" +
-    "  <aggregation dimName='time' type='joinExisting'>\n" +
-    "    <netcdf location='file:src/test/data/ncml/nc/jan.nc'/>\n" +
-    "    <netcdf location='file:src/test/data/ncml/nc/feb.nc'/>\n" +
-    "  </aggregation>\n" +
-    "</netcdf>";
+  String ncml = "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+      + "  <remove type='variable' name='P'/>\n" + "  <aggregation dimName='time' type='joinExisting'>\n"
+      + "    <netcdf location='file:src/test/data/ncml/nc/jan.nc'/>\n"
+      + "    <netcdf location='file:src/test/data/ncml/nc/feb.nc'/>\n" + "  </aggregation>\n" + "</netcdf>";
 
   public void testWithDateFormatMark() throws Exception {
     System.out.printf("ncml=%s%n", ncml);

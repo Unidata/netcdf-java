@@ -23,7 +23,7 @@ public class MAMath {
    * @param a add values from here
    * @param b add values from here
    * @return result = a + b
-   * @throws IllegalArgumentException      a and b are not conformable
+   * @throws IllegalArgumentException a and b are not conformable
    * @throws UnsupportedOperationException dont support this data type yet
    */
   public static Array add(Array a, Array b) throws IllegalArgumentException {
@@ -48,8 +48,7 @@ public class MAMath {
    * @param b operand
    * @throws IllegalArgumentException a,b,and result are not conformable
    */
-  public static void addDouble(Array result, Array a, Array b)
-      throws IllegalArgumentException {
+  public static void addDouble(Array result, Array a, Array b) throws IllegalArgumentException {
 
     if (!conformable(result, a) || !conformable(a, b))
       throw new IllegalArgumentException();
@@ -89,14 +88,16 @@ public class MAMath {
 
     int dimB = 0;
     for (int aShapeA : shapeA) {
-      //System.out.println(dimA + " "+ dimB);
+      // System.out.println(dimA + " "+ dimB);
 
-      //skip length 1 dimensions
+      // skip length 1 dimensions
       if (aShapeA == 1)
         continue;
       while (dimB < rankB)
-        if (shapeB[dimB] == 1) dimB++;
-        else break;
+        if (shapeB[dimB] == 1)
+          dimB++;
+        else
+          break;
 
       // test same shape (NB dimB cant be > rankB due to first test)
       if (aShapeA != shapeB[dimB])
@@ -114,8 +115,9 @@ public class MAMath {
    * @param wantType desired type
    * @return converted data of desired type, or original array if it is already
    */
-  public static Array convert( Array org, DataType wantType) {
-    if (org == null) return null;
+  public static Array convert(Array org, DataType wantType) {
+    if (org == null)
+      return null;
     Class wantClass = wantType.getPrimitiveClassType();
     if (org.getElementType().equals(wantClass))
       return org;
@@ -129,9 +131,9 @@ public class MAMath {
    * Copy using iterators. Will copy until !from.hasNext().
    *
    * @param dataType use this operation type (eg DataType.DOUBLE uses getDoubleNext())
-   * @param from     copy from here
-   * @param to       copy to here
-   * @throws IllegalArgumentException      a and b are not conformable
+   * @param from copy from here
+   * @param to copy to here
+   * @throws IllegalArgumentException a and b are not conformable
    * @throws UnsupportedOperationException dont support this data type
    */
   public static void copy(DataType dataType, IndexIterator from, IndexIterator to) throws IllegalArgumentException {
@@ -172,7 +174,7 @@ public class MAMath {
    * @param result copy to here
    * @param a copy from here
    *
-   * @throws IllegalArgumentException      a and b are not conformable
+   * @throws IllegalArgumentException a and b are not conformable
    * @throws UnsupportedOperationException dont support this data type yet
    */
   public static void copy(Array result, Array a) throws IllegalArgumentException {
@@ -241,6 +243,7 @@ public class MAMath {
    * copy array a to array result as longs
    * The values from the array a are converted to long (if needed),
    * and then converted to the type of result (if needed).
+   * 
    * @param result copy to here
    * @param a copy from here
    *
@@ -373,12 +376,13 @@ public class MAMath {
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
     while (iterA.hasNext()) {
-      iterR.setObjectNext( iterA.getObjectNext());
+      iterR.setObjectNext(iterA.getObjectNext());
     }
   }
 
   /**
    * Calculate the reduced rank of this shape, by subtracting dimensions with length 1
+   * 
    * @param shape shape of the array
    * @return rank without dimensions of length 1
    */
@@ -396,7 +400,8 @@ public class MAMath {
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
-      if (Double.isNaN(val)) continue;
+      if (Double.isNaN(val))
+        continue;
       if (val < min)
         min = val;
     }
@@ -408,7 +413,8 @@ public class MAMath {
     double max = -Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
-      if (Double.isNaN(val)) continue;
+      if (Double.isNaN(val))
+        continue;
       if (val > max)
         max = val;
     }
@@ -427,7 +433,8 @@ public class MAMath {
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
-      if (Double.isNaN(val)) continue;
+      if (Double.isNaN(val))
+        continue;
       if (val > max)
         max = val;
       if (val < min)
@@ -512,6 +519,7 @@ public class MAMath {
   /**
    * sum all of the elements of array a as doubles.
    * The values from the array a are converted to double (if needed).
+   * 
    * @param a read values from this Array
    * @return sum of elements
    */
@@ -527,6 +535,7 @@ public class MAMath {
   /**
    * sum all of the elements of array a as doubles.
    * The values from the array a are converted to double (if needed).
+   * 
    * @param a read values from this Array
    * @param missingValue skip values equal to this, or which are NaNs
    * @return sum of elements
@@ -556,15 +565,13 @@ public class MAMath {
 
     @Override
     public String toString() {
-      return "MinMax{" +
-              "min=" + min +
-              ", max=" + max +
-              '}';
+      return "MinMax{" + "min=" + min + ", max=" + max + '}';
     }
   }
 
   /**
    * Calculate the scale/offset for an array of numbers.
+   * 
    * <pre>
    * If signed:
    *   then
@@ -582,6 +589,7 @@ public class MAMath {
    *     offset = min
    *   One could modify this to allow a holder for missing values.
    * </pre>
+   * 
    * @param a array to convert (not changed)
    * @param missingValue skip these
    * @param nbits map into this many bits
@@ -593,13 +601,13 @@ public class MAMath {
     if (a.isUnsigned()) {
       long size = (1L << nbits) - 1;
       double offset = minmax.min;
-      double scale =(minmax.max - minmax.min) / size;
+      double scale = (minmax.max - minmax.min) / size;
       return new ScaleOffset(scale, offset);
 
     } else {
       long size = (1L << nbits) - 2;
       double offset = (minmax.max + minmax.min) / 2;
-      double scale =(minmax.max - minmax.min) / size;
+      double scale = (minmax.max - minmax.min) / size;
       return new ScaleOffset(scale, offset);
     }
   }
@@ -611,7 +619,7 @@ public class MAMath {
     while (unpacked.hasNext()) {
       double uv = unpacked.nextDouble();
       double pv = (uv - scaleOffset.offset) / scaleOffset.scale;
-      riter.setDoubleNext( pv);
+      riter.setDoubleNext(pv);
     }
     return result;
   }
@@ -619,8 +627,8 @@ public class MAMath {
   public static Array convert2Unpacked(Array packed, ScaleOffset scaleOffset) {
     Array result = Array.factory(DataType.DOUBLE, packed.getShape());
     IndexIterator riter = result.getIndexIterator();
-    while (packed.hasNext())  {
-      riter.setDoubleNext( packed.nextDouble() * scaleOffset.scale + scaleOffset.offset);
+    while (packed.hasNext()) {
+      riter.setDoubleNext(packed.nextDouble() * scaleOffset.scale + scaleOffset.offset);
     }
     return result;
   }
@@ -646,19 +654,21 @@ public class MAMath {
    * {@link #equals(Array, Array)} is an alternative to this method that requires that corresponding elements be
    * <b>exactly</b> equal. It is suitable for use in {@link Object#equals} implementations, whereas this method isn't.
    *
-   * @param data1  one array to be tested for equality.
-   * @param data2  the other array to be tested for equality.
+   * @param data1 one array to be tested for equality.
+   * @param data2 the other array to be tested for equality.
    * @return true if the specified arrays have the same size, signedness, and approximately equal corresponding elems.
    */
   public static boolean nearlyEquals(Array data1, Array data2) {
-    if (data1 == data2) {  // Covers case when both are null.
+    if (data1 == data2) { // Covers case when both are null.
       return true;
     } else if (data1 == null || data2 == null) {
       return false;
     }
 
-    if (data1.getSize() != data2.getSize()) return false;
-    if (data1.isUnsigned() != data2.isUnsigned()) return false;
+    if (data1.getSize() != data2.getSize())
+      return false;
+    if (data1.isUnsigned() != data2.isUnsigned())
+      return false;
     DataType dt = DataType.getType(data1);
 
     IndexIterator iter1 = data1.getIndexIterator();
@@ -682,25 +692,29 @@ public class MAMath {
       while (iter1.hasNext() && iter2.hasNext()) {
         int v1 = iter1.getIntNext();
         int v2 = iter2.getIntNext();
-        if (v1 != v2) return false;
+        if (v1 != v2)
+          return false;
       }
     } else if (dt.getPrimitiveClassType() == byte.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
-        if (v1 != v2) return false;
+        if (v1 != v2)
+          return false;
       }
     } else if (dt.getPrimitiveClassType() == short.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         byte v1 = iter1.getByteNext();
         byte v2 = iter2.getByteNext();
-        if (v1 != v2) return false;
+        if (v1 != v2)
+          return false;
       }
     } else if (dt.getPrimitiveClassType() == long.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         long v1 = iter1.getLongNext();
         long v2 = iter2.getLongNext();
-        if (v1 != v2) return false;
+        if (v1 != v2)
+          return false;
       }
     } else {
       while (iter1.hasNext() && iter2.hasNext()) {
@@ -732,7 +746,7 @@ public class MAMath {
    */
   // TODO: Should we add this to Array as the Object.equals() implementation? How much work is that?
   public static boolean equals(Array array1, Array array2) {
-    if (array1 == array2) {  // Covers case when both are null.
+    if (array1 == array2) { // Covers case when both are null.
       return true;
     } else if (array1 == null || array2 == null) {
       return false;
@@ -740,11 +754,11 @@ public class MAMath {
 
     // MAMath.nearlyEquals() does not require DataTypes to be equal, but in so doing, it becomes non-symmetric.
     // For example, suppose we have 2 arrays:
-    //     ArrayLong  al;
-    //     ArrayShort as;
+    // ArrayLong al;
+    // ArrayShort as;
     // If al contains elements that don't fit in a short, we could have the following:
-    //     MAMath.nearlyEquals(al, as);  // true
-    //     MAMath.nearlyEquals(as, al);  // false
+    // MAMath.nearlyEquals(al, as); // true
+    // MAMath.nearlyEquals(as, al); // false
     // This is because when MAMath.nearlyEquals() does comparisons, elements from the 2nd array are converted to the
     // type of the 1st array.
     //
@@ -764,11 +778,11 @@ public class MAMath {
     // Ultimately, I decided on the stricter requirement that the arrays must have the exact same shape. That's
     // because if 2 objects compare as equal, there's a general expectation that you can perform the same
     // operations on them and get the same result. But imagine this:
-    //     Array a1 = Array.factory(DataType.INT, new int[] { 3,4 }, new int[] { 0,1,2,3,4,5,6,7,8,9,10,11 });
-    //     Array a2 = Array.factory(DataType.INT, new int[] { 2,6 }, new int[] { 0,1,2,3,4,5,6,7,8,9,10,11 });
+    // Array a1 = Array.factory(DataType.INT, new int[] { 3,4 }, new int[] { 0,1,2,3,4,5,6,7,8,9,10,11 });
+    // Array a2 = Array.factory(DataType.INT, new int[] { 2,6 }, new int[] { 0,1,2,3,4,5,6,7,8,9,10,11 });
     // MAMath.nearlyEquals() will consider the arrays equal because they have the same size, but:
-    //     a1.getInt(a1.getIndex().set(1, 1)) == 5
-    //     a2.getInt(a2.getIndex().set(1, 1)) == 7
+    // a1.getInt(a1.getIndex().set(1, 1)) == 5
+    // a2.getInt(a2.getIndex().set(1, 1)) == 7
     if (!Arrays.equals(array1.getShape(), array2.getShape())) {
       return false;
     }
@@ -789,7 +803,7 @@ public class MAMath {
       }
     }
 
-    assert !iter1.hasNext() && !iter2.hasNext();    // Iterators ought to be the same length.
+    assert !iter1.hasNext() && !iter2.hasNext(); // Iterators ought to be the same length.
     return true;
   }
 
@@ -811,7 +825,7 @@ public class MAMath {
 
     // We can't simply hash array.getStorage(), because array may be a "view" that doesn't include all of the
     // elements in the backing store.
-    for (IndexIterator iter = array.getIndexIterator(); iter.hasNext(); ) {
+    for (IndexIterator iter = array.getIndexIterator(); iter.hasNext();) {
       hash = 29 * hash + iter.next().hashCode();
       hash = 29 * hash + Arrays.hashCode(iter.getCurrentCounter());
     }

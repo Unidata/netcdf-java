@@ -6,7 +6,6 @@ package ucar.nc2;
 
 import java.io.*;
 import java.lang.invoke.MethodHandles;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -16,13 +15,13 @@ import ucar.ma2.Array;
  *
  * @author Russ Rew
  */
-public class TestUtils  {
+public class TestUtils {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /** read all data, make sure variable metadata matches the array */
-  static public void testReadData( NetcdfFile ncfile, boolean showStatus) {
+  static public void testReadData(NetcdfFile ncfile, boolean showStatus) {
     try {
-      for (Variable v  : ncfile.getVariables()) {
+      for (Variable v : ncfile.getVariables()) {
         testVarMatchesData(v, showStatus);
       }
     } catch (IOException ioe) {
@@ -30,10 +29,11 @@ public class TestUtils  {
       assert (false);
     }
 
-    if (showStatus) logger.debug( "**** testReadData done on {}", ncfile.getLocation());
+    if (showStatus)
+      logger.debug("**** testReadData done on {}", ncfile.getLocation());
   }
 
-  static public void testVarMatchesData( Variable v, boolean showStatus) throws IOException {
+  static public void testVarMatchesData(Variable v, boolean showStatus) throws IOException {
     Array data = v.read();
     assert data.getSize() == v.getSize();
     assert data.getElementType() == v.getDataType().getPrimitiveClassType();
@@ -41,9 +41,10 @@ public class TestUtils  {
     assert data.getRank() == v.getRank();
     int[] dataShape = data.getShape();
     int[] varShape = v.getShape();
-    for (int i=0; i<data.getRank(); i++)
+    for (int i = 0; i < data.getRank(); i++)
       assert dataShape[i] == varShape[i];
 
-    if (showStatus) logger.debug( "**** testReadData done on {}", v.getFullName());
+    if (showStatus)
+      logger.debug("**** testReadData done on {}", v.getFullName());
   }
 }

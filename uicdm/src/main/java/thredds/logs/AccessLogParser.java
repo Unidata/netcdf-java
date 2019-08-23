@@ -24,27 +24,33 @@ public class AccessLogParser implements LogReader.LogParser {
   // log reading
 
   // sample
-  // 1                2   3                           4                                                                                                5   6  7     8               9
-  // 128.117.140.75 - - [02/May/2008:00:46:26 -0600] "HEAD /thredds/dodsC/model/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20080501_1800.grib2.dds HTTP/1.1" 200 - "null" "Java/1.6.0_05" 21
-  // 24.18.236.132 - - [04/Feb/2011:17:49:03 -0700] "GET /thredds/fileServer//nexrad/level3/N0R/YUX/20110205/Level3_YUX_N0R_20110205_0011.nids "       200 10409 "-" "-" 17
+  // 1 2 3 4 5 6 7 8 9
+  // 128.117.140.75 - - [02/May/2008:00:46:26 -0600] "HEAD
+  // /thredds/dodsC/model/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20080501_1800.grib2.dds HTTP/1.1" 200 - "null"
+  // "Java/1.6.0_05" 21
+  // 24.18.236.132 - - [04/Feb/2011:17:49:03 -0700] "GET
+  // /thredds/fileServer//nexrad/level3/N0R/YUX/20110205/Level3_YUX_N0R_20110205_0011.nids " 200 10409 "-" "-" 17
 
   // an access log without the extra fields at the end
-  // 1           2  3                           4                        5   6                                                                      5   6  7     8               9
+  // 1 2 3 4 5 6 5 6 7 8 9
   // 127.0.0.1 - - [17/Jun/2015:13:48:32 -0600] "GET /thredds/ HTTP/1.1" 302 -
 
   // 30/Sep/2009:23:50:47 -0600
   private SimpleDateFormat formatFrom = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
 
   static Pattern regPattern =
-                         // 1                             2       3         4      5      6             7        8      9                                                         5   6  7     8               9
-          Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
+      // 1 2 3 4 5 6 7 8 9 5 6 7 8 9
+      Pattern
+          .compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
 
-  // pattern without the extra fields at the end         1                             2       3         4      5      6                                                                  5   6  7     8               9
-  private static Pattern regPattern2 = Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)] \"(.*)\" (\\d+) ([\\-\\d]+)");
+  // pattern without the extra fields at the end 1 2 3 4 5 6 5 6 7 8 9
+  private static Pattern regPattern2 =
+      Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)] \"(.*)\" (\\d+) ([\\-\\d]+)");
 
   public LogReader.Log nextLog(BufferedReader dataIS) throws IOException {
     String line = dataIS.readLine();
-    if (line == null) return null;
+    if (line == null)
+      return null;
     LogReader.Log resultLog = parseLog(line);
     if (resultLog != null) {
       return resultLog;
@@ -52,34 +58,36 @@ public class AccessLogParser implements LogReader.LogParser {
       // todo: FIX ME...no likey recursy.
       return nextLog(dataIS);
     }
-    /* try {
-      //System.out.println("\n"+line);
-      Matcher m = regPattern.matcher(line);
-      if (m.matches()) {
-        LogReader.Log log = new LogReader.Log();
-        log.ip = m.group(1);
-        log.date = convertDate( m.group(3));
-        String request = m.group(4);
-        log.returnCode = parse(m.group(5));
-        log.sizeBytes = parseLong(m.group(6));
-        log.referrer = m.group(7);
-        log.client = m.group(8);
-        log.msecs = parseLong(m.group(9));
-
-        String[] reqss = request.split(" ");
-        if (reqss.length == 3) {
-          log.verb = reqss[0].intern();
-          log.path = reqss[1];
-          log.http = reqss[2].intern();
-        }
-
-        return log;
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("Cant parse " + line);
-    }
-    return null;  */
+    /*
+     * try {
+     * //System.out.println("\n"+line);
+     * Matcher m = regPattern.matcher(line);
+     * if (m.matches()) {
+     * LogReader.Log log = new LogReader.Log();
+     * log.ip = m.group(1);
+     * log.date = convertDate( m.group(3));
+     * String request = m.group(4);
+     * log.returnCode = parse(m.group(5));
+     * log.sizeBytes = parseLong(m.group(6));
+     * log.referrer = m.group(7);
+     * log.client = m.group(8);
+     * log.msecs = parseLong(m.group(9));
+     * 
+     * String[] reqss = request.split(" ");
+     * if (reqss.length == 3) {
+     * log.verb = reqss[0].intern();
+     * log.path = reqss[1];
+     * log.http = reqss[2].intern();
+     * }
+     * 
+     * return log;
+     * }
+     * } catch (Exception e) {
+     * e.printStackTrace();
+     * System.out.println("Cant parse " + line);
+     * }
+     * return null;
+     */
   }
 
   LogReader.Log parseLog(String line) throws IOException {
@@ -89,7 +97,7 @@ public class AccessLogParser implements LogReader.LogParser {
       if (m.matches()) {
         LogReader.Log log = new LogReader.Log();
         log.ip = m.group(1);
-        log.date = convertDate( m.group(3));
+        log.date = convertDate(m.group(3));
         String request = m.group(4);
         log.returnCode = parse(m.group(5));
         log.sizeBytes = parseLong(m.group(6));
@@ -111,31 +119,31 @@ public class AccessLogParser implements LogReader.LogParser {
 
       } else {
         // the non-enhanced log
-         m = regPattern2.matcher(line);
-         if (m.matches()) {
-           LogReader.Log log = new LogReader.Log();
-           log.ip = m.group(1);
-           log.date = convertDate(m.group(3));
-           String request = m.group(4);
-           log.returnCode = parse(m.group(5));
-           log.sizeBytes = parseLong(m.group(6));
+        m = regPattern2.matcher(line);
+        if (m.matches()) {
+          LogReader.Log log = new LogReader.Log();
+          log.ip = m.group(1);
+          log.date = convertDate(m.group(3));
+          String request = m.group(4);
+          log.returnCode = parse(m.group(5));
+          log.sizeBytes = parseLong(m.group(6));
 
-           log.referrer = "-";
-           log.client = "-";
-           log.msecs = -1;
+          log.referrer = "-";
+          log.client = "-";
+          log.msecs = -1;
 
-           String[] reqss = request.split(" ");
-           if (reqss.length == 3) {
-             log.verb = reqss[0].intern();
-             log.path = reqss[1];
-             log.http = reqss[2].intern();
+          String[] reqss = request.split(" ");
+          if (reqss.length == 3) {
+            log.verb = reqss[0].intern();
+            log.path = reqss[1];
+            log.http = reqss[2].intern();
 
-           } else if (reqss.length == 2) { // no HTTP/1.x
-             log.verb = reqss[0].intern();
-             log.path = reqss[1];
-           }
-           return log;
-         }
+          } else if (reqss.length == 2) { // no HTTP/1.x
+            log.verb = reqss[0].intern();
+            log.path = reqss[1];
+          }
+          return log;
+        }
       }
 
     } catch (Exception e) {
@@ -157,12 +165,14 @@ public class AccessLogParser implements LogReader.LogParser {
   }
 
   private int parse(String s) {
-    if (s.equals("-")) return 0;
+    if (s.equals("-"))
+      return 0;
     return Integer.parseInt(s);
   }
 
   private long parseLong(String s) {
-    if (s.equals("-")) return 0;
+    if (s.equals("-"))
+      return 0;
     return Long.parseLong(s);
   }
 

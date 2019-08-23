@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import javax.swing.*;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -34,7 +33,6 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.Attribute;
@@ -54,8 +52,7 @@ import ucar.util.prefs.PreferencesExt;
  */
 public class VariablePlot extends JPanel {
 
-    private static final org.slf4j.Logger log
-                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   final JFreeChart chart;
 
@@ -88,51 +85,42 @@ public class VariablePlot extends JPanel {
       legend.setPosition(RectangleEdge.BOTTOM);
     }
     add(chartPanel);
-    
+
   }
 
   private JFreeChart createChart() {
-    return ChartFactory.createTimeSeriesChart(
-            "Variable Plot",
-            "X",
-            "Value",
-            null,
-            true,
-            true,
-            false
-    );
+    return ChartFactory.createTimeSeriesChart("Variable Plot", "X", "Value", null, true, true, false);
   }
 
   NetcdfFile file;
 
   public void setDataset(NetcdfFile ncFile) {
-	  log.info("setDataset");
-	  file = ncFile;	  
+    log.info("setDataset");
+    file = ncFile;
   }
-  
+
   public void autoScale() {
-	chart.getXYPlot().getRangeAxis().setAutoRange(true);
-	chart.getXYPlot().getDomainAxis().setAutoRange(true);
+    chart.getXYPlot().getRangeAxis().setAutoRange(true);
+    chart.getXYPlot().getDomainAxis().setAutoRange(true);
   }
 
   public void clear() {
-	  XYPlot p = chart.getXYPlot();
+    XYPlot p = chart.getXYPlot();
 
-	  for(int i = 0;i<p.getDatasetCount();i++)
-	  {
-		  Dataset dataset = p.getDataset(i);		  
+    for (int i = 0; i < p.getDatasetCount(); i++) {
+      Dataset dataset = p.getDataset(i);
 
-		  log.info("clear dataset " + i + " dataset " + dataset);
-		  
-		  if (dataset instanceof TimeSeriesCollection)		  
-			  ((TimeSeriesCollection)dataset).removeAllSeries();
-		  if (dataset instanceof XYSeriesCollection)		  
-			  ((XYSeriesCollection)dataset).removeAllSeries();
-		  
-		  p.setDataset(i, null);
-		  if (i > 0)
-			  p.setRangeAxis(i, null);
-	  }
+      log.info("clear dataset " + i + " dataset " + dataset);
+
+      if (dataset instanceof TimeSeriesCollection)
+        ((TimeSeriesCollection) dataset).removeAllSeries();
+      if (dataset instanceof XYSeriesCollection)
+        ((XYSeriesCollection) dataset).removeAllSeries();
+
+      p.setDataset(i, null);
+      if (i > 0)
+        p.setRangeAxis(i, null);
+    }
   }
 
   // assume first dimension is TIME series
@@ -147,70 +135,65 @@ public class VariablePlot extends JPanel {
     Attribute title = file.findGlobalAttribute("title");
     if (title != null)
       chart.setTitle(title.getStringValue());
-    
+
     Variable varXdim = file.findVariable(null, dimName);
     boolean hasXdim = false;
     if (varXdim != null)
-    	hasXdim = true;
-    
+      hasXdim = true;
+
     boolean xIsTime = false;
 
     XYPlot p = chart.getXYPlot();
-    if (hasXdim)
-    {
-	    Attribute xUnit = varXdim.findAttribute("units");
-	    Attribute xAxis = varXdim.findAttribute("axis");
-	    if (xUnit != null)
-	    	if (xUnit.getStringValue().contains("since"))
-	    		xIsTime = true;
-	    if (xAxis != null)
-	    	if (xAxis.getStringValue().equals("T"))
-	    		xIsTime = true;
-	    if (xUnit != null)
-	    	p.getDomainAxis().setLabel(xUnit.getStringValue());
-	    else
-	    	p.getDomainAxis().setLabel(dimName);
+    if (hasXdim) {
+      Attribute xUnit = varXdim.findAttribute("units");
+      Attribute xAxis = varXdim.findAttribute("axis");
+      if (xUnit != null)
+        if (xUnit.getStringValue().contains("since"))
+          xIsTime = true;
+      if (xAxis != null)
+        if (xAxis.getStringValue().equals("T"))
+          xIsTime = true;
+      if (xUnit != null)
+        p.getDomainAxis().setLabel(xUnit.getStringValue());
+      else
+        p.getDomainAxis().setLabel(dimName);
 
-        if (xAxis != null) {
-          log.info("X axis type " + xAxis.getDataType() + " value " + xAxis.toString() + " is Time "
-              + xIsTime);
-        }
+      if (xAxis != null) {
+        log.info("X axis type " + xAxis.getDataType() + " value " + xAxis.toString() + " is Time " + xIsTime);
+      }
     }
 
     int ax = 0;
     log.info("dataset count " + p.getDatasetCount());
-    if (p.getDatasetCount() >= 1)
-    {
-    	if (p.getDataset(p.getDatasetCount()-1) != null)
-    	{
-		    log.info("number in dataset " + p.getDataset(0));
-		    ax = p.getDatasetCount();
-		    if (ax > 0)
-		    {
-		    	p.setRangeAxis(ax, new NumberAxis());
-		    }
-    	}
+    if (p.getDatasetCount() >= 1) {
+      if (p.getDataset(p.getDatasetCount() - 1) != null) {
+        log.info("number in dataset " + p.getDataset(0));
+        ax = p.getDatasetCount();
+        if (ax > 0) {
+          p.setRangeAxis(ax, new NumberAxis());
+        }
+      }
     }
     log.info("axis number " + ax);
-    
-    final XYItemRenderer renderer = p.getRenderer();
-    if (xIsTime)
-    {
-        final StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT, new SimpleDateFormat("d-MMM-yyyy"), new DecimalFormat("0.00"));
-        renderer.setBaseToolTipGenerator(g);
-    	
-    	dataset = new TimeSeriesCollection();
-    }
-    else
-    {
-        final StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT, new DecimalFormat("0.00"), new DecimalFormat("0.00"));
-        renderer.setBaseToolTipGenerator(g);
 
-        dataset = new XYSeriesCollection();
-        p.setDomainAxis(new NumberAxis()); // change to NumberAxis from DateAxis which is what is created
+    final XYItemRenderer renderer = p.getRenderer();
+    if (xIsTime) {
+      final StandardXYToolTipGenerator g =
+          new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
+              new SimpleDateFormat("d-MMM-yyyy"), new DecimalFormat("0.00"));
+      renderer.setBaseToolTipGenerator(g);
+
+      dataset = new TimeSeriesCollection();
+    } else {
+      final StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(
+          StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT, new DecimalFormat("0.00"), new DecimalFormat("0.00"));
+      renderer.setBaseToolTipGenerator(g);
+
+      dataset = new XYSeriesCollection();
+      p.setDomainAxis(new NumberAxis()); // change to NumberAxis from DateAxis which is what is created
     }
     p.getRangeAxis(ax).setAutoRange(true);
-    
+
     Attribute vUnit = v.findAttribute("units");
     Attribute vfill = v.findAttribute("_FillValue");
     double dfill = Double.NaN;
@@ -218,24 +201,22 @@ public class VariablePlot extends JPanel {
       dfill = vfill.getNumericValue().doubleValue();
 
     if (vUnit != null)
-    	p.getRangeAxis(ax).setLabel(vUnit.getStringValue());
+      p.getRangeAxis(ax).setLabel(vUnit.getStringValue());
 
     NetcdfDataset fds = new NetcdfDataset(file);
 
     CoordinateAxis1DTime tm;
     List<CalendarDate> dates = null;
     Array varXarray = null;
-    
-    if (hasXdim)
-    {
-    	varXarray = varXdim.read();
-	    if (xIsTime)
-	    {
-		    tm = CoordinateAxis1DTime.factory(fds, new VariableDS(null, varXdim, true), null);
-		    dates = tm.getCalendarDates();
-	    }
+
+    if (hasXdim) {
+      varXarray = varXdim.read();
+      if (xIsTime) {
+        tm = CoordinateAxis1DTime.factory(fds, new VariableDS(null, varXdim, true), null);
+        dates = tm.getCalendarDates();
+      }
     }
-    
+
     Array a = v.read();
 
     Index idx = a.getIndex();
@@ -254,47 +235,41 @@ public class VariablePlot extends JPanel {
     for (int j = 0; j < d2; j++) {
       if (rank > 1)
         idx.set1(j); // this wont work for 3rd dimension > 1
-      
+
       String name = v.getShortName();
       if (d2 > 1)
         name += "-" + j;
 
       Series s1;
       if (xIsTime)
-    	  s1 = new TimeSeries(name);
+        s1 = new TimeSeries(name);
       else
-    	  s1 = new XYSeries(name);
-      
+        s1 = new XYSeries(name);
+
       for (int i = 0; i < idx.getShape(0); i++) {
         idx.set0(i);
         float f = a.getFloat(idx);
         if (f != dfill) {
-        	if (!Float.isNaN(f))
-        	{
-	        	max = Math.max(max,  f);
-	        	min = Math.min(min,  f);
-        	}
-        	if (xIsTime)
-        	{
-        		Date ts = new Date(dates.get(i).getMillis());
-        		((TimeSeries)s1).addOrUpdate(new Second(ts), f);
-        	}
-        	else if (hasXdim)
-        	{
-        		((XYSeries)s1).addOrUpdate(varXarray.getDouble(i), f);        		
-        	}
-        	else
-        	{
-        		((XYSeries)s1).addOrUpdate(i, f);        		        		
-        	}
+          if (!Float.isNaN(f)) {
+            max = Math.max(max, f);
+            min = Math.min(min, f);
+          }
+          if (xIsTime) {
+            Date ts = new Date(dates.get(i).getMillis());
+            ((TimeSeries) s1).addOrUpdate(new Second(ts), f);
+          } else if (hasXdim) {
+            ((XYSeries) s1).addOrUpdate(varXarray.getDouble(i), f);
+          } else {
+            ((XYSeries) s1).addOrUpdate(i, f);
+          }
         }
       }
-	  if (dataset instanceof TimeSeriesCollection)		  
-		  ((TimeSeriesCollection)dataset).addSeries((TimeSeries)s1);
-	  if (dataset instanceof XYSeriesCollection)		  
-		  ((XYSeriesCollection)dataset).addSeries((XYSeries)s1);
+      if (dataset instanceof TimeSeriesCollection)
+        ((TimeSeriesCollection) dataset).addSeries((TimeSeries) s1);
+      if (dataset instanceof XYSeriesCollection)
+        ((XYSeriesCollection) dataset).addSeries((XYSeries) s1);
     }
-    final XYLineAndShapeRenderer renderer1 = new XYLineAndShapeRenderer(true, false); 
+    final XYLineAndShapeRenderer renderer1 = new XYLineAndShapeRenderer(true, false);
     p.setRenderer(ax, renderer1);
 
     log.info("dataset " + ax + " max " + max + " min " + min + " : " + dataset);

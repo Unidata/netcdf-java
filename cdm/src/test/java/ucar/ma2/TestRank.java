@@ -7,7 +7,6 @@ package ucar.ma2;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 
 /** Test ma2 get/put methods in the JUnit framework. */
@@ -15,15 +14,15 @@ import java.lang.invoke.MethodHandles;
 public class TestRank extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestRank( String name) {
+  public TestRank(String name) {
     super(name);
   }
 
   public void doit(int rank) {
-    System.out.println("testRank "+rank);
+    System.out.println("testRank " + rank);
 
-    int [] shape = new int[rank];
-    for (int i=0; i<rank; i++)
+    int[] shape = new int[rank];
+    for (int i = 0; i < rank; i++)
       shape[i] = i + 2;
 
     ArrayDouble A = new ArrayDouble(shape);
@@ -31,7 +30,7 @@ public class TestRank extends TestCase {
     IndexIterator iter = A.getIndexIterator();
     int count = 0;
     while (iter.hasNext())
-      iter.setDoubleNext( (double) count++);
+      iter.setDoubleNext((double) count++);
 
     iter = A.getIndexIterator();
     count = 0;
@@ -41,15 +40,15 @@ public class TestRank extends TestCase {
     }
 
     Index ima = A.getIndex();
-    for (int i=0; i<rank; i++)
-      ima.setDim(i,i+1);
+    for (int i = 0; i < rank; i++)
+      ima.setDim(i, i + 1);
     double val = A.getDouble(ima);
     double myVal = ima.currentElement();
-    assert(val == myVal);
+    assert (val == myVal);
   }
 
   public void testRank() {
-    for (int rank = 0; rank<10; rank++)
+    for (int rank = 0; rank < 10; rank++)
       doit(rank);
   }
 

@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,15 +27,15 @@ import java.util.List;
 public class SparseArray<T> {
   private static final Logger logger = LoggerFactory.getLogger(SparseArray.class);
 
-  private final int[] shape;    // multidim sizes
-  private final int[] stride;  // for index calculation
+  private final int[] shape; // multidim sizes
+  private final int[] stride; // for index calculation
   private final int totalSize; // product of sizes
 
-  private final int[] track;    // index into content, size totalSize. LOOK could use byte, short to save memory ??
+  private final int[] track; // index into content, size totalSize. LOOK could use byte, short to save memory ??
   private final List<T> content; // keep the things in a List.
   private final int ndups;
 
-  public SparseArray( int[] shape, int[] track, List<T> content, int ndups) {
+  public SparseArray(int[] shape, int[] track, List<T> content, int ndups) {
     this.shape = shape;
     this.totalSize = calcTotalSize(shape);
     this.stride = calcStrides(shape);
@@ -46,12 +45,13 @@ public class SparseArray<T> {
     this.ndups = ndups;
 
     if (track.length != totalSize)
-      throw new IllegalStateException("track len "+track.length+" != totalSize "+totalSize);
+      throw new IllegalStateException("track len " + track.length + " != totalSize " + totalSize);
   }
 
   static int calcTotalSize(int[] shape) {
     int total = 1;
-    for (int aSize : shape) total *= aSize;
+    for (int aSize : shape)
+      total *= aSize;
     return total;
   }
 
@@ -77,8 +77,8 @@ public class SparseArray<T> {
   @Nullable
   public T getContent(int idx) {
     if (idx >= track.length || idx < 0)
-      logger.error("BAD index get="+ idx+" max= "+track.length, new Throwable());
-    int contentIdx = track[idx]-1;
+      logger.error("BAD index get=" + idx + " max= " + track.length, new Throwable());
+    int contentIdx = track[idx] - 1;
     if (contentIdx < 0)
       return null; // missing
     return content.get(contentIdx);
@@ -114,18 +114,20 @@ public class SparseArray<T> {
   }
 
   public int countNotMissing() { // LOOK could use content.size()
-     int result=0;
-     for (int idx : track)
-       if (idx > 0) result++;
-     return result;
-   }
+    int result = 0;
+    for (int idx : track)
+      if (idx > 0)
+        result++;
+    return result;
+  }
 
-   public int countMissing() {
-     int result=0;
-     for (int idx : track)
-       if (idx == 0) result++;
-     return result;
-   }
+  public int countMissing() {
+    int result = 0;
+    for (int idx : track)
+      if (idx == 0)
+        result++;
+    return result;
+  }
 
   public float getDensity() {
     return (float) countNotMissing() / totalSize;
@@ -148,7 +150,8 @@ public class SparseArray<T> {
 
     List<Integer> sizes = new ArrayList<>();
     for (int s : shape) {
-      if (s == 1) continue; // skip dimension len 1
+      if (s == 1)
+        continue; // skip dimension len 1
       sizes.add(s);
     }
     info.format("%n");
@@ -156,12 +159,16 @@ public class SparseArray<T> {
   }
 
   private int showMissingRecurse(int offset, List<Integer> sizes, Formatter f) {
-    if (sizes.size() == 0) return 0;
+    if (sizes.size() == 0)
+      return 0;
     if (sizes.size() == 1) {
       int len = sizes.get(0);
-      for (int i=0; i<len; i++) {
-        boolean hasRecord = track[offset+i] > 0;
-        if (hasRecord) f.format("X"); else f.format("-");
+      for (int i = 0; i < len; i++) {
+        boolean hasRecord = track[offset + i] > 0;
+        if (hasRecord)
+          f.format("X");
+        else
+          f.format("-");
       }
       f.format("%n");
       return len;
@@ -169,8 +176,8 @@ public class SparseArray<T> {
     } else {
       int total = 0;
       int len = sizes.get(0);
-      for (int i=0; i<len; i++) {
-        int count = showMissingRecurse(offset, sizes.subList(1,sizes.size()), f);
+      for (int i = 0; i < len; i++) {
+        int count = showMissingRecurse(offset, sizes.subList(1, sizes.size()), f);
         offset += count;
         total += count;
       }
@@ -197,34 +204,35 @@ public class SparseArray<T> {
 
   // separate out the mutable part
   public static class Builder<T> {
-    private int[] shape;    // multidim sizes
-    private int[] stride;  // for index calculation
+    private int[] shape; // multidim sizes
+    private int[] stride; // for index calculation
     private int totalSize; // product of sizes
     private int ndups = 0; // number of duplicates
 
     private int[] track; // index into content, size totalSize. LOOK use byte, short to save memory ??
     private List<T> content; // keep the things in a List.
 
-    public Builder( int... shape) {
+    public Builder(int... shape) {
       this.shape = shape;
       this.totalSize = calcTotalSize(shape);
       this.stride = calcStrides(shape);
 
       track = new int[totalSize];
-      this.content = new ArrayList<>(totalSize);  // LOOK could only allocate part of this
+      this.content = new ArrayList<>(totalSize); // LOOK could only allocate part of this
     }
 
     public void add(T thing, Formatter info, int... index) {
-      content.add(thing);            // add the thing at end of list, idx = size-1
+      content.add(thing); // add the thing at end of list, idx = size-1
       int where = calcIndex(index);
       if (where < 0 || where >= track.length) {
         logger.error("BAD index add=" + Misc.showInts(index), new Throwable());
       }
       if (track[where] > 0) {
         ndups++;
-        if (info != null) info.format(" duplicate %s%n     with %s%n%n", thing, content.get(track[where] - 1));
+        if (info != null)
+          info.format(" duplicate %s%n     with %s%n%n", thing, content.get(track[where] - 1));
       }
-      track[where] = content.size();  // 1-based so that 0 = missing, so content at where = content.get(track[where]-1)
+      track[where] = content.size(); // 1-based so that 0 = missing, so content at where = content.get(track[where]-1)
     }
 
     int calcIndex(int... index) {
@@ -248,7 +256,7 @@ public class SparseArray<T> {
     }
 
     SparseArray<T> finish() {
-       return new SparseArray<>( shape, track, content, ndups);
+      return new SparseArray<>(shape, track, content, ndups);
     }
   }
 

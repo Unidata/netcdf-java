@@ -10,33 +10,37 @@ import java.io.IOException;
 
 /*
  * [Once support alias paths, these sentences or something like them should
- *  start the third paragraph below.]
+ * start the third paragraph below.]
  *
  * Two standard implementations affect what characters are allowed in a
  * CrawlableDataset path.The CrawlableDatasetAlias class uses wildcard
  * characters ("?", "*", and "**") to define a collection of CrawlableDatasets.
  * Therefore, the wildcard characters can not be used in a CrawlableDataset
  * path.
-*/
+ */
 
 /**
  * CrawlableDataset represents an abstract dataset that is part of a
  * hierarchical dataset collection. Parent and child datasets can be accessed
  * allowing the collection to be crawled.
  * <p/>
- * <p> The CrawlableDataset interface is a generalization (and simplification) of
+ * <p>
+ * The CrawlableDataset interface is a generalization (and simplification) of
  * the java.io.File class. A CrawlableDataset path is made up of ONE or more
  * path segments each seperated by a slash ("/"). The path may start or end with
- * a slash ("/").</p>
+ * a slash ("/").
+ * </p>
  * <p/>
- * <p>Implementation Notes:</p>
+ * <p>
+ * Implementation Notes:
+ * </p>
  * <ol>
- * <li> The thredds.crawlabledataset.CrawlableDatasetFactory requires each
+ * <li>The thredds.crawlabledataset.CrawlableDatasetFactory requires each
  * CrawlableDataset implementation to define a public constructor with one
  * String argument and one Object argument. The String argument is the path
  * for the CrawlableDataset being constructed, the Object argument is a
  * configuration object.</li>
- * <li> The thredds.cataloggen.CollectionLevelScanner framework does not support
+ * <li>The thredds.cataloggen.CollectionLevelScanner framework does not support
  * building a catalog for the collection based at the CrawlableDataset path "/".
  * So, do not implement your CrawlableDataset so that the path "/"
  * is allowed, or at least so that it is not likely to be used as the root of
@@ -49,36 +53,42 @@ import java.io.IOException;
  * </ol>
  *
  * @author edavis
- * @see thredds.cataloggen.CollectionLevelScanner CollectionLevelScanner uses CrawlableDatasets to scan a dataset collection and create a THREDDS catalog.
+ * @see thredds.cataloggen.CollectionLevelScanner CollectionLevelScanner uses CrawlableDatasets to scan a dataset
+ *      collection and create a THREDDS catalog.
  * @since May 3, 2005 20:18:59 -0600
  */
 public interface CrawlableDataset {
   /**
    * Return the configuration Object (can be null).
+   * 
    * @return the configuration Object (can be null).
    */
   public Object getConfigObject();
 
   /**
    * Set the configuration Object.
+   * 
    * @param config the config object.
    */
   // public void setConfigObject(Object config);
 
   /**
    * Returns the dataset path.
+   * 
    * @return the dataset path.
    */
   public String getPath();
 
   /**
    * Returns the dataset name, i.e., the last part of the dataset path.
+   * 
    * @return the dataset name, i.e., the last part of the dataset path.
    */
   public String getName();
 
   /**
    * Returns the parent CrawlableDataset or null if this dataset has no parent.
+   * 
    * @return the parent CrawlableDataset or null if this dataset has no parent.
    */
   public CrawlableDataset getParentDataset();
@@ -93,6 +103,7 @@ public interface CrawlableDataset {
 
   /**
    * Return true if the dataset is a collection dataset.
+   * 
    * @return true if the dataset is a collection dataset.
    */
   public boolean isCollection();
@@ -103,7 +114,8 @@ public interface CrawlableDataset {
    * @param relativePath the path, relative to this dataset, of the requested dataset.
    * @return the requested descendant of this dataset.
    * @throws IllegalArgumentException if the relative path is not relative (e.g., starts with a slash ("/")).
-   * @throws IllegalStateException if this dataset is not a collection, the isCollection() method should be used to check.
+   * @throws IllegalStateException if this dataset is not a collection, the isCollection() method should be used to
+   *         check.
    */
   public CrawlableDataset getDescendant(String relativePath);
 
@@ -115,8 +127,9 @@ public interface CrawlableDataset {
    *
    * @return Returns a list of the CrawlableDatasets contained in this collection dataset.
    *         The llist will be empty if no datasets are contained in this collection dataset.
-   * @throws IOException           if an I/O error occurs while accessing the children datasets.
-   * @throws IllegalStateException if this dataset is not a collection, the isCollection() method should be used to check.
+   * @throws IOException if an I/O error occurs while accessing the children datasets.
+   * @throws IllegalStateException if this dataset is not a collection, the isCollection() method should be used to
+   *         check.
    */
   public List<CrawlableDataset> listDatasets() throws IOException;
 
@@ -130,19 +143,22 @@ public interface CrawlableDataset {
    * @return Returns a list of the CrawlableDatasets contained in this collection dataset
    *         that satisfy the given filter. The list will be empty if no datasets are
    *         contained in this collection dataset.
-   * @throws IOException           if an I/O error occurs while accessing the children datasets.
-   * @throws IllegalStateException if this dataset is not a collection, the isCollection() method should be used to check.
+   * @throws IOException if an I/O error occurs while accessing the children datasets.
+   * @throws IllegalStateException if this dataset is not a collection, the isCollection() method should be used to
+   *         check.
    */
   public List<CrawlableDataset> listDatasets(CrawlableDatasetFilter filter) throws IOException;
 
   /**
    * Returns the size in bytes of the dataset, -1 if unknown.
+   * 
    * @return the size in bytes of the dataset, -1 if unknown.
    */
   public long length();
 
   /**
    * Returns the date the dataset was last modified, null if unknown.
+   * 
    * @return the date the dataset was last modified, null if unknown.
    */
   public Date lastModified(); // or long milliseconds?

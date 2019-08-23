@@ -9,7 +9,7 @@
  * this software, and any derivative works thereof, and its supporting
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
+ * supporting documentation. Further, UCAR requests that the user credit
  * UCAR/Unidata in any publications that result from the use of this
  * software or in any product that includes this software. The names UCAR
  * and/or Unidata, however, may not be used in any advertising or publicity
@@ -34,11 +34,9 @@ package ucar.nc2.ui.point;
 
 import ucar.nc2.ui.geoloc.NPController;
 import ucar.nc2.ft.PointFeature;
-
 import javax.swing.*;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
-
 import ucar.ui.widget.BAMutil;
 
 /**
@@ -67,8 +65,8 @@ public class PointController extends NPController {
 
   }
 
-  public void setPointFeatures( java.util.List<PointFeature> obs) throws IOException {
-    pointRenderer.setPointFeatures( obs);
+  public void setPointFeatures(java.util.List<PointFeature> obs) throws IOException {
+    pointRenderer.setPointFeatures(obs);
     redraw(true);
   }
 

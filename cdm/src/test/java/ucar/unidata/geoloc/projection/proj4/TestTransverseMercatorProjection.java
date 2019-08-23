@@ -23,10 +23,8 @@ public class TestTransverseMercatorProjection {
     for (int i = 0; i < lat.length; ++i) {
       ProjectionPointImpl p = new ProjectionPointImpl(x[i], y[i]);
       LatLonPointImpl lp = (LatLonPointImpl) proj.projToLatLon(p);
-      if ((Math.abs(lp.getLatitude() - lat[i]) > 1e-5)
-          || (Math.abs(lp.getLongitude() - lon[i]) > 1e-5)) {
-        if (Math.abs(lp.getLatitude()) > 89.99 &&
-            (Math.abs(lp.getLatitude() - lat[i]) < 1e-5)) {
+      if ((Math.abs(lp.getLatitude() - lat[i]) > 1e-5) || (Math.abs(lp.getLongitude() - lon[i]) > 1e-5)) {
+        if (Math.abs(lp.getLatitude()) > 89.99 && (Math.abs(lp.getLatitude() - lat[i]) < 1e-5)) {
           // ignore longitude singularities at poles
         } else {
           System.err.print("ERROR:");

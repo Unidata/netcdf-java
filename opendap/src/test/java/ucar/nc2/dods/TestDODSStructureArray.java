@@ -14,7 +14,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.UtilsTestStructureArray;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -30,7 +29,7 @@ public class TestDODSStructureArray {
     Array a = null;
 
     // int32
-    assert(null != (v = dodsfile.findVariable("exp.j")));
+    assert (null != (v = dodsfile.findVariable("exp.j")));
     assert v.getShortName().equals("j");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -38,7 +37,7 @@ public class TestDODSStructureArray {
     a = v.read();
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vali = ((ArrayInt.D0)a).get();
+    int vali = ((ArrayInt.D0) a).get();
     assert (vali == 1);
 
     assert null != (v = dodsfile.findVariable("exp.i"));
@@ -49,8 +48,8 @@ public class TestDODSStructureArray {
     a = v.read();
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    vali = ((ArrayInt.D0)a).get();
-    assert vali == 2 : vali;    //?? LOOK ? CHANGES depending on how its read. POTTER!!!!
+    vali = ((ArrayInt.D0) a).get();
+    assert vali == 2 : vali; // ?? LOOK ? CHANGES depending on how its read. POTTER!!!!
 
     // int16 array
     assert null != (v = dodsfile.findVariable("exp.g"));
@@ -68,7 +67,7 @@ public class TestDODSStructureArray {
       count++;
     }
 
-    assert null != (v = dodsfile.findVariable("exp.f" ));
+    assert null != (v = dodsfile.findVariable("exp.f"));
     assert v.getShortName().equals("f");
     assert v.getRank() == 2;
     assert v.getSize() == 4;
@@ -96,27 +95,27 @@ public class TestDODSStructureArray {
     Array a = null;
 
     // int32
-    assert(null != (m = sd.findMember("j")));
+    assert (null != (m = sd.findMember("j")));
     assert m.getName().equals("j");
     assert m.getDataType() == DataType.INT;
     a = sd.getArray(m);
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vali = ((ArrayInt.D0)a).get();
+    int vali = ((ArrayInt.D0) a).get();
     assert (vali == 1);
 
-    assert(null != (m = sd.findMember("i")));
+    assert (null != (m = sd.findMember("i")));
     assert m.getName().equals("i");
     assert m.getDataType() == DataType.INT;
     a = sd.getArray(m);
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    vali = ((ArrayInt.D0)a).get();
-    assert vali == 2 : vali;    //?? LOOK ? CHANGES depending on how its read. POTTER!!!!
+    vali = ((ArrayInt.D0) a).get();
+    assert vali == 2 : vali; // ?? LOOK ? CHANGES depending on how its read. POTTER!!!!
 
     // int16 array
-    assert(null != (m = sd.findMember("g")));
+    assert (null != (m = sd.findMember("g")));
     assert m.getName().equals("g");
     assert m.getDataType() == DataType.SHORT;
     a = sd.getArray(m);
@@ -130,7 +129,7 @@ public class TestDODSStructureArray {
       count++;
     }
 
-    assert(null != (m = sd.findMember("f" )));
+    assert (null != (m = sd.findMember("f")));
     assert m.getName().equals("f");
     assert m.getDataType() == DataType.SHORT;
     a = sd.getArray(m);
@@ -154,18 +153,18 @@ public class TestDODSStructureArray {
 
     StructureMembers.Member m = data.findMember("f");
     assert m != null;
-    //assert m.getV() instanceof DODSVariable;
-    //DODSVariable dv = (DODSVariable) m.getV();
-    //assert dv.hasCachedData();
+    // assert m.getV() instanceof DODSVariable;
+    // DODSVariable dv = (DODSVariable) m.getV();
+    // assert dv.hasCachedData();
 
     Array a = data.getArray(m);
     Index ima = a.getIndex();
-    assert a.getShort( ima.set(1,1)) == (short) 768;
+    assert a.getShort(ima.set(1, 1)) == (short) 768;
   }
 
   @Test
   public void testDODS() throws IOException, InvalidRangeException {
-    testW(TestSources.XURL1+"/test.53", "types", false);
+    testW(TestSources.XURL1 + "/test.53", "types", false);
   }
 
   public void testW(String url, String sname, boolean isScalar) throws IOException, InvalidRangeException {
@@ -173,13 +172,13 @@ public class TestDODSStructureArray {
     Structure v = (Structure) ncfile.findVariable(sname);
     assert v != null;
 
-    assert( v.getDataType() == DataType.STRUCTURE);
+    assert (v.getDataType() == DataType.STRUCTURE);
 
     Array data = v.read();
-    assert( data instanceof ArrayStructure);
-    assert(data.getElementType() == StructureData.class);
+    assert (data instanceof ArrayStructure);
+    assert (data.getElementType() == StructureData.class);
 
-    new UtilsTestStructureArray().testArrayStructure( (ArrayStructure) data);
+    new UtilsTestStructureArray().testArrayStructure((ArrayStructure) data);
     ncfile.close();
   }
 

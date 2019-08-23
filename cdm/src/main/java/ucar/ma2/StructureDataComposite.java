@@ -136,8 +136,8 @@ public class StructureDataComposite extends StructureData {
     return proxy.get(m).getArraySequence(m.getName());
   }
 
-  public Object getScalarObject( StructureMembers.Member m) {
+  public Object getScalarObject(StructureMembers.Member m) {
     return proxy.get(m).getScalarObject(m.getName());
-  }  
+  }
 
 }

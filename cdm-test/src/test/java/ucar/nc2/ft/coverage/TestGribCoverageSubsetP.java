@@ -20,7 +20,6 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -53,25 +52,27 @@ public class TestGribCoverageSubsetP {
     List<Object[]> result = new ArrayList<>();
 
     ////////////// dt
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", "RH",
-            null, "2003-06-12T22:00:00Z", null, 400.0});   // projection, no reftime, no timeOffset
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", "RH", null, "2003-06-12T22:00:00Z",
+        null, 400.0}); // projection, no reftime, no timeOffset
 
     ////////////// grib
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1", "Pressure_surface",
-            "2012-02-27T00:00:00Z", null, 42.0, null});   // projection, scalar reftime
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1",
+        "Pressure_surface", "2012-02-27T00:00:00Z", null, 42.0, null}); // projection, scalar reftime
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Momentum_flux_u-component_surface_Mixed_intervals_Average",
-            "2015-03-01T06:00:00Z", "2015-03-01T12:00:00Z", null, null});   // time
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4",
+        "Momentum_flux_u-component_surface_Mixed_intervals_Average", "2015-03-01T06:00:00Z", "2015-03-01T12:00:00Z",
+        null, null}); // time
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Momentum_flux_u-component_surface_Mixed_intervals_Average",
-            "2015-03-01T06:00:00Z", null, 213.0, null});                 // time offset
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4",
+        "Momentum_flux_u-component_surface_Mixed_intervals_Average", "2015-03-01T06:00:00Z", null, 213.0, null}); // time
+                                                                                                                  // offset
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Ozone_Mixing_Ratio_isobaric",
-            "2015-03-01T06:00:00Z", null, 213.0, null});   // all levels
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4",
+        "Ozone_Mixing_Ratio_isobaric", "2015-03-01T06:00:00Z", null, 213.0, null}); // all levels
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Ozone_Mixing_Ratio_isobaric",
-            "2015-03-01T06:00:00Z", null, 213.0, 10000.});   // specific level
-// */
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4",
+        "Ozone_Mixing_Ratio_isobaric", "2015-03-01T06:00:00Z", null, 213.0, 10000.}); // specific level
+    // */
     return result;
   }
 
@@ -79,7 +80,8 @@ public class TestGribCoverageSubsetP {
   CalendarDate rt_val, time_val;
   Double time_offset, vert_level;
 
-  public TestGribCoverageSubsetP(String endpoint, String covName, String rt_val, String time_val, Double time_offset, Double vert_level) {
+  public TestGribCoverageSubsetP(String endpoint, String covName, String rt_val, String time_val, Double time_offset,
+      Double vert_level) {
     this.endpoint = endpoint;
     this.covName = covName;
     this.rt_val = (rt_val == null) ? null : CalendarDate.parseISOformat(null, rt_val);
@@ -94,7 +96,8 @@ public class TestGribCoverageSubsetP {
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
       CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
-      if (gcs == null) return;
+      if (gcs == null)
+        return;
       logger.debug("testGridCoverageDatasetFmrc {}", endpoint);
 
       Coverage cover = gcs.findCoverage(covName);
@@ -126,13 +129,14 @@ public class TestGribCoverageSubsetP {
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
       CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
-      if (gcs == null) return; // not all datasets have an Fmrc
+      if (gcs == null)
+        return; // not all datasets have an Fmrc
       logger.debug("testFmrcStride {}", endpoint);
 
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       CoverageCoordSys csys = cover.getCoordSys();
-      int[] csysShape =  csys.getShape();
+      int[] csysShape = csys.getShape();
       logger.debug("csys shape = {}", Misc.showInts(csysShape));
 
       SubsetParams params = new SubsetParams().setHorizStride(2).set(SubsetParams.runtimeAll, true);
@@ -143,12 +147,12 @@ public class TestGribCoverageSubsetP {
       }
 
       CoverageCoordSys subsetCoordSys = opt.get();
-      int[] subsetShape =  subsetCoordSys.getShape();
+      int[] subsetShape = subsetCoordSys.getShape();
       logger.debug("csysSubset shape = {}", Misc.showInts(subsetShape));
 
       int n = csysShape.length;
-      csysShape[n-1] = (csysShape[n-1]+1)/2;
-      csysShape[n-2] = (csysShape[n-2]+1)/2;
+      csysShape[n - 1] = (csysShape[n - 1] + 1) / 2;
+      csysShape[n - 2] = (csysShape[n - 2] + 1) / 2;
 
       Assert.assertArrayEquals(csysShape, subsetShape);
     }
@@ -165,7 +169,7 @@ public class TestGribCoverageSubsetP {
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       CoverageCoordSys csys = cover.getCoordSys();
-      int[] csysShape =  csys.getShape();
+      int[] csysShape = csys.getShape();
       logger.debug("csys shape = {}", Misc.showInts(csysShape));
 
       SubsetParams params = new SubsetParams().setHorizStride(2);
@@ -176,19 +180,21 @@ public class TestGribCoverageSubsetP {
       }
 
       CoverageCoordSys subsetCoordSys = opt.get();
-      int[] subsetShape =  subsetCoordSys.getShape();
+      int[] subsetShape = subsetCoordSys.getShape();
       logger.debug("csysSubset shape = {}", Misc.showInts(subsetShape));
 
       int n = csysShape.length;
-      csysShape[n-1] = (csysShape[n-1]+1)/2;
-      csysShape[n-2] = (csysShape[n-2]+1)/2;
+      csysShape[n - 1] = (csysShape[n - 1] + 1) / 2;
+      csysShape[n - 2] = (csysShape[n - 2] + 1) / 2;
 
       Assert.assertArrayEquals(csysShape, subsetShape);
     }
   }
 
-  static void readOne(Coverage cover, CalendarDate rt_val, CalendarDate time_val, Double time_offset, Double vert_level) throws IOException, InvalidRangeException {
-    logger.debug("===Request Subset {} runtime={} time={} timeOffset={} vert={}", cover.getName(), rt_val, time_val, time_offset, vert_level);
+  static void readOne(Coverage cover, CalendarDate rt_val, CalendarDate time_val, Double time_offset, Double vert_level)
+      throws IOException, InvalidRangeException {
+    logger.debug("===Request Subset {} runtime={} time={} timeOffset={} vert={}", cover.getName(), rt_val, time_val,
+        time_offset, vert_level);
 
     SubsetParams subset = new SubsetParams();
     if (rt_val != null)
@@ -233,8 +239,8 @@ public class TestGribCoverageSubsetP {
             CalendarDate edge1 = timeOffsetAxis.makeDate(timeOffsetAxis.getCoordEdge1(0));
             CalendarDate edge2 = timeOffsetAxis.makeDate(timeOffsetAxis.getCoordEdge2(0));
 
-            Assert.assertTrue(edge1+">"+time_val, !edge1.isAfter(time_val));
-            Assert.assertTrue(edge2+"<"+time_val, !edge2.isBefore(time_val));
+            Assert.assertTrue(edge1 + ">" + time_val, !edge1.isAfter(time_val));
+            Assert.assertTrue(edge2 + "<" + time_val, !edge2.isBefore(time_val));
 
           } else {
             double val2 = timeOffsetAxis.getCoordMidpoint(0);

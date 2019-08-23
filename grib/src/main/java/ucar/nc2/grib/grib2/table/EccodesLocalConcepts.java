@@ -39,7 +39,7 @@ class EccodesLocalConcepts {
 
   EccodesLocalConcepts(String directoryPath) throws IOException {
     String[] dirs = directoryPath.split("/");
-    this.tableId = dirs[dirs.length-1];
+    this.tableId = dirs[dirs.length - 1];
 
     ImmutableListMultimap.Builder<LocalConceptPart, LocalConceptPart> partsBuilder = ImmutableListMultimap.builder();
     parseLocalConcept(partsBuilder, directoryPath + "/name.def", Type.name);
@@ -71,8 +71,8 @@ class EccodesLocalConcepts {
     for (LocalConcept lc : localConcepts.values()) {
       if (lc.getName() != null && lc.getShortName() != null) {
         int code = Grib2Tables.makeParamId(lc.discipline, lc.category, lc.number);
-        Grib2Parameter param = new Grib2Parameter(lc.discipline, lc.category, lc.number,
-            lc.getName(), lc.getUnits(), lc.getShortName(), null);
+        Grib2Parameter param = new Grib2Parameter(lc.discipline, lc.category, lc.number, lc.getName(), lc.getUnits(),
+            lc.getShortName(), null);
         result.put(code, param);
       }
     }
@@ -80,51 +80,53 @@ class EccodesLocalConcepts {
   }
 
   /*
-    #paramName
-    'value' = {
-      attName = attValue ;
-      attName = attValue ;
-      attName = attValue ;
-    }
-    examples:
+   * #paramName
+   * 'value' = {
+   * attName = attValue ;
+   * attName = attValue ;
+   * attName = attValue ;
+   * }
+   * examples:
+   * 
+   * #Potential vorticity
+   * '82001004' = {
+   * discipline = 0 ;
+   * parameterCategory = 2 ;
+   * parameterNumber = 14 ;
+   * }
+   * #Lake depth
+   * 'Lake depth' = {
+   * discipline = 192 ;
+   * parameterCategory = 228 ;
+   * parameterNumber = 7 ;
+   * }
+   * #Convective available potential energy
+   * 'cape' = {
+   * discipline = 0 ;
+   * parameterCategory = 7 ;
+   * parameterNumber = 6 ;
+   * typeOfFirstFixedSurface = 1 ;
+   * typeOfSecondFixedSurface = 8 ;
+   * }
+   * #Minimum temperature at 2 metres since previous post-processing
+   * 'K' = {
+   * discipline = 0 ;
+   * parameterCategory = 0 ;
+   * parameterNumber = 0 ;
+   * scaledValueOfFirstFixedSurface = 15 ;
+   * scaleFactorOfFirstFixedSurface = 1 ;
+   * typeOfStatisticalProcessing = 3 ;
+   * typeOfFirstFixedSurface = 103 ;
+   * is_uerra = 1 ;
+   * }
+   */
 
-    #Potential vorticity
-    '82001004' = {
-              discipline = 0 ;
-              parameterCategory = 2 ;
-              parameterNumber = 14 ;
-              }
-    #Lake depth
-    'Lake depth' = {
-       discipline = 192 ;
-       parameterCategory = 228 ;
-       parameterNumber = 7 ;
-      }
-    #Convective available potential energy
-     'cape' = {
-     discipline = 0 ;
-     parameterCategory = 7 ;
-     parameterNumber = 6 ;
-     typeOfFirstFixedSurface = 1 ;
-     typeOfSecondFixedSurface = 8 ;
-    }
-    #Minimum temperature at 2 metres since previous post-processing
-    'K' = {
-       discipline = 0 ;
-       parameterCategory = 0 ;
-       parameterNumber = 0 ;
-       scaledValueOfFirstFixedSurface = 15 ;
-       scaleFactorOfFirstFixedSurface = 1 ;
-       typeOfStatisticalProcessing = 3 ;
-       typeOfFirstFixedSurface = 103 ;
-       is_uerra = 1 ;
-      }
-	*/
-
-  private void parseLocalConcept(ImmutableListMultimap.Builder<LocalConceptPart, LocalConceptPart> localConceptParts, String path, Type conceptType) throws IOException {
+  private void parseLocalConcept(ImmutableListMultimap.Builder<LocalConceptPart, LocalConceptPart> localConceptParts,
+      String path, Type conceptType) throws IOException {
     ClassLoader cl = EccodesLocalConcepts.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(path)) {
-      if (is == null) return; // file not found is ok
+      if (is == null)
+        return; // file not found is ok
       try (BufferedReader br = new BufferedReader(new InputStreamReader(is, ENCODING))) {
         boolean header = true;
 
@@ -159,11 +161,7 @@ class EccodesLocalConcepts {
           }
 
           if (line.contains("=")) {
-            Iterator<String> tokens = Splitter.on('=')
-                .trimResults()
-                .omitEmptyStrings()
-                .split(line)
-                .iterator();
+            Iterator<String> tokens = Splitter.on('=').trimResults().omitEmptyStrings().split(line).iterator();
             String name = tokens.next();
             String valueS = clean(tokens.next());
             int value;
@@ -221,10 +219,11 @@ class EccodesLocalConcepts {
     }
 
     public void show(Formatter f) {
-      if (atts.isEmpty()) return;
+      if (atts.isEmpty())
+        return;
       f.format("     ");
       for (Map.Entry<String, Integer> entry : atts.entrySet()) {
-        f.format("%s(%3d) ",  entry.getKey(), entry.getValue());
+        f.format("%s(%3d) ", entry.getKey(), entry.getValue());
       }
       f.format("%n");
     }
@@ -234,7 +233,7 @@ class EccodesLocalConcepts {
     private final String paramName;
     private final LocalConceptPart org;
 
-    private int discipline ;
+    private int discipline;
     private int category;
     private int number;
     private String paramId;
@@ -258,8 +257,8 @@ class EccodesLocalConcepts {
     }
 
     void merge(LocalConceptPart part) {
-      assert(this.paramName.equals(part.paramName));
-      assert(this.org.atts.equals(part.atts));
+      assert (this.paramName.equals(part.paramName));
+      assert (this.org.atts.equals(part.atts));
       extractValue(part);
     }
 
@@ -326,14 +325,18 @@ class EccodesLocalConcepts {
     @Override
     public int compareTo(LocalConcept o) {
       int c = discipline - o.discipline;
-      if (c != 0) return c;
+      if (c != 0)
+        return c;
       c = category - o.category;
-      if (c != 0) return c;
+      if (c != 0)
+        return c;
       return number - o.number;
     }
   }
 
-  private enum Type {name, shortName, paramId, units, cfName, cfVarName}
+  private enum Type {
+    name, shortName, paramId, units, cfName, cfVarName
+  }
   private class LocalConceptPart {
     private final AttributeBag atts = new AttributeBag();
     private final String paramName;
@@ -375,10 +378,11 @@ class EccodesLocalConcepts {
     }
   }
 
-  private static final String FORMAT =  "%-10s: %-70s: %-10s - %-8s - %-10s - %-20s - %s%n";
+  private static final String FORMAT = "%-10s: %-70s: %-10s - %-8s - %-10s - %-20s - %s%n";
 
   void showDetails(Formatter f) {
-    ImmutableList<LocalConcept> sorted = localConcepts.values().stream().sorted().collect(ImmutableList.toImmutableList());
+    ImmutableList<LocalConcept> sorted =
+        localConcepts.values().stream().sorted().collect(ImmutableList.toImmutableList());
     Set<String> attNames = new TreeSet<>();
 
     f.format(FORMAT, "code", "name", "shortName", "paramId", "units", "cfName", "cfVarName");
@@ -400,7 +404,8 @@ class EccodesLocalConcepts {
     Set<String> attNames = new TreeSet<>();
 
     for (GribTables.Parameter param : params) {
-      String key = param.getName() + ":" + Grib2Tables.makeParamCode(param.getDiscipline(), param.getCategory(), param.getNumber());
+      String key = param.getName() + ":"
+          + Grib2Tables.makeParamCode(param.getDiscipline(), param.getCategory(), param.getNumber());
       Collection<LocalConcept> match = localConcepts.get(key);
       for (LocalConcept concept : match) {
         if (concept.getShortName().equals(param.getAbbrev())) {

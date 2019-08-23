@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -25,7 +24,7 @@ public class TestDODSScalars {
     Array a = null;
 
     // byte
-    assert(null != (v = dodsfile.findVariable("b")));
+    assert (null != (v = dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -35,11 +34,11 @@ public class TestDODSScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == byte.class;
     assert a instanceof ArrayByte.D0;
-    byte valb = ((ArrayByte.D0)a).get();
+    byte valb = ((ArrayByte.D0) a).get();
     assert (valb == 0);
 
     // int16
-    assert(null != (v = dodsfile.findVariable("i16")));
+    assert (null != (v = dodsfile.findVariable("i16")));
     assert v.getShortName().equals("i16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -49,11 +48,11 @@ public class TestDODSScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
     assert a instanceof ArrayShort.D0;
-    short vals = ((ArrayShort.D0)a).get();
+    short vals = ((ArrayShort.D0) a).get();
     assert (vals == 0);
 
     // int32
-    assert(null != (v = dodsfile.findVariable("i32")));
+    assert (null != (v = dodsfile.findVariable("i32")));
     assert v.getShortName().equals("i32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -63,11 +62,11 @@ public class TestDODSScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vali = ((ArrayInt.D0)a).get();
+    int vali = ((ArrayInt.D0) a).get();
     assert (vali == 1) : vali;
 
     // uint32
-    assert(null != (v = dodsfile.findVariable("ui32")));
+    assert (null != (v = dodsfile.findVariable("ui32")));
     assert v.getShortName().equals("ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -78,11 +77,11 @@ public class TestDODSScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
-    int vall = ((ArrayInt.D0)a).get();
+    int vall = ((ArrayInt.D0) a).get();
     assert (vall == 0);
 
     // uint16
-    assert(null != (v = dodsfile.findVariable("ui16")));
+    assert (null != (v = dodsfile.findVariable("ui16")));
     assert v.getShortName().equals("ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -92,11 +91,11 @@ public class TestDODSScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
     assert a instanceof ArrayShort.D0;
-    vali = ((ArrayShort.D0)a).get();
+    vali = ((ArrayShort.D0) a).get();
     assert (vali == 0);
 
     // float
-    assert(null != (v = dodsfile.findVariable("f32")));
+    assert (null != (v = dodsfile.findVariable("f32")));
     assert v.getShortName().equals("f32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -106,11 +105,11 @@ public class TestDODSScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == float.class;
     assert a instanceof ArrayFloat.D0;
-    float valf = ((ArrayFloat.D0)a).get();
+    float valf = ((ArrayFloat.D0) a).get();
     assert (valf == 0.0);
 
     // double
-    assert(null != (v = dodsfile.findVariable("f64")));
+    assert (null != (v = dodsfile.findVariable("f64")));
     assert v.getShortName().equals("f64");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
@@ -120,7 +119,7 @@ public class TestDODSScalars {
     assert a.getSize() == 1;
     assert a.getElementType() == double.class;
     assert a instanceof ArrayDouble.D0;
-    double vald = ((ArrayDouble.D0)a).get();
+    double vald = ((ArrayDouble.D0) a).get();
     assert (vald == 1000.0);
 
     try {
@@ -131,7 +130,7 @@ public class TestDODSScalars {
     }
 
     // string
-    assert(null != (v = dodsfile.findVariable("s")));
+    assert (null != (v = dodsfile.findVariable("s")));
     assert v.getShortName().equals("s");
     assert v.getRank() == 0;
     assert v.getDataType() == DataType.STRING : v.getDataType();
@@ -143,7 +142,7 @@ public class TestDODSScalars {
     assert str.equals("This is a data test string (pass 0).");
 
     // url
-    assert(null != (v = dodsfile.findVariable("u")));
+    assert (null != (v = dodsfile.findVariable("u")));
     assert v.getShortName().equals("u");
     assert v.getRank() == 0;
     assert v.getDataType() == DataType.STRING : v.getDataType();
@@ -175,7 +174,7 @@ public class TestDODSScalars {
     Variable v = null;
 
     // string
-    assert(null != (v = dodsfile.findVariable("s")));
+    assert (null != (v = dodsfile.findVariable("s")));
     assert v.getShortName().equals("s");
     assert v.getRank() == 1;
     assert v.getSize() == 25;

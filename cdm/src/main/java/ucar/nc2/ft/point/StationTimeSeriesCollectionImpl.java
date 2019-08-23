@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeature;
@@ -28,7 +27,8 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author caron
  * @since Feb 5, 2008
  */
-public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl implements StationTimeSeriesFeatureCollection {
+public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
+    implements StationTimeSeriesFeatureCollection {
   private volatile StationHelper stationHelper;
 
   public StationTimeSeriesCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
@@ -51,7 +51,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
       }
     }
 
-    assert stationHelper != null : "stationHelper is null for StationTimeSeriesCollectionImpl"+getName();
+    assert stationHelper != null : "stationHelper is null for StationTimeSeriesCollectionImpl" + getName();
     return stationHelper;
   }
 
@@ -93,7 +93,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
 
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) {
-    return subset( getStationFeatures(boundingBox));
+    return subset(getStationFeatures(boundingBox));
   }
 
   @Override
@@ -152,7 +152,8 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
 
   // might need to override for efficiency
   @Override
-  public PointFeatureCollection flatten(List<String> stationNames, CalendarDateRange dateRange, List<VariableSimpleIF> varList) {
+  public PointFeatureCollection flatten(List<String> stationNames, CalendarDateRange dateRange,
+      List<VariableSimpleIF> varList) {
     if ((stationNames == null) || (stationNames.size() == 0))
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
 
@@ -173,7 +174,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   @Override
   public StationFeature getStationFeature(PointFeature flatPointFeature) {
     if (flatPointFeature instanceof StationFeatureHas) {
-      return ((StationFeatureHas)flatPointFeature).getStationFeature();
+      return ((StationFeatureHas) flatPointFeature).getStationFeature();
     }
     return null;
   }
@@ -196,7 +197,8 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     return new StationIterator();
   }
 
-  // note this assumes that a StationFeature is-a PointFeatureCollection (meaning is-a StationTimeSeriesFeature) (see the cast in next())
+  // note this assumes that a StationFeature is-a PointFeatureCollection (meaning is-a StationTimeSeriesFeature) (see
+  // the cast in next())
   // subclasses must override if thats not true
   // note that subset() may have made a subset of stationHelper
   private class StationIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
@@ -217,7 +219,8 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
         calcInfo.extend(prev.getInfo());
 
       boolean more = stationIter.hasNext();
-      if (!more && calcInfo != null) calcInfo.setComplete();
+      if (!more && calcInfo != null)
+        calcInfo.setComplete();
       return more;
     }
 
@@ -236,7 +239,8 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
 
   @Override
   public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
+    if (localIterator == null)
+      resetIteration();
     return localIterator.hasNext();
   }
 

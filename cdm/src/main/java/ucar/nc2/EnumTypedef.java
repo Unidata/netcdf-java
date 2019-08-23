@@ -7,7 +7,6 @@ package ucar.nc2;
 
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
-
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
@@ -24,14 +23,14 @@ public class EnumTypedef extends CDMNode {
   // Constants for the unsigned max values for enum(1,2,4)
   static public final int UBYTE_MAX = 255;
   static public final int USHORT_MAX = 65535;
-  //not used static public final long UINT_MAX = 4294967295L;
+  // not used static public final long UINT_MAX = 4294967295L;
 
   private final Map<Integer, String> map;
   private final ArrayList<String> enumStrings;
   private final DataType basetype;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
-    this(name, map, DataType.ENUM4); //default basetype
+    this(name, map, DataType.ENUM4); // default basetype
   }
 
   public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
@@ -58,9 +57,9 @@ public class EnumTypedef extends CDMNode {
     return this.basetype;
   }
 
-  public boolean
-  validateMap(Map<Integer, String> map, DataType basetype) {
-    if (map == null || basetype == null) return false;
+  public boolean validateMap(Map<Integer, String> map, DataType basetype) {
+    if (map == null || basetype == null)
+      return false;
     for (Integer i : map.keySet()) {
       // WARNING, we do not have signed/unsigned info available
       switch (basetype) {
@@ -81,33 +80,33 @@ public class EnumTypedef extends CDMNode {
     return true;
   }
 
-  /* private boolean
-  IgnoreinRange(int i) {
-    // WARNING, we do not have signed/unsigned info available
-    if (this.basetype == DataType.ENUM1
-            && (i >= Byte.MIN_VALUE || i <= UBYTE_MAX))
-      return true;
-    else if (this.basetype == DataType.ENUM2
-            && (i >= Short.MIN_VALUE || i <= USHORT_MAX))
-      return true;
-    else if (this.basetype == DataType.ENUM4) // always ok
-      return true;
-    else
-      return false;
-  } */
+  /*
+   * private boolean
+   * IgnoreinRange(int i) {
+   * // WARNING, we do not have signed/unsigned info available
+   * if (this.basetype == DataType.ENUM1
+   * && (i >= Byte.MIN_VALUE || i <= UBYTE_MAX))
+   * return true;
+   * else if (this.basetype == DataType.ENUM2
+   * && (i >= Short.MIN_VALUE || i <= USHORT_MAX))
+   * return true;
+   * else if (this.basetype == DataType.ENUM4) // always ok
+   * return true;
+   * else
+   * return false;
+   * }
+   */
 
   public String lookupEnumString(int e) {
     String result = map.get(e);
     return (result == null) ? "Unknown enum value=" + e : result;
   }
 
-  public Integer
-  lookupEnumInt(String name)
-  {
-     for(Map.Entry<Integer,String> entry: map.entrySet()) {
-       if(entry.getValue().equalsIgnoreCase(name))
-         return entry.getKey();
-     }
+  public Integer lookupEnumInt(String name) {
+    for (Map.Entry<Integer, String> entry : map.entrySet()) {
+      if (entry.getValue().equalsIgnoreCase(name))
+        return entry.getKey();
+    }
     return null;
   }
 
@@ -146,7 +145,8 @@ public class EnumTypedef extends CDMNode {
     Collections.sort(keysetList);
     for (Integer key : keysetList) {
       String s = map.get(key);
-      if (0 < count++) out.format(", ");
+      if (0 < count++)
+        out.format(", ");
       if (strict)
         out.format("%s = %s", NetcdfFile.makeValidCDLName(s), key);
       else
@@ -157,14 +157,19 @@ public class EnumTypedef extends CDMNode {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     EnumTypedef that = (EnumTypedef) o;
 
-    if (map == that.map) return true;
-    if (map == null) return false;
-    if (!map.equals(that.map)) return false;
+    if (map == that.map)
+      return true;
+    if (map == null)
+      return false;
+    if (!map.equals(that.map))
+      return false;
     String name = getShortName();
     String thatname = that.getShortName();
     return !(name != null ? !name.equals(thatname) : thatname != null);
@@ -182,7 +187,8 @@ public class EnumTypedef extends CDMNode {
   @Override
   public void hashCodeShow(Indent indent) {
     System.out.printf("%sEnum hash = %d%n", indent, hashCode());
-    System.out.printf("%s shortName '%s' = %d%n", indent, getShortName(), getShortName() == null ? -1 : getShortName().hashCode());
+    System.out.printf("%s shortName '%s' = %d%n", indent, getShortName(),
+        getShortName() == null ? -1 : getShortName().hashCode());
     System.out.printf("%s map = %s%n", indent, map.hashCode());
   }
 

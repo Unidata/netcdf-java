@@ -15,7 +15,6 @@ import thredds.inventory.partition.DirectoryCollection;
 import thredds.inventory.partition.TimePartition;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
@@ -28,16 +27,18 @@ public class TestMCollection {
 
   @Test
   public void testStreamFilterInDirPartition() throws IOException {
-    // this dataset 0-6 hour forecasts  x 124 runtimes (4x31)
-    // there are  2 groups, likely miscoded, the smaller group are 0 hour,  duplicates, possibly miscoded
-    FeatureCollectionConfig config = new FeatureCollectionConfig("cfrsAnalysis_46", "test/testCfrsAnalysisOnly", FeatureCollectionType.GRIB2,
+    // this dataset 0-6 hour forecasts x 124 runtimes (4x31)
+    // there are 2 groups, likely miscoded, the smaller group are 0 hour, duplicates, possibly miscoded
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("cfrsAnalysis_46", "test/testCfrsAnalysisOnly", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/cfsr/.*grb2", null, null, null, "directory", null);
 
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
     Path rootPath = Paths.get(specp.getRootDir());
 
-    try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, rootPath, true, config.olderThan, logger)) {
+    try (DirectoryCollection dcm =
+        new DirectoryCollection(config.collectionName, rootPath, true, config.olderThan, logger)) {
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (specp.getFilter() != null)
         dcm.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
@@ -56,7 +57,8 @@ public class TestMCollection {
   public void testTimePartition() throws IOException {
 
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds627.1", "test/ds627.1", FeatureCollectionType.GRIB1,
-            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null, "#ei.mdfa.fc12hr.sfc.regn128sc.#yyyyMMddhh", null, "year", null);
+        TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null,
+        "#ei.mdfa.fc12hr.sfc.regn128sc.#yyyyMMddhh", null, "year", null);
 
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);

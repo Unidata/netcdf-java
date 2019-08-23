@@ -20,18 +20,18 @@ public class Location {
   private String latitude_units, longitude_units, elevation_units;
   private boolean hasElevation = false;
 
-   /**
-    * Construct from fields in XML catalog.
-    *
-    * @param latitude : the latitude of the location.
-    * @param longitude : the latitude of the location.
-    * @param elevation : the elevation of the location (optional)
-    * @param latitude_units : the units of latitude (optional, default degrees_north).
-    * @param longitude_units : the units of longitude (optional, default degrees_east).
-    * @param elevation_units : the units of elevation (optional, default meters).
-    */
-  public Location( String latitude, String longitude, String elevation,
-    String latitude_units, String longitude_units, String elevation_units) {
+  /**
+   * Construct from fields in XML catalog.
+   *
+   * @param latitude : the latitude of the location.
+   * @param longitude : the latitude of the location.
+   * @param elevation : the elevation of the location (optional)
+   * @param latitude_units : the units of latitude (optional, default degrees_north).
+   * @param longitude_units : the units of longitude (optional, default degrees_east).
+   * @param elevation_units : the units of elevation (optional, default meters).
+   */
+  public Location(String latitude, String longitude, String elevation, String latitude_units, String longitude_units,
+      String elevation_units) {
 
     try {
       this.latitude = Double.parseDouble(latitude);
@@ -48,19 +48,42 @@ public class Location {
     this.elevation_units = elevation_units; // (elevation_units == null) ? "" : elevation_units.intern();
   }
 
-  public double getLatitude() { return latitude; }
-  public double getLongitude() { return longitude; }
-  public boolean hasElevation() { return hasElevation; }
-  public double getElevation() { return elevation; }
-  public String getLatitudeUnits() { return latitude_units; }
+  public double getLatitude() {
+    return latitude;
+  }
+
+  public double getLongitude() {
+    return longitude;
+  }
+
+  public boolean hasElevation() {
+    return hasElevation;
+  }
+
+  public double getElevation() {
+    return elevation;
+  }
+
+  public String getLatitudeUnits() {
+    return latitude_units;
+  }
+
   public boolean isDefaultLatitudeUnits() {
     return (latitude_units == null) || latitude_units.equals("degrees_north");
   }
-  public String getLongitudeUnits() { return longitude_units; }
+
+  public String getLongitudeUnits() {
+    return longitude_units;
+  }
+
   public boolean isDefaultLongitudeUnits() {
     return (longitude_units == null) || longitude_units.equals("degrees_east");
   }
-  public String getElevationUnits() { return elevation_units; }
+
+  public String getElevationUnits() {
+    return elevation_units;
+  }
+
   public boolean isDefaultElevationUnits() {
     return (elevation_units == null) || elevation_units.equals("msl");
   }
@@ -79,30 +102,34 @@ public class Location {
     return sbuff.toString();
   }
 
-   public boolean equals(Object o) {
-     if (this == o) return true;
-     if (!(o instanceof Location)) return false;
-     return o.hashCode() == this.hashCode();
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof Location))
+      return false;
+    return o.hashCode() == this.hashCode();
   }
+
   /** Override Object.hashCode() to implement equals. */
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
-      result = 37*result + (int) ( 1000.0 * getLatitude()) ;
-      result = 37*result + (int) ( 1000.0 * getLongitude()) ;
+      result = 37 * result + (int) (1000.0 * getLatitude());
+      result = 37 * result + (int) (1000.0 * getLongitude());
       if (hasElevation())
-        result = 37*result + (int) ( 1000.0 * getElevation()) ;
+        result = 37 * result + (int) (1000.0 * getElevation());
       if (getLatitudeUnits() != null)
-        result = 37*result + getLatitudeUnits().hashCode();
+        result = 37 * result + getLatitudeUnits().hashCode();
       if (getLongitudeUnits() != null)
-        result = 37*result + getLongitudeUnits().hashCode();
+        result = 37 * result + getLongitudeUnits().hashCode();
       if (getElevationUnits() != null)
-        result = 37*result + getElevationUnits().hashCode();
+        result = 37 * result + getElevationUnits().hashCode();
 
       hashCode = result;
     }
     return hashCode;
   }
+
   private volatile int hashCode = 0; // Bloch, item 8
 
 
