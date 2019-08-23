@@ -20,16 +20,16 @@ public abstract class UnitID implements Serializable {
    * 
    * @param name
    *        The name for the unit. May be <code>null
-   *				</code>.
+   *        </code>.
    * @param plural
    *        The plural form of the name. If <code>null
-   *				</code> and
+   *        </code> and
    *        <code>name</code> is non-<code>
-   *				null</code>, then regular
+   *        null</code>, then regular
    *        plural-forming rules are used on the name.
    * @param symbol
    *        The symbol for the unit. May be <code>null
-   *				</code>.
+   *        </code>.
    */
   public static UnitID newUnitID(final String name, final String plural, final String symbol) {
     UnitID id;

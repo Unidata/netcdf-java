@@ -45,13 +45,13 @@ where:
 Example service requests are:
 
 |---
-| Request | 	Response
+| Request |   Response
 |:-:|:-:
 | http://server:8080/thredds/cdmremote/data.nc?req=CDL |  dataset CDL  
-| http://server:8080/thredds/cdmremote/data.nc?req=NcML |	dataset NcML 
-| http://server:8080/thredds/cdmremote/data.nc?req=capabilities	 | capabilities XML 
-|http://server:8080/thredds/cdmremote/data.nc?req=header  |	header ncstream message, contains the structural metadata
-|http://server:8080/thredds/cdmremote/data.nc?req=data&var=Temp(0:99:10,0:127,:);lat;lon | 	data ncstream message
+| http://server:8080/thredds/cdmremote/data.nc?req=NcML |  dataset NcML 
+| http://server:8080/thredds/cdmremote/data.nc?req=capabilities   | capabilities XML 
+|http://server:8080/thredds/cdmremote/data.nc?req=header  |  header ncstream message, contains the structural metadata
+|http://server:8080/thredds/cdmremote/data.nc?req=data&var=Temp(0:99:10,0:127,:);lat;lon |   data ncstream message
 
 * Data request uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.
 * Variable names are case-sensitive and must be <a href="cdm_objectnames.html#cdmremote"> backslash-escaped</a>
@@ -109,14 +109,14 @@ Possible requests are:
 Example service requests are:
 
 |---
-| Request |	Response | Meaning
+| Request |  Response | Meaning
 |:-:|:-:|:-:
-| http://server:8080/thredds/cdmrfeature/data.nc/point?req=form	| HTML form	 | form interface
-| http://server:8080/thredds/cdmrfeature/data.nc/point?req=capabilities	| capabilities XML	| describe dataset
-| http://server:8080/thredds/cdmrfeature/data.nc/point?req=data	pointFeatureList | message	| get all the data
-| http://server:8080/thredds/cdmrfeature/data.nc/point?req=data&north=40.3&south=22.8&east=-80&west=-105	| pointFeatureList message	| get data in bounding box
-| http://server:8080/thredds/cdmrfeature/data.nc/point?req=data&time_start=&time_end=	| pointFeatureList message	| get data in time range
-| http://server:8080/thredds/cdmfeature/data.nc/point?req=data&var=Temp,lat,lon	| pointFeatureList message	| get data for listed variables
+| http://server:8080/thredds/cdmrfeature/data.nc/point?req=form  | HTML form   | form interface
+| http://server:8080/thredds/cdmrfeature/data.nc/point?req=capabilities  | capabilities XML  | describe dataset
+| http://server:8080/thredds/cdmrfeature/data.nc/point?req=data  pointFeatureList | message  | get all the data
+| http://server:8080/thredds/cdmrfeature/data.nc/point?req=data&north=40.3&south=22.8&east=-80&west=-105  | pointFeatureList message  | get data in bounding box
+| http://server:8080/thredds/cdmrfeature/data.nc/point?req=data&time_start=&time_end=  | pointFeatureList message  | get data in time range
+| http://server:8080/thredds/cdmfeature/data.nc/point?req=data&var=Temp,lat,lon  | pointFeatureList message  | get data for listed variables
 
 * data requests return an unordered list of observation as StructureData
 * The protobuf messages are defined by thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto
@@ -130,17 +130,17 @@ Possible query parameters are:
 #### Example service requests are:
 
 |---
-| Request	| Response	| Meaning
+| Request  | Response  | Meaning
 |:-:|:-:|:-:
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=form	| HTML form	| form interface
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=capabilities	| capabilities XML	| describe dataset
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=stations	| stationListMessage	| get all stations
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=stations&north=40.3&south=22.8&east=-80&west=-105	| stationListMessage	| get stations in bounding box
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=stations&stn=KDEN,KLOG,MOAS	| stationListMessage	| get stations in list
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=data&time_start=&time_end=&stn=KDEN	| pointFeatureList message	| get data in time range
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=data&stn=KDEN,KLOG,MOAS	| pointFeatureList message	| get data for station list
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=data&north=40.3&south=22.8&east=-80&west=-105	| pointFeatureList message	| get data in bounding box
-| http://server:8080/thredds/cdmrfeature/data.nc/station?req=data&var=Temp,lat,lon&stn=KDEN	| pointFeatureList message	| get data for listed variables
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=form  | HTML form  | form interface
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=capabilities  | capabilities XML  | describe dataset
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=stations  | stationListMessage  | get all stations
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=stations&north=40.3&south=22.8&east=-80&west=-105  | stationListMessage  | get stations in bounding box
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=stations&stn=KDEN,KLOG,MOAS  | stationListMessage  | get stations in list
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=data&time_start=&time_end=&stn=KDEN  | pointFeatureList message  | get data in time range
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=data&stn=KDEN,KLOG,MOAS  | pointFeatureList message  | get data for station list
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=data&north=40.3&south=22.8&east=-80&west=-105  | pointFeatureList message  | get data in bounding box
+| http://server:8080/thredds/cdmrfeature/data.nc/station?req=data&var=Temp,lat,lon&stn=KDEN  | pointFeatureList message  | get data for listed variables
 
 * a list of stations or a bounding box must always be provided (?)
 * data requests return an unordered list of observation as StructureData

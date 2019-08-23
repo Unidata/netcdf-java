@@ -95,7 +95,7 @@ An example:
 ~~~
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" 
-		  location="C:/dev/github/thredds/cdm/src/test/data/testWrite.nc">
+      location="C:/dev/github/thredds/cdm/src/test/data/testWrite.nc">
   <dimension name="lat" length="64" />
   <dimension name="lon" length="128" />
   <dimension name="names_len" length="80" />
@@ -576,14 +576,14 @@ The following examples show how date and time patterns are interpreted in the U.
 |---
 | Date and Time Pattern | Result
 | :- | :-
-| "yyyy.MM.dd G 'at' HH:mm:ss z"	| 2001.07.04 AD at 12:08:56 PDT
-| "EEE, MMM d, ''yy"	| Wed, Jul 4, '01
-| "h:mm a"	| 12:08 PM
-| "hh 'o''clock' a, zzzz"	| 12 o'clock PM, Pacific Daylight Time
-| "K:mm a, z"	| 0:08 PM, PDT
-| "yyyyy.MMMMM.dd GGG hh:mm aaa"	| 02001.July.04 AD 12:08 PM
-| "EEE, d MMM yyyy HH:mm:ss Z"	| Wed, 4 Jul 2001 12:08:56 -0700
-| "yyMMddHHmmssZ"	| 010704120856-0700
+| "yyyy.MM.dd G 'at' HH:mm:ss z"  | 2001.07.04 AD at 12:08:56 PDT
+| "EEE, MMM d, ''yy"  | Wed, Jul 4, '01
+| "h:mm a"  | 12:08 PM
+| "hh 'o''clock' a, zzzz"  | 12 o'clock PM, Pacific Daylight Time
+| "K:mm a, z"  | 0:08 PM, PDT
+| "yyyyy.MMMMM.dd GGG hh:mm aaa"  | 02001.July.04 AD 12:08 PM
+| "EEE, d MMM yyyy HH:mm:ss Z"  | Wed, 4 Jul 2001 12:08:56 -0700
+| "yyMMddHHmmssZ"  | 010704120856-0700
 
 ### Regular Expressions
 
@@ -614,7 +614,7 @@ This may be confusing if you are used to having to double escape in Java Strings
 | .*/AG.*\.nc$ | C:/data/test/AG2006001_2006003_ssta.ncd | false
 | .*/AG.*\.nc$ | C:/data/test/PS2006001_2006003_ssta.ncs | false
 
- 	 	 
+       
 ### Resources:
 
 <a href="http://java.sun.com/docs/books/tutorial/essential/regex/">Java Tutorial on Regular Expressions</a>

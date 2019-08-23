@@ -351,7 +351,7 @@ public class DerivedUnitImpl extends UnitImpl implements DerivedUnit, DerivableU
    *        The other unit.
    * @return <code>true</code> if and only if values in this unit are
    *         convertible to values in <code>
-   *				that</code>.
+   *        that</code>.
    */
   @Override
   public final boolean isCompatible(final Unit that) {
@@ -366,7 +366,7 @@ public class DerivedUnitImpl extends UnitImpl implements DerivedUnit, DerivableU
    *        The object
    * @return <code>true</code> if and only if this derived unit is
    *         semantically identical to <code>
-   *				object</code>.
+   *        object</code>.
    */
   @Override
   public boolean equals(final Object object) {

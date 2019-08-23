@@ -900,12 +900,12 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
         || (dodsBT instanceof DUInt32)) {
       if (dodsV.darray == null) {
         if (debugConstruct)
-          System.out.println("	assigned to scalar " + dodsBT.getTypeName() + ": name = " + dodsShortName);
+          System.out.println("  assigned to scalar " + dodsBT.getTypeName() + ": name = " + dodsShortName);
         return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT, dodsV);
       } else {
         if (debugConstruct)
           System.out
-              .println("	assigned to array of type " + dodsBT.getClass().getName() + ": name = " + dodsShortName);
+              .println("  assigned to array of type " + dodsBT.getClass().getName() + ": name = " + dodsShortName);
         return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT, dodsV);
       }
     }
@@ -2091,7 +2091,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    * 
    * private Array convertArray(DArray da, Variable ncVar) {
    * BaseType elemType = da.getPrimitiveVector().getTemplate();
-   * if (debugConvertData) System.out.println("	DArray type "+ elemType.getClass().getName());
+   * if (debugConvertData) System.out.println("  DArray type "+ elemType.getClass().getName());
    * 
    * if (elemType instanceof DStructure) { // array of structures LOOK no array of DGrid
    * Structure s = (Structure) ncVar;

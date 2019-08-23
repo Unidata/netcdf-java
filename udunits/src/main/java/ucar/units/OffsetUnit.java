@@ -46,7 +46,7 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
    * @param offset
    *        The origin of this unit in terms of the reference unit. For
    *        example, a degree Celsius unit would be created as "<code>new
-   * 				OffsetUnit(kelvin, 273.15)</code>.
+   *         OffsetUnit(kelvin, 273.15)</code>.
    */
   public OffsetUnit(final Unit unit, final double offset) {
     this(unit, offset, null);
@@ -60,7 +60,7 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
    * @param offset
    *        The origin of this unit in terms of the reference unit. For
    *        example, a degree Celsius unit would be created as "<code>new
-   * 				OffsetUnit(kelvin, 273.15)</code>.
+   *         OffsetUnit(kelvin, 273.15)</code>.
    * @param id
    *        The identifier for the new unit.
    */
@@ -373,7 +373,7 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
    *        The object.
    * @return <code>true</code> if and only if this unit is semantically
    *         identical to <code>object
-   *				</code>.
+   *        </code>.
    */
   @Override
   public boolean equals(final Object object) {

@@ -39,10 +39,10 @@ public final class UnitName extends UnitID implements Comparable<Object> {
    * 
    * @param name
    *        The name of the unit. Shall not be <code>
-   *				null</code>.
+   *        null</code>.
    * @param symbol
    *        The symbol for the unit. May be <code>null
-   *				</code>.
+   *        </code>.
    * @throws NameException
    *         <code>name == null</code>.
    */
@@ -55,15 +55,15 @@ public final class UnitName extends UnitID implements Comparable<Object> {
    * 
    * @param name
    *        The name of the unit. Shall not be <code>
-   *				null</code>.
+   *        null</code>.
    * @param plural
    *        The plural form of the name. May be <code>
-   *				null</code>, in which
+   *        null</code>, in which
    *        case regular plural- forming rules are used to construct the
    *        plural form from the name.
    * @param symbol
    *        The symbol for the unit. May be <code>null
-   *				</code>.
+   *        </code>.
    * @throws NameException
    *         <code>name == null</code>.
    */
@@ -81,7 +81,7 @@ public final class UnitName extends UnitID implements Comparable<Object> {
    * 
    * @param name
    *        The name of the unit. Shall not be <code>
-   *				null</code>.
+   *        null</code>.
    * @throws NameException
    *         <code>name == null</code>.
    */
@@ -95,10 +95,10 @@ public final class UnitName extends UnitID implements Comparable<Object> {
    * 
    * @param name
    *        The name of the unit. Shall not be <code>
-   *				null</code>.
+   *        null</code>.
    * @param plural
    *        The plural form of the name. May be <code>
-   *				null</code>, in which
+   *        null</code>, in which
    *        case regular plural- forming rules are used to construct the
    *        plural form from the name.
    * @throws NameException
@@ -114,15 +114,15 @@ public final class UnitName extends UnitID implements Comparable<Object> {
    * 
    * @param name
    *        The name of the unit. Shall not be <code>
-   *				null</code>.
+   *        null</code>.
    * @param plural
    *        The plural form of the name. May be <code>
-   *				null</code>, in which
+   *        null</code>, in which
    *        case regular plural- forming rules are used to construct the
    *        plural form from the name.
    * @param symbol
    *        The symbol for the unit. May be <code>null
-   *				</code>.
+   *        </code>.
    * @throws NameException
    *         <code>name == null</code>.
    */

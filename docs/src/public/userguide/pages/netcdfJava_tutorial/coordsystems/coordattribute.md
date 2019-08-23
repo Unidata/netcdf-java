@@ -309,7 +309,7 @@ dimensions:
 
  variables:
   float Soil_temperature(level, y, x);
-	   Soil_temperature:units = "K";
+     Soil_temperature:units = "K";
  Soil_temperature:_CoordinateSystems = "ProjectionCoordinateSystem";
   
   double y(y);

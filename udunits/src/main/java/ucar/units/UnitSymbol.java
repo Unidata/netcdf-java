@@ -23,7 +23,7 @@ public final class UnitSymbol extends UnitID {
    * 
    * @param symbol
    *        The symbol for the unit. Shall not be <code>
-   *				null</code>.
+   *        null</code>.
    */
   public UnitSymbol(final String symbol) throws NameException {
     if (symbol == null) {
@@ -57,7 +57,7 @@ public final class UnitSymbol extends UnitID {
    * Returns the symbol for the unit.
    * 
    * @return The symbol for the unit. Never <code>null
-   *				</code>.
+   *        </code>.
    */
   @Override
   public String getSymbol() {

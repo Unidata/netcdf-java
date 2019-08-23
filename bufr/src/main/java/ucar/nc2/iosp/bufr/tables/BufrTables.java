@@ -45,9 +45,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  *
  * mel-tabs (tab delimited) ---------------
- * F	X	Y	Scale	RefVal	Width	Units	Element Name
- * 0	0	1	0	0	24	CCITT_IA5	Table A: entry
- * 0	0	2	0	0	256	CCITT_IA5	Table A: data category description, line 1
+ * F  X  Y  Scale  RefVal  Width  Units  Element Name
+ * 0  0  1  0  0  24  CCITT_IA5  Table A: entry
+ * 0  0  2  0  0  256  CCITT_IA5  Table A: data category description, line 1
  *
  *
  * ncep-----------

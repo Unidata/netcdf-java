@@ -350,7 +350,7 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
    *        The object.
    * @return <code>true</code> if an only if this unit is semantically
    *         identical to <code>object
-   *				</code>.
+   *        </code>.
    */
   public boolean equals(final Object object) {
     if (this == object) {
