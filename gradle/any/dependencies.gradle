@@ -58,6 +58,8 @@ libraries["license-gradle-plugin"] = "gradle.plugin.nl.javadude.gradle.plugins:l
 
 libraries["jruby-gradle-plugin"] = "com.github.jruby-gradle:jruby-gradle-plugin:1.7.0"
 
+libraries["spotless"] = "com.diffplug.spotless:spotless-plugin-gradle:3.22.0"
+
 //////////////////////////////////////////// Spring //////////////////////////////////////////
 
 versions["spring"] = "4.3.20.RELEASE"
