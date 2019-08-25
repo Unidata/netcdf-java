@@ -722,6 +722,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
       cftab[ch]++;
     }
 
+    tPos = tt[origPtr];
     count = 0;
     i2 = 0;
     ch2 = 256; /* not a char and not EOF */
