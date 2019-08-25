@@ -172,7 +172,7 @@ public class EnumTypedef extends CDMNode {
       return false;
     String name = getShortName();
     String thatname = that.getShortName();
-    return !(name != null ? !name.equals(thatname) : thatname != null);
+    return !(!Objects.equals(name, thatname));
 
   }
 

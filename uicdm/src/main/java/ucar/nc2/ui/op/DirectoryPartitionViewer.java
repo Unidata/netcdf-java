@@ -1211,7 +1211,7 @@ public class DirectoryPartitionViewer extends JPanel {
   }
 
 
-  public class GroupBean {
+  public static class GroupBean {
     String partitionName;
     String datasetName;
     GribCollectionMutable.GroupGC group;
@@ -1270,7 +1270,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////////////////
 
-  public class VarBean {
+  public static class VarBean {
     GribCollectionMutable.VariableIndex v;
     GribCollectionMutable.GroupGC group;
 

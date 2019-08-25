@@ -973,7 +973,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     return new CoverageCoordSys(null, axisNames, transformNames, coverageType);
   }
 
-  private class NameAndType {
+  private static class NameAndType {
     final String name;
     final AxisType type;
 

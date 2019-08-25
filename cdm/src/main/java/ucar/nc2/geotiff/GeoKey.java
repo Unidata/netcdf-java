@@ -357,11 +357,11 @@ class GeoKey {
       return false;
     if (!Arrays.equals(dvalue, geoKey.dvalue))
       return false;
-    if (valueS != null ? !valueS.equals(geoKey.valueS) : geoKey.valueS != null)
+    if (!Objects.equals(valueS, geoKey.valueS))
       return false;
-    if (tag != null ? !tag.equals(geoKey.tag) : geoKey.tag != null)
+    if (!Objects.equals(tag, geoKey.tag))
       return false;
-    return !(tagValue != null ? !tagValue.equals(geoKey.tagValue) : geoKey.tagValue != null);
+    return !(!Objects.equals(tagValue, geoKey.tagValue));
 
   }
 

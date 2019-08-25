@@ -169,7 +169,7 @@ public class Hdf4Table extends JPanel {
   /**
    *
    */
-  public class TagBean {
+  public static class TagBean {
     H4header.Tag tag;
 
     /**

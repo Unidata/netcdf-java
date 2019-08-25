@@ -108,7 +108,7 @@ public class GribWmoCodesPanel extends JPanel {
     entryTable.setBeans(beans);
   }
 
-  public class CodeTableBean {
+  public static class CodeTableBean {
     WmoTable wmoTable;
 
     // no-arg constructor
@@ -139,7 +139,7 @@ public class GribWmoCodesPanel extends JPanel {
     }
   }
 
-  public class EntryBean {
+  public static class EntryBean {
     WmoTable.WmoEntry entry;
 
     // no-arg constructor

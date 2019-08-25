@@ -204,7 +204,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
   // the StationTimeSeriesFeature
 
-  private class CompositeStationFeature extends StationTimeSeriesFeatureImpl {
+  private static class CompositeStationFeature extends StationTimeSeriesFeatureImpl {
     private TimedCollection collForFeature;
     private StructureData sdata;
 

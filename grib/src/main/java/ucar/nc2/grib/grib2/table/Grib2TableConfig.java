@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.grib.grib2.table.Grib2TablesId.Type;
 import com.google.common.collect.ImmutableList;
 import java.util.Objects;
@@ -38,7 +39,7 @@ class Grib2TableConfig {
     try (InputStream is = cl.getResourceAsStream(tableMapPath)) {
       if (is == null)
         throw new IllegalStateException("Cant find " + tableMapPath);
-      try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF8")))) {
+      try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
         int count = 0;
         while (true) {
           String line = dataIS.readLine();

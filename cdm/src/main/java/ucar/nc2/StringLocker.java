@@ -12,7 +12,7 @@ import java.util.List;
 
 public class StringLocker {
 
-  private List<String> stringList = Collections.synchronizedList(new ArrayList<String>());
+  private List<String> stringList = Collections.synchronizedList(new ArrayList<>());
   private boolean waiting = false;
 
   public synchronized void control(String item) {

@@ -380,7 +380,7 @@ public class StructureTable extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  private abstract class StructureTableModel extends AbstractTableModel {
+  private abstract static class StructureTableModel extends AbstractTableModel {
     protected HashMapLRU rowHash = new HashMapLRU(500, 500); // cache 500 rows
     protected StructureMembers members;
     protected boolean wantDate = false;

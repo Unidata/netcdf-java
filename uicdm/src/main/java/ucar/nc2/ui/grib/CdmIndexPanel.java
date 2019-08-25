@@ -1141,7 +1141,7 @@ public class CdmIndexPanel extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////////////////
 
-  public class VarBean {
+  public static class VarBean {
     GribCollectionImmutable.VariableIndex v;
     GribCollectionImmutable.GroupGC group;
     String name;

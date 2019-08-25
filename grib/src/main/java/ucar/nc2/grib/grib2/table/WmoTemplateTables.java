@@ -262,7 +262,7 @@ public class WmoTemplateTables {
     }
   }
 
-  public class Field implements Comparable<Field> {
+  public static class Field implements Comparable<Field> {
     private final String octet;
     private final String content;
     private String status;

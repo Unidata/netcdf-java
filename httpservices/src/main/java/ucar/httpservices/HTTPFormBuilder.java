@@ -48,7 +48,7 @@ public class HTTPFormBuilder {
   //////////////////////////////////////////////////
   // Type Decls
 
-  static protected enum Sort {
+  protected enum Sort {
     TEXT, BYTES, STREAM, FILE;
 
     static public ContentType contenttype(Sort sort) {

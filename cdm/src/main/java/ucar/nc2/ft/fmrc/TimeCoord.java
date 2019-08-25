@@ -6,8 +6,6 @@
 package ucar.nc2.ft.fmrc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashSet;

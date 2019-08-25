@@ -748,6 +748,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   }
 
   @Immutable
+  static
   class DataRecord extends GribDataReader.DataRecord {
     final PartitionCollectionImmutable usePartition;
     final int partno; // partition index in usePartition

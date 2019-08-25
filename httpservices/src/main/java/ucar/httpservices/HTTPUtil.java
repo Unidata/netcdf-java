@@ -5,8 +5,9 @@
 
 package ucar.httpservices;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import org.apache.http.*;
-import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
@@ -25,8 +26,8 @@ abstract public class HTTPUtil {
   //////////////////////////////////////////////////
   // Constants
 
-  static final public Charset UTF8 = Charset.forName("UTF-8");
-  static final public Charset ASCII = Charset.forName("US-ASCII");
+  static final public Charset UTF8 = StandardCharsets.UTF_8;
+  static final public Charset ASCII = StandardCharsets.US_ASCII;
   static final public String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
   static final public String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   static final public String DRIVELETTERS = LOWERCASE + UPPERCASE;
@@ -208,7 +209,7 @@ abstract public class HTTPUtil {
    * @return {@code true} if the objects are equal or both null
    */
   static boolean equals(final Object obj1, final Object obj2) {
-    return obj1 == null ? obj2 == null : obj1.equals(obj2);
+    return Objects.equals(obj1, obj2);
   }
 
   /**

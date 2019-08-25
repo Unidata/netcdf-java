@@ -343,7 +343,7 @@ public class SimpleGeomTable extends JPanel {
     return gridDataset.findGridDatatype(vb.getName());
   }
 
-  public class GeoGridBean {
+  public static class GeoGridBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
     GridDatatype geogrid;
@@ -480,7 +480,7 @@ public class SimpleGeomTable extends JPanel {
     }
   }
 
-  public class GeoCoordinateSystemBean {
+  public static class GeoCoordinateSystemBean {
     private GridCoordSystem gcs;
     private String proj, coordTrans;
     private int ngrids = -1;
@@ -575,7 +575,7 @@ public class SimpleGeomTable extends JPanel {
     }
   }
 
-  public class GeoAxisBean {
+  public static class GeoAxisBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
     CoordinateAxis axis;
@@ -700,7 +700,7 @@ public class SimpleGeomTable extends JPanel {
     }
   }
 
-  public class SimpleGeomBean {
+  public static class SimpleGeomBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
     GridDatatype v;

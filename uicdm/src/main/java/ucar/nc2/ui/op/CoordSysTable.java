@@ -890,7 +890,7 @@ public class CoordSysTable extends JPanel {
     }
   }
 
-  public class AttributeBean {
+  public static class AttributeBean {
     private Attribute att;
 
     // no-arg constructor
@@ -912,7 +912,7 @@ public class CoordSysTable extends JPanel {
 
   }
 
-  public class AxisBean {
+  public static class AxisBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
     CoordinateAxis axis;

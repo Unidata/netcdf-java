@@ -201,7 +201,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     int rnk = var.getRank();
 
     if (rnk == 3) {
-      VariableSimpleIF v = new AbstractRadialAdapter.MyRadialVariableAdapter(vName, var.getAttributes());
+      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
       rsvar = makeRadialVariable(nds, v, var);
     }
 

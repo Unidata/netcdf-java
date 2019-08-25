@@ -812,7 +812,7 @@ public class DatasetWriter extends JPanel {
   /**
    *
    */
-  public class DimensionBean {
+  public static class DimensionBean {
 
     Dimension ds;
 
@@ -1089,7 +1089,7 @@ public class DatasetWriter extends JPanel {
   /**
    *
    */
-  public class AttributeBean {
+  public static class AttributeBean {
 
     private Attribute att;
 

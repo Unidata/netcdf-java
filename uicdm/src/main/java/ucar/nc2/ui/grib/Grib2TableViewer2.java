@@ -267,7 +267,7 @@ public class Grib2TableViewer2 extends JPanel {
     infoWindow.show();
   }
 
-  public class TableBean implements Comparable<TableBean> {
+  public static class TableBean implements Comparable<TableBean> {
     Grib2Tables table;
     Grib2TablesId id;
 
@@ -325,7 +325,7 @@ public class Grib2TableViewer2 extends JPanel {
     }
   }
 
-  public class EntryBean {
+  public static class EntryBean {
     GribTables.Parameter param;
 
     // no-arg constructor

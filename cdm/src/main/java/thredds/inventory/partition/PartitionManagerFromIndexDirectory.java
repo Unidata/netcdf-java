@@ -10,7 +10,6 @@ import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

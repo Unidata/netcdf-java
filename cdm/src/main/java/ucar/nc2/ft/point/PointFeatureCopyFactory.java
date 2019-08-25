@@ -58,7 +58,7 @@ public class PointFeatureCopyFactory {
     return deep;
   }
 
-  private class PointFeatureCopy extends PointFeatureImpl {
+  private static class PointFeatureCopy extends PointFeatureImpl {
 
     StructureData data;
 

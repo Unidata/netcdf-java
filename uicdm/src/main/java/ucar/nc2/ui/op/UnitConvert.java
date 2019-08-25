@@ -200,7 +200,7 @@ public class UnitConvert extends OpPanel {
       try {
         String[] s = command.split("%");
         if (s.length == 2) {
-          final Double val = Double.parseDouble(s[0].trim());
+          final double val = Double.parseDouble(s[0].trim());
           ta.appendLine("\nval= " + val + " unit=" + s[1]);
           CalendarDateUnit cdu = CalendarDateUnit.of(null, s[1].trim());
           ta.appendLine("CalendarDateUnit= " + cdu);

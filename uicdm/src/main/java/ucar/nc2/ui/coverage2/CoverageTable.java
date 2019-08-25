@@ -355,7 +355,7 @@ public class CoverageTable extends JPanel {
     return result;
   }
 
-  public class DatasetBean {
+  public static class DatasetBean {
     CoverageCollection cds;
 
     public DatasetBean() {}
@@ -398,7 +398,7 @@ public class CoverageTable extends JPanel {
   }
 
 
-  public class CoverageBean implements NamedObject {
+  public static class CoverageBean implements NamedObject {
 
     public String hiddenProperties() { // for BeanTable
       return "value";
@@ -451,7 +451,7 @@ public class CoverageTable extends JPanel {
     }
   }
 
-  public class CoordSysBean {
+  public static class CoordSysBean {
     private CoverageCoordSys gcs;
     private String coordTrans, runtimeName, timeName, ensName, vertName;
     private int nIndAxis = 0;
@@ -529,7 +529,7 @@ public class CoverageTable extends JPanel {
     }
   }
 
-  public class CoordTransBean {
+  public static class CoordTransBean {
     private CoverageTransform gcs;
     String params;
     boolean isHoriz;
@@ -560,7 +560,7 @@ public class CoverageTable extends JPanel {
     }
   }
 
-  public class AxisBean {
+  public static class AxisBean {
     CoverageCoordAxis axis;
     String name, desc, units;
     DataType dataType;

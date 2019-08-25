@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp.bufr.tables;
 
+import java.nio.charset.StandardCharsets;
 import ucar.unidata.util.StringUtil2;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class NcepTable {
 
   static private void readNcepTable(String location) throws IOException {
     try (InputStream ios = BufrTables.openStream(location)) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF8")));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
       int count = 0;
       while (true) {
         String line = dataIS.readLine();

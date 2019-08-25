@@ -402,7 +402,7 @@ public class EsriShapefile {
    *
    * @author Russ Rew
    */
-  public abstract class EsriFeature extends AbstractGisFeature {
+  public abstract static class EsriFeature extends AbstractGisFeature {
     protected Rectangle2D bounds;
     int numPoints;
     int numParts;

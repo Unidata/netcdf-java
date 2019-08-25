@@ -287,7 +287,7 @@ public class GribCdmIndex implements IndexReader {
 
     boolean changed = updatePartition(isGrib1, dcm, updateType, logger, errlog);
     if (errlog != null)
-      errlog.format("PartitionCollection %s was recreated{}", dcm.getCollectionName(), changed);
+      errlog.format("PartitionCollection {} was recreated{}", dcm.getCollectionName(), changed);
     return changed;
   }
 
@@ -1039,7 +1039,7 @@ public class GribCdmIndex implements IndexReader {
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
     public final boolean help = false;
 
-    public class CollectionUpdateTypeConverter implements IStringConverter<CollectionUpdateType> {
+    public static class CollectionUpdateTypeConverter implements IStringConverter<CollectionUpdateType> {
       @Override
       public CollectionUpdateType convert(String value) {
         return CollectionUpdateType.valueOf(value);
@@ -1094,13 +1094,13 @@ public class GribCdmIndex implements IndexReader {
         String location = cmdLine.inputFile.getAbsolutePath();
         FeatureCollectionConfig config = reader.readConfigFromFile(location);
         boolean changed = GribCdmIndex.updateGribCollection(config, cmdLine.updateType, classLogger);
-        System.out.printf("changed ={}", changed);
+        System.out.printf("changed =%s", changed);
 
       } catch (Exception e) {
         System.out.printf("%s = %s %n", e.getClass().getName(), e.getMessage());
         String err = errlog.toString();
         if (err.length() > 0)
-          System.out.printf(" errlog={}", err);
+          System.out.printf(" errlog=%s", err);
         e.printStackTrace();
       }
 

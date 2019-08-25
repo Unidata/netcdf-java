@@ -812,7 +812,7 @@ public class BufrMessageViewer extends JPanel {
   }
 
 
-  public class DdsBean {
+  public static class DdsBean {
     DataDescriptor dds;
     int seq;
 
@@ -868,7 +868,7 @@ public class BufrMessageViewer extends JPanel {
   }
 
 
-  public class ObsBean {
+  public static class ObsBean {
     double lat = Double.NaN, lon = Double.NaN, height = Double.NaN, heightOfStation = Double.NaN;
     int year = -1, month = -1, day = -1, hour = -1, minute = -1, sec = -1, doy = -1;
     CalendarDate date;

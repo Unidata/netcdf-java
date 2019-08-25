@@ -723,7 +723,7 @@ public class Fmrc2Panel extends JPanel {
    * }
    */
 
-  public class FmrBean {
+  public static class FmrBean {
     FmrInv fmr;
 
     // no-arg constructor
@@ -746,7 +746,7 @@ public class Fmrc2Panel extends JPanel {
 
   }
 
-  public class InvBean {
+  public static class InvBean {
     GridDatasetInv fmrInv;
 
     // no-arg constructor
@@ -769,7 +769,7 @@ public class Fmrc2Panel extends JPanel {
   }
 
 
-  public class GridBean {
+  public static class GridBean {
     FmrcInv.UberGrid grid;
 
     // no-arg constructor
@@ -805,7 +805,7 @@ public class Fmrc2Panel extends JPanel {
     }
   }
 
-  public abstract class CoordBean {
+  public abstract static class CoordBean {
     // no-arg constructor
     public CoordBean() {}
 

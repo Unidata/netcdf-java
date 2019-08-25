@@ -7,14 +7,10 @@ package thredds.ui.catalog;
 
 import thredds.client.catalog.*;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.XMLStore;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.Formatter;
 
 // import thredds.catalog.ui.tools.CatalogSearcher;

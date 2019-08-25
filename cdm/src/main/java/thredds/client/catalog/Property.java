@@ -4,6 +4,7 @@
  */
 package thredds.client.catalog;
 
+import java.util.Objects;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import javax.annotation.concurrent.Immutable;
@@ -45,7 +46,7 @@ public class Property {
 
     if (!name.equals(property.name))
       return false;
-    return !(value != null ? !value.equals(property.value) : property.value != null);
+    return !(!Objects.equals(value, property.value));
   }
 
   @Override

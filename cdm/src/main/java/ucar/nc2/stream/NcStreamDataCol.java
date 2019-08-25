@@ -223,7 +223,7 @@ public class NcStreamDataCol {
   ///////////////////////////////////////////////////////////////////////////////////////////////
   // Structures
 
-  private class MemberData {
+  private static class MemberData {
     StructureMembers.Member member;
     Section section;
     DataType dtype;

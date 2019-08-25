@@ -505,7 +505,7 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   // track number of records for each file
-  private class FileCount {
+  private static class FileCount {
     private FileCount(MFile f) {
       this.f = f;
     }

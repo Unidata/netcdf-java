@@ -85,7 +85,7 @@ public class HTTPMethodStream extends FilterInputStream implements Closeable {
         log.debug("HTTPMethodStream: unconsumed data");
       }
     } catch (IOException ioe) {
-      /* ignore */} ;
+      /* ignore */}
   }
 
   public boolean isClosed() {

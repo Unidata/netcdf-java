@@ -369,7 +369,7 @@ public class Grib1TablesViewer extends JPanel {
 
   }
 
-  public class TableBean implements Comparable<TableBean> {
+  public static class TableBean implements Comparable<TableBean> {
     Grib1ParamTableReader table;
 
     // no-arg constructor
@@ -425,7 +425,7 @@ public class Grib1TablesViewer extends JPanel {
     }
   }
 
-  public class EntryBean {
+  public static class EntryBean {
     Grib1Parameter param;
 
     // no-arg constructor

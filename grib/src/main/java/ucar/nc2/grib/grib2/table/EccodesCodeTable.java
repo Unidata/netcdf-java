@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 /**
@@ -112,7 +113,7 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
       if (is == null) {
         throw new IllegalStateException("Cant find " + path);
       }
-      try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF8")))) {
+      try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
         int count = 0;
         while (true) {
           String line = dataIS.readLine();
@@ -152,7 +153,7 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
     return builder.build();
   }
 
-  private class EcmwfEntry implements Entry, Comparable<Entry> {
+  private static class EcmwfEntry implements Entry, Comparable<Entry> {
     private final int codeValue;
     private final String name;
 

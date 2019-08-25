@@ -403,7 +403,7 @@ public class GEOSTransform {
    * r_eq = 6378.1690 km
    */
 
-  class Geoid {
+  static class Geoid {
     double r_pol; // semi-minor axis (polar radius km)
     double r_eq; // semi-major axis (equatorial radius km)
     double f; // flattening

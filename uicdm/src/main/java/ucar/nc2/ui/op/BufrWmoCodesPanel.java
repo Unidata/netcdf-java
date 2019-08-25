@@ -106,7 +106,7 @@ public class BufrWmoCodesPanel extends JPanel {
     entryTable.setBeans(beans);
   }
 
-  public class CodeTableBean {
+  public static class CodeTableBean {
     CodeFlagTables code;
 
     // no-arg constructor
@@ -142,7 +142,7 @@ public class BufrWmoCodesPanel extends JPanel {
     }
   }
 
-  public class EntryBean {
+  public static class EntryBean {
     int code;
     String value;
 

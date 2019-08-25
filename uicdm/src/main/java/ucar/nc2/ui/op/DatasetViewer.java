@@ -831,7 +831,7 @@ public class DatasetViewer extends JPanel {
     return vlist;
   }
 
-  public class VariableBean {
+  public static class VariableBean {
     // static public String editableProperties() { return "title include logging freq"; }
     private Variable vs;
     private String name, dimensions, desc, units, dataType, shape;
@@ -944,7 +944,7 @@ public class DatasetViewer extends JPanel {
     }
   }
 
-  public class AttributeBean {
+  public static class AttributeBean {
     private Attribute att;
 
     // create from a dataset
