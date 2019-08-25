@@ -22,7 +22,7 @@ public class TestTableAnalyzer {
 
   @Test
   public void testStuff() throws IOException {
-    doit("ncss/point_features/metars/Surface_METAR_20130823_0000.nc");
+    doit("ncss/point_features/metar/Surface_METAR_20130823_0000.nc");
     doit("ncss/point_features/windProfilers/20131101/PROFILER_wind_06min_20131101_2348.nc");
 
     // LOOK add all in directory

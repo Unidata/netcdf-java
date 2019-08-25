@@ -3,6 +3,8 @@ package ucar.nc2.dt.grid;
 import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridCoordSystem;
@@ -10,6 +12,7 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 @Category(NeedsCdmUnitTest.class)
+@RunWith(JUnit4.class)
 public class TestGridCoordinate2D {
 
   private static void doOne(GridCoordinate2D g2d, double wantLat, double wantLon) {
@@ -31,7 +34,7 @@ public class TestGridCoordinate2D {
   public void testStuff1() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "asaScience/EGM200_3.ncml";
     GridDataset gds = GridDataset.open(filename);
-    GeoGrid grid = gds.findGridByName("u_wind");
+    GeoGrid grid = gds.findGridByName("U");
     GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis lonAxis = gcs.getXHorizAxis();
     assert lonAxis instanceof CoordinateAxis2D;
@@ -50,7 +53,7 @@ public class TestGridCoordinate2D {
 
   @Test
   public void testStuff2() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "fmrc/apex_fmrc/Run_20091025_0000.nc";
+    String filename = TestDir.cdmUnitTestDir + "ft/fmrc/apex_fmrc/Run_20091025_0000.nc";
     GridDataset gds = GridDataset.open(filename);
     GeoGrid grid = gds.findGridByName("temp");
     GridCoordSystem gcs = grid.getCoordinateSystem();
