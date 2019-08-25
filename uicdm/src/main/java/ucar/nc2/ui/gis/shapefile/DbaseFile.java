@@ -213,7 +213,7 @@ public class DbaseFile {
       String[] s = d.getStrings();
       double[] dd = new double[s.length];
       for (int i = 0; i < s.length; i++) {
-        dd[i] = Double.valueOf(s[i]);
+        dd[i] = Double.parseDouble(s[i]);
       }
       return dd;
     }

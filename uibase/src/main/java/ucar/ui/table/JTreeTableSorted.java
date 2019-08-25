@@ -544,7 +544,7 @@ public class JTreeTableSorted extends JPanel {
     }
   }
 
-  private class SortedHeaderRenderer implements TableCellRenderer {
+  private static class SortedHeaderRenderer implements TableCellRenderer {
     int modelCol;
     Component comp;
 

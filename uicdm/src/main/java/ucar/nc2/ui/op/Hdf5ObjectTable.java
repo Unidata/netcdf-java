@@ -258,7 +258,7 @@ public class Hdf5ObjectTable extends JPanel {
   /**
    *
    */
-  public class ObjectBean {
+  public static class ObjectBean {
     H5header.DataObject m;
 
     /**
@@ -297,7 +297,7 @@ public class Hdf5ObjectTable extends JPanel {
   /**
    *
    */
-  public class MessageBean {
+  public static class MessageBean {
     H5header.HeaderMessage m;
 
     /**
@@ -336,7 +336,7 @@ public class Hdf5ObjectTable extends JPanel {
   /**
    *
    */
-  public class AttributeBean {
+  public static class AttributeBean {
     H5header.MessageAttribute att;
 
     /**

@@ -245,7 +245,7 @@ public class GribFilesPanel extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////////
 
-  public class CollectionBean {
+  public static class CollectionBean {
 
     String spec;
     // MCollection dcm;
@@ -280,7 +280,7 @@ public class GribFilesPanel extends JPanel {
 
   }
 
-  public class Grib1Bean {
+  public static class Grib1Bean {
 
     MFile m;
     Grib1Record first;
@@ -336,7 +336,7 @@ public class GribFilesPanel extends JPanel {
   }
 
 
-  public class Grib2Bean {
+  public static class Grib2Bean {
 
     MFile m;
     Grib2Index index;

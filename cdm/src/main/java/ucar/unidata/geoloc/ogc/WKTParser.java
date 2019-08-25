@@ -6,7 +6,6 @@
 package ucar.unidata.geoloc.ogc;
 
 import java.util.HashMap;
-import java.util.Map;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.*;

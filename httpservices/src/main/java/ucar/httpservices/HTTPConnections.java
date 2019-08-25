@@ -13,9 +13,7 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.util.EntityUtils;
 import javax.annotation.concurrent.ThreadSafe;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

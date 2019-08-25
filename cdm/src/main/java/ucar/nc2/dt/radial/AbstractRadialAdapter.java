@@ -321,7 +321,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   }
 
   ///////////////////////////////////////////////////////////////////////
-  public class MyRadialVariableAdapter implements VariableSimpleIF {
+  public static class MyRadialVariableAdapter implements VariableSimpleIF {
 
     private int rank;
     private int[] shape;

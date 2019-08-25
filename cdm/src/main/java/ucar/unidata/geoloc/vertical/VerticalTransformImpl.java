@@ -143,7 +143,7 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
   protected boolean getParameterBooleanValue(List<Parameter> params, String name) {
     for (Parameter p : params) {
       if (name.equalsIgnoreCase(p.getName()))
-        return Boolean.valueOf(p.getStringValue());
+        return Boolean.parseBoolean(p.getStringValue());
     }
     return false;
   }

@@ -1,6 +1,5 @@
 package ucar.nc2.iosp.fysat.util;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

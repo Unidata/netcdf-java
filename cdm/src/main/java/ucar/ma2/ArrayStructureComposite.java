@@ -6,7 +6,6 @@
 package ucar.ma2;
 
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * An ArrayStructure compose of other ArrayStructures.

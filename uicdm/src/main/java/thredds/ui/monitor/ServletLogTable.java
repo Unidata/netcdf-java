@@ -487,7 +487,7 @@ public class ServletLogTable extends JPanel {
   ////////////////////////////////////////////////
 
 
-  public class Merge {
+  public static class Merge {
     public long getReqTime() {
       return start.getReqTime();
     }

@@ -44,7 +44,7 @@ public class PointCollectionStreamRemote extends PointCollectionStreamAbstract i
     return new Subset(this, boundingBox, dateRange);
   }
 
-  private class Subset extends PointCollectionStreamRemote {
+  private static class Subset extends PointCollectionStreamRemote {
     LatLonRect filter_bb;
     CalendarDateRange filter_date;
 

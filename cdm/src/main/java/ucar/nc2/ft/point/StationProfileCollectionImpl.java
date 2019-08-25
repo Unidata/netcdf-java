@@ -160,7 +160,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl
   }
 
   // LOOK make into top-level; how come section didnt need this?
-  public class NestedCollectionIOIteratorAdapter<T> implements IOIterator<T> {
+  public static class NestedCollectionIOIteratorAdapter<T> implements IOIterator<T> {
     PointFeatureCCIterator pfIterator;
 
     public NestedCollectionIOIteratorAdapter(PointFeatureCCIterator pfIterator) {

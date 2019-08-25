@@ -617,7 +617,7 @@ public class SigmetVolumeScan {
     return groups;
   }
 
-  private class GroupComparator implements Comparator<List<Ray>> {
+  private static class GroupComparator implements Comparator<List<Ray>> {
     public int compare(List<Ray> group1, List<Ray> group2) {
       Ray record1 = group1.get(0);
       Ray record2 = group2.get(0);
@@ -741,7 +741,7 @@ public class SigmetVolumeScan {
 
   }
 
-  class RayComparator implements Comparator<Ray> {
+  static class RayComparator implements Comparator<Ray> {
     public int compare(Ray ray1, Ray ray2) {
       if (ray1.getTime() < ray2.getTime()) {
         return -1;

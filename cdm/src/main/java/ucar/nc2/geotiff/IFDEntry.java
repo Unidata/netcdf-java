@@ -126,17 +126,17 @@ class IFDEntry implements Comparable<IFDEntry> {
 
     if (count != ifdEntry.count)
       return false;
-    if (tag != null ? !tag.equals(ifdEntry.tag) : ifdEntry.tag != null)
+    if (!Objects.equals(tag, ifdEntry.tag))
       return false;
-    if (type != null ? !type.equals(ifdEntry.type) : ifdEntry.type != null)
+    if (!Objects.equals(type, ifdEntry.type))
       return false;
     if (!Arrays.equals(value, ifdEntry.value))
       return false;
     if (!Arrays.equals(valueD, ifdEntry.valueD))
       return false;
-    if (valueS != null ? !valueS.equals(ifdEntry.valueS) : ifdEntry.valueS != null)
+    if (!Objects.equals(valueS, ifdEntry.valueS))
       return false;
-    return !(geokeys != null ? !geokeys.equals(ifdEntry.geokeys) : ifdEntry.geokeys != null);
+    return !(!Objects.equals(geokeys, ifdEntry.geokeys));
 
   }
 

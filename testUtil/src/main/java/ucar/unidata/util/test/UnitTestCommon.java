@@ -7,6 +7,7 @@ package ucar.unidata.util.test;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import java.nio.charset.StandardCharsets;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -29,7 +30,7 @@ abstract public class UnitTestCommon {
 
   static public final boolean DEBUG = false;
 
-  static public final Charset UTF8 = Charset.forName("UTF-8");
+  static public final Charset UTF8 = StandardCharsets.UTF_8;
 
   static protected final int[] OKCODES = new int[] {200, 404};
 

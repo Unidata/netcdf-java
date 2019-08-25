@@ -5,8 +5,6 @@
 package ucar.nc2.ui.util;
 
 import java.nio.charset.StandardCharsets;
-import ucar.httpservices.*;
-import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.ListenerManager;
 import java.net.*;

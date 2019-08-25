@@ -487,28 +487,28 @@ public class GradsDataDescriptorFile {
             fileHeaderBytes = Integer.parseInt(st.nextToken());
 
           } else if (label.equalsIgnoreCase(XDEF)) {
-            int xSize = Integer.valueOf(st.nextToken());
+            int xSize = Integer.parseInt(st.nextToken());
             String xMapping = st.nextToken();
             xDim = new GradsDimension(label, xSize, xMapping);
             curDim = xDim;
             dimList.add(xDim);
 
           } else if (label.equalsIgnoreCase(YDEF)) {
-            int ySize = Integer.valueOf(st.nextToken());
+            int ySize = Integer.parseInt(st.nextToken());
             String yMapping = st.nextToken();
             yDim = new GradsDimension(label, ySize, yMapping);
             curDim = yDim;
             dimList.add(yDim);
 
           } else if (label.equalsIgnoreCase(ZDEF)) {
-            int zSize = Integer.valueOf(st.nextToken());
+            int zSize = Integer.parseInt(st.nextToken());
             String zMapping = st.nextToken();
             zDim = new GradsDimension(label, zSize, zMapping);
             curDim = zDim;
             dimList.add(zDim);
 
           } else if (label.equalsIgnoreCase(TDEF)) {
-            int tSize = Integer.valueOf(st.nextToken());
+            int tSize = Integer.parseInt(st.nextToken());
             // we can read the following directly
             // since tdef never uses "levels"
             String tMapping = st.nextToken();
@@ -517,7 +517,7 @@ public class GradsDataDescriptorFile {
             dimList.add(tDim);
 
           } else if (label.equalsIgnoreCase(EDEF)) {
-            int eSize = Integer.valueOf(st.nextToken());
+            int eSize = Integer.parseInt(st.nextToken());
             // Check if EDEF entry is the short or extended version
             if (st.nextToken().equalsIgnoreCase(GradsEnsembleDimension.NAMES)) {
               inEnsSection = false;

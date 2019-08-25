@@ -188,7 +188,7 @@ class EccodesLocalConcepts {
     return sb.toString().trim();
   }
 
-  private class AttributeBag {
+  private static class AttributeBag {
     private final Map<String, Integer> atts = new TreeMap<>();
     int hashCode = 0;
 

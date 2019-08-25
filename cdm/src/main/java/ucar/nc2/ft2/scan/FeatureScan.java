@@ -134,7 +134,7 @@ public class FeatureScan {
 
   private static final boolean debug = true;
 
-  public class Bean {
+  public static class Bean {
     public File f;
     String fileType;
     String coordMap;

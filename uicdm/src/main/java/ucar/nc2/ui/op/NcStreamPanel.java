@@ -159,7 +159,7 @@ public class NcStreamPanel extends JPanel {
   /**
    *
    */
-  public class MessBean {
+  public static class MessBean {
     private NcStreamIosp.NcsMess m;
 
     /**

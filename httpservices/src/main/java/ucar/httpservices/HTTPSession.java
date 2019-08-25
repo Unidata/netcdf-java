@@ -129,7 +129,7 @@ public class HTTPSession implements Closeable {
   // Previously taken from class AllClientPNames, but that is now
   // deprecated, so just use an enum
 
-  static /* package */ enum Prop {
+  /* package */ enum Prop {
     ALLOW_CIRCULAR_REDIRECTS, HANDLE_REDIRECTS, HANDLE_AUTHENTICATION, MAX_REDIRECTS, MAX_CONNECTIONS, SO_TIMEOUT, CONN_TIMEOUT, CONN_REQ_TIMEOUT, USER_AGENT, COOKIE_STORE, RETRIES, UNAVAILRETRIES, COMPRESSION, CREDENTIALS, USESESSIONS,
   }
 
@@ -160,7 +160,7 @@ public class HTTPSession implements Closeable {
   // Type Declaration(s)
 
   // Define property keys for selected authorization related properties
-  static /* package */ enum AuthProp {
+  /* package */ enum AuthProp {
     KEYSTORE, KEYPASSWORD, TRUSTSTORE, TRUSTPASSWORD, SSLFACTORY, HTTPPROXY, HTTPSPROXY, PROXYUSER, PROXYPWD,
   }
 
@@ -237,7 +237,7 @@ public class HTTPSession implements Closeable {
    * public HttpResponse response = null;
    * }
    */
-  static public enum Methods {
+  public enum Methods {
     Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
     private final String name;
 
@@ -389,14 +389,14 @@ public class HTTPSession implements Closeable {
     props.put(Prop.USER_AGENT, DFALTUSERAGENT);
   }
 
-  static final void buildsslfactory(AuthControls authcontrols) {
+  static void buildsslfactory(AuthControls authcontrols) {
     KeyStore keystore = (KeyStore) authcontrols.get(AuthProp.KEYSTORE);
     String keypass = (String) authcontrols.get(AuthProp.KEYPASSWORD);
     KeyStore truststore = (KeyStore) authcontrols.get(AuthProp.TRUSTSTORE);
     buildsslfactory(authcontrols, truststore, keystore, keypass);
   }
 
-  static final void buildkeystores(AuthControls authcontrols) {
+  static void buildkeystores(AuthControls authcontrols) {
     // SSL flags
     String keypath = cleanproperty("keystore");
     String keypassword = cleanproperty("keystorepassword");
@@ -411,7 +411,7 @@ public class HTTPSession implements Closeable {
     authcontrols.put(AuthProp.TRUSTPASSWORD, trustpassword);
   }
 
-  static protected final KeyStore buildkeystore(String keypath, String keypassword) {
+  static protected KeyStore buildkeystore(String keypath, String keypassword) {
     KeyStore keystore;
     try {
       if (keypath != null && keypassword != null) {
@@ -427,7 +427,7 @@ public class HTTPSession implements Closeable {
     return keystore;
   }
 
-  static final void buildproxy(AuthControls ac) {
+  static void buildproxy(AuthControls ac) {
     // Proxy flags
     String proxyurl = getproxyurl();
     if (proxyurl == null)
@@ -463,7 +463,7 @@ public class HTTPSession implements Closeable {
     ac.put(AuthProp.PROXYPWD, pwd);
   }
 
-  static final String getproxyurl() {
+  static String getproxyurl() {
     String proxyurl = cleanproperty("proxyurl");
     if (proxyurl == null) {
       // Check the java.net flags
@@ -1173,7 +1173,7 @@ public class HTTPSession implements Closeable {
 
 
   static String getUrlAsString(String url) throws HTTPException {
-    try (HTTPMethod m = HTTPFactory.Get(url);) {
+    try (HTTPMethod m = HTTPFactory.Get(url)) {
       int status = m.execute();
       String content = null;
       if (status == 200) {

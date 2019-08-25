@@ -205,7 +205,7 @@ public class BufrCdmIndexPanel extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////////
 
-  public class StationBean {
+  public static class StationBean {
     BufrCdmIndexProto.Station s;
 
     public StationBean(BufrCdmIndexProto.Station s) {
@@ -243,7 +243,7 @@ public class BufrCdmIndexPanel extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  public class FieldBean implements BufrField {
+  public static class FieldBean implements BufrField {
     FieldBean parent;
     BufrCdmIndexProto.Field child;
     List<FieldBean> children;

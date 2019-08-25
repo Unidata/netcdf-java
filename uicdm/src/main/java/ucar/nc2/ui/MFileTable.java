@@ -114,7 +114,7 @@ public class MFileTable extends JPanel {
   }
 
 
-  public class FileBean {
+  public static class FileBean {
     MFile mfile;
     int count;
 

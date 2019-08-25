@@ -432,7 +432,7 @@ public class BufrConfig {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public class FieldConverter implements BufrField {
+  public static class FieldConverter implements BufrField {
     DataDescriptor dds;
     List<FieldConverter> flds;
     BufrCdmIndexProto.FldType type;

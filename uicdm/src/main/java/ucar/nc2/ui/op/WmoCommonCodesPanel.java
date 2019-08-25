@@ -102,7 +102,7 @@ public class WmoCommonCodesPanel extends JPanel {
     return beans;
   }
 
-  public class TableBean {
+  public static class TableBean {
     CommonCodeTable.Table t;
 
     // no-arg constructor
@@ -131,7 +131,7 @@ public class WmoCommonCodesPanel extends JPanel {
 
   }
 
-  public class EntryBean {
+  public static class EntryBean {
     CommonCodeTable.TableEntry te;
 
     // no-arg constructor

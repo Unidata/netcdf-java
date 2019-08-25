@@ -898,7 +898,7 @@ public class Grib1ReportPanel extends ReportPanel {
     }
   }
 
-  private class FileCount {
+  private static class FileCount {
     private FileCount(MFile f) {
       this.f = f;
     }

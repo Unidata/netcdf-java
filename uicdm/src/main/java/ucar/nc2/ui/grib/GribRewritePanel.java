@@ -315,7 +315,7 @@ public class GribRewritePanel extends JPanel {
 
   private static final boolean debug = true;
 
-  public class FileBean {
+  public static class FileBean {
     private File f;
     String fileType;
     long cdmData2D, nc4Data2D, nc4Size;

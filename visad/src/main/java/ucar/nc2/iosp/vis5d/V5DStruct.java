@@ -12,7 +12,6 @@ package ucar.nc2.iosp.vis5d;
 
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;

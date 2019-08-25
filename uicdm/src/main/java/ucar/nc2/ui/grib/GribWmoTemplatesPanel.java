@@ -137,7 +137,7 @@ public class GribWmoTemplatesPanel extends JPanel {
 
   }
 
-  public class EntryBean {
+  public static class EntryBean {
     WmoTemplateTables.Field te;
 
     // no-arg constructor

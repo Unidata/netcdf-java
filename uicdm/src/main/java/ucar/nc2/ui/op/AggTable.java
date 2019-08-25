@@ -233,7 +233,7 @@ public class AggTable extends JPanel {
   /**
    *
    */
-  public class DatasetBean {
+  public static class DatasetBean {
     Aggregation.Dataset ds;
 
     /**

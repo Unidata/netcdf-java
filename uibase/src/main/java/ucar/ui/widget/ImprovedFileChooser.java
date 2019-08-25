@@ -6,7 +6,6 @@
 package ucar.ui.widget;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -23,7 +22,6 @@ import javax.swing.JTable;
 import javax.swing.MenuElement;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileSystemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

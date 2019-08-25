@@ -4,8 +4,6 @@
  */
 package ucar.ma2;
 
-import com.google.common.collect.Iterables;
-
 /**
  * Convenience routines for constructing one-off StructureData objects
  *

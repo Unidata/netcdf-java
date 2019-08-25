@@ -92,7 +92,7 @@ public class DbaseData {
         character[n] = new String(field, StandardCharsets.UTF_8);
         break;
       case 'N':
-        numeric[n] = Double.valueOf(new String(field, StandardCharsets.UTF_8));
+        numeric[n] = Double.parseDouble(new String(field, StandardCharsets.UTF_8));
         break;
       case 'F': /* binary floating point */
         if (desc.FieldLength == 4) {

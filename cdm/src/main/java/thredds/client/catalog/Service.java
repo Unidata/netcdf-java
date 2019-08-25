@@ -4,6 +4,7 @@
  */
 package thredds.client.catalog;
 
+import java.util.Objects;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
@@ -137,19 +138,19 @@ public class Service { // (7)
 
     Service service = (Service) o;
 
-    if (base != null ? !base.equals(service.base) : service.base != null)
+    if (!Objects.equals(base, service.base))
       return false;
-    if (desc != null ? !desc.equals(service.desc) : service.desc != null)
+    if (!Objects.equals(desc, service.desc))
       return false;
-    if (name != null ? !name.equals(service.name) : service.name != null)
+    if (!Objects.equals(name, service.name))
       return false;
-    if (nestedServices != null ? !nestedServices.equals(service.nestedServices) : service.nestedServices != null)
+    if (!Objects.equals(nestedServices, service.nestedServices))
       return false;
-    if (properties != null ? !properties.equals(service.properties) : service.properties != null)
+    if (!Objects.equals(properties, service.properties))
       return false;
-    if (suffix != null ? !suffix.equals(service.suffix) : service.suffix != null)
+    if (!Objects.equals(suffix, service.suffix))
       return false;
-    return typeS != null ? typeS.equals(service.typeS) : service.typeS == null;
+    return Objects.equals(typeS, service.typeS);
 
   }
 

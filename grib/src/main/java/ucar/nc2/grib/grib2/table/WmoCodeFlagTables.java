@@ -189,7 +189,7 @@ public class WmoCodeFlagTables {
         } else if (tableName.startsWith("Code")) {
           type = TableType.code;
         } else {
-          logger.warn("Unknown wmo table entry = '%s'", tableName);
+          logger.warn("Unknown wmo table entry = '{}'", tableName);
           continue;
         }
 

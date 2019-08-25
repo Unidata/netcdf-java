@@ -865,7 +865,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private static float[] mandPressureLevel =
       new float[] {1000, 850, 700, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10, 7, 5, 3, 2, 1};
 
-  private abstract class Entry {
+  private abstract static class Entry {
     abstract Structure makeStructure(Structure parent) throws InvalidRangeException;
 
     abstract void loadStructureData(ByteBuffer bb);

@@ -179,7 +179,7 @@ public class CdmrFeaturePanel extends JPanel {
     f.format("%s", ncd.toString()); // CDL
   }
 
-  public class MessBean {
+  public static class MessBean {
     Mess mess;
 
     MessBean() {}

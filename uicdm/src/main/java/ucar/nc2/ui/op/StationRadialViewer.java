@@ -23,7 +23,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
-import java.io.IOException;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
@@ -135,7 +134,7 @@ public class StationRadialViewer extends JPanel {
     // rdTable.saveState();
   }
 
-  public class StationBean implements Station {
+  public static class StationBean implements Station {
     private Station s;
 
     public StationBean(Station s) {

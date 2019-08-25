@@ -203,7 +203,7 @@ public class RadialDatasetTable extends JPanel {
   }
 
 
-  public class VariableBean {
+  public static class VariableBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
     RadialDatasetSweep.RadialVariable v;
@@ -269,7 +269,7 @@ public class RadialDatasetTable extends JPanel {
 
   }
 
-  public class SweepBean {
+  public static class SweepBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
     RadialDatasetSweep.Sweep sweep;

@@ -45,9 +45,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class Escape {
-  public static final Charset utf8Charset = Charset.forName("UTF-8");
+  public static final Charset utf8Charset = StandardCharsets.UTF_8;
 
   // Sets of ascii characters of interest
 

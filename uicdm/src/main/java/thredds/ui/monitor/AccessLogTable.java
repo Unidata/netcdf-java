@@ -388,7 +388,7 @@ public class AccessLogTable extends JPanel {
 
   ////////////////////////////////////////////////
 
-  public class Accum {
+  public static class Accum {
     public String getName() {
       return name;
     }

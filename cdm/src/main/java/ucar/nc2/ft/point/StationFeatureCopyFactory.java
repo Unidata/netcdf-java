@@ -71,7 +71,7 @@ public class StationFeatureCopyFactory {
     return deep;
   }
 
-  private class StationPointFeatureCopy extends PointFeatureImpl implements StationPointFeature {
+  private static class StationPointFeatureCopy extends PointFeatureImpl implements StationPointFeature {
 
     final StationFeature station;
     StructureData data;

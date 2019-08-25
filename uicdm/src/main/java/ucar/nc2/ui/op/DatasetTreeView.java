@@ -321,7 +321,7 @@ public class DatasetTreeView extends JPanel {
   /**
    *
    */
-  private class VariableNode implements TreeNode {
+  private static class VariableNode implements TreeNode {
     private VariableIF var;
     private TreeNode parent;
     private List<Object> children = null;

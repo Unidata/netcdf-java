@@ -892,7 +892,7 @@ public class Grib1CollectionPanel extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  public class Gds1Bean implements Comparable<Gds1Bean> {
+  public static class Gds1Bean implements Comparable<Gds1Bean> {
     Grib1SectionGridDefinition gdss;
     Grib1Gds gds;
     // no-arg constructor
