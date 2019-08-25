@@ -780,6 +780,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
             log.info("ungzipped {} to {}", filename, uncompressedFile);
         }
       } catch (Exception e) {
+        log.warn("Failed to uncompress file {}", filename, e);
         // dont leave bad files around
         if (uncompressedFile.exists()) {
           if (!uncompressedFile.delete())
