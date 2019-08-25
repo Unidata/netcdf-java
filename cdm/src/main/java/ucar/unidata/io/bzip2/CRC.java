@@ -61,8 +61,7 @@
 package ucar.unidata.io.bzip2;
 
 /**
- * A simple class the hold and calculate the CRC for sanity checking
- * of the data.
+ * A simple class to hold and calculate the CRC for sanity checking of the data.
  *
  * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
  */
@@ -126,7 +125,7 @@ public class CRC {
     globalCrc = (globalCrc << 8) ^ CRC.crc32Table[temp];
   }
 
-  int globalCrc;
+  private int globalCrc;
 }
 
 
