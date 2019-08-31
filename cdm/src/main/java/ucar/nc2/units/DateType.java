@@ -96,7 +96,7 @@ public class DateType {
     this.type = type;
 
     // see if its blank
-    if (text.length() == 0) {
+    if (text.isEmpty()) {
       isBlank = true;
       date = null;
       return;
@@ -152,7 +152,7 @@ public class DateType {
     this.type = type;
 
     // see if its blank
-    if (text.length() == 0) {
+    if (text.isEmpty()) {
       isBlank = true;
       date = null;
       return;

@@ -49,9 +49,9 @@ public class CoordinateAxis extends VariableDS {
   public static int axisSizeToCache = 100 * 1000; // bytes
 
   protected NetcdfDataset ncd; // container dataset
-  protected AxisType axisType = null;
-  protected String positive = null;
-  protected String boundaryRef = null;
+  protected AxisType axisType;
+  protected String positive;
+  protected String boundaryRef;
   protected boolean isContiguous = true;
 
   /**
@@ -245,7 +245,7 @@ public class CoordinateAxis extends VariableDS {
 
   ////////////////////////////////
 
-  private MAMath.MinMax minmax = null;
+  private MAMath.MinMax minmax;
 
   private void init() {
     try {
@@ -353,7 +353,7 @@ public class CoordinateAxis extends VariableDS {
     CoordinateAxis o = (CoordinateAxis) oo;
 
     if (getAxisType() != null)
-      if (!getAxisType().equals(o.getAxisType()))
+      if (getAxisType() != o.getAxisType())
         return false;
 
     if (getPositive() != null)

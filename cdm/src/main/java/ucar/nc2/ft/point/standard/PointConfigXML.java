@@ -256,9 +256,9 @@ public class PointConfigXML {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  private static boolean debugXML = false;
-  private static boolean debugURL = false;
-  private static boolean showParsedXML = false;
+  private static boolean debugXML;
+  private static boolean debugURL;
+  private static boolean showParsedXML;
 
   public TableConfig readConfigXMLfromResource(String resourceLocation, FeatureType wantFeatureType, NetcdfDataset ds,
       Formatter errlog) throws IOException {

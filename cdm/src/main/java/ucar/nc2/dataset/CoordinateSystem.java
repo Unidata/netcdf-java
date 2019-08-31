@@ -406,7 +406,7 @@ public class CoordinateSystem {
     return projection;
   }
 
-  private ProjectionImpl projection = null;
+  private ProjectionImpl projection;
 
   ////////////////////////////////////////////////////////////////////////////
   // classification
@@ -699,7 +699,7 @@ public class CoordinateSystem {
     return hashCode;
   }
 
-  private volatile int hashCode = 0;
+  private volatile int hashCode;
 
   public String toString() {
     return name;

@@ -406,27 +406,27 @@ public class Level2Record {
   short seg_number;
 
   // radar data header
-  int data_msecs = 0;
-  short data_julian_date = 0;
-  short unamb_range = 0;
-  int azimuth_ang = 0;
-  short radial_num = 0; // radial number within the elevation : starts with one
-  short radial_status = 0;
-  short elevation_ang = 0;
-  short elevation_num = 0;
+  int data_msecs;
+  short data_julian_date;
+  short unamb_range;
+  int azimuth_ang;
+  short radial_num; // radial number within the elevation : starts with one
+  short radial_status;
+  short elevation_ang;
+  short elevation_num;
 
-  short reflect_first_gate = 0; // distance to first reflectivity gate (m)
-  short reflect_gate_size = 0; // reflectivity gate size (m)
-  short reflect_gate_count = 0; // number of reflectivity gates
+  short reflect_first_gate; // distance to first reflectivity gate (m)
+  short reflect_gate_size; // reflectivity gate size (m)
+  short reflect_gate_count; // number of reflectivity gates
 
-  short doppler_first_gate = 0; // distance to first reflectivity gate (m)
-  short doppler_gate_size = 0; // reflectivity gate size (m)
-  short doppler_gate_count = 0; // number of reflectivity gates
+  short doppler_first_gate; // distance to first reflectivity gate (m)
+  short doppler_gate_size; // reflectivity gate size (m)
+  short doppler_gate_count; // number of reflectivity gates
 
-  short cut = 0;
-  float calibration = 0; // system gain calibration constant (db biased)
-  short resolution = 0; // dopplar velocity resolution
-  short vcp = 0; // volume coverage pattern
+  short cut;
+  float calibration; // system gain calibration constant (db biased)
+  short resolution; // dopplar velocity resolution
+  short vcp; // volume coverage pattern
 
   short nyquist_vel; // nyquist velocity
   short attenuation; // atmospheric attenuation factor
@@ -448,7 +448,7 @@ public class Level2Record {
   private short velocity_offset; // velocity data pointer (byte number from start of message)
   private short spectWidth_offset; // spectrum-width data pointer (byte number from start of message)
   // new addition for message type 31
-  short rlength = 0;
+  short rlength;
   String id;
   float azimuth;
   byte compressIdx;
@@ -469,42 +469,42 @@ public class Level2Record {
   int dbp7;
   int dbp8;
   int dbp9;
-  short reflectHR_gate_count = 0;
-  short velocityHR_gate_count = 0;
-  short spectrumHR_gate_count = 0;
-  float reflectHR_scale = 0;
-  float velocityHR_scale = 0;
-  float spectrumHR_scale = 0;
-  float zdrHR_scale = 0;
-  float phiHR_scale = 0;
-  float rhoHR_scale = 0;
-  float reflectHR_addoffset = 0;
-  float velocityHR_addoffset = 0;
-  float spectrumHR_addoffset = 0;
-  float zdrHR_addoffset = 0;
-  float phiHR_addoffset = 0;
-  float rhoHR_addoffset = 0;
-  short reflectHR_offset = 0;
-  short velocityHR_offset = 0;
-  short spectrumHR_offset = 0;
-  short zdrHR_offset = 0;
-  short phiHR_offset = 0;
-  short rhoHR_offset = 0;
-  short zdrHR_gate_count = 0;
-  short phiHR_gate_count = 0;
-  short rhoHR_gate_count = 0;
-  short reflectHR_gate_size = 0;
-  short velocityHR_gate_size = 0;
-  short spectrumHR_gate_size = 0;
-  short zdrHR_gate_size = 0;
-  short phiHR_gate_size = 0;
-  short rhoHR_gate_size = 0;
-  short reflectHR_first_gate = 0;
-  short velocityHR_first_gate = 0;
-  short spectrumHR_first_gate = 0;
-  short zdrHR_first_gate = 0;
-  short phiHR_first_gate = 0;
-  short rhoHR_first_gate = 0;
+  short reflectHR_gate_count;
+  short velocityHR_gate_count;
+  short spectrumHR_gate_count;
+  float reflectHR_scale;
+  float velocityHR_scale;
+  float spectrumHR_scale;
+  float zdrHR_scale;
+  float phiHR_scale;
+  float rhoHR_scale;
+  float reflectHR_addoffset;
+  float velocityHR_addoffset;
+  float spectrumHR_addoffset;
+  float zdrHR_addoffset;
+  float phiHR_addoffset;
+  float rhoHR_addoffset;
+  short reflectHR_offset;
+  short velocityHR_offset;
+  short spectrumHR_offset;
+  short zdrHR_offset;
+  short phiHR_offset;
+  short rhoHR_offset;
+  short zdrHR_gate_count;
+  short phiHR_gate_count;
+  short rhoHR_gate_count;
+  short reflectHR_gate_size;
+  short velocityHR_gate_size;
+  short spectrumHR_gate_size;
+  short zdrHR_gate_size;
+  short phiHR_gate_size;
+  short rhoHR_gate_size;
+  short reflectHR_first_gate;
+  short velocityHR_first_gate;
+  short spectrumHR_first_gate;
+  short zdrHR_first_gate;
+  short phiHR_first_gate;
+  short rhoHR_first_gate;
 
 
   public static Level2Record factory(RandomAccessFile din, int record, long message_offset31) throws IOException {

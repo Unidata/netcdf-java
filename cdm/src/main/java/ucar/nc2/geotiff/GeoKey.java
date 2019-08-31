@@ -14,7 +14,7 @@ import java.util.*;
  */
 
 class GeoKey {
-  boolean isDouble = false, isString = false;
+  boolean isDouble, isString;
   private int count;
   private int[] value;
   private double[] dvalue;

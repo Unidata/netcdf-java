@@ -32,7 +32,7 @@ public class SequenceDS extends StructureDS {
   private static class StructureDataConverter implements StructureDataIterator {
     private StructureDataIterator orgIter;
     private SequenceDS newStruct;
-    private int count = 0;
+    private int count;
 
     StructureDataConverter(SequenceDS newStruct, StructureDataIterator orgIter) {
       this.newStruct = newStruct;

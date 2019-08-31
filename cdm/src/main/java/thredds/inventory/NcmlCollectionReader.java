@@ -209,15 +209,15 @@ public class NcmlCollectionReader {
   }
 
   private boolean hasMods(Element elem) {
-    if (elem.getChildren("attribute", ncmlNS).size() > 0)
+    if (!elem.getChildren("attribute", ncmlNS).isEmpty())
       return true;
-    if (elem.getChildren("variable", ncmlNS).size() > 0)
+    if (!elem.getChildren("variable", ncmlNS).isEmpty())
       return true;
-    if (elem.getChildren("dimension", ncmlNS).size() > 0)
+    if (!elem.getChildren("dimension", ncmlNS).isEmpty())
       return true;
-    if (elem.getChildren("group", ncmlNS).size() > 0)
+    if (!elem.getChildren("group", ncmlNS).isEmpty())
       return true;
-    return elem.getChildren("remove", ncmlNS).size() > 0;
+    return !elem.getChildren("remove", ncmlNS).isEmpty();
   }
 
   public Element getNcmlOuter() {

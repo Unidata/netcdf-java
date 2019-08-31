@@ -44,7 +44,7 @@ public class Nccopy {
 
     @Parameter(names = {"-isLargeFile", "--isLargeFile"},
         description = "Write to large file format. Only used in NetCDF 3.")
-    public boolean isLargeFile = false;
+    public boolean isLargeFile;
 
     @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. "
         + "Allowed values = 0 (no compression, fast) to 9 (max compression, slow)")
@@ -55,7 +55,7 @@ public class Nccopy {
     public boolean shuffle = true;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
-    public boolean help = false;
+    public boolean help;
 
 
     private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
@@ -125,7 +125,7 @@ public class Nccopy {
       } catch (Exception ex) {
         System.out.printf("%s = %s %n", ex.getClass().getName(), ex.getMessage());
         String err = errlog.toString();
-        if (err.length() > 0)
+        if (!err.isEmpty())
           System.out.printf(" errlog=%s%n", err);
         // e.printStackTrace();
       }

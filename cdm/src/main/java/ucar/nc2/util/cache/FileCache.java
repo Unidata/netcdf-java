@@ -120,7 +120,7 @@ public class FileCache implements FileCacheIF {
   protected final AtomicInteger hits = new AtomicInteger();
   protected final AtomicInteger miss = new AtomicInteger();
   protected ConcurrentHashMap<Object, Tracker> track;
-  protected boolean trackAll = false;
+  protected boolean trackAll;
 
   /**
    * Constructor.
@@ -538,7 +538,7 @@ public class FileCache implements FileCacheIF {
       synchronized (cache) {
         for (CacheElement elem : cache.values()) {
           synchronized (elem) {
-            if (elem.list.size() == 0)
+            if (elem.list.isEmpty())
               cache.remove(elem.hashKey);
           }
         }
@@ -747,7 +747,7 @@ public class FileCache implements FileCacheIF {
       synchronized (cache) {
         for (CacheElement elem : cache.values()) {
           synchronized (elem) {
-            if (elem.list.size() == 0)
+            if (elem.list.isEmpty())
               cache.remove(elem.hashKey);
           }
         }
@@ -822,7 +822,7 @@ public class FileCache implements FileCacheIF {
     class CacheFile implements Comparable<CacheFile> {
       FileCacheable ncfile; // actually final, but we null it out for gc
       final AtomicBoolean isLocked = new AtomicBoolean(true);
-      int countAccessed = 0;
+      int countAccessed;
       long lastModified;
       long lastAccessed;
 

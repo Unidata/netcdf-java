@@ -34,13 +34,13 @@ import ucar.unidata.geoloc.LatLonRect;
 public class CompositeDatasetFactory {
   public static final String SCHEME = "collection:";
   // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
-  static boolean debug = false;
+  static boolean debug;
 
   public static FeatureDataset factory(String location, FeatureType wantFeatureType, MFileCollectionManager dcm,
       Formatter errlog) throws IOException {
 
     TimedCollection collection = new TimedCollection(dcm, errlog);
-    if (collection.getDatasets().size() == 0) {
+    if (collection.getDatasets().isEmpty()) {
       throw new FileNotFoundException("Collection is empty; spec=" + dcm);
     }
 
@@ -55,7 +55,7 @@ public class CompositeDatasetFactory {
         wantFeatureType = proto.getFeatureType();
 
       List<DsgFeatureCollection> fcList = proto.getPointFeatureCollectionList();
-      if (fcList.size() == 0) {
+      if (fcList.isEmpty()) {
         throw new FileNotFoundException("FeatureCollectionList is empty; spec=" + dcm);
       }
       first = fcList.get(0);

@@ -20,7 +20,7 @@ import ucar.ma2.MAMath;
  * @since Jul 10, 2009
  */
 public class GeoGridCoordinate2D {
-  private static boolean debug = false;
+  private static boolean debug;
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGridCoordinate2D.class);
 
   private final CoordinateAxis2D latCoord, lonCoord;

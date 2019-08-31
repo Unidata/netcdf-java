@@ -46,7 +46,7 @@ public class CFLine implements Line {
   public void addPoint(double x, double y) {
     Point ptPrev = null;
 
-    if (points.size() > 0) {
+    if (!points.isEmpty()) {
       ptPrev = points.get(points.size() - 1);
     }
 

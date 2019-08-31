@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
  */
 public class N3channelWriter extends N3streamWriter {
   private static int buffer_size = 1000 * 1000;
-  private static boolean debugWrite = false;
+  private static boolean debugWrite;
 
   public N3channelWriter(ucar.nc2.NetcdfFile ncfile) {
     super(ncfile);

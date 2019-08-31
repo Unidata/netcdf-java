@@ -30,8 +30,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   public static final String SCHEME = PROTOCOL + ":";
 
   // static private org.slf4SCHEMEj.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  private static boolean showRequest = false;
-  private static boolean compress = false;
+  private static boolean showRequest;
+  private static boolean compress;
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
@@ -58,7 +58,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////////////////////
 
-  private HTTPSession httpClient = null; // stays open until close is called
+  private HTTPSession httpClient; // stays open until close is called
 
   private final String remoteURI;
 

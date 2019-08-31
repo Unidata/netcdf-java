@@ -185,9 +185,9 @@ public class Catalog extends DatasetNode {
 
     // gotta deal with file ourself
     String scheme = baseURI.getScheme();
-    if ((scheme != null) && scheme.equals("file")) {
+    if ("file".equals(scheme)) {
       String baseString = baseURI.toString();
-      if ((uriString.length() > 0) && (uriString.charAt(0) == '#'))
+      if ((!uriString.isEmpty()) && (uriString.charAt(0) == '#'))
         return new URI(baseString + uriString);
       int pos = baseString.lastIndexOf('/');
       if (pos > 0) {

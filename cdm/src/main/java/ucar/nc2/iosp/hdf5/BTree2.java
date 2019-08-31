@@ -36,7 +36,7 @@ import java.util.List;
  * @since 6/27/12
  */
 public class BTree2 {
-  private boolean debugBtree2 = false, debugPos = false;
+  private boolean debugBtree2, debugPos;
   private java.io.PrintStream debugOut = System.out;
 
   byte btreeType;

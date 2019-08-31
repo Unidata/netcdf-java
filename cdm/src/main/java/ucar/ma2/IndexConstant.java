@@ -114,7 +114,7 @@ public class IndexConstant extends Index {
       return currElement < size - howMany;
     }
 
-    private Index counter = null; // usually not used
+    private Index counter; // usually not used
 
     public String toString() {
       if (counter == null)

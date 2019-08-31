@@ -24,8 +24,8 @@ class DoradeSWIB extends DoradeDescriptor {
   private DoradeRYIB[] myRYIBs;
   private DoradeASIB[] myASIBs;
 
-  private float[] azimuths = null;
-  private float[] elevations = null;
+  private float[] azimuths;
+  private float[] elevations;
 
   public DoradeSWIB(RandomAccessFile file, boolean littleEndianData, DoradeVOLD vold) throws DescriptorException {
     byte[] data = readDescriptor(file, littleEndianData, "SWIB");

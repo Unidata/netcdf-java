@@ -22,7 +22,7 @@ import java.io.IOException;
 public class Suomi extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String center = ds.findAttValueIgnoreCase(null, "Convention", null);
-    return center != null && center.equals("Suomi-Station-CDM");
+    return "Suomi-Station-CDM".equals(center);
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {

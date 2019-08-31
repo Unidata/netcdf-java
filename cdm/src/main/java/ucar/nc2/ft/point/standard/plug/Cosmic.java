@@ -22,7 +22,7 @@ import java.io.IOException;
 public class Cosmic extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String center = ds.findAttValueIgnoreCase(null, "center", null);
-    return center != null && center.equals("UCAR/CDAAC");
+    return "UCAR/CDAAC".equals(center);
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {

@@ -27,7 +27,7 @@ import java.util.*;
  * @since 5/1/2015
  */
 public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
-  private static boolean debug = false;
+  private static boolean debug;
 
   public static FeatureDatasetCoverage factory(DtCoverageDataset proxy, Formatter errlog) {
     DtCoverageAdapter reader = new DtCoverageAdapter(proxy);

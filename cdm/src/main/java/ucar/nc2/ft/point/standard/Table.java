@@ -335,7 +335,7 @@ public abstract class Table {
 
     @Override
     public String getName() {
-      return stype.toString() + "(" + struct.getShortName() + ")";
+      return stype + "(" + struct.getShortName() + ")";
     }
   }
 
@@ -1190,7 +1190,7 @@ public abstract class Table {
 
   // not ok for sdata to be null
   private static class SingletonStructureDataIterator implements StructureDataIterator {
-    private int count = 0;
+    private int count;
     private StructureData sdata;
 
     SingletonStructureDataIterator(StructureData sdata) {
@@ -1255,7 +1255,7 @@ public abstract class Table {
       indent = parent.show(f, indent);
 
     String s = indent(indent);
-    String ftDesc = (featureType == null) ? "" : "featureType=" + featureType.toString();
+    String ftDesc = (featureType == null) ? "" : "featureType=" + featureType;
     f.format("%n%sTable %s: type=%s %s%n", s, getName(), getClass().toString(), ftDesc);
     if (extraJoins != null) {
       f.format("  %sExtraJoins:%n", s);

@@ -16,7 +16,7 @@ import java.io.*;
  */
 public class PositioningDataInputStream {
   private DataInputStream delegate;
-  private long cpos = 0;
+  private long cpos;
 
   public PositioningDataInputStream(InputStream is) {
     if (is instanceof DataInputStream)

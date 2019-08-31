@@ -170,7 +170,7 @@ public class CF1Convention extends CSMConvention {
           gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
 
           String grid_mapping_name = ds.findAttValueIgnoreCase(gridMap, CF.GRID_MAPPING_NAME, null);
-          if (grid_mapping_name != null && grid_mapping_name.equals(CF.LATITUDE_LONGITUDE)) {
+          if (CF.LATITUDE_LONGITUDE.equals(grid_mapping_name)) {
             // "grid_mapping_name == latitude_longitude" is special in CF: it's applied to variables that describe
             // properties of lat/lon CRSes.
             gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.Lat + " " + AxisType.Lon));
@@ -293,7 +293,7 @@ public class CF1Convention extends CSMConvention {
     ds.finish();
   }
 
-  private boolean avhrr_oiv2 = false;
+  private boolean avhrr_oiv2;
 
   // this is here because it doesnt fit into the 3D array thing.
   private void makeAtmLnCoordinate(NetcdfDataset ds, Variable v) {

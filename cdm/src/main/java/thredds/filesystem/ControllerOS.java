@@ -53,8 +53,6 @@ public class ControllerOS implements MController {
 
   ////////////////////////////////////////
 
-  public ControllerOS() {}
-
   @Override
   public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
@@ -153,7 +151,7 @@ public class ControllerOS implements MController {
   // returns everything in the current directory
   private static class MFileIterator implements Iterator<MFile> {
     List<File> files;
-    int count = 0;
+    int count;
 
     MFileIterator(File dir) {
       File[] f = dir.listFiles();
@@ -245,7 +243,7 @@ public class ControllerOS implements MController {
   private static class Traversal {
     List<File> fileList; // list of files
     Iterator<File> subdirIterator; // list of subdirs
-    boolean leavesAreDone = false; // when all the files are done, start on the subdirs
+    boolean leavesAreDone; // when all the files are done, start on the subdirs
 
     Traversal(File dir) {
       fileList = new ArrayList<>();
@@ -273,7 +271,7 @@ public class ControllerOS implements MController {
             fileList.add(f);
         }
 
-      if (subdirList.size() > 0)
+      if (!subdirList.isEmpty())
         this.subdirIterator = subdirList.iterator();
     }
   }

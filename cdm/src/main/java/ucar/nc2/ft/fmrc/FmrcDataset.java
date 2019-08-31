@@ -245,7 +245,7 @@ class FmrcDataset {
 
     // choose some run in the list
     List<FmrInv> list = fmrcInv.getFmrInv();
-    if (list.size() == 0) {
+    if (list.isEmpty()) {
       logger.error("Fmrc collection is empty =" + fmrcInv.getName());
       throw new IllegalStateException("Fmrc collection is empty =" + fmrcInv.getName());
     }

@@ -28,7 +28,7 @@ import java.util.List;
  * @since 1/11/2015
  */
 public class CatalogXmlWriter {
-  private static boolean useBytesForDataSize = false;
+  private static boolean useBytesForDataSize;
 
   public static void useBytesForDataSize(boolean b) {
     useBytesForDataSize = b;
@@ -37,7 +37,7 @@ public class CatalogXmlWriter {
   private static final String version = "1.2";
 
   ////////////////////////////////////////////////////////////////////////
-  private boolean raw = false;
+  private boolean raw;
 
   /**
    * Write the catalog as an XML document to the specified stream.
@@ -374,7 +374,7 @@ public class CatalogXmlWriter {
     if ("compound".equalsIgnoreCase(svctype) && base == null)
       base = ""; // Add some error tolerance
     serviceElem.setAttribute("base", base);
-    if ((service.getSuffix() != null) && (service.getSuffix().length() > 0))
+    if ((service.getSuffix() != null) && (!service.getSuffix().isEmpty()))
       serviceElem.setAttribute("suffix", service.getSuffix());
 
     // properties
@@ -457,7 +457,7 @@ public class CatalogXmlWriter {
     if (tmi == null)
       return;
     writeThreddsMetadata(mdataElem, tmi);
-    if (mdataElem.getChildren().size() > 0)
+    if (!mdataElem.getChildren().isEmpty())
       elem.addContent(mdataElem);
   }
 
@@ -608,7 +608,7 @@ public class CatalogXmlWriter {
       elem.setAttribute("name", v.getName());
     if (v.getDescription() != null) {
       String desc = v.getDescription().trim();
-      if (desc.length() > 0)
+      if (!desc.isEmpty())
         elem.setText(v.getDescription());
     }
     if (v.getVocabularyName() != null)

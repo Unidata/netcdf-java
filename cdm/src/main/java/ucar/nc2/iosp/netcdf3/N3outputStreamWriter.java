@@ -102,7 +102,7 @@ public class N3outputStreamWriter extends N3streamWriter {
     }
   }
 
-  private int recno = 0;
+  private int recno;
   private boolean first = true;
 
   public void writeRecordData(DataOutputStream stream, List<Variable> varList) throws IOException {

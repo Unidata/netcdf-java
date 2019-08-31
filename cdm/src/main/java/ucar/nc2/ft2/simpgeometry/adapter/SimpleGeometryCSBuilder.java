@@ -124,9 +124,9 @@ public class SimpleGeometryCSBuilder {
     // Also, populate simple geometry axis list
     boolean sgtype = false;
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
-      if (axis.getAxisType().equals(AxisType.SimpleGeometryID) || axis.getAxisType().equals(AxisType.SimpleGeometryX)
-          || axis.getAxisType().equals(AxisType.SimpleGeometryY)
-          || axis.getAxisType().equals(AxisType.SimpleGeometryZ)) {
+      if (axis.getAxisType() == AxisType.SimpleGeometryID || axis.getAxisType() == AxisType.SimpleGeometryX
+          || axis.getAxisType() == AxisType.SimpleGeometryY
+          || axis.getAxisType() == AxisType.SimpleGeometryZ) {
         sgAxes.add(axis);
         sgtype = true;
       }

@@ -74,7 +74,7 @@ public class NcmlConstructor {
 
     Element netcdfElem = doc.getRootElement();
     readGroup(target, target.getRootGroup(), netcdfElem);
-    return errlog.toString().length() == 0;
+    return errlog.toString().isEmpty();
   }
 
   private void readGroup(NetcdfFile ncfile, Group parent, Element groupElem) {
@@ -272,14 +272,14 @@ public class NcmlConstructor {
     String isSharedS = dimElem.getAttributeValue("isShared");
     String isUnknownS = dimElem.getAttributeValue("isVariableLength");
 
-    boolean isUnlimited = (isUnlimitedS != null) && isUnlimitedS.equalsIgnoreCase("true");
-    boolean isUnknown = (isUnknownS != null) && isUnknownS.equalsIgnoreCase("true");
+    boolean isUnlimited = "true".equalsIgnoreCase(isUnlimitedS);
+    boolean isUnknown = "true".equalsIgnoreCase(isUnknownS);
     boolean isShared = true;
-    if ((isSharedS != null) && isSharedS.equalsIgnoreCase("false"))
+    if ("false".equalsIgnoreCase(isSharedS))
       isShared = false;
 
     int len = Integer.parseInt(lengthS);
-    if ((isUnknownS != null) && isUnknownS.equalsIgnoreCase("false"))
+    if ("false".equalsIgnoreCase(isUnknownS))
       len = Dimension.VLEN.getLength();
 
     Dimension dim = new Dimension(name, len, isShared, isUnlimited, isUnknown);

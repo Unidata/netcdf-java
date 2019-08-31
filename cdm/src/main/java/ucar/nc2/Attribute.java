@@ -11,7 +11,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.ForbiddenConversionException;
 import ucar.ma2.Index;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
@@ -31,7 +30,7 @@ import java.util.Map;
 public class Attribute extends CDMNode {
 
   static final String SPECIALPREFIX = "_";
-  static final String[] SPECIALS = new String[] {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION,
+  static final String[] SPECIALS = {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION,
       CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
 
   /**
@@ -328,7 +327,7 @@ public class Attribute extends CDMNode {
 
   private String svalue; // optimization for common case of single String valued attribute
   private DataType dataType;
-  private EnumTypedef enumtype = null;
+  private EnumTypedef enumtype;
   private int nelems; // can be 0 or greater
   private Array values;
 
@@ -425,7 +424,7 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, List values, boolean isUnsigned) {
     this(name);
-    if (values == null || values.size() == 0)
+    if (values == null || values.isEmpty())
       throw new IllegalArgumentException("Cannot determine attribute's type");
     Class c = values.get(0).getClass();
     setDataType(DataType.getType(c, isUnsigned));
@@ -499,7 +498,7 @@ public class Attribute extends CDMNode {
    * Set the values from a list
    */
   public void setValues(List values) {
-    if (values == null || values.size() == 0)
+    if (values == null || values.isEmpty())
       throw new IllegalArgumentException("Cannot determine attribute's type");
     int n = values.size();
     Class c = values.get(0).getClass();
@@ -625,14 +624,14 @@ public class Attribute extends CDMNode {
     if (!(o instanceof Attribute))
       return false;
 
-    final Attribute att = (Attribute) o;
+    Attribute att = (Attribute) o;
 
     String name = getShortName();
     if (!name.equals(att.getShortName()))
       return false;
     if (nelems != att.nelems)
       return false;
-    if (!dataType.equals(att.dataType))
+    if (dataType != att.dataType)
       return false;
 
     if (isString())

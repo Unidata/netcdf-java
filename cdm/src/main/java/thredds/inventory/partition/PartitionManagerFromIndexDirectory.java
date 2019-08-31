@@ -48,7 +48,7 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
 
   private class PartIterator implements Iterator<MCollection>, Iterable<MCollection> {
     Iterator<File> iter = partIndexFiles.iterator();
-    MCollection next = null;
+    MCollection next;
 
     @Override
     public Iterator<MCollection> iterator() {

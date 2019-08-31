@@ -26,10 +26,10 @@ public final class GridBoundariesExtractor {
 
 
   private GridDataset gridDataset;
-  private double minLon = 0;
-  private double maxLon = 0;
-  private double maxDiff = 0;
-  private boolean crossesDateLine = false;
+  private double minLon;
+  private double maxLon;
+  private double maxDiff;
+  private boolean crossesDateLine;
 
 
   private GridBoundariesExtractor() {}

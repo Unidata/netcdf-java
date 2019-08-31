@@ -25,27 +25,22 @@ public class GradsTimeStruct {
       {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 
   /** year field */
-  int year = 0;
+  int year;
 
   /** month field (1 based) */
-  int month = 0;
+  int month;
 
   /** day field */
-  int day = 0;
+  int day;
 
   /** hour field */
-  int hour = 0;
+  int hour;
 
   /** minute field */
-  int minute = 0;
+  int minute;
 
   /** julian day field */
-  int jday = 0;
-
-  /**
-   * Create a new time structure
-   */
-  public GradsTimeStruct() {}
+  int jday;
 
   /**
    * Get a String representation of this object

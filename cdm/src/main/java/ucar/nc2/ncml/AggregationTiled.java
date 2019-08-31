@@ -27,7 +27,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
   private List<Dimension> dims = new ArrayList<>();
   private Section section;
 
-  private boolean debug = false;
+  private boolean debug;
 
   public AggregationTiled(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.tiled, recheckS);
@@ -251,7 +251,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
 
   private class TileLayout {
     // Section dataSection, resultSection;
-    private int srcPos = 0, resultPos, nelems;
+    private int srcPos, resultPos, nelems;
     private int total, startElem;
     Index index;
 

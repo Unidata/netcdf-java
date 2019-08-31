@@ -152,9 +152,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   }
 
-  private LatLonRect llbbMax = null;
-  private CalendarDateRange dateRangeMax = null;
-  private ProjectionRect projBB = null;
+  private LatLonRect llbbMax;
+  private CalendarDateRange dateRangeMax;
+  private ProjectionRect projBB;
 
   private void makeRanges() {
 

@@ -117,7 +117,7 @@ public class IndexChunkerTiled {
     resultIndex = new Index(shape, resultStrides);
 
     if (debugDetail) {
-      System.out.println(" dataIndex=" + dataIndex.toString());
+      System.out.println(" dataIndex=" + dataIndex);
       System.out.println(" resultIndex=" + resultIndex.toStringDebug());
     }
 

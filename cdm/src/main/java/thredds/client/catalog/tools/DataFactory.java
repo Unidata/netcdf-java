@@ -52,8 +52,8 @@ public class DataFactory {
     debugTypeOpen = debugFlag.isSet("thredds/openDatatype");
   }
 
-  private static boolean debugOpen = false;
-  private static boolean debugTypeOpen = false;
+  private static boolean debugOpen;
+  private static boolean debugTypeOpen;
 
   /**
    * The result of trying to open a THREDDS dataset.
@@ -365,7 +365,7 @@ public class DataFactory {
     IOException saveException = null;
 
     List<Access> accessList = new ArrayList<>(dataset.getAccess()); // a list of all the accesses
-    while (accessList.size() > 0) {
+    while (!accessList.isEmpty()) {
       Access access = chooseDatasetAccess(accessList);
 
       // no valid access
@@ -536,7 +536,7 @@ public class DataFactory {
    * @return best access method.
    */
   public Access chooseDatasetAccess(List<Access> accessList) {
-    if (accessList.size() == 0)
+    if (accessList.isEmpty())
       return null;
 
     Access access = null;
@@ -670,7 +670,7 @@ public class DataFactory {
   private Access getImageAccess(Dataset ds, ucar.nc2.util.CancelTask task, Result result) {
 
     List<Access> accessList = new ArrayList<>(ds.getAccess()); // a list of all the accesses
-    while (accessList.size() > 0) {
+    while (!accessList.isEmpty()) {
       Access access = chooseImageAccess(accessList);
       if (access == null) {
         result.errLog.format("No access that could be used for Image Type %s %n", ds);

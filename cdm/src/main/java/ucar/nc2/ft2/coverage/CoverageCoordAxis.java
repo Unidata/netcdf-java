@@ -263,7 +263,7 @@ public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     indent.incr();
 
     f.format("%s", getDependenceType());
-    if (dependsOn.size() > 0) {
+    if (!dependsOn.isEmpty()) {
       f.format(" :");
       for (String s : dependsOn)
         f.format(" %s", s);

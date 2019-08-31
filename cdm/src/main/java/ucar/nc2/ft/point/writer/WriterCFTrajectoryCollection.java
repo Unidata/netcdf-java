@@ -29,7 +29,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   ///////////////////////////////////////////////////
   private Structure featureStruct; // used for netcdf4 extended
   private Map<String, Variable> featureVarMap = new HashMap<>();
-  private boolean headerDone = false;
+  private boolean headerDone;
 
   public WriterCFTrajectoryCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
@@ -102,7 +102,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     }
   }
 
-  private int trajRecno = 0;
+  private int trajRecno;
 
   public void writeTrajectoryData(TrajectoryFeature profile, int nobs) throws IOException {
 
@@ -118,7 +118,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   }
 
 
-  private int obsRecno = 0;
+  private int obsRecno;
 
   public void writeObsData(PointFeature pf) throws IOException {
     EarthLocation loc = pf.getLocation();

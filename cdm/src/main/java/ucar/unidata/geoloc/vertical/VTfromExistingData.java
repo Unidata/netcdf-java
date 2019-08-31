@@ -71,8 +71,8 @@ public class VTfromExistingData extends VerticalTransformImpl {
 
 
     ArrayDouble.D3 ddata = getCoordinateArray(timeIndex);
-    int[] origin = new int[] {0, yIndex, xIndex};
-    int[] shape = new int[] {ddata.getShape()[0], 1, 1};
+    int[] origin = {0, yIndex, xIndex};
+    int[] shape = {ddata.getShape()[0], 1, 1};
 
     return (ArrayDouble.D1) ddata.section(origin, shape).reduce();
   }

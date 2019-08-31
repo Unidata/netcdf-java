@@ -68,10 +68,10 @@ public class URLnaming {
         // empty
       }
 
-      if ((relativeUri.length() > 0) && (relativeUri.charAt(0) == '#'))
+      if ((!relativeUri.isEmpty()) && (relativeUri.charAt(0) == '#'))
         return baseUri + relativeUri;
 
-      if ((relativeUri.length() > 0) && (relativeUri.charAt(0) == '/'))
+      if ((!relativeUri.isEmpty()) && (relativeUri.charAt(0) == '/'))
         return relativeUri;
 
       baseUri = StringUtil2.substitute(baseUri, "\\", "/"); // assumes forward slash

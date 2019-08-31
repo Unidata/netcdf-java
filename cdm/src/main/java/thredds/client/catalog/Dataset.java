@@ -64,7 +64,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
       List<DatasetBuilder> datasetBuilders) {
     super(parent, name, flds, datasetBuilders);
 
-    if (accessBuilders != null && accessBuilders.size() > 0) {
+    if (accessBuilders != null && !accessBuilders.isEmpty()) {
       List<Access> access = new ArrayList<>(accessBuilders.size());
       for (AccessBuilder acc : accessBuilders)
         access.add(acc.makeAccess(this));

@@ -199,7 +199,7 @@ public class CoordsSet implements Iterable<SubsetParams> {
     // therefore: end = reftime, start = runtime
     double adjust = axis.getOffsetInTimeUnits(runtime, axis.getRefDate());
     if (axis.isInterval()) {
-      double[] adjustVal = new double[] {axis.getCoordEdge1(coordIdx) + adjust, axis.getCoordEdge2(coordIdx) + adjust};
+      double[] adjustVal = {axis.getCoordEdge1(coordIdx) + adjust, axis.getCoordEdge2(coordIdx) + adjust};
       result.setTimeOffsetIntv(adjustVal);
       double mid = (adjustVal[0] + adjustVal[1]) / 2.0;
       result.set(SubsetParams.timeOffsetUnit, axis.makeDateInTimeUnits(runtime, mid)); // validation

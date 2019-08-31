@@ -233,7 +233,7 @@ public class EscapeStrings {
     StringBuilder ret = new StringBuilder(protocol);
     ret.append("://");
     ret.append(authority);
-    if (path != null && path.length() > 0) {
+    if (path != null && !path.isEmpty()) {
       // Encode pieces between '/'
       String[] pieces = path.split("[/]", -1);
       for (int i = 0; i < pieces.length; i++) {
@@ -247,11 +247,11 @@ public class EscapeStrings {
         ret.append(urlEncode(p));
       }
     }
-    if (query != null && query.length() > 0) {
+    if (query != null && !query.isEmpty()) {
       ret.append("?");
       ret.append(escapeURLQuery(query));
     }
-    if (fragment != null && fragment.length() > 0) {
+    if (fragment != null && !fragment.isEmpty()) {
       ret.append("#");
       ret.append(urlEncode(fragment));
     }
@@ -578,10 +578,10 @@ public class EscapeStrings {
    * Given a CDM string, insert backslashes before <toescape> characters.
    */
   public static String backslashEscapeCDMString(String s, String toescape) {
-    if (toescape == null || toescape.length() == 0) {
+    if (toescape == null || toescape.isEmpty()) {
       return s;
     }
-    if (s == null || s.length() == 0) {
+    if (s == null || s.isEmpty()) {
       return s;
     }
     StringBuilder buf = new StringBuilder();

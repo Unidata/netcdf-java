@@ -42,7 +42,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public static int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
                                                           // defaultSizeToCache
 
-  protected static boolean debugCaching = false;
+  protected static boolean debugCaching;
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
 
   public static String getDAPName(String name, Variable context) {
@@ -81,8 +81,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected List<Dimension> dimensions = new ArrayList<>(5);
   protected AttributeContainerHelper attributes;
 
-  protected boolean isVariableLength = false;
-  protected boolean isMetadata = false;
+  protected boolean isVariableLength;
+  protected boolean isMetadata;
 
   protected Cache cache = new Cache(); // cache cannot be null
   protected int sizeToCache = -1; // bytes
@@ -901,7 +901,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public void getNameAndDimensions(StringBuffer buf) {
     Formatter proxy = new Formatter();
     getNameAndDimensions(proxy, true, false);
-    buf.append(proxy.toString());
+    buf.append(proxy);
   }
 
   /**
@@ -914,7 +914,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public void getNameAndDimensions(StringBuilder buf, boolean useFullName, boolean strict) {
     Formatter proxy = new Formatter();
     getNameAndDimensions(proxy, useFullName, strict);
-    buf.append(proxy.toString());
+    buf.append(proxy);
   }
 
 
@@ -1030,7 +1030,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return f.toString();
   }
 
-  private static boolean showSize = false;
+  private static boolean showSize;
 
   protected String extraInfo() {
     return showSize ? " // " + getElementSize() + " " + getSize() : "";
@@ -1095,7 +1095,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return hashCode;
   }
 
-  protected int hashCode = 0;
+  protected int hashCode;
 
   /**
    * Sort by name
@@ -1592,8 +1592,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   protected static class Cache {
     public Array data;
-    public boolean isCaching = false;
-    public boolean cachingSet = false;
+    public boolean isCaching;
+    public boolean cachingSet;
 
     public Cache() {}
   }

@@ -139,7 +139,7 @@ public class EnsCoord implements Comparable {
         extra.add(ec);
       }
     }
-    if (extra.size() == 0)
+    if (extra.isEmpty())
       return;
     for (EnsCoord ec : extra) {
       if (ec.getNEnsembles() < result.getNEnsembles())

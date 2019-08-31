@@ -42,7 +42,7 @@ public class Cursor {
 
   private int getParentIndex() { // skip null structureData, to allow dummy tables to be inserted, eg FslWindProfiler
     int indx = currentIndex;
-    while ((tableData[indx] == null || tableData[indx].getMembers().size() == 0) && (indx < tableData.length - 1))
+    while ((tableData[indx] == null || tableData[indx].getMembers().isEmpty()) && (indx < tableData.length - 1))
       indx++;
     return indx;
   }

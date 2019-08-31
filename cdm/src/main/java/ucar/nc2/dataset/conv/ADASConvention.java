@@ -34,7 +34,7 @@ public class ADASConvention extends CoordSysBuilder {
   }
 
   // private double originX = 0.0, originY = 0.0;
-  private ProjectionCT projCT = null;
+  private ProjectionCT projCT;
   private static final boolean debugProj = false;
 
   /**
@@ -88,7 +88,7 @@ public class ADASConvention extends CoordSysBuilder {
     }
 
     ProjectionImpl proj;
-    if ((projName != null) && projName.equalsIgnoreCase("lambert_conformal_conic")) {
+    if ("lambert_conformal_conic".equalsIgnoreCase(projName)) {
       proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing);
       projCT = new ProjectionCT("Projection", "FGDC", proj);
       if (false_easting == 0.0)
@@ -310,7 +310,7 @@ public class ADASConvention extends CoordSysBuilder {
     for (CoordinateSystem cs : csys) {
       if (cs.getZaxis() != null) {
         String units = cs.getZaxis().getUnitsString();
-        if ((units == null) || (units.trim().length() == 0)) {
+        if ((units == null) || (units.trim().isEmpty())) {
           VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(ncDataset, cs);
           if (vct != null) {
             cs.addCoordinateTransform(vct);

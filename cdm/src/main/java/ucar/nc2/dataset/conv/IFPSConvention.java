@@ -73,7 +73,7 @@ public class IFPSConvention extends CoordSysBuilder {
     return (geoVarsCheck && fileFormatCheck);
   }
 
-  private Variable projVar = null; // use this to get projection info
+  private Variable projVar; // use this to get projection info
 
   public IFPSConvention() {
     this.conventionName = "IFPS";
@@ -95,7 +95,7 @@ public class IFPSConvention extends CoordSysBuilder {
 
     projVar = latVar;
     String projName = ds.findAttValueIgnoreCase(projVar, "projectionType", null);
-    if (projName != null && projName.equals("LAMBERT_CONFORMAL")) {
+    if ("LAMBERT_CONFORMAL".equals(projName)) {
       Projection proj = makeLCProjection(ds);
       makeXYcoords(ds, proj, latVar, lonVar);
     }

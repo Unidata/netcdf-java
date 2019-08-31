@@ -28,10 +28,10 @@ public abstract class N3streamWriter {
   protected ucar.nc2.NetcdfFile ncfile;
   protected Map<Variable, Vinfo> vinfoMap = new HashMap<>();
   protected List<Vinfo> vinfoList = new ArrayList<>(); // output order of the variables
-  protected boolean debug = false, debugPos = true, debugWriteData = false;
+  protected boolean debug, debugPos = true, debugWriteData;
   protected int recStart, recSize;
   protected boolean usePadding = true;
-  protected long filePos = 0;
+  protected long filePos;
 
   protected N3streamWriter(ucar.nc2.NetcdfFile ncfile) {
     this.ncfile = ncfile;

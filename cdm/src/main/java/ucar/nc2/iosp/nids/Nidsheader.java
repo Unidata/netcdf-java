@@ -87,50 +87,50 @@ class Nidsheader {
 
   // message header block
 
-  short mcode = 0;
-  short mdate = 0;
-  int mtime = 0;
-  int mlength = 0;
-  short msource = 0;
-  short mdestId = 0;
-  short mNumOfBlock = 0;
+  short mcode;
+  short mdate;
+  int mtime;
+  int mlength;
+  short msource;
+  short mdestId;
+  short mNumOfBlock;
   // production dessciption block
-  short divider = 0;
-  double latitude = 0.0;
-  double lat_min = 0.0;
-  double lat_max = 0.0;
-  double longitude = 0.0;
-  double lon_min = 0.0;
-  double lon_max = 0.0;
+  short divider;
+  double latitude;
+  double lat_min;
+  double lat_max;
+  double longitude;
+  double lon_min;
+  double lon_max;
 
-  double height = 0;
-  short pcode = 0;
-  short opmode = 0;
-  short volumnScanPattern = 0;
-  short sequenceNumber = 0;
-  short volumeScanNumber = 0;
-  short volumeScanDate = 0;
-  int volumeScanTime = 0;
-  short productDate = 0;
-  int productTime = 0;
-  short p1 = 0;
-  short p2 = 0;
-  short elevationNumber = 0;
-  short p3 = 0;
+  double height;
+  short pcode;
+  short opmode;
+  short volumnScanPattern;
+  short sequenceNumber;
+  short volumeScanNumber;
+  short volumeScanDate;
+  int volumeScanTime;
+  short productDate;
+  int productTime;
+  short p1;
+  short p2;
+  short elevationNumber;
+  short p3;
   short[] threshold = new short[16];
-  short p4 = 0;
-  short p5 = 0;
-  short p6 = 0;
-  short p7 = 0;
-  short p8 = 0;
-  short p9 = 0;
-  short p10 = 0;
-  short numberOfMaps = 0;
-  int offsetToSymbologyBlock = 0;
-  int offsetToGraphicBlock = 0;
-  int offsetToTabularBlock = 0;
-  int block_length = 0;
-  short number_layers = 0;
+  short p4;
+  short p5;
+  short p6;
+  short p7;
+  short p8;
+  short p9;
+  short p10;
+  short numberOfMaps;
+  int offsetToSymbologyBlock;
+  int offsetToGraphicBlock;
+  int offsetToTabularBlock;
+  int block_length;
+  short number_layers;
   String stationId;
   String stationName = "XXX";
   private boolean noHeader;
@@ -238,8 +238,8 @@ class Nidsheader {
   private int numX0;
   private int numY;
   private int numY0;
-  private boolean isR = false;
-  private byte[] uncompdata = null;
+  private boolean isR;
+  private byte[] uncompdata;
 
   /**
    * read and parse the header of the nids/tdwr file
@@ -2162,7 +2162,7 @@ class Nidsheader {
    */
   private void setProductInfo(int prod_type, Pinfo pinfo) {
     /* memo field */
-    String[] cmode = new String[] {"Maintenance", "Clear Air", "Precip Mode"};
+    String[] cmode = {"Maintenance", "Clear Air", "Precip Mode"};
 
     short prod_max = pinfo.p4;
     short prod_min = 0;
@@ -3498,7 +3498,7 @@ class Nidsheader {
    */
   static int code_typelookup(int code) {
     int type;
-    final int[] types = {Other, Other, Other, Other, Other, /* 0- 9 */
+    int[] types = {Other, Other, Other, Other, Other, /* 0- 9 */
         Other, Other, Other, Other, Other, Other, Other, Other, Other, Other, /* 10- 19 */
         Other, Base_Reflect, Base_Reflect, Base_Reflect, Base_Reflect, BaseReflect248, Base_Reflect, Velocity, /*
                                                                                                                 * 20- 29
@@ -3717,7 +3717,7 @@ class Nidsheader {
 
     double data_res;
 
-    final double[] res = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0- 9 */
+    double[] res = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0- 9 */
         0, 0, 0, 0, 0, 0, 1, 2, 4, 1, /* 10- 19 */
         2, 4, 0.25, 0.5, 1, 0.25, 0.5, 1, 0.25, 0, /* 20- 29 */
         1, 0, 1, 0, 0, 1, 4, 1, 4, 0, /* 30- 39 */
@@ -3759,7 +3759,7 @@ class Nidsheader {
 
     int level;
 
-    final int[] levels = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0- 9 */
+    int[] levels = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0- 9 */
         0, 0, 0, 0, 0, 0, 8, 8, 8, 16, /* 10- 19 */
         16, 16, 8, 8, 8, 16, 16, 16, 8, 0, /* 20- 29 */
         8, 0, 256, 0, 0, 8, 8, 16, 16, 0, /* 30- 39 */

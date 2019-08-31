@@ -29,15 +29,15 @@ import java.util.concurrent.ExecutorCompletionService;
  */
 
 public abstract class AggregationOuterDimension extends Aggregation implements ProxyReader {
-  protected static boolean debugCache = false, debugInvocation = false, debugStride = false;
-  public static int invocation = 0; // debugging
+  protected static boolean debugCache, debugInvocation, debugStride;
+  public static int invocation; // debugging
 
   protected List<String> aggVarNames = new ArrayList<>(); // explicitly specified in the NcML
   protected List<VariableDS> aggVars = new ArrayList<>(); // actual vars that will be aggregated
-  private int totalCoords = 0; // the aggregation dimension size
+  private int totalCoords; // the aggregation dimension size
 
   protected List<CacheVar> cacheList = new ArrayList<>(); // promote global attribute to variable
-  protected boolean timeUnitsChange = false;
+  protected boolean timeUnitsChange;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -486,8 +486,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     protected int ncoord; // number of coordinates in outer dimension for this dataset
     protected String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank seperated
     protected Date coordValueDate; // if its a date
-    protected boolean isStringValued = false;
-    private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
+    protected boolean isStringValued;
+    private int aggStart, aggEnd; // index in aggregated dataset; aggStart <= i < aggEnd
 
     /**
      * Dataset constructor.
@@ -1094,7 +1094,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     f.format("  timeUnitsChange=%s%n", timeUnitsChange);
     f.format("  totalCoords=%d%n", totalCoords);
 
-    if (aggVarNames.size() > 0) {
+    if (!aggVarNames.isEmpty()) {
       f.format("  Aggregation Variables specified in NcML%n");
       for (String vname : aggVarNames)
         f.format("   %s%n", vname);
@@ -1107,7 +1107,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       f.format("%n");
     }
 
-    if (cacheList.size() > 0) {
+    if (!cacheList.isEmpty()) {
       f.format("%nCache Variables%n");
       for (CacheVar cv : cacheList)
         f.format("   %s%n", cv);

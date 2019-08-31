@@ -45,7 +45,7 @@ public class StationHelper {
 
   public LatLonRect getBoundingBox() {
     if (rect == null) {
-      if (stations.size() == 0)
+      if (stations.isEmpty())
         return null;
 
       Station s = stations.get(0);

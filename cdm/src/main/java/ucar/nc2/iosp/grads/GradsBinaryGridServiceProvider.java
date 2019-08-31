@@ -60,37 +60,37 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
   /**
    * the size of the x dimension
    */
-  private int sizeX = 0;
+  private int sizeX;
 
   /**
    * the size of the y dimension
    */
-  private int sizeY = 0;
+  private int sizeY;
 
   /**
    * the number of xy header bytes
    */
-  private int xyHeaderBytes = 0;
+  private int xyHeaderBytes;
 
   /**
    * the sequential record bytes
    */
-  private int sequentialRecordBytes = 0;
+  private int sequentialRecordBytes;
 
   /**
    * the number of file header bytes
    */
-  private int fileHeaderBytes = 0;
+  private int fileHeaderBytes;
 
   /**
    * the number of time header bytes
    */
-  private int timeHeaderBytes = 0;
+  private int timeHeaderBytes;
 
   /**
    * the number of time trailer bytes
    */
-  private int timeTrailerBytes = 0;
+  private int timeTrailerBytes;
 
   /**
    * The name for the ensemble varaible

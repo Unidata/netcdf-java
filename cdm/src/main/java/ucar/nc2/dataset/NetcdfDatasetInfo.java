@@ -239,7 +239,7 @@ public class NetcdfDatasetInfo implements Closeable {
     }
 
     String userAdvice = getUserAdvice();
-    if (userAdvice.length() > 0) {
+    if (!userAdvice.isEmpty()) {
       StringTokenizer toker = new StringTokenizer(userAdvice, "\n");
       while (toker.hasMoreTokens())
         rootElem.addContent(new Element("userAdvice").addContent(toker.nextToken()));

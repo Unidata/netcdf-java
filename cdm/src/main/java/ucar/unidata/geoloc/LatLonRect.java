@@ -38,12 +38,12 @@ public class LatLonRect {
   /**
    * flag for dateline cross
    */
-  private boolean crossDateline = false;
+  private boolean crossDateline;
 
   /**
    * All longitudes are included
    */
-  private boolean allLongitude = false;
+  private boolean allLongitude;
 
   /**
    * width and initial longitude

@@ -108,7 +108,7 @@ public class Util {
       return true;
     String munge = unit.toLowerCase().trim();
     munge = StringUtil2.remove(munge, '(');
-    return munge.length() == 0 || munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see")
+    return munge.isEmpty() || munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see")
         || munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") || munge.equals("1");
   }
 

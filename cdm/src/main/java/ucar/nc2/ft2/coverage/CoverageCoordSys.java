@@ -447,7 +447,7 @@ public class CoverageCoordSys {
     }
 
     String errs = errMessages.toString();
-    if (errs.length() > 0)
+    if (!errs.isEmpty())
       return Optional.empty(errs);
 
     Collections.sort(subsetAxes);

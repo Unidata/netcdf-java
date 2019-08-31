@@ -47,7 +47,7 @@ public class HybridHeight extends VerticalTransformImpl {
   /**
    * a and b Arrays
    */
-  private Array aArray = null, bArray = null;
+  private Array aArray, bArray;
 
   /**
    * Construct a coordinate transform for hybrid height

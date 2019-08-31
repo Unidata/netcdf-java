@@ -35,9 +35,9 @@ public class Jason2Convention extends CoordSysBuilder {
     // if (null == ncfile.findGlobalAttribute( "stop_time")) return false;
 
     String center = ncfile.findAttValueIgnoreCase(null, "processing_center", null);
-    if ((center != null) && center.equals("ESPC")) {
+    if ("ESPC".equals(center)) {
       String mission = ncfile.findAttValueIgnoreCase(null, "mission_name", null);
-      return mission != null && mission.equals("OSTM/Jason-2");
+      return "OSTM/Jason-2".equals(mission);
     } else
       return false;
   }

@@ -299,7 +299,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
     sbuff.append("  has netcdf = ").append(getNetcdfFile() != null).append("\n");
     List<Attribute> ga = getGlobalAttributes();
-    if (ga.size() > 0) {
+    if (!ga.isEmpty()) {
       sbuff.append("  Attributes\n");
       for (Attribute a : ga) {
         sbuff.append("    ").append(a).append("\n");

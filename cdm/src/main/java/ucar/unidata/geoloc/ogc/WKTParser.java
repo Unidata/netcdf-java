@@ -99,7 +99,7 @@ public class WKTParser {
   /**
    * parse position
    */
-  private int position = 0;
+  private int position;
 
   /**
    * the reader

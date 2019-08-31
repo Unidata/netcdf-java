@@ -22,9 +22,9 @@ import java.text.ParseException;
  * Time: 3:38:11 PM
  */
 public class DMSPHeader {
-  private String[] header = null;
+  private String[] header;
   private Map<String, String> headerInfo = new HashMap<>();
-  private int headerSizeInBytes = 0;
+  private int headerSizeInBytes;
   private int headerSizeInBytesGuess = 5000;
 
   private ucar.unidata.io.RandomAccessFile raFile;
@@ -33,133 +33,133 @@ public class DMSPHeader {
 
   // File information
   private String fileIdAttName = "fileId";
-  private Attribute fileIdAtt = null;
+  private Attribute fileIdAtt;
 
   private String datasetIdAttName = "datasetId";
-  private Attribute datasetIdAtt = null;
+  private Attribute datasetIdAtt;
 
-  private int recordSizeInBytes = 0;
+  private int recordSizeInBytes;
 
-  private int numHeaderRecords = 0;
-  private int numDataRecords = 0;
+  private int numHeaderRecords;
+  private int numDataRecords;
 
   private String numDataRecordsDimName = "numScans";
-  private Dimension numDataRecordsDim = null;
+  private Dimension numDataRecordsDim;
 
-  private int numArtificialDataRecords = 0;
-  private int numRecords = 0;
+  private int numArtificialDataRecords;
+  private int numRecords;
 
   // Processing information
   private String suborbitHistoryAttName = "suborbitHistory";
-  private Attribute suborbitHistoryAtt = null;
+  private Attribute suborbitHistoryAtt;
 
   private String processingSystemAttName = "processingSystem";
-  private Attribute processingSystemAtt = null;
+  private Attribute processingSystemAtt;
 
-  private Date processingDate = null;
+  private Date processingDate;
 
   private String processingDateAttName = "processingDate";
-  private Attribute processingDateAtt = null;
+  private Attribute processingDateAtt;
 
   // Satellite information
   private String spacecraftIdAttName = "spacecraftId";
-  private Attribute spacecraftIdAtt = null;
+  private Attribute spacecraftIdAtt;
 
   private String noradIdAttName = "noradId";
-  private Attribute noradIdAtt = null;
+  private Attribute noradIdAtt;
 
   // Orbit information
   private String startDateAttName = "startDate";
-  private Attribute startDateAtt = null;
-  private Date startDate = null;
+  private Attribute startDateAtt;
+  private Date startDate;
 
   private String endDateAttName = "endDate";
-  private Attribute endDateAtt = null;
-  private Date endDate = null;
+  private Attribute endDateAtt;
+  private Date endDate;
 
   private String startDateLocalAttName = "startDateLocal";
-  private Attribute startDateLocalAtt = null;
+  private Attribute startDateLocalAtt;
 
   private String startTimeLocalAttName = "startTimeLocal";
-  private Attribute startTimeLocalAtt = null;
+  private Attribute startTimeLocalAtt;
 
   private String startLatitudeAttName = "startLatitude";
-  private Attribute startLatitudeAtt = null;
+  private Attribute startLatitudeAtt;
 
   private String startLongitudeAttName = "startLongitude";
-  private Attribute startLongitudeAtt = null;
+  private Attribute startLongitudeAtt;
 
   private String endLatitudeAttName = "endLatitude";
-  private Attribute endLatitudeAtt = null;
+  private Attribute endLatitudeAtt;
 
   private String endLongitudeAttName = "endLongitude";
-  private Attribute endLongitudeAtt = null;
+  private Attribute endLongitudeAtt;
 
   private String startSubsolarCoordsAttName = "startSubsolarCoords";
-  private Attribute startSubsolarCoordsAtt = null;
+  private Attribute startSubsolarCoordsAtt;
 
   private String endSubsolarCoordsAttName = "endSubsolarCoords";
-  private Attribute endSubsolarCoordsAtt = null;
+  private Attribute endSubsolarCoordsAtt;
 
   private String startLunarCoordsAttName = "startLunarCoords";
-  private Attribute startLunarCoordsAtt = null;
+  private Attribute startLunarCoordsAtt;
 
   private String endLunarCoordsAttName = "endLunarCoords";
-  private Attribute endLunarCoordsAtt = null;
+  private Attribute endLunarCoordsAtt;
 
   private String ascendingNodeAttName = "ascendingNode";
-  private Attribute ascendingNodeAtt = null;
+  private Attribute ascendingNodeAtt;
 
   private String nodeHeadingAttName = "nodeHeading";
-  private Attribute nodeHeadingAtt = null;
+  private Attribute nodeHeadingAtt;
 
   // Sensor information
-  private int numSamplesPerBand = 0;
+  private int numSamplesPerBand;
   private String numSamplesPerBandDimName = "numSamplesPerScan";
-  private Dimension numSamplesPerBandDim = null;
+  private Dimension numSamplesPerBandDim;
 
   private String nominalResolutionAttName = "nominalResolution";
-  private Attribute nominalResolutionAtt = null;
+  private Attribute nominalResolutionAtt;
 
   private String bandsPerScanlineAttName = "bandsPerScanline";
-  private Attribute bandsPerScanlineAtt = null;
+  private Attribute bandsPerScanlineAtt;
 
   private String bytesPerSampleAttName = "bytesPerSample";
-  private Attribute bytesPerSampleAtt = null;
+  private Attribute bytesPerSampleAtt;
 
   private String byteOffsetBand1AttName = "byteOffsetBand1";
-  private Attribute byteOffsetBand1Att = null;
+  private Attribute byteOffsetBand1Att;
 
   private String byteOffsetBand2AttName = "byteOffsetBand2";
-  private Attribute byteOffsetBand2Att = null;
+  private Attribute byteOffsetBand2Att;
 
   private String band1AttName = "band1";
-  private Attribute band1Att = null;
+  private Attribute band1Att;
 
   private String band2AttName = "band2";
-  private Attribute band2Att = null;
+  private Attribute band2Att;
 
   private String bandOrganizationAttName = "bandOrganization";
-  private Attribute bandOrganizationAtt = null;
+  private Attribute bandOrganizationAtt;
 
   private String thermalOffsetAttName = "thermalOffset";
-  private Attribute thermalOffsetAtt = null;
+  private Attribute thermalOffsetAtt;
 
   private String thermalScaleAttName = "thermalScale";
-  private Attribute thermalScaleAtt = null;
+  private Attribute thermalScaleAtt;
 
   private String percentDaylightAttName = "percentDaylight";
-  private Attribute percentDaylightAtt = null;
+  private Attribute percentDaylightAtt;
 
   private String percentFullMoonAttName = "percentFullMoon";
-  private Attribute percentFullMoonAtt = null;
+  private Attribute percentFullMoonAtt;
 
   private String percentTerminatorEvidentAttName = "percentTerminatorEvident";
-  private Attribute percentTerminatorEvidentAtt = null;
+  private Attribute percentTerminatorEvidentAtt;
 
   // QC information
   private String qcFlagsAttName = "qcFlags";
-  private Attribute qcFlagsAtt = null;
+  private Attribute qcFlagsAtt;
 
 
   public Attribute getFileIdAtt() {
@@ -351,13 +351,13 @@ public class DMSPHeader {
     // Make sure header starts with the proper item.
     if (!fullHeader.startsWith(HeaderInfoTitle.FILE_ID.toString())) {
       throw new IOException(
-          "Invalid DMSP file: header does not start with \"" + HeaderInfoTitle.FILE_ID.toString() + "\".");
+          "Invalid DMSP file: header does not start with \"" + HeaderInfoTitle.FILE_ID + "\".");
     }
     // Make sure header contains end-of-header marker.
     int endOfHeaderIndex = fullHeader.indexOf(HeaderInfoTitle.END_HEADER.toString());
     if (endOfHeaderIndex == -1) {
       throw new IOException(
-          "Invalid DMSP file: header does not end with \"" + HeaderInfoTitle.END_HEADER.toString() + "\".");
+          "Invalid DMSP file: header does not end with \"" + HeaderInfoTitle.END_HEADER + "\".");
     }
 
     // Drop the end-of-header marker and the line feed ('\n') proceeding it.
@@ -613,17 +613,17 @@ public class DMSPHeader {
    */
   public String toString() {
 
-    String retVal = HeaderInfoTitle.FILE_ID.toString() + ": " + this.fileIdAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.DATA_SET_ID.toString() + ": " + this.datasetIdAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.RECORD_BYTES.toString() + ": " + this.recordSizeInBytes + "\n"
-        + HeaderInfoTitle.NUM_HEADER_RECORDS.toString() + ": " + this.numHeaderRecords + "\n"
-        + HeaderInfoTitle.NUM_RECORDS.toString() + ": " + this.numRecords + "\n"
-        + HeaderInfoTitle.SUBORBIT_HISTORY.toString() + ": " + this.suborbitHistoryAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.PROCESSING_SYSTEM.toString() + ": " + this.processingSystemAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.PROCESSING_DATE.toString() + ": "
+    String retVal = HeaderInfoTitle.FILE_ID + ": " + this.fileIdAtt.getStringValue() + "\n"
+        + HeaderInfoTitle.DATA_SET_ID + ": " + this.datasetIdAtt.getStringValue() + "\n"
+        + HeaderInfoTitle.RECORD_BYTES + ": " + this.recordSizeInBytes + "\n"
+        + HeaderInfoTitle.NUM_HEADER_RECORDS + ": " + this.numHeaderRecords + "\n"
+        + HeaderInfoTitle.NUM_RECORDS + ": " + this.numRecords + "\n"
+        + HeaderInfoTitle.SUBORBIT_HISTORY + ": " + this.suborbitHistoryAtt.getStringValue() + "\n"
+        + HeaderInfoTitle.PROCESSING_SYSTEM + ": " + this.processingSystemAtt.getStringValue() + "\n"
+        + HeaderInfoTitle.PROCESSING_DATE + ": "
         + DateFormatHandler.ALT_DATE_TIME.getDateTimeStringFromDate(this.processingDate) + "\n"
-        + HeaderInfoTitle.SPACECRAFT_ID.toString() + ": " + this.spacecraftIdAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.NORAD_ID.toString() + ": " + this.noradIdAtt.getStringValue() + "\n";
+        + HeaderInfoTitle.SPACECRAFT_ID + ": " + this.spacecraftIdAtt.getStringValue() + "\n"
+        + HeaderInfoTitle.NORAD_ID + ": " + this.noradIdAtt.getStringValue() + "\n";
     return (retVal);
   }
 

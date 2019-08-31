@@ -357,7 +357,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       // now look for comma or semicolon or / delimited list
       if (convClass == null) {
         List<String> names = breakupConventionNames(convName);
-        if (names.size() > 0) {
+        if (!names.isEmpty()) {
           // search the registered conventions, in order
           for (Convention conv : conventionList) {
             for (String name : names) {
@@ -471,7 +471,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   protected Formatter parseInfo = new Formatter();
   protected Formatter userAdvice = new Formatter();
 
-  protected boolean debug = false;
+  protected boolean debug;
 
   @Override
   public void setConventionUsed(String convName) {
@@ -1013,7 +1013,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       if (vp.isCoordinateTransform && (vp.ct != null) && (vp.coordAxes != null)) {
         List<CoordinateAxis> dataAxesList = vp.findCoordinateAxes(false);
 
-        if (dataAxesList.size() > 0) {
+        if (!dataAxesList.isEmpty()) {
           for (CoordinateSystem cs : ncDataset.getCoordinateSystems()) {
             if (cs.containsAxes(dataAxesList)) {
               cs.addCoordinateTransform(vp.ct);
@@ -1035,7 +1035,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           if (null != (atype = AxisType.getType(name)))
             axisTypesList.add(atype);
         }
-        if (axisTypesList.size() > 0) {
+        if (!axisTypesList.isEmpty()) {
           for (CoordinateSystem cs : ncDataset.getCoordinateSystems()) {
             if (cs.containsAxisTypes(axisTypesList)) {
               cs.addCoordinateTransform(vp.ct);
@@ -1201,7 +1201,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     }
 
     public boolean hasCoordinateSystem() {
-      return ((VariableEnhanced) v).getCoordinateSystems().size() > 0;
+      return !((VariableEnhanced) v).getCoordinateSystems().isEmpty();
     }
 
     public String toString() {
@@ -1257,7 +1257,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         }
       }
 
-      if (axesList.size() == 0) {
+      if (axesList.isEmpty()) {
         parseInfo.format(" No axes found for Coordinate System %s%n", v.getFullName());
         userAdvice.format(" No axes found for Coordinate System %s%n", v.getFullName());
         return;

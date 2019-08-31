@@ -297,8 +297,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     private class CompositeStationFeatureIterator extends PointIteratorAbstract {
       private Iterator<TimedCollection.Dataset> iter;
       private FeatureDatasetPoint currentDataset;
-      private PointFeatureIterator pfIter = null;
-      private boolean finished = false;
+      private PointFeatureIterator pfIter;
+      private boolean finished;
 
       CompositeStationFeatureIterator() {
         iter = collForFeature.getDatasets().iterator();

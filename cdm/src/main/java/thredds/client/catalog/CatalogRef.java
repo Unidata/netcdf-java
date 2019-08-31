@@ -65,7 +65,7 @@ public class CatalogRef extends Dataset {
   protected String translatePathToReletiveLocation(String dsPath, String configPath) {
     if (dsPath == null)
       return null;
-    if (dsPath.length() == 0)
+    if (dsPath.isEmpty())
       return null;
 
     if (dsPath.startsWith("/"))
@@ -83,7 +83,7 @@ public class CatalogRef extends Dataset {
   }
 
   //////////////////////////////////////////////////////////////////
-  private Catalog proxy = null;
+  private Catalog proxy;
 
   @Override
   public boolean hasNestedDatasets() {

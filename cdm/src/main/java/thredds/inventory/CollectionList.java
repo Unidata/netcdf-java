@@ -33,7 +33,7 @@ public class CollectionList extends CollectionAbstract {
     String[] files = list.split(";");
     for (String s : files) {
       String filename = s.trim();
-      if (filename.length() == 0)
+      if (filename.isEmpty())
         continue;
       Path p = Paths.get(filename);
       if (Files.exists(p)) {

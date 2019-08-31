@@ -116,7 +116,7 @@ public class NCdumpW {
           varNames = stoke.nextToken();
         if (toke.equalsIgnoreCase("-datasetname") && stoke.hasMoreTokens()) {
           fakeDataset = stoke.nextToken();
-          if (fakeDataset.length() == 0)
+          if (fakeDataset.isEmpty())
             fakeDataset = null;
           if (fakeDataset != null) {
             trueDataset = nc.getLocation();
@@ -405,7 +405,7 @@ public class NCdumpW {
         value = DataType.widenNumberIfNegative((Number) value);
       }
 
-      out.print(value.toString());
+      out.print(value);
       return;
     }
 
@@ -425,7 +425,7 @@ public class NCdumpW {
 
         if (ii > 0)
           out.print(", ");
-        out.print(value.toString());
+        out.print(value);
         if (ct != null && ct.isCancel())
           return;
       }

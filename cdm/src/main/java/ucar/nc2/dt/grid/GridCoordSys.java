@@ -251,7 +251,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   private VerticalTransform vt;
   private Dimension timeDim;
 
-  private boolean isLatLon = false;
+  private boolean isLatLon;
 
   /**
    * Create a GridCoordSys from an existing Coordinate System.
@@ -950,7 +950,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return null;
   }
 
-  private ProjectionRect mapArea = null;
+  private ProjectionRect mapArea;
 
   /**
    * Get the x,y bounding box in projection coordinates.
@@ -1035,7 +1035,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord), new LatLonPointImpl());
   }
 
-  private LatLonRect llbb = null;
+  private LatLonRect llbb;
 
   /**
    * Get horizontal bounding box in lat, lon coordinates.

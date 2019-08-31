@@ -172,7 +172,7 @@ public class TableParser {
         break;
       if (line.startsWith(comment))
         continue;
-      if (line.trim().length() == 0)
+      if (line.trim().isEmpty())
         continue;
       if (debug)
         System.out.printf("%s%n", line);
@@ -201,7 +201,7 @@ public class TableParser {
     int start, end;
     Class type;
 
-    boolean hasScale = false;
+    boolean hasScale;
     float scale;
 
     Field(int start, int end, Class type) {
@@ -234,7 +234,7 @@ public class TableParser {
 
       try {
         svalue = StringUtil2.remove(svalue, ' ');
-        boolean isBlank = (svalue.trim().length() == 0);
+        boolean isBlank = (svalue.trim().isEmpty());
         if (type == double.class)
           return isBlank ? 0.0 : new Double(svalue);
         if (type == int.class) {

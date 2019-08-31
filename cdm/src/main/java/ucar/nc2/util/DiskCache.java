@@ -74,13 +74,13 @@ import java.util.*;
 public class DiskCache {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private static String root;
-  private static boolean standardPolicy = false;
-  private static boolean checkExist = false;
+  private static boolean standardPolicy;
+  private static boolean checkExist;
 
   /**
    * debug only
    */
-  public static boolean simulateUnwritableDir = false;
+  public static boolean simulateUnwritableDir;
 
   static {
     root = System.getProperty("nj22.cache");

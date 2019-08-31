@@ -85,7 +85,7 @@ public class FeatureCollectionConfig {
   public FmrcConfig fmrcConfig = new FmrcConfig();
   public PointConfig pointConfig = new PointConfig();
   public GribConfig gribConfig = new GribConfig();
-  public Element innerNcml = null;
+  public Element innerNcml;
   public Optional<Boolean> filesSortIncreasing = Optional.empty();
 
   public FeatureCollectionConfig() {}
@@ -264,12 +264,12 @@ public class FeatureCollectionConfig {
     public String recheckAfter; // used by non-GRIB FC
     public String rescan;
     public boolean triggerOk = true;
-    public boolean userDefined = false;
+    public boolean userDefined;
     public CollectionUpdateType startupType = CollectionUpdateType.never; // same as updateType, except may be
                                                                           // overridden on the command line, for startup
                                                                           // only
     public CollectionUpdateType updateType = CollectionUpdateType.never; // this is what the user entered in config
-    public String deleteAfter = null; // not implemented yet
+    public String deleteAfter; // not implemented yet
 
     public UpdateConfig() { // defaults
     }
@@ -314,9 +314,9 @@ public class FeatureCollectionConfig {
   // <protoDataset choice="First | Random | Penultimate | Latest | Run" param="0" change="expr" />
   public static class ProtoConfig {
     public ProtoChoice choice = ProtoChoice.Penultimate;
-    public String param = null;
-    public String change = null;
-    public Element outerNcml = null;
+    public String param;
+    public String change;
+    public Element outerNcml;
     public boolean cacheAll = true;
 
     public ProtoConfig() { // defaults
@@ -354,7 +354,7 @@ public class FeatureCollectionConfig {
   // return regularizeDefault;
   // }
 
-  private static boolean regularizeDefault = false;
+  private static boolean regularizeDefault;
 
   private static Set<FmrcDatasetType> defaultFmrcDatasetTypes = Collections.unmodifiableSet(
       EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best, FmrcDatasetType.Files, FmrcDatasetType.Runs));
@@ -362,14 +362,14 @@ public class FeatureCollectionConfig {
   public static class FmrcConfig {
     public boolean regularize = regularizeDefault;
     public Set<FmrcDatasetType> datasets = defaultFmrcDatasetTypes;
-    private boolean explicit = false;
-    private List<BestDataset> bestDatasets = null;
+    private boolean explicit;
+    private List<BestDataset> bestDatasets;
 
     public FmrcConfig() { // defaults
     }
 
     public FmrcConfig(String regularize) {
-      this.regularize = (regularize != null) && (regularize.equalsIgnoreCase("true"));
+      this.regularize = "true".equalsIgnoreCase(regularize);
     }
 
     public void addDatasetType(String datasetTypes) {
@@ -426,10 +426,7 @@ public class FeatureCollectionConfig {
 
   public static class PointConfig {
     public Set<PointDatasetType> datasets = defaultPointDatasetTypes;
-    protected boolean explicit = false;
-
-    public PointConfig() { // defaults
-    }
+    protected boolean explicit;
 
     public void addDatasetType(String datasetTypes) {
       // if they list datasetType explicitly, remove defaults
@@ -461,7 +458,7 @@ public class FeatureCollectionConfig {
   private static final Set<GribDatasetType> defaultGribDatasetTypes = Collections.unmodifiableSet(
       EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Files, GribDatasetType.Latest));
 
-  public static boolean useGenTypeDef = false, useTableVersionDef = false, intvMergeDef = true, useCenterDef = false;
+  public static boolean useGenTypeDef, useTableVersionDef, intvMergeDef = true, useCenterDef;
 
   public static class GribConfig {
 
@@ -485,10 +482,7 @@ public class FeatureCollectionConfig {
     public String lookupTablePath, paramTablePath; // user defined tables
     public Element paramTable; // ??
 
-    private boolean explicitDatasets = false;
-
-    public GribConfig() { // defaults
-    }
+    private boolean explicitDatasets;
 
     public TimeUnitConverter getTimeUnitConverter() {
       return tuc;
@@ -568,7 +562,7 @@ public class FeatureCollectionConfig {
       }
 
       List<Element> paramElems = configElem.getChildren("option", ns);
-      if (paramElems.size() == 0)
+      if (paramElems.isEmpty())
         paramElems = configElem.getChildren("parameter", ns); // backwards compatible
       for (Element param : paramElems) {
         String name = param.getAttributeValue("name");
@@ -627,9 +621,9 @@ public class FeatureCollectionConfig {
         if (e != null) {
           value = true; // no value means true
           String t = e.getTextNormalize();
-          if (t != null && t.equalsIgnoreCase("true"))
+          if ("true".equalsIgnoreCase(t))
             value = true;
-          if (t != null && t.equalsIgnoreCase("false"))
+          if ("false".equalsIgnoreCase(t))
             value = false;
         }
       }
@@ -726,7 +720,7 @@ public class FeatureCollectionConfig {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder("GribConfig{");
+      StringBuilder sb = new StringBuilder("GribConfig{");
       sb.append("datasets=").append(datasets);
       if (gdsHash != null)
         sb.append(", gdsHash=").append(gdsHash);
@@ -824,14 +818,14 @@ public class FeatureCollectionConfig {
 
   public static class GribIntvFilter {
     public List<IntvFilter> filterList = new ArrayList<>();
-    public boolean isZeroExcluded = false; // default is false 1/31/2019
+    public boolean isZeroExcluded; // default is false 1/31/2019
 
     public boolean isZeroExcluded() {
       return isZeroExcluded;
     }
 
     public boolean hasFilter() {
-      return (filterList.size() > 0);
+      return (!filterList.isEmpty());
     }
 
     // true means discard

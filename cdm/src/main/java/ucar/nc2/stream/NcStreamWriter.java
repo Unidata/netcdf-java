@@ -23,7 +23,7 @@ public class NcStreamWriter {
 
   private NetcdfFile ncfile;
   private NcStreamProto.Header header;
-  private boolean show = false;
+  private boolean show;
 
   public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;

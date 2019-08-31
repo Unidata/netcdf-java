@@ -36,7 +36,7 @@ public class GradsTimeDimension extends GradsDimension {
   private final String[] dateFormats = {"HH:mm'z'ddMMMyyyy", "HH'z'ddMMMyyyy", "ddMMMyyyy", "MMMyyyy"};
 
   /** The initial time as a TimeStruct */
-  private GradsTimeStruct initialTime = null;
+  private GradsTimeStruct initialTime;
 
   // J-
   /** time templates */

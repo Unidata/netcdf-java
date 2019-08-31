@@ -19,11 +19,11 @@ import java.util.*;
 public class UFheader {
   static final boolean littleEndianData = true;
   String dataFormat = "UNIVERSALFORMAT"; // temp setting
-  Ray firstRay = null;
-  Date endDate = null;
+  Ray firstRay;
+  Date endDate;
 
   Map<String, List<List<Ray>>> variableGroup; // key = data type, value = List by sweep number
-  private int max_radials = 0;
+  private int max_radials;
   private int min_radials = Integer.MAX_VALUE;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {

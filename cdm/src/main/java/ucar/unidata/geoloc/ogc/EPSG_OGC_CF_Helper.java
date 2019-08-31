@@ -127,7 +127,7 @@ public class EPSG_OGC_CF_Helper {
 
     ProjectionStandardsInfo psi = ProjectionStandardsInfo.getProjectionByCfName(paramName);
     String crsId = "EPSG:" + psi.getEpsgCode() + " [" + psi.name();
-    if (psi.equals(ProjectionStandardsInfo.Unknown)) {
+    if (psi == ProjectionStandardsInfo.Unknown) {
       log.warn("getWcs1_0CrsId(): Unknown projection - " + projToString(proj));
       crsId += " - " + paramName;
     }
@@ -140,7 +140,7 @@ public class EPSG_OGC_CF_Helper {
     StringBuilder sb = new StringBuilder();
     sb.append(proj.getName()).append(" [").append(proj.getClassName()).append("] - parameters=[");
     for (Parameter curProjParam : proj.getProjectionParameters()) {
-      sb.append("(").append(curProjParam.toString()).append(")");
+      sb.append("(").append(curProjParam).append(")");
     }
     sb.append("]");
     return sb.toString();

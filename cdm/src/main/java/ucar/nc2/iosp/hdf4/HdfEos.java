@@ -61,7 +61,7 @@ public class HdfEos {
   public static final String HDFEOS_CRS_SphereCode = "SphereCode";
 
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
-  static boolean showWork = false; // set in debug
+  static boolean showWork; // set in debug
   private static final String GEOLOC_FIELDS = "Geolocation Fields";
   private static final String GEOLOC_FIELDS2 = "Geolocation_Fields";
   private static final String DATA_FIELDS = "Data Fields";
@@ -227,7 +227,7 @@ public class HdfEos {
 
     if (featureType != null) {
       if (showWork) {
-        log.debug("***EOS featureType= {}", featureType.toString());
+        log.debug("***EOS featureType= {}", featureType);
       }
       rootg.addAttribute(new Attribute(CF.FEATURE_TYPE, featureType.toString()));
       // rootg.addAttribute(new Attribute(CDM.CONVENTIONS, "HDFEOS"));
@@ -616,7 +616,7 @@ public class HdfEos {
 
   // convert to shared dimensions
   private void setSharedDimensions(Variable v, List<Element> values, List<Dimension> unknownDims, String location) {
-    if (values.size() == 0) {
+    if (values.isEmpty()) {
       return;
     }
 

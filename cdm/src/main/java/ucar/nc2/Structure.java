@@ -410,8 +410,8 @@ public class Structure extends Variable {
   public ArrayStructure readStructure(int start, int count) throws IOException, ucar.ma2.InvalidRangeException {
     if (getRank() != 1)
       throw new java.lang.UnsupportedOperationException("not a vector structure");
-    int[] origin = new int[] {start};
-    int[] shape = new int[] {count};
+    int[] origin = {start};
+    int[] shape = {count};
     if (NetcdfFile.debugStructureIterator)
       System.out.println("readStructure " + start + " " + count);
     return (ArrayStructure) read(origin, shape);
@@ -463,12 +463,12 @@ public class Structure extends Variable {
    * Iterator over type StructureData, rank 1 (common) case
    */
   private class IteratorRank1 implements StructureDataIterator {
-    private int count = 0;
+    private int count;
     private int recnum = (int) getSize();
-    private int readStart = 0;
-    private int readCount = 0;
+    private int readStart;
+    private int readCount;
     private int readAtaTime;
-    private ArrayStructure as = null;
+    private ArrayStructure as;
 
     protected IteratorRank1(int bufferSize) {
       setBufferSize(bufferSize);
@@ -543,7 +543,7 @@ public class Structure extends Variable {
     private int readStart; // current buffer starts at
     private int readCount; // count within the current buffer [0,readAtaTime)
     private int outerCount; // over the outer Dimension
-    private ArrayStructure as = null;
+    private ArrayStructure as;
 
     protected Iterator(int bufferSize) {
       reset();

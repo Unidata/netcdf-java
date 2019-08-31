@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
  */
 public class H4iosp extends AbstractIOServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
-  private static boolean showLayoutTypes = false;
+  private static boolean showLayoutTypes;
 
   private H4header header = new H4header();
 
@@ -222,8 +222,8 @@ public class H4iosp extends AbstractIOServiceProvider {
     int[] segSizeA;
 
     int segno = -1;
-    int segpos = 0;
-    int segSize = 0;
+    int segpos;
+    int segSize;
     // H4header.Vinfo vinfo;
 
     LinkedInputStream(H4header.Vinfo vinfo) {

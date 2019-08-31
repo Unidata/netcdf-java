@@ -74,7 +74,7 @@ public class FeatureScan {
 
     // eliminate redundant files
     // ".Z", ".zip", ".gzip", ".gz", or ".bz2"
-    if (files.size() > 0) {
+    if (!files.isEmpty()) {
       Collections.sort(files);
       List<File> files2 = new ArrayList<>(files);
 
@@ -160,7 +160,7 @@ public class FeatureScan {
 
         Formatter errlog = new Formatter();
         builder = DtCoverageCSBuilder.classify(ds, errlog);
-        info.append(errlog.toString());
+        info.append(errlog);
         setCoordMap();
 
         ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
@@ -170,7 +170,7 @@ public class FeatureScan {
           errlog = new Formatter();
           FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
           info.append("FeatureDatasetFactoryManager errlog = ");
-          info.append(errlog.toString());
+          info.append(errlog);
           info.append("\n\n");
 
           if (featureDataset != null) {
@@ -180,14 +180,14 @@ public class FeatureScan {
             ftImpl = featureDataset.getImplementationName();
             Formatter infof = new Formatter();
             featureDataset.getDetailInfo(infof);
-            info.append(infof.toString());
+            info.append(infof);
           } else {
             ftype = "";
           }
 
         } catch (Throwable t) {
           ftype = " ERR: " + t.getMessage();
-          info.append(errlog.toString());
+          info.append(errlog);
           problem = t;
         }
 

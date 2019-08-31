@@ -43,9 +43,9 @@ public class WriterCFStationCollection extends CFPointWriter {
   protected Structure stationStruct; // used for netcdf4 extended
   private HashMap<String, Integer> stationIndexMap;
 
-  private boolean useDesc = false;
-  private boolean useAlt = false;
-  private boolean useWmoId = false;
+  private boolean useDesc;
+  private boolean useAlt;
+  private boolean useWmoId;
 
   private int desc_strlen = 1, wmo_strlen = 1;
   private Map<String, Variable> featureVarMap = new HashMap<>();
@@ -65,9 +65,9 @@ public class WriterCFStationCollection extends CFPointWriter {
     for (Station stn : stnList) {
       if (!Double.isNaN(stn.getAltitude()))
         useAlt = true;
-      if ((stn.getWmoId() != null) && (stn.getWmoId().trim().length() > 0))
+      if ((stn.getWmoId() != null) && (!stn.getWmoId().trim().isEmpty()))
         useWmoId = true;
-      if ((stn.getDescription() != null) && (stn.getDescription().trim().length() > 0))
+      if ((stn.getDescription() != null) && (!stn.getDescription().trim().isEmpty()))
         useDesc = true;
 
       // find string lengths
@@ -150,7 +150,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   }
 
-  private int stnRecno = 0;
+  private int stnRecno;
 
   private void writeStationData(StationFeature stn) throws IOException {
 
@@ -175,7 +175,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sdata);
   }
 
-  private int obsRecno = 0;
+  private int obsRecno;
 
   public void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, StructureData sdata)
       throws IOException {

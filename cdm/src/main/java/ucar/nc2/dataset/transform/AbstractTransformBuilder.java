@@ -65,7 +65,7 @@ public abstract class AbstractTransformBuilder {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
-  protected Formatter errBuffer = null;
+  protected Formatter errBuffer;
   protected double lat0, lon0, false_easting, false_northing, earth_radius;
   protected Earth earth;
 

@@ -6,7 +6,6 @@ package ucar.nc2;
 
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.util.Indent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,13 +23,13 @@ import java.util.Map;
 
 public abstract class CDMNode {
 
-  protected CDMSort sort = null;
-  protected Group group = null;
-  protected Structure parentstruct = null;
-  protected boolean immutable = false;
-  protected String shortName = null;
+  protected CDMSort sort;
+  protected Group group;
+  protected Structure parentstruct;
+  protected boolean immutable;
+  protected String shortName;
 
-  protected Map<Object, Object> annotations = null;
+  protected Map<Object, Object> annotations;
 
   // String fullName = null; // uses backslash escaping
 
@@ -42,7 +41,7 @@ public abstract class CDMNode {
   // may contain group information separated
   // by forward slash.
 
-  protected String dodsname = null;
+  protected String dodsname;
 
   //////////////////////////////////////////////////
   // Constructors

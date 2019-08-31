@@ -74,7 +74,7 @@ public class GempakCdm extends TableConfigurerImpl {
   }
 
   protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
-    final boolean needFinish = false;
+    boolean needFinish = false;
 
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
@@ -198,7 +198,7 @@ public class GempakCdm extends TableConfigurerImpl {
   }
 
   protected TableConfig getStationAsPointConfig(NetcdfDataset ds, Formatter errlog) {
-    final boolean needFinish = false;
+    boolean needFinish = false;
 
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);

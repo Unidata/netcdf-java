@@ -291,7 +291,7 @@ public class HorizCoordSys {
     }
 
     String errs = errMessages.toString();
-    if (errs.length() > 0)
+    if (!errs.isEmpty())
       return Optional.empty(errs);
 
     // makes a copy of the axis
@@ -330,7 +330,7 @@ public class HorizCoordSys {
     // use MAMath.MinMax as a container for two values, min and max
     List<MAMath.MinMax> lonIntvs = subsetLonIntervals(wantMin, wantMax, start, end);
 
-    if (lonIntvs.size() == 0)
+    if (lonIntvs.isEmpty())
       return Optional.empty(
           String.format("longitude want [%f,%f] does not intersect lon axis [%f,%f]", wantMin, wantMax, start, end));
 

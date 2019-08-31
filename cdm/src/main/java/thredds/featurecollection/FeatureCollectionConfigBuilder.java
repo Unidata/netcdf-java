@@ -100,7 +100,7 @@ public class FeatureCollectionConfigBuilder {
     try {
       List<Element> fcElems = new ArrayList<>();
       findFeatureCollection(doc.getRootElement(), fcName, fcElems);
-      if (fcElems.size() > 0)
+      if (!fcElems.isEmpty())
         return readConfig(fcElems.get(0));
 
     } catch (IllegalStateException e) {

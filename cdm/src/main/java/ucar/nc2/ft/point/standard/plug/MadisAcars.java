@@ -26,7 +26,7 @@ public class MadisAcars extends Madis {
       return false;
 
     String title = ds.findAttValueIgnoreCase(null, "title", null);
-    if ((title == null) || !title.equals("MADIS ACARS data"))
+    if (!"MADIS ACARS data".equals(title))
       return false;
 
     if (!ds.hasUnlimitedDimension())

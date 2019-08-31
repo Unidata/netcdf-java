@@ -34,7 +34,7 @@ class H5tiledLayoutBB implements LayoutBB {
   // System property name for -D flag
   static final String INFLATEBUFFERSIZE = "unidata.h5iosp.inflate.buffersize";
 
-  public static boolean debugFilter = false;
+  public static boolean debugFilter;
 
   private LayoutBBTiled delegate;
 
@@ -47,7 +47,7 @@ class H5tiledLayoutBB implements LayoutBB {
   private int elemSize; // last dimension of the StorageLayout message
   private int nChunkDims;
 
-  private boolean debug = false;
+  private boolean debug;
 
   private int inflatebuffersize = DEFAULTZIPBUFFERSIZE;
 

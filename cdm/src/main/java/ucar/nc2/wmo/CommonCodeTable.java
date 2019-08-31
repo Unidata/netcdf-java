@@ -268,7 +268,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
           // elem.getChildTextNormalize(elems[3]); WTF ?
           Element statusElem = elem.getChild("Status");
           String status = (statusElem == null) ? null : statusElem.getTextNormalize();
-          if (value != null && value.equals(")"))
+          if (")".equals(value))
             value = previousValue;
           ct.add(line, code, code2, value, status);
           previousValue = value;
@@ -299,7 +299,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   public final String tableName;
   public final int type;
   public final List<TableEntry> entries = new ArrayList<>();
-  private Map<Integer, String> map = null;
+  private Map<Integer, String> map;
 
   CommonCodeTable(String name, int type) {
     this.tableName = name;

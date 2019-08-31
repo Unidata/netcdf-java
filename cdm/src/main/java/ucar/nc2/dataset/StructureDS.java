@@ -516,7 +516,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   private static class StructureDataConverter implements StructureDataIterator {
     private StructureDataIterator orgIter;
     private StructureDS newStruct;
-    private int count = 0;
+    private int count;
 
     StructureDataConverter(StructureDS newStruct, StructureDataIterator orgIter) {
       this.newStruct = newStruct;

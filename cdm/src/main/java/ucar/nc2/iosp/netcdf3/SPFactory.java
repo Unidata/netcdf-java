@@ -16,7 +16,7 @@ import ucar.nc2.iosp.IOServiceProvider;
 public class SPFactory {
 
   private static Class spClass = N3raf.class;
-  private static boolean debug = false;
+  private static boolean debug;
 
   public static IOServiceProvider getServiceProvider() {
     try {

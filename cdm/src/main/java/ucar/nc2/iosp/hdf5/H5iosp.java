@@ -30,16 +30,16 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public static final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
 
-  static boolean debug = false;
-  static boolean debugPos = false;
-  static boolean debugHeap = false;
-  static boolean debugHeapStrings = false;
-  static boolean debugFilter = false;
-  static boolean debugRead = false;
-  static boolean debugFilterIndexer = false;
-  static boolean debugChunkIndexer = false;
-  static boolean debugVlen = false;
-  static boolean debugStructure = false;
+  static boolean debug;
+  static boolean debugPos;
+  static boolean debugHeap;
+  static boolean debugHeapStrings;
+  static boolean debugFilter;
+  static boolean debugRead;
+  static boolean debugFilterIndexer;
+  static boolean debugChunkIndexer;
+  static boolean debugVlen;
+  static boolean debugStructure;
   static boolean useHdfEos = true;
 
   static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
@@ -95,7 +95,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   // private RandomAccessFile raf;
   private H5header headerParser;
   private boolean isEos;
-  boolean includeOriginalAttributes = false;
+  boolean includeOriginalAttributes;
 
   /////////////////////////////////////////////////////////////////////////////
   // reading

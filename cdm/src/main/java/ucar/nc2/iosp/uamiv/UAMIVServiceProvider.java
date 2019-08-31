@@ -432,7 +432,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       try (BufferedReader br =
           new BufferedReader(new InputStreamReader(new FileInputStream(paramFile), StandardCharsets.UTF_8))) {
         while ((thisLine = br.readLine()) != null) {
-          if (thisLine.length() == 0)
+          if (thisLine.isEmpty())
             continue;
           if (thisLine.charAt(0) == '#')
             continue;

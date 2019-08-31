@@ -34,7 +34,7 @@ import java.io.IOException;
  */
 public class StructurePseudoDS extends StructureDS {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudoDS.class);
-  private static boolean debugRecord = false;
+  private static boolean debugRecord;
   protected static final Set<NetcdfDataset.Enhance> enhanceScaleMissing =
       EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset, NetcdfDataset.Enhance.ConvertMissing);
 
@@ -72,7 +72,7 @@ public class StructurePseudoDS extends StructureDS {
           continue;
 
         Dimension dim0 = orgV.getDimension(0);
-        if ((dim0 != null) && dim0.equals(outerDim))
+        if (outerDim.equals(dim0))
           varNames.add(orgV.getShortName());
       }
     }

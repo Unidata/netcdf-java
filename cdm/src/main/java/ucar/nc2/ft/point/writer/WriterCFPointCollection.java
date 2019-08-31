@@ -68,7 +68,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
   }
 
-  private int obsRecno = 0;
+  private int obsRecno;
 
   public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata)
       throws IOException {

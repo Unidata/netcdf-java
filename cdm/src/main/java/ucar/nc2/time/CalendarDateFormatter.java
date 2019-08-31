@@ -248,7 +248,7 @@ public class CalendarDateFormatter {
       }
 
       // Parse the time if present
-      if (timeString != null && timeString.length() > 0) {
+      if (timeString != null && !timeString.isEmpty()) {
         if (timeString.contains(":")) {
           StringTokenizer timeTokenizer = new StringTokenizer(timeString, ":");
           if (timeTokenizer.hasMoreTokens())
@@ -316,7 +316,7 @@ public class CalendarDateFormatter {
       // Parse the time zone if present
       if (zoneString != null) {
         zoneString = zoneString.trim();
-        if (zoneString.length() > 0 && !zoneString.equalsIgnoreCase("Z") && !zoneString.equalsIgnoreCase("UTC")
+        if (!zoneString.isEmpty() && !zoneString.equalsIgnoreCase("Z") && !zoneString.equalsIgnoreCase("UTC")
             && !zoneString.equalsIgnoreCase("GMT")) {
           isMinus = false;
           if (zoneString.startsWith("-")) {

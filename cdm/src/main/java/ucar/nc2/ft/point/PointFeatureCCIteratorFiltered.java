@@ -21,7 +21,7 @@ public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, I
   private PointFeatureCCIterator.Filter filter;
 
   private PointFeatureCC pointFeatureCollection;
-  private boolean done = false;
+  private boolean done;
 
   PointFeatureCCIteratorFiltered(PointFeatureCCIterator npfciter, PointFeatureCCIterator.Filter filter) {
     this.npfciter = npfciter;

@@ -26,8 +26,8 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
 
   private PointFeatureIterator.Filter filter;
   private StructureDataIterator structIter;
-  private PointFeature feature = null; // hasNext must cache
-  private boolean finished = false;
+  private PointFeature feature; // hasNext must cache
+  private boolean finished;
 
   /**
    * Constructor

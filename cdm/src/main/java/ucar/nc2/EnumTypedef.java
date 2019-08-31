@@ -186,7 +186,7 @@ public class EnumTypedef extends CDMNode {
 
   @Override
   public String toString() {
-    final Formatter f = new Formatter();
+    Formatter f = new Formatter();
     f.format("EnumTypedef %s: ", getShortName());
     for (int key : map.keySet()) {
       f.format("%d=%s,", key, map.get(key));

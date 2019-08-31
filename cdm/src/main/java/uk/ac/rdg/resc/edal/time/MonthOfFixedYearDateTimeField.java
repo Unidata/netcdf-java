@@ -81,7 +81,7 @@ final class MonthOfFixedYearDateTimeField extends ImpreciseDateTimeField {
   }
 
   @Override
-  public long add(final long instant, final int numMonths) {
+  public long add(long instant, int numMonths) {
     if (numMonths == 0)
       return instant;
 

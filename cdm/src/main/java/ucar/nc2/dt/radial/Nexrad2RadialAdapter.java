@@ -34,7 +34,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
-    if ((null != convention) && convention.equals(_Coordinate.Convention)) {
+    if (_Coordinate.Convention.equals(convention)) {
       String format = ncd.findAttValueIgnoreCase(null, "Format", null);
       if (format != null && (format.equals("ARCHIVE2") || format.equals("AR2V0001") || format.equals("CINRAD-SA")
           || format.equals("AR2V0003") || format.equals("AR2V0002") || format.equals("AR2V0004")
@@ -239,7 +239,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
   }
 
   public String getInfo() {
-    String sbuff = "LevelII2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo.toString();
+    String sbuff = "LevelII2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo;
     return sbuff;
   }
 

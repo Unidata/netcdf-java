@@ -30,7 +30,7 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
       return false;
     }
 
-    final String typeName = ncfile.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
+    String typeName = ncfile.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
     if (typeName == null) {
       return false;
     }
@@ -58,12 +58,12 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
      * }
      * }
      */
-    final Attribute instName = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@InstrumentName");
+    Attribute instName = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@InstrumentName");
     if (instName == null || !instName.getStringValue().equals("OMI")) {
       return false;
     }
 
-    final Attribute level = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
+    Attribute level = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
     if (level == null) {
       return false;
     }
@@ -137,11 +137,11 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
    * }
    */
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
-    final Attribute levelAtt = ds.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
+    Attribute levelAtt = ds.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
     if (levelAtt == null) {
       return;
     }
-    final int level = levelAtt.getStringValue().startsWith("2") ? 2 : 3;
+    int level = levelAtt.getStringValue().startsWith("2") ? 2 : 3;
 
     // Attribute time = ds.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@TAI93At0zOfGranule");
 
@@ -154,19 +154,19 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
    *
    */
   private void augmentDataset3(NetcdfDataset ds) {
-    final Group grids = ds.findGroup("/HDFEOS/GRIDS");
+    Group grids = ds.findGroup("/HDFEOS/GRIDS");
     if (grids == null) {
       return;
     }
-    for (final Group g2 : grids.getGroups()) {
-      final Attribute gctp = g2.findAttribute("GCTPProjectionCode");
+    for (Group g2 : grids.getGroups()) {
+      Attribute gctp = g2.findAttribute("GCTPProjectionCode");
 
       if (gctp == null || !gctp.getNumericValue().equals(0)) {
         continue;
       }
 
-      final Attribute nlon = g2.findAttribute("NumberOfLongitudesInGrid");
-      final Attribute nlat = g2.findAttribute("NumberOfLatitudesInGrid");
+      Attribute nlon = g2.findAttribute("NumberOfLongitudesInGrid");
+      Attribute nlat = g2.findAttribute("NumberOfLatitudesInGrid");
 
       if (nlon == null || nlon.isString()) {
         continue;
@@ -178,8 +178,8 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
       ds.addCoordinateAxis(makeLonCoordAxis(ds, g2, nlon.getNumericValue().intValue(), "XDim"));
       ds.addCoordinateAxis(makeLatCoordAxis(ds, g2, nlat.getNumericValue().intValue(), "YDim"));
 
-      for (final Group g3 : g2.getGroups()) {
-        for (final Variable v : g3.getVariables()) {
+      for (Group g3 : g2.getGroups()) {
+        for (Variable v : g3.getVariables()) {
           v.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
         }
       }
@@ -192,8 +192,8 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
    *
    */
   private CoordinateAxis makeLatCoordAxis(NetcdfDataset ds, Group g, int n, String dimName) {
-    final double incr = 180.0 / n;
-    final CoordinateAxis v = new CoordinateAxis1D(ds, g, "lat", DataType.FLOAT, dimName, CDM.LAT_UNITS, "latitude");
+    double incr = 180.0 / n;
+    CoordinateAxis v = new CoordinateAxis1D(ds, g, "lat", DataType.FLOAT, dimName, CDM.LAT_UNITS, "latitude");
     v.setValues(n, -90.0 + 0.5 * incr, incr);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     return v;
@@ -203,8 +203,8 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
    *
    */
   private CoordinateAxis makeLonCoordAxis(NetcdfDataset ds, Group g, int n, String dimName) {
-    final double incr = 360.0 / n;
-    final CoordinateAxis v = new CoordinateAxis1D(ds, g, "lon", DataType.FLOAT, dimName, CDM.LON_UNITS, "longitude");
+    double incr = 360.0 / n;
+    CoordinateAxis v = new CoordinateAxis1D(ds, g, "lon", DataType.FLOAT, dimName, CDM.LON_UNITS, "longitude");
     v.setValues(n, -180.0 + 0.5 * incr, incr);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     return v;

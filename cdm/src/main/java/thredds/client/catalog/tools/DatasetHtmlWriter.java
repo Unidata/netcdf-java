@@ -98,12 +98,12 @@ public class DatasetHtmlWriter {
     out.format("</ul>%n");
 
     java.util.List<Documentation> docs = ds.getDocumentation();
-    if (docs.size() > 0) {
+    if (!docs.isEmpty()) {
       out.format("<h3>Documentation:</h3>%n<ul>%n");
       for (Documentation doc : docs) {
         String type = (doc.getType() == null) ? "" : "<strong>" + htmlEscaper.escape(doc.getType()) + ":</strong> ";
         String inline = doc.getInlineContent();
-        if ((inline != null) && (inline.length() > 0))
+        if ((inline != null) && (!inline.isEmpty()))
           out.format(" <li>%s %s</li>%n", type, htmlEscaper.escape(inline));
         if (doc.hasXlink()) {
           out.format(" <li>%s %s</li>%n", type, makeHref(doc.getXlinkHref(), null, doc.getXlinkTitle()));
@@ -113,7 +113,7 @@ public class DatasetHtmlWriter {
     }
 
     java.util.List<Access> access = ds.getAccess();
-    if (access.size() > 0) {
+    if (!access.isEmpty()) {
       out.format("<h3>Access:</h3>%n<ol>%n");
       for (Access a : access) {
         Service s = a.getService();
@@ -180,7 +180,7 @@ public class DatasetHtmlWriter {
     }
 
     java.util.List<ThreddsMetadata.Contributor> contributors = ds.getContributors();
-    if (contributors.size() > 0) {
+    if (!contributors.isEmpty()) {
       out.format("<h3>Contributors:</h3>%n<ul>%n");
       for (ThreddsMetadata.Contributor t : contributors) {
         String role = (t.getRole() == null) ? "" : "<strong> (" + htmlEscaper.escape(t.getRole()) + ")</strong> ";
@@ -190,7 +190,7 @@ public class DatasetHtmlWriter {
     }
 
     java.util.List<ThreddsMetadata.Vocab> keywords = ds.getKeywords();
-    if (keywords.size() > 0) {
+    if (!keywords.isEmpty()) {
       out.format("<h3>Keywords:</h3>%n<ul>%n");
       for (ThreddsMetadata.Vocab t : keywords) {
         String vocab =
@@ -201,7 +201,7 @@ public class DatasetHtmlWriter {
     }
 
     java.util.List<DateType> dates = ds.getDates();
-    if (dates.size() > 0) {
+    if (!dates.isEmpty()) {
       out.format("<h3>Dates:</h3>%n<ul>%n");
       for (DateType d : dates) {
         String type = (d.getType() == null) ? "" : " <strong>(" + htmlEscaper.escape(d.getType()) + ")</strong> ";
@@ -211,7 +211,7 @@ public class DatasetHtmlWriter {
     }
 
     java.util.List<ThreddsMetadata.Vocab> projects = ds.getProjects();
-    if (projects.size() > 0) {
+    if (!projects.isEmpty()) {
       out.format("<h3>Projects:</h3>%n<ul>%n");
       for (ThreddsMetadata.Vocab t : projects) {
         String vocab =
@@ -222,7 +222,7 @@ public class DatasetHtmlWriter {
     }
 
     java.util.List<ThreddsMetadata.Source> creators = ds.getCreators();
-    if (creators.size() > 0) {
+    if (!creators.isEmpty()) {
       out.format("<h3>Creators:</h3>%n<ul>%n");
       for (ThreddsMetadata.Source t : creators) {
         out.format(" <li><strong>%s</strong><ul>%n", htmlEscaper.escape(t.getName()));
@@ -238,7 +238,7 @@ public class DatasetHtmlWriter {
     }
 
     java.util.List<ThreddsMetadata.Source> publishers = ds.getPublishers();
-    if (publishers.size() > 0) {
+    if (!publishers.isEmpty()) {
       out.format("<h3>Publishers:</h3>%n<ul>%n");
       for (ThreddsMetadata.Source t : publishers) {
         out.format(" <li><strong>%s</strong><ul>%n", htmlEscaper.escape(t.getName()));
@@ -290,7 +290,7 @@ public class DatasetHtmlWriter {
      * </ul>
      */
     java.util.List<ThreddsMetadata.VariableGroup> vars = ds.getVariables();
-    if (vars.size() > 0) {
+    if (!vars.isEmpty()) {
       out.format("<h3>Variables:</h3>%n<ul>%n");
       for (ThreddsMetadata.VariableGroup t : vars) {
 
@@ -306,9 +306,9 @@ public class DatasetHtmlWriter {
         out.format("]:%n<ul>%n");
 
         java.util.List<ThreddsMetadata.Variable> vlist = t.getVariableList();
-        if (vlist.size() > 0) {
+        if (!vlist.isEmpty()) {
           for (ThreddsMetadata.Variable v : vlist) {
-            String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
+            String units = (v.getUnits() == null || v.getUnits().isEmpty()) ? "" : " (" + v.getUnits() + ") ";
             out.format(" <li><strong>%s</strong> = ", htmlEscaper.escape(v.getName() + units));
             if (v.getDescription() != null)
               out.format(" <i>%s</i> = ", htmlEscaper.escape(v.getDescription()));
@@ -342,7 +342,7 @@ public class DatasetHtmlWriter {
       }
 
       java.util.List<ThreddsMetadata.Vocab> nlist = gc.getNames();
-      if ((nlist != null) && (nlist.size() > 0)) {
+      if ((nlist != null) && (!nlist.isEmpty())) {
         out.format(" <li><em>  Names: </em> <ul>%n");
         for (ThreddsMetadata.Vocab elem : nlist) {
           out.format(" <li>%s</li>%n", htmlEscaper.escape(elem.getText()));
@@ -401,7 +401,7 @@ public class DatasetHtmlWriter {
       if (!p.getName().startsWith("viewer")) // eliminate the viewer properties from the html view
         props.add(p);
     }
-    if (props.size() > 0) {
+    if (!props.isEmpty()) {
       out.format("<h3>Properties:</h3>%n<ul>%n");
       for (Property p : props) {
         if (p.getName().equals("attachments")) { // LOOK whats this ?

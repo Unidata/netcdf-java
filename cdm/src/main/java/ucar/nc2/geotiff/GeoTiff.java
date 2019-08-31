@@ -68,10 +68,10 @@ public class GeoTiff implements Closeable {
   // writing
 
   private int headerSize = 8;
-  private int firstIFD = 0;
-  private int lastIFD = 0;
-  private int startOverflowData = 0;
-  private int nextOverflowData = 0;
+  private int firstIFD;
+  private int lastIFD;
+  private int startOverflowData;
+  private int nextOverflowData;
 
   void addTag(IFDEntry ifd) {
     tags.add(ifd);
@@ -101,7 +101,7 @@ public class GeoTiff implements Closeable {
   }
 
   private void writeGeoKeys() {
-    if (geokeys.size() == 0)
+    if (geokeys.isEmpty())
       return;
 
     // count extras

@@ -35,7 +35,7 @@ import java.util.Map;
 public class FileWriter2 {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
   private static final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
-  private static boolean debug = false, debugWrite = false, debugChunk = false;
+  private static boolean debug, debugWrite, debugChunk;
 
   /**
    * Set debugging flags
@@ -114,7 +114,7 @@ public class FileWriter2 {
     List<Dimension> newDims = getNewDimensions(oldVar);
 
     Variable newVar;
-    if ((oldVar.getDataType().equals(DataType.STRING)) && (!version.isExtendedModel())) {
+    if ((oldVar.getDataType() == DataType.STRING) && (!version.isExtendedModel())) {
       newVar = writer.addStringVariable(null, oldVar, newDims);
     } else {
       newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
@@ -193,7 +193,7 @@ public class FileWriter2 {
 
   private void addGroupClassic() throws IOException {
 
-    if (fileIn.getRootGroup().getGroups().size() != 0) {
+    if (!fileIn.getRootGroup().getGroups().isEmpty()) {
       throw new IllegalStateException("Input file has nested groups: cannot write to netcdf-3 format");
     }
 
@@ -390,8 +390,8 @@ public class FileWriter2 {
 
     // write record data
     if (useRecordDimension) {
-      int[] origin = new int[] {0};
-      int[] size = new int[] {1};
+      int[] origin = {0};
+      int[] size = {1};
 
       int nrecs = (int) recordVar.getSize();
       int sdataSize = recordVar.getElementSize();

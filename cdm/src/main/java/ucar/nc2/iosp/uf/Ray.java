@@ -17,7 +17,7 @@ public class Ray {
   long rayOffset;
   static final int UF_MANDATORY_HEADER2_LEN = 90;
   static final int UF_FIELD_HEADER2_LEN = 50;
-  boolean debug = false;
+  boolean debug;
 
   /**
    * moment identifier

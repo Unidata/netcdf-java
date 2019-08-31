@@ -45,7 +45,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
 
   private static final boolean debugProj = false;
 
-  private ProjectionCT projCT = null;
+  private ProjectionCT projCT;
   private double startx, starty, dx, dy;
 
   public AWIPSsatConvention() {

@@ -68,9 +68,9 @@ public class CatalogCrawler {
   private final Object context;
 
   private Random random;
-  private int countCatrefs = 0;
+  private int countCatrefs;
 
-  private int numReadFailures = 0;
+  private int numReadFailures;
 
   /**
    * Constructor.
@@ -205,7 +205,7 @@ public class CatalogCrawler {
           leaves.add(dds);
       }
 
-      if (leaves.size() > 0) {
+      if (!leaves.isEmpty()) {
         if (type == Type.first_direct) {
           Dataset dds = leaves.get(0);
           listen.getDataset(dds, context);
@@ -298,9 +298,9 @@ public class CatalogCrawler {
     boolean skipDatasetScan;
     int catrefLevel;
 
-    int count = 0;
-    int countSkip = 0;
-    int countCatrefs = 0;
+    int count;
+    int countSkip;
+    int countCatrefs;
 
     private FilterDatasetScan(PrintWriter pw, boolean skipDatasetScan, int catrefLevel) {
       this.out = pw;
@@ -338,22 +338,22 @@ public class CatalogCrawler {
     public Type type = Type.all;
 
     @Parameter(names = {"-sh", "--showNames"}, description = "show dataset names ")
-    public boolean showNames = false;
+    public boolean showNames;
 
     @Parameter(names = {"-o", "--openDataset"}, description = "try to open the dataset ")
-    public boolean openDataset = false;
+    public boolean openDataset;
 
     @Parameter(names = {"-r", "--readRandom"}, description = "read some random data")
-    public boolean readRandom = false;
+    public boolean readRandom;
 
     @Parameter(names = {"-skipScans", "--skipScans"}, description = "skip DatasetScans ")
     public boolean skipDatasetScan = true;
 
     @Parameter(names = {"-catrefLevel", "--catrefLevel"}, description = "skip Catalog References > nested level")
-    public int catrefLevel = 0;
+    public int catrefLevel;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
-    public boolean help = false;
+    public boolean help;
 
     private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
       // Display parameters in this order in the usage information.
@@ -395,14 +395,14 @@ public class CatalogCrawler {
   }
 
   private static class Counter {
-    int datasets = 0;
-    int openFc = 0;
-    int failFc = 0;
-    int failException = 0;
-    int openOdap = 0;
-    int failOdap = 0;
-    int openCdmr = 0;
-    int failCdmr = 0;
+    int datasets;
+    int openFc;
+    int failFc;
+    int failException;
+    int openOdap;
+    int failOdap;
+    int openCdmr;
+    int failCdmr;
   }
 
   public static void main(String[] args) throws Exception {

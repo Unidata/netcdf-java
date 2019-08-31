@@ -97,10 +97,10 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   }
 
   private class CompositePointFeatureIterator extends PointIteratorAbstract {
-    private boolean finished = false;
+    private boolean finished;
     private Iterator<TimedCollection.Dataset> iter;
     private FeatureDatasetPoint currentDataset;
-    private PointFeatureIterator pfIter = null;
+    private PointFeatureIterator pfIter;
 
     CompositePointFeatureIterator() {
       iter = pointCollections.getDatasets().iterator();

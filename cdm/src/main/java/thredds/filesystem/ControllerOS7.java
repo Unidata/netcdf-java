@@ -26,8 +26,6 @@ public class ControllerOS7 implements MController {
 
   ////////////////////////////////////////
 
-  public ControllerOS7() {}
-
   @Override
   public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
     return null;

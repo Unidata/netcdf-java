@@ -224,7 +224,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new PointIteratorStream(StationFeatureStream.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        riter = new PointIteratorStream(this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         return riter;
 
       } catch (Throwable t) {

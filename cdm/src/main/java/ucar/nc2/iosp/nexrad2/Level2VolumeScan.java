@@ -64,10 +64,10 @@ public class Level2VolumeScan {
   private NexradStationDB.Station station; // from lookup table, may be null
   private Level2Record first, last;
 
-  private int vcp = 0; // Volume coverage pattern
-  private int max_radials = 0;
+  private int vcp; // Volume coverage pattern
+  private int max_radials;
   private int min_radials = Integer.MAX_VALUE;
-  private int max_radials_hr = 0;
+  private int max_radials_hr;
   private int min_radials_hr = Integer.MAX_VALUE;
   private int dopplarResolution;
   private boolean hasDifferentDopplarResolutions;
@@ -89,9 +89,9 @@ public class Level2VolumeScan {
   private List<List<Level2Record>> diffPhaseHighResGroups;
   private List<List<Level2Record>> coefficientHighResGroups;
 
-  private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false,
-      debugRadials = false;
-  private boolean runCheck = false;
+  private boolean showMessages, showData, debugScans, debugGroups2,
+      debugRadials;
+  private boolean runCheck;
 
   Level2VolumeScan(RandomAccessFile orgRaf, CancelTask cancelTask) throws IOException {
     this.raf = orgRaf;
@@ -113,7 +113,7 @@ public class Level2VolumeScan {
       log.debug(" dataFormat= " + dataFormat + " stationId= " + stationId);
     }
 
-    if (stationId.length() == 0) {
+    if (stationId.isEmpty()) {
       stationId = null;
     }
 
@@ -264,26 +264,26 @@ public class Level2VolumeScan {
     if (debugRadials) {
       System.out.println(" reflect ok= " + reflectivity.size() + " doppler ok= " + doppler.size());
     }
-    if (highReflectivity.size() == 0) {
+    if (highReflectivity.isEmpty()) {
       reflectivityGroups = sortScans("reflect", reflectivity, 600);
       dopplerGroups = sortScans("doppler", doppler, 600);
     }
-    if (highReflectivity.size() > 0) {
+    if (!highReflectivity.isEmpty()) {
       reflectivityHighResGroups = sortScans("reflect_HR", highReflectivity, 720);
     }
-    if (highVelocity.size() > 0) {
+    if (!highVelocity.isEmpty()) {
       velocityHighResGroups = sortScans("velocity_HR", highVelocity, 720);
     }
-    if (highSpectrum.size() > 0) {
+    if (!highSpectrum.isEmpty()) {
       spectrumHighResGroups = sortScans("spectrum_HR", highSpectrum, 720);
     }
-    if (highDiffReflectivity.size() > 0) {
+    if (!highDiffReflectivity.isEmpty()) {
       diffReflectHighResGroups = sortScans("diffReflect_HR", highDiffReflectivity, 720);
     }
-    if (highDiffPhase.size() > 0) {
+    if (!highDiffPhase.isEmpty()) {
       diffPhaseHighResGroups = sortScans("diffPhase_HR", highDiffPhase, 720);
     }
-    if (highCorreCoefficient.size() > 0) {
+    if (!highCorreCoefficient.isEmpty()) {
       coefficientHighResGroups = sortScans("coefficient_HR", highCorreCoefficient, 720);
     }
 
@@ -465,7 +465,7 @@ public class Level2VolumeScan {
   // do we have same characteristics for all groups in a variable?
   private boolean testVariable(String name, List scans) {
     int datatype = name.equals("reflect") ? Level2Record.REFLECTIVITY : Level2Record.VELOCITY_HI;
-    if (scans.size() == 0) {
+    if (scans.isEmpty()) {
       log.warn(" No data for = " + name);
       return false;
     }

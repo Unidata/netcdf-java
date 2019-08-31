@@ -199,7 +199,7 @@ public class Ray {
    * @throws java.io.IOException on read error
    */
   public void readData(RandomAccessFile raf, Range gateRange, IndexIterator ii) throws IOException {
-    final int REC_SIZE = 6144;
+    int REC_SIZE = 6144;
     raf.seek(offset);
     byte[] data = new byte[bins];
     float[] dd = new float[bins];

@@ -60,7 +60,7 @@ public class Section {
 
   //////////////////////////////////////////////////////////////////////////////
   private List<Range> list;
-  private boolean immutable = false;
+  private boolean immutable;
 
   /**
    * Create Section from a shape array, assumes 0 origin.

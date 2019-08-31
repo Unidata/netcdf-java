@@ -27,23 +27,23 @@ import static ucar.ma2.DataType.*;
 class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private DataType origDataType = null, unsignedConversionType = null, scaledOffsetType = null;
+  private DataType origDataType, unsignedConversionType, scaledOffsetType;
 
   // defaults from NetcdfDataset modes
   private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
   private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
   private boolean missingDataIsMissing = NetcdfDataset.missingDataIsMissing;
 
-  private boolean hasScaleOffset = false;
-  private double scale = 1.0, offset = 0.0;
+  private boolean hasScaleOffset;
+  private double scale = 1.0, offset;
 
-  private boolean hasValidRange = false, hasValidMin = false, hasValidMax = false;
+  private boolean hasValidRange, hasValidMin, hasValidMax;
   private double validMin = -Double.MAX_VALUE, validMax = Double.MAX_VALUE;
 
-  private boolean hasFillValue = false;
+  private boolean hasFillValue;
   private double fillValue; // LOOK: making it double not really correct. What about CHAR?
 
-  private boolean hasMissingValue = false;
+  private boolean hasMissingValue;
   private double[] missingValue; // LOOK: also wrong to make double, for the same reason.
 
   private DataType.Signedness signedness;
@@ -184,7 +184,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
         String svalue = missingValueAtt.getStringValue();
         if (origDataType == DataType.CHAR) {
           missingValue = new double[1];
-          if (svalue.length() == 0) {
+          if (svalue.isEmpty()) {
             missingValue[0] = 0;
           } else {
             missingValue[0] = svalue.charAt(0);

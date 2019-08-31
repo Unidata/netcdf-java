@@ -32,7 +32,7 @@ public class TagEnum {
    * COMP_CODE_JPEG /* _Ugly_ hack to allow JPEG images to be created with GRsetcompress
    * }
    */
-  public static int COMP_CODE_NONE = 0; // don't encode at all, just store
+  public static int COMP_CODE_NONE; // don't encode at all, just store
   public static int COMP_CODE_RLE = 1; // for simple RLE encoding
   public static int COMP_CODE_NBIT = 2; // for N-bit encoding
   public static int COMP_CODE_SKPHUFF = 3; // for Skipping huffman encoding

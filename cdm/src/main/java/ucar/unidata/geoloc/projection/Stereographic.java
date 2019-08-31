@@ -40,8 +40,8 @@ public class Stereographic extends ProjectionImpl {
   private double scale, earthRadius;
   private double latt, lont;
   private double sinlatt, coslatt, latts;
-  private boolean isNorth = false;
-  private boolean isPolar = false;
+  private boolean isNorth;
+  private boolean isPolar;
 
   @Override
   public ProjectionImpl constructCopy() {

@@ -115,7 +115,7 @@ public class IgraPor extends AbstractIOServiceProvider {
       line = raf.readLine();
       if (line == null)
         break;
-      if (line.trim().length() == 0)
+      if (line.trim().isEmpty())
         continue;
       Matcher matcher = p.matcher(line);
       return matcher.matches();
@@ -253,7 +253,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   private class SingleStationSeqIter implements StructureDataIterator {
     private StructureDataRegexp.Vinfo vinfo;
-    private int recno = 0;
+    private int recno;
 
     SingleStationSeqIter(StructureDataRegexp.Vinfo vinfo) throws IOException {
       this.vinfo = vinfo;
@@ -280,7 +280,7 @@ public class IgraPor extends AbstractIOServiceProvider {
           return null;
         if (line.startsWith("#"))
           continue;
-        if (line.trim().length() == 0)
+        if (line.trim().isEmpty())
           continue;
         matcher = vinfo.p.matcher(line);
         if (matcher.matches()) {
@@ -355,7 +355,7 @@ public class IgraPor extends AbstractIOServiceProvider {
           return null;
         if (line.startsWith("#"))
           continue;
-        if (line.trim().length() == 0)
+        if (line.trim().isEmpty())
           continue;
         matcher = vinfo.p.matcher(line);
         if (matcher.matches())
@@ -398,10 +398,10 @@ public class IgraPor extends AbstractIOServiceProvider {
   // sequence of time series for one station
 
   private class TimeSeriesIter implements StructureDataIterator {
-    private int countRead = 0;
+    private int countRead;
     private long totalBytes;
     private File file;
-    private RandomAccessFile timeSeriesRaf = null;
+    private RandomAccessFile timeSeriesRaf;
     private boolean exists;
 
     TimeSeriesIter(String stnid) {
@@ -464,7 +464,7 @@ public class IgraPor extends AbstractIOServiceProvider {
         line = timeSeriesRaf.readLine();
         if (line == null)
           return null; // only on EOF
-        if (line.trim().length() == 0)
+        if (line.trim().isEmpty())
           continue;
         matcher = seriesVinfo.p.matcher(line);
         if (matcher.matches())
@@ -506,7 +506,7 @@ public class IgraPor extends AbstractIOServiceProvider {
           line = timeSeriesRaf.readLine();
           if (line == null)
             break;
-          if (line.trim().length() == 0)
+          if (line.trim().isEmpty())
             continue;
           matcher = profileVinfo.p.matcher(line);
           if (matcher.matches())

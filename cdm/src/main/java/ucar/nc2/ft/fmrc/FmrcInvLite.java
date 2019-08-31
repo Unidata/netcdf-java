@@ -555,7 +555,7 @@ public class FmrcInvLite implements java.io.Serializable {
     int timeIdx;
     double offset; // hours since base or hours since run time
     double startIntv = Double.NaN;
-    boolean isInterval = false;
+    boolean isInterval;
 
     TimeInv(int runIdx, int timeIdx, double b1, double b2) {
       this.runIdx = runIdx;
@@ -589,7 +589,7 @@ public class FmrcInvLite implements java.io.Serializable {
     public double[] bounds; // bounds of interval or null. shape = (ntimes, 2)
 
     public ValueB(List<TimeInv> invs) {
-      boolean isInterval = invs.size() > 0 && invs.get(0).isInterval;
+      boolean isInterval = !invs.isEmpty() && invs.get(0).isInterval;
       offset = new double[invs.size()];
 
       if (isInterval) {

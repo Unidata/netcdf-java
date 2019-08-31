@@ -38,7 +38,7 @@ import java.util.StringTokenizer;
 public class DefaultConvention extends CoordSysBuilder {
   private static final Logger logger = LoggerFactory.getLogger(DefaultConvention.class);
 
-  protected ProjectionCT projCT = null;
+  protected ProjectionCT projCT;
 
   public DefaultConvention() {
     this.conventionName = "Default";
@@ -70,7 +70,7 @@ public class DefaultConvention extends CoordSysBuilder {
         continue; // cant be a structure
 
       String dimName = findAlias(ds, ncvar);
-      if (dimName.length() == 0) // none
+      if (dimName.isEmpty()) // none
         continue;
       Dimension dim = ds.findDimension(dimName);
       if (null != dim) {

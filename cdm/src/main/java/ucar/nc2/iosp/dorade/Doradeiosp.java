@@ -19,7 +19,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
 
   protected Doradeheader headerParser;
 
-  public DoradeSweep mySweep = null;
+  public DoradeSweep mySweep;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     return Doradeheader.isValidFile(raf);

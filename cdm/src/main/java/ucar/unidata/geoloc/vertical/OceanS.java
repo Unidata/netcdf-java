@@ -67,7 +67,7 @@ public class OceanS extends VerticalTransformImpl {
   /**
    * the c array
    */
-  private Array c = null;
+  private Array c;
 
   /**
    * Create a new vertical transform for Ocean S coordinates

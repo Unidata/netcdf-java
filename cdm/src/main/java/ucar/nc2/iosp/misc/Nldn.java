@@ -318,22 +318,22 @@ public class Nldn extends AbstractLightningIOSP {
     /**
      * done?
      */
-    private int done = 0;
+    private int done;
 
     /**
      * number bytes already read
      */
-    private int alreadyRead = 0;
+    private int alreadyRead;
 
     /**
      * next index
      */
-    private int nextIndex = 0;
+    private int nextIndex;
 
     /**
      * the wrapped asbb
      */
-    private ArrayStructureBB asbb = null;
+    private ArrayStructureBB asbb;
 
     /**
      * total bytes
