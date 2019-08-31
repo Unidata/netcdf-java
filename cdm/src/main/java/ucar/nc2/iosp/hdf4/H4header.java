@@ -350,7 +350,8 @@ public class H4header extends NCheader {
           raf.seek(data.offset);
           int length2 = raf.readInt();
           if (debugConstruct)
-            System.out.println("dimension length=" + length2 + " for TagVGroup= " + group + " using data " + data.refno);
+            System.out
+                .println("dimension length=" + length2 + " for TagVGroup= " + group + " using data " + data.refno);
           if (length2 > 0) {
             length = length2;
             break;

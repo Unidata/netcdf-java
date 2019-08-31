@@ -538,7 +538,7 @@ public class WKTParser {
             SimpleUnit unit = SimpleUnit.factoryWithExceptions(srp.getProjUnitName());
             scalef = unit.convertTo(srp.getProjUnitValue(), SimpleUnit.kmUnit);
           } catch (Exception e) {
-            logger.warn("{} {} not convertible to km", srp.getProjUnitValue(),srp.getProjUnitName());
+            logger.warn("{} {} not convertible to km", srp.getProjUnitValue(), srp.getProjUnitName());
           }
         }
         falseEasting *= scalef;

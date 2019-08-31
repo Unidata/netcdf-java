@@ -239,7 +239,8 @@ public class FileCacheARC implements FileCacheIF {
                                                      // need to use LinkedList ?
     if (prev != null && (elem != prev)) {
       CacheElementComparator cc = new CacheElementComparator();
-      log.error("elem != prev compare={} hash elem ={} prev={}", cc.compare(elem, prev), elem.hashCode(), prev.hashCode());
+      log.error("elem != prev compare={} hash elem ={} prev={}", cc.compare(elem, prev), elem.hashCode(),
+          prev.hashCode());
     }
     return elem;
   }

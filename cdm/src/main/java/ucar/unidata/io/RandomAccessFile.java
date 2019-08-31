@@ -743,7 +743,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     int n = file.read(b, offset, len);
     if (debugAccess) {
       if (showRead)
-        System.out.printf(" **read_ %s = %d bytes at %d; block = %d%n", location, len, pos , (pos / buffer.length));
+        System.out.printf(" **read_ %s = %d bytes at %d; block = %d%n", location, len, pos, (pos / buffer.length));
       debug_nseeks.incrementAndGet();
       debug_nbytes.addAndGet(len);
     }

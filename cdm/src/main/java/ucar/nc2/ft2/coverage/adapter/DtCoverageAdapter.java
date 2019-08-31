@@ -403,13 +403,15 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       // read the data
       ranges.set(n - 1, (Range) ri.setName(comp.getName())); // add last
       Section want = new Section(ranges);
-      if (debug) System.out.printf("  composite read section=%s%n", want);
+      if (debug)
+        System.out.printf("  composite read section=%s%n", want);
       Array data = grid.readDataSection(want, canonicalOrder);
 
       // where does it go?
       Section dataSection = new Section(data.getShape());
       Section sectionInResult = dataSection.shiftOrigin(origin);
-      if (debug) System.out.printf("  sectionInResult=%s%n", sectionInResult);
+      if (debug)
+        System.out.printf("  sectionInResult=%s%n", sectionInResult);
 
       // copy it there
       IndexIterator resultIter = result.getRangeIterator(sectionInResult.getRanges());
