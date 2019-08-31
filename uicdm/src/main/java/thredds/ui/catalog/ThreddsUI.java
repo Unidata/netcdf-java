@@ -210,8 +210,7 @@ public class ThreddsUI extends JPanel {
   }
 
   // actions that control the dataset
-  private void makeActionsDataset() {
-  }
+  private void makeActionsDataset() {}
 }
 
 

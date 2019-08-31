@@ -704,7 +704,8 @@ public class GridHorizCoordSys {
 
     if (GridServiceProvider.debugProj) {
       System.out.printf("starting proj coord %s lat/lon %s%n", start, proj.projToLatLon(start));
-      System.out.println("   should be LA1=" + gds.getDouble(GridDefRecord.LA1) + " l)1=" + gds.getDouble(GridDefRecord.LO1));
+      System.out
+          .println("   should be LA1=" + gds.getDouble(GridDefRecord.LA1) + " l)1=" + gds.getDouble(GridDefRecord.LO1));
     }
 
     attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "polar_stereographic"));

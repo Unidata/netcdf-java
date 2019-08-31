@@ -966,7 +966,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
 
     members.setStructureSize(recsize);
     return new ArrayStructureBBpos(members, new int[] {size}, bos, pos);
-   }
+  }
 
   /**
    * Read nested data

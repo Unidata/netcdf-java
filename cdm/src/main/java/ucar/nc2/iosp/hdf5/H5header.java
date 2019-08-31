@@ -645,19 +645,20 @@ public class H5header extends NCheader {
           if (facade.dobj.mds.ndims > 1)
             facade.is2DCoordinate = true;
 
-          /* old way
-            findNetcdf4DimidAttribute(facade);
-            if (facade.dobj.mds.ndims == 1) { // 1D dimension scale
-              // create a dimension
-              facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0],
-              facade.dobj.mds.maxLength[0] == -1);
-              if (! h5iosp.includeOriginalAttributes) iter.remove();
-            } else { // multiD dimension scale
-              int dimIndex = findCoordinateDimensionIndex(facade, h5group);
-              addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex],
-              facade.dobj.mds.maxLength[dimIndex] == -1);
-              if (!h5iosp.includeOriginalAttributes) iter.remove();
-            }
+          /*
+           * old way
+           * findNetcdf4DimidAttribute(facade);
+           * if (facade.dobj.mds.ndims == 1) { // 1D dimension scale
+           * // create a dimension
+           * facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0],
+           * facade.dobj.mds.maxLength[0] == -1);
+           * if (! h5iosp.includeOriginalAttributes) iter.remove();
+           * } else { // multiD dimension scale
+           * int dimIndex = findCoordinateDimensionIndex(facade, h5group);
+           * addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex],
+           * facade.dobj.mds.maxLength[dimIndex] == -1);
+           * if (!h5iosp.includeOriginalAttributes) iter.remove();
+           * }
            */
 
         }
