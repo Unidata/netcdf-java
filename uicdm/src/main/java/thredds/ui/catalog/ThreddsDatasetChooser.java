@@ -159,7 +159,6 @@ public class ThreddsDatasetChooser extends JPanel {
    * </ul>
    */
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
-    // System.out.println("firePropertyChangeEvent "+((InvDatasetImpl)ds).dump());
     if (pipeOut)
       pipeEvent(event);
     if (messageOut)
@@ -222,7 +221,6 @@ public class ThreddsDatasetChooser extends JPanel {
     buff.format(", dataType = %s%n", ds.getFeatureType());
     for (Access ac : ds.getAccess()) {
       buff.format("  service = %s, url = %s%n", ac.getService().getType(), ac.getStandardUrlName());
-      // System.out.println(" url = "+ac.getStandardUrlName());
     }
   }
 

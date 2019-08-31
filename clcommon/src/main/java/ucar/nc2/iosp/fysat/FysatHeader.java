@@ -308,8 +308,6 @@ public final class FysatHeader {
         ncfile.addVariable(ncfile.getRootGroup(), var);
 
 
-        // if (debug) System.out.println("start at proj coord "+start);
-
         LatLonPointImpl startPnt =
             new LatLonPointImpl(geoSatelliteSecondHeader.latitudeOfNorth, geoSatelliteSecondHeader.longitudeOfWest);
         LatLonPointImpl endPnt =
@@ -521,9 +519,6 @@ public final class FysatHeader {
         double dxKm = 0.0, dyKm = 0.0, latin, lonProjectionOrigin;
 
         // deal with projection
-        // System.out.println("unimplemented projection");
-
-
         ncfile.addAttribute(null, new Attribute("geospatial_lat_min", gridprocuctSecondHeader.rightBottomLat));
         ncfile.addAttribute(null, new Attribute("geospatial_lat_max", gridprocuctSecondHeader.leftTopLat));
         ncfile.addAttribute(null, new Attribute("geospatial_lon_min", gridprocuctSecondHeader.leftTopLon));
@@ -593,7 +588,6 @@ public final class FysatHeader {
             dataType = DataType.INT.getPrimitiveClassType();
             break;
           default:
-            System.out.println("Unsupported Grid Procuct Dataset!");
             throw new UnsupportedDatasetException("Unsupported Grid Procuct Dataset");
         }
 
@@ -626,9 +620,6 @@ public final class FysatHeader {
         ncfile.addVariable(ncfile.getRootGroup(), var);
 
         // we have to project in order to find the origin
-        // ProjectionPointImpl start = (ProjectionPointImpl) projection.latLonToProj( new LatLonPointImpl( lat1, lon1));
-        // if (debug) System.out.println("start at proj coord "+start);
-
         LatLonPointImpl startPnt =
             new LatLonPointImpl(gridprocuctSecondHeader.leftTopLat, gridprocuctSecondHeader.leftTopLon);
         LatLonPointImpl endPnt =
@@ -740,7 +731,6 @@ public final class FysatHeader {
         vname = "DST";
         break;
       default: {
-        System.out.println("Unsupported GeoSatellite Procuct Dataset!");
         return null;
       }
     }
@@ -829,7 +819,6 @@ public final class FysatHeader {
         vname = "TOVS";
         break;
       default: {
-        System.out.println("Unsupported Satellite Grid Procuct Dataset!");
         return null;
       }
     }
@@ -891,7 +880,6 @@ public final class FysatHeader {
         unit = "Db";
         break;
       default: {
-        System.out.println("Unsupported Satellite Grid Procuct Dataset!");
         return null;
       }
 

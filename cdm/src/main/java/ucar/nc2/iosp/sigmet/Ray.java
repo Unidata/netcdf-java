@@ -216,7 +216,6 @@ public class Ray {
         nb++;
       }
     }
-    // System.out.println("this is az " + getAz());
     raf.seek(offset1);
     int cur_len = offset1;
 

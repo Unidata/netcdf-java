@@ -238,7 +238,6 @@ public class BufrConfig {
       if (ncd != null)
         ncd.close();
     }
-    System.out.printf("nobs = %d%n", countObs);
   }
 
   private FeatureType guessFeatureType(StandardFields.StandardFieldsFromMessage standardFields) {
@@ -268,8 +267,6 @@ public class BufrConfig {
 
         if (isTop) {
           countObs++;
-          if (debug && countObs % 100 == 0)
-            System.out.printf("%d ", countObs);
 
           if (hasStations)
             processStations(parent, sdata);
@@ -282,11 +279,9 @@ public class BufrConfig {
             long msecs = date.getMillis();
             if (this.start > msecs) {
               this.start = msecs;
-              // System.out.printf("new start %s%n", date);
             }
             if (this.end < msecs) {
               this.end = msecs;
-              // System.out.printf("new end %s%n", date);
             }
           }
         }

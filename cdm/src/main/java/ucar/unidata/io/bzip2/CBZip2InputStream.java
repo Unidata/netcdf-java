@@ -308,10 +308,6 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     cadvise("Bad Block Header");
   }
 
-  private void crcError() {
-    cadvise();
-  }
-
   private void bsFinishedWithStream() {
     try {
       if (this.bsStream != null) {
@@ -856,7 +852,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
   private void setDecompressStructureSizes(int newSize100k) {
     if (!(0 <= newSize100k && newSize100k <= 9 && 0 <= blockSize100k && blockSize100k <= 9)) {
-      // throw new IOException("Invalid block size");
+      cadvise("Invalid block size");
     }
 
     blockSize100k = newSize100k;
@@ -886,11 +882,6 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     }
   }
 
-  private void cadvise() {
-    System.out.println("CRC Error");
-    // throw new CCoruptionError();
-  }
-
   private void cadvise(String msg) {
     throw new BZip2ReadException(msg);
   }
@@ -898,7 +889,6 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   private void compressedStreamEOF() {
     cadvise("Compressed Stream EOF");
   }
-
 
   private void makeMaps() {
     int i;

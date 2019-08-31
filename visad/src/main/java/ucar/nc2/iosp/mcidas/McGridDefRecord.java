@@ -192,17 +192,6 @@ public class McGridDefRecord extends GridDefRecord {
         input = new double[][] {{1, nx}, {ny, 1}};
       }
       double[][] llur = nav.toLatLon(input);
-      /*
-       * if (cnt == 0 && navType == 6) {
-       * System.out.println("Proj = " + getProjName(navType) + ":" + navType);
-       * System.out.println("isFlipped = " + nav.isFlippedRowCoordinates());
-       * ucar.unidata.util.Misc.printArray("input x", input[0]);
-       * ucar.unidata.util.Misc.printArray("input y", input[1]);
-       * ucar.unidata.util.Misc.printArray("lats", llur[0]);
-       * ucar.unidata.util.Misc.printArray("lons", llur[1]);
-       * cnt++;
-       * }
-       */
       addParam(LA1, String.valueOf(llur[0][0]));
       addParam(LO1, String.valueOf(llur[1][0]));
       addParam(LA2, String.valueOf(llur[0][1]));
@@ -310,7 +299,7 @@ public class McGridDefRecord extends GridDefRecord {
           break;
       }
     } catch (McIDASException me) {
-      System.out.println("couldn't set nav");
+      throw new RuntimeException("couldn't set nav");
     }
 
   }

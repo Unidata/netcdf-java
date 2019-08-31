@@ -59,12 +59,6 @@ class DoradeCSFD extends DoradeCELV {
         }
       }
     }
-
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
   }
 
   public String toString() {

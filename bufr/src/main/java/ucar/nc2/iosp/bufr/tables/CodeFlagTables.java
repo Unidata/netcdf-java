@@ -118,7 +118,6 @@ public class CodeFlagTables {
         if (ct == null) {
           ct = new CodeFlagTables(fxy, desc);
           table.put(fxy, ct);
-          // System.out.printf(" added %s == %s %n", ct.id, desc);
         }
 
         String line = elem.getChildText("No");

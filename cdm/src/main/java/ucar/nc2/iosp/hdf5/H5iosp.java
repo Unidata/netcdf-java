@@ -359,11 +359,9 @@ public class H5iosp extends AbstractIOServiceProvider {
     // create StructureMembers - must set offsets
     StructureMembers sm = s.makeStructureMembers();
     int calcSize = ArrayStructureBB.setOffsets(sm); // standard
-    // ArrayStructureBB.showOffsets(sm, new Indent(2), new Formatter(System.out));
 
     // special offset setting
     boolean hasHeap = convertStructure(s, sm);
-    // ArrayStructureBB.showOffsets(sm, new Indent(2), new Formatter(System.out));
 
     int recSize = layout.getElemSize();
     if (recSize < calcSize) {

@@ -6,6 +6,8 @@ package ucar.nc2.iosp.noaa;
 
 import com.google.re2j.Pattern;
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -45,6 +47,8 @@ import java.util.*;
  * @since Dec 8, 2010
  */
 public class Ghcnm extends AbstractIOServiceProvider {
+  private static Logger logger = LoggerFactory.getLogger(Ghcnm.class);
+
 
   /*
    * ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/README
@@ -768,8 +772,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
         map.put(si.stnId, si);
       }
     }
-
-    System.out.println(" read index map size=" + map.values().size());
   }
 
   private void makeIndex(File indexFile) throws IOException {
@@ -815,9 +817,9 @@ public class Ghcnm extends AbstractIOServiceProvider {
       if ((currStn == null) || (currStn.stnId != id)) {
         StationIndex s = map.get(id);
         if (s == null)
-          System.out.printf("Cant find %d%n", id);
+          logger.warn("Cant find id = {}", id);
         else if (s.dataCount != 0)
-          System.out.printf("Not in order %d at pos %d %n", id, dataPos);
+          logger.warn("Id {} Not in order at pos {}", id, dataPos);
         else {
           s.dataPos = dataPos;
           totalCount++;
@@ -827,7 +829,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
       if (currStn != null)
         currStn.dataCount++;
     }
-    // System.out.printf("ok stns=%s data=%d%n", stnCount, totalCount);
 
     //////////////////////////////
     // write the index file
@@ -853,8 +854,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
         fout.write(pb);
       }
     }
-
-    // System.out.println(" index size=" + size);
   }
 
   private StationIndex decodeStationIndex(byte[] data) throws InvalidProtocolBufferException {
@@ -983,14 +982,12 @@ public class Ghcnm extends AbstractIOServiceProvider {
       boolean more = (bytesRead < totalBytes); // && (recno < 10);
       if (!more) {
         vinfo.nelems = recno;
-        // System.out.printf("nelems=%d%n", recno);
         return false;
       }
       curr = reallyNext();
       more = (curr != null);
       if (!more) {
         vinfo.nelems = recno;
-        // System.out.printf("nelems=%d%n", recno);
         return false;
       }
       return more;
@@ -1013,7 +1010,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
           continue;
         break;
       }
-      // System.out.printf("%s%n", line);
       bytesRead = vinfo.raf.getFilePointer();
       recno++;
       return new StructureDataAsciiGhcnm(vinfo.sm, line);
@@ -1066,7 +1062,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
           continue;
         break;
       }
-      // System.out.printf("%s%n", line);
       countRead++;
       return new StructureDataAscii(sm, line);
     }

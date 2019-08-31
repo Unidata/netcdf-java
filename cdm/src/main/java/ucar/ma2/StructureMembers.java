@@ -105,7 +105,6 @@ public final class StructureMembers {
     structureSize = 0;
     for (Member member : members) {
       structureSize += member.getSizeBytes();
-      // System.out.println(member.getName()+" size="+member.getTotalSize());
     }
   }
 

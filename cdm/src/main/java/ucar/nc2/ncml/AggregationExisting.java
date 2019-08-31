@@ -369,14 +369,9 @@ public class AggregationExisting extends AggregationOuterDimension {
 
           // long start = System.nanoTime();
           String[] vals = sdata.split(" ");
-          // double took = .001 * .001 * .001 * (System.nanoTime() - start);
-          // if (debugPersist) System.out.println(" split took = " + took + " sec; ");
 
           try {
-            // start = System.nanoTime();
             Array data = Array.makeArray(pv.dtype, vals);
-            // took = .001 * .001 * .001 * (System.nanoTime() - start);
-            // if (debugPersist) System.out.println(" makeArray took = " + took + " sec nelems= "+data.getSize());
             pv.putData(id, data);
             countCacheUse++;
 

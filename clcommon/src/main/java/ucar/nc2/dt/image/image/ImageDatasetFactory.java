@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
@@ -20,7 +22,7 @@ import ucar.ma2.Array;
  * @author caron
  */
 public class ImageDatasetFactory {
-
+  private static Logger logger = LoggerFactory.getLogger(ImageDatasetFactory.class);
   private StringBuffer log;
 
   public String getErrorMessages() {
@@ -148,10 +150,9 @@ public class ImageDatasetFactory {
 
     File nextFile = currentDirFileList.get(currentDirFileNo);
     try {
-      System.out.println("Open image " + nextFile);
       return javax.imageio.ImageIO.read(nextFile);
     } catch (IOException e) {
-      System.out.println("Failed to open image " + nextFile);
+      logger.warn("Failed to open image {}", nextFile);
       return getNextImage(forward);
     }
 

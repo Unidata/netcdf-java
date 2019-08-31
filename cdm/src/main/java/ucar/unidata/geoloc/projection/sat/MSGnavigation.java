@@ -206,8 +206,6 @@ public class MSGnavigation extends ProjectionImpl {
     addParameter(HEIGHT_FROM_EARTH_CENTER, sat_height);
     addParameter(SCALE_X, scale_x);
     addParameter(SCALE_Y, scale_y);
-
-    // System.out.printf("%s %n", this);
   }
 
   @Override
@@ -316,7 +314,6 @@ public class MSGnavigation extends ProjectionImpl {
 
     double dotprod = r1 * (re * coscLat * cosLon) - r2 * r2 - r3 * r3 * const1;
     if (dotprod <= 0) {
-      // System.out.printf("lat,lon=%f,%f NaN%n",latitude,longitude);
       result.setLocation(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
       return (-1);
     }
@@ -328,7 +325,6 @@ public class MSGnavigation extends ProjectionImpl {
     // double cc = x_off + xx * cfac;
     // double ll = y_off + yy * lfac;
 
-    // System.out.printf("lat,lon=%f,%f x,y=%f,%f i,j=%f,%f%n",latitude,longitude,xx, yy, cc, ll);
     result.setLocation(scale_x * xx, scale_y * yy);
     return (0);
   }

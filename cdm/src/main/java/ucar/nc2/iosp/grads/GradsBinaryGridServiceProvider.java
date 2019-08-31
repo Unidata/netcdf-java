@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-
 /**
  * IOSP for GrADS Binary data files. This IOSP only handles the binary formatted grids,
  * most other GrADS data types can be read directly through other IOSPs.
@@ -260,7 +259,6 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     ncFile.empty();
     fillNCFile();
     ncFile.finish();
-    // System.out.println(ncfile);
   }
 
   /**
@@ -465,7 +463,6 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException problem reading stuff
    */
   private float[] readGrid(int index) throws IOException {
-    // System.out.println("grid number: " + index);
     // NB: RandomAccessFile.skipBytes only takes an int. For files larger than
     // 2GB, that is problematic, so we use offset as a long
     long offset = 0;
@@ -481,7 +478,6 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     // [End of file]
     // so we have to add 2*sequentialRecordBytes for each record we skip,
     offset += (sizeX * sizeY * wordSize + xyHeaderBytes + 2L * sequentialRecordBytes) * (long) index;
-    // System.out.println("offset to grid = " + offset);
 
     // TODO: make sure this works - need an example
     int curTimeStep = index / gradsDDF.getGridsPerTimeStep();
@@ -588,10 +584,6 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    */
   private void readXY(Variable v2, int ensIdx, int timeIdx, int levIdx, Range yRange, Range xRange, IndexIterator ii)
       throws IOException {
-
-    // System.out.println("ens: " + ensIdx + " , time = " + timeIdx
-    // + ", lev = " + levIdx);
-
 
     dataFile = getDataFile(ensIdx, timeIdx);
     List<GradsVariable> vars = gradsDDF.getVariables();

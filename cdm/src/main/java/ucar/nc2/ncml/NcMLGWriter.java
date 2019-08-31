@@ -4,6 +4,8 @@
  */
 package ucar.nc2.ncml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
@@ -27,6 +29,7 @@ import ucar.unidata.util.Parameter;
  */
 
 public class NcMLGWriter {
+  private static Logger logger = LoggerFactory.getLogger(NcMLGWriter.class);
   protected static final String schemaLocation = "http://www.unidata.ucar.edu/schemas/netcdf-cs.xsd";
 
   /**
@@ -191,7 +194,7 @@ public class NcMLGWriter {
       String err = org.jdom2.Verifier.checkCharacterData(value);
       if (err != null) {
         value = "NcMLWriter invalid attribute value, err= " + err;
-        System.out.println(value);
+        logger.warn(value);
       }
       attElem.setAttribute("value", value);
     } else {
@@ -217,7 +220,7 @@ public class NcMLGWriter {
       String err = org.jdom2.Verifier.checkCharacterData(value);
       if (err != null) {
         value = "NcMLWriter invalid attribute value, err= " + err;
-        System.out.println(value);
+        logger.warn(value);
       }
       attElem.setAttribute("value", value);
     } else {

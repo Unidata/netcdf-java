@@ -79,7 +79,7 @@ public class FileCache implements FileCacheIF {
     synchronized (lock) {
       if (timer != null) {
         timer.cancel();
-        System.out.printf("FileCache.shutdown called%n");
+        cacheLog.info("FileCache.shutdown called%n");
       }
       timer = null;
     }

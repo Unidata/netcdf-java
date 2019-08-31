@@ -297,7 +297,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     if (debugConvert && mainv instanceof VariableDS) {
       DataType dtype = ((VariableDS) mainv).getOriginalDataType();
       if ((dtype != null) && (dtype != mainv.getDataType())) {
-        System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
+        logger.warn("Original type = {} mainv type= {}", dtype, mainv.getDataType());
       }
     }
 
@@ -339,9 +339,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       Range nestedJoinRange = dod.getNestedJoinRange(joinRange);
       if (nestedJoinRange == null)
         continue;
-      // if (debug)
-      // System.out.println(" agg use " + nested.aggStart + ":" + nested.aggEnd + " range= " + nestedJoinRange + " file
-      // " + nested.getLocation());
 
       Array varData;
       if ((type == Type.joinNew) || (type == Type.forecastModelRunCollection)) {
@@ -374,7 +371,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     if (debugConvert && mainv instanceof VariableDS) {
       DataType dtype = ((VariableDS) mainv).getOriginalDataType();
       if ((dtype != null) && (dtype != mainv.getDataType())) {
-        System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
+        logger.warn("Original type = {} mainv type= {}", dtype, mainv.getDataType());
       }
     }
 
@@ -469,98 +466,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       this.index = index;
     }
   }
-
-  /*
-   * protected Array readAggCoord(Variable aggCoord, Section section, CancelTask cancelTask) throws IOException,
-   * InvalidRangeException {
-   * DataType dtype = aggCoord.getDataType();
-   * Array allData = Array.factory(dtype, section.getShape());
-   * IndexIterator result = allData.getIndexIterator();
-   * 
-   * List<Range> ranges = section.getRanges();
-   * Range joinRange = section.getRange(0);
-   * List<Range> nestedSection = new ArrayList<Range>(ranges); // get copy
-   * List<Range> innerSection = ranges.subList(1, ranges.size());
-   * 
-   * List<Dataset> nestedDatasets = getDatasets();
-   * for (Dataset vnested : nestedDatasets) {
-   * DatasetOuterDimension dod = (DatasetOuterDimension) vnested;
-   * Range nestedJoinRange = dod.getNestedJoinRange(joinRange);
-   * if (nestedJoinRange == null)
-   * continue;
-   * //if (debug)
-   * // System.out.println("   agg use " + vnested.aggStart + ":" + vnested.aggEnd + " range= " + nestedJoinRange +
-   * " file " + vnested.getLocation());
-   * 
-   * readAggCoord(aggCoord, cancelTask, dod, dtype, result, nestedJoinRange, nestedSection, innerSection);
-   * 
-   * if ((cancelTask != null) && cancelTask.isCancel())
-   * return null;
-   * }
-   * 
-   * return allData;
-   * }
-   * 
-   * // handle the case of cached agg coordinate variables
-   * private void readAggCoord(Variable aggCoord, CancelTask cancelTask, DatasetOuterDimension vnested, DataType dtype,
-   * IndexIterator result,
-   * Range nestedJoinRange, List<Range> nestedSection, List<Range> innerSection) throws IOException,
-   * InvalidRangeException {
-   * 
-   * // we have the coordinates as a String
-   * if (vnested.coordValue != null) {
-   * 
-   * // if theres only one coord
-   * if (vnested.ncoord == 1) {
-   * if (dtype == DataType.STRING) {
-   * result.setObjectNext(vnested.coordValue);
-   * } else {
-   * double val = Double.parseDouble(vnested.coordValue);
-   * result.setDoubleNext(val);
-   * }
-   * 
-   * } else {
-   * 
-   * // joinExisting can have multiple coords
-   * int count = 0;
-   * StringTokenizer stoker = new StringTokenizer(vnested.coordValue, " ,");
-   * while (stoker.hasMoreTokens()) {
-   * String toke = stoker.nextToken();
-   * if ((nestedJoinRange != null) && !nestedJoinRange.contains(count))
-   * continue;
-   * 
-   * if (dtype == DataType.STRING) {
-   * result.setObjectNext(toke);
-   * } else {
-   * double val = Double.parseDouble(toke);
-   * result.setDoubleNext(val);
-   * }
-   * count++;
-   * }
-   * 
-   * if (count != vnested.ncoord)
-   * logger.error("readAggCoord incorrect number of coordinates dataset=" + vnested.getLocation());
-   * }
-   * 
-   * } else { // we gotta read it
-   * 
-   * Array varData;
-   * if (nestedJoinRange == null) { // all data
-   * varData = vnested.read(aggCoord, cancelTask);
-   * 
-   * } else if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
-   * varData = vnested.read(aggCoord, cancelTask, innerSection);
-   * } else {
-   * nestedSection.set(0, nestedJoinRange);
-   * varData = vnested.read(aggCoord, cancelTask, nestedSection);
-   * }
-   * 
-   * // copy it to the result
-   * MAMath.copy(dtype, varData.getIndexIterator(), result);
-   * }
-   * 
-   * }
-   */
 
   @Override
   protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
@@ -909,8 +814,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
         // can we skip ?
         Range nestedJoinRange = dod.getNestedJoinRange(joinRange);
         if (nestedJoinRange == null) {
-          // if (debugStride) System.out.printf(" skip [%d,%d) (%d) %f for %s%n", dod.aggStart, dod.aggEnd, dod.ncoord,
-          // dod.aggStart / 8.0, vnested.getLocation());
           continue;
         }
         if (debugStride)

@@ -296,12 +296,9 @@ public class RangeSelector extends JPanel {
    * private void setLabels() {
    * if (debugSliderSize) {
    * Rectangle bounds = minSlider.getBounds();
-   * System.out.println(" minSlider Bounds= " + bounds);
-   * System.out.println(" minSlider Bounds= " + maxSlider.getBounds());
    * maxSlider.setBounds(bounds);
    * maxSlider.revalidate();
-   * System.out.println(" maxSlider Bounds= " + maxSlider.getBounds());
-   * 
+   *
    * double h = (bounds.getHeight() > 0) ? bounds.getHeight() : 100.0;
    * //double wh = (max - min) > 0.0 ? (max - min) : 1.0;
    * //scale = 100.0 / wh;
@@ -311,8 +308,6 @@ public class RangeSelector extends JPanel {
    * FontMetrics fontMetrics = Toolkit.getDefaultToolkit().getFontMetrics(font);
    * if (fontMetrics != null)
    * incrY = fontMetrics.getAscent(); // + fontMetrics.getDescent();
-   * if (debugEvent)
-   * System.out.println(" scale= " + scale + " incrY = " + incrY);
    * }
    * 
    * java.util.Hashtable labelTable = new java.util.Hashtable();
@@ -347,8 +342,7 @@ public class RangeSelector extends JPanel {
    * 
    * private void setLabels() {
    * Rectangle bounds = slider.getBounds();
-   * if (debugEvent) System.out.println(" setLevels Bounds= "+bounds);
-   * 
+   *
    * double h = (bounds.getHeight() > 0) ? bounds.getHeight() : 100.0;
    * double wh = (max - min) > 0.0 ? (max - min) : 1.0;
    * scale = 100.0 / wh;
@@ -358,8 +352,7 @@ public class RangeSelector extends JPanel {
    * FontMetrics fontMetrics = Toolkit.getDefaultToolkit().getFontMetrics( font);
    * if (fontMetrics != null)
    * incrY = fontMetrics.getAscent(); // + fontMetrics.getDescent();
-   * if (debugEvent) System.out.println(" scale= "+scale+ " incrY = "+incrY);
-   * 
+   *
    * java.util.Hashtable labelTable = new java.util.Hashtable();
    * 
    * if (zAxis == null) return;
@@ -368,20 +361,16 @@ public class RangeSelector extends JPanel {
    * labelTable.put( new Integer( last), new JLabel(zAxis.getCoordName(n-1)) ); // always
    * int next = world2slider(zAxis.getCoordValue(0));
    * labelTable.put( new Integer( next), new JLabel(zAxis.getCoordName(0)) ); // always
-   * if (debugLevels) System.out.println("level = "+slider2pixel*next+" "+ zAxis.getCoordName(0)+" added ");
-   * 
+   *
    * for (int i=1; i< n-1; i++) {
    * int ival = world2slider(zAxis.getCoordValue(i));
-   * if (debugLevels) System.out.println("level = "+slider2pixel*ival+" "+ zAxis.getCoordName(i));
    * if ((slider2pixel*Math.abs(ival-last) > incrY) &&
    * (slider2pixel*Math.abs(ival-next) > incrY)) {
    * labelTable.put( new Integer( ival), new JLabel(zAxis.getCoordName(i)) );
    * next = ival;
-   * if (debugLevels) System.out.println("  added ");
    * }
    * }
-   * if (debugLevels) System.out.println("level = "+slider2pixel*last+" "+ zAxis.getCoordName(n-1)+" added ");
-   * 
+   *
    * slider.setLabelTable( labelTable );
    * }
    * 
@@ -392,7 +381,6 @@ public class RangeSelector extends JPanel {
    * setSelectedIndex(i);
    * return;
    * }
-   * System.out.println("ERROR VertScaleSlider cant find = "+name);
    * }
    * 
    * // set current value - no event

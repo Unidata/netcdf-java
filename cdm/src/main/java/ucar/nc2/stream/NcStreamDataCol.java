@@ -5,6 +5,8 @@
 package ucar.nc2.stream;
 
 import com.google.protobuf.ByteString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.Misc;
@@ -22,6 +24,7 @@ import java.util.List;
  * @since 10/30/2015.
  */
 public class NcStreamDataCol {
+  private static Logger logger = LoggerFactory.getLogger(NcStreamDataCol.class);
 
   /*
    * message DataCol {
@@ -162,7 +165,7 @@ public class NcStreamDataCol {
   public static ByteString copyArrayToByteString(Array data) {
     int nbytes = (int) data.getSizeBytes();
     if (nbytes < 0) {
-      System.out.printf("copyArrayToByteString neg byte size %d dataType = %d data size %d shape = %s%n", nbytes,
+      logger.error("copyArrayToByteString neg byte size {} dataType = {} data size {} shape = {}", nbytes,
           data.getDataType().getSize(), data.getSize(), Misc.showInts(data.getShape()));
     }
     ByteBuffer bb = ByteBuffer.allocate(nbytes);

@@ -38,7 +38,7 @@ public class DiskCache2 {
   static public void exit() {
     if (timer != null) {
       timer.cancel();
-      System.out.printf("DiskCache2.exit()%n");
+      cacheLog.info("DiskCache2.exit()%n");
     }
     timer = null;
   }
@@ -405,7 +405,7 @@ public class DiskCache2 {
       File parent = file.getParentFile();
       if (!parent.exists()) {
         if (root == null) { // LOOK shouldnt happen, remove soon
-          System.out.printf("mkdir4 %s%n", parent.getPath());
+          cacheLog.error("makeCachePath has null root %{}", parent.getPath());
           new Throwable().printStackTrace();
         }
         boolean ret = parent.mkdirs();

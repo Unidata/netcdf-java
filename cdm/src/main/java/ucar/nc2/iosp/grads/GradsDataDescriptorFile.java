@@ -560,8 +560,6 @@ public class GradsDataDescriptorFile {
         }
 
       } // end parsing loop
-      // System.out.println("Time to parse file = "
-      // + (System.currentTimeMillis() - start2));
 
       // update the units for the zDimension if they are specified as
       // an attribute
@@ -925,8 +923,6 @@ public class GradsDataDescriptorFile {
           // this'll be a bogus number if chsub was used
           timeStepsPerFile = tDim.getSize() / (fileSet.size() / numens);
         }
-        // System.out.println("Time to generate file list = "
-        // + (System.currentTimeMillis() - start));
         fileNames.addAll(fileSet);
       }
       // long start2 = System.currentTimeMillis();
@@ -938,8 +934,6 @@ public class GradsDataDescriptorFile {
           throw new IOException("File: " + f + " does not exist");
         }
       }
-      // System.out.println("Time to check file list = "
-      // + (System.currentTimeMillis() - start2));
     }
     return fileNames;
   }

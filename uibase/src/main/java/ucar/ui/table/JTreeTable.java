@@ -77,26 +77,10 @@ public class JTreeTable extends JTable {
 
     // Create the tree. It will be used as a renderer and editor.
     tree = new TreeTableCellRenderer(treeTableModel);
-    /*
-     * tree.addPropertyChangeListener( new PropertyChangeListener() {
-     * public void propertyChange(PropertyChangeEvent e) {
-     * System.out.println("tree PropertyChangeEvent= "+e.getPropertyName());
-     * /*if (e.getPropertyName().equals(JTree.TREE_MODEL_PROPERTY))
-     * System.out.println("TREE_MODEL_PROPERTY new= "+e.getNewValue()+
-     * " old= "+e.getOldValue());
-     * }
-     * });
-     */
 
     // Install a tableModel representing the visible rows in the tree.
     tableModel = new TreeTableModelAdapter(treeTableModel, tree);
-    /*
-     * tableModel.addTableModelListener(new TableModelListener() {
-     * public void tableChanged(TableModelEvent e) {
-     * System.out.println("TableModelEvent= "+e);
-     * }
-     * });
-     */
+
     super.setModel(tableModel);
 
     // Force the JTable and JTree to share their row selection models.
@@ -215,17 +199,9 @@ public class JTreeTable extends JTable {
   }
 
   public void fireDataChanged() {
-    // System.out.println("fireDataChanged");
-    // tableModel.delayedFireTableDataChanged();
-    // tree.setModel(treeModel);
-    // tree.firePropertyChange(JTree.TREE_MODEL_PROPERTY, null, null);
-
     Object[] path = new Object[1];
     path[0] = treeModel.getRoot();
     treeModel.fireTreeStructureChanged(this, path, null, null);
-
-    // tableModel.fireTableChanged(
-    // new TableModelEvent(tableModel, 0, Integer.MAX_VALUE, TableModelEvent.ALL_COLUMNS));
   }
 
   public void tableChanged(TableModelEvent e) {
@@ -233,14 +209,6 @@ public class JTreeTable extends JTable {
       System.out.println("tableChanged " + autoCreateColumnsFromModel);
     super.tableChanged(null);
   }
-
-  /*
-   * Returns the tree that is being shared between the model.
-   * 
-   * public JTree getTree() {
-   * return tree;
-   * }
-   */
 
   /**
    * A TreeCellRenderer that displays a JTree.
@@ -443,17 +411,8 @@ public class JTreeTable extends JTable {
               if (listSelectionModel.isSelectedIndex(counter)) {
                 TreePath selPath = tree.getPathForRow(counter);
 
-                // System.out.println("JTreeTable selected = "+counter+ " "+selPath);
-
                 if (selPath != null)
                   addSelectionPath(selPath);
-
-                /*
-                 * TreePath[] paths = getSelectionPaths();
-                 * for (int i=0; i<paths.length; i++)
-                 * System.out.println(" "+paths[i]);
-                 */
-
               }
             }
           }

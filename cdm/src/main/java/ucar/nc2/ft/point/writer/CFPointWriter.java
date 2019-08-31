@@ -595,14 +595,8 @@ public abstract class CFPointWriter implements Closeable {
       if (oldVar == null)
         continue;
 
-      // if (writer.findVariable(oldVar.getShortName()) != null)
-      // continue; // eliminate coordinate variables
-
       List<Dimension> dims = makeDimensionList(dimMap, oldVar.getDimensions());
       dims.add(0, recordDim);
-
-      // if (oldVar.getShortName().equals("PRES"))
-      // System.out.printf("HEY%n");
 
       Variable newVar;
       if (oldVar.getDataType().equals(DataType.STRING) && !writer.getVersion().isExtendedModel()) {

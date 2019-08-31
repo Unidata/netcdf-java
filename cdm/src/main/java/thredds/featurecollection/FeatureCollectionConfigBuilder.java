@@ -32,7 +32,9 @@
 
 package thredds.featurecollection;
 
+import java.io.IOException;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import thredds.client.catalog.Catalog;
 import thredds.inventory.CollectionAbstract;
@@ -57,20 +59,15 @@ public class FeatureCollectionConfigBuilder {
   }
 
   // input is xml file with just the <featureCollection>
-  public FeatureCollectionConfig readConfigFromFile(String filename) {
-
-    org.jdom2.Document doc;
+  public FeatureCollectionConfig readConfigFromFile(String filename) throws IOException {
+    SAXBuilder builder = new SAXBuilder();
     try {
-      SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(filename);
-    } catch (Exception e) {
-      System.out.printf("Error parsing featureCollection %s err = %s", filename, e.getMessage());
-      return null;
+      org.jdom2.Document doc = builder.build(filename);
+      return readConfig(doc.getRootElement());
+    } catch (JDOMException e) {
+      throw new IOException(e);
     }
-
-    return readConfig(doc.getRootElement());
   }
-
 
   /**
    * Read a catalog and extract a FeatureCollectionConfig from it

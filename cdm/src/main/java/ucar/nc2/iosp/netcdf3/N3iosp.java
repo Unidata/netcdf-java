@@ -450,13 +450,6 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
   @Override
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
-    /*
-     * if (debugRead) {
-     * System.out.printf("debugRead %s %s%n", v2.toStringDebug(), section);
-     * if (v2.getShortName().equals("cref"))
-     * System.out.println("HEY");
-     * }
-     */
     if (v2 instanceof Structure)
       return readRecordData((Structure) v2, section);
 
@@ -1031,16 +1024,4 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   abstract protected void _open(ucar.unidata.io.RandomAccessFile raf);
 
   abstract protected void _create(ucar.unidata.io.RandomAccessFile raf);
-
-  private static void testValid(String test) {
-    // boolean isValid = isValidNetcdf3ObjectName(test);
-    // String convert = makeValidNetcdf3ObjectName(test);
-    // boolean isValid2 = isValidNetcdf3ObjectName(convert);
-    // System.out.printf("old: %s (%s) == %s (%s) %n", test, isValid, convert, isValid2);
-
-    boolean isValid = isValidNetcdfObjectName(test);
-    String convert = makeValidNetcdfObjectName(test);
-    boolean isValid2 = isValidNetcdfObjectName(convert);
-    System.out.printf("new: %s (%s) == %s (%s) %n%n", test, isValid, convert, isValid2);
-  }
 }

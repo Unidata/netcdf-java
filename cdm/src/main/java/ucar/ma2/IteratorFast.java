@@ -20,7 +20,6 @@ public class IteratorFast implements IndexIterator {
   IteratorFast(long size, Array maa) {
     this.size = size;
     this.maa = maa;
-    // System.out.println("IteratorFast");
   }
 
   public boolean hasNext() {

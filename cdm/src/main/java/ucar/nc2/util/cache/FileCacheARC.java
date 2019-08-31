@@ -5,6 +5,8 @@
 
 package ucar.nc2.util.cache;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -237,8 +239,7 @@ public class FileCacheARC implements FileCacheIF {
                                                      // need to use LinkedList ?
     if (prev != null && (elem != prev)) {
       CacheElementComparator cc = new CacheElementComparator();
-      System.out.printf("elem != prev compare=%d%n", cc.compare(elem, prev));
-      System.out.printf("hash elem =%d prev=%d%n", elem.hashCode(), prev.hashCode());
+      log.error("elem != prev compare={} hash elem ={} prev={}", cc.compare(elem, prev), elem.hashCode(), prev.hashCode());
     }
     return elem;
   }
@@ -584,8 +585,6 @@ public class FileCacheARC implements FileCacheIF {
     if (cacheLog.isDebugEnabled())
       cacheLog.debug("*FileCacheARC " + name + " clearCache force= " + force + " deleted= " + deleteList.size()
           + " left=" + files.size());
-    // System.out.println("\n*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left="
-    // + counter.get());
   }
 
   /**

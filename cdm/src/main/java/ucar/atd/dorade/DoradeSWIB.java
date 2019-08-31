@@ -42,12 +42,6 @@ class DoradeSWIB extends DoradeDescriptor {
     filterFlag = grabInt(data, 36);
 
     //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
-
-    //
     // Get the RYIBs and save offsets to the data for each ray
     //
     myRYIBs = new DoradeRYIB[nRays];

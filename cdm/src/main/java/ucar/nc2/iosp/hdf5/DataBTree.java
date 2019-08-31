@@ -67,21 +67,6 @@ public class DataBTree {
 
   // used by H5tiledLayout
   LayoutTiled.DataChunkIterator getDataChunkIteratorNoFilter(Section want, int nChunkDim) throws IOException {
-    /*
-     * if (if (debugChunkOrder) ) {
-     * DataChunkIteratorNoFilter iter = new DataChunkIteratorNoFilter(null, nChunkDim);
-     * int count = 0;
-     * int last = -1;
-     * while (iter.hasNext()) {
-     * LayoutTiled.DataChunk chunk = iter.next();
-     * System.out.printf("%d : %d%n", count++, tiling.order(chunk.offset));
-     * if (tiling.order(chunk.offset) <= last)
-     * System.out.println("HEY");
-     * last = tiling.order(chunk.offset);
-     * }
-     * }
-     */
-
     return new DataChunkIteratorNoFilter(want, nChunkDim);
   }
 
@@ -273,8 +258,6 @@ public class DataBTree {
         }
       }
 
-      // if (currentEntry >= nentries)
-      // System.out.println("hah");
       assert (nentries == 0) || (currentEntry < nentries) : currentEntry + " >= " + nentries;
     }
 
@@ -305,26 +288,6 @@ public class DataBTree {
       }
     }
   }
-
-  /*
-   * private void dump(DataType dt, List<DataChunk> entries) {
-   * try {
-   * for (DataChunk node : entries) {
-   * if (dt == DataType.STRING) {
-   * HeapIdentifier heapId = new HeapIdentifier(node.address);
-   * GlobalHeap.HeapObject ho = heapId.getHeapObject();
-   * byte[] pa = new byte[(int) ho.dataSize];
-   * raf.seek(ho.dataPos);
-   * raf.read(pa);
-   * debugOut.println(" data at " + ho.dataPos + " = " + new String(pa));
-   * }
-   * }
-   * }
-   * catch (IOException e) {
-   * e.printStackTrace();
-   * }
-   * }
-   */
 
   // these are part of the level 1A data structure, type 1
   // see http://www.hdfgroup.org/HDF5/doc/H5.format.html#V1Btrees,

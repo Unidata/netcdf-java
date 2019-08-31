@@ -135,15 +135,11 @@ public class AreaReader {
 
     // TODO: Need to support calibrated data.
     if ((af.getCal() != null) && CalibratorFactory.hasCalibrator(sensor)) {
-      // System.out.println("can calibrate");
       try {
         calibrator = CalibratorFactory.getCalibrator(sensor, calType, af.getCal());
       } catch (CalibratorException ce) {
-        // System.out.println("can't make calibrator");
         calibrator = null;
       }
-      // System.out.println("calibrator = " + calibrator);
-
     }
     calUnit = ad.getCalibrationUnitName();
     calScale = (1.0f / ad.getCalibrationScaleFactor());

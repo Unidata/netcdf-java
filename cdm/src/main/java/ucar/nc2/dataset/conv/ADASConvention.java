@@ -150,21 +150,19 @@ public class ADASConvention extends CoordSysBuilder {
 
     LatLonPointImpl lpt0 = new LatLonPointImpl(lat_check, lon_check);
     ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
-    System.out.println("CTR lpt0= " + lpt0 + " ppt0=" + ppt0);
 
     Variable xstag = ds.findVariable("x_stag");
     int nxpts = (int) xstag.getSize();
     ArrayFloat.D1 xstagData = (ArrayFloat.D1) xstag.read();
     float center_x = xstagData.get(nxpts - 1);
     double false_easting = center_x / 2000 - ppt0.getX() * 1000.0;
-    System.out.println("false_easting= " + false_easting);
 
     Variable ystag = ds.findVariable("y_stag");
     int nypts = (int) ystag.getSize();
     ArrayFloat.D1 ystagData = (ArrayFloat.D1) ystag.read();
     float center_y = ystagData.get(nypts - 1);
     double false_northing = center_y / 2000 - ppt0.getY() * 1000.0;
-    System.out.println("false_northing= " + false_northing);
+    log.debug("false easting/northing= {} {} ", false_easting, false_northing);
 
     double dx = findAttributeDouble(ds, "DX", Double.NaN);
     double dy = findAttributeDouble(ds, "DY", Double.NaN);

@@ -32,7 +32,6 @@ public class PositioningDataInputStream {
     while (want > 0)
       want -= delegate.skip(want);
     cpos = pos;
-    // System.out.println("now at "+pos);
   }
 
   public void read(long pos, byte[] dest, int off, int len) throws IOException {

@@ -58,36 +58,6 @@ public class AccessLogParser implements LogReader.LogParser {
       // todo: FIX ME...no likey recursy.
       return nextLog(dataIS);
     }
-    /*
-     * try {
-     * //System.out.println("\n"+line);
-     * Matcher m = regPattern.matcher(line);
-     * if (m.matches()) {
-     * LogReader.Log log = new LogReader.Log();
-     * log.ip = m.group(1);
-     * log.date = convertDate( m.group(3));
-     * String request = m.group(4);
-     * log.returnCode = parse(m.group(5));
-     * log.sizeBytes = parseLong(m.group(6));
-     * log.referrer = m.group(7);
-     * log.client = m.group(8);
-     * log.msecs = parseLong(m.group(9));
-     * 
-     * String[] reqss = request.split(" ");
-     * if (reqss.length == 3) {
-     * log.verb = reqss[0].intern();
-     * log.path = reqss[1];
-     * log.http = reqss[2].intern();
-     * }
-     * 
-     * return log;
-     * }
-     * } catch (Exception e) {
-     * e.printStackTrace();
-     * System.out.println("Cant parse " + line);
-     * }
-     * return null;
-     */
   }
 
   LogReader.Log parseLog(String line) throws IOException {

@@ -88,8 +88,6 @@ public class MAMath {
 
     int dimB = 0;
     for (int aShapeA : shapeA) {
-      // System.out.println(dimA + " "+ dimB);
-
       // skip length 1 dimensions
       if (aShapeA == 1)
         continue;

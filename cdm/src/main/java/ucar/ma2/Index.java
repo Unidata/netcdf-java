@@ -897,7 +897,6 @@ public class Index implements Cloneable {
       if (rank > 0)
         counter.current[rank - 1] = -1; // avoid "if first" on every incr.
       counter.precalc();
-      // System.out.println("IteratorSlow");
     }
 
     public boolean hasNext() {

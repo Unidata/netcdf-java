@@ -227,39 +227,6 @@ public class DataDescriptorTreeConstructor {
   }
 
   /*
-   * OLD preflatten replications inside a top level compound (!)
-   * private List<DataDescriptor> preflattenOld(List<DataDescriptor> tree) {
-   * List<DataDescriptor> result = new ArrayList<DataDescriptor>(tree.size());
-   * for (DataDescriptor key : tree) {
-   * boolean preflatten = false;
-   * 
-   * if ((key.f == 3) && (key.subKeys != null)) {
-   * List<DataDescriptor> subkeys = key.subKeys;
-   * for (int i=0; i<subkeys.size();i++) {
-   * DataDescriptor subkey = subkeys.get(i);
-   * if (subkey.f == 1) {
-   * int need = subkey.x;
-   * int have = subkeys.size() - i - 1;
-   * if (subkey.y == 0) have--;
-   * if (need > have) {
-   * preflatten = true;
-   * // ScannerSystem.out.printf("preflatten replication %d > %d%n", need, have);
-   * }
-   * }
-   * }
-   * }
-   * 
-   * if (preflatten)
-   * result.addAll(key.subKeys);
-   * else
-   * result.add(key);
-   * 
-   * }
-   * return result;
-   * }
-   */
-
-  /*
    * try to grab names of compounds (structs)
    * if f=1 is followed by f=3, eg:
    * 0-40-20 : GQisFlagQualDetailed - Quality flag for the system
@@ -493,72 +460,6 @@ public class DataDescriptorTreeConstructor {
       index++;
     }
   }
-
-  /*
-   * private void addDpiFields(List<DataDescriptor> tree) {
-   * if (tree == null) return;
-   * 
-   * Iterator<DataDescriptor> iter = tree.iterator();
-   * while (iter.hasNext()) {
-   * DataDescriptor dd = iter.next();
-   * if (dd.dpi != null) { // make this into a compound type
-   * dd.name = "firstOrderStatistics";
-   * dd.type = 3;
-   * dd.replication = 1;
-   * dd.subKeys = new ArrayList<DataDescriptor>();
-   * while (iter.hasNext()) {
-   * DataDescriptor dd2 = iter.next();
-   * iter.remove();
-   * dd.subKeys.add(dd2);
-   * if (dd2 == dd.dpi.stop) {
-   * dd2.subKeys = new ArrayList<DataDescriptor>();
-   * 
-   * dd2.subKeys.add(dd.dpi.statField);
-   * dd.dpi.statField.dpi = dd.dpi; // also need it here
-   * //dd.dpi = null;
-   * // DataDescriptor extra = dd.dpi.linear.get(184); // temp kludge
-   * // for (int i=0; i< dd2.replication; i++)
-   * // dd.subKeys.add(extra);
-   * break;
-   * }
-   * }
-   * System.out.printf("addDpiFields for %s %n", dd);
-   * }
-   * }
-   * }
-   * 
-   * /* private DataPresentIndicator processDataPresentIndicator(List<DataDescriptor> tree, int hellRealmIndex) {
-   * DataPresentIndicator dpi = new DataPresentIndicator();
-   * Iterator<DataDescriptor> iter = tree.iterator();
-   * while (iter.hasNext()) {
-   * DataDescriptor dd = iter.next();
-   * if ((dd.f == 2) && (dd.x == hellRealmIndex) && (dd.y == 0)) {
-   * dpi.start = dd;
-   * 
-   * while (iter.hasNext()) {
-   * dd = iter.next();
-   * if (dd.f == 1) {
-   * for (DataDescriptor dd2 : dd.getSubKeys()){
-   * if ((dd2.f == 2) && (dd2.x == hellRealmIndex) && (dd2.y == 255)) {
-   * dpi.stop = dd;
-   * dpi.statField = dd2;
-   * } else if ((dd2.f == 0) && (dd2.x == 31) && (dd2.y == 31)) {
-   * dpi.dataPresent = dd;
-   * }
-   * }
-   * }
-   * }
-   * }
-   * }
-   * 
-   * dpi.linear = new ArrayList<DataDescriptor>();
-   * linearize(tree, dpi);
-   * // LOOK System.out.printf("DPI: data count = %d linear count = %d %n", dpi.dataPresent.replication,
-   * dpi.linear.size());
-   * 
-   * return dpi;
-   * }
-   */
 
   static class DataPresentIndicator {
     DataDescriptor dataPresent; // replication of bit present field

@@ -29,7 +29,6 @@ public abstract class TableRowAbstract implements TableRow {
 
     if ((tryNext != null) && (col < tryNext.length)) {
       int next = tryNext[col];
-      // System.out.println(" tryNext "+next+" "+col);
       if (next < 0)
         return 0;
       else

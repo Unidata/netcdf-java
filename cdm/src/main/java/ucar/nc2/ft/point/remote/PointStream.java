@@ -17,6 +17,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
@@ -110,8 +112,6 @@ public class PointStream {
   static public PointStreamProto.PointFeatureCollection encodePointFeatureCollection(String name, String timeUnitString,
       String altUnits, PointFeature pf) throws IOException {
     PointStreamProto.PointFeatureCollection.Builder builder = PointStreamProto.PointFeatureCollection.newBuilder();
-    if (name == null)
-      System.out.printf("HEY null pointstream name%n");
     builder.setName(name);
     builder.setTimeUnit(timeUnitString);
 

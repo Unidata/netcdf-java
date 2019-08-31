@@ -219,19 +219,16 @@ public class WRFConvention extends CoordSysBuilder {
         case 0: // for diagnostic runs with no georeferencing
           proj = new FlatEarth();
           projCT = new ProjectionCT("flat_earth", "FGDC", proj);
-          // System.out.println(" using LC "+proj.paramsToString());
           break;
         case 1:
           proj = new LambertConformal(standardLat, standardLon, lat1, lat2, 0.0, 0.0, 6370);
           projCT = new ProjectionCT("Lambert", "FGDC", proj);
-          // System.out.println(" using LC "+proj.paramsToString());
           break;
         case 2:
           // Thanks to Heiko Klein for figuring out WRF Stereographic
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
           double lat0 = (Double.isNaN(centralLat)) ? lat2 : centralLat; // ?? 7/20/2010
           double scaleFactor = (1 + Math.abs(Math.sin(Math.toRadians(lat1)))) / 2.; // R Schmunk 9/10/07
-          // proj = new Stereographic(lat2, lon0, scaleFactor);
           proj = new Stereographic(lat0, lon0, scaleFactor, 0.0, 0.0, 6370);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
@@ -239,8 +236,6 @@ public class WRFConvention extends CoordSysBuilder {
           proj = new Mercator(standardLon, lat1, 0.0, 0.0, 6370); // thanks to Robert Schmunk with edits for non-MOAD
                                                                   // grids
           projCT = new ProjectionCT("Mercator", "FGDC", proj);
-          // proj = new TransverseMercator(standardLat, standardLon, 1.0);
-          // projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
           break;
         case 6:
           // version 3 "lat-lon", including global
@@ -465,7 +460,6 @@ public class WRFConvention extends CoordSysBuilder {
     double dx = findAttributeDouble(ds, "DX") / 1000.0; // km ya just gotta know
     int nx = dim.getLength();
     double startx = centerX - dx * (nx - 1) / 2; // ya just gotta know
-    // System.out.println(" originX= "+originX+" startx= "+startx);
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "km",
         "synthesized GeoX coordinate from DX attribute");
@@ -485,7 +479,6 @@ public class WRFConvention extends CoordSysBuilder {
     double dy = findAttributeDouble(ds, "DY") / 1000.0;
     int ny = dim.getLength();
     double starty = centerY - dy * (ny - 1) / 2; // - dy/2; // ya just gotta know
-    // System.out.println(" originY= "+originY+" starty= "+starty);
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getShortName(), "km",
         "synthesized GeoY coordinate from DY attribute");

@@ -201,9 +201,6 @@ public class HorizCoordSys2D extends HorizCoordSys {
         if (count > 10) {
           // last ditch attempt
           return incr(wantLat, wantLon, rectIndex);
-          // if (!ok)
-          // log.error("findCoordElement didnt converge lat,lon = "+wantLat+" "+ wantLon);
-          // return ok;
         }
       }
     }
@@ -563,24 +560,6 @@ public class HorizCoordSys2D extends HorizCoordSys {
       return false;
     }
   }
-
-
-  /*
-   * public int[] findXYindexFromCoord(double x_coord, double y_coord) {
-   * int[] result = new int[2];
-   * 
-   * int[] result2 = new int[2];
-   * boolean found = g2d.findCoordElement(y_coord, x_coord, result2);
-   * if (found) {
-   * result[0] = result2[1];
-   * result[1] = result2[0];
-   * } else {
-   * result[0] = -1;
-   * result[1] = -1;
-   * }
-   * return result;
-   * }
-   */
 
 }
 

@@ -23,12 +23,6 @@ public class N3channelWriter extends N3streamWriter {
   static private int buffer_size = 1000 * 1000;
   static private boolean debugWrite = false;
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // private ucar.nc2.NetcdfFile ncfile;
-  // private List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
-  // private boolean debugPos = false, debugWriteData = false;
-  // private int dataStart, dataOffset = 0;
-
   public N3channelWriter(ucar.nc2.NetcdfFile ncfile) {
     super(ncfile);
   }
@@ -39,8 +33,6 @@ public class N3channelWriter extends N3streamWriter {
     for (Vinfo vinfo : vinfoList) {
       if (!vinfo.isRecord) {
         Variable v = vinfo.v;
-        // assert filePos == vinfo.offset;
-        // if (debugPos) System.out.println(" writing at "+filePos+" should be "+vinfo.offset+" "+v.getFullName());
         int nbytes = (int) v.readToByteChannel(v.getShapeAsSection(), channel);
         filePos += nbytes;
         filePos += pad(channel, nbytes);

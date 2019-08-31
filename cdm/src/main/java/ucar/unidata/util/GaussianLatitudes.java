@@ -117,9 +117,6 @@ public class GaussianLatitudes {
           break;
       }
 
-      /* PRINT*,' LAT NO.',I,J,' ITERATIONS' */
-      // System.out.println("Lat "+i+" has "+countIterations+" iterations");
-
       /*
        * determine the Gaussian weights
        * C = 2.0 *( 1.0-COSC(I)*COSC(I) )

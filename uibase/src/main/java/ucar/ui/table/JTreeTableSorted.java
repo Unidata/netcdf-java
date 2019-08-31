@@ -214,7 +214,6 @@ public class JTreeTableSorted extends JPanel {
       // modify popup menu
       for (int i = 0; i < ncols; i++)
         if (!visible[i]) {
-          // System.out.println( colName[i]+" hide "+i);
           acts[i].hideColumn();
           acts[i].putValue(BAMutil.STATE, Boolean.FALSE);
         }
@@ -278,7 +277,6 @@ public class JTreeTableSorted extends JPanel {
   }
 
   public void setColOn(int colno, boolean state, int pos) {
-    // System.out.println("setColOn "+colno+" "+state+" "+pos);
     acts[colno].putValue(BAMutil.STATE, state);
     if (state)
       acts[colno].addAtPos(pos);
@@ -349,29 +347,6 @@ public class JTreeTableSorted extends JPanel {
     // table.clearSelection();
     table.fireDataChanged();
   }
-
-  /*
-   * Remove elem from rowList, update the table.
-   * Searches for match using object identity (==)
-   * 
-   * @param Object elem
-   *
-   * public void removeRow ( Object elem) {
-   * Iterator iter = rowList.iterator();
-   * while (iter.hasNext()) {
-   * Object row = iter.next();
-   * if (row == elem) {
-   * iter.remove();
-   * break;
-   * }
-   * }
-   * table.revalidate();
-   * }
-   */
-
-  // public int getRowCount() { return table.getRowCount(); }
-  // int getSelectedRowIndex() { return table.getSelectedRow(); } // for SuperComboBox
-  // void setSortOK(boolean sortOK) { this.sortOK = sortOK; } // for SuperComboBox
 
   /**
    * Get the currently selected row.
@@ -515,7 +490,6 @@ public class JTreeTableSorted extends JPanel {
         hideColumn();
 
       JTreeTableSorted.this.revalidate();
-      // System.out.println(id+" "+state);
     }
 
     public void addAtPos(int pos) {
@@ -536,7 +510,6 @@ public class JTreeTableSorted extends JPanel {
     }
 
     public void hideColumn() {
-      // System.out.println("hideColumn "+id);
       TableColumnModel tcm = table.getColumnModel();
       int idx = tcm.getColumnIndex(id);
       tc = tcm.getColumn(idx);
@@ -581,11 +554,9 @@ public class JTreeTableSorted extends JPanel {
         this.reverse = reverse;
         hasSortIndicator = true;
 
-        // System.out.println("setSortCol on "+modelCol+" "+sortCol+" "+reverse);
       } else if (hasSortIndicator) {
         compPanel.remove(1);
         hasSortIndicator = false;
-        // System.out.println("setSortCol off "+modelCol+" "+sortCol+" "+reverse);
       }
     }
 

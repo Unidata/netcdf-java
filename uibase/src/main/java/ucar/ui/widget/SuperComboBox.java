@@ -181,7 +181,6 @@ public class SuperComboBox extends JPanel {
     });
     table.getTable().addMouseListener(new MyMouseAdapter() {
       public void click(MouseEvent e) {
-        // System.out.println("table.table click");
         hidePulldownMenu();
       }
     });
@@ -387,28 +386,8 @@ public class SuperComboBox extends JPanel {
   private void hidePulldownMenu() {
     if (pulldown.isShowing()) {
       pulldown.setVisible(false);
-      // System.out.println("hidePulldownMenu");
     }
   }
-
-
-  /*
-   * private void showPulldownMenu() {
-   * hidePulldownMenu();
-   * Point p = text.getLocationOnScreen();
-   * p.y += text.getHeight();
-   * PopupFactory factory = PopupFactory.getSharedInstance();
-   * popup = factory.getPopup(this, table, p.x, p.y);
-   * popup.show();
-   * }
-   * 
-   * private void hidePulldownMenu() {
-   * if (popup != null) {
-   * popup.hide();
-   * popup = null;
-   * }
-   * }
-   */
 
   private JButton makeButton(SpinIcon.Type type) {
     SpinIcon icon = new SpinIcon(type);
@@ -578,7 +557,6 @@ public class SuperComboBox extends JPanel {
           int item = getItem(anEvent.getX());
           if (item != currentItem) {
             setSelection();
-            // if (debug) System.out.println("release select "+item);
           }
         }
         wasDragged = false;
@@ -825,12 +803,6 @@ public class SuperComboBox extends JPanel {
       private void stop() {
         immediateMode = false;
         eventOK = true;
-        /*
-         * if (Debug.isSet("timing/loop")) {
-         * long tookTime = System.currentTimeMillis() - startTime;
-         * System.out.println("timing/loop: "+list.size()+" " + tookTime*.001 + " seconds");
-         * }
-         */
       }
 
     }

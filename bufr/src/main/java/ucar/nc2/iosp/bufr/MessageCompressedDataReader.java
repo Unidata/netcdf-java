@@ -162,9 +162,6 @@ public class MessageCompressedDataReader {
   public static void setIterators(ArrayStructureMA ama) {
     StructureMembers sms = ama.getStructureMembers();
     for (StructureMembers.Member sm : sms.getMembers()) {
-      // System.out.printf("doin %s%n", sm.getName());
-      // if (sm.getName().startsWith("first"))
-      // System.out.println("HEY");
       Array data = sm.getDataArray();
       if (data instanceof ArrayStructureMA) {
         setIterators((ArrayStructureMA) data);
@@ -193,12 +190,10 @@ public class MessageCompressedDataReader {
       HashMap<DataDescriptor, StructureMembers.Member> map) {
     for (DataDescriptor dkey : parent.getSubKeys()) {
       if (dkey.name == null) {
-        // System.out.printf("ass skip %s%n", dkey);
         if (dkey.getSubKeys() != null)
           associateMessage2Members(members, dkey, map);
         continue;
       }
-      // System.out.printf("ass %s%n", dkey.name);
       StructureMembers.Member m = members.findMember(dkey.name);
       if (m != null) {
         map.put(dkey, m);
@@ -210,7 +205,6 @@ public class MessageCompressedDataReader {
         }
 
       } else {
-        // System.out.printf("Cant find %s%n", dkey);
         if (dkey.getSubKeys() != null)
           associateMessage2Members(members, dkey, map);
       }
@@ -260,12 +254,10 @@ public class MessageCompressedDataReader {
         // the dpi nightmare
         if ((dkey.f == 2) && (dkey.x == 36)) {
           req.dpiTracker = new DpiTracker(dkey.dpi, dkey.dpi.getNfields());
-          // System.out.printf("HEY gotta dpiTracker %n");
         }
 
         if (out != null)
           out.f.format("%s %d %s (%s) %n", out.indent(), out.fldno++, dkey.name, dkey.getFxyName());
-        // System.out.printf("HEY skipping %s %n", dkey);
         continue;
       }
 
@@ -279,7 +271,6 @@ public class MessageCompressedDataReader {
         bitOffset += dkey.replicationCountSize;
 
         reader.bits2UInt(6);
-        // System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
         if (null != out)
           out.f.format("%s--sequence %s bitOffset=%d replication=%s %n", out.indent(), dkey.getFxyName(), bitOffset,
               count);
@@ -327,7 +318,6 @@ public class MessageCompressedDataReader {
         member = req.map.get(dkey);
         iter = (IndexIterator) member.getDataObject();
         if (iter == null) {
-          // System.out.printf("HEY missing iter %s%n", dkey);
           dataDpi = (ArrayStructure) member.getDataArray();
         }
       }
@@ -393,7 +383,6 @@ public class MessageCompressedDataReader {
         isDpiField = true;
         DataDescriptor dpiDD = req.dpiTracker.getDpiDD(req.outerRow);
         useBitWidth = dpiDD.bitWidth;
-        // System.out.printf("HEY gotta dpiField bitWidth=%d %n", useBitWidth);
       }
 
       long dataMin = reader.bits2UInt(useBitWidth);

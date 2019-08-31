@@ -426,7 +426,6 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * invoked on this node (or an ancestor).
    */
   protected void removeNodeSpi() throws BackingStoreException {
-    // System.out.println(" removeNodeSpi :"+name());
     if (parent != null) {
       if (null == parent.children.remove(name()))
         System.out.println("ERROR PreferencesExt.removeNodeSpi :" + name());

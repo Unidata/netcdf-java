@@ -236,7 +236,7 @@ public class Structure extends Variable {
     for (int i = 0; i < members.size(); i++) {
       Variable v = members.get(i);
       if (v.getShortName() == null)
-        System.out.println("BAD null short name"); // E:/work/ghansham/iasi_20110513_045057_metopa_23676_eps_o.l1_bufr
+        log.warn("BAD null short name"); // E:/work/ghansham/iasi_20110513_045057_metopa_23676_eps_o.l1_bufr
       if (v.getShortName().equals(newVar.getShortName())) {
         members.set(i, newVar);
         found = true;
@@ -506,7 +506,6 @@ public class Structure extends Variable {
       int left = Math.min(recnum, readStart + readAtaTime); // dont go over recnum
       int need = left - readStart; // how many to read this time
       try {
-        // System.out.println(" read start= "+readStart+" count= "+need);
         as = readStructure(readStart, need);
         if (NetcdfFile.debugStructureIterator)
           System.out.println("readNext " + count + " " + readStart);

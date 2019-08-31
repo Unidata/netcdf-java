@@ -438,7 +438,6 @@ public class GridVariable {
       }
 
       int time = tcs.findIndex(p);
-      // System.out.println("time="+time+" level="+level);
       if (level < 0) {
         log.warn("LEVEL NOT FOUND record; level=" + level + " time= " + time + " for " + getName() + " file="
             + ncfile.getLocation() + "\n" + "   " + getVertLevelName() + " (type=" + p.getLevelType1() + ","
@@ -500,7 +499,6 @@ public class GridVariable {
    * @param f write to this
    */
   public void showMissing(Formatter f) {
-    // System.out.println(" " +name+" ntimes (across)= "+ ntimes+" nlevs (down)= "+ nlevels+":");
     int count = 0, total = 0;
     f.format("  %s%n", name);
     for (int j = 0; j < nlevels; j++) {

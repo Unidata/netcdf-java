@@ -43,7 +43,6 @@ import java.util.prefs.Preferences;
  *   xstore = XMLStore.createFromFile("E:/dev/prefs/test/panel/panel.xml", null);
  *   store = xstore.getPreferences();
  * } catch (Exception e) {
- *   System.out.println(e);
  *   System.exit(1);
  * }
  * PrefPanel pp = new PrefPanel("test", store);
@@ -139,7 +138,6 @@ public class PrefPanel extends JPanel {
      * String sval = (val == null) ? "null" : val.getClass().getName();
      * Component own = manager.getFocusOwner();
      * String sown = (own == null) ? "null" : own.getClass().getName();
-     * System.out.println("focusOwner val="+sval+" own="+sown);
      * }
      * });
      * manager.addPropertyChangeListener( "permanentFocusOwner", new PropertyChangeListener() {
@@ -148,7 +146,6 @@ public class PrefPanel extends JPanel {
      * String sval = (val == null) ? "null" : val.getClass().getName();
      * Component pown = manager.getPermanentFocusOwner();
      * String sown = (pown == null) ? "null" : pown.getClass().getName();
-     * System.out.println("permanentFocusOwner val="+sval+" own="+sown);
      * }
      * });
      */

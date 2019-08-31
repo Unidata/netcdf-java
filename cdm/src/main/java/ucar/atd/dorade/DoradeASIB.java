@@ -54,12 +54,6 @@ class DoradeASIB extends DoradeDescriptor {
     wWind = grabFloat(data, 68);
     headingChangeRate = grabFloat(data, 72);
     pitchChangeRate = grabFloat(data, 76);
-
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
   }
 
   public String toString() {

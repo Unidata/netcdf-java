@@ -52,14 +52,6 @@ public class Tiling {
       stride[k] = strider;
       strider *= tileSize[k];
     }
-
-    /*
-     * debug
-     * System.out.printf("--Data shape= %s%n", show(this.shape));
-     * System.out.printf("  Data chunk= %s%n", show(this.chunk));
-     * System.out.printf("       Tiles= %s%n", show(tileSize));
-     * System.out.printf("      stride= %s%n", show(this.stride));
-     */
   }
 
   String show(int[] a) {

@@ -430,36 +430,6 @@ public abstract class Aggregation {
     // Sort by date if it exists, else sort by filename.
     Collections.sort(datasets);
 
-    /*
-     * optionally extract the date
-     * String dateCoordS = null;
-     * if (null != dateFormatMark) {
-     * String filename = myf.getName(); // LOOK operates on name, not path
-     * Date dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
-     * dateCoordS = formatter.toDateTimeStringISO(dateCoord);
-     * if (debugDateParse) System.out.println("  adding " + myf.getPath() + " date= " + dateCoordS);
-     * } else {
-     * if (debugDateParse) System.out.println("  adding " + myf.getPath());
-     * }
-     * 
-     * String location = myf.getPath();
-     * Aggregation.Dataset ds = makeDataset(location, location, null, null, dateCoordS, null, enhance, null);
-     * datasets.add(ds);
-     * }
-     * 
-     * // Sort by date if it exists, else filename.
-     * Collections.sort(datasets, new Comparator<Aggregation.Dataset>() {
-     * public int compare(Aggregation.Dataset ds1, Aggregation.Dataset ds2) {
-     * if(ds1.cd == null)
-     * return ds1.getLocation().compareTo(ds2.getLocation()) ;
-     * if (ds1.cd.dateCoord != null) // LOOK can we generalize
-     * return ds1.cd.dateCoord.compareTo(ds2.cd.dateCoord);
-     * else
-     * return ds1.cd.file.getName().compareTo(ds2.cd.file.getName());
-     * }
-     * });
-     */
-
     // add the explicit datasets - these need to be kept in order
     // LOOK - should they be before or after scanned? Does it make sense to mix scan and explicit?
     // AggFmrcSingle sets explicit datasets - the scan is empty

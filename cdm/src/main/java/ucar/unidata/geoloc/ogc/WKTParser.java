@@ -6,6 +6,8 @@
 package ucar.unidata.geoloc.ogc;
 
 import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.*;
@@ -18,6 +20,7 @@ import java.text.ParseException;
  * @author Unidata Java Development Team
  */
 public class WKTParser {
+  private static Logger logger = LoggerFactory.getLogger(WKTParser.class);
 
   /*
    * geogcs info
@@ -535,7 +538,7 @@ public class WKTParser {
             SimpleUnit unit = SimpleUnit.factoryWithExceptions(srp.getProjUnitName());
             scalef = unit.convertTo(srp.getProjUnitValue(), SimpleUnit.kmUnit);
           } catch (Exception e) {
-            System.out.println(srp.getProjUnitValue() + " " + srp.getProjUnitName() + " not convertible to km");
+            logger.warn("{} {} not convertible to km", srp.getProjUnitValue(),srp.getProjUnitName());
           }
         }
         falseEasting *= scalef;

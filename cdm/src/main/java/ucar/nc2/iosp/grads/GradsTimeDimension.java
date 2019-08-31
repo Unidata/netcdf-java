@@ -6,6 +6,8 @@
 package ucar.nc2.iosp.grads;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.units.DateUnit;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
@@ -22,6 +24,7 @@ import java.util.TimeZone;
  * @author Don Murray - CU/CIRES
  */
 public class GradsTimeDimension extends GradsDimension {
+  private static Logger logger = LoggerFactory.getLogger(GradsTimeDimension.class);
 
   /** time increment periods */
   private final String[] incStr = {"mn", "hr", "dy", "mo", "yr"};
@@ -140,10 +143,9 @@ public class GradsTimeDimension extends GradsDimension {
     ParsePosition p = new ParsePosition(0);
     Date d = sdf.parse(tstart, p);
     if (d == null) {
-      System.out.println("couldn't parse at " + p.getErrorIndex());
+      logger.warn("couldn't parse at " + p.getErrorIndex());
       d = new Date(0);
     }
-    // System.out.println("start = " + d);
     // set the unit
     sdf.applyPattern("yyyy-MM-dd HH:mm:ss Z");
     setUnit("hours since " + sdf.format(d, new StringBuffer(), new FieldPosition(0)));
@@ -172,7 +174,6 @@ public class GradsTimeDimension extends GradsDimension {
     calendar.setTime(d);
     vals[0] = 0;
     initialTime = makeTimeStruct(calendar);
-    // System.out.println("initial time = " + initialTime);
     int calInc = calIncs[incIndex];
     double hours = (double) 1000 * 60 * 60;
     for (int i = 1; i < getSize(); i++) {
@@ -232,7 +233,6 @@ public class GradsTimeDimension extends GradsDimension {
   public String replaceFileTemplate(String filespec, int timeIndex) {
 
     GradsTimeStruct ts = makeTimeStruct(timeIndex);
-    // System.out.println(ts);
     String retString = filespec;
     String format;
     while (hasTimeTemplate(retString)) {

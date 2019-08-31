@@ -317,7 +317,6 @@ public class GeoTiff implements Closeable {
       channel.write(buffer);
       // write data
       channel.position(nextOverflowData);
-      // System.out.println(" write offset = "+ifd.tag.getName());
       ByteBuffer vbuffer = ByteBuffer.allocate(size);
       writeValues(vbuffer, ifd);
       vbuffer.flip();
@@ -516,41 +515,6 @@ public class GeoTiff implements Closeable {
 
     return ifd;
   }
-
-  /*
-   * Construct a GeoKey from an IFDEntry.
-   * 
-   * @param id GeoKey.Tag number
-   * 
-   * @param v value
-   *
-   * GeoKey(int id, IFDEntry data, int vcount, int offset) {
-   * this.id = id;
-   * this.geoTag = GeoKey.Tag.get(id);
-   * this.count = vcount;
-   * 
-   * if (data.type == FieldType.SHORT) {
-   * 
-   * if (vcount == 1)
-   * geoValue = TagValue.get(geoTag, offset);
-   * else {
-   * value = new int[vcount];
-   * for (int i=0; i<vcount; i++)
-   * value[i] = data.value[offset + i];
-   * }
-   * 
-   * if (geoValue == null) {
-   * if (data.type == FieldType.ASCII)
-   * valueS = data.valueS.substring( offset, offset+vcount);
-   * else {
-   * value = new int[vcount];
-   * for (int i=0; i<vcount; i++)
-   * value[i] = data.value[offset + i];
-   * }
-   * }
-   * }
-   * 
-   */
 
   private void readValues(ByteBuffer buffer, IFDEntry ifd) {
 

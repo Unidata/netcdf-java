@@ -782,7 +782,6 @@ public class NcStream {
     size += NcStream.writeVInt(os, datab.length); // proto len
     os.write(datab); // proto
     size += datab.length;
-    // System.out.printf("encodeArrayStructure write sdata size= %d%n", datab.length);
 
     return size;
   }

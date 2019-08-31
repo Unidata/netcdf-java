@@ -158,10 +158,8 @@ public class UnidataPointDatasetHelper {
     List<Variable> varList = ds.getVariables();
     for (Variable v : varList) {
       if (v instanceof Structure) {
-        // System.out.println( "v is a Structure" );
         List<Variable> vars = ((Structure) v).getVariables();
         for (Variable vs : vars) {
-          // System.out.println( "vs =" + vs.getShortName() );
           String axisType = ds.findAttValueIgnoreCase(vs, _Coordinate.AxisType, null);
           if ((axisType != null) && axisType.equals(a.toString()))
             return vs;

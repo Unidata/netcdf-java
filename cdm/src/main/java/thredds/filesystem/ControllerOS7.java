@@ -121,7 +121,6 @@ public class ControllerOS7 implements MController {
         double took = (System.currentTimeMillis() - start);
         double rate = countFiles / took;
         double drate = countDirs / took;
-        System.out.printf("%s file rate=%f/msec drate=%f/msec%n", countFiles, rate, drate);
       }
       return FileVisitResult.CONTINUE;
     }
@@ -129,7 +128,6 @@ public class ControllerOS7 implements MController {
     // Print each directory visited.
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-      System.out.format("Directory: %s%n", dir);
       countDirs++;
       return FileVisitResult.CONTINUE;
     }

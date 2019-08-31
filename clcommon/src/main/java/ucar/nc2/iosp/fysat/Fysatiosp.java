@@ -92,9 +92,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     } else if (vi.classType == DataType.SHORT.getPrimitiveClassType()) {
       EndianByteBuffer byteBuff = new EndianByteBuffer(data, vi.byteOrder);
       short[] sdata = byteBuff.getShortArray();
-      // for(int i=0; i<sdata.length; i++){
-      // System.out.println(sdata[i]);
-      // }
       array = Array.factory(DataType.SHORT, v2.getShape(), sdata);
     } else if (vi.classType == DataType.INT.getPrimitiveClassType()) {
       EndianByteBuffer byteBuff = new EndianByteBuffer(data, vi.byteOrder);

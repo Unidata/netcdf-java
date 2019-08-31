@@ -66,8 +66,6 @@ public class FractalHeap {
    * 
    * 
    */
-
-
   private java.io.PrintStream debugOut = System.out;
   static boolean debugDetail, debugFractalHeap, debugPos;
 
@@ -358,7 +356,6 @@ public class FractalHeap {
           continue;
         if ((offset >= db.offset) && (offset <= db.offset + db.size)) {
           long localOffset = offset - db.offset;
-          // System.out.println(" heap ID find block= "+block+" db.dataPos " + db.dataPos+" localOffset= "+localOffset);
           return db.dataPos + localOffset;
         }
         block++;
@@ -372,7 +369,6 @@ public class FractalHeap {
     void showDetails(Formatter f) {
       f.format(" DoublingTable: tableWidth= %d startingBlockSize = %d managedSpace=%d maxDirectBlockSize=%d%n",
           tableWidth, startingBlockSize, managedSpace, maxDirectBlockSize);
-      // sbuff.append(" nrows=" + nrows + " nDirectRows=" + nDirectRows + " nIndirectRows=" + nIndirectRows+"%n");
       f.format(" DataBlocks:%n");
       f.format("  address            dataPos            offset size%n");
       for (DataBlock dblock : blockList) {
@@ -424,7 +420,6 @@ public class FractalHeap {
     void showDetails(Formatter f) {
       f.format("%n IndirectBlock: nrows= %d directRows = %d indirectRows=%d startingSize=%d%n", nrows, directRows,
           indirectRows, size);
-      // sbuff.append(" nrows=" + nrows + " nDirectRows=" + nDirectRows + " nIndirectRows=" + nIndirectRows+"%n");
       f.format(" DataBlocks:%n");
       f.format("  address            dataPos            offset size end%n");
       if (directBlocks != null)

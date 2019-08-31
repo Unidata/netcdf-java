@@ -58,12 +58,6 @@ class DoradeRYIB extends DoradeDescriptor {
       rayTimeCalendar.add(Calendar.DAY_OF_MONTH, 1);
 
     rayTime = rayTimeCalendar.getTime();
-
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
   }
 
   public String toString() {

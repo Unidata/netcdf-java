@@ -210,12 +210,6 @@ public class GridDatasetInfo {
       CoordinateAxis time = gcs.getTimeAxis();
       CoordinateAxis vert = gcs.getVerticalAxis();
 
-      /*
-       * System.out.println(" grid "+grid.getName()
-       * +" time="+(time == null ? " null" : time.hashCode())
-       * +" vert="+(vert == null ? " null" : vert.hashCode()));
-       */
-
       // Assuming all variables in dataset has ensemble dim if one has
       if (i == 0) {
         CoordinateAxis1D ens = gcs.getEnsembleAxis();
@@ -223,7 +217,6 @@ public class GridDatasetInfo {
           Element ensAxisEl = writeAxis2(ens, "ensemble");
           rootElem.addContent(ensAxisEl);
         }
-
       }
 
       if ((i == 0) || !compareAxis(time, currentTime)) {

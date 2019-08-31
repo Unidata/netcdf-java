@@ -138,7 +138,6 @@ public class GempakGridReader extends GempakFileReader {
       return false;
     }
     navBlock = new NavigationBlock(headerArray);
-    // System.out.println("nav = " + navBlock);
     gridIndex.addHorizCoordSys(navBlock);
 
     headerArray = getFileHeader(ANLB);
@@ -484,11 +483,6 @@ public class GempakGridReader extends GempakFileReader {
         ibit -= 32;
         iword++;
       }
-      /*
-       * if (i < 25) {
-       * System.out.println("grid["+i+"]: " + grid[i]);
-       * }
-       */
     }
     return grid;
   }
@@ -509,7 +503,6 @@ public class GempakGridReader extends GempakFileReader {
    */
   private float[] unpackGrib1Data(int iiword, int nword, int kxky, int nbits, float ref, float scale, boolean miss,
       int decimalScale) throws IOException {
-    // System.out.println("decimal scale = " + decimalScale);
     float[] values = new float[kxky];
     bitPos = 0;
     bitBuf = 0;
@@ -530,11 +523,6 @@ public class GempakGridReader extends GempakFileReader {
       } else {
         values[i] = (ref + scale * idat) * scaleFactor;
       }
-      /*
-       * if (i < 25) {
-       * System.out.println("values[" + i + "] = " + values[i]);
-       * }
-       */
     }
     return values;
   }

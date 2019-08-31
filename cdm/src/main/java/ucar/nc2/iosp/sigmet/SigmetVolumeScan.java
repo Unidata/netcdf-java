@@ -8,6 +8,8 @@ package ucar.nc2.iosp.sigmet;
 
 // ~--- non-JDK imports --------------------------------------------------------
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Variable;
 import ucar.unidata.io.RandomAccessFile;
 import java.util.*;
@@ -17,6 +19,7 @@ import java.util.*;
  * @since Apr 7, 2010
  */
 public class SigmetVolumeScan {
+  private static Logger logger = LoggerFactory.getLogger(SigmetVolumeScan.class);
   String[] data_name = {" ", "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity"};
   private List<List<Ray>> differentialReflectivityGroups;
   private List<List<Ray>> reflectivityGroups;
@@ -66,23 +69,17 @@ public class SigmetVolumeScan {
 
     int fileLength = (int) raf.length();
     java.util.Map<String, Number> recHdr = SigmetIOServiceProvider.readRecordsHdr(raf);
-    int nparams = recHdr.get("nparams").intValue(); // System.out.println("DO: nparams="+nparams);
+    int nparams = recHdr.get("nparams").intValue();
     short number_sweeps = recHdr.get("number_sweeps").shortValue();
 
-    // System.out.println("DO: number_sweeps="+number_sweeps);
     short num_rays = recHdr.get("num_rays").shortValue();
 
-    // System.out.println("DO: num_rays="+num_rays);
     int range_1st = recHdr.get("range_first").intValue();
     float range_first = range_1st * 0.01f;
     int stepp = recHdr.get("range_last").intValue();
 
-    // System.out.println("DO: stepp="+stepp);
     float range_last = stepp * 0.01f;
     short bins = recHdr.get("bins").shortValue();
-
-    // System.out.println("DO: bins="+bins);
-    // int[] base_time = new int[nparams * number_sweeps];
 
     short[] num_sweep = new short[nparams];
     short[] num_rays_swp = new short[nparams];
@@ -325,9 +322,7 @@ public class SigmetVolumeScan {
         data_read = data_read - pos;
         pos = 0;
       }
-      // if(az > 358.5 && az < 358.8 && var_name.contains("Reflectivity")) {
-      // System.out.println(" here ");
-      // }
+
       if (data_read > 0) {
         raf.seek(cur_len);
         rayoffset = cur_len;
@@ -468,7 +463,7 @@ public class SigmetVolumeScan {
           } else if (var_name.trim().equalsIgnoreCase("DifferentialReflectivity")) {
             diffReflectivity.add(ray);
           } else {
-            System.out.println(" Error: Unknown Radial Variable found!!");
+            logger.warn(" Error: Unknown Radial Variable found1 {}", var_name);
           }
           break;
         }
@@ -492,7 +487,7 @@ public class SigmetVolumeScan {
           } else if (var_name.trim().equalsIgnoreCase("DifferentialReflectivity")) {
             diffReflectivity.add(ray);
           } else {
-            System.out.println(" Error: Unknown Radial Variable found!!");
+            logger.warn(" Error: Unknown Radial Variable found2 {}", var_name);
           }
           continue;
         }
@@ -513,7 +508,7 @@ public class SigmetVolumeScan {
       } else if (var_name.trim().equalsIgnoreCase("DifferentialReflectivity")) {
         diffReflectivity.add(ray);
       } else {
-        System.out.println(" Error: Unknown Radial Variable found!!");
+        logger.warn(" Error: Unknown Radial Variable found3 {}", var_name);
       }
 
       pos = 0;

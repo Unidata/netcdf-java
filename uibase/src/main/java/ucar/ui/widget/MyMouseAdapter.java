@@ -41,8 +41,7 @@ public class MyMouseAdapter extends java.awt.event.MouseAdapter implements Seria
   }
 
   /// subclasses should override
-  public void click(MouseEvent e) {} // System.out.println( "click"); }
+  public void click(MouseEvent e) {}
 
   public void drag(MouseEvent e, int deltax, int deltay) {}
-  // System.out.println( "drag: "+deltax+" "+deltay);}
 }

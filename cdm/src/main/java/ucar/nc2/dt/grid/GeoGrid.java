@@ -420,40 +420,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return data[z,y,x] or data[y,x] if no z axis.
    */
   public Array readVolumeData(int t) throws java.io.IOException {
-    // if (gcs.isProductSet())
     return readDataSlice(t, -1, -1, -1);
-    /*
-     * else { // 2D XY
-     * int rank = vs.getRank();
-     * int[] shape = vs.getShape();
-     * int [] start = new int[rank];
-     * 
-     * CoordinateAxis taxis = gcs.getTimeAxis();
-     * if (taxis != null) {
-     * if ((t >= 0) && (t < taxis.getSize()))
-     * shape[ tDim] = 1; // fix t
-     * start[ tDim] = t;
-     * }
-     * 
-     * if (debugArrayShape) {
-     * System.out.println("getDataVolume shape = ");
-     * for (int i=0; i<rank; i++)
-     * System.out.println("   start = "+start[i]+" shape = "+ shape[i]);
-     * }
-     * 
-     * Array dataVolume;
-     * try {
-     * dataVolume = vs.read( start, shape);
-     * } catch (Exception e) {
-     * System.out.println("Exception: GeoGridImpl.getdataSlice() on dataset "+getName());
-     * e.printStackTrace();
-     * throw new java.io.IOException(e.getMessage());
-     * }
-     * 
-     * // no reordering FIX
-     * return dataVolume.reduce();
-     * }
-     */
   }
 
   /**

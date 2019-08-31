@@ -78,7 +78,6 @@ public class UFheader {
 
       int endPoint = bytesToInt(b4, false);
       if (endPoint != rsize || rsize == 0) {
-        // System.out.println("Herr " +velocityList.size());
         continue;
       }
 
@@ -106,9 +105,6 @@ public class UFheader {
       List<List<Ray>> sortedGroup = sortScans(key, group);
       variableGroup.put(key, sortedGroup);
     }
-
-    // System.out.println("Herr " +velocityList.size());
-    // return;
   }
 
   private List<List<Ray>> sortScans(String name, List<Ray> rays) {

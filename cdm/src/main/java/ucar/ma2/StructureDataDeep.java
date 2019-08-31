@@ -136,7 +136,6 @@ public class StructureDataDeep extends StructureDataA {
       assert m.getDataType() == wantMember.getDataType();
 
       DataType dtype = m.getDataType();
-      // System.out.printf("do %s (%s) = %d%n", m.getName(), m.getDataType(), bb.position());
       if (m.isScalar()) {
         switch (dtype) {
           case STRING:

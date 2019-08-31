@@ -155,28 +155,11 @@ public abstract class RowSorterAbstract implements ucar.ui.table.RowSorter {
      * for (int i=0; i<n; i++)
      * if (col2Model[i] != sortModelCol)
      * sortOrder[sortNo++] = col2Model[i];
-     * 
+     *
      * // compute next
      * for (int i=0; i<n-1; i++)
      * sortNext[sortOrder[i]] = sortOrder[i+1];
      * sortNext[sortOrder[n-1]] = -1;
-     * 
-     * if (debug) {
-     * System.out.print(" col->model = ");
-     * for (int i=0; i<n; i++)
-     * System.out.print(" "+col2Model[i]);
-     * System.out.println();
-     * 
-     * System.out.print(sortModelCol+" sortOrder = ");
-     * for (int i=0; i<n; i++)
-     * System.out.print(" "+sortOrder[i]);
-     * System.out.println();
-     * 
-     * System.out.print(sortModelCol+" sortNext = ");
-     * for (int i=0; i<n; i++)
-     * System.out.print(" "+sortNext[i]);
-     * System.out.println();
-     * }
      */
   }
 

@@ -253,7 +253,6 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
     for (int i = 0; i < rowList.size(); i++) {
       TableRow row = (TableRow) rowList.get(i);
       String value = (String) row.getValueAt(colNo); // STRING !
-      // if (debug) System.out.println(i+" "+value+" "+row.getValueAt(3));
       if (!value.equals(current)) {
         if (null != currentNode)
           currentNode.count = count;
@@ -403,14 +402,6 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
     // note this returns path to the SortNode only
     for (Object o : treeList) {
       SortNode snode = (SortNode) o;
-      /*
-       * if (rowno == snode.start) {
-       * Object[] path = new Object[2];
-       * path[0] = root;
-       * path[1] = snode;
-       * return new TreePath( path);
-       * }
-       */
       if ((rowno >= snode.start) && (rowno < snode.start + snode.count)) {
         Object[] path = new Object[2];
         path[0] = root;
@@ -424,23 +415,6 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
 
   public String toString() {
     return "root";
-  }
-
-  // debug
-  void dumpAll() {
-    boolean save = debugTM;
-    debugTM = false;
-    System.out.println("model = ");
-    dump(getRoot());
-    System.out.println("----");
-    debugTM = save;
-  }
-
-  private void dump(Object node) {
-    System.out.println("  node = " + node.toString());
-    int n = getChildCount(node);
-    for (int i = 0; i < n; i++)
-      dump(getChild(node, i));
   }
 
   private class SortNode implements Comparable {

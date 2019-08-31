@@ -22,6 +22,7 @@ import java.util.List;
  * @since 8/22/13
  */
 public class NcepTable {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepTable.class);
 
   static private void readNcepTable(String location) throws IOException {
     try (InputStream ios = BufrTables.openStream(location)) {
@@ -37,7 +38,7 @@ public class NcepTable {
 
         String[] flds = line.split(";");
         if (flds.length < 3) {
-          System.out.printf("%d BAD split == %s%n", count, line);
+          log.warn("{} BAD split == {}", count, line);
           continue;
         }
 
@@ -48,7 +49,7 @@ public class NcepTable {
           String desc = StringUtil2.remove(flds[fldidx++], '"');
           entries.add(new TableEntry(cat, subcat, desc));
         } catch (Exception e) {
-          System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
+          log.warn("{} {} BAD line == {}", count, fldidx, line);
         }
       }
     }
@@ -64,7 +65,6 @@ public class NcepTable {
       this.cat = cat;
       this.subcat = subcat;
       this.value = value.trim();
-      // System.out.printf(" %3d %3d: %s%n", cat, subcat, value);
     }
   }
 

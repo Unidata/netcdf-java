@@ -616,23 +616,3 @@ public class NUWGConvention extends CoordSysBuilder {
   } // GRIB1 */
 
 }
-
-/*
- * 
- * private void showPoint( int ix, int iy) {
- * ProjectionPointImpl pt = new ProjectionPointImpl(xaxis.getCoordValue(ix), yaxis.getCoordValue(iy));
- * if (debugPoint) System.out.println( ix+ " "+iy+" "+pt+ " --> " +proj.projToLatLon(pt));
- * }
- * 
- * private void showProj( double lat, double lon) {
- * LatLonPointImpl llpt = new LatLonPointImpl(lat,lon);
- * if (debugProj) System.out.println( llpt+ " --> " +proj.latLonToProj(llpt));
- * }
- * 
- * private void showLat( double x, double y) {
- * ProjectionPointImpl pt = new ProjectionPointImpl(x, y);
- * LatLonPoint llpt = proj.projToLatLon(pt);
- * if (debugPoint) System.out.println( pt+ " --> " +llpt.getLatitude()+" "+llpt.getLongitude());
- * }
- * 
- */

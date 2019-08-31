@@ -11,6 +11,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.inventory.TimedCollection;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
@@ -42,6 +44,8 @@ import ucar.unidata.geoloc.Station;
  * @since May 19, 2009
  */
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl implements UpdateableCollection {
+  private static Logger log = LoggerFactory.getLogger(CompositeStationCollection.class);
+
   private TimedCollection dataCollection;
   protected List<VariableSimpleIF> dataVariables;
   protected List<Attribute> globalAttributes;
@@ -314,8 +318,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
         StationFeature s = stnCollection.findStationFeature(getName());
         if (s == null) {
-          System.out.printf("CompositeStationFeatureIterator dataset: %s missing station %s%n", td.getLocation(),
-              getName());
+          log.warn("CompositeStationFeatureIterator dataset: {} missing station {}", td.getLocation(), getName());
           return getNextIterator();
         }
 

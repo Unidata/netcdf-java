@@ -6,6 +6,8 @@ package ucar.nc2.iosp.noaa;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -16,6 +18,7 @@ import ucar.unidata.io.RandomAccessFile;
  * @since Feb 26, 2011
  */
 public class StructureDataRegexp extends StructureData {
+  private static Logger logger = LoggerFactory.getLogger(StructureDataRegexp.class);
   protected Matcher matcher;
 
   public StructureDataRegexp(StructureMembers members, Matcher m) {
@@ -33,8 +36,6 @@ public class StructureDataRegexp extends StructureData {
       svalue = matcher.group(fldno);
     else
       svalue = " ";
-    // System.out.printf("HEY! %d>= %d %n", field, matcher.groupCount());
-    // String svalue = matcher.group(field);
 
     if (dt == DataType.STRING)
       return svalue.trim();
@@ -55,7 +56,7 @@ public class StructureDataRegexp extends StructureData {
         return isBlank ? 0L : new Long(svalue);
 
     } catch (NumberFormatException e) {
-      System.out.printf("  %d = <%s> %n", fldno, svalue);
+      logger.error(" fldno {} = {}", fldno, svalue);
       throw e;
     }
 

@@ -580,7 +580,6 @@ public class BufrTables {
         break;
       if (line.startsWith("#") || line.length() == 0)
         continue;
-      // System.out.println("Table B line =" + line);
 
       try {
         String[] split = line.split(";");
@@ -680,7 +679,6 @@ public class BufrTables {
         int scale = Integer.parseInt(split[3].trim());
         int refVal = Integer.parseInt(split[4].trim());
         int width = Integer.parseInt(split[5].trim());
-        // System.out.printf("%s = %d %d, %d %d %d %s %s %n", line, x, y, scale, refVal, width, split[7], split[6]);
 
         b.addDescriptor(x, y, scale, refVal, width, split[7], split[6], null);
       } catch (Exception e) {
@@ -728,13 +726,6 @@ public class BufrTables {
         short y = Short.parseShort(clean(xyflds[2]));
 
         b.addDescriptor(x, y, scale, refVal, width, name, units, desc);
-
-        /*
-         * System.out.println("Table B line =" + line);
-         * System.out.printf("%s = %d %d, %d %d %d %s %s %n", fxys, x, y, scale, refVal, width, name, units);
-         * if (count > 10) break;
-         * count++;
-         */
 
       } catch (Exception e) {
         log.error("Bad table " + b.getName() + " entry=<" + line + ">", e);
@@ -808,13 +799,6 @@ public class BufrTables {
       int width = (Integer) record.get(6);
 
       b.addDescriptor((short) x, (short) y, scale, ref, width, name, units, null);
-
-      /*
-       * System.out.println("Table B line =" + record);
-       * System.out.printf("%d %d, %d %d %d %s %s %n", x, y, scale, ref, width, name, units);
-       * if (count > 10) break;
-       * count++;
-       */
     }
 
     return b;
@@ -850,21 +834,21 @@ public class BufrTables {
           s = bufrElem.getChildTextNormalize("BUFR_scale");
           scale = Integer.parseInt(clean(s));
         } catch (NumberFormatException e) {
-          System.out.printf(" key %s name '%s' has bad scale='%s'%n", fxy, name, s);
+          log.warn(" key {} name '{}' has bad scale='{}'%n", fxy, name, s);
         }
 
         try {
           s = bufrElem.getChildTextNormalize("BUFR_reference");
           reference = Integer.parseInt(clean(s));
         } catch (NumberFormatException e) {
-          System.out.printf(" key %s name '%s' has bad reference='%s' %n", fxy, name, s);
+          log.warn(" key {} name '{}' has bad reference='{}' %n", fxy, name, s);
         }
 
         try {
           s = bufrElem.getChildTextNormalize("BUFR_width");
           width = Integer.parseInt(clean(s));
         } catch (NumberFormatException e) {
-          System.out.printf(" key %s name '%s' has bad width='%s' %n", fxy, name, s);
+          log.warn(" key {} name '{}' has bad width='{}' %n", fxy, name, s);
         }
 
         b.addDescriptor((short) x, (short) y, scale, reference, width, name, units, null);
@@ -943,7 +927,7 @@ public class BufrTables {
           WmoXmlReader.readWmoXmlTableD(ios, d);
           break;
         default:
-          System.out.printf("Unknown format= %s %n", format);
+          log.warn("Unknown format= {}", format);
           return null;
       }
     }
@@ -1280,7 +1264,6 @@ public class BufrTables {
         break;
       if (line.startsWith("#") || line.trim().length() == 0)
         continue;
-      // System.out.println("Table D line =" + line);
 
       try {
         String[] flds = line.split("[\\|;]");
@@ -1295,7 +1278,6 @@ public class BufrTables {
           short y = Short.parseShort(clean(xyflds[2]));
           String seqName = (flds.length > 3) ? flds[3].trim() : "";
           currDesc = t.addDescriptor(x, y, seqName, new ArrayList<>());
-          // System.out.printf("Add seq %s = %d %d %s %n", fxys, x, y, seqName);
         } else if (currDesc != null) {
           fxys = StringUtil2.remove(flds[1], '>');
           String[] xyflds = fxys.split("-");
@@ -1304,11 +1286,7 @@ public class BufrTables {
           short y = Short.parseShort(clean(xyflds[2]));
           int fxy = (f << 14) + (x << 8) + y;
           currDesc.addFeature((short) fxy);
-          // System.out.printf("Add %s = %d %d %d%n", fxys, f, x, y);
         }
-
-        // if (count > 10) break;
-        // count++;
 
       } catch (Exception e) {
         log.error("Bad table " + t.getName() + " entry=<" + line + ">", e);
@@ -1353,7 +1331,6 @@ public class BufrTables {
           fxy /= 1000;
           int x = fxy % 100;
           currDesc = t.addDescriptor((short) x, (short) y, "", new ArrayList<>());
-          // System.out.printf("Add seq %s = %d %d%n", fxys, x, y);
           n = Integer.parseInt(flds[1].trim());
           fxys = flds[2].trim();
         } else {

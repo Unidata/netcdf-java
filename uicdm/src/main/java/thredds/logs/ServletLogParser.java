@@ -131,7 +131,6 @@ public class ServletLogParser implements LogReader.LogParser {
       if (line == null) {
         return haveLog ? log : null;
       }
-      // if (count++ < limit) System.out.println("\n" + line); nTest reqe
 
       try {
         Matcher m = commonPattern.matcher(line);
@@ -191,7 +190,6 @@ public class ServletLogParser implements LogReader.LogParser {
           }
 
         } else { // the true extra line
-          // System.out.println("No match on " + line);
           log.addExtra(line);
         }
 

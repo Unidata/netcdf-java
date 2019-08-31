@@ -7,6 +7,8 @@ package ucar.nc2.iosp.noaa;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -443,6 +445,7 @@ import java.util.HashMap;
  */
 
 public class Ghcnm2 extends AbstractIOServiceProvider {
+  private static Logger logger = LoggerFactory.getLogger(Ghcnm2.class);
   private static final String dataPatternRegexp =
       "(\\d{11})(\\d{4})TAVG([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"
           + "([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"
@@ -651,14 +654,12 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
       boolean more = (bytesRead < totalBytes); // && (recno < 10);
       if (!more) {
         vinfo.nelems = recno;
-        // System.out.printf("nelems=%d%n", recno);
         return false;
       }
       curr = reallyNext();
       more = (curr != null);
       if (!more) {
         vinfo.nelems = recno;
-        // System.out.printf("nelems=%d%n", recno);
         return false;
       }
       return more;
@@ -682,9 +683,8 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
         matcher = vinfo.p.matcher(line);
         if (matcher.matches())
           break;
-        System.out.printf("FAIL %s%n", line);
+        logger.warn("FAIL on line {}", line);
       }
-      // System.out.printf("%s%n", line);
       bytesRead = vinfo.rafile.getFilePointer();
       recno++;
       return new StructureDataRegexpGhcnm(vinfo.sm, matcher);
@@ -760,7 +760,6 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
         if (matcher.matches())
           break;
       }
-      // System.out.printf("%s%n", line);
       countRead++;
       return new StructureDataRegexp(sm, matcher);
     }
@@ -842,7 +841,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
 
       Matcher matcher = dataInfo.p.matcher(line);
       if (!matcher.matches()) {
-        System.out.printf("FAIL %s%n", line);
+        logger.warn("FAIL on line {}", line);
         continue;
       }
 
@@ -852,9 +851,9 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
       if ((currStn == null) || (currStn.stnId != id)) {
         StationIndex s = map.get(id);
         if (s == null)
-          System.out.printf("Cant find %d%n", id);
+          logger.error("Cant find id = {}", id);
         else if (s.dataCount != 0)
-          System.out.printf("Not in order %d at pos %d %n", id, dataPos);
+          logger.error("Id {} Not in order at pos {}", id, dataPos);
         else {
           s.dataPos = dataPos;
           totalCount++;
@@ -864,7 +863,6 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
       if (currStn != null)
         currStn.dataCount++;
     }
-    // System.out.printf("ok stns=%s data=%d%n", stnCount, totalCount);
 
     //////////////////////////////
     // write the index file
@@ -890,8 +888,6 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
         fout.write(pb);
       }
     }
-
-    // System.out.println(" index size=" + size);
   }
 
   private StationIndex decodeStationIndex(byte[] data) throws InvalidProtocolBufferException {

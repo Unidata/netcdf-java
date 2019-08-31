@@ -723,7 +723,7 @@ public class V5DStruct {
   public static V5DStruct v5dOpenFile(RandomAccessFile fd) throws IOException, BadFormException {
     if (fd == null) {
       // error
-      System.out.println("null file");
+      logger.warn("null file");
       return null;
     }
 
@@ -1826,7 +1826,7 @@ public class V5DStruct {
         continue; // try again
       } else {
         // unknown file type
-        System.out.println("unknown file type");
+        logger.warn("unknown file type");
         return false;
       }
     }

@@ -21,7 +21,6 @@ class DebugProxyHandler implements InvocationHandler {
       return super.toString();
     }
 
-    // System.out.println("proxy= "+proxy+" method = "+method+" args="+args);
     if (method.getName().equals("isSet")) {
       return Debug.isSet((String) args[0]);
     }

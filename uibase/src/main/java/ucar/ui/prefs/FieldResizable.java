@@ -383,12 +383,10 @@ class FieldResizable extends Field {
   private static class MyPanel extends JPanel {
 
     public void setPreferredSize(Dimension preferredSize) {
-      // System.out.println("MyPanel: setPreferredSize = "+preferredSize);
       super.setPreferredSize(preferredSize);
     }
 
     public Dimension getPreferredSize() {
-      // System.out.println("MyPanel: getPreferredSize = "+super.getPreferredSize());
       return super.getPreferredSize();
     }
   }

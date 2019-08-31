@@ -297,8 +297,6 @@ public class UFiosp extends AbstractIOServiceProvider {
             needFirst = false;
           }
 
-          // int radial = r.uf_header2.rayNumber ;
-          // if(scan == 0) System.out.println("AZI " + r.getAzimuth());
           timeData.setLong(timeIndex.set(scan, radial), r.data_msecs);
           elevData.setFloat(elevIndex.set(scan, radial), r.getElevation());
           aziData.setFloat(aziIndex.set(scan, radial), r.getAzimuth());

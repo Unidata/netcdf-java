@@ -8,6 +8,8 @@ package ucar.nc2.iosp.gempak;
 
 
 import com.google.common.base.MoreObjects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 import java.util.*;
@@ -17,7 +19,7 @@ import java.util.*;
  * Read a Gempak grid file
  */
 public class GempakFileReader implements GempakConstants {
-
+  private static Logger logger = LoggerFactory.getLogger(GempakFileReader.class);
   /**
    * The file
    */
@@ -1428,20 +1430,19 @@ public class GempakFileReader implements GempakConstants {
 
     int ipoint;
     if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1) || (icol > dmLabel.kcol)) {
-      System.out.println("bad row/column number " + irow + "/" + icol);
+      logger.warn("bad row/column number {}/{}", irow, icol);
       return null;
     }
-    // System.out.println("reading row " + irow + ", column " + icol);
     int iprt = getPartNumber(partName);
     if (iprt == 0) {
-      System.out.println("couldn't find part: " + partName);
+      logger.warn("couldn't find part: {}", partName);
       return null;
     }
     // gotta subtract 1 because parts are 1 but List is 0 based
     DMPart part = parts.get(iprt - 1);
     // check for valid real data type
     if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID) && (part.ktyprt != MDRPCK)) {
-      System.out.println("Not a valid type");
+      logger.warn("Not a valid type");
       return null;
     }
     int ilenhd = part.klnhdr;
@@ -1458,12 +1459,8 @@ public class GempakFileReader implements GempakConstants {
       int length = DM_RINT(istart);
       int isword = istart + 1;
       if (length <= ilenhd) {
-        // System.out.println("length (" + length
-        // + ") is less than header length (" + ilenhd
-        // + ")");
         return null;
       } else if (Math.abs(length) > 10000000) {
-        // System.out.println("length is huge");
         return null;
       }
       header = new int[ilenhd];
