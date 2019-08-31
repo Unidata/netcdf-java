@@ -28,7 +28,7 @@ import ucar.nc2.time.CalendarDateUnit;
  */
 public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
-  static boolean showTables = false;
+  static boolean showTables;
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
     showTables = debugFlags.isSet("PointDatasetStandardFactory/showTables");
@@ -161,7 +161,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
           featureCollections.add(new StandardTrajectoryCollectionImpl(flatTable, timeUnit, altUnits));
       }
 
-      if (featureCollections.size() == 0)
+      if (featureCollections.isEmpty())
         throw new IllegalStateException("No feature collections found");
 
       setPointFeatureCollection(featureCollections);

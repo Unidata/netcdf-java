@@ -51,19 +51,19 @@ import ucar.unidata.io.RandomAccessFile;
  */
 public class NcStream {
   // must start with this "CDFS"
-  public static final byte[] MAGIC_START = new byte[] {0x43, 0x44, 0x46, 0x53};
+  public static final byte[] MAGIC_START = {0x43, 0x44, 0x46, 0x53};
 
-  public static final byte[] MAGIC_HEADER = new byte[] {(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
-  public static final byte[] MAGIC_DATA = new byte[] {(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
-  public static final byte[] MAGIC_DATA2 = new byte[] {(byte) 0xab, (byte) 0xeb, (byte) 0xbe, (byte) 0xba};
-  public static final byte[] MAGIC_VDATA = new byte[] {(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};
-  public static final byte[] MAGIC_VEND = new byte[] {(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
+  public static final byte[] MAGIC_HEADER = {(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
+  public static final byte[] MAGIC_DATA = {(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+  public static final byte[] MAGIC_DATA2 = {(byte) 0xab, (byte) 0xeb, (byte) 0xbe, (byte) 0xba};
+  public static final byte[] MAGIC_VDATA = {(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};
+  public static final byte[] MAGIC_VEND = {(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
 
-  public static final byte[] MAGIC_HEADERCOV = new byte[] {(byte) 0xad, (byte) 0xed, (byte) 0xde, (byte) 0xda};
-  public static final byte[] MAGIC_DATACOV = new byte[] {(byte) 0xab, (byte) 0xed, (byte) 0xde, (byte) 0xba};
+  public static final byte[] MAGIC_HEADERCOV = {(byte) 0xad, (byte) 0xed, (byte) 0xde, (byte) 0xda};
+  public static final byte[] MAGIC_DATACOV = {(byte) 0xab, (byte) 0xed, (byte) 0xde, (byte) 0xba};
 
-  public static final byte[] MAGIC_ERR = new byte[] {(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
-  public static final byte[] MAGIC_END = new byte[] {(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
+  public static final byte[] MAGIC_ERR = {(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
+  public static final byte[] MAGIC_END = {(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
 
   public static final int ncstream_data_version = 3;
 
@@ -425,7 +425,7 @@ public class NcStream {
   }
 
   static Dimension decodeDim(NcStreamProto.Dimension dim) {
-    String name = (dim.getName().length() == 0 ? null : dim.getName());
+    String name = (dim.getName().isEmpty() ? null : dim.getName());
     int dimLen = dim.getIsVlen() ? -1 : (int) dim.getLength();
     return new Dimension(name, dimLen, !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
   }

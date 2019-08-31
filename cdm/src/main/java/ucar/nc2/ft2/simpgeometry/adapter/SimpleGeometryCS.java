@@ -36,13 +36,13 @@ public class SimpleGeometryCS {
     for (CoordinateAxis axis : builder.getSgAxes()) {
 
       // Look for simple geometry axes and add them
-      if (axis.getAxisType().equals(AxisType.SimpleGeometryX))
+      if (axis.getAxisType() == AxisType.SimpleGeometryX)
         simpleGeometryX.add(axis);
-      else if (axis.getAxisType().equals(AxisType.SimpleGeometryY))
+      else if (axis.getAxisType() == AxisType.SimpleGeometryY)
         simpleGeometryY.add(axis);
-      else if (axis.getAxisType().equals(AxisType.SimpleGeometryZ))
+      else if (axis.getAxisType() == AxisType.SimpleGeometryZ)
         simpleGeometryZ.add(axis);
-      else if (axis.getAxisType().equals(AxisType.SimpleGeometryID))
+      else if (axis.getAxisType() == AxisType.SimpleGeometryID)
         simpleGeometryID.add(axis);
 
     }

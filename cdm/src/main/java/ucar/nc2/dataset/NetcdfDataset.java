@@ -292,7 +292,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   ////////////////////////////////////////////////////////////////////////////////////
   // NetcdfFile caching
 
-  private static ucar.nc2.util.cache.FileCache netcdfFileCache = null;
+  private static ucar.nc2.util.cache.FileCache netcdfFileCache;
   private static ucar.nc2.util.cache.FileFactory defaultNetcdfFileFactory = new MyNetcdfFileFactory();
 
   // no state, so a singleton is ok
@@ -793,7 +793,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
           break; // fall through
 
         default:
-          throw new IOException("Unknown service type: " + durl.serviceType.toString());
+          throw new IOException("Unknown service type: " + durl.serviceType);
       }
     }
 
@@ -958,7 +958,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
-  private NetcdfFile orgFile = null;
+  private NetcdfFile orgFile;
 
   private List<CoordinateSystem> coordSys = new ArrayList<>();
   private List<CoordinateAxis> coordAxes = new ArrayList<>();
@@ -968,7 +968,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
 
   // If its an aggregation
-  private ucar.nc2.ncml.Aggregation agg = null;
+  private ucar.nc2.ncml.Aggregation agg;
 
   /**
    * If its an NcML aggregation, it has an Aggregation object associated.
@@ -1369,9 +1369,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       VariableEnhanced v1 = (VariableEnhanced) o1;
       VariableEnhanced v2 = (VariableEnhanced) o2;
       List list1 = v1.getCoordinateSystems();
-      String cs1 = (list1.size() > 0) ? ((CoordinateSystem) list1.get(0)).getName() : "";
+      String cs1 = (!list1.isEmpty()) ? ((CoordinateSystem) list1.get(0)).getName() : "";
       List list2 = v2.getCoordinateSystems();
-      String cs2 = (list2.size() > 0) ? ((CoordinateSystem) list2.get(0)).getName() : "";
+      String cs2 = (!list2.isEmpty()) ? ((CoordinateSystem) list2.get(0)).getName() : "";
 
       if (cs2.equals(cs1))
         return v1.getShortName().compareToIgnoreCase(v2.getShortName());

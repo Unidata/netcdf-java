@@ -24,7 +24,7 @@ public class LatLonProjection extends ProjectionImpl {
   /**
    * center longitude
    */
-  private double centerLon = 0.0;
+  private double centerLon;
   private Earth earth = EarthEllipsoid.DEFAULT;
 
   @Override
@@ -325,7 +325,7 @@ public class LatLonProjection extends ProjectionImpl {
     double lon0 = LatLonPointImpl.lonNormal(latlonR.getLowerLeftPoint().getLongitude(), centerLon);
     double lon1 = LatLonPointImpl.lonNormal(latlonR.getUpperRightPoint().getLongitude(), centerLon);
 
-    ProjectionRect[] rects = new ProjectionRect[] {new ProjectionRect(), new ProjectionRect()};
+    ProjectionRect[] rects = {new ProjectionRect(), new ProjectionRect()};
     if (lon0 < lon1) {
       rects[0].setRect(lon0, lat0, width, height);
       rects[1] = null;
@@ -374,7 +374,7 @@ public class LatLonProjection extends ProjectionImpl {
     lon0 = LatLonPointImpl.lonNormal(lon0, centerLon);
     lon1 = LatLonPointImpl.lonNormal(lon1, centerLon);
 
-    ProjectionRect[] rects = new ProjectionRect[] {new ProjectionRect(), new ProjectionRect()};
+    ProjectionRect[] rects = {new ProjectionRect(), new ProjectionRect()};
     if (width >= 360.0) {
       rects[0].setRect(centerLon - 180.0, lat0, 360.0, height);
       rects[1] = null;

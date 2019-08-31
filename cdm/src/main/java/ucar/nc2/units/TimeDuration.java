@@ -56,7 +56,7 @@ public class TimeDuration {
   private TimeUnit timeUnit;
   private boolean isBlank;
 
-  private static boolean debug = false;
+  private static boolean debug;
 
   private TimeDuration() {}
 
@@ -92,7 +92,7 @@ public class TimeDuration {
     this.text = text;
 
     // see if its blank LOOK WTF ?
-    if (text.length() == 0) {
+    if (text.isEmpty()) {
       isBlank = true;
       try {
         timeUnit = new TimeUnit("1 sec");

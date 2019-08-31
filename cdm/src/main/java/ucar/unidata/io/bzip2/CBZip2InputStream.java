@@ -134,7 +134,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
   private InputStream bsStream;
 
-  private boolean streamEnd = false;
+  private boolean streamEnd;
   private int currentChar = -1;
   private int currentState = START_BLOCK_STATE;
 
@@ -143,8 +143,8 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
   int i2, count, chPrev, ch2;
   int i, tPos;
-  int rNToGo = 0;
-  int rTPos = 0;
+  int rNToGo;
+  int rTPos;
   int j2;
   char z;
 

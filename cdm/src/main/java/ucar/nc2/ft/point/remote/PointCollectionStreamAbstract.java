@@ -72,7 +72,7 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
 
         if (needUnits) {
           try {
-            this.altUnits = pfc.getAltUnit().length() > 0 ? pfc.getAltUnit() : null;
+            this.altUnits = !pfc.getAltUnit().isEmpty() ? pfc.getAltUnit() : null;
             this.timeUnit = CalendarDateUnit.of(null, pfc.getTimeUnit());
           } catch (IllegalArgumentException e) {
             String message = String.format("Invalid time unit found in stream (%s). Using default (%s).",
@@ -84,7 +84,7 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
           needUnits = false;
         }
 
-        PointFeatureIterator iter = new PointIteratorStream(PointCollectionStreamAbstract.this, in,
+        PointFeatureIterator iter = new PointIteratorStream(this, in,
             new PointStream.ProtobufPointFeatureMaker(pfc));
 
         leaveStreamOpen = true; // It is now iter's responsiblity to close the stream.

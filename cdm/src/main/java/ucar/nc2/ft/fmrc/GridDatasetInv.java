@@ -258,9 +258,9 @@ public class GridDatasetInv {
    */
   public class Grid implements Comparable<Grid> {
     final String name;
-    TimeCoord tc = null; // time coordinates reletive to getRunDate()
-    EnsCoord ec = null; // optional
-    VertCoord vc = null; // optional
+    TimeCoord tc; // time coordinates reletive to getRunDate()
+    EnsCoord ec; // optional
+    VertCoord vc; // optional
 
     private Grid(String name) {
       this.name = name;
@@ -527,7 +527,7 @@ public class GridDatasetInv {
       fmr.times.add(tc);
       tc.setId(Integer.parseInt(timeElem.getAttributeValue("id")));
       String s = timeElem.getAttributeValue("isInterval");
-      boolean isInterval = (s != null) && (s.equals("true"));
+      boolean isInterval = "true".equals(s);
 
       if (isInterval) {
         String boundsAll = timeElem.getTextNormalize();

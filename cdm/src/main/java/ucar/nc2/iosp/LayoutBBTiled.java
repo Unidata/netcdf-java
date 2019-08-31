@@ -24,7 +24,7 @@ public class LayoutBBTiled implements LayoutBB {
   private int elemSize;
 
   private DataChunkIterator chunkIterator; // iterate across chunks
-  private IndexChunkerTiled index = null; // iterate within a chunk
+  private IndexChunkerTiled index; // iterate within a chunk
 
   // track the overall iteration
   private long totalNelems, totalNelemsDone; // total number of elemens

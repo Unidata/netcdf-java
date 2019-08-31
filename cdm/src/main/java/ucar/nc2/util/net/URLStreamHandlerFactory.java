@@ -18,7 +18,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
 
   //////////////////////////////////////////////////////////////////////////
   private static Map<String, URLStreamHandler> map = new java.util.HashMap<>();
-  private static boolean installed = false;
+  private static boolean installed;
 
   public static void install() {
     try {

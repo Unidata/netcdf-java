@@ -185,7 +185,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     private class ProfileFeatureIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
       private Cursor cursor;
       private ucar.ma2.StructureDataIterator sdataIter;
-      private int count = 0;
+      private int count;
       private StructureData profileData;
       DsgCollectionImpl prev;
       CollectionInfo calcInfo;

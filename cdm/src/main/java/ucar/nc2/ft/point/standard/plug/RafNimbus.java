@@ -22,7 +22,7 @@ import java.util.Formatter;
 public class RafNimbus extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String center = ds.findAttValueIgnoreCase(null, "Convention", null);
-    return center != null && center.equals("NCAR-RAF/nimbus");
+    return "NCAR-RAF/nimbus".equals(center);
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
@@ -33,7 +33,7 @@ public class RafNimbus extends TableConfigurerImpl {
       errlog.format("Cant find a time coordinate");
       return null;
     }
-    final Dimension innerDim = coordAxis.getDimension(0);
+    Dimension innerDim = coordAxis.getDimension(0);
     boolean obsIsStruct = Evaluator.hasNetcdf3RecordStructure(ds) && innerDim.isUnlimited();
 
     TableConfig obsTable = new TableConfig(Table.Type.Structure, innerDim.getShortName());

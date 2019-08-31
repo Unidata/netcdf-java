@@ -75,7 +75,7 @@ public class RotatedLatLon extends ProjectionImpl {
   public static final String GRID_SOUTH_POLE_LATITUDE = "grid_south_pole_latitude";
   public static final String GRID_SOUTH_POLE_ANGLE = "grid_south_pole_angle";
 
-  private static boolean show = false;
+  private static boolean show;
 
   private final double lonpole; // Longitude of south pole
   private final double latpole; // Latitude of south pole

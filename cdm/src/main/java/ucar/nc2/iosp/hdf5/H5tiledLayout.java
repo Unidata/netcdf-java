@@ -25,7 +25,7 @@ class H5tiledLayout implements Layout {
   private int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
   private int elemSize; // last dimension of the StorageLayout message
 
-  private boolean debug = false;
+  private boolean debug;
 
   /**
    * Constructor.

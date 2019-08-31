@@ -178,7 +178,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated
 
-  private TrajCollectionIterator localIterator = null;
+  private TrajCollectionIterator localIterator;
 
   @Override
   public boolean hasNext() throws IOException {

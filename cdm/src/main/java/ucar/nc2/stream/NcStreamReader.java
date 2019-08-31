@@ -32,8 +32,8 @@ public class NcStreamReader {
   private static final boolean debug = false;
   private static final boolean showDeflate = false;
 
-  private static double total_uncompressedSize = 0.0;
-  private static double total_compressedSize = 0.0;
+  private static double total_uncompressedSize;
+  private static double total_compressedSize;
 
   public static double getCompression(boolean reset) {
     double result = total_uncompressedSize / total_compressedSize;
@@ -247,9 +247,9 @@ public class NcStreamReader {
   private static class StreamDataIterator implements StructureDataIterator {
     private InputStream is;
     private StructureMembers members;
-    private StructureData curr = null;
+    private StructureData curr;
     private ByteOrder bo;
-    private int count = 0;
+    private int count;
     private boolean done;
 
     StreamDataIterator(InputStream is, StructureMembers members, ByteOrder bo) {
@@ -321,9 +321,9 @@ public class NcStreamReader {
     if (ncfile == null)
       ncfile = new NetcdfFileSubclass(); // not used i think
     ncfile.setLocation(proto.getLocation());
-    if (proto.getId().length() > 0)
+    if (!proto.getId().isEmpty())
       ncfile.setId(proto.getId());
-    if (proto.getTitle().length() > 0)
+    if (!proto.getTitle().isEmpty())
       ncfile.setTitle(proto.getTitle());
 
     NcStreamProto.Group root = proto.getRoot();

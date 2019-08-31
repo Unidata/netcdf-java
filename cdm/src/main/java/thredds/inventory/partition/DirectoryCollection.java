@@ -114,7 +114,7 @@ public class DirectoryCollection extends CollectionAbstract {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
     MFile nextMFile;
-    int count = 0;
+    int count;
 
     MyFileIterator(Path dir) throws IOException {
       if (debug) {
@@ -179,7 +179,7 @@ public class DirectoryCollection extends CollectionAbstract {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private static final boolean debug = false;
-  private static int debugCount = 0;
+  private static int debugCount;
 
   // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure DirectoryStream
   // closes. like++

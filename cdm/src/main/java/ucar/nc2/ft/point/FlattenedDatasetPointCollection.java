@@ -65,7 +65,7 @@ public class FlattenedDatasetPointCollection extends PointCollectionImpl {
     private IOIterator<PointFeatureCollection> pfcIter;
     private IOIterator<PointFeatureCC> pfccIter;
 
-    private boolean finished = false; // set to "true" when close() is called.
+    private boolean finished; // set to "true" when close() is called.
 
     public FlattenedDatasetPointIterator(FeatureDatasetPoint fdPoint) {
       this.dsgFeatColIter = fdPoint.getPointFeatureCollectionList().iterator();

@@ -65,7 +65,7 @@ public class ListenerManager {
   private final List<Object> listeners = new CopyOnWriteArrayList<>(); // cf
                                                                        // http://www.ibm.com/developerworks/java/library/j-jtp07265/index.html
   private final java.lang.reflect.Method method;
-  private boolean hasListeners = false;
+  private boolean hasListeners;
   private boolean enabled = true;
 
   /**
@@ -124,7 +124,7 @@ public class ListenerManager {
   public synchronized void removeListener(Object l) {
     if (listeners.contains(l)) {
       listeners.remove(l);
-      hasListeners = (listeners.size() > 0);
+      hasListeners = (!listeners.isEmpty());
     } else
       logger.warn("ListenerManager.removeListener couldnt find Listener " + l);
   }

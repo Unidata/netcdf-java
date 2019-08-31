@@ -93,7 +93,7 @@ public class Bearing {
   }
 
   /** _more_ */
-  private static int maxLoopCnt = 0;
+  private static int maxLoopCnt;
 
   /**
    * Computes distance (in km), azimuth (degrees clockwise positive

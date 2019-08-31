@@ -38,7 +38,7 @@ public class CdmrfWriter {
   // static private final Logger logger = LoggerFactory.getLogger(CdmrfWriter.class);
 
   // must start with this "CDFF"
-  public static final byte[] MAGIC_START = new byte[] {0x43, 0x44, 0x46, 0x46};
+  public static final byte[] MAGIC_START = {0x43, 0x44, 0x46, 0x46};
   public static final int MAX_INLINE_NVALUES = 500;
   private static final boolean show = false;
 

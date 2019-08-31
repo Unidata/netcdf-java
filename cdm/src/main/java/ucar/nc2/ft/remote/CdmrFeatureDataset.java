@@ -41,8 +41,8 @@ public class CdmrFeatureDataset {
   public static final String PROTOCOL = "cdmrFeature";
   public static final String SCHEME = PROTOCOL + ":";
 
-  private static boolean debug = false;
-  private static boolean showXML = false;
+  private static boolean debug;
+  private static boolean showXML;
 
   // all CdmrFeatureDatasets must return their featureType - use as a fail-fast test of the endpoint
   public static FeatureType isCdmrfEndpoint(String endpoint) throws IOException {

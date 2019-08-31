@@ -536,7 +536,7 @@ public class Range implements RangeIterator {
   }
 
   private class MyIterator implements java.util.Iterator<Integer> {
-    private int current = 0;
+    private int current;
 
     public boolean hasNext() {
       return current < length;

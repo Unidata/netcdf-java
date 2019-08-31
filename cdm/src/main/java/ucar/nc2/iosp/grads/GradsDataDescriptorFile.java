@@ -231,7 +231,7 @@ public class GradsDataDescriptorFile {
   /**
    * Is this a big endian file?
    */
-  boolean bigEndian = false;
+  boolean bigEndian;
 
   /**
    * missing data value
@@ -241,27 +241,27 @@ public class GradsDataDescriptorFile {
   /**
    * number of xy header bytes
    */
-  private int xyHeaderBytes = 0;
+  private int xyHeaderBytes;
 
   /**
    * number of file header bytes
    */
-  private int fileHeaderBytes = 0;
+  private int fileHeaderBytes;
 
   /**
    * number of time header bytes
    */
-  private int timeHeaderBytes = 0;
+  private int timeHeaderBytes;
 
   /**
    * number of time trilobytes
    */
-  private int timeTrailerBytes = 0;
+  private int timeTrailerBytes;
 
   /**
    * data type
    */
-  private String dataType = null;
+  private String dataType;
 
   /**
    * The list of variables
@@ -306,37 +306,37 @@ public class GradsDataDescriptorFile {
   /**
    * The title
    */
-  private String title = null;
+  private String title;
 
   /**
    * grids per timestep
    */
-  private int gridsPerTimeStep = 0;
+  private int gridsPerTimeStep;
 
   /**
    * timesteps per file
    */
-  private int timeStepsPerFile = 0;
+  private int timeStepsPerFile;
 
   /**
    * is this a template file
    */
-  private boolean isTemplate = false;
+  private boolean isTemplate;
 
   /**
    * type of template
    */
-  private int templateType = 0;
+  private int templateType;
 
   /**
    * is this a sequential file
    */
-  private boolean isSequential = false;
+  private boolean isSequential;
 
   /**
    * is y reversed
    */
-  private boolean yReversed = false;
+  private boolean yReversed;
 
   /**
    * the list of filenames that this ctl points to
@@ -346,17 +346,17 @@ public class GradsDataDescriptorFile {
   /**
    * defines a projection
    */
-  private boolean hasProjection = false;
+  private boolean hasProjection;
 
   /**
    * list of chsub parameters
    */
-  private List<Chsub> chsubs = null;
+  private List<Chsub> chsubs;
 
   /**
    * the path to the ddf
    */
-  private String pathToDDF = null;
+  private String pathToDDF;
 
   /**
    * Create a GradsDataDescriptorFile from the file
@@ -841,10 +841,10 @@ public class GradsDataDescriptorFile {
     buf.append(dataFile);
     buf.append("\n");
     for (GradsDimension dim : dimList) {
-      buf.append(dim.toString());
+      buf.append(dim);
     }
     for (GradsVariable var : variableList) {
-      buf.append(var.toString());
+      buf.append(var);
     }
 
     return buf.toString();

@@ -272,7 +272,7 @@ public class Misc {
   public static String stackTraceToString(StackTraceElement[] stackTrace) {
     StringBuilder buf = new StringBuilder();
     for (StackTraceElement ste : stackTrace) {
-      buf.append(ste.toString());
+      buf.append(ste);
       buf.append("\n");
     }
     return buf.toString();

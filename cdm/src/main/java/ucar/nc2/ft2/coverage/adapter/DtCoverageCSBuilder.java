@@ -358,7 +358,7 @@ public class DtCoverageCSBuilder {
     }
     f2.format(")");
 
-    if (otherAxes.size() > 0) {
+    if (!otherAxes.isEmpty()) {
       f2.format(": ");
       count = 0;
       for (CoordinateAxis axis : otherAxes) {

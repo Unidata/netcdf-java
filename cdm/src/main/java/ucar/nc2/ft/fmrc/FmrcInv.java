@@ -281,8 +281,8 @@ public class FmrcInv {
     private final String gridName;
     private final List<FmrInv.GridVariable> runs = new ArrayList<>();
 
-    private VertCoord vertCoordUnion = null;
-    private RunSeq runSeq = null;
+    private VertCoord vertCoordUnion;
+    private RunSeq runSeq;
 
     UberGrid(String name) {
       this.gridName = name;
@@ -368,7 +368,7 @@ public class FmrcInv {
           ensList.add(ec);
       }
       if (ec_union != null) {
-        if (ensList.size() > 0)
+        if (!ensList.isEmpty())
           EnsCoord.normalize(ec_union, ensList); // add the other coords
       }
 
@@ -489,8 +489,8 @@ public class FmrcInv {
     private final HashMap<CalendarDate, TimeCoord> coordMap; // runDate, timeExpected
     private final List<UberGrid> vars = new ArrayList<>(); // list of UberGrid that use this
     private int id;
-    private List<TimeCoord> timeList = null; // timeList has differing runDates
-    private TimeCoord timeCoordUnion = null; // union of all offset hours
+    private List<TimeCoord> timeList; // timeList has differing runDates
+    private TimeCoord timeCoordUnion; // union of all offset hours
     private boolean isInterval;
 
     RunSeq(List<FmrInv.GridVariable> runs) {

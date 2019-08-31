@@ -35,7 +35,7 @@ public class GradsVariable {
   private String description;
 
   /** the unit name */
-  private String unitName = null;
+  private String unitName;
 
   /**
    * Create a variable from the descriptor

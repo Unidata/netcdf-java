@@ -445,7 +445,7 @@ public class StringUtil2 {
    * @return munged string
    */
   public static String replace(String string, String pattern, String value) {
-    if (pattern.length() == 0)
+    if (pattern.isEmpty())
       return string;
 
     if (!string.contains(pattern))
@@ -654,14 +654,14 @@ public class StringUtil2 {
               location = remainderString.indexOf(sep);
             }
           } // close while loop
-          if (remainderString.length() > 0)
+          if (!remainderString.isEmpty())
             strs.add(remainderString); // add the last token, post last separator
       } // close switch (sepLength)
     } else { // default to white space separator if sep is null
       String[] tokens = splitString(fullString);
       strs = Arrays.asList(tokens);
     }
-    if (strs.size() == 0)
+    if (strs.isEmpty())
       strs.add(""); // maybe thrown an exception instead? return null?
     return strs;
   }

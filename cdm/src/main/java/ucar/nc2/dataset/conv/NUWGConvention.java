@@ -132,7 +132,7 @@ public class NUWGConvention extends CoordSysBuilder {
       if (null != ds.findVariable(dimName)) // already has a coord axis
         continue;
       List<Variable> ncvars = searchAliasedDimension(ds, dim);
-      if ((ncvars == null) || (ncvars.size() == 0)) // no alias
+      if ((ncvars == null) || (ncvars.isEmpty())) // no alias
         continue;
 
       if (ncvars.size() == 1) {
@@ -517,7 +517,7 @@ public class NUWGConvention extends CoordSysBuilder {
     Grib1(int mode) {
       // horiz system
       grid_name = "Projection";
-      if (grid_name.length() == 0)
+      if (grid_name.isEmpty())
         grid_name = "grid_var";
 
       grid_code = mode;

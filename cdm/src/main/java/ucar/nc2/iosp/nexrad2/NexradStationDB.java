@@ -22,9 +22,9 @@ import org.jdom2.input.*;
  */
 public class NexradStationDB {
 
-  private static boolean showStations = false;
-  private static Map<String, Station> stationTableHash = null;
-  private static Map<String, Station> stationTableHash1 = null;
+  private static boolean showStations;
+  private static Map<String, Station> stationTableHash;
+  private static Map<String, Station> stationTableHash1;
 
   public static synchronized void init() throws IOException {
     if (stationTableHash == null)

@@ -20,7 +20,7 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
   private PointFeatureCollectionIterator.Filter filter;
 
   private PointFeatureCollection pointFeatureCollection;
-  private boolean done = false;
+  private boolean done;
 
   public PointCollectionIteratorFiltered(PointFeatureCollectionIterator pfciter,
       PointFeatureCollectionIterator.Filter filter) {

@@ -82,8 +82,8 @@ public class LayoutRegularSegmented implements Layout {
     return (int) (innerNelems - startElem % innerNelems);
   }
 
-  private int needInner = 0;
-  private int doneInner = 0;
+  private int needInner;
+  private int doneInner;
 
   public Chunk next() {
     IndexChunker.Chunk result;

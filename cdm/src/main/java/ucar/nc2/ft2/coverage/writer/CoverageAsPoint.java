@@ -165,7 +165,7 @@ public class CoverageAsPoint {
     }
 
     private class TimeseriesIterator extends PointIteratorAbstract {
-      int curr = 0;
+      int curr;
       int nvalues;
       List<VarIter> varIters;
       CoverageCoordAxis1D timeAxis;

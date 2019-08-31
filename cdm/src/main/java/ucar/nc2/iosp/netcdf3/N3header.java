@@ -22,10 +22,10 @@ import java.io.IOException;
 public class N3header extends NCheader {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
 
-  static final byte[] MAGIC = new byte[] {0x43, 0x44, 0x46, 0x01};
+  static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
   private static final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 
-  static final byte[] MAGIC_LONG = new byte[] {0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the
+  static final byte[] MAGIC_LONG = {0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the
                                                                         // variable offset value
   static final int MAGIC_DIM = 10;
   static final int MAGIC_VAR = 11;
@@ -42,11 +42,11 @@ public class N3header extends NCheader {
     return false;
   }
 
-  public static boolean disallowFileTruncation = false; // see NetcdfFile.setDebugFlags
-  public static boolean debugHeaderSize = false; // see NetcdfFile.setDebugFlags
+  public static boolean disallowFileTruncation; // see NetcdfFile.setDebugFlags
+  public static boolean debugHeaderSize; // see NetcdfFile.setDebugFlags
 
-  private static boolean debugVariablePos = false;
-  private static boolean debugStreaming = false;
+  private static boolean debugVariablePos;
+  private static boolean debugStreaming;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,16 +56,16 @@ public class N3header extends NCheader {
   private Dimension udim; // the unlimited dimension
 
   // N3iosp needs access to these
-  boolean isStreaming = false; // is streaming (numrecs = -1)
-  int numrecs = 0; // number of records written
-  long recsize = 0; // size of each record (padded)
+  boolean isStreaming; // is streaming (numrecs = -1)
+  int numrecs; // number of records written
+  long recsize; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
 
   private boolean useLongOffset;
   private long nonRecordDataSize; // size of non-record variables
   private long dataStart = Long.MAX_VALUE; // where the data starts
 
-  private long globalAttsPos = 0; // global attributes start here - used for update
+  private long globalAttsPos; // global attributes start here - used for update
 
   /*
    * Notes
@@ -254,7 +254,7 @@ public class N3header extends NCheader {
 
     if (nonRecordDataSize > 0) // if there are non-record variables
       nonRecordDataSize -= dataStart;
-    if (uvars.size() == 0) // if there are no record variables
+    if (uvars.isEmpty()) // if there are no record variables
       recStart = 0;
 
     // Check if file affected by bug CDM-52 (netCDF-Java library used incorrect padding when
@@ -375,7 +375,7 @@ public class N3header extends NCheader {
 
   synchronized boolean makeRecordStructure() {
     // create record structure
-    if (uvars.size() > 0) {
+    if (!uvars.isEmpty()) {
       Structure recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");
       recordStructure.setDimensions(udim.getShortName());
       for (Variable v : uvars) {
@@ -731,7 +731,7 @@ public class N3header extends NCheader {
 
     if (nonRecordDataSize > 0) // if there are non-record variables
       nonRecordDataSize -= dataStart;
-    if (uvars.size() == 0) // if there are no record variables
+    if (uvars.isEmpty()) // if there are no record variables
       recStart = 0;
   }
 

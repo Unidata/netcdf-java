@@ -52,14 +52,14 @@ public class H5header extends NCheader {
   public static final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
 
   // debugging
-  private static boolean debugEnum = false, debugVlen = false;
-  private static boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
-  private static boolean debugGroupBtree = false, debugDataBtree = false, debugBtree2 = false;
-  private static boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false,
-      debugHardLink = false, debugSymbolTable = false;
-  private static boolean warnings = true, debugReference = false, debugRegionReference = false,
-      debugCreationOrder = false, debugStructure = false;
-  private static boolean debugDimensionScales = false;
+  private static boolean debugEnum, debugVlen;
+  private static boolean debug1, debugDetail, debugPos, debugHeap, debugV;
+  private static boolean debugGroupBtree, debugDataBtree, debugBtree2;
+  private static boolean debugContinueMessage, debugTracker, debugSoftLink,
+      debugHardLink, debugSymbolTable;
+  private static boolean warnings = true, debugReference, debugRegionReference,
+      debugCreationOrder, debugStructure;
+  private static boolean debugDimensionScales;
 
   public static void setWarnings(boolean warn) {
     warnings = warn;
@@ -107,7 +107,7 @@ public class H5header extends NCheader {
    * Cant always tell if written with netcdf library. if all dimensions have coordinate variables, eg:
    * Q:/cdmUnitTest/formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4
    */
-  private boolean isNetcdf4 = false;
+  private boolean isNetcdf4;
   // Map<Integer, DataObjectFacade> dimIds = null; // if isNetcdf4 and all dimension scales have _Netcdf4Dimid attribute
 
   private H5Group rootGroup;
@@ -116,7 +116,7 @@ public class H5header extends NCheader {
   private Map<Long, GlobalHeap> heapMap = new HashMap<>();
   private java.text.SimpleDateFormat hdfDateParser;
 
-  private java.io.PrintWriter debugOut = null;
+  private java.io.PrintWriter debugOut;
   private boolean mustClose;
   private MemTracker memTracker;
 
@@ -508,7 +508,7 @@ public class H5header extends NCheader {
             }
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
             String ename = enumTypedef.getShortName();
-            if (ename == null || ename.length() == 0) {
+            if (ename == null || ename.isEmpty()) {
               enumTypedef = ncGroup.findEnumeration(facadeNested.name);
               if (enumTypedef == null) {
                 enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
@@ -1482,7 +1482,7 @@ public class H5header extends NCheader {
     // v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
     if (facade.dobj.mdt.type == 5) {
       String desc = facade.dobj.mdt.opaque_desc;
-      if ((desc != null) && (desc.length() > 0))
+      if ((desc != null) && (!desc.isEmpty()))
         v.addAttribute(new Attribute("_opaqueDesc", desc));
     }
 
@@ -1692,7 +1692,7 @@ public class H5header extends NCheader {
       } else if (mdt.isVlen()) { // variable length (not a string)
 
         if ((dim.length == 1) && (dim[0] == 1)) { // replace scalar with vlen
-          int[] shape = new int[] {-1};
+          int[] shape = {-1};
           v.setDimensionsAnonymous(shape);
 
         } else if (mdt.type != 10) { // add vlen dimension already done above for array
@@ -1749,17 +1749,17 @@ public class H5header extends NCheader {
     // for type 2 (chunked) : msl.chunkSize (last number is element size)
     // null for attributes
 
-    boolean isvlen = false; // VLEN, but not vlenstring
+    boolean isvlen; // VLEN, but not vlenstring
 
     // chunked stuff
-    boolean isChunked = false;
-    DataBTree btree = null; // only if isChunked
+    boolean isChunked;
+    DataBTree btree; // only if isChunked
 
     MessageDatatype mdt;
     MessageDataspace mds;
     MessageFilter mfp;
 
-    boolean useFillValue = false;
+    boolean useFillValue;
     byte[] fillValue;
 
     public String getCompression() {
@@ -2221,7 +2221,7 @@ public class H5header extends NCheader {
     String dimList; // list of dimension names for this variable
 
     // or a link
-    String linkName = null;
+    String linkName;
 
     // _Netcdf4Coordinates att.
     // Attribute netcdf4CoordinatesAtt;
@@ -2235,7 +2235,7 @@ public class H5header extends NCheader {
     DataObjectFacade(H5Group parent, String name, long address) throws IOException {
       this.parent = parent;
       this.name = name;
-      displayName = (name.length() == 0) ? "root" : name;
+      displayName = (name.isEmpty()) ? "root" : name;
       dobj = getDataObject(address, displayName);
 
       // hash for soft link lookup
@@ -2297,7 +2297,7 @@ public class H5header extends NCheader {
       this.facade = facade;
       this.parent = facade.parent;
       this.name = facade.name;
-      displayName = (name.length() == 0) ? "root" : name;
+      displayName = (name.isEmpty()) ? "root" : name;
 
       // if has a "group message", then its an "old group"
       if (facade.dobj.groupMessage != null) {
@@ -2393,12 +2393,12 @@ public class H5header extends NCheader {
     List<MessageAttribute> attributes = new ArrayList<>();
 
     // need to look for these
-    MessageGroup groupMessage = null;
-    MessageGroupNew groupNewMessage = null;
-    MessageDatatype mdt = null;
-    MessageDataspace mds = null;
-    MessageLayout msl = null;
-    MessageFilter mfp = null;
+    MessageGroup groupMessage;
+    MessageGroupNew groupNewMessage;
+    MessageDatatype mdt;
+    MessageDataspace mds;
+    MessageLayout msl;
+    MessageFilter mfp;
 
     byte version; // 1 or 2
     // short nmess;
@@ -3352,7 +3352,7 @@ public class H5header extends NCheader {
     public String getName() {
       DataType dtype = getNCtype(type, byteSize, unsigned);
       if (dtype != null)
-        return dtype.toString() + " size= " + byteSize;
+        return dtype + " size= " + byteSize;
       else
         return "type=" + type + " size= " + byteSize;
     }
@@ -3659,7 +3659,7 @@ public class H5header extends NCheader {
     byte fillWriteTime;
     int size;
     byte[] value;
-    boolean hasFillValue = false;
+    boolean hasFillValue;
 
     byte flags;
 
@@ -3870,7 +3870,7 @@ public class H5header extends NCheader {
   }
 
   private static final String[] filterName =
-      new String[] {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
+      {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
 
   class Filter {
     short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
@@ -3951,11 +3951,11 @@ public class H5header extends NCheader {
       sbuff.append(" dataPos = ").append(dataPos);
       if (mdt != null) {
         sbuff.append("\n mdt=");
-        sbuff.append(mdt.toString());
+        sbuff.append(mdt);
       }
       if (mds != null) {
         sbuff.append("\n mds=");
-        sbuff.append(mds.toString());
+        sbuff.append(mds);
       }
       return sbuff.toString();
     }
@@ -4254,7 +4254,7 @@ public class H5header extends NCheader {
 
     if (groupNewMessage.fractalHeapAddress >= 0) {
       FractalHeap fractalHeap =
-          new FractalHeap(H5header.this, group.displayName, groupNewMessage.fractalHeapAddress, memTracker);
+          new FractalHeap(this, group.displayName, groupNewMessage.fractalHeapAddress, memTracker);
 
       long btreeAddress =
           (groupNewMessage.v2BtreeAddressCreationOrder >= 0) ? groupNewMessage.v2BtreeAddressCreationOrder
@@ -4263,7 +4263,7 @@ public class H5header extends NCheader {
         throw new IllegalStateException("no valid btree for GroupNew with Fractal Heap");
 
       // read in btree and all entries
-      BTree2 btree = new BTree2(H5header.this, group.displayName, btreeAddress);
+      BTree2 btree = new BTree2(this, group.displayName, btreeAddress);
       for (BTree2.Entry2 e : btree.entryList) {
         byte[] heapId;
         switch (btree.btreeType) {
@@ -4366,7 +4366,7 @@ public class H5header extends NCheader {
   // this just reads in all the entries into a list
   private class GroupBTree {
     protected String owner;
-    protected int wantType = 0;
+    protected int wantType;
     private List<SymbolTableEntry> sentries = new ArrayList<>(); // list of type SymbolTableEntry
 
     // for DataBTree
@@ -4521,7 +4521,7 @@ public class H5header extends NCheader {
     int cacheType, linkOffset;
     long posData;
 
-    boolean isSymbolicLink = false;
+    boolean isSymbolicLink;
 
     SymbolTableEntry(long filePos) throws IOException {
       raf.seek(filePos);
@@ -5200,7 +5200,7 @@ public class H5header extends NCheader {
     if (debugTracker) {
       Formatter f = new Formatter();
       memTracker.report(f);
-      log.debug("{}", f.toString());
+      log.debug("{}", f);
     }
   }
 

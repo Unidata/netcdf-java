@@ -65,9 +65,9 @@ public class WRFConvention extends CoordSysBuilder {
     return att != null;
   }
 
-  private double centerX = 0.0, centerY = 0.0;
-  private ProjectionCT projCT = null;
-  private boolean gridE = false;
+  private double centerX, centerY;
+  private ProjectionCT projCT;
+  private boolean gridE;
 
   public WRFConvention() {
     this.conventionName = "WRF";
@@ -513,8 +513,8 @@ public class WRFConvention extends CoordSysBuilder {
       return makeFakeCoordAxis(ds, axisName, dim);
 
     int n = etaVar.getShape(1); // number of eta levels
-    int[] origin = new int[] {0, 0};
-    int[] shape = new int[] {1, n};
+    int[] origin = {0, 0};
+    int[] shape = {1, n};
     try {
       Array array = etaVar.read(origin, shape);// read first time slice
       ArrayDouble.D1 newArray = new ArrayDouble.D1(n);
@@ -569,8 +569,8 @@ public class WRFConvention extends CoordSysBuilder {
       boolean isCanonicalIsoStr = true;
       // Maybe too specific to require WRF to give 10 digits or
       // dashes for the date (e.g. yyyy-mm-dd)?
-      final String wrfDateWithUnderscore = "([\\-\\d]{10})_";
-      final Pattern wrfDateWithUnderscorePattern = Pattern.compile(wrfDateWithUnderscore);
+      String wrfDateWithUnderscore = "([\\-\\d]{10})_";
+      Pattern wrfDateWithUnderscorePattern = Pattern.compile(wrfDateWithUnderscore);
       Matcher m = wrfDateWithUnderscorePattern.matcher(testTimeStr);
       isCanonicalIsoStr = m.matches();
 
@@ -660,8 +660,8 @@ public class WRFConvention extends CoordSysBuilder {
 
     // read first time slice
     int n = coordVar.getShape(1);
-    int[] origin = new int[] {0, 0};
-    int[] shape = new int[] {1, n};
+    int[] origin = {0, 0};
+    int[] shape = {1, n};
     try {
       Array array = coordVar.read(origin, shape);
       ArrayDouble.D1 newArray = new ArrayDouble.D1(n);
@@ -697,7 +697,7 @@ public class WRFConvention extends CoordSysBuilder {
     for (CoordinateSystem cs : csys) {
       if (cs.getZaxis() != null) {
         String units = cs.getZaxis().getUnitsString();
-        if ((units == null) || (units.trim().length() == 0)) {
+        if ((units == null) || (units.trim().isEmpty())) {
           VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(ncDataset, cs);
           if (vct != null)
             cs.addCoordinateTransform(vct);

@@ -23,7 +23,7 @@ import java.io.IOException;
 public class Nldn extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String center = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
-    return center != null && center.equals("NLDN-CDM");
+    return "NLDN-CDM".equals(center);
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {

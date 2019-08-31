@@ -28,7 +28,7 @@ public class DatasetNode {
     this.parent = parent;
     this.name = name;
     this.flds = Collections.unmodifiableMap(flds);
-    if (datasetBuilders != null && datasetBuilders.size() > 0) {
+    if (datasetBuilders != null && !datasetBuilders.isEmpty()) {
       List<Dataset> datasets = new ArrayList<>(datasetBuilders.size());
       for (DatasetBuilder dsb : datasetBuilders)
         datasets.add(dsb.makeDataset(this));

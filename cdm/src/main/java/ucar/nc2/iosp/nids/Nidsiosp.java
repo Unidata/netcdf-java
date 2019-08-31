@@ -36,11 +36,11 @@ public class Nidsiosp extends AbstractIOServiceProvider {
   static final int DEF_WBITS = 15;
 
   // used for writing
-  protected int fileUsed = 0; // how much of the file is written to ?
-  protected int recStart = 0; // where the record data starts
+  protected int fileUsed; // how much of the file is written to ?
+  protected int recStart; // where the record data starts
 
-  protected boolean debug = false, debugSize = false, debugSPIO = false;
-  protected boolean showHeaderBytes = false;
+  protected boolean debug, debugSize, debugSPIO;
+  protected boolean showHeaderBytes;
 
   /**
    * Check if the file is a Nids file.

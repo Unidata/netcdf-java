@@ -20,7 +20,7 @@ import ucar.ma2.MAMath;
  */
 
 public class GridCoordinate2D {
-  private static boolean debug = false;
+  private static boolean debug;
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordinate2D.class);
 
   private final CoordinateAxis2D latCoord, lonCoord;

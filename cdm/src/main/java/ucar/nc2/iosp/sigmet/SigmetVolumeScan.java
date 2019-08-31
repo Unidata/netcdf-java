@@ -32,15 +32,15 @@ public class SigmetVolumeScan {
   public short[] year;
   public short[] month;
   public short[] day;
-  public Ray firstRay = null;
-  public Ray lastRay = null;
+  public Ray firstRay;
+  public Ray lastRay;
   public ucar.unidata.io.RandomAccessFile raf;
-  public boolean hasReflectivity = false;
-  public boolean hasVelocity = false;
-  public boolean hasWidth = false;
-  public boolean hasTotalPower = false;
-  public boolean hasDifferentialReflectivity = false;
-  public boolean hasTime = false;
+  public boolean hasReflectivity;
+  public boolean hasVelocity;
+  public boolean hasWidth;
+  public boolean hasTotalPower;
+  public boolean hasDifferentialReflectivity;
+  public boolean hasTime;
 
   /**
    * Read all the values from SIGMET-IRIS file which are necessary to fill in the ncfile.
@@ -51,7 +51,7 @@ public class SigmetVolumeScan {
    */
   SigmetVolumeScan(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ArrayList<Variable> varList)
       throws java.io.IOException {
-    final int REC_SIZE = 6144;
+    int REC_SIZE = 6144;
     int len = 12288; // ---- Read from the 3d record----------- 6144*2=12288
     short nrec = 0, nsweep = 1, nray = 0, byteoff = 0;
     int nwords, end_words, data_read = 0, num_zero, rays_count = 0, nb = 0, pos = 0, pos_ray_hdr = 0, t = 0;
@@ -530,28 +530,28 @@ public class SigmetVolumeScan {
     } // ------------end of outer while ---------------
     lastRay = ray;
 
-    if (reflectivity.size() > 0) {
+    if (!reflectivity.isEmpty()) {
       reflectivityGroups = sortScans("reflectivity", reflectivity, 1000);
       hasReflectivity = true;
     }
-    if (velocity.size() > 0) {
+    if (!velocity.isEmpty()) {
       velocityGroups = sortScans("velocity", velocity, 1000);
       hasVelocity = true;
     }
-    if (totalPower.size() > 0) {
+    if (!totalPower.isEmpty()) {
       totalPowerGroups = sortScans("totalPower", totalPower, 1000);
       hasTotalPower = true;
     }
-    if (width.size() > 0) {
+    if (!width.isEmpty()) {
       widthGroups = sortScans("width", width, 1000);
       hasWidth = true;
     }
-    if (diffReflectivity.size() > 0) {
+    if (!diffReflectivity.isEmpty()) {
       differentialReflectivityGroups = sortScans("diffReflectivity", diffReflectivity, 1000);
       hasDifferentialReflectivity = true;
     }
 
-    if (time.size() > 0) {
+    if (!time.isEmpty()) {
       timeGroups = sortScans("diffReflectivity", diffReflectivity, 1000);
       hasTime = true;
     }
@@ -559,9 +559,9 @@ public class SigmetVolumeScan {
     // --------- fill all of values in the ncfile ------
   } // ----------- end of doData -----------------------
 
-  private int max_radials = 0;
+  private int max_radials;
   private int min_radials = Integer.MAX_VALUE;
-  private boolean debugRadials = false;
+  private boolean debugRadials;
 
 
   private List<List<Ray>> sortScans(String name, List<Ray> scans, int siz) {

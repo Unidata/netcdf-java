@@ -186,7 +186,7 @@ public final class StructureMembers {
     private int size = 1;
     private int[] shape;
     private StructureMembers members; // only if member is type Structure
-    private boolean isVariableLength = false;
+    private boolean isVariableLength;
 
     // optional, use depends on ArrayStructure subclass
     private Array dataArray;

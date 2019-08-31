@@ -30,7 +30,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
 
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFRadialAdapter.class);
 
-  private NetcdfDataset ds = null;
+  private NetcdfDataset ds;
   private double latv, lonv, elev;
   private double[] time;
   private float[] elevation;
@@ -42,7 +42,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   private int[] ray_start_index;
   private int nsweeps;
   private boolean isStationary;
-  private boolean isStationaryChecked = false;
+  private boolean isStationaryChecked;
 
   /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
@@ -354,7 +354,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
    * @return _more_
    */
   public String getInfo() {
-    String sbuff = "CFRadial2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo.toString();
+    String sbuff = "CFRadial2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo;
     return sbuff;
   }
 

@@ -27,7 +27,7 @@ public class PointIteratorStream extends PointIteratorAbstract {
   private FeatureMaker featureMaker;
 
   private PointFeature pf;
-  private boolean finished = false;
+  private boolean finished;
 
   PointIteratorStream(DsgCollectionImpl dsg, InputStream in, FeatureMaker featureMaker) {
     this.dsg = dsg;

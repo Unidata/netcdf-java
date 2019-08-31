@@ -153,7 +153,7 @@ public class MSGnavigation extends ProjectionImpl {
   private static final double SUB_LON = 0.0; // longitude of sub-satellite point in radiant
 
 
-  private double lat0 = 0.0; // always 0
+  private double lat0; // always 0
   private double lon0; // longitude of sub-satellite point in radians
   private double major_axis, minor_axis; // ellipsoidal shape
   private double sat_height; // distance from Earth centre to satellite

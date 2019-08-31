@@ -38,7 +38,7 @@ public class Group extends CDMNode implements AttributeContainer {
   protected List<Group> groups = new ArrayList<>();
   protected AttributeContainerHelper attributes;
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
-  private int hashCode = 0;
+  private int hashCode;
 
   /**
    * Is this the root group?
@@ -318,7 +318,7 @@ public class Group extends CDMNode implements AttributeContainer {
     sbuff.append("\n");
     for (Attribute att : attributes.getAttributes()) {
       sbuff.append("  ").append(getShortName()).append(":");
-      sbuff.append(att.toString());
+      sbuff.append(att);
       sbuff.append(";");
       sbuff.append("\n");
     }
@@ -338,11 +338,11 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
-    boolean hasE = (enumTypedefs.size() > 0);
-    boolean hasD = (dimensions.size() > 0);
-    boolean hasV = (variables.size() > 0);
+    boolean hasE = (!enumTypedefs.isEmpty());
+    boolean hasD = (!dimensions.isEmpty());
+    boolean hasV = (!variables.isEmpty());
     // boolean hasG = (groups.size() > 0);
-    boolean hasA = (attributes.getAttributes().size() > 0);
+    boolean hasA = (!attributes.getAttributes().isEmpty());
 
     if (hasE) {
       out.format("%stypes:%n", indent);

@@ -30,15 +30,15 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   private List<Station> stations = new ArrayList<>();
   private List<Report> reports = new ArrayList<>();
-  private Calendar cal = null;
+  private Calendar cal;
   private DateFormatter dateFormatter = new DateFormatter();
   private Date refDate; // from the header
 
   private List<StructureCode> catStructures = new ArrayList<>(10);
 
-  private boolean showObs = false, showSkip = false, showOverflow = false, showData = false, showHeader = false,
-      showTime = false;
-  private boolean checkType = false, checkPositions = false;
+  private boolean showObs, showSkip, showOverflow, showData, showHeader,
+      showTime;
+  private boolean checkType, checkPositions;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
@@ -357,7 +357,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return abb;
   }
 
-  private Report firstReport = null;
+  private Report firstReport;
 
   private void init() throws IOException {
     int badPos = 0;
@@ -576,7 +576,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     private class CatIterator implements StructureDataIterator {
       Entry[] entries;
-      int count = 0;
+      int count;
       StructureMembers members;
 
       CatIterator(Entry[] entries, Structure useStructure) {
@@ -758,7 +758,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
   }
 
-  private String[] catNames = new String[] {"", "Category 01: mandatory constant-pressure data",
+  private String[] catNames = {"", "Category 01: mandatory constant-pressure data",
       "Category 02: temperature/dewpoint at variable pressure-levels ",
       "Category 03: wind at variable pressure-levels ", "Category 04: wind at variable height-levels ",
       "Category 05: tropopause data", "", "Category 07: cloud cover", "Category 08: additional data", "", "",
@@ -767,7 +767,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private static float[] mandPressureLevel =
-      new float[] {1000, 850, 700, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10, 7, 5, 3, 2, 1};
+      {1000, 850, 700, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10, 7, 5, 3, 2, 1};
 
   private abstract static class Entry {
     abstract Structure makeStructure(Structure parent) throws InvalidRangeException;

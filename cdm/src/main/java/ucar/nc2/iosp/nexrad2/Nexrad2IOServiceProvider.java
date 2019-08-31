@@ -45,7 +45,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   private double radarRadius;
   private Variable v0, v1;
   private DateFormatter formatter = new DateFormatter();
-  private boolean overMidNight = false;
+  private boolean overMidNight;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
@@ -218,9 +218,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         secondGroup.add(o);
       }
     }
-    if (firstGroup != null && firstGroup.size() > 0)
+    if (firstGroup != null && !firstGroup.isEmpty())
       v1 = makeVariable(ncfile, datatype, shortName + "_HI", longName + "_HI", abbrev + "_HI", firstGroup, 1, vScan);
-    if (secondGroup != null && secondGroup.size() > 0)
+    if (secondGroup != null && !secondGroup.isEmpty())
       v0 = makeVariable(ncfile, datatype, shortName, longName, abbrev, secondGroup, 0, vScan);
 
   }

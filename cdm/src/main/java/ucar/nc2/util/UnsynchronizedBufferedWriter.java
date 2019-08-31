@@ -17,9 +17,9 @@ public class UnsynchronizedBufferedWriter extends Writer {
   private static final int CAPACITY = 8192;
 
   private char[] buffer = new char[CAPACITY];
-  private int position = 0;
+  private int position;
   private Writer out;
-  private boolean closed = false;
+  private boolean closed;
 
   public UnsynchronizedBufferedWriter(Writer out) {
     this.out = out;

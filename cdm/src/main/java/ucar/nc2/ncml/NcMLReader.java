@@ -63,9 +63,9 @@ public class NcMLReader {
 
   private Namespace ncNS;
 
-  private static boolean debugURL = false, debugXML = false, showParsedXML = false;
-  private static boolean debugOpen = false, debugConstruct = false, debugCmd = false;
-  private static boolean debugAggDetail = false;
+  private static boolean debugURL, debugXML, showParsedXML;
+  private static boolean debugOpen, debugConstruct, debugCmd;
+  private static boolean debugAggDetail;
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugURL = debugFlag.isSet("NcML/debugURL");
@@ -228,7 +228,7 @@ public class NcMLReader {
 
     if (debugURL) {
       System.out.println(" NcMLReader open " + ncmlLocation);
-      System.out.println("   URL = " + url.toString());
+      System.out.println("   URL = " + url);
       System.out.println("   external form = " + url.toExternalForm());
       System.out.println("   protocol = " + url.getProtocol());
       System.out.println("   host = " + url.getHost());
@@ -395,7 +395,7 @@ public class NcMLReader {
 
   //////////////////////////////////////////////////////////////////////////////////////
   private String location;
-  private boolean explicit = false;
+  private boolean explicit;
   private Formatter errlog = new Formatter();
 
   /**
@@ -547,7 +547,7 @@ public class NcMLReader {
     // the root group
     readGroup(targetDS, refds, null, null, netcdfElem);
     String errors = errlog.toString();
-    if (errors.length() > 0)
+    if (!errors.isEmpty())
       throw new IllegalArgumentException("NcML had fatal errors:" + errors);
 
     // transfer from groups to global containers
@@ -561,7 +561,7 @@ public class NcMLReader {
 
     // optionally add record structure to netcdf-3
     String addRecords = netcdfElem.getAttributeValue("addRecords");
-    if ((addRecords != null) && addRecords.equalsIgnoreCase("true"))
+    if ("true".equalsIgnoreCase(addRecords))
       targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
   }
@@ -622,7 +622,7 @@ public class NcMLReader {
           addAttribute(parent, new ucar.nc2.Attribute(name, oldatt.getValues()));
         else { // weird corner case of attribute with no value - must use the type
           String unS = attElem.getAttributeValue("isUnsigned"); // deprecated but must deal with
-          boolean isUnsignedSet = unS != null && unS.equalsIgnoreCase("true");
+          boolean isUnsignedSet = "true".equalsIgnoreCase(unS);
           String typeS = attElem.getAttributeValue("type");
           DataType dtype = typeS == null ? DataType.STRING : DataType.getType(typeS);
           if (isUnsignedSet)
@@ -667,7 +667,7 @@ public class NcMLReader {
 
     // backwards compatibility with deprecated isUnsigned attribute
     String unS = s.getAttributeValue("isUnsigned");
-    boolean isUnsignedSet = unS != null && unS.equalsIgnoreCase("true");
+    boolean isUnsignedSet = "true".equalsIgnoreCase(unS);
     if (isUnsignedSet && dtype.isIntegral() && !dtype.isUnsigned()) {
       dtype = dtype.withSignedness(DataType.Signedness.UNSIGNED);
     }
@@ -745,10 +745,10 @@ public class NcMLReader {
       String isSharedS = dimElem.getAttributeValue("isShared");
       String isUnknownS = dimElem.getAttributeValue("isVariableLength");
 
-      boolean isUnlimited = (isUnlimitedS != null) && isUnlimitedS.equalsIgnoreCase("true");
-      boolean isUnknown = (isUnknownS != null) && isUnknownS.equalsIgnoreCase("true");
+      boolean isUnlimited = "true".equalsIgnoreCase(isUnlimitedS);
+      boolean isUnknown = "true".equalsIgnoreCase(isUnknownS);
       boolean isShared = true;
-      if ((isSharedS != null) && isSharedS.equalsIgnoreCase("false"))
+      if ("false".equalsIgnoreCase(isSharedS))
         isShared = false;
 
       int len;
@@ -1645,15 +1645,15 @@ public class NcMLReader {
      * <xsd:element ref="remove"/>
      * </xsd:choice>
      */
-    boolean needMerge = aggElem.getChildren("attribute", ncNS).size() > 0;
+    boolean needMerge = !aggElem.getChildren("attribute", ncNS).isEmpty();
     if (!needMerge)
-      needMerge = aggElem.getChildren("variable", ncNS).size() > 0;
+      needMerge = !aggElem.getChildren("variable", ncNS).isEmpty();
     if (!needMerge)
-      needMerge = aggElem.getChildren("dimension", ncNS).size() > 0;
+      needMerge = !aggElem.getChildren("dimension", ncNS).isEmpty();
     if (!needMerge)
-      needMerge = aggElem.getChildren("group", ncNS).size() > 0;
+      needMerge = !aggElem.getChildren("group", ncNS).isEmpty();
     if (!needMerge)
-      needMerge = aggElem.getChildren("remove", ncNS).size() > 0;
+      needMerge = !aggElem.getChildren("remove", ncNS).isEmpty();
     if (needMerge)
       agg.setModifications(aggElem);
 

@@ -60,9 +60,9 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
   ///////////////////////////////////////////////////////////////////////
   // debug leaks - keep track of open files
-  protected static boolean debugLeaks = false;
-  protected static boolean debugAccess = false;
-  protected static Set<String> allFiles = null;
+  protected static boolean debugLeaks;
+  protected static boolean debugAccess;
+  protected static Set<String> allFiles;
   protected static List<String> openFiles = Collections.synchronizedList(new ArrayList<>()); // could keep map on file
                                                                                              // hashcode
   private static AtomicLong count_openFiles = new AtomicLong();
@@ -70,8 +70,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   private static AtomicInteger debug_nseeks = new AtomicInteger();
   private static AtomicLong debug_nbytes = new AtomicLong();
 
-  protected static boolean showOpen = false;
-  protected static boolean showRead = false;
+  protected static boolean showOpen;
+  protected static boolean showRead;
 
   /**
    * Debugging, do not use.
@@ -171,7 +171,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     }
   };
 
-  private static FileCacheIF cache = null;
+  private static FileCacheIF cache;
 
   public static synchronized void enableDefaultGlobalFileCache() {
     if (cache != null)
@@ -221,7 +221,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * File location
    */
   protected String location;
-  private int cacheState = 0; // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
+  private int cacheState; // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
 
   /**
    * The underlying java.io.RandomAccessFile.
@@ -277,17 +277,17 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   /**
    * True if the data in the buffer has been modified.
    */
-  boolean bufferModified = false;
+  boolean bufferModified;
 
   /**
    * make sure file is at least this long when closed
    */
-  private long minLength = 0;
+  private long minLength;
 
   /**
    * STUPID extendMode for truncated, yet valid files. old netcdf C library code allowed NOFILL to do this
    */
-  private boolean extendMode = false;
+  private boolean extendMode;
 
   /**
    * Constructor, for subclasses

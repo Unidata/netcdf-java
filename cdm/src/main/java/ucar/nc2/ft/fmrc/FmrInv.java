@@ -111,7 +111,7 @@ public class FmrInv implements Comparable<FmrInv> {
       list.add(vc);
     }
     for (List<VertCoord> list : map.values()) {
-      if (list.size() > 0) {
+      if (!list.isEmpty()) {
         int count = 0;
         for (VertCoord vc : list) {
           if (count > 0)
@@ -139,10 +139,10 @@ public class FmrInv implements Comparable<FmrInv> {
   public class GridVariable implements Comparable<GridVariable> {
     private final String name;
     private final List<GridDatasetInv.Grid> gridList = new ArrayList<>();
-    VertCoord vertCoordUnion = null; // union of vert coords
-    EnsCoord ensCoordUnion = null; // union of ens coords NOT USED YET
-    TimeCoord timeCoordUnion = null; // union of time coords
-    TimeCoord timeExpected = null; // expected time coords
+    VertCoord vertCoordUnion; // union of vert coords
+    EnsCoord ensCoordUnion; // union of ens coords NOT USED YET
+    TimeCoord timeCoordUnion; // union of time coords
+    TimeCoord timeExpected; // expected time coords
 
     GridVariable(String name) {
       this.name = name;
@@ -209,7 +209,7 @@ public class FmrInv implements Comparable<FmrInv> {
           ensList.add(ec);
       }
       if (ec_union != null) {
-        if (ensList.size() > 0)
+        if (!ensList.isEmpty())
           EnsCoord.normalize(ec_union, ensList); // add the other coords
         ensCoordUnion = EnsCoord.findEnsCoord(getEnsCoords(), ec_union); // find unique within collection
       }

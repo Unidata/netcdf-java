@@ -13,7 +13,7 @@ import java.util.List;
 public class StringLocker {
 
   private List<String> stringList = Collections.synchronizedList(new ArrayList<>());
-  private boolean waiting = false;
+  private boolean waiting;
 
   public synchronized void control(String item) {
     // If the string is in use by another thread then wait() for the other thread to notify this thread it is done with

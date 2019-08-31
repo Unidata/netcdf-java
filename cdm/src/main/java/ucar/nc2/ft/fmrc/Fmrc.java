@@ -103,7 +103,7 @@ public class Fmrc implements Closeable {
   // the current state - changing must be thread safe
   private final Object lock = new Object();
   private FmrcDataset fmrcDataset;
-  private volatile boolean forceProto = false;
+  private volatile boolean forceProto;
   private volatile long lastInvChanged;
   private volatile long lastProtoChanged;
 

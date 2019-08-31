@@ -66,7 +66,7 @@ public class M3IOConvention extends CoordSysBuilder {
     ncd.finish();
   }
 
-  private CoordinateTransform ct = null;
+  private CoordinateTransform ct;
 
   protected void constructCoordAxes(NetcdfDataset ds) {
 

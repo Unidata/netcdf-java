@@ -410,7 +410,7 @@ public class NcMLWriter {
         Number val = attribute.getNumericValue(i);
         if (i > 0)
           buff.append(" ");
-        buff.append(val.toString());
+        buff.append(val);
       }
       attElem.setAttribute("value", buff.toString());
 

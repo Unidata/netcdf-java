@@ -204,7 +204,7 @@ public class NcMLGWriter {
         Number val = att.getNumericValue(i);
         if (i > 0)
           buff.append(" ");
-        buff.append(val.toString());
+        buff.append(val);
       }
       attElem.setAttribute("value", buff.toString());
     }
@@ -280,7 +280,7 @@ public class NcMLGWriter {
 
     // coordinate systems
     List csys = var.getCoordinateSystems();
-    if (csys.size() > 0) {
+    if (!csys.isEmpty()) {
       buff.setLength(0);
       for (int i = 0; i < csys.size(); i++) {
         CoordinateSystem cs = (CoordinateSystem) csys.get(i);
@@ -387,7 +387,7 @@ public class NcMLGWriter {
 
     // coordinate systems
     List csys = var.getCoordinateSystems();
-    if (csys.size() > 0) {
+    if (!csys.isEmpty()) {
       buff.setLength(0);
       for (int i = 0; i < csys.size(); i++) {
         CoordinateSystem cs = (CoordinateSystem) csys.get(i);

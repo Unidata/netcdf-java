@@ -54,7 +54,7 @@ public class ParsedSectionSpec {
   public static ParsedSectionSpec parseVariableSection(NetcdfFile ncfile, String variableSection)
       throws InvalidRangeException {
     List<String> tokes = EscapeStrings.tokenizeEscapedName(variableSection);
-    if (tokes.size() == 0)
+    if (tokes.isEmpty())
       throw new IllegalArgumentException("empty sectionSpec = " + variableSection);
 
     String selector = tokes.get(0);
@@ -159,7 +159,7 @@ public class ParsedSectionSpec {
   // Modify to allow setting after creation
   public Variable v; // the variable
   public Section section; // section for this variable, filled in from variable if needed
-  public ParsedSectionSpec child = null; // if not null, v is a Structure, and this is one of its members
+  public ParsedSectionSpec child; // if not null, v is a Structure, and this is one of its members
 
   public ParsedSectionSpec(Variable v, Section section) {
     this.v = v;

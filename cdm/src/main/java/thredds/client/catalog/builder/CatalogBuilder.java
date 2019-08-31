@@ -42,7 +42,7 @@ public class CatalogBuilder {
   // used when reading from XML
   private Map<String, Service> serviceMap = new HashMap<>(); // LOOK why not instead of services ?
   protected Formatter errlog = new Formatter();
-  protected boolean fatalError = false;
+  protected boolean fatalError;
 
   public Catalog buildFromLocation(String location, URI baseURI) {
     location = StringUtil2.replace(location, "\\", "/");
@@ -306,7 +306,7 @@ public class CatalogBuilder {
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
       errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
-      logger.error("failed to read catalog at {}, {}", uri.toString(), e.toString());
+      logger.error("failed to read catalog at {}, {}", uri, e.toString());
       if (logger.isTraceEnabled()) {
         e.printStackTrace();
       }
@@ -322,7 +322,7 @@ public class CatalogBuilder {
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
       errlog.format("failed to read catalogAsString err='%s'%n", e);
-      logger.error("failed to read catalogAsString at {}, {}", baseURI.toString(), e.toString());
+      logger.error("failed to read catalogAsString at {}, {}", baseURI, e.toString());
       if (logger.isTraceEnabled()) {
         e.printStackTrace();
       }
@@ -337,7 +337,7 @@ public class CatalogBuilder {
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
       errlog.format("failed to read catalogAsString err='%s'%n", e);
-      logger.error("failed to read catalogAsString at {}, {}", baseURI.toString(), e.toString());
+      logger.error("failed to read catalogAsString at {}, {}", baseURI, e.toString());
       if (logger.isTraceEnabled()) {
         e.printStackTrace();
       }
@@ -622,7 +622,7 @@ public class CatalogBuilder {
     }
 
     String harvest = dsElem.getAttributeValue("harvest");
-    if (harvest != null && harvest.equalsIgnoreCase("true")) {
+    if ("true".equalsIgnoreCase(harvest)) {
       dataset.put(Dataset.Harvest, Boolean.TRUE);
     }
 
@@ -749,7 +749,7 @@ public class CatalogBuilder {
     if (dataTypeElem != null) {
       String dataTypeName = dataTypeElem.getText();
       flds.put(Dataset.FeatureType, dataTypeName);
-      if ((dataTypeName != null) && (dataTypeName.length() > 0)) {
+      if ((dataTypeName != null) && (!dataTypeName.isEmpty())) {
         FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
         if (dataType == null) {
           errlog.format(" ** warning: non-standard feature type = '%s'%n", dataTypeName);
@@ -761,7 +761,7 @@ public class CatalogBuilder {
     Element dataFormatElem = parent.getChild("dataFormat", Catalog.defNS);
     if (dataFormatElem != null) {
       String dataFormatTypeName = dataFormatElem.getText();
-      if ((dataFormatTypeName != null) && (dataFormatTypeName.length() > 0)) {
+      if ((dataFormatTypeName != null) && (!dataFormatTypeName.isEmpty())) {
         DataFormatType dataFormatType = DataFormatType.getType(dataFormatTypeName);
         if (dataFormatType == null) {
           errlog.format(" ** warning: non-standard dataFormat type = '%s'%n", dataFormatTypeName);
@@ -949,7 +949,7 @@ public class CatalogBuilder {
     // there are 6 cases to deal with: threddsNamespace vs not & inline vs Xlink & (if thredds) inherited or not
     Namespace namespace;
     List inlineElements = mdataElement.getChildren();
-    if (inlineElements.size() > 0) {
+    if (!inlineElements.isEmpty()) {
       // look at the namespace of the children, if they exist
       namespace = ((Element) inlineElements.get(0)).getNamespace();
     } else {
@@ -960,14 +960,14 @@ public class CatalogBuilder {
     String href = mdataElement.getAttributeValue("href", Catalog.xlinkNS);
     String title = mdataElement.getAttributeValue("title", Catalog.xlinkNS);
     String inheritedS = mdataElement.getAttributeValue("inherited");
-    boolean inherited = (inheritedS != null) && inheritedS.equalsIgnoreCase("true");
+    boolean inherited = "true".equalsIgnoreCase(inheritedS);
 
     boolean isThreddsNamespace = ((mtype == null) || mtype.equalsIgnoreCase("THREDDS"))
         && namespace.getURI().equals(Catalog.CATALOG_NAMESPACE_10);
 
     // the case where its not ThreddsMetadata
     if (!isThreddsNamespace) {
-      if (inlineElements.size() > 0) {
+      if (!inlineElements.isEmpty()) {
         // just hold onto the jdom elements as the "content"
         return new ThreddsMetadata.MetadataOther(mtype, namespace.getURI(), namespace.getPrefix(), inherited,
             mdataElement);
@@ -1229,7 +1229,7 @@ public class CatalogBuilder {
 
     java.util.List<Element> vlist = varsElem.getChildren("variable", Catalog.defNS);
     ThreddsMetadata.UriResolved variableMap = readUri(varsElem.getChild("variableMap", Catalog.defNS), "Variables Map");
-    if ((variableMap != null) && vlist.size() > 0) { // cant do both
+    if ((variableMap != null) && !vlist.isEmpty()) { // cant do both
       errlog.format(" ** Catalog error: cant have variableMap and variable in same element '%s'%n", varsElem);
     }
 

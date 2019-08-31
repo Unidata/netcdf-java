@@ -21,14 +21,14 @@ public class BitReader {
   private static final int BYTE_BITMASK = 0xFF;
   private static final long LONG_BITMASK = Long.MAX_VALUE;
 
-  private RandomAccessFile raf = null;
+  private RandomAccessFile raf;
   private long startPos;
 
   private byte[] data;
   private int dataPos;
 
-  private byte bitBuf = 0;
-  private int bitPos = 0; // Current bit position in bitBuf.
+  private byte bitBuf;
+  private int bitPos; // Current bit position in bitBuf.
 
   // for testing
   public BitReader(byte[] test) {

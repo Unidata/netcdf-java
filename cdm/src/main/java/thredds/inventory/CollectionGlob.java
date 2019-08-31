@@ -48,8 +48,8 @@ import java.util.*;
  */
 public class CollectionGlob extends CollectionAbstract {
   PathMatcher matcher;
-  boolean debug = false;
-  int depth = 0;
+  boolean debug;
+  int depth;
 
   public CollectionGlob(String collectionName, String glob, Logger logger) {
     super(collectionName, logger);
@@ -95,7 +95,7 @@ public class CollectionGlob extends CollectionAbstract {
   // from http://blog.eyallupu.com/2011/11/java-7-working-with-directories.html
   public static DirectoryStream newDirectoryStream(Path dir, String glob) throws IOException {
     FileSystem fs = dir.getFileSystem();
-    final PathMatcher matcher = fs.getPathMatcher("glob:" + glob);
+    PathMatcher matcher = fs.getPathMatcher("glob:" + glob);
     DirectoryStream.Filter<Path> filter = entry -> matcher.matches(entry.getFileName());
     return fs.provider().newDirectoryStream(dir, filter);
   }
@@ -104,9 +104,9 @@ public class CollectionGlob extends CollectionAbstract {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
     MFile nextMFile;
-    int count = 0, total = 0;
+    int count, total;
     Stack<Path> subdirs = new Stack<>();
-    int currDepth = 0;
+    int currDepth;
 
     MyFileIterator(String topDir) throws IOException {
       Path topPath = Paths.get(topDir);

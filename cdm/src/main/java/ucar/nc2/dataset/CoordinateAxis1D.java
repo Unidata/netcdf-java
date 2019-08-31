@@ -42,21 +42,21 @@ import java.util.List;
 public class CoordinateAxis1D extends CoordinateAxis {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
-  private boolean wasRead = false; // have the data values been read
-  private boolean wasBoundsDone = false; // have we created the bounds arrays if exists ?
-  private boolean isInterval = false; // is this an interval coordinates - then should use bounds
+  private boolean wasRead; // have the data values been read
+  private boolean wasBoundsDone; // have we created the bounds arrays if exists ?
+  private boolean isInterval; // is this an interval coordinates - then should use bounds
   private boolean isAscending;
 
   // read in on doRead()
   private double[] coords; // coordinate values, must be between edges
-  private String[] names = null; // only set if String or char values
+  private String[] names; // only set if String or char values
 
   // defer making until asked, use makeBounds()
   private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
   private double[] bound1, bound2; // may be contiguous or not
 
-  private boolean wasCalcRegular = false; // have we checked if the data is regularly spaced ?
-  private boolean isRegular = false;
+  private boolean wasCalcRegular; // have we checked if the data is regularly spaced ?
+  private boolean isRegular;
   private double start, increment;
 
   /**

@@ -18,7 +18,7 @@ import ucar.nc2.write.Nc4ChunkingDefault;
 public class CFPointWriterConfig {
   public NetcdfFileWriter.Version version; // netcdf file version
   public Nc4Chunking chunking; // for netcdf-4
-  public boolean noTimeCoverage = false; // does not have a time dimension
+  public boolean noTimeCoverage; // does not have a time dimension
   public int recDimensionLength = -1; // do use unlimited dimension (for netcdf3), use fixed dimension of this length
                                       // NOT USED
 

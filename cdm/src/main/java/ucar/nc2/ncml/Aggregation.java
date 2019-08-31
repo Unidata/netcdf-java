@@ -100,7 +100,7 @@ public abstract class Aggregation {
   protected static TypicalDataset typicalDatasetMode;
 
   protected static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
-  protected static DiskCache2 diskCache2 = null;
+  protected static DiskCache2 diskCache2;
 
   // this is where persist() reads/writes files
   public static void setPersistenceCache(DiskCache2 dc) {
@@ -130,8 +130,8 @@ public abstract class Aggregation {
       logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
 
-  protected static boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
-      debugRead = false, debugDateParse = false, debugConvert = false;
+  protected static boolean debug, debugOpenFile, debugSyncDetail, debugProxy,
+      debugRead, debugDateParse, debugConvert;
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -147,12 +147,12 @@ public abstract class Aggregation {
 
   protected String dimName; // the aggregation dimension name
 
-  private Element mergeNcml = null;
+  private Element mergeNcml;
 
   // experimental
   protected String dateFormatMark;
   // protected EnumSet<NetcdfDataset.Enhance> enhance = null; // default no enhancement
-  protected boolean isDate = false;
+  protected boolean isDate;
   protected DateFormatter dateFormatter = new DateFormatter();
 
   /**
@@ -464,7 +464,7 @@ public abstract class Aggregation {
       dset.add(dataset.cacheLocation);
     }
 
-    if (datasets.size() == 0) {
+    if (datasets.isEmpty()) {
       throw new IllegalStateException("There are no datasets in the aggregation " + datasetManager);
     }
   }
@@ -535,7 +535,7 @@ public abstract class Aggregation {
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
     protected Set<NetcdfDataset.Enhance> enhance; // used by Fmrc to read enhanced datasets
-    protected DatasetUrl durl = null;
+    protected DatasetUrl durl;
 
     /*
      * For subclasses.

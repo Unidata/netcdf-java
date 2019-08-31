@@ -22,7 +22,7 @@ import java.util.*;
  */
 
 public class GDVConvention extends CSMConvention {
-  protected ProjectionCT projCT = null;
+  protected ProjectionCT projCT;
 
   public GDVConvention() {
     this.conventionName = "GDV";
@@ -60,7 +60,7 @@ public class GDVConvention extends CSMConvention {
         continue; // cant be a structure
 
       String dimName = findAlias(ds, ncvar);
-      if (dimName.length() == 0) // none
+      if (dimName.isEmpty()) // none
         continue;
       Dimension dim = ds.findDimension(dimName);
       if (null != dim) {

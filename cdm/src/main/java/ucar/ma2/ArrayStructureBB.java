@@ -83,7 +83,7 @@ public class ArrayStructureBB extends ArrayStructure {
   /////////////////////////////////////////////////////
 
   protected ByteBuffer bbuffer;
-  protected int bb_offset = 0;
+  protected int bb_offset;
 
   /**
    * Create a new Array of type StructureData and the given members and shape.

@@ -102,7 +102,7 @@ public class Index implements Cloneable {
   private static long computeStrides(int[] shape, int[] stride) {
     long product = 1;
     for (int ii = shape.length - 1; ii >= 0; ii--) {
-      final int thisDim = shape[ii];
+      int thisDim = shape[ii];
       if (thisDim < 0)
         continue; // ignore vlen
       stride[ii] = (int) product;
@@ -886,8 +886,8 @@ public class Index implements Cloneable {
    */
 
   private class IteratorImpl implements IndexIterator {
-    private int count = 0;
-    private int currElement = 0;
+    private int count;
+    private int currElement;
     private Index counter;
     private Array maa;
 

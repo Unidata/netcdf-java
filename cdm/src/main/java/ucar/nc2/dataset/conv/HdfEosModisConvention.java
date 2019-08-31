@@ -109,7 +109,7 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
     ds.addDimension(null, newDim);
 
     // add the coordinate variable
-    String units = "seconds since " + cd.toString();
+    String units = "seconds since " + cd;
     String desc = "time coordinate";
 
     Array data = Array.makeArray(DataType.DOUBLE, 1, 0.0, 0.0);

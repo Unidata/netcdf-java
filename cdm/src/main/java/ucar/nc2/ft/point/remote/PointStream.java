@@ -17,8 +17,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
@@ -50,10 +48,10 @@ public class PointStream {
     Start, Header, Data, End, Error, Eos, StationList, PointFeatureCollection, PointFeature
   }
 
-  private static final byte[] MAGIC_StationList = new byte[] {(byte) 0xfe, (byte) 0xfe, (byte) 0xef, (byte) 0xef};
+  private static final byte[] MAGIC_StationList = {(byte) 0xfe, (byte) 0xfe, (byte) 0xef, (byte) 0xef};
   private static final byte[] MAGIC_PointFeatureCollection =
-      new byte[] {(byte) 0xfa, (byte) 0xfa, (byte) 0xaf, (byte) 0xaf};
-  private static final byte[] MAGIC_PointFeature = new byte[] {(byte) 0xf0, (byte) 0xf0, (byte) 0x0f, (byte) 0x0f};
+      {(byte) 0xfa, (byte) 0xfa, (byte) 0xaf, (byte) 0xaf};
+  private static final byte[] MAGIC_PointFeature = {(byte) 0xf0, (byte) 0xf0, (byte) 0x0f, (byte) 0x0f};
 
   private static final boolean debug = false;
 
@@ -212,8 +210,8 @@ public class PointStream {
       sm = new StructureMembers(pfc.getName());
       for (PointStreamProto.PointFeatureMember m : pfc.getMembersList()) {
         String name = m.getName();
-        String desc = m.getDesc().length() > 0 ? m.getDesc() : null;
-        String units = m.getUnits().length() > 0 ? m.getUnits() : null;
+        String desc = !m.getDesc().isEmpty() ? m.getDesc() : null;
+        String units = !m.getUnits().isEmpty() ? m.getUnits() : null;
         DataType dtype = NcStream.convertDataType(m.getDataType());
         int[] shape = NcStream.decodeSection(m.getSection()).getShape();
 

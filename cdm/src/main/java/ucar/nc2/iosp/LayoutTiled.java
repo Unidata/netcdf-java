@@ -27,7 +27,7 @@ public class LayoutTiled implements Layout {
   private long startSrcPos;
 
   private DataChunkIterator chunkIterator; // iterate across chunks
-  private IndexChunkerTiled index = null; // iterate within a chunk
+  private IndexChunkerTiled index; // iterate within a chunk
 
   // track the overall iteration
   private long totalNelems, totalNelemsDone; // total number of elemens
@@ -66,7 +66,7 @@ public class LayoutTiled implements Layout {
     return elemSize;
   }
 
-  private Layout.Chunk next = null;
+  private Layout.Chunk next;
 
   public boolean hasNext() { // have to actually fetch the thing here
     if (totalNelemsDone >= totalNelems)

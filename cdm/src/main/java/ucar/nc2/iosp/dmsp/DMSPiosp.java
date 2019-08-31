@@ -34,25 +34,25 @@ import java.text.ParseException;
  */
 public class DMSPiosp extends AbstractIOServiceProvider {
 
-  DMSPHeader header = null;
+  DMSPHeader header;
 
   // Cached data arrays for time.
-  private float[] calculatedTime = null; // seconds since "startDate" attribute
-  private String startDateString = null;
-  private Date startDate = null;
-  private int[] cachedYear = null;
-  private int[] cachedDayOfYear = null;
-  private double[] cachedSecondsOfDay = null;
+  private float[] calculatedTime; // seconds since "startDate" attribute
+  private String startDateString;
+  private Date startDate;
+  private int[] cachedYear;
+  private int[] cachedDayOfYear;
+  private double[] cachedSecondsOfDay;
 
   // Cached data arrays for lat/lon.
-  private float[] calculatedLatitude = null;
-  private float[] calculatedLongitude = null;
-  private float[] cachedSatEphemLatitude = null;
-  private float[] cachedSatEphemLongitude = null;
-  private float[] cachedSatEphemAltitude = null;
-  private float[] cachedSatEphemHeading = null;
-  private float[] cachedScannerOffset = null;
-  private byte[] cachedScanDirection = null;
+  private float[] calculatedLatitude;
+  private float[] calculatedLongitude;
+  private float[] cachedSatEphemLatitude;
+  private float[] cachedSatEphemLongitude;
+  private float[] cachedSatEphemAltitude;
+  private float[] cachedSatEphemHeading;
+  private float[] cachedScannerOffset;
+  private byte[] cachedScanDirection;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     DMSPHeader localHeader = new DMSPHeader();

@@ -24,7 +24,7 @@ package ucar.ma2;
 public class ArraySequenceNested extends ArrayStructure {
   private int[] sequenceLen;
   private int[] sequenceOffset;
-  private int total = 0;
+  private int total;
 
   /**
    * This is used for inner sequences, ie variable length structures nested inside of another structure.

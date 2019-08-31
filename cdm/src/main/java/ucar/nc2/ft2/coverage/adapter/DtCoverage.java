@@ -359,7 +359,7 @@ public class DtCoverage implements IsMissingEvaluator {
   public float[] setMissingToNaN(float[] values) {
     if (!vs.hasMissing())
       return values;
-    final int length = values.length;
+    int length = values.length;
     for (int i = 0; i < length; i++) {
       double value = values[i];
       if (vs.isMissing(value))
@@ -661,7 +661,7 @@ public class DtCoverage implements IsMissingEvaluator {
     return hashCode;
   }
 
-  private int hashCode = 0; // Bloch, item 8
+  private int hashCode; // Bloch, item 8
 
   /**
    * string representation

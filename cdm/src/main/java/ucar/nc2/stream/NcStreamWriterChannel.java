@@ -28,7 +28,7 @@ public class NcStreamWriterChannel {
 
   private NetcdfFile ncfile;
   private NcStreamProto.Header header;
-  private boolean show = false;
+  private boolean show;
 
   public NcStreamWriterChannel(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;
@@ -197,8 +197,8 @@ public class NcStreamWriterChannel {
   }
 
   public static void main2(String[] args) throws InvalidRangeException {
-    int[] totalShape = new int[] {1, 40, 530, 240};
-    int[] chunkShape = new int[] {1, 1, 530, 240};
+    int[] totalShape = {1, 40, 530, 240};
+    int[] chunkShape = {1, 1, 530, 240};
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(totalShape);
     while (index.currentElement() < index.getSize()) {
       int[] chunkOrigin = index.getCurrentCounter();

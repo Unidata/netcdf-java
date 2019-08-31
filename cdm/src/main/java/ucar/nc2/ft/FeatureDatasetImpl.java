@@ -43,7 +43,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     this.dataVariables = new ArrayList<>(from.dataVariables);
     this.parseInfo = new Formatter();
     String fromInfo = from.parseInfo.toString().trim();
-    if (fromInfo.length() > 0)
+    if (!fromInfo.isEmpty())
       parseInfo.format("%s%n", fromInfo);
     this.parseInfo.format("Subsetted from original%n");
   }
@@ -158,7 +158,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
 
     sf.format("  has netcdf = %b%n", (getNetcdfFile() != null));
     List<Attribute> ga = getGlobalAttributes();
-    if (ga.size() > 0) {
+    if (!ga.isEmpty()) {
       sf.format("  Attributes%n");
       for (Attribute a : ga)
         sf.format("    %s%n", a);
@@ -174,7 +174,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
       sf.format(")%n");
     }
 
-    if (parseInfo.toString().length() > 0)
+    if (!parseInfo.toString().isEmpty())
       sf.format("%nparseInfo=%n%s%n", parseInfo);
   }
 

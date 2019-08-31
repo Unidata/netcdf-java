@@ -55,8 +55,8 @@ public class FileCacheGuava implements FileCacheIF {
   }
 
   @Override
-  public FileCacheable acquire(final FileFactory factory, Object hashKey, final DatasetUrl durl, final int buffer_size,
-      final CancelTask cancelTask, final Object spiObject) {
+  public FileCacheable acquire(FileFactory factory, Object hashKey, DatasetUrl durl, int buffer_size,
+      CancelTask cancelTask, Object spiObject) {
     if (null == hashKey)
       hashKey = durl.trueurl;
     if (null == hashKey)

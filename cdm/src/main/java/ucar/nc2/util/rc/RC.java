@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.*;
 
 public class RC {
-  static boolean showlog = false; /* do not do any logging */
+  static boolean showlog; /* do not do any logging */
   public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RC.class);
 
   //////////////////////////////////////////////////
@@ -29,7 +29,7 @@ public class RC {
   public static final String ALLOWSELFSIGNEDKEY = "ucar.nc2.net.allowselfsigned";
 
   protected static boolean useGroups = true;
-  protected static boolean verifyServer = false;
+  protected static boolean verifyServer;
   protected static boolean allowSelfSigned = true;
 
   public static boolean getUseGroups() {
@@ -70,7 +70,7 @@ public class RC {
     // canonical boolean values
     if (value == null || "0".equals(value) || "false".equalsIgnoreCase(value))
       return false;
-    if (value.length() == 0 || "1".equals(value) || "true".equalsIgnoreCase(value))
+    if (value.isEmpty() || "1".equals(value) || "true".equalsIgnoreCase(value))
       return true;
     return value != null; // any non-null value?
   }
@@ -83,7 +83,7 @@ public class RC {
   static final char LTAG = '[';
   static final char RTAG = ']';
 
-  static final String[] rcfilelist = new String[] {".dodsrc", ".tdsrc"};
+  static final String[] rcfilelist = {".dodsrc", ".tdsrc"};
 
   static int urlCompare(URL u1, URL u2) {
     int relation;
@@ -136,7 +136,7 @@ public class RC {
 
     public Triple(String key, String value, String url) {
       URL u = null;
-      if (url != null && url.length() > 0)
+      if (url != null && !url.isEmpty())
         try {
           u = new URL(url);
         } catch (MalformedURLException e) {
@@ -178,7 +178,7 @@ public class RC {
       StringBuilder line = new StringBuilder();
       if (url != null) {
         line.append("[");
-        line.append(url.toString());
+        line.append(url);
         line.append("]");
       }
       line.append(key);
@@ -189,9 +189,9 @@ public class RC {
   }
 
   // Define a singlton RC instance for general global use
-  static RC dfaltRC = null;
+  static RC dfaltRC;
 
-  private static boolean initialized = false;
+  private static boolean initialized;
 
   static {
     RC.initialize();
@@ -244,7 +244,7 @@ public class RC {
    * Record some well known parameters
    */
   static void setWellKnown() {
-    if (dfaltRC.triplestore.size() == 0)
+    if (dfaltRC.triplestore.isEmpty())
       return;
     // Walk the set of triples looking for those that have no url
     for (String key : dfaltRC.keySet()) {
@@ -257,7 +257,7 @@ public class RC {
 
   static void loadDefaults() {
     RC rc0 = new RC();
-    String[] locations = new String[] {System.getProperty("user.home"), System.getProperty("user.dir"),};
+    String[] locations = {System.getProperty("user.home"), System.getProperty("user.dir"),};
 
     boolean found1 = false;
     for (String loc : locations) {
@@ -279,7 +279,7 @@ public class RC {
   }
 
   static void loadFromJava() {
-    String[] flags = new String[] {USEGROUPSKEY, VERIFYSERVERKEY, ALLOWSELFSIGNEDKEY};
+    String[] flags = {USEGROUPSKEY, VERIFYSERVERKEY, ALLOWSELFSIGNEDKEY};
     for (String flag : flags) {
       String value = System.getProperty(flag);
       if (value != null) {
@@ -327,7 +327,7 @@ public class RC {
           break;
         // trim leading blanks
         line = line.trim();
-        if (line.length() == 0)
+        if (line.isEmpty())
           continue; // empty line
         if (line.charAt(0) == '#')
           continue; // check for comment
@@ -393,7 +393,7 @@ public class RC {
   }
 
   public Triple lookup(String key, String url) {
-    if (url == null || url.length() == 0)
+    if (url == null || url.isEmpty())
       return lookup(key);
     try {
       URL u = new URL(url);
@@ -408,7 +408,7 @@ public class RC {
     if (list == null)
       return null;
     if (url == null) {
-      if (list.size() == 0)
+      if (list.isEmpty())
         return null;
       return list.get(0);
     } else

@@ -306,7 +306,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
 
     String version = aggElem.getAttributeValue("version");
-    if ((version == null) || !version.equals("3")) {
+    if (!"3".equals(version)) {
       return; // dont read old cache files, recreate
     }
 
@@ -360,7 +360,7 @@ public class AggregationExisting extends AggregationOuterDimension {
         CacheVar pv = findCacheVariable(varName);
         if (pv != null) {
           String sdata = cacheElemNested.getText();
-          if (sdata.length() == 0) {
+          if (sdata.isEmpty()) {
             continue;
           }
           if (logger.isDebugEnabled()) {
@@ -401,6 +401,6 @@ public class AggregationExisting extends AggregationOuterDimension {
 
   //////////////////////////////////////////////////
   // back door for testing
-  public static int countCacheUse = 0;
+  public static int countCacheUse;
 
 }

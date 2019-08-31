@@ -18,13 +18,13 @@ import java.util.Iterator;
  * @since May 11, 2009
  */
 public abstract class PointIteratorAbstract implements PointFeatureIterator, Iterator<PointFeature> {
-  protected boolean calcBounds = false;
+  protected boolean calcBounds;
   protected CollectionInfo info;
 
-  private LatLonRect bb = null;
+  private LatLonRect bb;
   private double minTime = Double.MAX_VALUE;
   private double maxTime = -Double.MAX_VALUE;
-  private int count = 0;
+  private int count;
 
   protected PointIteratorAbstract() {}
 

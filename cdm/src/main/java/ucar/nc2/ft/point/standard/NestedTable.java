@@ -269,7 +269,7 @@ public class NestedTable {
     public boolean isMissing(StructureData sdata) {
       if (isString()) {
         String s = getCoordValueString(sdata);
-        double test = (s.length() == 0) ? 0 : (double) s.charAt(0);
+        double test = (s.isEmpty()) ? 0 : (double) s.charAt(0);
         return coordVar.isMissing(test);
       } else {
         double val = getCoordValue(sdata);

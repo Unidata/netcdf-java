@@ -30,7 +30,7 @@ public class IteratorFast implements IndexIterator {
     return currElement < size - howMany;
   }
 
-  private Index counter = null; // usually not used
+  private Index counter; // usually not used
 
   public String toString() {
     if (counter == null || counter.toString().equals("")) // not sure about the second condition

@@ -44,7 +44,7 @@ public class StructureDataRegexp extends StructureData {
 
     try {
       svalue = svalue.trim();
-      boolean isBlank = (svalue.length() == 0);
+      boolean isBlank = (svalue.isEmpty());
       if (dt == DataType.DOUBLE)
         return isBlank ? 0.0 : new Double(svalue);
       else if (dt == DataType.FLOAT) {

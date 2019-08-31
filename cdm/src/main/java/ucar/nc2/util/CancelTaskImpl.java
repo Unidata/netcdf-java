@@ -12,11 +12,11 @@ package ucar.nc2.util;
  * @since 4/10/13
  */
 public class CancelTaskImpl implements CancelTask {
-  protected boolean done = false;
-  protected boolean success = false;
-  protected boolean cancel = false;
-  protected String error = null;
-  protected String note = null;
+  protected boolean done;
+  protected boolean success;
+  protected boolean cancel;
+  protected String error;
+  protected String note;
   protected int progress;
 
   /**

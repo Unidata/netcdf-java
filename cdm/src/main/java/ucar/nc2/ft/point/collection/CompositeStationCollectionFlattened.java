@@ -41,7 +41,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   private List<String> stationsSubset;
   private CalendarDateRange dateRange;
   private List<VariableSimpleIF> varList;
-  private boolean wantStationsubset = false;
+  private boolean wantStationsubset;
 
   protected CompositeStationCollectionFlattened(String name, CalendarDateUnit timeUnit, String altUnits,
       List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList,
@@ -52,7 +52,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
     this.varList = varList;
     this.stnCollections = stnCollections;
 
-    wantStationsubset = (stations != null) && (stations.size() > 0);
+    wantStationsubset = (stations != null) && (!stations.isEmpty());
   }
 
   protected CompositeStationCollectionFlattened(String name, CalendarDateUnit timeUnit, String altUnits,
@@ -69,10 +69,10 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   }
 
   private class PointIterator extends PointIteratorAbstract {
-    private boolean finished = false;
+    private boolean finished;
     private Iterator<TimedCollection.Dataset> iter;
     private FeatureDatasetPoint currentDataset;
-    private PointFeatureIterator pfIter = null;
+    private PointFeatureIterator pfIter;
 
     PointIterator() {
       iter = stnCollections.getDatasets().iterator();

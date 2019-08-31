@@ -145,7 +145,7 @@ public class Uspln extends AbstractLightningIOSP {
   /**
    * is this extended data
    */
-  private boolean isExtended = false;
+  private boolean isExtended;
 
   /**
    * offsets int the file
@@ -175,7 +175,7 @@ public class Uspln extends AbstractLightningIOSP {
   /**
    * the date format
    */
-  private SimpleDateFormat isoDateFormat = null;
+  private SimpleDateFormat isoDateFormat;
 
   /**
    * Check if this is a valid file for this IOServiceProvider.
@@ -451,12 +451,12 @@ public class Uspln extends AbstractLightningIOSP {
     /**
      * the wrapped asbb
      */
-    private ArrayStructureBB asbb = null;
+    private ArrayStructureBB asbb;
 
     /**
      * number read
      */
-    int numFlashes = 0;
+    int numFlashes;
 
     /**
      * Create a new one

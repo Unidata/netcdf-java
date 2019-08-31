@@ -145,7 +145,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     if (debugDetails) {
       // request headers dont seem to be available until after execute()
-      printHeaders("Request: " + method.getURI().toString(), method.getRequestHeaders());
+      printHeaders("Request: " + method.getURI(), method.getRequestHeaders());
       printHeaders("Response: " + method.getStatusCode(), method.getResponseHeaders());
     }
   }
@@ -153,7 +153,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   private void printHeaders(String title, Header[] heads) {
     System.out.println(title);
     for (Header head : heads) {
-      System.out.print("  " + head.toString());
+      System.out.print("  " + head);
     }
     System.out.println();
   }

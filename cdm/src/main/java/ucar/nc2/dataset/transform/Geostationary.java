@@ -112,11 +112,11 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
     if (Double.isNaN(semi_minor_axis) && Double.isNaN(inv_flattening)) {
       throw new IllegalArgumentException("Must specify " + CF.SEMI_MINOR_AXIS + " and/or " + CF.INVERSE_FLATTENING);
     } else if (Double.isNaN(semi_minor_axis)) {
-      final double flattening = 1. / inv_flattening;
+      double flattening = 1. / inv_flattening;
       semi_minor_axis = semi_major_axis * (1. - flattening);
     } else if (Double.isNaN(inv_flattening)) {
       if (semi_minor_axis != semi_major_axis) {
-        final double flattening = (semi_major_axis - semi_minor_axis) / semi_major_axis;
+        double flattening = (semi_major_axis - semi_minor_axis) / semi_major_axis;
         inv_flattening = 1. / flattening;
       } else {
         // Do nothing. The calculations results in inv_flattening = 1. / 0., and it is already

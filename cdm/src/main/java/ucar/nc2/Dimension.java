@@ -91,7 +91,7 @@ public class Dimension extends CDMNode implements Comparable {
     if (dimString == null) // scalar
       return newDimensions; // empty list
     dimString = dimString.trim();
-    if (dimString.length() == 0) // scalar
+    if (dimString.isEmpty()) // scalar
       return newDimensions; // empty list
 
     StringTokenizer stoke = new StringTokenizer(dimString);
@@ -238,7 +238,7 @@ public class Dimension extends CDMNode implements Comparable {
     return hashCode;
   }
 
-  private int hashCode = 0;
+  private int hashCode;
 
   /**
    * CDL representation, not strict.
@@ -424,7 +424,7 @@ public class Dimension extends CDMNode implements Comparable {
   public String setName(String name) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
-    if (name.length() == 0)
+    if (name.isEmpty())
       name = null;
     setShortName(name);
     hashCode = 0;

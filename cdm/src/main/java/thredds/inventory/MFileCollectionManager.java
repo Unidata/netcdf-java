@@ -245,7 +245,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     boolean wantSubdirs = true;
-    if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
+    if ("false".equalsIgnoreCase(subdirsS))
       wantSubdirs = false;
 
     CollectionConfig mc = new CollectionConfig(dirName, dirName, wantSubdirs, filters, auxInfo);
@@ -324,7 +324,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   ////////////////////////
   // experimental
-  protected ChangeChecker changeChecker = null;
+  protected ChangeChecker changeChecker;
 
   public synchronized void setChangeChecker(ChangeChecker strat) {
     this.changeChecker = strat;
@@ -504,7 +504,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.lastScanned = System.currentTimeMillis();
     this.lastChanged.set(this.lastScanned);
     logger.debug("{} : initial scan found n datasets = {} ", collectionName, map.keySet().size());
-    return map.keySet().size() > 0;
+    return !map.keySet().isEmpty();
   }
 
   @Override
@@ -555,7 +555,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       }
     }
 
-    if (map.size() == 0) {
+    if (map.isEmpty()) {
       if (hasScans()) {
         // only warn if a directory scan comes up with no files found
         logger.warn("MFileCollectionManager: No files found for {}", collectionName);

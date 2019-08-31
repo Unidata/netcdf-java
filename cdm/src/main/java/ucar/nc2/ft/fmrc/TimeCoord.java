@@ -35,7 +35,7 @@ public class TimeCoord implements Comparable<TimeCoord> {
   private String axisName; // time coordinate axis
 
   // time at point has offsets, intervals have bounds
-  private boolean isInterval = false;
+  private boolean isInterval;
   private double[] offset; // hours since runDate
   private double[] bound1, bound2; // hours since runDate [ntimes,2]
 
@@ -315,7 +315,7 @@ public class TimeCoord implements Comparable<TimeCoord> {
    * @return union TimeCoord
    */
   public static TimeCoord makeUnion(List<TimeCoord> timeCoords, CalendarDate baseDate) {
-    if (timeCoords.size() == 0)
+    if (timeCoords.isEmpty())
       return new TimeCoord(baseDate);
     if (timeCoords.size() == 1)
       return timeCoords.get(0);

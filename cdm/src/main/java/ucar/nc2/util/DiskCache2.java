@@ -55,13 +55,13 @@ public class DiskCache2 {
   }
 
   private CachePathPolicy cachePathPolicy = CachePathPolicy.NestedDirectory;
-  private boolean alwaysUseCache = false;
-  private boolean neverUseCache = false;
-  private String cachePathPolicyParam = null;
+  private boolean alwaysUseCache;
+  private boolean neverUseCache;
+  private String cachePathPolicyParam;
 
   private String root;
   private int persistMinutes, scourEveryMinutes;
-  private boolean fail = false;
+  private boolean fail;
 
   /**
    * Default DiskCache2 strategy: use $user_home/.unidata/cache/, no scouring, alwaysUseCache = false

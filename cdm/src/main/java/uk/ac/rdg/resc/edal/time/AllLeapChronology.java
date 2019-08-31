@@ -58,7 +58,7 @@ import org.joda.time.DateTimeZone;
  */
 public final class AllLeapChronology extends FixedYearVariableMonthChronology {
 
-  private static final int[] MONTH_LENGTHS = new int[] {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  private static final int[] MONTH_LENGTHS = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
   private static final AllLeapChronology INSTANCE_UTC = new AllLeapChronology();
 

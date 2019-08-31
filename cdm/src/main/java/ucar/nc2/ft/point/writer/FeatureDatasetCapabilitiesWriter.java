@@ -94,7 +94,7 @@ public class FeatureDatasetCapabilitiesWriter {
       sElem.setAttribute("name", s.getName());
       if (s.getWmoId() != null)
         sElem.setAttribute("wmo_id", s.getWmoId());
-      if ((s.getDescription() != null) && (s.getDescription().length() > 0))
+      if ((s.getDescription() != null) && (!s.getDescription().isEmpty()))
         sElem.addContent(new Element("description").addContent(s.getDescription()));
 
       sElem.addContent(new Element("longitude").addContent(Double.toString(s.getLongitude())));
@@ -312,7 +312,7 @@ public class FeatureDatasetCapabilitiesWriter {
   public static String getAltUnits(Document doc) {
     Element root = doc.getRootElement();
     String altUnits = root.getChildText("AltitudeUnits");
-    if (altUnits == null || altUnits.length() == 0)
+    if (altUnits == null || altUnits.isEmpty())
       return null;
     return altUnits;
   }

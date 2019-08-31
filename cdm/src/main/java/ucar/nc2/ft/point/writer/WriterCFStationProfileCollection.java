@@ -36,9 +36,9 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   protected Structure stationStruct; // used for netcdf4 extended
   private HashMap<String, Integer> stationIndexMap;
 
-  private boolean useDesc = false;
-  private boolean useAlt = false;
-  private boolean useWmoId = false;
+  private boolean useDesc;
+  private boolean useAlt;
+  private boolean useWmoId;
 
   private int desc_strlen = 1, wmo_strlen = 1;
   private Map<String, Variable> stationVarMap = new HashMap<>();
@@ -47,7 +47,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   // private Formatter coordNames = new Formatter();
   protected Structure profileStruct; // used for netcdf4 extended
   private Map<String, Variable> profileVarMap = new HashMap<>();
-  private boolean headerDone = false;
+  private boolean headerDone;
 
   public WriterCFStationProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
@@ -64,9 +64,9 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     for (StationFeature stn : stnList) {
       if (!Double.isNaN(stn.getAltitude()))
         useAlt = true;
-      if ((stn.getWmoId() != null) && (stn.getWmoId().trim().length() > 0))
+      if ((stn.getWmoId() != null) && (!stn.getWmoId().trim().isEmpty()))
         useWmoId = true;
-      if ((stn.getDescription() != null) && (stn.getDescription().trim().length() > 0))
+      if ((stn.getDescription() != null) && (!stn.getDescription().trim().isEmpty()))
         useDesc = true;
 
       // find string lengths
@@ -175,7 +175,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   }
 
-  private int stnRecno = 0;
+  private int stnRecno;
 
   private void writeStationData(StationFeature stn) throws IOException {
 
@@ -233,7 +233,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     }
   }
 
-  private int profileRecno = 0;
+  private int profileRecno;
 
   public void writeProfileData(int stnIndex, ProfileFeature profile, int nobs) throws IOException {
     trackBB(profile.getLatLon(), profile.getTime());
@@ -258,7 +258,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   }
 
 
-  private int obsRecno = 0;
+  private int obsRecno;
 
   public void writeObsData(PointFeature pf) throws IOException {
 

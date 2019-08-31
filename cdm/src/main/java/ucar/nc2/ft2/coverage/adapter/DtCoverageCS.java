@@ -30,7 +30,7 @@ public class DtCoverageCS {
   private String name;
   private ProjectionImpl proj;
   private GeoGridCoordinate2D g2d;
-  private boolean isLatLon = false;
+  private boolean isLatLon;
 
   /**
    * Create a GeoGridCoordSys from an existing Coordinate System.
@@ -170,7 +170,7 @@ public class DtCoverageCS {
     this.horizStaggerType = horizStaggerType;
   }
 
-  private ProjectionRect mapArea = null;
+  private ProjectionRect mapArea;
 
   /**
    * Get the x,y bounding box in projection coordinates.
@@ -256,7 +256,7 @@ public class DtCoverageCS {
     return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord), new LatLonPointImpl());
   }
 
-  private LatLonRect llbb = null;
+  private LatLonRect llbb;
 
   /**
    * Get horizontal bounding box in lat, lon coordinates.

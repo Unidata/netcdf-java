@@ -512,7 +512,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
         break;
       if (line.startsWith("#"))
         continue;
-      if (line.trim().length() == 0)
+      if (line.trim().isEmpty())
         continue;
       Matcher matcher = p.matcher(line);
       return matcher.matches();
@@ -678,7 +678,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
           return null;
         if (line.startsWith("#"))
           continue;
-        if (line.trim().length() == 0)
+        if (line.trim().isEmpty())
           continue;
         matcher = vinfo.p.matcher(line);
         if (matcher.matches())
@@ -754,7 +754,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
           return null;
         if (line.startsWith("#"))
           continue;
-        if (line.trim().length() == 0)
+        if (line.trim().isEmpty())
           continue;
         matcher = dataPattern.matcher(line);
         if (matcher.matches())

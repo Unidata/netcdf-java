@@ -1006,7 +1006,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
           return null;
         if (line.startsWith("#"))
           continue;
-        if (line.trim().length() == 0)
+        if (line.trim().isEmpty())
           continue;
         break;
       }
@@ -1058,7 +1058,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
           return null;
         if (line.startsWith("#"))
           continue;
-        if (line.trim().length() == 0)
+        if (line.trim().isEmpty())
           continue;
         break;
       }

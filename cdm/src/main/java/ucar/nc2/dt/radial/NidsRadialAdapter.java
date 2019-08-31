@@ -28,9 +28,9 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
-    if ((null != convention) && convention.equals(_Coordinate.Convention)) {
+    if (_Coordinate.Convention.equals(convention)) {
       String format = ncd.findAttValueIgnoreCase(null, "Format", null);
-      if (format != null && format.equals("Level3/NIDS"))
+      if ("Level3/NIDS".equals(format))
         return this;
     }
     return null;
@@ -210,7 +210,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
   }
 
   public String getInfo() {
-    String sbuff = "Nids2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo.toString();
+    String sbuff = "Nids2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo;
     return sbuff;
   }
 

@@ -123,7 +123,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    */
   public static final int MAX_NUMRECS = Integer.MAX_VALUE;
 
-  private static boolean syncExtendOnly = false;
+  private static boolean syncExtendOnly;
 
   /**
    * Set a static property.
@@ -378,8 +378,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   // protected long fileUsed = 0; // how much of the file is written to ?
   // protected long recStart = 0; // where the record data starts
 
-  protected boolean debug = false, debugSize = false, debugSPIO = false, debugRecord = false, debugRead = false;
-  protected boolean showHeaderBytes = false;
+  protected boolean debug, debugSize, debugSPIO, debugRecord, debugRead;
+  protected boolean showHeaderBytes;
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -895,7 +895,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     } else if (classType == char.class) {
       char[] storageP = new char[1];
       storageP[0] =
-          (att != null) && (att.getStringValue().length() > 0) ? att.getStringValue().charAt(0) : NC_FILL_CHAR;
+          (att != null) && (!att.getStringValue().isEmpty()) ? att.getStringValue().charAt(0) : NC_FILL_CHAR;
       storage = storageP;
     }
 

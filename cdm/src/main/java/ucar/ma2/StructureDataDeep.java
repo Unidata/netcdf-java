@@ -175,7 +175,7 @@ public class StructureDataDeep extends StructureDataA {
             copyToArrayBB(sd, out_abb);
             break;
           default:
-            throw new IllegalStateException("scalar " + dtype.toString());
+            throw new IllegalStateException("scalar " + dtype);
             /*
              * case BOOLEAN:
              * break;
@@ -230,7 +230,7 @@ public class StructureDataDeep extends StructureDataA {
               bb.putLong(ldata[i]);
             break;
           default:
-            throw new IllegalStateException("array " + dtype.toString());
+            throw new IllegalStateException("array " + dtype);
             /*
              * case BOOLEAN:
              * break;

@@ -201,6 +201,6 @@ public class TimeUnit extends SimpleUnit {
     return hashCode;
   }
 
-  private int hashCode = 0;
+  private int hashCode;
 
 }

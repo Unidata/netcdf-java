@@ -192,7 +192,7 @@ public class TableAnalyzer {
           }
         }
 
-        if (names.size() > 0) {
+        if (!names.isEmpty()) {
           // search the registered conventions, in order
           for (Configurator conv : conventionList) {
             for (String name : names) {
@@ -454,7 +454,7 @@ public class TableAnalyzer {
       }
     }
 
-    if (tableSet.size() > 0)
+    if (!tableSet.isEmpty())
       return;
 
     // search at dimensions that lat, lon, time coordinates use
@@ -467,7 +467,7 @@ public class TableAnalyzer {
 
     // lat, lon, time all use same dimension - use it
     if (dimSet.size() == 1) {
-      final Dimension obsDim = (Dimension) dimSet.toArray()[0];
+      Dimension obsDim = (Dimension) dimSet.toArray()[0];
       TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getShortName());
       st.structureType =
           obsDim.isUnlimited() ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
@@ -484,7 +484,7 @@ public class TableAnalyzer {
       checkIfTrajectory(st);
     }
 
-    if (tableSet.size() > 0)
+    if (!tableSet.isEmpty())
       return;
 
     // try the time dimension
@@ -591,10 +591,10 @@ public class TableAnalyzer {
     sf.format(" TableAnalyser = %s%n", getName());
     showNestedTables(sf);
     String errlogS = errlog.toString();
-    if (errlogS.length() > 0)
+    if (!errlogS.isEmpty())
       sf.format("%n Errlog=%n%s", errlogS);
     String userAdviceS = userAdvice.toString();
-    if (userAdviceS.length() > 0)
+    if (!userAdviceS.isEmpty())
       sf.format("%n userAdvice=%n%s%n", userAdviceS);
 
     writeConfigXML(sf);

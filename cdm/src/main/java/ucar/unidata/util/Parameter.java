@@ -130,7 +130,7 @@ public class Parameter implements java.io.Serializable {
     return hashCode;
   }
 
-  private volatile int hashCode = 0;
+  private volatile int hashCode;
 
   /**
    * String representation

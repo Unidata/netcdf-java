@@ -78,9 +78,9 @@ import ucar.unidata.io.RandomAccessFile;
 
 public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   private static Logger logger = LoggerFactory.getLogger(SigmetIOServiceProvider.class);
-  private ArrayList<Variable> varList = null;
-  private int[] tsu_sec = null;
-  private int[] sweep_bins = null;
+  private ArrayList<Variable> varList;
+  private int[] tsu_sec;
+  private int[] sweep_bins;
   private String date0;
 
   public static java.util.Map<String, Number> recHdr = new java.util.HashMap<>();
@@ -116,7 +116,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       raf.readShort(data, 0, 13);
       return (data[0] == (short) 27 && data[6] == (short) 26 && data[12] == (short) 15);
     } catch (IOException ioe) {
-      logger.info("In isValidFile(): " + ioe.toString());
+      logger.info("In isValidFile(): " + ioe);
       return false;
     }
   }
@@ -560,7 +560,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         }
       }
       List rgp = volScan.getTotalPowerGroups();
-      if (rgp.size() == 0)
+      if (rgp.isEmpty())
         rgp = volScan.getReflectivityGroups();
       List[] sgp = new ArrayList[number_sweeps];
       for (int i = 0; i < number_sweeps; i++) {
@@ -849,7 +849,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @return float value of angle in degrees with precision of two decimal
    */
   static float calcAngle(short angle) {
-    final double maxval = 65536.0;
+    double maxval = 65536.0;
     double ang = (double) angle;
     if (ang < 0.0) {
       ang = maxval + ang;
@@ -867,7 +867,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @return float value of angle with precision of two decimal in degrees
    */
   static float calcAngle(int ang) {
-    final double maxval = 4294967296.0;
+    double maxval = 4294967296.0;
     double temp = (ang / maxval) * 360.0;
     BigDecimal bd = new BigDecimal(temp);
     BigDecimal result = bd.setScale(3, RoundingMode.HALF_DOWN);
@@ -881,7 +881,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @return float value of elevation in degrees with precision of two decimal
    */
   static float calcElev(short angle) {
-    final double maxval = 65536.0;
+    double maxval = 65536.0;
     double ang = (double) angle;
     if (angle < 0)
       ang = (~angle) + 1;

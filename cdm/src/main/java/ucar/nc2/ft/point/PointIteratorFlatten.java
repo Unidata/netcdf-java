@@ -22,12 +22,12 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 public class PointIteratorFlatten extends PointIteratorAbstract {
   private IOIterator<PointFeatureCollection> collectionIter;
-  private Filter filter = null;
+  private Filter filter;
 
   private PointFeatureCollection currCollection;
   private PointFeatureIterator pfiter; // iterator over the current PointFeatureCollection
   private PointFeature pointFeature; // current PointFeature in the current PointFeatureCollection
-  private boolean finished = false;
+  private boolean finished;
 
   /**
    * Constructor.

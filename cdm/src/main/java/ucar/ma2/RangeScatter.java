@@ -196,7 +196,7 @@ public class RangeScatter implements RangeIterator {
   }
 
   private class ScatterIterator implements Iterator<Integer> {
-    private int current = 0;
+    private int current;
 
     @Override
     public boolean hasNext() {

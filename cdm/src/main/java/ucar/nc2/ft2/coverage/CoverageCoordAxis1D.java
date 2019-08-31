@@ -487,7 +487,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
 
   // Look what about intervals ??
   private class MyIterator implements java.util.Iterator<Object> {
-    private int current = 0;
+    private int current;
     private int ncoords = getNcoords();
 
     public boolean hasNext() {

@@ -1508,7 +1508,7 @@ public class CFpointObs extends TableConfigurerImpl {
           parentVars.add(orgV.getShortName());
         } else {
           Dimension dim1 = orgV.getDimension(1);
-          if ((dim1 != null) && dim1.equals(obsDim))
+          if (obsDim.equals(dim1))
             obsVars.add(orgV.getShortName());
         }
       }
@@ -1612,7 +1612,7 @@ public class CFpointObs extends TableConfigurerImpl {
   // Note to John. It may be that this implementation can be pushed into the super
   // class, I don't understand enough of the code base to anticipate implementation artifacts.
 
-  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer) {
+  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, Dimension outer) {
     Variable var = CoordSysEvaluator.findCoordByType(ds, type, axis -> {
       if ((outer == null) && (axis.getRank() == 0))
         return true;

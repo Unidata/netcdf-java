@@ -582,7 +582,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     }
 
     public List<Variable> getVariableList() {
-      if (variables.size() > 0)
+      if (!variables.isEmpty())
         return variables;
       if (variableMap != null)
         return getVariablesFromMap();
@@ -603,7 +603,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
         return variables;
 
       } catch (Exception e) {
-        logger.error("failed to read VariablesFromMap at {}", variableMap.resolved.toString(), e);
+        logger.error("failed to read VariablesFromMap at {}", variableMap.resolved, e);
         return new ArrayList<>(0);
       }
     }

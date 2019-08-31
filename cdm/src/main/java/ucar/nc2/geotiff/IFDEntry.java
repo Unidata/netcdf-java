@@ -18,7 +18,7 @@ class IFDEntry implements Comparable<IFDEntry> {
   protected double[] valueD;
   protected String valueS;
 
-  protected List<GeoKey> geokeys = null;
+  protected List<GeoKey> geokeys;
 
   IFDEntry(Tag tag, FieldType type) {
     this.tag = tag;
@@ -90,7 +90,7 @@ class IFDEntry implements Comparable<IFDEntry> {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("IFDEntry{");
+    StringBuilder sb = new StringBuilder("IFDEntry{");
     sb.append("tag=").append(tag);
     sb.append(", type=").append(type);
     sb.append(", count=").append(count);

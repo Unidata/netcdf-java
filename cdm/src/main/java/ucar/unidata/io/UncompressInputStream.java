@@ -52,8 +52,8 @@ public class UncompressInputStream extends FilterInputStream {
 
   // input buffer
   private byte[] data = new byte[10000];
-  private int bit_pos = 0, end = 0, got = 0;
-  private boolean eof = false;
+  private int bit_pos, end, got;
+  private boolean eof;
   private static final int EXTRA = 64;
 
 

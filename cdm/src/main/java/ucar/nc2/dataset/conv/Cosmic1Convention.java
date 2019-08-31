@@ -44,7 +44,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
     // if (null == ncfile.findGlobalAttribute( "stop_time")) return false;
 
     String center = ncfile.findAttValueIgnoreCase(null, "center", null);
-    return (center != null) && center.equals("UCAR/CDAAC");
+    return "UCAR/CDAAC".equals(center);
   }
 
   /**

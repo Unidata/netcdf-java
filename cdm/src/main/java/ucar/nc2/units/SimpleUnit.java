@@ -27,7 +27,7 @@ public class SimpleUnit {
 
   // static protected UnitFormat format;
   protected static Unit secsUnit, dateReferenceUnit;
-  protected static boolean debugParse = false;
+  protected static boolean debugParse;
 
   static {
     try {
@@ -207,7 +207,7 @@ public class SimpleUnit {
   }
 
   ////////////////////////////////////////////////
-  protected ucar.units.Unit uu = null;
+  protected ucar.units.Unit uu;
 
   /**
    * for subclasses.

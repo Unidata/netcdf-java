@@ -18,7 +18,7 @@ import java.util.List;
  * some code forked from ucar.nc2.dataset.GridCoordinate2D
  */
 public class HorizCoordSys2D extends HorizCoordSys {
-  private static boolean debug = false;
+  private static boolean debug;
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HorizCoordSys2D.class);
 
   // private final LatLonAxis2D latAxis, lonAxis;
@@ -68,7 +68,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
     }
 
     String errs = errMessages.toString();
-    if (errs.length() > 0)
+    if (!errs.isEmpty())
       return Optional.empty(errs);
 
     // makes a copy of the axis

@@ -134,7 +134,7 @@ public class CoverageDatasetCapabilities {
     if (null != axisType)
       varElem.setAttribute("axisType", axisType.toString());
 
-    if (axis.getDependsOn() != null && axis.getDependsOn().trim().length() > 0)
+    if (axis.getDependsOn() != null && !axis.getDependsOn().trim().isEmpty())
       varElem.setAttribute("dependsOn", axis.getDependsOn().trim());
 
     // attributes

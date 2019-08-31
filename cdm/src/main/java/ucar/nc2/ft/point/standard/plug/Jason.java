@@ -24,8 +24,8 @@ public class Jason extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String mission = ds.findAttValueIgnoreCase(null, "mission_name", null);
     String center = ds.findAttValueIgnoreCase(null, "processing_center", null);
-    if (center != null && center.equals("ESPC")) {
-      return mission != null && mission.equals("OSTM/Jason-2");
+    if ("ESPC".equals(center)) {
+      return "OSTM/Jason-2".equals(mission);
     } else
       return false;
   }

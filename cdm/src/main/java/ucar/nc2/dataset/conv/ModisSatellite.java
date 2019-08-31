@@ -26,11 +26,11 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
 
   public static boolean isMine(NetcdfFile ncfile) {
     String satName = ncfile.findAttValueIgnoreCase(null, "SATNAME", null);
-    if ((satName == null) || !(satName.equalsIgnoreCase("Aqua")))
+    if (!"Aqua".equalsIgnoreCase(satName))
       return false;
 
     String instName = ncfile.findAttValueIgnoreCase(null, "INTRUMENT_NAME", null); // LOOK "INTRUMENT_NAME" ??
-    return !((instName == null) || !(instName.equalsIgnoreCase("modis")));
+    return !(!"modis".equalsIgnoreCase(instName));
 
   }
 

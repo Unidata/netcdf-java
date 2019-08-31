@@ -265,7 +265,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated
 
-  private ProfileIterator localIterator = null;
+  private ProfileIterator localIterator;
 
   @Override
   public boolean hasNext() throws IOException {

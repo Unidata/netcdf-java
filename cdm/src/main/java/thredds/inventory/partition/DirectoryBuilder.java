@@ -69,7 +69,7 @@ public class DirectoryBuilder {
   private FileTime indexLastModified; // index last modified
   private long indexSize; // index size
 
-  private boolean childrenConstructed = false;
+  private boolean childrenConstructed;
   private List<DirectoryBuilder> children = new ArrayList<>(25);
   private PartitionStatus partitionStatus = PartitionStatus.unknown;
 
@@ -174,7 +174,7 @@ public class DirectoryBuilder {
     }
 
     // once we have found children, we know that this is a time partition
-    partitionStatus = (children.size() > 0) ? PartitionStatus.isDirectoryPartition : PartitionStatus.isLeaf;
+    partitionStatus = (!children.isEmpty()) ? PartitionStatus.isDirectoryPartition : PartitionStatus.isLeaf;
     childrenConstructed = true; // otherwise we are good
 
     return children;

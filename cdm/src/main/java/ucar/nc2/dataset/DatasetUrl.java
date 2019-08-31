@@ -101,7 +101,7 @@ public class DatasetUrl {
 
     String trueurl = location;
     String leadprotocol;
-    if (allprotocols.size() == 0) {
+    if (allprotocols.isEmpty()) {
       leadprotocol = "file"; // The location has no leading protocols, assume file:
     } else {
       leadprotocol = allprotocols.get(0);
@@ -163,7 +163,7 @@ public class DatasetUrl {
     if (svctype == ServiceType.NCML) { // ??
       // If lead protocol was null and then pretend it was a file
       // Note that technically, this should be 'file://'
-      trueurl = (allprotocols.size() == 0 ? "file:" + trueurl : location);
+      trueurl = (allprotocols.isEmpty() ? "file:" + trueurl : location);
     }
 
     // Add back the query and fragment (if any)
@@ -190,7 +190,7 @@ public class DatasetUrl {
    * @return The discovered ServiceType, or null
    */
   private static ServiceType searchFragment(String fragment) {
-    if (fragment.length() == 0)
+    if (fragment.isEmpty())
       return null;
     Map<String, String> map = parseFragment(fragment);
     if (map == null)
@@ -260,7 +260,7 @@ public class DatasetUrl {
    */
   private static ServiceType searchPath(String url) {
     if (false) { // Disable for now
-      if (url == null || url.length() == 0)
+      if (url == null || url.isEmpty())
         return null;
       url = url.toLowerCase(); // for matching purposes
       for (int i = 0; i < FRAGPROTOCOLS.length; i++) {

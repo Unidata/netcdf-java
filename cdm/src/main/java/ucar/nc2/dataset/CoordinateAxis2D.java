@@ -27,7 +27,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
   private static final boolean debug = false;
 
-  private ArrayDouble.D2 coords = null; // LOOK maybe optional for large arrays, or maybe eliminate all together, and
+  private ArrayDouble.D2 coords; // LOOK maybe optional for large arrays, or maybe eliminate all together, and
                                         // read each time ??
 
   /**

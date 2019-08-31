@@ -5,8 +5,6 @@
 
 package ucar.nc2.util.cache;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -30,8 +28,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class FileCacheARC implements FileCacheIF {
   protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCacheARC.class);
   protected static final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
-  static boolean debug = false;
-  static boolean debugPrint = false;
+  static boolean debug;
+  static boolean debugPrint;
   static boolean trackAll = true;
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -561,7 +559,7 @@ public class FileCacheARC implements FileCacheIF {
 
       // remove empty cache elements
       for (CacheElement elem : cache.values()) {
-        if (elem.list.size() == 0)
+        if (elem.list.isEmpty())
           cache.remove(elem.hashKey);
       }
     }

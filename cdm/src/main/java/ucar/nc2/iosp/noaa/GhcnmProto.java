@@ -223,7 +223,7 @@ public final class GhcnmProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -628,12 +628,12 @@ public final class GhcnmProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -867,7 +867,7 @@ public final class GhcnmProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -1406,12 +1406,12 @@ public final class GhcnmProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 

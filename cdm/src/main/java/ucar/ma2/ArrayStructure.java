@@ -263,7 +263,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
   }
 
   public class ArrayStructureIterator implements StructureDataIterator, Iterator<StructureData> {
-    private int count = 0;
+    private int count;
     private int size = (int) getSize();
 
     @Override

@@ -41,17 +41,17 @@ public class H4header extends NCheader {
    * }
    */
 
-  private static boolean debugDD = false; // DDH/DD
-  private static boolean debugTag1 = false; // show tags after read(), before read2().
-  private static boolean debugTag2 = false; // show tags after everything is done.
-  private static boolean debugTagDetail = false; // when showing tags, show detail or not
-  private static boolean debugConstruct = false; // show CDM objects as they are constructed
-  private static boolean debugAtt = false; // show CDM attributes as they are constructed
-  private static boolean debugLinked = false; // linked data
-  private static boolean debugChunkTable = false; // chunked data
-  private static boolean debugChunkDetail = false; // chunked data
-  private static boolean debugTracker = false; // memory tracker
-  private static boolean warnings = false; // log messages
+  private static boolean debugDD; // DDH/DD
+  private static boolean debugTag1; // show tags after read(), before read2().
+  private static boolean debugTag2; // show tags after everything is done.
+  private static boolean debugTagDetail; // when showing tags, show detail or not
+  private static boolean debugConstruct; // show CDM objects as they are constructed
+  private static boolean debugAtt; // show CDM attributes as they are constructed
+  private static boolean debugLinked; // linked data
+  private static boolean debugChunkTable; // chunked data
+  private static boolean debugChunkDetail; // chunked data
+  private static boolean debugTracker; // memory tracker
+  private static boolean warnings; // log messages
 
   private static boolean useHdfEos = true; // allow to turn hdf eos processing off
 
@@ -331,7 +331,7 @@ public class H4header extends NCheader {
       if (tag.code == 1963)
         data = tag;
     }
-    if (dims.size() == 0)
+    if (dims.isEmpty())
       throw new IllegalStateException();
 
     int length = 0;
@@ -1341,7 +1341,7 @@ public class H4header extends NCheader {
       raf.readFully(sp_tag_header);
     }
 
-    List<DataChunk> dataChunks = null;
+    List<DataChunk> dataChunks;
 
     List<DataChunk> getDataChunks() throws IOException {
       if (dataChunks == null) {
@@ -1765,7 +1765,7 @@ public class H4header extends NCheader {
     private List<String> getList() {
       List<String> result = new ArrayList<>(text.length);
       for (String s : text)
-        if (s.trim().length() > 0)
+        if (!s.trim().isEmpty())
           result.add(s.trim());
       return result;
     }
@@ -2081,7 +2081,7 @@ public class H4header extends NCheader {
       sbuff.append(Format.l(size, 6));
       sbuff.append(" ");
       sbuff.append(name);
-      debugOut.println(sbuff.toString());
+      debugOut.println(sbuff);
     }
 
     class Mem implements Comparable<Mem> {

@@ -244,7 +244,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   public String getInfo() {
-    String sbuff = "Netcdfs2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo.toString();
+    String sbuff = "Netcdfs2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo;
     return sbuff;
   }
 

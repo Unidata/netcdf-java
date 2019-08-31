@@ -96,8 +96,8 @@ public class LayoutSegmented implements Layout {
     return (int) (segMax[segno] - start);
   }
 
-  private int needInner = 0;
-  private int doneInner = 0;
+  private int needInner;
+  private int doneInner;
 
   public Chunk next() {
     Chunk result;

@@ -69,7 +69,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 
 public class Geostationary extends ProjectionImpl {
   private static final String NAME = CF.GEOSTATIONARY;
-  private boolean isGeoCoordinateScaled = false;
+  private boolean isGeoCoordinateScaled;
   private double geoCoordinateScaleFactor;
 
   GEOSTransform navigation;

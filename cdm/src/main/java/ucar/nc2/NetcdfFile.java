@@ -101,9 +101,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   private static int default_buffersize = 8092;
   private static List<IOServiceProvider> registeredProviders = new ArrayList<>();
-  protected static boolean debugSPI = false, debugCompress = false, showRequest = false;
-  static boolean debugStructureIterator = false;
-  static boolean loadWarnings = false;
+  protected static boolean debugSPI, debugCompress, showRequest;
+  static boolean debugStructureIterator;
+  static boolean loadWarnings;
 
   private static boolean userLoads;
 
@@ -940,7 +940,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   protected String location, id, title, cacheName;
   protected Group rootGroup = makeRootGroup();
-  private boolean immutable = false;
+  private boolean immutable;
 
   protected ucar.nc2.util.cache.FileCacheIF cache;
   protected IOServiceProvider spi;
@@ -1085,7 +1085,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return Group or null if not found.
    */
   public Group findGroup(String fullName) {
-    if (fullName == null || fullName.length() == 0)
+    if (fullName == null || fullName.isEmpty())
       return rootGroup;
 
     Group g = rootGroup;
@@ -1140,7 +1140,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
     // heres var.var - tokenize respecting the possible escaped '.'
     List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
-    if (snames.size() == 0)
+    if (snames.isEmpty())
       return null;
 
     String varShortName = NetcdfFile.makeNameUnescaped(snames.get(0));
@@ -1303,7 +1303,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return Attribute or null if not found.
    */
   public Attribute findAttribute(String fullNameEscaped) {
-    if (fullNameEscaped == null || fullNameEscaped.length() == 0) {
+    if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
       return null;
     }
 
@@ -1336,7 +1336,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
     // heres var.var - tokenize respecting the possible escaped '.'
     List<String> snames = EscapeStrings.tokenizeEscapedName(varName);
-    if (snames.size() == 0)
+    if (snames.isEmpty())
       return null;
 
     String varShortName = NetcdfFile.makeNameUnescaped(snames.get(0));

@@ -70,7 +70,7 @@ public abstract class CFPointWriter implements Closeable {
   public static final int idMissingValue = -9999;
 
 
-  private static boolean debug = false;
+  private static boolean debug;
 
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut,
       NetcdfFileWriter.Version version) throws IOException {
@@ -361,9 +361,9 @@ public abstract class CFPointWriter implements Closeable {
   private Map<String, Variable> extraMap; // added as variables just as they are
   protected List<Variable> extra;
 
-  protected LatLonRect llbb = null;
-  protected CalendarDate minDate = null;
-  protected CalendarDate maxDate = null;
+  protected LatLonRect llbb;
+  protected CalendarDate minDate;
+  protected CalendarDate maxDate;
 
   // LOOK doesnt work
   protected CFPointWriter(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException {
@@ -548,7 +548,7 @@ public abstract class CFPointWriter implements Closeable {
       List<Dimension> dims = makeDimensionList(dimMap, oldVar.getDimensions());
       dims.add(0, recordDim);
       Variable newVar;
-      if (oldVar.getDataType().equals(DataType.STRING) && !writer.getVersion().isExtendedModel()) {
+      if (oldVar.getDataType() == DataType.STRING && !writer.getVersion().isExtendedModel()) {
         if (oldVar instanceof Variable)
           newVar = writer.addStringVariable(null, (Variable) oldVar, dims);
         else
@@ -599,7 +599,7 @@ public abstract class CFPointWriter implements Closeable {
       dims.add(0, recordDim);
 
       Variable newVar;
-      if (oldVar.getDataType().equals(DataType.STRING) && !writer.getVersion().isExtendedModel()) {
+      if (oldVar.getDataType() == DataType.STRING && !writer.getVersion().isExtendedModel()) {
         if (oldVar instanceof Variable)
           newVar = writer.addStringVariable(null, (Variable) oldVar, dims);
         else
@@ -847,7 +847,7 @@ public abstract class CFPointWriter implements Closeable {
     public boolean shuffle = true;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
-    public boolean help = false;
+    public boolean help;
 
 
     private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
@@ -909,7 +909,7 @@ public abstract class CFPointWriter implements Closeable {
       try (FeatureDatasetPoint fdPoint =
           (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, location, cancel, errlog)) {
         if (fdPoint == null) {
-          System.err.println(errlog.toString());
+          System.err.println(errlog);
         } else {
           System.out.printf("CFPointWriter: reading from %s, writing to %s%n", cmdLine.inputFile, cmdLine.outputFile);
           writeFeatureCollection(fdPoint, cmdLine.outputFile.getAbsolutePath(), cmdLine.getCFPointWriterConfig());

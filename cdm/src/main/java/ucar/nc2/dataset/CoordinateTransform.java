@@ -147,7 +147,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     return hashCode;
   }
 
-  private volatile int hashCode = 0;
+  private volatile int hashCode;
 
   public String toString() {
     return name;

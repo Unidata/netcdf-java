@@ -79,9 +79,9 @@ public class DtCoverageDataset implements Closeable {
   private Map<String, Gridset> gridsetHash = new HashMap<>();
   private List<Gridset> gridSets = new ArrayList<>();
 
-  private LatLonRect llbbMax = null;
-  private CalendarDateRange dateRangeMax = null;
-  private ProjectionRect projBB = null;
+  private LatLonRect llbbMax;
+  private CalendarDateRange dateRangeMax;
+  private ProjectionRect projBB;
 
   /**
    * Create a DtCoverageDataset from a NetcdfDataset.
@@ -130,7 +130,7 @@ public class DtCoverageDataset implements Closeable {
     for (Variable v : ncd.getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
       List<CoordinateSystem> css = ve.getCoordinateSystems();
-      if (css.size() == 0)
+      if (css.isEmpty())
         continue;
       css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
       CoordinateSystem cs = css.get(0); // the largest one

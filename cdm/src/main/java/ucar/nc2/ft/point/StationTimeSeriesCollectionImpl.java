@@ -154,7 +154,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   @Override
   public PointFeatureCollection flatten(List<String> stationNames, CalendarDateRange dateRange,
       List<VariableSimpleIF> varList) {
-    if ((stationNames == null) || (stationNames.size() == 0))
+    if ((stationNames == null) || (stationNames.isEmpty()))
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
 
     List<StationFeature> subsetStations = getStationHelper().getStationFeaturesFromNames(stationNames);

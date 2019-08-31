@@ -986,7 +986,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -1389,7 +1389,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int type_ = 0;
+      private int type_;
 
       /**
        * <pre>
@@ -1707,7 +1707,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int dataType_ = 0;
+      private int dataType_;
 
       /**
        * <pre>
@@ -1778,12 +1778,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -2125,7 +2125,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -2653,12 +2653,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -3265,7 +3265,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -3750,7 +3750,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int dataType_ = 0;
+      private int dataType_;
 
       /**
        * <code>.DataType dataType = 2;</code>
@@ -4524,12 +4524,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -5254,7 +5254,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -5802,7 +5802,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int dataType_ = 0;
+      private int dataType_;
 
       /**
        * <pre>
@@ -7045,12 +7045,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -7415,7 +7415,7 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public boolean equals(final java.lang.Object obj) {
+      public boolean equals(java.lang.Object obj) {
         if (obj == this) {
           return true;
         }
@@ -7785,12 +7785,12 @@ public final class NcStreamProto {
         }
 
         @java.lang.Override
-        public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+        public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.setUnknownFields(unknownFields);
         }
 
         @java.lang.Override
-        public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+        public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
           return super.mergeUnknownFields(unknownFields);
         }
 
@@ -7948,7 +7948,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -8567,12 +8567,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -9281,7 +9281,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -11347,12 +11347,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -11783,7 +11783,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -12488,12 +12488,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -12724,7 +12724,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -13089,12 +13089,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -13321,7 +13321,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -13685,12 +13685,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -13922,7 +13922,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -14459,12 +14459,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -14732,7 +14732,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Data.class, ucar.nc2.stream.NcStreamProto.Data.Builder.class);
     }
 
-    private int bigendPresentCase_ = 0;
+    private int bigendPresentCase_;
     private java.lang.Object bigendPresent_;
 
     public enum BigendPresentCase implements com.google.protobuf.Internal.EnumLite {
@@ -15016,7 +15016,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -15043,7 +15043,7 @@ public final class NcStreamProto {
         return false;
       if (getUncompressedSize() != other.getUncompressedSize())
         return false;
-      if (!getBigendPresentCase().equals(other.getBigendPresentCase()))
+      if (getBigendPresentCase() != other.getBigendPresentCase())
         return false;
       switch (bigendPresentCase_) {
         case 4:
@@ -15380,7 +15380,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int bigendPresentCase_ = 0;
+      private int bigendPresentCase_;
       private java.lang.Object bigendPresent_;
 
       public BigendPresentCase getBigendPresentCase() {
@@ -15483,7 +15483,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int dataType_ = 0;
+      private int dataType_;
 
       /**
        * <code>.DataType dataType = 2;</code>
@@ -15772,7 +15772,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int compress_ = 0;
+      private int compress_;
 
       /**
        * <code>.Compress compress = 6;</code>
@@ -15881,12 +15881,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -16384,7 +16384,7 @@ public final class NcStreamProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
       getSerializedSize();
-      if (getMemberList().size() > 0) {
+      if (!getMemberList().isEmpty()) {
         output.writeUInt32NoTag(10);
         output.writeUInt32NoTag(memberMemoizedSerializedSize);
       }
@@ -16394,7 +16394,7 @@ public final class NcStreamProto {
       if (!data_.isEmpty()) {
         output.writeBytes(2, data_);
       }
-      if (getHeapCountList().size() > 0) {
+      if (!getHeapCountList().isEmpty()) {
         output.writeUInt32NoTag(26);
         output.writeUInt32NoTag(heapCountMemoizedSerializedSize);
       }
@@ -16467,7 +16467,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -17273,12 +17273,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -18042,7 +18042,7 @@ public final class NcStreamProto {
       for (int i = 0; i < stringdata_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 11, stringdata_.getRaw(i));
       }
-      if (getVlensList().size() > 0) {
+      if (!getVlensList().isEmpty()) {
         output.writeUInt32NoTag(98);
         output.writeUInt32NoTag(vlensMemoizedSerializedSize);
       }
@@ -18126,7 +18126,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -18652,7 +18652,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int dataType_ = 0;
+      private int dataType_;
 
       /**
        * <code>.DataType dataType = 2;</code>
@@ -19473,12 +19473,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -19712,7 +19712,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -20252,12 +20252,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -21005,7 +21005,7 @@ public final class NcStreamProto {
       for (int i = 0; i < stringdata_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 11, stringdata_.getRaw(i));
       }
-      if (getVlensList().size() > 0) {
+      if (!getVlensList().isEmpty()) {
         output.writeUInt32NoTag(98);
         output.writeUInt32NoTag(vlensMemoizedSerializedSize);
       }
@@ -21089,7 +21089,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -21595,7 +21595,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int dataType_ = 0;
+      private int dataType_;
 
       /**
        * <code>.DataType dataType = 2;</code>
@@ -22416,12 +22416,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -22759,7 +22759,7 @@ public final class NcStreamProto {
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
       }
-      if (getShapeList().size() > 0) {
+      if (!getShapeList().isEmpty()) {
         output.writeUInt32NoTag(26);
         output.writeUInt32NoTag(shapeMemoizedSerializedSize);
       }
@@ -22806,7 +22806,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -23177,7 +23177,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      private int dataType_ = 0;
+      private int dataType_;
 
       /**
        * <code>.DataType dataType = 2;</code>
@@ -23355,12 +23355,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -24011,7 +24011,7 @@ public final class NcStreamProto {
     }
 
     @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    public boolean equals(java.lang.Object obj) {
       if (obj == this) {
         return true;
       }
@@ -25351,12 +25351,12 @@ public final class NcStreamProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
-      public final Builder mergeUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder mergeUnknownFields(com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
