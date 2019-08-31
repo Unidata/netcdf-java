@@ -44,7 +44,7 @@ import java.util.List;
  * local or inheritable ThreddsMetadata.
  */
 public class InvDatasetImpl extends InvDataset {
-  static private final Logger logger = LoggerFactory.getLogger(InvDatasetImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(InvDatasetImpl.class);
 
   private String urlPath;
   private String alias;
@@ -962,7 +962,7 @@ public class InvDatasetImpl extends InvDataset {
    * @deprecated Instead use
    *             {@link #writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds, boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents, boolean resolveRelativeUrls)}
    */
-  static public void writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds, boolean complete, boolean isServer,
+  public static void writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds, boolean complete, boolean isServer,
       boolean datasetEvents, boolean catrefEvents) {
     writeHtmlDescription(buff, ds, complete, isServer, datasetEvents, catrefEvents, true);
   }
@@ -987,7 +987,7 @@ public class InvDatasetImpl extends InvDataset {
    * @param catrefEvents if true, prepend "catref:" to any catref URLS
    */
 
-  static public void writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds, boolean complete, boolean isServer,
+  public static void writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds, boolean complete, boolean isServer,
       boolean datasetEvents, boolean catrefEvents, boolean resolveRelativeUrls) {
 
     if (ds == null)
@@ -1348,7 +1348,7 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("</body></html>");
   }
 
-  static private String rangeString(ThreddsMetadata.Range r) {
+  private static String rangeString(ThreddsMetadata.Range r) {
     if (r == null)
       return "";
     String units = (r.getUnits() == null) ? "" : " " + r.getUnits();
@@ -1363,7 +1363,7 @@ public class InvDatasetImpl extends InvDataset {
    * @param href URL to resolve
    * @return resolved URL
    */
-  static public String resolve(InvDataset ds, String href) {
+  public static String resolve(InvDataset ds, String href) {
     InvCatalog cat = ds.getParentCatalog();
     if (cat != null) {
       try {
@@ -1376,13 +1376,13 @@ public class InvDatasetImpl extends InvDataset {
     return href;
   }
 
-  static private String makeHref(String href, String title) {
+  private static String makeHref(String href, String title) {
     if (title == null)
       title = href;
     return "<a href='" + StringUtil2.quoteHtmlContent(href) + "'>" + StringUtil2.quoteHtmlContent(title) + "</a>";
   }
 
-  static private String makeHrefResolve(InvDatasetImpl ds, String href, String title) {
+  private static String makeHrefResolve(InvDatasetImpl ds, String href, String title) {
     if (title == null)
       title = href;
     href = resolve(ds, href);

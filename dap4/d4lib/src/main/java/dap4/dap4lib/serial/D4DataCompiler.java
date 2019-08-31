@@ -16,12 +16,12 @@ import java.util.List;
 import static dap4.core.data.DataCursor.Scheme;
 
 public class D4DataCompiler {
-  static public boolean DEBUG = false;
+  public static boolean DEBUG = false;
 
   //////////////////////////////////////////////////
   // Constants
 
-  static final public int COUNTSIZE = 8; // databuffer as specified by the DAP4 spec
+  public static final int COUNTSIZE = 8; // databuffer as specified by the DAP4 spec
 
   static String LBRACE = "{";
   static String RBRACE = "}";
@@ -239,17 +239,17 @@ public class D4DataCompiler {
     return data.getInt();
   }
 
-  static protected void skip(ByteBuffer data, int count) {
+  protected static void skip(ByteBuffer data, int count) {
     data.position(data.position() + count);
   }
 
-  static protected int getCount(ByteBuffer data) {
+  protected static int getCount(ByteBuffer data) {
     long count = data.getLong();
     count = (count & 0xFFFFFFFF);
     return (int) count;
   }
 
-  static protected int getPos(ByteBuffer data) {
+  protected static int getPos(ByteBuffer data) {
     return data.position();
   }
 
@@ -259,11 +259,11 @@ public class D4DataCompiler {
    * @param daptype
    * @return type's serialized form size
    */
-  static protected int computeTypeSize(DapType daptype) {
+  protected static int computeTypeSize(DapType daptype) {
     return LibTypeFcns.size(daptype);
   }
 
-  static protected long walkByteStrings(long[] positions, ByteBuffer databuffer) {
+  protected static long walkByteStrings(long[] positions, ByteBuffer databuffer) {
     int count = positions.length;
     long total = 0;
     int savepos = databuffer.position();

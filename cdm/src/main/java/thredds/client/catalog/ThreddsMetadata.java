@@ -54,7 +54,7 @@ import java.util.*;
  */
 // @Immutable
 public class ThreddsMetadata implements ThreddsMetadataContainer {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ThreddsMetadata.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ThreddsMetadata.class);
   private final Map<String, Object> flds;
   private boolean immutable;
 
@@ -125,7 +125,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   @Immutable
-  static public class Contributor {
+  public static class Contributor {
     public final String name;
     public final String role;
 
@@ -149,7 +149,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
    * Implements Source type, used by publisher and creator elements.
    */
   @Immutable
-  static public class Source {
+  public static class Source {
     public final Vocab name;
     public final String url, email;
 
@@ -187,7 +187,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
    * Implements Vocab type, just text with an optional "vocabulary" attribute.
    */
   @Immutable
-  static public class Vocab {
+  public static class Vocab {
     public final String text;
     public final String vocabulary;
 
@@ -211,7 +211,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
    * Implements GeospatialCoverage type.
    */
   @Immutable
-  static public class GeospatialCoverage {
+  public static class GeospatialCoverage {
     /*
      * static private GeospatialRange defaultEastwest = new GeospatialRange(0.0, 0.0, Double.NaN, CDM.LON_UNITS);
      * static private GeospatialRange defaultNorthsouth = new GeospatialRange(0.0, 0.0, Double.NaN, CDM.LAT_UNITS);
@@ -445,7 +445,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
    * Implements spatialRange type.
    */
   @Immutable
-  static public class GeospatialRange {
+  public static class GeospatialRange {
     public final double start, size, resolution;
     public final String units;
 
@@ -504,7 +504,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
    * Implements Variable type.
    */
   @Immutable
-  static public class Variable implements Comparable<Variable> {
+  public static class Variable implements Comparable<Variable> {
     public final String name, desc, vocabulary_name, units, id;
 
     public Variable(String name, String desc, String vocabulary_name, String units, String id) {
@@ -555,7 +555,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
   }
 
   @Immutable
-  static public class VariableGroup {
+  public static class VariableGroup {
     public final String vocabulary;
     public final UriResolved vocabUri;
     public final UriResolved variableMap;

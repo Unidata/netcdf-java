@@ -41,37 +41,37 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
   /**
    * Float missing attribute
    */
-  protected final static Number RMISS = GempakConstants.RMISSD;
+  protected static final Number RMISS = GempakConstants.RMISSD;
 
   /**
    * Integer missing attribute
    */
-  protected final static Number IMISS = GempakConstants.IMISSD;
+  protected static final Number IMISS = GempakConstants.IMISSD;
 
   /**
    * static for shared dimension of length 4
    */
-  protected final static Dimension DIM_LEN8 = new Dimension("len8", 8, true);
+  protected static final Dimension DIM_LEN8 = new Dimension("len8", 8, true);
 
   /**
    * static for shared dimension of length 4
    */
-  protected final static Dimension DIM_LEN4 = new Dimension("len4", 4, true);
+  protected static final Dimension DIM_LEN4 = new Dimension("len4", 4, true);
 
   /**
    * static for shared dimension of length 2
    */
-  protected final static Dimension DIM_LEN2 = new Dimension("len2", 2, true);
+  protected static final Dimension DIM_LEN2 = new Dimension("len2", 2, true);
 
   /**
    * name for the time variable
    */
-  protected final static String TIME_VAR = "time";
+  protected static final String TIME_VAR = "time";
 
   /**
    * name for the time variable
    */
-  protected final static String MISSING_VAR = "_isMissing";
+  protected static final String MISSING_VAR = "_isMissing";
 
   /**
    * station variable names

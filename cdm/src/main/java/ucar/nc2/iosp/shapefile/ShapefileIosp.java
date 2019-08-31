@@ -23,8 +23,8 @@ import java.nio.ByteOrder;
  * @since 9/27/12
  */
 public class ShapefileIosp extends AbstractIOServiceProvider {
-  private final static int MAGIC = 9994;
-  private final static int VERSION = 1000;
+  private static final int MAGIC = 9994;
+  private static final int VERSION = 1000;
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {

@@ -32,10 +32,10 @@ import ucar.unidata.io.bzip2.BZip2ReadException;
 public class Cinrad2VolumeScan {
 
   // data formats
-  static public final String ARCHIVE2 = "ARCHIVE2";
-  static public final String AR2V0001 = "AR2V0001";
+  public static final String ARCHIVE2 = "ARCHIVE2";
+  public static final String AR2V0001 = "AR2V0001";
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Cinrad2VolumeScan.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Cinrad2VolumeScan.class);
   ////////////////////////////////////////////////////////////////////////////////////
 
   // Data file
@@ -651,7 +651,7 @@ public class Cinrad2VolumeScan {
   // check if compressed file seems ok
   // LOOK While the IOSP seems to read files fine, this function seems terribly
   // broken on the data in our cdmUnitTests/formats/cinrad directory.
-  static public long testValid(String ufilename) throws IOException {
+  public static long testValid(String ufilename) throws IOException {
     boolean lookForHeader = false;
 
     // gotta make it

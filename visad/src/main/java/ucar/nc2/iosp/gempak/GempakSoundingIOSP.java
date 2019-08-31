@@ -190,7 +190,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
   /**
    * static for shared dimension of length 4
    */
-  protected final static Dimension DIM_MAXMERGELEVELS = new Dimension("maxMergeLevels", 50, true);
+  protected static final Dimension DIM_MAXMERGELEVELS = new Dimension("maxMergeLevels", 50, true);
 
   /**
    * Make the station reader for this type
@@ -545,7 +545,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    *
    * @author Unidata Development Team
    */
-  static private class SequenceIterator implements StructureDataIterator {
+  private static class SequenceIterator implements StructureDataIterator {
     private ArrayStructure abb;
     private StructureDataIterator siter;
 

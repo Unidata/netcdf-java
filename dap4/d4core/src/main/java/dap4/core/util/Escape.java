@@ -24,23 +24,23 @@ public class Escape {
   static final String ENTITY_QUOT = "quot";
   static final String ENTITY_APOS = "apos";
 
-  static public final String[][] DEFAULTTRANSTABLE =
+  public static final String[][] DEFAULTTRANSTABLE =
       {{ENTITY_AMP, "&"}, {ENTITY_LT, "<"}, {ENTITY_GT, ">"}, {ENTITY_QUOT, "\""}, {ENTITY_APOS, "'"},};
 
   // For reference: set of all ascii printable non-alphanumeric characters
-  static private final String nonAlphaNumeric = " !\"#$%&'()*+,-./:;<=>?@[]\\^_`|{}~";
+  private static final String nonAlphaNumeric = " !\"#$%&'()*+,-./:;<=>?@[]\\^_`|{}~";
 
   // define the printable backslash characters to escape (control chars not included)
   // Note that '\\' is always included
-  static public final String BACKSLASHESCAPE = "/.";
+  public static final String BACKSLASHESCAPE = "/.";
 
   // define the default entity characters to escape
-  static public final String ENTITYESCAPES = "\\<>&\"'";
+  public static final String ENTITYESCAPES = "\\<>&\"'";
 
   // Define the alphan characters
 
   /* Defind loose set of characters that can appear in an xml entity name */
-  static public boolean entitychar(char c) {
+  public static boolean entitychar(char c) {
     return ("#_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0);
   }
 
@@ -51,7 +51,7 @@ public class Escape {
    * @param wrt which chars to escape
    * @return escaped string
    */
-  static public String entityEscape(String s, String wrt) {
+  public static String entityEscape(String s, String wrt) {
     if (wrt == null)
       wrt = ENTITYESCAPES;
     StringBuilder escaped = new StringBuilder();
@@ -94,11 +94,11 @@ public class Escape {
     return escaped.toString();
   }
 
-  static public String entityUnescape(String s) {
+  public static String entityUnescape(String s) {
     return entityUnescape(s, null);
   }
 
-  static public String entityUnescape(String s, String[][] translations) {
+  public static String entityUnescape(String s, String[][] translations) {
     int count, len;
     boolean found;
     StringBuilder u; // returned string with entities unescaped
@@ -176,7 +176,7 @@ public class Escape {
    *        control characters and '\\' are always escaped.
    * @return
    */
-  static public String backslashEscape(String s, String wrt) {
+  public static String backslashEscape(String s, String wrt) {
     if (wrt == null)
       wrt = BACKSLASHESCAPE;
     StringBuilder escaped = new StringBuilder();
@@ -212,7 +212,7 @@ public class Escape {
   /**
    * Remove backslashed characters in a string
    */
-  static public String backslashUnescape(String s) {
+  public static String backslashUnescape(String s) {
     StringBuilder clear = new StringBuilder();
     for (int i = 0; i < s.length();) {
       char c = s.charAt(i++);
@@ -250,7 +250,7 @@ public class Escape {
    * @return a List of strings (all with escaping still intact)
    *         representing s split at unescaped instances of sep.
    */
-  static public List<String> backslashsplit(String s, char sep) {
+  public static List<String> backslashsplit(String s, char sep) {
     List<String> path = new ArrayList<String>();
     int len = s.length();
     StringBuilder piece = new StringBuilder();
@@ -284,16 +284,16 @@ public class Escape {
    * }
    */
 
-  static final public String hexchars = "0123456789abcdef";
+  public static final String hexchars = "0123456789abcdef";
   static final String allhexchars = "0123456789abcdefABCDEF";
 
-  static public String toHex(int i) {
+  public static String toHex(int i) {
     char digit1 = hexchars.charAt((i >>> 4) & 0xf);
     char digit2 = hexchars.charAt((i & 0xf));
     return Character.toString(digit1) + digit2;
   }
 
-  static public int fromHex(char c) {
+  public static int fromHex(char c) {
     c = Character.toLowerCase(c);
     int index = hexchars.indexOf(c);
     if (index < 0)
@@ -301,12 +301,12 @@ public class Escape {
     return index;
   }
 
-  static public boolean isHexDigit(char c) {
+  public static boolean isHexDigit(char c) {
     return allhexchars.indexOf(c) >= 0;
   }
 
 
-  static public String bytes2hex(byte[] bytes) {
+  public static String bytes2hex(byte[] bytes) {
     int len = bytes.length;
     StringBuilder buf = new StringBuilder(2 + (len * 2));
     buf.append("0x");
@@ -318,7 +318,7 @@ public class Escape {
     return buf.toString();
   }
 
-  static public String urlDecode(String s) {
+  public static String urlDecode(String s) {
     try {
       s = URLDecoder.decode(s, "UTF8");
     } catch (UnsupportedEncodingException uee) {
@@ -330,7 +330,7 @@ public class Escape {
   // before sending it to server
   static final String URLESCAPECHARS = " %";
 
-  static public String urlEncodeQuery(String s) {
+  public static String urlEncodeQuery(String s) {
     if (s == null || s.length() == 0)
       return s;
     if (false)
@@ -363,7 +363,7 @@ public class Escape {
    * @param s string to clean
    * @return cleaned string
    */
-  static public String cleanString(String s) {
+  public static String cleanString(String s) {
     int index = s.indexOf((char) 0);
     if (index >= 0)
       s = s.substring(0, index);

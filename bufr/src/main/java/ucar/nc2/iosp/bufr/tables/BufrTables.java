@@ -136,7 +136,7 @@ public class BufrTables {
 
   private static List<String> lookups = null;
 
-  static public synchronized void addLookupFile(String filename) throws FileNotFoundException {
+  public static synchronized void addLookupFile(String filename) throws FileNotFoundException {
     if (lookups == null)
       lookups = new ArrayList<>();
     File f = new File(filename);
@@ -145,7 +145,7 @@ public class BufrTables {
     lookups.add(filename);
   }
 
-  static private synchronized void readLookupTable() {
+  private static synchronized void readLookupTable() {
     tables = new ArrayList<>();
     if (lookups != null) {
       lookups.add(canonicalLookup);
@@ -157,7 +157,7 @@ public class BufrTables {
   }
 
   // center,subcenter,master,local,cat,tableB,tableBformat,tableD,tableDformat, mode
-  static private void readLookupTable(String filename) {
+  private static void readLookupTable(String filename) {
 
     try (InputStream ios = openStream(filename)) {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
@@ -349,7 +349,7 @@ public class BufrTables {
     }
   }
 
-  static public Tables getLocalTables(int center, int subcenter, int master, int local, int cat) throws IOException {
+  public static Tables getLocalTables(int center, int subcenter, int master, int local, int cat) throws IOException {
     TableConfig tc = matchTableConfig(center, subcenter, master, local, cat);
     if (tc == null)
       return null;
@@ -385,9 +385,9 @@ public class BufrTables {
 
   ////////////////////////////////////////////////////
 
-  static private TableB latestWmoB;
+  private static TableB latestWmoB;
 
-  static public synchronized TableB getWmoTableBlatest() {
+  public static synchronized TableB getWmoTableBlatest() {
     if (latestWmoB == null) {
       try {
         latestWmoB = getWmoTableB(latestVersion);
@@ -427,14 +427,14 @@ public class BufrTables {
    * }
    */
 
-  static public TableB getWmoTableB(int masterTableVersion) throws IOException {
+  public static TableB getWmoTableB(int masterTableVersion) throws IOException {
     TableConfig tc = matchTableConfig(0, 0, masterTableVersion, 0, -1);
     if (tc != null)
       return readTableB(tc.tableBname, tc.tableBformat, false);
     return null;
   }
 
-  static public TableB readTableB(String location, Format format, boolean force) throws IOException {
+  public static TableB readTableB(String location, Format format, boolean force) throws IOException {
     if (!force) {
       TableB tb = tablesB.get(location);
       if (tb != null)
@@ -488,7 +488,7 @@ public class BufrTables {
     return b;
   }
 
-  static private void readWmoCsvTableB(InputStream ios, TableB b) throws IOException {
+  private static void readWmoCsvTableB(InputStream ios, TableB b) throws IOException {
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     while (true) {
@@ -542,11 +542,11 @@ public class BufrTables {
     }
   }
 
-  static private String clean(String s) {
+  private static String clean(String s) {
     return StringUtil2.remove(s, ' ');
   }
 
-  static private TableB readEmbeddedTableB(String location) throws IOException {
+  private static TableB readEmbeddedTableB(String location) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(location, "r")) {
       MessageScanner scan = new MessageScanner(raf);
       TableLookup lookup = scan.getTableLookup();
@@ -557,7 +557,7 @@ public class BufrTables {
     }
   }
 
-  static private TableD readEmbeddedTableD(String location) throws IOException {
+  private static TableD readEmbeddedTableD(String location) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(location, "r")) {
       MessageScanner scan = new MessageScanner(raf);
       TableLookup lookup = scan.getTableLookup();
@@ -569,7 +569,7 @@ public class BufrTables {
   }
 
   // tables are in mel-bufr format
-  static private TableB readMelbufrTableB(InputStream ios, TableB b) throws IOException {
+  private static TableB readMelbufrTableB(InputStream ios, TableB b) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
@@ -606,7 +606,7 @@ public class BufrTables {
    * 2 -18000 16
    */
 
-  static private TableB readCypherTableB(InputStream ios, TableB b) throws IOException {
+  private static TableB readCypherTableB(InputStream ios, TableB b) throws IOException {
     boolean startMode = false;
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     while (true) {
@@ -660,7 +660,7 @@ public class BufrTables {
   // tables are in mel-bufr format
   // #F X Y Scale RefVal Width Units Element Name
   // 0 0 1 0 0 24 CCITT_IA5 Table A: entry
-  static private TableB readMeltabTableB(InputStream ios, TableB b) throws IOException {
+  private static TableB readMeltabTableB(InputStream ios, TableB b) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
@@ -690,7 +690,7 @@ public class BufrTables {
   }
 
   // F-XX-YYY |SCALE| REFERENCE | BIT | UNIT | MNEMONIC ;DESC ; ELEMENT NAME
-  static private TableB readNcepTableB(InputStream ios, TableB b) throws IOException {
+  private static TableB readNcepTableB(InputStream ios, TableB b) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
@@ -741,7 +741,7 @@ public class BufrTables {
    * 0;07;192;Pixel size in Z-direction;Meters;-1;0;16
    * 0;21;036;Radar rainfall intensity;mm*h-1;2;0;16
    */
-  static private void readOperaTableB(InputStream ios, TableB b) throws IOException {
+  private static void readOperaTableB(InputStream ios, TableB b) throws IOException {
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     while (true) {
@@ -784,7 +784,7 @@ public class BufrTables {
    * 001015 STATION OR SITE NAME CCITTIA5 0 0 160 CHARACTER 0 20
    * 001041 ABSOLUTE PLATFORM VELOCITY - FIRST COMPONENT (SEE NOTE 6) M/S 5 -1073741824 31 M/S 5 10
    */
-  static private TableB readEcmwfTableB(InputStream ios, TableB b) throws IOException {
+  private static TableB readEcmwfTableB(InputStream ios, TableB b) throws IOException {
     List<TableParser.Record> recs = TableParser.readTable(ios, "4i,7i,72,97,102i,114i,119i", 50000);
     for (TableParser.Record record : recs) {
       if (record.nfields() < 7) {
@@ -804,7 +804,7 @@ public class BufrTables {
     return b;
   }
 
-  static private void readBmetTableB(InputStream ios, TableB b) throws IOException {
+  private static void readBmetTableB(InputStream ios, TableB b) throws IOException {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -859,9 +859,9 @@ public class BufrTables {
 
   ///////////////////////////////////////////////////////
 
-  static private TableD latestWmoD;
+  private static TableD latestWmoD;
 
-  static public synchronized TableD getWmoTableDlatest() {
+  public static synchronized TableD getWmoTableDlatest() {
     if (latestWmoD == null) {
       try {
         latestWmoD = getWmoTableD(latestVersion);
@@ -873,14 +873,14 @@ public class BufrTables {
     return latestWmoD;
   }
 
-  static public TableD getWmoTableD(int masterTableVersion) throws IOException {
+  public static TableD getWmoTableD(int masterTableVersion) throws IOException {
     TableConfig tc = matchTableConfig(0, 0, masterTableVersion, 0, -1);
     if (tc != null)
       return readTableD(tc.tableDname, tc.tableDformat, false);
     return null;
   }
 
-  static public TableD readTableD(String location, Format format, boolean force) throws IOException {
+  public static TableD readTableD(String location, Format format, boolean force) throws IOException {
     if (location == null)
       return null;
     if (location.trim().length() == 0)
@@ -967,7 +967,7 @@ public class BufrTables {
    * 000019 Units reference value
    * 000020 Element data width
    */
-  static private void readCypherTableD(InputStream ios, TableD t) throws IOException {
+  private static void readCypherTableD(InputStream ios, TableD t) throws IOException {
     TableD.Descriptor currDesc = null;
     boolean startMode = false;
 
@@ -1042,7 +1042,7 @@ public class BufrTables {
    * 3;21;192; 1;10;000
    * ...
    */
-  static private void readOperaTableD(InputStream ios, TableD t) throws IOException {
+  private static void readOperaTableD(InputStream ios, TableD t) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
@@ -1086,7 +1086,7 @@ public class BufrTables {
   }
 
 
-  static private void readWmoCsvTableD(InputStream ios, TableD tableD) throws IOException {
+  private static void readWmoCsvTableD(InputStream ios, TableD tableD) throws IOException {
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
     int currSeqno = -1;
@@ -1166,7 +1166,7 @@ public class BufrTables {
                                                                                                // beginning of line
   private static final Pattern negOne = Pattern.compile("^\\s*-1"); // check for -1 sequence terminator
 
-  static private void readMelbufrTableD(InputStream ios, TableD t) throws IOException {
+  private static void readMelbufrTableD(InputStream ios, TableD t) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
     int count = 0;
@@ -1250,7 +1250,7 @@ public class BufrTables {
    * | 0-01-002 | WMO station number
    * 
    */
-  static private void readNcepTableD(InputStream ios, TableD t) throws IOException {
+  private static void readNcepTableD(InputStream ios, TableD t) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
@@ -1303,7 +1303,7 @@ public class BufrTables {
    * 000011
    * 000012
    */
-  static private void readEcmwfTableD(InputStream ios, TableD t) throws IOException {
+  private static void readEcmwfTableD(InputStream ios, TableD t) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 

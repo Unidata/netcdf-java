@@ -55,7 +55,7 @@ import java.io.PrintWriter;
  * @see DSequence
  * @see DGrid
  */
-abstract public class DConstructor extends BaseType {
+public abstract class DConstructor extends BaseType {
 
   /**
    * Constructs a new <code>DConstructor</code>.
@@ -79,7 +79,7 @@ abstract public class DConstructor extends BaseType {
    * @param v the variable to add.
    * @param part The part of the constructor data to be modified.
    */
-  abstract public void addVariable(BaseType v, int part);
+  public abstract void addVariable(BaseType v, int part);
 
   /**
    * Adds a variable to the container. Same as <code>addVariable(v, 0)</code>.
@@ -98,7 +98,7 @@ abstract public class DConstructor extends BaseType {
    * @throws NoSuchVariableException if the named variable does not
    *         exist in this container.
    */
-  abstract public BaseType getVariable(String name) throws NoSuchVariableException;
+  public abstract BaseType getVariable(String name) throws NoSuchVariableException;
 
   /**
    * Gets the indexed variable. For a DGrid the index 0 returns the <code>DArray</code> and
@@ -109,14 +109,14 @@ abstract public class DConstructor extends BaseType {
    * @throws NoSuchVariableException if the named variable does not
    *         exist in this container.
    */
-  abstract public BaseType getVar(int index) throws NoSuchVariableException;
+  public abstract BaseType getVar(int index) throws NoSuchVariableException;
 
   /**
    * Get the number of contained variables (for use with getVar()
    * 
    * @return the number of contained variables
    */
-  abstract public int getVarCount();
+  public abstract int getVarCount();
 
 
   /**
@@ -129,7 +129,7 @@ abstract public class DConstructor extends BaseType {
    *
    * @return An Enumeration object.
    */
-  abstract public Enumeration getVariables();
+  public abstract Enumeration getVariables();
 
 
   /**

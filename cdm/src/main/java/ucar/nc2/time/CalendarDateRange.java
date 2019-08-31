@@ -21,11 +21,11 @@ public class CalendarDateRange {
   private final DateTime startDt, endDt;
   private final Calendar cal;
 
-  static public CalendarDateRange of(CalendarDate start, CalendarDate end) {
+  public static CalendarDateRange of(CalendarDate start, CalendarDate end) {
     return new CalendarDateRange(start, end);
   }
 
-  static public CalendarDateRange of(Date start, Date end) {
+  public static CalendarDateRange of(Date start, Date end) {
     return new CalendarDateRange(CalendarDate.of(start), CalendarDate.of(end));
   }
 
@@ -125,7 +125,7 @@ public class CalendarDateRange {
    * 
    * @deprecated
    */
-  static public CalendarDateRange of(DateRange dr) {
+  public static CalendarDateRange of(DateRange dr) {
     if (dr == null)
       return null;
     return CalendarDateRange.of(dr.getStart().getDate(), dr.getEnd().getDate());

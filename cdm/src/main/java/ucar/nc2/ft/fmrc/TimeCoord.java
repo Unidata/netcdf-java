@@ -27,7 +27,7 @@ import ucar.nc2.util.Misc;
  * Tracks a list of variables that all have the same list of offset times.
  */
 public class TimeCoord implements Comparable<TimeCoord> {
-  static public final TimeCoord EMPTY = new TimeCoord(CalendarDate.of(new Date()), new double[0]);
+  public static final TimeCoord EMPTY = new TimeCoord(CalendarDate.of(new Date()), new double[0]);
 
   private CalendarDate runDate;
   private List<GridDatasetInv.Grid> gridInv; // track the grids that use this coord
@@ -292,7 +292,7 @@ public class TimeCoord implements Comparable<TimeCoord> {
    * @param want find equivilent
    * @return return equivilent or make a new one and add to timeCoords
    */
-  static public TimeCoord findTimeCoord(List<TimeCoord> timeCoords, TimeCoord want) {
+  public static TimeCoord findTimeCoord(List<TimeCoord> timeCoords, TimeCoord want) {
     if (want == null)
       return null;
 
@@ -314,7 +314,7 @@ public class TimeCoord implements Comparable<TimeCoord> {
    * @param baseDate resulting union timeCoord uses this as a base date
    * @return union TimeCoord
    */
-  static public TimeCoord makeUnion(List<TimeCoord> timeCoords, CalendarDate baseDate) {
+  public static TimeCoord makeUnion(List<TimeCoord> timeCoords, CalendarDate baseDate) {
     if (timeCoords.size() == 0)
       return new TimeCoord(baseDate);
     if (timeCoords.size() == 1)
@@ -326,7 +326,7 @@ public class TimeCoord implements Comparable<TimeCoord> {
       return makeUnionReg(timeCoords, baseDate);
   }
 
-  static private TimeCoord makeUnionReg(List<TimeCoord> timeCoords, CalendarDate baseDate) {
+  private static TimeCoord makeUnionReg(List<TimeCoord> timeCoords, CalendarDate baseDate) {
     // put into a set for uniqueness
     Set<Double> offsets = new HashSet<>();
     for (TimeCoord tc : timeCoords) {
@@ -351,7 +351,7 @@ public class TimeCoord implements Comparable<TimeCoord> {
     return result;
   }
 
-  static private TimeCoord makeUnionIntv(List<TimeCoord> timeCoords, CalendarDate baseDate) {
+  private static TimeCoord makeUnionIntv(List<TimeCoord> timeCoords, CalendarDate baseDate) {
     // put into a set for uniqueness
     Set<Tinv> offsets = new HashSet<>();
     for (TimeCoord tc : timeCoords) {

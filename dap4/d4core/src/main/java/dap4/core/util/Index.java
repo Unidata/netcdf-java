@@ -8,7 +8,7 @@ package dap4.core.util;
 import java.util.Arrays;
 
 public class Index {
-  static public final Index SCALAR = new Index(0);
+  public static final Index SCALAR = new Index(0);
 
   public int rank;
   public long[] indices; // allow direct access

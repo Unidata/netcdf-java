@@ -21,16 +21,16 @@ import java.util.*;
  * @since 8/8/13
  */
 public class BufrIosp2 extends AbstractIOServiceProvider {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp2.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp2.class);
 
-  static public final String obsRecord = "obs";
-  static public final String fxyAttName = "BUFR:TableB_descriptor";
-  static public final String centerId = "BUFR:centerId";
+  public static final String obsRecord = "obs";
+  public static final String fxyAttName = "BUFR:TableB_descriptor";
+  public static final String centerId = "BUFR:centerId";
 
   // debugging
-  static private boolean debugIter = false;
+  private static boolean debugIter = false;
 
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     // debugOpen = debugFlag.isSet("Bufr/open");
     debugIter = debugFlag.isSet("Bufr/iter");
   }

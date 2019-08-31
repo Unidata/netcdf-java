@@ -22,7 +22,7 @@ import java.util.Iterator;
  */
 
 public class LocalDatasetSource extends DatasetSource {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LocalDatasetSource.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LocalDatasetSource.class);
   // private static Log log = LogFactory.getLog( LocalDatasetSource.class);
 
   private File accessPointHeaderFile = null;

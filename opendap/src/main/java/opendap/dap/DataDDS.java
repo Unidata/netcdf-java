@@ -143,7 +143,7 @@ public class DataDDS extends DDS {
   }
 
   // debug
-  static private class Counter implements StatusUI {
+  private static class Counter implements StatusUI {
     int counter = 0;
 
     public void incrementByteCount(int bytes) {

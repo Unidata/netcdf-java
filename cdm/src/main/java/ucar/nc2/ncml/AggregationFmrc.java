@@ -27,7 +27,7 @@ import java.util.Set;
  * @author caron
  */
 public class AggregationFmrc extends AggregationOuterDimension {
-  static protected Set<NetcdfDataset.Enhance> fmrcEnhanceMode = NetcdfDataset.getDefaultEnhanceMode();
+  protected static Set<NetcdfDataset.Enhance> fmrcEnhanceMode = NetcdfDataset.getDefaultEnhanceMode();
 
   private Fmrc fmrc;
   private String runMatcher; // , forecastMatcher, offsetMatcher; // scanFmrc

@@ -51,7 +51,7 @@ public class HTTPFormBuilder {
   protected enum Sort {
     TEXT, BYTES, STREAM, FILE;
 
-    static public ContentType contenttype(Sort sort) {
+    public static ContentType contenttype(Sort sort) {
       switch (sort) {
         case TEXT:
           return TEXT_PLAIN;
@@ -63,12 +63,12 @@ public class HTTPFormBuilder {
       }
     }
 
-    static public String mimetype(Sort sort) {
+    public static String mimetype(Sort sort) {
       return contenttype(sort).getMimeType();
     }
   }
 
-  static protected class Field {
+  protected static class Field {
     public Sort sort;
     public String fieldname = null;
     public Object value = null;

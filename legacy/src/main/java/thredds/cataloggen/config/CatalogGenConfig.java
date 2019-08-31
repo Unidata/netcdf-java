@@ -27,7 +27,7 @@ import thredds.catalog.InvDataset;
 
 public class CatalogGenConfig {
   // private static Log log = LogFactory.getLog( CatalogGenConfig.class );
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogGenConfig.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogGenConfig.class);
 
   // parent dataset for this CatalogGenConfig
   private InvDataset parentDataset = null;

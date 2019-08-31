@@ -14,7 +14,7 @@ import java.util.Vector;
  * Time: 11:13 AM
  * To change this template use File | Settings | File Templates.
  */
-abstract public class AST {
+public abstract class AST {
   CEEvaluator ceEval;
   ClauseFactory clauseFactory;
   BaseTypeFactory factory;

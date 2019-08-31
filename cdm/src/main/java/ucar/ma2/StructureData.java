@@ -69,9 +69,9 @@ import java.util.List;
  * @see ArrayStructure
  */
 
-abstract public class StructureData {
+public abstract class StructureData {
 
-  static public final StructureData EMPTY = new StructureDataScalar("empty");
+  public static final StructureData EMPTY = new StructureDataScalar("empty");
 
   /*
    * Copy all the data out of 'from' and into a new StructureData.
@@ -138,7 +138,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member.
    * @return Array values.
    */
-  abstract public Array getArray(StructureMembers.Member m);
+  public abstract Array getArray(StructureMembers.Member m);
 
   /**
    * Get member data array of any type as an Array.
@@ -236,7 +236,7 @@ abstract public class StructureData {
    * @return scalar value as a float
    * @throws ForbiddenConversionException if not convertible to float.
    */
-  abstract public float convertScalarFloat(StructureMembers.Member m);
+  public abstract float convertScalarFloat(StructureMembers.Member m);
 
   /**
    * Get scalar value as a double, with conversion as needed. Underlying type must be convertible to double.
@@ -259,7 +259,7 @@ abstract public class StructureData {
    * @return scalar value as a double
    * @throws ForbiddenConversionException if not convertible to double.
    */
-  abstract public double convertScalarDouble(StructureMembers.Member m);
+  public abstract double convertScalarDouble(StructureMembers.Member m);
 
   /**
    * Get scalar value as a int, with conversion as needed. Underlying type must be convertible to int.
@@ -282,7 +282,7 @@ abstract public class StructureData {
    * @return scalar value as a int
    * @throws ForbiddenConversionException if not convertible to int.
    */
-  abstract public int convertScalarInt(StructureMembers.Member m);
+  public abstract int convertScalarInt(StructureMembers.Member m);
 
   /**
    * Get scalar value as a int, with conversion as needed. Underlying type must be convertible to int.
@@ -305,7 +305,7 @@ abstract public class StructureData {
    * @return scalar value as a int
    * @throws ForbiddenConversionException if not convertible to int.
    */
-  abstract public long convertScalarLong(StructureMembers.Member m);
+  public abstract long convertScalarLong(StructureMembers.Member m);
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -329,7 +329,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type double.
    * @return scalar double value
    */
-  abstract public double getScalarDouble(StructureMembers.Member m);
+  public abstract double getScalarDouble(StructureMembers.Member m);
 
   /**
    * Get java double array for a member of type double.
@@ -350,7 +350,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type double.
    * @return 1D java array of doubles
    */
-  abstract public double[] getJavaArrayDouble(StructureMembers.Member m);
+  public abstract double[] getJavaArrayDouble(StructureMembers.Member m);
 
   ////////////////
 
@@ -374,7 +374,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return scalar double value
    */
-  abstract public float getScalarFloat(StructureMembers.Member m);
+  public abstract float getScalarFloat(StructureMembers.Member m);
 
   /**
    * Get java float array for a member of type float.
@@ -395,7 +395,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return 1D java array of floats
    */
-  abstract public float[] getJavaArrayFloat(StructureMembers.Member m);
+  public abstract float[] getJavaArrayFloat(StructureMembers.Member m);
 
   /////
 
@@ -419,7 +419,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return scalar byte value
    */
-  abstract public byte getScalarByte(StructureMembers.Member m);
+  public abstract byte getScalarByte(StructureMembers.Member m);
 
   /**
    * Get java byte array for a member of type byte.
@@ -440,7 +440,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return 1D java array of bytes
    */
-  abstract public byte[] getJavaArrayByte(StructureMembers.Member m);
+  public abstract byte[] getJavaArrayByte(StructureMembers.Member m);
 
   /////
   /**
@@ -463,7 +463,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type int.
    * @return scalar int value
    */
-  abstract public int getScalarInt(StructureMembers.Member m);
+  public abstract int getScalarInt(StructureMembers.Member m);
 
   /**
    * Get java int array for a member of type int.
@@ -484,7 +484,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type int.
    * @return 1D java array of ints
    */
-  abstract public int[] getJavaArrayInt(StructureMembers.Member m);
+  public abstract int[] getJavaArrayInt(StructureMembers.Member m);
 
   /////
   /**
@@ -507,7 +507,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type short.
    * @return scalar short value
    */
-  abstract public short getScalarShort(StructureMembers.Member m);
+  public abstract short getScalarShort(StructureMembers.Member m);
 
   /**
    * Get java short array for a member of type short.
@@ -528,7 +528,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type short.
    * @return 1D java array of shorts
    */
-  abstract public short[] getJavaArrayShort(StructureMembers.Member m);
+  public abstract short[] getJavaArrayShort(StructureMembers.Member m);
 
   /////
   /**
@@ -551,7 +551,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type long.
    * @return scalar long value
    */
-  abstract public long getScalarLong(StructureMembers.Member m);
+  public abstract long getScalarLong(StructureMembers.Member m);
 
   /**
    * Get java long array for a member of type long.
@@ -572,7 +572,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type long.
    * @return 1D java array of longs
    */
-  abstract public long[] getJavaArrayLong(StructureMembers.Member m);
+  public abstract long[] getJavaArrayLong(StructureMembers.Member m);
 
   /////
   /**
@@ -595,7 +595,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return scalar char value
    */
-  abstract public char getScalarChar(StructureMembers.Member m);
+  public abstract char getScalarChar(StructureMembers.Member m);
 
   /**
    * Get java char array for a member of type char.
@@ -616,7 +616,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return 1D java array of chars
    */
-  abstract public char[] getJavaArrayChar(StructureMembers.Member m);
+  public abstract char[] getJavaArrayChar(StructureMembers.Member m);
 
   /////
 
@@ -640,7 +640,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type char or String.
    * @return scalar String value
    */
-  abstract public String getScalarString(StructureMembers.Member m);
+  public abstract String getScalarString(StructureMembers.Member m);
 
   /**
    * Get java String array for a member of type String.
@@ -661,7 +661,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type char or String.
    * @return 1D java array of String
    */
-  abstract public String[] getJavaArrayString(StructureMembers.Member m);
+  public abstract String[] getJavaArrayString(StructureMembers.Member m);
 
   ////
 
@@ -685,7 +685,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return StructureData
    */
-  abstract public StructureData getScalarStructure(StructureMembers.Member m);
+  public abstract StructureData getScalarStructure(StructureMembers.Member m);
 
   /**
    * Get member data of type Structure.
@@ -707,7 +707,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return ArrayStructure
    */
-  abstract public ArrayStructure getArrayStructure(StructureMembers.Member m);
+  public abstract ArrayStructure getArrayStructure(StructureMembers.Member m);
 
   //////
 
@@ -730,7 +730,7 @@ abstract public class StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type Sequence.
    * @return ArrayStructure
    */
-  abstract public ArraySequence getArraySequence(StructureMembers.Member m);
+  public abstract ArraySequence getArraySequence(StructureMembers.Member m);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // debugging

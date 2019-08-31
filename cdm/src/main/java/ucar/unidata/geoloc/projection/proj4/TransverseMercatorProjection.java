@@ -36,14 +36,14 @@ import ucar.unidata.geoloc.ProjectionPointImpl;
  */
 public class TransverseMercatorProjection extends ProjectionImpl {
 
-  private final static double FC1 = 1.0;
-  private final static double FC2 = 0.5;
-  private final static double FC3 = 0.16666666666666666666;
-  private final static double FC4 = 0.08333333333333333333;
-  private final static double FC5 = 0.05;
-  private final static double FC6 = 0.03333333333333333333;
-  private final static double FC7 = 0.02380952380952380952;
-  private final static double FC8 = 0.01785714285714285714;
+  private static final double FC1 = 1.0;
+  private static final double FC2 = 0.5;
+  private static final double FC3 = 0.16666666666666666666;
+  private static final double FC4 = 0.08333333333333333333;
+  private static final double FC5 = 0.05;
+  private static final double FC6 = 0.03333333333333333333;
+  private static final double FC7 = 0.02380952380952380952;
+  private static final double FC8 = 0.01785714285714285714;
 
   private double esp;
   private double ml0;

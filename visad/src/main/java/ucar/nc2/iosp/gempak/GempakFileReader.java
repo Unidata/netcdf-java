@@ -1009,7 +1009,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to mimic the DMHDRS common block.
    */
-  static protected class DMHeaders {
+  protected static class DMHeaders {
 
     /**
      * last valid row
@@ -1600,7 +1600,7 @@ public class GempakFileReader implements GempakConstants {
    *
    * @author Unidata Development Team
    */
-  static public class RData {
+  public static class RData {
 
     /**
      * the header

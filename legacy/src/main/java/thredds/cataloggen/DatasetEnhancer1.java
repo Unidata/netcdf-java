@@ -21,7 +21,7 @@ import java.text.ParseException;
  * @since Apr 20, 2005 17:02:08 PM
  */
 public class DatasetEnhancer1 {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetEnhancer1.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetEnhancer1.class);
 
   private DatasetMetadataAdder mdataAdder;
   private boolean applyToLeafNodesOnly;

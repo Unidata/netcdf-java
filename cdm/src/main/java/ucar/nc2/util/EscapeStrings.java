@@ -43,19 +43,19 @@ import java.util.List;
 
 public class EscapeStrings {
 
-  static protected final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  static protected final String numeric = "0123456789";
-  static protected final String alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  static protected final String _allowableInUrl =
+  protected static final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  protected static final String numeric = "0123456789";
+  protected static final String alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  protected static final String _allowableInUrl =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$&'()*+,-./:;=?@_~";
-  static protected final String _allowableInUrlQuery =
+  protected static final String _allowableInUrlQuery =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&'()*+,-./:;=?@_~";
-  static protected final String _allowableInDAP =
+  protected static final String _allowableInDAP =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_!~*'-\"./";
-  static protected final String _allowableInOGC =
+  protected static final String _allowableInOGC =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~*'()";
-  static protected final char _URIEscape = '%';
-  static protected final char _JavaEscape = '\\';
+  protected static final char _URIEscape = '%';
+  protected static final char _JavaEscape = '\\';
   static final byte blank = ((byte) ' ');
   static final byte plus = ((byte) '+');
 
@@ -196,7 +196,7 @@ public class EscapeStrings {
     return s;
   }
 
-  static private final Pattern p = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
+  private static final Pattern p = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
 
   public static String escapeURL(String url) {
     String protocol;
@@ -349,7 +349,7 @@ public class EscapeStrings {
     return escapeString(s, _allowableInOGC);
   }
 
-  static public void testOGC() {
+  public static void testOGC() {
     for (char c : (alphaNumeric + " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~").toCharArray()) {
       String encoded = EscapeStrings.escapeOGC("" + c);
       System.err.printf("|%c|=|%s|%n", c, encoded);
@@ -365,7 +365,7 @@ public class EscapeStrings {
    * @param reservedChars these chars get a backslash in front of them
    * @return escaped string
    */
-  static public String backslashEscape(String x, String reservedChars) {
+  public static String backslashEscape(String x, String reservedChars) {
     if (x == null) {
       return null;
     } else if (reservedChars == null) {
@@ -407,7 +407,7 @@ public class EscapeStrings {
    * @param x unescape this
    * @return string with \c -> c
    */
-  static public String backslashUnescape(String x) {
+  public static String backslashUnescape(String x) {
     if (!x.contains("\\")) {
       return x;
     }
@@ -450,7 +450,7 @@ public class EscapeStrings {
     return result;
   }
 
-  static private final int sep = '.';
+  private static final int sep = '.';
 
   /**
    * Find first occurence of char c in escapedName, excluding escaped c.
@@ -543,7 +543,7 @@ public class EscapeStrings {
    * also escapes control characters, although the spec does not call for it; make that code
    * conditional.
    */
-  static public String backslashEscapeDapString(String s) {
+  public static String backslashEscapeDapString(String s) {
     StringBuilder buf = new StringBuilder();
     for (int i = 0; i < s.length(); i++) {
       int c = s.charAt(i);
@@ -577,7 +577,7 @@ public class EscapeStrings {
   /**
    * Given a CDM string, insert backslashes before <toescape> characters.
    */
-  static public String backslashEscapeCDMString(String s, String toescape) {
+  public static String backslashEscapeCDMString(String s, String toescape) {
     if (toescape == null || toescape.length() == 0) {
       return s;
     }

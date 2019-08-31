@@ -17,7 +17,7 @@ import java.util.Iterator;
  * @since Jul 14, 2008
  */
 public class DataDescriptorTreeConstructor {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataDescriptorTreeConstructor.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataDescriptorTreeConstructor.class);
 
   //////////////////////////////////////////////////////////////////////////////////
   private DataDescriptor root;

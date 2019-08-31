@@ -38,7 +38,7 @@ import java.util.Date;
 
 
 public class TimeDuration {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TimeDuration.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TimeDuration.class);
 
   /*
    * private static TimeUnit secUnits;
@@ -56,7 +56,7 @@ public class TimeDuration {
   private TimeUnit timeUnit;
   private boolean isBlank;
 
-  static private boolean debug = false;
+  private static boolean debug = false;
 
   private TimeDuration() {}
 
@@ -136,7 +136,7 @@ public class TimeDuration {
    * @return TimeDuration
    * @throws java.text.ParseException when text is misformed
    */
-  static public TimeDuration parseW3CDuration(String text) throws java.text.ParseException {
+  public static TimeDuration parseW3CDuration(String text) throws java.text.ParseException {
     TimeDuration td = new TimeDuration();
 
     text = (text == null) ? "" : text.trim();

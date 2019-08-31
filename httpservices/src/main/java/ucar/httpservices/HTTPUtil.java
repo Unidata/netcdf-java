@@ -21,16 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-abstract public class HTTPUtil {
+public abstract class HTTPUtil {
 
   //////////////////////////////////////////////////
   // Constants
 
-  static final public Charset UTF8 = StandardCharsets.UTF_8;
-  static final public Charset ASCII = StandardCharsets.US_ASCII;
-  static final public String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
-  static final public String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  static final public String DRIVELETTERS = LOWERCASE + UPPERCASE;
+  public static final Charset UTF8 = StandardCharsets.UTF_8;
+  public static final Charset ASCII = StandardCharsets.US_ASCII;
+  public static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+  public static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  public static final String DRIVELETTERS = LOWERCASE + UPPERCASE;
 
   //////////////////////////////////////////////////
 
@@ -41,7 +41,7 @@ abstract public class HTTPUtil {
   //////////////////////////////////////////////////
   // Interceptors
 
-  static abstract class InterceptCommon {
+  abstract static class InterceptCommon {
     protected HttpContext context = null;
     protected List<Header> headers = new ArrayList<Header>();
     protected HttpRequest request = null;
@@ -60,19 +60,19 @@ abstract public class HTTPUtil {
       response = null;
     }
 
-    synchronized public HttpRequest getRequest() {
+    public synchronized HttpRequest getRequest() {
       return this.request;
     }
 
-    synchronized public HttpResponse getResponse() {
+    public synchronized HttpResponse getResponse() {
       return this.response;
     }
 
-    synchronized public HttpContext getContext() {
+    public synchronized HttpContext getContext() {
       return this.context;
     }
 
-    synchronized public HttpEntity getRequestEntity() {
+    public synchronized HttpEntity getRequestEntity() {
       if (this.request != null && this.request instanceof HttpEntityEnclosingRequest) {
         return ((HttpEntityEnclosingRequest) this.request).getEntity();
       } else
@@ -86,7 +86,7 @@ abstract public class HTTPUtil {
         return null;
     }
 
-    synchronized public List<Header> getHeaders(String key) {
+    public synchronized List<Header> getHeaders(String key) {
       List<Header> keyh = new ArrayList<Header>();
       for (Header h : this.headers) {
         if (h.getName().equalsIgnoreCase(key.trim()))
@@ -122,8 +122,8 @@ abstract public class HTTPUtil {
     }
   }
 
-  static public class InterceptResponse extends InterceptCommon implements HttpResponseInterceptor {
-    synchronized public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+  public static class InterceptResponse extends InterceptCommon implements HttpResponseInterceptor {
+    public synchronized void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
       this.response = response;
       this.context = context;
       if (this.printheaders)
@@ -137,8 +137,8 @@ abstract public class HTTPUtil {
     }
   }
 
-  static public class InterceptRequest extends InterceptCommon implements HttpRequestInterceptor {
-    synchronized public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+  public static class InterceptRequest extends InterceptCommon implements HttpRequestInterceptor {
+    public synchronized void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
       this.request = request;
       this.context = context;
       if (this.printheaders)
@@ -155,13 +155,13 @@ abstract public class HTTPUtil {
   //////////////////////////////////////////////////
   // Misc.
 
-  static public byte[] readbinaryfile(File f) throws IOException {
+  public static byte[] readbinaryfile(File f) throws IOException {
     try (FileInputStream fis = new FileInputStream(f)) {
       return readbinaryfile(fis);
     }
   }
 
-  static public byte[] readbinaryfile(InputStream stream) throws IOException {
+  public static byte[] readbinaryfile(InputStream stream) throws IOException {
     // Extract the stream into a bytebuffer
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     byte[] tmp = new byte[1 << 16];
@@ -175,7 +175,7 @@ abstract public class HTTPUtil {
     return bytes.toByteArray();
   }
 
-  static public File fillTempFile(String base, String content) throws IOException {
+  public static File fillTempFile(String base, String content) throws IOException {
     // Locate a temp directory
     String tmppath = System.getenv("TEMP");
     if (tmppath == null || tmppath.length() == 0)
@@ -234,7 +234,7 @@ abstract public class HTTPUtil {
    * @return The URI corresponding to u.
    * @throws URISyntaxException
    */
-  static public URI parseToURI(final String u) throws URISyntaxException {
+  public static URI parseToURI(final String u) throws URISyntaxException {
     StringBuilder buf = new StringBuilder();
     int i = 0;
     while (i < u.length()) {
@@ -301,7 +301,7 @@ abstract public class HTTPUtil {
    * Temporary hack to remove Content-Encoding: XXX-Endian headers
    */
   static class ContentEncodingInterceptor extends InterceptCommon implements HttpResponseInterceptor {
-    synchronized public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+    public synchronized void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
       if (response == null)
         return;
       Header[] hdrs = response.getAllHeaders();
@@ -331,7 +331,7 @@ abstract public class HTTPUtil {
     }
   }
 
-  static protected Map<HTTPSession.Prop, Object> merge(Map<HTTPSession.Prop, Object> globalsettings,
+  protected static Map<HTTPSession.Prop, Object> merge(Map<HTTPSession.Prop, Object> globalsettings,
       Map<HTTPSession.Prop, Object> localsettings) {
     // merge global and local settings; local overrides global.
     Map<HTTPSession.Prop, Object> merge = new ConcurrentHashMap<HTTPSession.Prop, Object>();
@@ -351,7 +351,7 @@ abstract public class HTTPUtil {
    * @param s the string to check for length
    * @return null if s.length() == 0, s otherwise
    */
-  static public String nullify(String s) {
+  public static String nullify(String s) {
     if (s != null && s.length() == 0)
       s = null;
     return s;
@@ -375,7 +375,7 @@ abstract public class HTTPUtil {
    * @param suffix
    * @return
    */
-  static public String canonjoin(String prefix, String suffix) {
+  public static String canonjoin(String prefix, String suffix) {
     if (prefix == null)
       prefix = "";
     if (suffix == null)
@@ -409,7 +409,7 @@ abstract public class HTTPUtil {
    * @return canonicalized version
    */
 
-  static public String canonicalpath(String path) {
+  public static String canonicalpath(String path) {
     if (path == null)
       return null;
     StringBuilder b = new StringBuilder(path);
@@ -417,7 +417,7 @@ abstract public class HTTPUtil {
     return b.toString();
   }
 
-  static public void canonicalpath(StringBuilder s) {
+  public static void canonicalpath(StringBuilder s) {
     if (s == null || s.length() == 0)
       return;
     int index = 0;
@@ -455,7 +455,7 @@ abstract public class HTTPUtil {
    * @param path convert this path
    * @return relatived version
    */
-  static public String relpath(String path) {
+  public static String relpath(String path) {
     if (path == null)
       return null;
     StringBuilder b = new StringBuilder(path);
@@ -473,12 +473,12 @@ abstract public class HTTPUtil {
    * @param path to test
    * @return true if path appears to start with Windows drive letter
    */
-  static public boolean hasDriveLetter(String path) {
+  public static boolean hasDriveLetter(String path) {
     return (path != null && path.length() >= 2 && path.charAt(1) == ':' && DRIVELETTERS.indexOf(path.charAt(0)) >= 0);
   }
 
   // Support function
-  static protected boolean hasDriveLetter(StringBuilder path) {
+  protected static boolean hasDriveLetter(StringBuilder path) {
     return (path.length() >= 2 && path.charAt(1) == ':' && DRIVELETTERS.indexOf(path.charAt(0)) >= 0);
   }
 
@@ -486,7 +486,7 @@ abstract public class HTTPUtil {
    * @param path to test
    * @return true if path is absolute
    */
-  static public boolean isAbsolutePath(String path) {
+  public static boolean isAbsolutePath(String path) {
     return (path != null && path.length() > 0 && (path.charAt(0) == '/' || hasDriveLetter(path)));
   }
 
@@ -496,7 +496,7 @@ abstract public class HTTPUtil {
    * @param path convert this path
    * @return absolute version
    */
-  static public String abspath(String path) {
+  public static String abspath(String path) {
     if (path == null)
       return "/";
     StringBuilder b = new StringBuilder(path);
@@ -508,12 +508,12 @@ abstract public class HTTPUtil {
     return b.toString();
   }
 
-  static public String readtextfile(InputStream stream) throws IOException {
+  public static String readtextfile(InputStream stream) throws IOException {
     InputStreamReader rdr = new InputStreamReader(stream, UTF8);
     return readtextfile(rdr);
   }
 
-  static public String readtextfile(Reader rdr) throws IOException {
+  public static String readtextfile(Reader rdr) throws IOException {
     StringBuilder buf = new StringBuilder();
     for (;;) {
       int c = rdr.read();
@@ -524,7 +524,7 @@ abstract public class HTTPUtil {
     return buf.toString();
   }
 
-  static public void writebinaryfile(byte[] content, File dst) throws IOException {
+  public static void writebinaryfile(byte[] content, File dst) throws IOException {
     try (FileOutputStream fos = new FileOutputStream(dst)) {
       fos.write(content);
     }

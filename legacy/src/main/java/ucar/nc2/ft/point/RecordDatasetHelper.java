@@ -45,7 +45,7 @@ import ucar.unidata.geoloc.StationImpl;
  */
 
 public class RecordDatasetHelper {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RecordDatasetHelper.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RecordDatasetHelper.class);
 
   protected NetcdfDataset ncfile;
   protected String obsTimeVName, nomTimeVName;

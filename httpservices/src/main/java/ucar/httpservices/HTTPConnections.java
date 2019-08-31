@@ -25,7 +25,7 @@ import java.util.Map;
 /* package scope */
 @ThreadSafe
 abstract class HTTPConnections {
-  static public boolean TRACE = false;
+  public static boolean TRACE = false;
 
   //////////////////////////////////////////////////
   // Constants
@@ -33,7 +33,7 @@ abstract class HTTPConnections {
   static int DFALTMAXCONNS = 20;
 
 
-  static public int setDefaultMaxConections(int n) {
+  public static int setDefaultMaxConections(int n) {
     int old = DFALTMAXCONNS;
     if (n > 0)
       DFALTMAXCONNS = n;
@@ -98,11 +98,11 @@ abstract class HTTPConnections {
     assert actualconnections == 0;
   }
 
-  abstract public HttpClientConnectionManager newManager(HTTPMethod m);
+  public abstract HttpClientConnectionManager newManager(HTTPMethod m);
 
-  abstract public void freeManager(HTTPMethod method);
+  public abstract void freeManager(HTTPMethod method);
 
-  abstract public void close();
+  public abstract void close();
 }
 
 

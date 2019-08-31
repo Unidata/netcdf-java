@@ -26,29 +26,29 @@ import java.util.Formatter;
  */
 
 public abstract class N3iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
 
   // Default fill values, used unless _FillValue variable attribute is set.
-  static public final byte NC_FILL_BYTE = -127;
-  static public final char NC_FILL_CHAR = (char) 0;
-  static public final short NC_FILL_SHORT = (short) -32767;
-  static public final int NC_FILL_INT = -2147483647;
-  static public final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
-  static public final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
+  public static final byte NC_FILL_BYTE = -127;
+  public static final char NC_FILL_CHAR = (char) 0;
+  public static final short NC_FILL_SHORT = (short) -32767;
+  public static final int NC_FILL_INT = -2147483647;
+  public static final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
+  public static final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
 
-  static public final byte NC_FILL_UBYTE = (byte) 255;
-  static public final short NC_FILL_USHORT = (short) 65535;
-  static public final int NC_FILL_UINT = (int) 4294967295L;
-  static public final long NC_FILL_INT64 = -9223372036854775806L; // 0x8000000000000002. Only bits 63 and 1 set.
+  public static final byte NC_FILL_UBYTE = (byte) 255;
+  public static final short NC_FILL_USHORT = (short) 65535;
+  public static final int NC_FILL_UINT = (int) 4294967295L;
+  public static final long NC_FILL_INT64 = -9223372036854775806L; // 0x8000000000000002. Only bits 63 and 1 set.
 
   // We want to use 18446744073709551614ULL here (see https://goo.gl/buBal9), but that's too big to fit into a
   // signed long (Java doesn't have unsigned types). So, assign the hex string that WOULD correspond to that value
   // *if it were treated as unsigned*. Java will treat it as signed and see "-2", but we don't much care.
-  static public final long NC_FILL_UINT64 = 0xfffffffffffffffeL;
+  public static final long NC_FILL_UINT64 = 0xfffffffffffffffeL;
 
-  static public final String NC_FILL_STRING = "";
+  public static final String NC_FILL_STRING = "";
 
-  static public Number getFillValueDefault(DataType dtype) {
+  public static Number getFillValueDefault(DataType dtype) {
     if ((dtype == DataType.BYTE) || (dtype == DataType.ENUM1))
       return N3iosp.NC_FILL_BYTE;
     if (dtype == DataType.UBYTE)
@@ -116,14 +116,14 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * Each fixed-size variable and the data for one record's worth of a single record variable are limited
    * to a little less than 4 GiB.
    */
-  static public final long MAX_VARSIZE = (long) 2 * Integer.MAX_VALUE - 2; // 4,294,967,292
+  public static final long MAX_VARSIZE = (long) 2 * Integer.MAX_VALUE - 2; // 4,294,967,292
 
   /**
    * The maximum number of records is 2^32-1.
    */
-  static public final int MAX_NUMRECS = Integer.MAX_VALUE;
+  public static final int MAX_NUMRECS = Integer.MAX_VALUE;
 
-  static private boolean syncExtendOnly = false;
+  private static boolean syncExtendOnly = false;
 
   /**
    * Set a static property.
@@ -135,7 +135,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @param name property name
    * @param value property value
    */
-  static public void setProperty(String name, String value) {
+  public static void setProperty(String name, String value) {
     if (name.equalsIgnoreCase("syncExtendOnly"))
       syncExtendOnly = value.equalsIgnoreCase("true");
   }
@@ -246,7 +246,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   /**
    * @deprecated use makeValidNetcdfObjectName
    */
-  static public String makeValidNetcdf3ObjectName(String name) {
+  public static String makeValidNetcdf3ObjectName(String name) {
     StringBuilder sb = new StringBuilder(name);
 
     while (sb.length() > 0) {
@@ -283,7 +283,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   // static private final String special1 = "_\\.@\\+\\-";
   // static private final String special2 = " ";
   // static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\.\\-\\+]*");
-  static private final Pattern objectNamePatternOld = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\:\\(\\)\\.\\-\\+]*");
+  private static final Pattern objectNamePatternOld = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\:\\(\\)\\.\\-\\+]*");
 
   /**
    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
@@ -293,19 +293,19 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @return true if valid name.
    * @deprecated use isValidNetcdfObjectName
    */
-  static public boolean isValidNetcdf3ObjectName(String name) {
+  public static boolean isValidNetcdf3ObjectName(String name) {
     Matcher m = objectNamePatternOld.matcher(name);
     return m.matches();
   }
 
-  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
+  private static final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
 
   /**
    * Valid Netcdf Object name as a regular expression.
    * 
    * @return regular expression pattern describing valid Netcdf Object names.
    */
-  static public Pattern getValidNetcdf3ObjectNamePattern() {
+  public static Pattern getValidNetcdf3ObjectNamePattern() {
     return objectNamePattern;
   }
 
@@ -329,7 +329,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @return converted name
    * @deprecated use makeValidNetcdfObjectName
    */
-  static public String createValidNetcdf3ObjectName(String name) {
+  public static String createValidNetcdf3ObjectName(String name) {
     StringBuilder sb = new StringBuilder(name);
 
     // LOOK: could escape characters, as in DODS (%xx) ??
@@ -1006,9 +1006,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @return primitive array with data read in
    * @throws java.io.IOException on error
    */
-  abstract protected Object readData(Layout index, DataType dataType) throws IOException;
+  protected abstract Object readData(Layout index, DataType dataType) throws IOException;
 
-  abstract protected long readData(Layout index, DataType dataType, WritableByteChannel out) throws IOException;
+  protected abstract long readData(Layout index, DataType dataType, WritableByteChannel out) throws IOException;
 
 
   /**
@@ -1019,9 +1019,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @param dataType dataType of the variable
    * @throws java.io.IOException on error
    */
-  abstract protected void writeData(Array aa, Layout index, DataType dataType) throws IOException;
+  protected abstract void writeData(Array aa, Layout index, DataType dataType) throws IOException;
 
-  abstract protected void _open(ucar.unidata.io.RandomAccessFile raf);
+  protected abstract void _open(ucar.unidata.io.RandomAccessFile raf);
 
-  abstract protected void _create(ucar.unidata.io.RandomAccessFile raf);
+  protected abstract void _create(ucar.unidata.io.RandomAccessFile raf);
 }

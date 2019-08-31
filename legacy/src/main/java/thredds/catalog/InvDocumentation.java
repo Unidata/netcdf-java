@@ -190,11 +190,11 @@ public class InvDocumentation {
   // for bean editing
   public InvDocumentation() {}
 
-  static public String hiddenProperties() {
+  public static String hiddenProperties() {
     return "inlineContent type URI xlinkContent";
   }
 
-  static public String editableProperties() {
+  public static String editableProperties() {
     return "xlinkTitle xlinkHref";
   }
 }

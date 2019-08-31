@@ -20,7 +20,7 @@ import java.io.IOException;
 
 
 public class StructurePseudo2Dim extends StructurePseudoDS {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudo2Dim.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudo2Dim.class);
   private List<Variable> orgVariables = new ArrayList<>();
   private static final boolean debugRecord = false;
 

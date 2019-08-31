@@ -17,7 +17,7 @@ import java.util.*;
  * @author caron
  */
 public class GridTimeCoord implements Comparable<GridTimeCoord> {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridTimeCoord.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridTimeCoord.class);
 
   protected int seq = 0; // for getting a unique name
   protected String timeUdunit;
@@ -271,7 +271,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     return o.getNTimes() - getNTimes(); // reverse sort on number of coords
   }
 
-  static protected class TimeCoordWithInterval implements Comparable<TimeCoordWithInterval> {
+  protected static class TimeCoordWithInterval implements Comparable<TimeCoordWithInterval> {
     public Date coord;
     public int start, interval;
 

@@ -27,7 +27,7 @@ public class MadisPointObsDataset extends PointObsDatasetImpl implements TypedDa
 
   private boolean debug = false, debugLinks = false;
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     if (ds.findVariable("staticIds") == null)
       return false;
     if (ds.findVariable("nStaticIds") == null)

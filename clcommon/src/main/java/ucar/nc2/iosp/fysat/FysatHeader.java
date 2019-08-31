@@ -31,7 +31,7 @@ import ucar.unidata.util.Parameter;
 public final class FysatHeader {
 
   private static final boolean debug = false;
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FysatHeader.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FysatHeader.class);
 
   int FY_AWX_PIB_LEN = 40; // FY Satellite AWX product indentification block
 

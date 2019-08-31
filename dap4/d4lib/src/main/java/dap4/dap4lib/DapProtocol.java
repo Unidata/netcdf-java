@@ -14,13 +14,13 @@ import java.util.Map;
  * Store protocol related constants
  */
 
-abstract public class DapProtocol implements DapCodes {
-  static public final String X_DAP_SERVER = "TDS-4";
-  static public final String X_DAP_VERSION = "4.0";
+public abstract class DapProtocol implements DapCodes {
+  public static final String X_DAP_SERVER = "TDS-4";
+  public static final String X_DAP_VERSION = "4.0";
 
-  static public final String CONSTRAINTTAG = "dap4.ce";
+  public static final String CONSTRAINTTAG = "dap4.ce";
 
-  static public Map<RequestMode, ContentType> contenttypes;
+  public static Map<RequestMode, ContentType> contenttypes;
 
   static {
     contenttypes = new HashMap<RequestMode, ContentType>();
@@ -38,7 +38,7 @@ abstract public class DapProtocol implements DapCodes {
 
   //////////////////////////////////////////////////
 
-  static public class ContentType {
+  public static class ContentType {
     public RequestMode mode;
     public String contenttype;
     public String xmltype;

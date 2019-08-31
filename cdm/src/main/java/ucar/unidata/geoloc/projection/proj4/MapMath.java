@@ -33,17 +33,17 @@ import ucar.unidata.geoloc.ProjectionRect;
 
 public class MapMath {
 
-  public final static double HALFPI = Math.PI / 2.0;
-  public final static double QUARTERPI = Math.PI / 4.0;
-  public final static double TWOPI = Math.PI * 2.0;
+  public static final double HALFPI = Math.PI / 2.0;
+  public static final double QUARTERPI = Math.PI / 4.0;
+  public static final double TWOPI = Math.PI * 2.0;
 
-  public final static ProjectionRect WORLD_BOUNDS_RAD =
+  public static final ProjectionRect WORLD_BOUNDS_RAD =
       new ProjectionRect(-Math.PI, -Math.PI / 2, Math.PI * 2, Math.PI);
-  public final static ProjectionRect WORLD_BOUNDS = new ProjectionRect(-180, -90, 360, 180);
+  public static final ProjectionRect WORLD_BOUNDS = new ProjectionRect(-180, -90, 360, 180);
 
-  public final static double EPS10 = 1e-10;
-  public final static double RTD = 180.0 / Math.PI;
-  public final static double DTR = Math.PI / 180.0;
+  public static final double EPS10 = 1e-10;
+  public static final double RTD = 180.0 / Math.PI;
+  public static final double DTR = Math.PI / 180.0;
 
   /**
    * Degree versions of trigonometric functions
@@ -238,9 +238,9 @@ public class MapMath {
     return a;
   }
 
-  public final static int DONT_INTERSECT = 0;
-  public final static int DO_INTERSECT = 1;
-  public final static int COLLINEAR = 2;
+  public static final int DONT_INTERSECT = 0;
+  public static final int DO_INTERSECT = 1;
+  public static final int COLLINEAR = 2;
 
   public static int intersectSegments(ProjectionPoint aStart, ProjectionPoint aEnd, ProjectionPoint bStart,
       ProjectionPoint bEnd, ProjectionPointImpl p) {
@@ -342,7 +342,7 @@ public class MapMath {
     return cosphi / Math.sqrt(1.0 - es * sinphi * sinphi);
   }
 
-  private final static int N_ITER = 15;
+  private static final int N_ITER = 15;
 
   public static double phi2(double ts, double e) {
     double eccnth, phi, con, dphi;
@@ -361,19 +361,19 @@ public class MapMath {
     return phi;
   }
 
-  private final static double C00 = 1.0;
-  private final static double C02 = .25;
-  private final static double C04 = .046875;
-  private final static double C06 = .01953125;
-  private final static double C08 = .01068115234375;
-  private final static double C22 = .75;
-  private final static double C44 = .46875;
-  private final static double C46 = .01302083333333333333;
-  private final static double C48 = .00712076822916666666;
-  private final static double C66 = .36458333333333333333;
-  private final static double C68 = .00569661458333333333;
-  private final static double C88 = .3076171875;
-  private final static int MAX_ITER = 10;
+  private static final double C00 = 1.0;
+  private static final double C02 = .25;
+  private static final double C04 = .046875;
+  private static final double C06 = .01953125;
+  private static final double C08 = .01068115234375;
+  private static final double C22 = .75;
+  private static final double C44 = .46875;
+  private static final double C46 = .01302083333333333333;
+  private static final double C48 = .00712076822916666666;
+  private static final double C66 = .36458333333333333333;
+  private static final double C68 = .00569661458333333333;
+  private static final double C88 = .3076171875;
+  private static final int MAX_ITER = 10;
 
   public static double[] enfn(double es) {
     double t;
@@ -406,12 +406,12 @@ public class MapMath {
     return phi;
   }
 
-  private final static double P00 = .33333333333333333333;
-  private final static double P01 = .17222222222222222222;
-  private final static double P02 = .10257936507936507936;
-  private final static double P10 = .06388888888888888888;
-  private final static double P11 = .06640211640211640211;
-  private final static double P20 = .01641501294219154443;
+  private static final double P00 = .33333333333333333333;
+  private static final double P01 = .17222222222222222222;
+  private static final double P02 = .10257936507936507936;
+  private static final double P10 = .06388888888888888888;
+  private static final double P11 = .06640211640211640211;
+  private static final double P20 = .01641501294219154443;
 
   public static double[] authset(double es) {
     double t;

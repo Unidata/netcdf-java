@@ -30,13 +30,13 @@ import java.util.*;
  * @since 8/8/13
  */
 public class BufrConfig {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrConfig.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrConfig.class);
 
-  static public BufrConfig scanEntireFile(RandomAccessFile raf) throws IOException {
+  public static BufrConfig scanEntireFile(RandomAccessFile raf) throws IOException {
     return new BufrConfig(raf);
   }
 
-  static public BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) throws IOException {
+  public static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) throws IOException {
     BufrConfig config = new BufrConfig(raf, m);
     if (iospParam != null)
       config.merge(iospParam);

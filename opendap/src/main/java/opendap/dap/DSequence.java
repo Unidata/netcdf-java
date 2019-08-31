@@ -65,12 +65,12 @@ public class DSequence extends DConstructor implements ClientIO {
   /**
    * The start of instance byte marker
    */
-  static protected byte START_OF_INSTANCE = 0x5A;
+  protected static byte START_OF_INSTANCE = 0x5A;
 
   /**
    * The end of sequence byte marker
    */
-  static protected byte END_OF_SEQUENCE = (byte) 0xA5;
+  protected static byte END_OF_SEQUENCE = (byte) 0xA5;
 
   /**
    * The variables in this <code>DSequence</code>, stored in a

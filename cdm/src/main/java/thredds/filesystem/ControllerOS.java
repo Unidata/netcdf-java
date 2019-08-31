@@ -49,7 +49,7 @@ import java.util.*;
 
 @ThreadSafe
 public class ControllerOS implements MController {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS.class);
 
   ////////////////////////////////////////
 

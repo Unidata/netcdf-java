@@ -401,6 +401,6 @@ public class AggregationExisting extends AggregationOuterDimension {
 
   //////////////////////////////////////////////////
   // back door for testing
-  static public int countCacheUse = 0;
+  public static int countCacheUse = 0;
 
 }

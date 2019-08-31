@@ -48,7 +48,7 @@ public class UnidataTrajectoryObsDataset2 extends TypedDatasetImpl
   protected boolean isTimeDimensionFirst;
   protected TrajectoryObsDataset backingTraj;
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     Attribute cdmDtAtt = ds.findGlobalAttributeIgnoreCase("cdm_data_type");
     if (cdmDtAtt == null)
       cdmDtAtt = ds.findGlobalAttributeIgnoreCase("cdm_datatype");

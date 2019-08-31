@@ -16,8 +16,8 @@ import java.net.URI;
  * @author john caron
  */
 
-abstract public class InvAccess {
-  static private final Logger logger = LoggerFactory.getLogger(InvAccess.class);
+public abstract class InvAccess {
+  private static final Logger logger = LoggerFactory.getLogger(InvAccess.class);
 
   protected InvDataset dataset;
   protected ServiceType type;

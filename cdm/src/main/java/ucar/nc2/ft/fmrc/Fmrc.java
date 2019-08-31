@@ -37,9 +37,9 @@ import java.util.*;
  */
 @ThreadSafe
 public class Fmrc implements Closeable {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Fmrc.class);
-  static private final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
-  static private NcMLWriter ncmlWriter = new NcMLWriter();
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Fmrc.class);
+  private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
+  private static NcMLWriter ncmlWriter = new NcMLWriter();
 
   /**
    * Factory method

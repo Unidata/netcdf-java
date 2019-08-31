@@ -20,7 +20,7 @@ public class DapDataset extends DapGroup {
   // Constants
 
   // Do not, for now, allow maps to specify fields
-  static private final boolean ALLOWFIELDMAPS = false;
+  private static final boolean ALLOWFIELDMAPS = false;
 
   //////////////////////////////////////////////////
   // Instance variables

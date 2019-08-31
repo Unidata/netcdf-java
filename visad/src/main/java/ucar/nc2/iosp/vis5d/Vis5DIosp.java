@@ -48,57 +48,57 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   /**
    * maximum number of varaiables
    */
-  private final static int MAXVARS = 200;
+  private static final int MAXVARS = 200;
 
   /**
    * maximum number of times
    */
-  private final static int MAXTIMES = 400;
+  private static final int MAXTIMES = 400;
 
   /**
    * maximum number of rows
    */
-  private final static int MAXROWS = 400;
+  private static final int MAXROWS = 400;
 
   /**
    * maximum number of columns
    */
-  private final static int MAXCOLUMNS = 400;
+  private static final int MAXCOLUMNS = 400;
 
   /**
    * maximum number of levels
    */
-  private final static int MAXLEVELS = 400;
+  private static final int MAXLEVELS = 400;
 
   /**
    * row variable name
    */
-  private final static String ROW = "row";
+  private static final String ROW = "row";
 
   /**
    * column variable name
    */
-  private final static String COLUMN = "col";
+  private static final String COLUMN = "col";
 
   /**
    * level variable name
    */
-  private final static String LEVEL = "lev";
+  private static final String LEVEL = "lev";
 
   /**
    * time variable name
    */
-  private final static String TIME = "time";
+  private static final String TIME = "time";
 
   /**
    * latitude variable name
    */
-  private final static String LAT = "lat";
+  private static final String LAT = "lat";
 
   /**
    * longitude variable name
    */
-  private final static String LON = "lon";
+  private static final String LON = "lon";
 
   /**
    * maximum number of projection arguments
@@ -616,7 +616,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   /**
    * Get all the information about a Vis5D file
    */
-  static public class Vis5DLookup implements GridTableLookup {
+  public static class Vis5DLookup implements GridTableLookup {
 
     /**
      * Gets a representative grid for this lookup

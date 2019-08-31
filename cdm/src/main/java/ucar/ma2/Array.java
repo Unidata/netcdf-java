@@ -57,7 +57,7 @@ public abstract class Array {
    * @param shape shape of the array.
    * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
    */
-  static public Array factory(DataType dataType, int[] shape) {
+  public static Array factory(DataType dataType, int[] shape) {
     return factory(dataType, Index.factory(shape), null);
   }
 
@@ -70,12 +70,12 @@ public abstract class Array {
    * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
    * @throws ClassCastException wrong storage type
    */
-  static public Array factory(DataType dataType, int[] shape, Object storage) {
+  public static Array factory(DataType dataType, int[] shape, Object storage) {
     return factory(dataType, Index.factory(shape), storage);
   }
 
   /* generate new Array with given type, index and storage */
-  static public Array factory(DataType dtype, Index index, Object storage) {
+  public static Array factory(DataType dtype, Index index, Object storage) {
     switch (dtype) {
       case DOUBLE:
         return ArrayDouble.factory(index, (double[]) storage);
@@ -128,7 +128,7 @@ public abstract class Array {
    * @param storage must be an Array type. must not be null
    * @return ArrayObject
    */
-  static public Array makeVlenArray(int[] shape, @Nonnull Array[] storage) {
+  public static Array makeVlenArray(int[] shape, @Nonnull Array[] storage) {
     Index index = Index.factory(shape);
     return ArrayObject.factory(storage[0].getDataType(), storage[0].getClass(), true, index, storage);
   }
@@ -150,7 +150,7 @@ public abstract class Array {
    * @throws IllegalArgumentException storage.length != product of shapes
    * @throws ClassCastException wrong storage type
    */
-  static public Array makeObjectArray(DataType dtype, Class classType, int[] shape, Object storage) {
+  public static Array makeObjectArray(DataType dtype, Class classType, int[] shape, Object storage) {
     Index index = Index.factory(shape);
     return ArrayObject.factory(dtype, classType, false, index, (Object[]) storage);
   }
@@ -163,7 +163,7 @@ public abstract class Array {
    * @param storage primitive array of correct type of length 1
    * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
    */
-  static public Array factoryConstant(DataType dtype, int[] shape, Object storage) {
+  public static Array factoryConstant(DataType dtype, int[] shape, Object storage) {
     Index index = new IndexConstant(shape);
     // cant go though the factory, must call the general constructor
     switch (dtype) {
@@ -210,7 +210,7 @@ public abstract class Array {
     }
   }
 
-  static public Array makeFromJavaArray(Object javaArray) {
+  public static Array makeFromJavaArray(Object javaArray) {
     return makeFromJavaArray(javaArray, false);
   }
 
@@ -222,7 +222,7 @@ public abstract class Array {
    * @param javaArray scalar Object or a java array of any rank and type
    * @return Array of the appropriate rank and type, with the data copied from javaArray.
    */
-  static public Array makeFromJavaArray(Object javaArray, boolean isUnsigned) {
+  public static Array makeFromJavaArray(Object javaArray, boolean isUnsigned) {
     // get the rank and type
     int rank_ = 0;
     Class componentType = javaArray.getClass();
@@ -253,7 +253,7 @@ public abstract class Array {
     return aa;
   }
 
-  static private void reflectArrayCopyIn(Object jArray, Array aa, IndexIterator aaIter) {
+  private static void reflectArrayCopyIn(Object jArray, Array aa, IndexIterator aaIter) {
     Class cType = jArray.getClass().getComponentType();
     if (cType.isPrimitive()) {
       aa.copyFrom1DJavaArray(aaIter, jArray); // subclass does type-specific copy
@@ -263,7 +263,7 @@ public abstract class Array {
     }
   }
 
-  static private void reflectArrayCopyOut(Object jArray, Array aa, IndexIterator aaIter) {
+  private static void reflectArrayCopyOut(Object jArray, Array aa, IndexIterator aaIter) {
     Class cType = jArray.getClass().getComponentType();
     // if (cType.isPrimitive()) { // Rob Weingruber <weingrub@rap.ucar.edu> May 11, 2011
     if (!cType.isArray()) {
@@ -285,7 +285,7 @@ public abstract class Array {
    * @param dstPos starting at
    * @param len number of elements to copy
    */
-  static public void arraycopy(Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len) {
+  public static void arraycopy(Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len) {
     // deal with special case
     if (arraySrc.isConstant()) {
       double d = arraySrc.getDouble(0);
@@ -308,7 +308,7 @@ public abstract class Array {
    * @param incr increment
    * @return 1D array
    */
-  static public Array makeArray(DataType dtype, int npts, double start, double incr) {
+  public static Array makeArray(DataType dtype, int npts, double start, double incr) {
     Array result = Array.factory(dtype, new int[] {npts});
     IndexIterator dataI = result.getIndexIterator();
     for (int i = 0; i < npts; i++) {
@@ -326,7 +326,7 @@ public abstract class Array {
    * @return resulting 1D array.
    * @throws NumberFormatException if string values not parseable to specified data type
    */
-  static public Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
+  public static Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
     Array result = Array.factory(dtype, new int[] {stringValues.size()});
     IndexIterator dataI = result.getIndexIterator();
 
@@ -360,7 +360,7 @@ public abstract class Array {
    * @return resulting 1D array.
    * @throws NumberFormatException if string values not parseable to specified data type
    */
-  static public Array makeArray(DataType dtype, String[] stringValues) throws NumberFormatException {
+  public static Array makeArray(DataType dtype, String[] stringValues) throws NumberFormatException {
     return makeArray(dtype, Arrays.asList(stringValues));
   }
 
@@ -370,7 +370,7 @@ public abstract class Array {
    * @param org original array
    * @return rank1 array of rank + 1
    */
-  static public Array makeArrayRankPlusOne(Array org) {
+  public static Array makeArrayRankPlusOne(Array org) {
     int[] shape = new int[org.getRank() + 1];
     System.arraycopy(org.getShape(), 0, shape, 1, org.getRank());
     shape[0] = 1;
@@ -516,9 +516,9 @@ public abstract class Array {
   // This has consequences all over ucar.ma2.
 
   // used to create Array from java array
-  abstract protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray);
+  protected abstract void copyFrom1DJavaArray(IndexIterator iter, Object javaArray);
 
-  abstract protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray);
+  protected abstract void copyTo1DJavaArray(IndexIterator iter, Object javaArray);
 
   /**
    * create new Array with given Index and the same backing store
@@ -526,7 +526,7 @@ public abstract class Array {
    * @param index use this Index
    * @return a view of the Array using the given Index
    */
-  abstract protected Array createView(Index index);
+  protected abstract Array createView(Index index);
 
   /**
    * Create a new Array as a subsection of this Array, with rank reduction.
@@ -1094,45 +1094,45 @@ public abstract class Array {
    * @throws ArrayIndexOutOfBoundsException if index incorrect rank or out of bounds
    * @throws ClassCastException if Object is incorrect type
    */
-  abstract public void setObject(Index ima, Object value);
+  public abstract void setObject(Index ima, Object value);
 
   //// these are for optimized access with no need to check index values
   //// elem is the index into the backing data
-  abstract public double getDouble(int elem);
+  public abstract double getDouble(int elem);
 
-  abstract public void setDouble(int elem, double val);
+  public abstract void setDouble(int elem, double val);
 
-  abstract public float getFloat(int elem);
+  public abstract float getFloat(int elem);
 
-  abstract public void setFloat(int elem, float val);
+  public abstract void setFloat(int elem, float val);
 
-  abstract public long getLong(int elem);
+  public abstract long getLong(int elem);
 
-  abstract public void setLong(int elem, long value);
+  public abstract void setLong(int elem, long value);
 
-  abstract public int getInt(int elem);
+  public abstract int getInt(int elem);
 
-  abstract public void setInt(int elem, int value);
+  public abstract void setInt(int elem, int value);
 
-  abstract public short getShort(int elem);
+  public abstract short getShort(int elem);
 
-  abstract public void setShort(int elem, short value);
+  public abstract void setShort(int elem, short value);
 
-  abstract public byte getByte(int elem);
+  public abstract byte getByte(int elem);
 
-  abstract public void setByte(int elem, byte value);
+  public abstract void setByte(int elem, byte value);
 
-  abstract public char getChar(int elem);
+  public abstract char getChar(int elem);
 
-  abstract public void setChar(int elem, char value);
+  public abstract void setChar(int elem, char value);
 
-  abstract public boolean getBoolean(int elem);
+  public abstract boolean getBoolean(int elem);
 
-  abstract public void setBoolean(int elem, boolean value);
+  public abstract void setBoolean(int elem, boolean value);
 
-  abstract public Object getObject(int elem);
+  public abstract Object getObject(int elem);
 
-  abstract public void setObject(int elem, Object value);
+  public abstract void setObject(int elem, Object value);
 
   public String toString() {
     StringBuilder sbuff = new StringBuilder();

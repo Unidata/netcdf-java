@@ -36,16 +36,16 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * A {@code true} value for this field does not indicate whether a Variable
    * {@link #isCaching() is caching}, only that it's <i>permitted</i> to cache.
    */
-  static public boolean permitCaching = true;
+  public static boolean permitCaching = true;
 
-  static public int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
-  static public int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
+  public static int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
+  public static int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
                                                           // defaultSizeToCache
 
-  static protected boolean debugCaching = false;
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
+  protected static boolean debugCaching = false;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
 
-  static public String getDAPName(String name, Variable context) {
+  public static String getDAPName(String name, Variable context) {
     if (RC.getUseGroups()) {
       // leave off leading '/' for root entries
       Group xg = context.getParentGroup();
@@ -64,7 +64,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return name;
   }
 
-  static public String getDAPName(Variable v) {
+  public static String getDAPName(Variable v) {
     return Variable.getDAPName(v.getShortName(), v);
   }
 
@@ -1590,7 +1590,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Public by accident.
    */
-  static protected class Cache {
+  protected static class Cache {
     public Array data;
     public boolean isCaching = false;
     public boolean cachingSet = false;

@@ -22,7 +22,7 @@ public enum ResponseFormat {
     return format;
   }
 
-  static public ResponseFormat formatFor(String s) {
+  public static ResponseFormat formatFor(String s) {
     if (s == null)
       return null;
     for (ResponseFormat format : ResponseFormat.values()) {

@@ -20,10 +20,10 @@ import java.io.IOException;
  */
 
 public class N3header extends NCheader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
 
   static final byte[] MAGIC = new byte[] {0x43, 0x44, 0x46, 0x01};
-  static private final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
+  private static final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 
   static final byte[] MAGIC_LONG = new byte[] {0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the
                                                                         // variable offset value
@@ -31,7 +31,7 @@ public class N3header extends NCheader {
   static final int MAGIC_VAR = 11;
   static final int MAGIC_ATT = 12;
 
-  static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+  public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     switch (checkFileType(raf)) {
       case NC_FORMAT_NETCDF3:
       case NC_FORMAT_64BIT_OFFSET:
@@ -42,8 +42,8 @@ public class N3header extends NCheader {
     return false;
   }
 
-  static public boolean disallowFileTruncation = false; // see NetcdfFile.setDebugFlags
-  static public boolean debugHeaderSize = false; // see NetcdfFile.setDebugFlags
+  public static boolean disallowFileTruncation = false; // see NetcdfFile.setDebugFlags
+  public static boolean debugHeaderSize = false; // see NetcdfFile.setDebugFlags
 
   private static boolean debugVariablePos = false;
   private static boolean debugStreaming = false;

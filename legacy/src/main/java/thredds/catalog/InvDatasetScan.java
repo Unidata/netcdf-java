@@ -56,20 +56,20 @@ import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
  * Should be thread safe except that the above two usage notes are not enforced.
  */
 public class InvDatasetScan extends InvCatalogRef {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InvDatasetScan.class);
-  static private String context = "/thredds";
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InvDatasetScan.class);
+  private static String context = "/thredds";
 
-  static public void setContext(String c) {
+  public static void setContext(String c) {
     context = c;
   }
 
-  static private String catalogServletName = "/catalog";
+  private static String catalogServletName = "/catalog";
 
-  static public void setCatalogServletName(String catServletName) {
+  public static void setCatalogServletName(String catServletName) {
     catalogServletName = catServletName;
   }
 
-  static private String makeHref(String path) {
+  private static String makeHref(String path) {
     return context + (catalogServletName == null ? "" : catalogServletName) + "/" + CatalogUtils.escapePathForURL(path)
         + "/catalog.xml";
   }

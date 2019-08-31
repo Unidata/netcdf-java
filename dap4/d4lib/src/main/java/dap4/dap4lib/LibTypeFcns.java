@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
  * Singleton
  */
 
-abstract public class LibTypeFcns {
+public abstract class LibTypeFcns {
   //////////////////////////////////////////////////
   // Static Methods
 
@@ -33,7 +33,7 @@ abstract public class LibTypeFcns {
    * @param type The type of interest
    * @return the size, in databuffer
    */
-  static public int size(DapType type) {
+  public static int size(DapType type) {
     switch (type.getTypeSort()) {
       case Char: // remember serial size is 1, not 2.
       case UInt8:
@@ -58,7 +58,7 @@ abstract public class LibTypeFcns {
     return 0;
   }
 
-  static public Object newVector(DapType type, long count) throws DapException {
+  public static Object newVector(DapType type, long count) throws DapException {
     int icount = (int) count;
     Object vector = null;
     switch (type.getTypeSort()) {
@@ -112,7 +112,7 @@ abstract public class LibTypeFcns {
    * @return resulting array of converted values as an object
    */
 
-  static public Object convertVector(DapType dsttype, DapType srctype, Object src) throws DapException {
+  public static Object convertVector(DapType dsttype, DapType srctype, Object src) throws DapException {
     int i;
 
     TypeSort srcatomtype = srctype.getAtomicType();

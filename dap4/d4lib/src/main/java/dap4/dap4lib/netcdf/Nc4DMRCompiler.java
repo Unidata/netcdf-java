@@ -27,18 +27,18 @@ public class Nc4DMRCompiler {
   //////////////////////////////////////////////////
   // Constants
 
-  static public final boolean DEBUG = false;
+  public static final boolean DEBUG = false;
 
   // Define reserved attributes
-  static public final String UCARTAGVLEN = Nc4DSP.UCARTAGVLEN;
-  static public final String UCARTAGOPAQUE = Nc4DSP.UCARTAGOPAQUE;
+  public static final String UCARTAGVLEN = Nc4DSP.UCARTAGVLEN;
+  public static final String UCARTAGOPAQUE = Nc4DSP.UCARTAGOPAQUE;
 
   static final int NC_FALSE = 0;
   static final int NC_TRUE = 1;
   // "null" id(s)
-  static public final int NC_GRPNULL = 0;
-  static public final int NC_IDNULL = -1;
-  static public final int NC_NOERR = 0;
+  public static final int NC_GRPNULL = 0;
+  public static final int NC_IDNULL = -1;
+  public static final int NC_NOERR = 0;
 
   static int NC_INT_BYTES = (java.lang.Integer.SIZE / java.lang.Byte.SIZE);
   static int NC_LONG_BYTES = (Native.LONG_SIZE);
@@ -55,7 +55,7 @@ public class Nc4DMRCompiler {
    * @param context Any parameters that may help to decide.
    * @return true if this path appears to be processible by this DSP
    */
-  static public boolean dspMatch(String path, DapContext context) {
+  public static boolean dspMatch(String path, DapContext context) {
     for (String s : EXTENSIONS) {
       if (path.endsWith(s))
         return true;

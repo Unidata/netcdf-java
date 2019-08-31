@@ -332,7 +332,7 @@ public abstract class N3streamWriter {
   }
 
   // variable info for reading/writing
-  static protected class Vinfo {
+  protected static class Vinfo {
     Variable v;
     int hsize; // header size
     int vsize; // size of array in bytes. if isRecord, size per record. includes padding

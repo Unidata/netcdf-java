@@ -145,7 +145,7 @@ public class LayoutTiled implements Layout {
     DataChunk next() throws IOException;
   }
 
-  static public class DataChunk {
+  public static class DataChunk {
     public int[] offset; // offset index of this chunk, relative to entire array
     public long filePos; // filePos of a single raw data chunk
 

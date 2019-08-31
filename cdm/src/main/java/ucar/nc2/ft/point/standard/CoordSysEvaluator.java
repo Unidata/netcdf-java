@@ -29,7 +29,7 @@ public class CoordSysEvaluator {
    * @param nt set coordinates short names in this table.
    * @param ds search in this dataset's "Best" coordinate system. If no CoordSystem, try list of coordinate axes
    */
-  static public void findCoords(TableConfig nt, NetcdfDataset ds, Predicate p) {
+  public static void findCoords(TableConfig nt, NetcdfDataset ds, Predicate p) {
     nt.lat = findCoordShortNameByType(ds, AxisType.Lat, p);
     nt.lon = findCoordShortNameByType(ds, AxisType.Lon, p);
     nt.time = findCoordShortNameByType(ds, AxisType.Time, p);
@@ -45,17 +45,17 @@ public class CoordSysEvaluator {
    * @param atype search for this type of CoordinateAxis. takes the first one it finds.
    * @return the found CoordinateAxis name, or null if none
    */
-  static public String findCoordNameByType(NetcdfDataset ds, AxisType atype) {
+  public static String findCoordNameByType(NetcdfDataset ds, AxisType atype) {
     CoordinateAxis coordAxis = findCoordByType(ds, atype);
     return coordAxis == null ? null : coordAxis.getFullName();
   }
 
-  static public String findCoordShortNameByType(NetcdfDataset ds, AxisType atype) {
+  public static String findCoordShortNameByType(NetcdfDataset ds, AxisType atype) {
     CoordinateAxis coordAxis = findCoordByType(ds, atype);
     return coordAxis == null ? null : coordAxis.getShortName();
   }
 
-  static public String findCoordShortNameByType(NetcdfDataset ds, AxisType atype, Predicate p) {
+  public static String findCoordShortNameByType(NetcdfDataset ds, AxisType atype, Predicate p) {
     CoordinateAxis coordAxis = findCoordByType(ds, atype, p);
     return coordAxis == null ? null : coordAxis.getShortName();
   }
@@ -67,7 +67,7 @@ public class CoordSysEvaluator {
    * @param atype search for this type of CoordinateAxis. takes the first one it finds.
    * @return the found CoordinateAxis, or null if none
    */
-  static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype) {
+  public static CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype) {
     return findCoordByType(ds, atype, null);
   }
 
@@ -79,7 +79,7 @@ public class CoordSysEvaluator {
    * @param p match this predicate; may be null
    * @return the found CoordinateAxis, or null if none
    */
-  static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype, Predicate p) {
+  public static CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype, Predicate p) {
     // try the "best" coordinate system
     CoordinateSystem use = findBestCoordinateSystem(ds);
     if (use == null)
@@ -92,7 +92,7 @@ public class CoordSysEvaluator {
     return findCoordByType(ds.getCoordinateAxes(), atype, p);
   }
 
-  static public CoordinateAxis findCoordByType(List<CoordinateAxis> axes, AxisType atype, Predicate p) {
+  public static CoordinateAxis findCoordByType(List<CoordinateAxis> axes, AxisType atype, Predicate p) {
     // first search for matching AxisType and "CF axis" attribute
     for (CoordinateAxis axis : axes) {
       if (axis.getAxisType() == atype) {
@@ -122,7 +122,7 @@ public class CoordSysEvaluator {
    * @param atype search for this type of CoordinateAxis. takes the first one it finds.
    * @return the found CoordinateAxis' first Dimension, or null if none or scalar
    */
-  static public Dimension findDimensionByType(NetcdfDataset ds, AxisType atype) {
+  public static Dimension findDimensionByType(NetcdfDataset ds, AxisType atype) {
     CoordinateAxis axis = findCoordByType(ds, atype);
     if (axis == null)
       return null;
@@ -137,7 +137,7 @@ public class CoordSysEvaluator {
    * @param ds search in this dataset
    * @return CoordinateSystem or null if none
    */
-  static private CoordinateSystem findBestCoordinateSystem(NetcdfDataset ds) {
+  private static CoordinateSystem findBestCoordinateSystem(NetcdfDataset ds) {
     // find coordinate system with highest rank (largest number of axes)
     CoordinateSystem use = null;
     for (CoordinateSystem cs : ds.getCoordinateSystems()) {

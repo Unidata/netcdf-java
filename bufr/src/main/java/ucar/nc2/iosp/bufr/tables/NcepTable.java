@@ -22,9 +22,9 @@ import java.util.List;
  * @since 8/22/13
  */
 public class NcepTable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepTable.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepTable.class);
 
-  static private void readNcepTable(String location) throws IOException {
+  private static void readNcepTable(String location) throws IOException {
     try (InputStream ios = BufrTables.openStream(location)) {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
       int count = 0;

@@ -38,11 +38,11 @@ import org.jdom2.input.SAXBuilder;
  * @since May 19, 2009
  */
 public class CdmrFeatureDataset {
-  static public final String PROTOCOL = "cdmrFeature";
-  static public final String SCHEME = PROTOCOL + ":";
+  public static final String PROTOCOL = "cdmrFeature";
+  public static final String SCHEME = PROTOCOL + ":";
 
-  static private boolean debug = false;
-  static private boolean showXML = false;
+  private static boolean debug = false;
+  private static boolean showXML = false;
 
   // all CdmrFeatureDatasets must return their featureType - use as a fail-fast test of the endpoint
   public static FeatureType isCdmrfEndpoint(String endpoint) throws IOException {
@@ -65,7 +65,7 @@ public class CdmrFeatureDataset {
     }
   }
 
-  static public Optional<FeatureDataset> factory(FeatureType wantFeatureType, String endpoint) throws IOException {
+  public static Optional<FeatureDataset> factory(FeatureType wantFeatureType, String endpoint) throws IOException {
     if (endpoint.startsWith(SCHEME))
       endpoint = endpoint.substring(SCHEME.length());
 
@@ -114,7 +114,7 @@ public class CdmrFeatureDataset {
         String.format("Unimplemented featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint));
   }
 
-  static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
+  private static org.jdom2.Document getCapabilities(String endpoint) throws IOException {
     org.jdom2.Document doc;
     try (InputStream in = CdmRemote.sendQuery(null, endpoint, "req=capabilities")) {
       SAXBuilder builder = new SAXBuilder();

@@ -36,7 +36,7 @@ import java.util.StringTokenizer;
  * @since Dec 17, 2008
  */
 public class DefaultConvention extends CoordSysBuilder {
-  static private final Logger logger = LoggerFactory.getLogger(DefaultConvention.class);
+  private static final Logger logger = LoggerFactory.getLogger(DefaultConvention.class);
 
   protected ProjectionCT projCT = null;
 

@@ -48,7 +48,7 @@ import java.util.*;
 public class FeatureCollectionConfig {
   // keys for storing AuxInfo objects
   // static public final String AUX_GRIB_CONFIG = "gribConfig";
-  static public final String AUX_CONFIG = "fcConfig";
+  public static final String AUX_CONFIG = "fcConfig";
 
   public enum ProtoChoice {
     First, Random, Latest, Penultimate, Run
@@ -70,7 +70,7 @@ public class FeatureCollectionConfig {
     none, directory, file, timePeriod, all
   }
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
 
   //////////////////////////////////////////////
 
@@ -260,7 +260,7 @@ public class FeatureCollectionConfig {
   }
 
   // <update startup="nocheck" rescan="cron expr" trigger="allow" recheckAfter="15 min"/>
-  static public class UpdateConfig {
+  public static class UpdateConfig {
     public String recheckAfter; // used by non-GRIB FC
     public String rescan;
     public boolean triggerOk = true;
@@ -312,7 +312,7 @@ public class FeatureCollectionConfig {
   }
 
   // <protoDataset choice="First | Random | Penultimate | Latest | Run" param="0" change="expr" />
-  static public class ProtoConfig {
+  public static class ProtoConfig {
     public ProtoChoice choice = ProtoChoice.Penultimate;
     public String param = null;
     public String change = null;
@@ -354,12 +354,12 @@ public class FeatureCollectionConfig {
   // return regularizeDefault;
   // }
 
-  static private boolean regularizeDefault = false;
+  private static boolean regularizeDefault = false;
 
-  static private Set<FmrcDatasetType> defaultFmrcDatasetTypes = Collections.unmodifiableSet(
+  private static Set<FmrcDatasetType> defaultFmrcDatasetTypes = Collections.unmodifiableSet(
       EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best, FmrcDatasetType.Files, FmrcDatasetType.Runs));
 
-  static public class FmrcConfig {
+  public static class FmrcConfig {
     public boolean regularize = regularizeDefault;
     public Set<FmrcDatasetType> datasets = defaultFmrcDatasetTypes;
     private boolean explicit = false;
@@ -410,7 +410,7 @@ public class FeatureCollectionConfig {
     }
   }
 
-  static public class BestDataset {
+  public static class BestDataset {
     public String name;
     public double greaterThan;
 
@@ -421,10 +421,10 @@ public class FeatureCollectionConfig {
 
   }
 
-  static private Set<PointDatasetType> defaultPointDatasetTypes =
+  private static Set<PointDatasetType> defaultPointDatasetTypes =
       Collections.unmodifiableSet(EnumSet.of(PointDatasetType.cdmrFeature, PointDatasetType.Files));
 
-  static public class PointConfig {
+  public static class PointConfig {
     public Set<PointDatasetType> datasets = defaultPointDatasetTypes;
     protected boolean explicit = false;
 
@@ -458,12 +458,12 @@ public class FeatureCollectionConfig {
 
   // GribConfig
 
-  static private final Set<GribDatasetType> defaultGribDatasetTypes = Collections.unmodifiableSet(
+  private static final Set<GribDatasetType> defaultGribDatasetTypes = Collections.unmodifiableSet(
       EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Files, GribDatasetType.Latest));
 
-  static public boolean useGenTypeDef = false, useTableVersionDef = false, intvMergeDef = true, useCenterDef = false;
+  public static boolean useGenTypeDef = false, useTableVersionDef = false, intvMergeDef = true, useCenterDef = false;
 
-  static public class GribConfig {
+  public static class GribConfig {
 
     public Map<Integer, Integer> gdsHash; // map one gds hash to another
     public Map<Integer, String> gdsNamer; // hash, group name
@@ -822,7 +822,7 @@ public class FeatureCollectionConfig {
     }
   }
 
-  static public class GribIntvFilter {
+  public static class GribIntvFilter {
     public List<IntvFilter> filterList = new ArrayList<>();
     public boolean isZeroExcluded = false; // default is false 1/31/2019
 

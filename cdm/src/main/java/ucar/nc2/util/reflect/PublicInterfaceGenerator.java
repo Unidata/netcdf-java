@@ -95,7 +95,7 @@ public class PublicInterfaceGenerator {
     }
   }
 
-  static public void showMethods(Class c, PrintStream out) {
+  public static void showMethods(Class c, PrintStream out) {
 
     out.println("Methods for class " + c.getName());
 

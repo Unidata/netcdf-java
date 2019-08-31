@@ -29,7 +29,7 @@ import thredds.util.DodsURLExtractor;
  * @since Jun 8, 2005 15:34:04 -0600
  */
 public class CrawlableDatasetDods implements CrawlableDataset {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrawlableDatasetDods.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrawlableDatasetDods.class);
 
   private static DodsURLExtractor urlExtractor = null;
 

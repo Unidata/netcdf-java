@@ -16,14 +16,14 @@ import dap4.core.util.DapUtil;
  * via annotation
  */
 
-abstract public class Nc4Notes {
+public abstract class Nc4Notes {
   //////////////////////////////////////////////////
   // Constants
 
   // Mnemonics
-  static public final int NOGROUP = -1;
-  static public final int NOID = -1;
-  static public final int NOFIELDID = -1;
+  public static final int NOGROUP = -1;
+  public static final int NOID = -1;
+  public static final int NOFIELDID = -1;
 
   //////////////////////////////////////////////////
   // Use a factory so we can debug constructor calls
@@ -50,11 +50,11 @@ abstract public class Nc4Notes {
   //////////////////////////////////////////////////
   // Manage the compound id for variables
 
-  static public long getVarId(VarNotes note) {
+  public static long getVarId(VarNotes note) {
     return getVarId(note.gid, note.id, note.getFieldIndex());
   }
 
-  static public long getVarId(int gid, int varid, int ifid) {
+  public static long getVarId(int gid, int varid, int ifid) {
     long gv = ((long) gid) << 32;
     assert varid < 0x100000;
     gv = gv | ((long) varid) << 20;
@@ -67,11 +67,11 @@ abstract public class Nc4Notes {
   //////////////////////////////////////////////////
   // Type Decls
 
-  static public enum NoteSort {
+  public static enum NoteSort {
     TYPE, VAR, GROUP, DIM;
   }
 
-  static public class Notes implements Cloneable {
+  public static class Notes implements Cloneable {
     Nc4DSP dsp; // Need a place to store global state
     NoteSort sort;
     int gid;
@@ -183,7 +183,7 @@ abstract public class Nc4Notes {
     }
   }
 
-  static public class GroupNotes extends Notes {
+  public static class GroupNotes extends Notes {
     protected GroupNotes(int p, int g, Nc4DSP dsp) {
       super(NoteSort.GROUP, p, g, dsp);
     }
@@ -198,7 +198,7 @@ abstract public class Nc4Notes {
 
   }
 
-  static public class DimNotes extends Notes {
+  public static class DimNotes extends Notes {
     protected DimNotes(int g, int id, Nc4DSP dsp) {
       super(NoteSort.DIM, g, id, dsp);
     }
@@ -213,7 +213,7 @@ abstract public class Nc4Notes {
 
   }
 
-  static public class TypeNotes extends Notes {
+  public static class TypeNotes extends Notes {
     public int enumbase = -1;
     public boolean isvlen = false;
 
@@ -285,7 +285,7 @@ abstract public class Nc4Notes {
 
   }
 
-  static public class VarNotes extends Notes {
+  public static class VarNotes extends Notes {
     protected VarNotes(int g, int v, Nc4DSP dsp) {
       super(NoteSort.VAR, g, v, dsp);
     }

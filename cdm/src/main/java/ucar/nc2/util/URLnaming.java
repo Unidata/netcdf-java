@@ -16,7 +16,7 @@ import java.net.URI;
 public class URLnaming {
 
   /// try to figure out if we need to add file: to the location when writing
-  static public String canonicalizeWrite(String location) {
+  public static String canonicalizeWrite(String location) {
     try {
       URI refURI = URI.create(location);
       if (refURI.isAbsolute())

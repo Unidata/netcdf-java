@@ -40,7 +40,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
 
   private static String trajId = "trajectory data";
 
-  static public boolean isValidFile(NetcdfDataset ncd) {
+  public static boolean isValidFile(NetcdfDataset ncd) {
     return (buildConfig(ncd) != null);
   }
 

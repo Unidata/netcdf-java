@@ -39,8 +39,8 @@ import ucar.nc2.util.Indent;
  */
 
 public class Structure extends Variable {
-  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
-  static protected int defaultBufferSize = 500 * 1000; // 500K bytes
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
+  protected static int defaultBufferSize = 500 * 1000; // 500K bytes
 
   protected List<Variable> members;
   protected HashMap<String, Variable> memberHash;

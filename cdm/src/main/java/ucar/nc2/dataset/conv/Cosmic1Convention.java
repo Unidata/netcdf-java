@@ -587,12 +587,12 @@ public class Cosmic1Convention extends CoordSysBuilder {
   /**
    * _more_
    */
-  protected final static double RTD = 180. / Math.PI;
+  protected static final double RTD = 180. / Math.PI;
 
   /**
    * _more_
    */
-  protected final static double DTR = Math.PI / 180.;
+  protected static final double DTR = Math.PI / 180.;
 
   /**
    * _more_

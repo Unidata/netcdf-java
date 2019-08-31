@@ -35,7 +35,7 @@ import java.io.IOException;
  */
 
 public class DodsDirDatasetSource extends DatasetSource {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DodsDirDatasetSource.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DodsDirDatasetSource.class);
   // private static Log log = LogFactory.getLog( DodsDirDatasetSource.class);
 
   private URI accessPointHeaderUri = null;

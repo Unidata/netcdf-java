@@ -56,7 +56,7 @@ import java.io.*;
  * @see BaseType
  * @see DVector
  */
-abstract public class PrimitiveVector extends DAPNode implements ClientIO {
+public abstract class PrimitiveVector extends DAPNode implements ClientIO {
   /**
    * Template variable to use for <code>printDecl</code> and
    * <code>deserialize</code> (<code>BaseTypePrimitiveVector</code> only).
@@ -87,7 +87,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    *
    * @return the number of elements in the array.
    */
-  abstract public int getLength();
+  public abstract int getLength();
 
   /**
    * Sets the number of elements in the array. Allocates a new primitive
@@ -99,7 +99,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    *
    * @param len the number of elements in the array.
    */
-  abstract public void setLength(int len);
+  public abstract void setLength(int len);
 
   /**
    * Reads data from a <code>DataInputStream</code>. This method is only used
@@ -118,7 +118,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    * @throws IOException thrown on any other InputStream exception.
    * @see ClientIO#deserialize(DataInputStream, ServerVersion, StatusUI)
    */
-  abstract public void deserialize(DataInputStream source, ServerVersion sv, StatusUI statusUI)
+  public abstract void deserialize(DataInputStream source, ServerVersion sv, StatusUI statusUI)
       throws IOException, EOFException, DataReadException;
 
   /**
@@ -130,7 +130,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    * @throws IOException thrown on any <code>OutputStream</code>
    *         exception.
    */
-  abstract public void externalize(DataOutputStream sink) throws IOException;
+  public abstract void externalize(DataOutputStream sink) throws IOException;
 
   /**
    * Write a subset of the data to a <code>DataOutputStream</code>.
@@ -203,7 +203,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    *        and controls the leading spaces of the output.
    * @see BaseType#printVal(PrintWriter, String, boolean)
    */
-  abstract public void printVal(PrintWriter os, String space);
+  public abstract void printVal(PrintWriter os, String space);
 
   /**
    * Prints the value of a single variable in this vector.
@@ -213,7 +213,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    * @param index the index of the variable to print.
    * @see DArray#printVal(PrintWriter, String, boolean)
    */
-  abstract public void printSingleVal(PrintWriter os, int index);
+  public abstract void printSingleVal(PrintWriter os, int index);
 
 
   /**
@@ -226,7 +226,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    * This method is provided as an optimization to eliminate massive
    * copying of data.
    */
-  abstract public Object getInternalStorage();
+  public abstract Object getInternalStorage();
 
   /**
    * Set the internal storage for PrimitiveVector.
@@ -238,7 +238,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    * This method is provided as an optimization to eliminate massive
    * copying of data.
    */
-  abstract public void setInternalStorage(Object o);
+  public abstract void setInternalStorage(Object o);
 
   /**
    * Create a new primitive vector using a subset of the data.
@@ -248,7 +248,7 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO {
    * @param stride index stride (i+=stride)
    * @return new primitive vector
    */
-  abstract public PrimitiveVector subset(int start, int stop, int stride);
+  public abstract PrimitiveVector subset(int start, int stop, int stride);
 
   /**
    * Returns a clone of this <code>PrimitiveVector</code>.

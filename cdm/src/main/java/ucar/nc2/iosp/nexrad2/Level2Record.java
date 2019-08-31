@@ -27,7 +27,7 @@ import java.util.Date;
  * @author David Priegnitz
  */
 public class Level2Record {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Level2Record.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Level2Record.class);
 
   /**
    * Reflectivity moment identifier
@@ -147,7 +147,7 @@ public class Level2Record {
    */
   private static final int RADAR_DATA_SIZE = 2432;
 
-  static public String getDatatypeName(int datatype) {
+  public static String getDatatypeName(int datatype) {
     switch (datatype) {
       case REFLECTIVITY:
         return "Reflectivity";
@@ -175,7 +175,7 @@ public class Level2Record {
     }
   }
 
-  static public String getDatatypeUnits(int datatype) {
+  public static String getDatatypeUnits(int datatype) {
     switch (datatype) {
       case REFLECTIVITY:
       case REFLECTIVITY_HIGH:
@@ -295,7 +295,7 @@ public class Level2Record {
     }
   }
 
-  static public String getMessageTypeName(int code) {
+  public static String getMessageTypeName(int code) {
     switch (code) {
       case 1:
         return "digital radar data";
@@ -336,7 +336,7 @@ public class Level2Record {
     }
   }
 
-  static public String getRadialStatusName(int code) {
+  public static String getRadialStatusName(int code) {
     switch (code) {
       case 0:
         return "start of new elevation";
@@ -353,7 +353,7 @@ public class Level2Record {
     }
   }
 
-  static public String getVolumeCoveragePatternName(int code) {
+  public static String getVolumeCoveragePatternName(int code) {
     switch (code) {
       case 11:
         return "16 elevation scans every 5 mins";
@@ -378,7 +378,7 @@ public class Level2Record {
     }
   }
 
-  static public java.util.Date getDate(int julianDays, int msecs) {
+  public static java.util.Date getDate(int julianDays, int msecs) {
     long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
     return new Date(total);
   }

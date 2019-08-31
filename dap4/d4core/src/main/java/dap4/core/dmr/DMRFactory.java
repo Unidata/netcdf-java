@@ -8,7 +8,7 @@ package dap4.core.dmr;
 public class DMRFactory {
   /////////////////////////////////////////////////
 
-  static public boolean DEBUG = false;
+  public static boolean DEBUG = false;
 
   //////////////////////////////////////////////////
   // Constructor

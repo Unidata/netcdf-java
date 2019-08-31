@@ -26,9 +26,9 @@ import java.util.Formatter;
  */
 
 public class H5iosp extends AbstractIOServiceProvider {
-  static public final String IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES = "IncludeOrgAttributes";
+  public static final String IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES = "IncludeOrgAttributes";
 
-  static public final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
+  public static final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
 
   static boolean debug = false;
   static boolean debugPos = false;
@@ -44,7 +44,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug = debugFlag.isSet("H5iosp/read");
     debugPos = debugFlag.isSet("H5iosp/filePos");
     debugHeap = debugFlag.isSet("H5iosp/Heap");

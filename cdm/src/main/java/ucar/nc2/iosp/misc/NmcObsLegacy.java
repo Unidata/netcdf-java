@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
  * @since Feb 22, 2008
  */
 public class NmcObsLegacy extends AbstractIOServiceProvider {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NmcObsLegacy.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NmcObsLegacy.class);
 
   private List<Station> stations = new ArrayList<>();
   private List<Report> reports = new ArrayList<>();

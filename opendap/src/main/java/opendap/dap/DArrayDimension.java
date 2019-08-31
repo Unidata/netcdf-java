@@ -61,7 +61,7 @@ import java.util.Formatter;
 public final class DArrayDimension extends DAPNode {
   static final long serialVersionUID = DArrayDimension.class.hashCode();
 
-  static public class Slice {
+  public static class Slice {
     public int size;
     public int start;
     public int stride;
@@ -81,8 +81,8 @@ public final class DArrayDimension extends DAPNode {
   };
 
   // Define two slices for each dimension
-  transient private Slice decl = null; // as defined in the original declaration
-  transient private Slice projection = null; // as defined in any projection of this dimension
+  private transient Slice decl = null; // as defined in the original declaration
+  private transient Slice projection = null; // as defined in any projection of this dimension
   private DArray container = null;
 
   /**

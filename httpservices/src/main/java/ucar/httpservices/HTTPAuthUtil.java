@@ -20,7 +20,7 @@ import java.util.Set;
  */
 
 @Immutable
-abstract public class HTTPAuthUtil {
+public abstract class HTTPAuthUtil {
 
   //////////////////////////////////////////////////
   // Constants
@@ -121,7 +121,7 @@ abstract public class HTTPAuthUtil {
     return new AuthScope(host.getHostName(), host.getPort(), AuthScope.ANY_REALM, host.getSchemeName());
   }
 
-  static public AuthScope bestmatch(AuthScope scope, Set<AuthScope> scopelist) {
+  public static AuthScope bestmatch(AuthScope scope, Set<AuthScope> scopelist) {
     Credentials creds = null;
     int bestMatchFactor = -1;
     AuthScope bestMatch = null;

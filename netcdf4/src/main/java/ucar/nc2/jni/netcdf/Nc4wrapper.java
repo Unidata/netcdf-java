@@ -21,13 +21,13 @@ import com.sun.jna.ptr.IntByReference;
  */
 public class Nc4wrapper implements Nc4prototypes {
 
-  static public boolean TRACE = false;
+  public static boolean TRACE = false;
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4wrapper.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4wrapper.class);
 
   static int counter;
 
-  static protected void trace(Object ret, String fcn, Object... args) {
+  protected static void trace(Object ret, String fcn, Object... args) {
     if (!TRACE) {
       return;
     }
@@ -43,18 +43,18 @@ public class Nc4wrapper implements Nc4prototypes {
     log.info(String.format("trace: %s ret=%s args=%s", fcn, ret.toString(), sargs.toString()));
   }
 
-  static protected void err(String cc, int c) {
+  protected static void err(String cc, int c) {
     log.error("Serial failure: " + cc + ": counter != " + c + "\n");
   }
 
-  static protected void ce() {
+  protected static void ce() {
     if (counter != 0) {
       err("ce", 0);
     }
     counter = 1;
   }
 
-  static protected void cx() {
+  protected static void cx() {
     if (counter != 1) {
       err("cx", 1);
     }

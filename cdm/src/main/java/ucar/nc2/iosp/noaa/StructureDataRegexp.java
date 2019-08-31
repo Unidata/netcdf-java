@@ -245,7 +245,7 @@ public class StructureDataRegexp extends StructureData {
     return null;
   }
 
-  static public class Vinfo {
+  public static class Vinfo {
     RandomAccessFile rafile;
     StructureMembers sm;
     Pattern p;
@@ -258,7 +258,7 @@ public class StructureDataRegexp extends StructureData {
     }
   }
 
-  static public class VinfoField {
+  public static class VinfoField {
     int fldno;
     int stride = 4;
     float scale;

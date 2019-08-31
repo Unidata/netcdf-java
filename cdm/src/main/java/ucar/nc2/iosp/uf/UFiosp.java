@@ -23,8 +23,8 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class UFiosp extends AbstractIOServiceProvider {
-  static private final int MISSING_INT = -9999;
-  static private final float MISSING_FLOAT = Float.NaN;
+  private static final int MISSING_INT = -9999;
+  private static final float MISSING_FLOAT = Float.NaN;
   protected UFheader headerParser;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {

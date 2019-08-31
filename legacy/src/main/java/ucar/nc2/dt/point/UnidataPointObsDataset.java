@@ -34,7 +34,7 @@ import ucar.nc2.constants.FeatureType;
 
 public class UnidataPointObsDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.POINT.toString())
         && !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.POINT.toString()))
       return false;

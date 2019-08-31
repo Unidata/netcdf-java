@@ -26,8 +26,8 @@ public class SimpleUnit {
   public static final SimpleUnit pressureUnit;
 
   // static protected UnitFormat format;
-  static protected Unit secsUnit, dateReferenceUnit;
-  static protected boolean debugParse = false;
+  protected static Unit secsUnit, dateReferenceUnit;
+  protected static boolean debugParse = false;
 
   static {
     try {
@@ -57,7 +57,7 @@ public class SimpleUnit {
    * @return SimpleUnit, DateUnit, TimeUnit, or null if failed
    * @see ucar.units.UnitFormat#parse
    */
-  static public SimpleUnit factory(String name) {
+  public static SimpleUnit factory(String name) {
     try {
       return factoryWithExceptions(name);
     } catch (Exception e) {
@@ -75,7 +75,7 @@ public class SimpleUnit {
    * @throws UnitException when date parser fails
    * @see ucar.units.UnitFormat#parse
    */
-  static public SimpleUnit factoryWithExceptions(String name) throws UnitException {
+  public static SimpleUnit factoryWithExceptions(String name) throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit uu = format.parse(name);
     // if (isDateUnit(uu)) return new DateUnit(name);
@@ -85,7 +85,7 @@ public class SimpleUnit {
   }
 
   // need subclass access
-  static protected Unit makeUnit(String name) throws UnitException {
+  protected static Unit makeUnit(String name) throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     return format.parse(name);
   }
@@ -98,7 +98,7 @@ public class SimpleUnit {
    * @param unitString2 compare this unit
    * @return true if the 2 units are compatible
    */
-  static public boolean isCompatible(String unitString1, String unitString2) {
+  public static boolean isCompatible(String unitString1, String unitString2) {
     Unit uu1, uu2;
     try {
       UnitFormat format = UnitFormatManager.instance();
@@ -129,7 +129,7 @@ public class SimpleUnit {
    * @return true if the 2 units are compatible
    * @throws UnitException if units parsing fails
    */
-  static public boolean isCompatibleWithExceptions(String unitString1, String unitString2) throws UnitException {
+  public static boolean isCompatibleWithExceptions(String unitString1, String unitString2) throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit uu1 = format.parse(unitString1);
     Unit uu2 = format.parse(unitString2);
@@ -142,7 +142,7 @@ public class SimpleUnit {
    * @param uu check this Unit
    * @return true if its a Date
    */
-  static public boolean isDateUnit(ucar.units.Unit uu) {
+  public static boolean isDateUnit(ucar.units.Unit uu) {
     boolean ok = uu.isCompatible(dateReferenceUnit);
     if (!ok)
       return false;
@@ -160,7 +160,7 @@ public class SimpleUnit {
    * @param uu check this Unit
    * @return true if its a Time
    */
-  static public boolean isTimeUnit(ucar.units.Unit uu) {
+  public static boolean isTimeUnit(ucar.units.Unit uu) {
     return uu.isCompatible(secsUnit);
   }
 
@@ -175,7 +175,7 @@ public class SimpleUnit {
    * @param unitString check this unit string
    * @return true if its a Date
    */
-  static public boolean isDateUnit(String unitString) {
+  public static boolean isDateUnit(String unitString) {
     SimpleUnit su = factory(unitString);
     return su != null && isDateUnit(su.getUnit());
   }
@@ -186,7 +186,7 @@ public class SimpleUnit {
    * @param unitString check this unit string
    * @return true if its a Time
    */
-  static public boolean isTimeUnit(String unitString) {
+  public static boolean isTimeUnit(String unitString) {
     SimpleUnit su = factory(unitString);
     return su != null && isTimeUnit(su.getUnit());
   }
@@ -199,7 +199,7 @@ public class SimpleUnit {
    * @return conversion factor
    * @throws IllegalArgumentException if not convertible
    */
-  static public double getConversionFactor(String inputUnitString, String outputUnitString)
+  public static double getConversionFactor(String inputUnitString, String outputUnitString)
       throws IllegalArgumentException {
     SimpleUnit inputUnit = SimpleUnit.factory(inputUnitString);
     SimpleUnit outputUnit = SimpleUnit.factory(outputUnitString);

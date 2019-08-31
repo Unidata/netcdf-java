@@ -111,13 +111,13 @@ public class DOM4Parser implements Dap4Parser {
   //////////////////////////////////////////////////
   // static variables
 
-  static protected int globaldebuglevel = 0;
-  static protected java.io.PrintStream debugstream = System.err;
+  protected static int globaldebuglevel = 0;
+  protected static java.io.PrintStream debugstream = System.err;
 
   //////////////////////////////////////////////////
   // Static methods
 
-  static public void setGlobalDebugLevel(int level) {
+  public static void setGlobalDebugLevel(int level) {
     globaldebuglevel = level;
   }
 

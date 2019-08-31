@@ -33,7 +33,7 @@ import java.io.IOException;
  * @author caron
  */
 public class StructurePseudoDS extends StructureDS {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudoDS.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudoDS.class);
   private static boolean debugRecord = false;
   protected static final Set<NetcdfDataset.Enhance> enhanceScaleMissing =
       EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset, NetcdfDataset.Enhance.ConvertMissing);

@@ -36,7 +36,7 @@ import java.util.*;
 
 public class OldUnidataStationObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF {
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     String kind = ds.findAttValueIgnoreCase(null, "title", null);
     if (kind == null)
       return false;

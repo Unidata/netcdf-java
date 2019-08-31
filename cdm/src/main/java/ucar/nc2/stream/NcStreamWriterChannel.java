@@ -23,8 +23,8 @@ import java.nio.channels.WritableByteChannel;
  * @since 7/10/12
  */
 public class NcStreamWriterChannel {
-  static private final long maxChunk = 1000 * 1000; // 1 MByte
-  static private final int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
+  private static final long maxChunk = 1000 * 1000; // 1 MByte
+  private static final int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
 
   private NetcdfFile ncfile;
   private NcStreamProto.Header header;
@@ -196,7 +196,7 @@ public class NcStreamWriterChannel {
     return size;
   }
 
-  static public void main2(String[] args) throws InvalidRangeException {
+  public static void main2(String[] args) throws InvalidRangeException {
     int[] totalShape = new int[] {1, 40, 530, 240};
     int[] chunkShape = new int[] {1, 1, 530, 240};
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(totalShape);

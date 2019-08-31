@@ -13,7 +13,7 @@ import java.util.*;
 
 public class RC {
   static boolean showlog = false; /* do not do any logging */
-  static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RC.class);
+  public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RC.class);
 
   //////////////////////////////////////////////////
   // Predefined flags
@@ -24,33 +24,33 @@ public class RC {
   // 4. Add an arm to the set function
   // 5. Add any usefull utilities like booleanize()
 
-  static final public String USEGROUPSKEY = "ucar.nc2.cdm.usegroups";
-  static final public String VERIFYSERVERKEY = "ucar.nc2.net.verifyserver";
-  static final public String ALLOWSELFSIGNEDKEY = "ucar.nc2.net.allowselfsigned";
+  public static final String USEGROUPSKEY = "ucar.nc2.cdm.usegroups";
+  public static final String VERIFYSERVERKEY = "ucar.nc2.net.verifyserver";
+  public static final String ALLOWSELFSIGNEDKEY = "ucar.nc2.net.allowselfsigned";
 
-  static protected boolean useGroups = true;
-  static protected boolean verifyServer = false;
-  static protected boolean allowSelfSigned = true;
+  protected static boolean useGroups = true;
+  protected static boolean verifyServer = false;
+  protected static boolean allowSelfSigned = true;
 
-  static public boolean getUseGroups() {
+  public static boolean getUseGroups() {
     if (!initialized)
       RC.initialize();
     return useGroups;
   }
 
-  static public boolean getVerifyServer() {
+  public static boolean getVerifyServer() {
     if (!initialized)
       RC.initialize();
     return verifyServer;
   }
 
-  static public boolean getAllowSelfSigned() {
+  public static boolean getAllowSelfSigned() {
     if (!initialized)
       RC.initialize();
     return allowSelfSigned;
   }
 
-  static public void set(String key, String value) {
+  public static void set(String key, String value) {
     // TODO: think about the rc properties naming hierarchy
     assert (key != null);
     switch (key) {
@@ -129,7 +129,7 @@ public class RC {
 
   }
 
-  static public class Triple implements Comparable<Triple> {
+  public static class Triple implements Comparable<Triple> {
     public String key; // also sort key
     public String value;
     public URL url;
@@ -191,13 +191,13 @@ public class RC {
   // Define a singlton RC instance for general global use
   static RC dfaltRC = null;
 
-  static private boolean initialized = false;
+  private static boolean initialized = false;
 
   static {
     RC.initialize();
   }
 
-  static synchronized public void initialize() {
+  public static synchronized void initialize() {
     if (!initialized) {
       initialized = true;
       RC.loadDefaults();
@@ -213,7 +213,7 @@ public class RC {
    * @param value and this value
    * @param url null => not url specific
    */
-  static synchronized public void add(String key, String value, String url) {
+  public static synchronized void add(String key, String value, String url) {
     if (key == null)
       return;
     if (!initialized)
@@ -231,7 +231,7 @@ public class RC {
    * @param url null => not url specific
    * @return value corresponding to key+url, or null if does not exist
    */
-  static synchronized public String find(String key, String url) {
+  public static synchronized String find(String key, String url) {
     if (key == null)
       return null;
     if (!initialized)

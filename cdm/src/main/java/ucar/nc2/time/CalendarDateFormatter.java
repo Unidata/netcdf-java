@@ -37,7 +37,7 @@ public class CalendarDateFormatter {
   private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
   private static DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // udunits
 
-  static public String toDateTimeStringISO(CalendarDate cd) {
+  public static String toDateTimeStringISO(CalendarDate cd) {
 
     if (cd.getDateTime().getMillisOfSecond() == 0)
       return isof.print(cd.getDateTime());
@@ -46,15 +46,15 @@ public class CalendarDateFormatter {
 
   }
 
-  static public String toDateTimeStringISO(Date d) {
+  public static String toDateTimeStringISO(Date d) {
     return toDateTimeStringISO(CalendarDate.of(d));
   }
 
-  static public String toDateTimeStringISO(long millisecs) {
+  public static String toDateTimeStringISO(long millisecs) {
     return toDateTimeStringISO(CalendarDate.of(millisecs));
   }
 
-  static public String toDateTimeString(CalendarDate cd) {
+  public static String toDateTimeString(CalendarDate cd) {
 
     if (cd.getDateTime().getMillisOfSecond() == 0)
       return dtf.print(cd.getDateTime());
@@ -62,19 +62,19 @@ public class CalendarDateFormatter {
       return dtf_with_millis_of_second.print(cd.getDateTime());
   }
 
-  static public String toDateTimeString(Date date) {
+  public static String toDateTimeString(Date date) {
     return toDateTimeString(CalendarDate.of(date));
   }
 
-  static public String toDateTimeStringPresent() {
+  public static String toDateTimeStringPresent() {
     return dtf.print(new DateTime());
   }
 
-  static public String toDateString(CalendarDate cd) {
+  public static String toDateString(CalendarDate cd) {
     return df.print(cd.getDateTime());
   }
 
-  static public String toDateStringPresent() {
+  public static String toDateStringPresent() {
     return df.print(new DateTime());
   }
 
@@ -84,15 +84,15 @@ public class CalendarDateFormatter {
    * @param cd the calendar date
    * @return udunits formated date
    */
-  static public String toTimeUnits(CalendarDate cd) {
+  public static String toTimeUnits(CalendarDate cd) {
     return df_units.print(cd.getDateTime());
   }
 
-  static public String toTimeUnits(Date date) {
+  public static String toTimeUnits(Date date) {
     return df_units.print(date.getTime());
   }
 
-  static public CalendarDateFormatter factory(CalendarPeriod period) {
+  public static CalendarDateFormatter factory(CalendarPeriod period) {
     switch (period.getField()) {
       case Year:
         return new CalendarDateFormatter("yyyy");
@@ -121,7 +121,7 @@ public class CalendarDateFormatter {
    * 
    */
   @Deprecated
-  static public Date parseISODate(String iso) {
+  public static Date parseISODate(String iso) {
     DateFormatter df = new DateFormatter();
     return df.getISODate(iso);
   }
@@ -167,7 +167,7 @@ public class CalendarDateFormatter {
    * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
    * @see "http://www.w3.org/TR/NOTE-datetime"
    */
-  static public CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException {
+  public static CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException {
     DateTime dt = parseIsoTimeString(calt, iso);
     Calendar useCal = Calendar.of(dt.getChronology());
     return new CalendarDate(useCal, dt);
@@ -180,13 +180,13 @@ public class CalendarDateFormatter {
    * @return Date
    * @deprecated use isoStringToCalendarDate
    */
-  static public Date isoStringToDate(String iso) throws IllegalArgumentException {
+  public static Date isoStringToDate(String iso) throws IllegalArgumentException {
     CalendarDate dt = isoStringToCalendarDate(null, iso);
     return dt.toDate();
   }
 
   // 1 2 3
-  static public final String isodatePatternString = "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public
+  public static final String isodatePatternString = "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public
                                                                                                                 // for
                                                                                                                 // testing
   // private static final String isodatePatternString = "([\\+\\-\\d]+)[ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";

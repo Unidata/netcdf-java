@@ -48,7 +48,7 @@ import java.util.Formatter;
  * @since Oct 20, 2009
  */
 public class LambertConformalConicEllipse extends ProjectionImpl {
-  private final static double TOL = 1.0e-10;
+  private static final double TOL = 1.0e-10;
 
   // projection parameters
   private double lat0deg, lon0deg; // projection origin, degrees

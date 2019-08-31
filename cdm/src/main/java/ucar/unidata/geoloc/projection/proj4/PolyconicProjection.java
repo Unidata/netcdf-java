@@ -54,11 +54,11 @@ public class PolyconicProjection extends ProjectionImpl {
 
   private double ml0;
   private double[] en;
-  private final static double TOL = 1e-10;
-  private final static double CONV = 1e-10;
-  private final static int N_ITER = 10;
-  private final static int I_ITER = 20;
-  private final static double ITOL = 1.e-12;
+  private static final double TOL = 1e-10;
+  private static final double CONV = 1e-10;
+  private static final int N_ITER = 10;
+  private static final int I_ITER = 20;
+  private static final double ITOL = 1.e-12;
 
   // New variables added
   private boolean spherical = true;

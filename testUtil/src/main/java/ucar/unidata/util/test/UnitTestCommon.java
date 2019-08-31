@@ -22,17 +22,17 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-abstract public class UnitTestCommon {
+public abstract class UnitTestCommon {
   //////////////////////////////////////////////////
   // Static Constants
 
-  static public boolean LOGSTDIO = System.getProperty("intellij") == null;
+  public static boolean LOGSTDIO = System.getProperty("intellij") == null;
 
-  static public final boolean DEBUG = false;
+  public static final boolean DEBUG = false;
 
-  static public final Charset UTF8 = StandardCharsets.UTF_8;
+  public static final Charset UTF8 = StandardCharsets.UTF_8;
 
-  static protected final int[] OKCODES = new int[] {200, 404};
+  protected static final int[] OKCODES = new int[] {200, 404};
 
   protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnitTestCommon.class);
 
@@ -42,8 +42,8 @@ abstract public class UnitTestCommon {
   // NetcdfDataset enhancement to use: need only coord systems
   static final Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
-  static protected String threddsroot = null;
-  static protected String threddsServer = null;
+  protected static String threddsroot = null;
+  protected static String threddsServer = null;
 
   static {
     // Compute the root path
@@ -108,7 +108,7 @@ abstract public class UnitTestCommon {
     return null;
   }
 
-  static protected String rebuildpath(String[] pieces, int last) {
+  protected static String rebuildpath(String[] pieces, int last) {
     StringBuilder buf = new StringBuilder();
     for (int i = 0; i <= last; i++) {
       buf.append("/");
@@ -117,7 +117,7 @@ abstract public class UnitTestCommon {
     return buf.toString();
   }
 
-  static public void clearDir(File dir, boolean clearsubdirs) {
+  public static void clearDir(File dir, boolean clearsubdirs) {
     // wipe out the dir contents
     if (!dir.exists())
       return;
@@ -139,7 +139,7 @@ abstract public class UnitTestCommon {
    * Provide an interface that allows for arbitrary modification
    * of text before is is passed to compare().
    */
-  static public interface Modifier {
+  public static interface Modifier {
     public String modify(String text);
   }
 
@@ -149,7 +149,7 @@ abstract public class UnitTestCommon {
    * of text before is is passed to compare().
    * A Line is defined by text.split("[\n]").
    */
-  static public class ModDelete implements Modifier {
+  public static class ModDelete implements Modifier {
     protected Pattern pattern = null;
 
     public ModDelete(String regexp) {
@@ -175,7 +175,7 @@ abstract public class UnitTestCommon {
   /**
    * Instance of Modifier specialized to delete named attributes.
    */
-  static public class ModSuppress implements Modifier {
+  public static class ModSuppress implements Modifier {
     protected List<Pattern> patterns = new ArrayList<>();
 
     public ModSuppress() {}
@@ -302,7 +302,7 @@ abstract public class UnitTestCommon {
     System.err.println("===============");
   }
 
-  static public String compare(String tag, String baseline, String testresult) {
+  public static String compare(String tag, String baseline, String testresult) {
     // Check for empty testresult
     if (testresult.trim().length() == 0)
       return ">>>> EMPTY TEST RESULT";
@@ -318,7 +318,7 @@ abstract public class UnitTestCommon {
     }
   }
 
-  static public boolean same(String tag, String baseline, String testresult) {
+  public static boolean same(String tag, String baseline, String testresult) {
     String result = compare(tag, baseline, testresult);
     if (result == null) {
       System.err.println("Files are Identical");
@@ -329,7 +329,7 @@ abstract public class UnitTestCommon {
     }
   }
 
-  static public boolean similar(String tag, String baseline, String testresult, Modifier mbaseline, Modifier mtest) {
+  public static boolean similar(String tag, String baseline, String testresult, Modifier mbaseline, Modifier mtest) {
     String baselinemod = mbaseline.modify(baseline);
     String testresultmod = mtest.modify(testresult);
     String result = compare(tag, baselinemod, testresultmod);
@@ -374,7 +374,7 @@ abstract public class UnitTestCommon {
   // Static utilities
 
   // Copy result into the a specified dir
-  static public void writefile(String path, String content) throws IOException {
+  public static void writefile(String path, String content) throws IOException {
     File f = new File(path);
     if (f.exists())
       f.delete();
@@ -384,7 +384,7 @@ abstract public class UnitTestCommon {
   }
 
   // Copy result into the a specified dir
-  static public void writefile(String path, byte[] content) throws IOException {
+  public static void writefile(String path, byte[] content) throws IOException {
     File f = new File(path);
     if (f.exists())
       f.delete();
@@ -393,7 +393,7 @@ abstract public class UnitTestCommon {
     out.close();
   }
 
-  static public String readfile(String filename) throws IOException {
+  public static String readfile(String filename) throws IOException {
     StringBuilder buf = new StringBuilder();
     try (FileReader file = new FileReader(filename)) {
       BufferedReader rdr = new BufferedReader(file);
@@ -407,14 +407,14 @@ abstract public class UnitTestCommon {
     }
   }
 
-  static public byte[] readbinaryfile(String filename) throws IOException {
+  public static byte[] readbinaryfile(String filename) throws IOException {
     FileInputStream stream = new FileInputStream(filename);
     byte[] result = readbinaryfile(stream);
     stream.close();
     return result;
   }
 
-  static public byte[] readbinaryfile(InputStream stream) throws IOException {
+  public static byte[] readbinaryfile(InputStream stream) throws IOException {
     // Extract the stream into a bytebuffer
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     byte[] tmp = new byte[1 << 16];
@@ -429,13 +429,13 @@ abstract public class UnitTestCommon {
   }
 
   // Properly access a dataset
-  static public NetcdfDataset openDataset(String url) throws IOException {
+  public static NetcdfDataset openDataset(String url) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(url);
     return NetcdfDataset.acquireDataset(null, durl, ENHANCEMENT, -1, null, null);
   }
 
   // Fix up a filename reference in a string
-  static public String shortenFileName(String text, String filename) {
+  public static String shortenFileName(String text, String filename) {
     // In order to achieve diff consistentcy, we need to
     // modify the output to change "netcdf .../file.nc {...}"
     // to "netcdf file.nc {...}"
@@ -447,12 +447,12 @@ abstract public class UnitTestCommon {
     return text;
   }
 
-  static public void tag(String t) {
+  public static void tag(String t) {
     System.err.println(t);
     System.err.flush();
   }
 
-  static public String canonjoin2(String prefix, String suffix) {
+  public static String canonjoin2(String prefix, String suffix) {
     if (prefix == null)
       prefix = "";
     if (suffix == null)
@@ -464,7 +464,7 @@ abstract public class UnitTestCommon {
     return result.toString();
   }
 
-  static public String canonjoin(String... pieces) {
+  public static String canonjoin(String... pieces) {
     StringBuilder buf = new StringBuilder();
     for (int i = 0; i < pieces.length; i++) {
       // invariant buf does not end with ('/')
@@ -492,7 +492,7 @@ abstract public class UnitTestCommon {
    * @param path convert this path
    * @return canonicalized version
    */
-  static public String canonicalpath(String path) {
+  public static String canonicalpath(String path) {
     if (path == null)
       return null;
     path = path.trim();
@@ -512,17 +512,17 @@ abstract public class UnitTestCommon {
    * @return
    */
 
-  static public boolean hasDriveLetter(String path) {
+  public static boolean hasDriveLetter(String path) {
     if (path != null && path.length() >= 2) {
       return (DRIVELETTERS.indexOf(path.charAt(0)) >= 0 && path.charAt(1) == ':');
     }
     return false;
   }
 
-  static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase();
+  public static final String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase();
 
 
-  static public String extractDatasetname(String urlorpath, String suffix) {
+  public static String extractDatasetname(String urlorpath, String suffix) {
     try {
       URI x = new URI(urlorpath);
       StringBuilder path = new StringBuilder(x.getPath());
@@ -542,7 +542,7 @@ abstract public class UnitTestCommon {
     return null;
   }
 
-  static protected String ncdumpmetadata(NetcdfFile ncfile, String datasetname) throws Exception {
+  protected static String ncdumpmetadata(NetcdfFile ncfile, String datasetname) throws Exception {
     StringWriter sw = new StringWriter();
     StringBuilder args = new StringBuilder("-strict");
     if (datasetname != null) {
@@ -560,7 +560,7 @@ abstract public class UnitTestCommon {
     return sw.toString();
   }
 
-  static protected String ncdumpdata(NetcdfFile ncfile, String datasetname) throws Exception {
+  protected static String ncdumpdata(NetcdfFile ncfile, String datasetname) throws Exception {
     StringBuilder args = new StringBuilder("-strict -vall");
     if (datasetname != null) {
       args.append(" -datasetname ");
@@ -584,7 +584,7 @@ abstract public class UnitTestCommon {
    * @param options - list of option names of interest
    * @return specified properties converted to command line form
    */
-  static public String[] propertiesToArgs(String prefix, String... options) {
+  public static String[] propertiesToArgs(String prefix, String... options) {
     if (options == null || options.length == 0)
       throw new IllegalArgumentException("No options specified");
     if (prefix == null)
@@ -602,11 +602,11 @@ abstract public class UnitTestCommon {
     return args.toArray(new String[args.size()]);
   }
 
-  static protected boolean check(int code) {
+  protected static boolean check(int code) {
     return check(code, OKCODES);
   }
 
-  static protected boolean check(int code, int[] ok) {
+  protected static boolean check(int code, int[] ok) {
     for (int okcode : ok) {
       if (okcode == code)
         return true;

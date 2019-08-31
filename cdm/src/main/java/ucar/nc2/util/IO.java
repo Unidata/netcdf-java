@@ -25,13 +25,13 @@ import java.util.zip.GZIPInputStream;
  */
 public class IO {
 
-  static public final int default_file_buffersize = 9200;
-  static public final int default_socket_buffersize = 64000;
-  static private final boolean showStackTrace = false;
-  static private final boolean debug = false, showCopy = false;
-  static private final boolean showHeaders = false;
+  public static final int default_file_buffersize = 9200;
+  public static final int default_socket_buffersize = 64000;
+  private static final boolean showStackTrace = false;
+  private static final boolean debug = false, showCopy = false;
+  private static final boolean showHeaders = false;
 
-  static private Class cl;
+  private static Class cl;
 
   /**
    * Open a resource as a Stream. First try ClassLoader.getResourceAsStream().
@@ -75,7 +75,7 @@ public class IO {
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public long copy(InputStream in, OutputStream out) throws IOException {
+  public static long copy(InputStream in, OutputStream out) throws IOException {
     long totalBytesRead = 0;
     byte[] buffer = new byte[default_file_buffersize];
     while (true) {
@@ -97,7 +97,7 @@ public class IO {
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public long copy2null(InputStream in, int buffersize) throws IOException {
+  public static long copy2null(InputStream in, int buffersize) throws IOException {
     long totalBytesRead = 0;
     if (buffersize <= 0)
       buffersize = default_file_buffersize;
@@ -112,7 +112,7 @@ public class IO {
     return totalBytesRead;
   }
 
-  static public long touch(InputStream in, int buffersize) throws IOException {
+  public static long touch(InputStream in, int buffersize) throws IOException {
     long touch = 0;
     if (buffersize <= 0)
       buffersize = default_file_buffersize;
@@ -136,7 +136,7 @@ public class IO {
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public long copy2null(FileChannel in, int buffersize) throws IOException {
+  public static long copy2null(FileChannel in, int buffersize) throws IOException {
     long totalBytesRead = 0;
     if (buffersize <= 0)
       buffersize = default_file_buffersize;
@@ -151,7 +151,7 @@ public class IO {
     return totalBytesRead;
   }
 
-  static public long touch(FileChannel in, int buffersize) throws IOException {
+  public static long touch(FileChannel in, int buffersize) throws IOException {
     long touch = 0;
     if (buffersize <= 0)
       buffersize = default_file_buffersize;
@@ -184,7 +184,7 @@ public class IO {
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public long copyB(InputStream in, OutputStream out, int bufferSize) throws IOException {
+  public static long copyB(InputStream in, OutputStream out, int bufferSize) throws IOException {
     long totalBytesRead = 0;
     int done = 0, next = 1;
 
@@ -216,7 +216,7 @@ public class IO {
    * @param n number of bytes to copy
    * @throws java.io.IOException on io error
    */
-  static public void copy(InputStream in, OutputStream out, int n) throws IOException {
+  public static void copy(InputStream in, OutputStream out, int n) throws IOException {
     byte[] buffer = new byte[default_file_buffersize];
     int count = 0;
     while (true) {
@@ -240,7 +240,7 @@ public class IO {
    * @return String holding the contents, or an error message.
    * @throws java.io.IOException on io error
    */
-  static public String readContents(InputStream is) throws IOException {
+  public static String readContents(InputStream is) throws IOException {
     return readContents(is, "UTF-8");
   }
 
@@ -252,7 +252,7 @@ public class IO {
    * @return String holding the contents, or an error message.
    * @throws java.io.IOException on io error
    */
-  static public String readContents(InputStream is, String charset) throws IOException {
+  public static String readContents(InputStream is, String charset) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
     IO.copy(is, bout);
     return bout.toString(charset);
@@ -266,7 +266,7 @@ public class IO {
    * @return byte[] holding the contents, or an error message.
    * @throws java.io.IOException on io error
    */
-  static public byte[] readContentsToByteArray(InputStream is) throws IOException {
+  public static byte[] readContentsToByteArray(InputStream is) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
     IO.copy(is, bout);
     return bout.toByteArray();
@@ -279,7 +279,7 @@ public class IO {
    * @param os write to this OutputStream
    * @throws java.io.IOException on io error
    */
-  static public void writeContents(String contents, OutputStream os) throws IOException {
+  public static void writeContents(String contents, OutputStream os) throws IOException {
     ByteArrayInputStream bin = new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset));
     IO.copy(bin, os);
   }
@@ -294,7 +294,7 @@ public class IO {
    * @param fileOutName copy to this file, which is overrwritten if already exists.
    * @throws java.io.IOException on io error
    */
-  static public void copyFile(String fileInName, String fileOutName) throws IOException {
+  public static void copyFile(String fileInName, String fileOutName) throws IOException {
     try (FileInputStream fin = new FileInputStream(fileInName);
         FileOutputStream fout = new FileOutputStream(fileOutName)) {
 
@@ -311,7 +311,7 @@ public class IO {
    * @param fileOut copy to this file, which is overrwritten if already exists.
    * @throws java.io.IOException on io error
    */
-  static public void copyFile(File fileIn, File fileOut) throws IOException {
+  public static void copyFile(File fileIn, File fileOut) throws IOException {
     try (FileInputStream fin = new FileInputStream(fileIn); FileOutputStream fout = new FileOutputStream(fileOut)) {
       InputStream in = new BufferedInputStream(fin);
       OutputStream out = new BufferedOutputStream(fout);
@@ -326,7 +326,7 @@ public class IO {
    * @param fileOut copy to this file
    * @throws java.io.IOException on io error
    */
-  static public void copy2File(byte[] src, String fileOut) throws IOException {
+  public static void copy2File(byte[] src, String fileOut) throws IOException {
     try (FileOutputStream fout = new FileOutputStream(fileOut)) {
       InputStream in = new BufferedInputStream(new ByteArrayInputStream(src));
       OutputStream out = new BufferedOutputStream(fout);
@@ -341,7 +341,7 @@ public class IO {
    * @param out copy here
    * @throws java.io.IOException on io error
    */
-  static public void copyFile(String fileInName, OutputStream out) throws IOException {
+  public static void copyFile(String fileInName, OutputStream out) throws IOException {
     copyFileB(new File(fileInName), out, default_file_buffersize);
   }
 
@@ -353,14 +353,14 @@ public class IO {
    * @param bufferSize internal buffer size.
    * @throws java.io.IOException on io error
    */
-  static public void copyFileB(File fileIn, OutputStream out, int bufferSize) throws IOException {
+  public static void copyFileB(File fileIn, OutputStream out, int bufferSize) throws IOException {
     try (FileInputStream fin = new FileInputStream(fileIn)) {
       InputStream in = new BufferedInputStream(fin);
       IO.copyB(in, out, bufferSize);
     }
   }
 
-  static public void copyFileWithChannels(File fileIn, WritableByteChannel out) throws IOException {
+  public static void copyFileWithChannels(File fileIn, WritableByteChannel out) throws IOException {
     try (FileChannel in = new FileInputStream(fileIn).getChannel()) {
       long want = fileIn.length();
       long pos = 0;
@@ -415,7 +415,7 @@ public class IO {
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public long copyRafB(ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out,
+  public static long copyRafB(ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out,
       byte[] buffer) throws IOException {
     int bufferSize = buffer.length;
     long want = length;
@@ -439,7 +439,7 @@ public class IO {
    * @param toDirName to this directory (will create if not exist)
    * @throws java.io.IOException on io error
    */
-  static public void copyDirTree(String fromDirName, String toDirName) throws IOException {
+  public static void copyDirTree(String fromDirName, String toDirName) throws IOException {
     File fromDir = new File(fromDirName);
     File toDir = new File(toDirName);
 
@@ -470,7 +470,7 @@ public class IO {
    * @return byte[] holding the contents, or an error message.
    * @throws java.io.IOException on io error
    */
-  static public byte[] readFileToByteArray(String filename) throws IOException {
+  public static byte[] readFileToByteArray(String filename) throws IOException {
     try (FileInputStream fin = new FileInputStream(filename)) {
       InputStream in = new BufferedInputStream(fin);
       return readContentsToByteArray(in);
@@ -484,7 +484,7 @@ public class IO {
    * @return String holding the file contents
    * @throws java.io.IOException on io error
    */
-  static public String readFile(String filename) throws IOException {
+  public static String readFile(String filename) throws IOException {
     try (FileInputStream fin = new FileInputStream(filename)) {
       InputStreamReader reader = new InputStreamReader(fin, CDM.utf8Charset);
       StringWriter swriter = new StringWriter(50000);
@@ -501,7 +501,7 @@ public class IO {
    * @param file write to this file (overwrite if exists)
    * @throws java.io.IOException on io error
    */
-  static public void writeToFile(String contents, File file) throws IOException {
+  public static void writeToFile(String contents, File file) throws IOException {
     try (FileOutputStream fout = new FileOutputStream(file)) {
       OutputStreamWriter fw = new OutputStreamWriter(fout, CDM.utf8Charset);
       UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
@@ -517,7 +517,7 @@ public class IO {
    * @param file write to this file (overwrite if exists)
    * @throws java.io.IOException on io error
    */
-  static public void writeToFile(byte[] contents, File file) throws IOException {
+  public static void writeToFile(byte[] contents, File file) throws IOException {
     try (FileOutputStream fw = new FileOutputStream(file)) {
       fw.write(contents);
       fw.flush();
@@ -531,7 +531,7 @@ public class IO {
    * @param fileOutName write to this file (overwrite if exists)
    * @throws java.io.IOException on io error
    */
-  static public void writeToFile(String contents, String fileOutName) throws IOException {
+  public static void writeToFile(String contents, String fileOutName) throws IOException {
     writeToFile(contents, new File(fileOutName));
   }
 
@@ -543,7 +543,7 @@ public class IO {
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public long writeToFile(InputStream in, String fileOutName) throws IOException {
+  public static long writeToFile(InputStream in, String fileOutName) throws IOException {
     try (FileOutputStream fout = new FileOutputStream(fileOutName)) {
       OutputStream out = new BufferedOutputStream(fout);
       return IO.copy(in, out);
@@ -553,7 +553,7 @@ public class IO {
     }
   }
 
-  static public long appendToFile(InputStream in, String fileOutName) throws IOException {
+  public static long appendToFile(InputStream in, String fileOutName) throws IOException {
     try (FileOutputStream fout = new FileOutputStream(fileOutName)) {
       OutputStream out = new BufferedOutputStream(fout);
       return IO.copy(in, out);
@@ -572,7 +572,7 @@ public class IO {
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public long copyUrlB(String urlString, OutputStream out, int bufferSize) throws IOException {
+  public static long copyUrlB(String urlString, OutputStream out, int bufferSize) throws IOException {
     long count;
     URL url;
 
@@ -657,7 +657,7 @@ public class IO {
     return count;
   }
 
-  static private void showRequestHeaders(String urlString, java.net.URLConnection connection) {
+  private static void showRequestHeaders(String urlString, java.net.URLConnection connection) {
     System.out.println("\nREQUEST Properties for " + urlString + ": ");
     Map<String, List<String>> reqs = connection.getRequestProperties();
     for (Map.Entry<String, List<String>> entry : reqs.entrySet()) {
@@ -675,7 +675,7 @@ public class IO {
    * @return input stream, unzipped if needed
    * @throws java.io.IOException on io error
    */
-  static public InputStream getInputStreamFromUrl(String urlString) throws IOException {
+  public static InputStream getInputStreamFromUrl(String urlString) throws IOException {
     URL url;
 
     try {
@@ -765,7 +765,7 @@ public class IO {
    * @param file write to this file
    * @return status or error message.
    */
-  static public String readURLtoFile(String urlString, File file) {
+  public static String readURLtoFile(String urlString, File file) {
     try (FileOutputStream fout = new FileOutputStream(file)) {
       OutputStream out = new BufferedOutputStream(fout);
       copyUrlB(urlString, out, 20000);
@@ -793,7 +793,7 @@ public class IO {
    * @return byte[] holding the contents, or an error message.
    * @throws java.io.IOException on io error
    */
-  static public byte[] readURLContentsToByteArray(String urlString) throws IOException {
+  public static byte[] readURLContentsToByteArray(String urlString) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(200000);
     copyUrlB(urlString, bout, 200000);
     return bout.toByteArray();
@@ -808,7 +808,7 @@ public class IO {
    * @return status or error message.
    * @throws IOException if failure
    */
-  static public String readURLtoFileWithExceptions(String urlString, File file) throws IOException {
+  public static String readURLtoFileWithExceptions(String urlString, File file) throws IOException {
     return readURLtoFileWithExceptions(urlString, file, default_socket_buffersize);
 
   }
@@ -822,7 +822,7 @@ public class IO {
    * @return status or error message.
    * @throws IOException if failure
    */
-  static public String readURLtoFileWithExceptions(String urlString, File file, int buffer_size) throws IOException {
+  public static String readURLtoFileWithExceptions(String urlString, File file, int buffer_size) throws IOException {
     try (FileOutputStream fout = new FileOutputStream(file)) {
       OutputStream out = new BufferedOutputStream(fout);
       copyUrlB(urlString, out, buffer_size);
@@ -839,7 +839,7 @@ public class IO {
    * @return String holding the contents.
    * @throws IOException if fails
    */
-  static public String readURLcontentsWithException(String urlString) throws IOException {
+  public static String readURLcontentsWithException(String urlString) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(20000);
     copyUrlB(urlString, bout, 20000);
     return bout.toString(CDM.UTF8);
@@ -852,7 +852,7 @@ public class IO {
    * @param urlString the URL to read from.
    * @return String holding the contents, or an error message.
    */
-  static public String readURLcontents(String urlString) {
+  public static String readURLcontents(String urlString) {
     try {
       return readURLcontentsWithException(urlString);
     } catch (IOException e) {
@@ -867,7 +867,7 @@ public class IO {
    * @param contents String holding the contents
    * @return a Result object; generally 0 <= code <=400 is ok
    */
-  static public HttpResult putToURL(String urlString, String contents) {
+  public static HttpResult putToURL(String urlString, String contents) {
     URL url;
     try {
       url = new URL(urlString);
@@ -907,7 +907,7 @@ public class IO {
   /**
    * Holds the result of an HTTP action.
    */
-  static public class HttpResult {
+  public static class HttpResult {
     public int statusCode;
     public String message;
 

@@ -33,9 +33,9 @@ import java.util.Map;
  */
 
 public class FileWriter2 {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
-  static private final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
-  static private boolean debug = false, debugWrite = false, debugChunk = false;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
+  private static final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
+  private static boolean debug = false, debugWrite = false, debugChunk = false;
 
   /**
    * Set debugging flags

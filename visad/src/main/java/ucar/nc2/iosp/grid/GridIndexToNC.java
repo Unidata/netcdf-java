@@ -20,7 +20,7 @@ import java.util.*;
  * @author caron
  */
 public class GridIndexToNC {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridIndexToNC.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridIndexToNC.class);
 
   /**
    * map of horizontal coordinate systems
@@ -489,7 +489,7 @@ public class GridIndexToNC {
    * @author IDV Development Team
    * @version $Revision: 1.3 $
    */
-  static private class CompareGridVariableByVertName implements Comparator<GridVariable> {
+  private static class CompareGridVariableByVertName implements Comparator<GridVariable> {
     public int compare(GridVariable gv1, GridVariable gv2) {
       return gv1.getVertName().compareToIgnoreCase(gv2.getVertName());
     }

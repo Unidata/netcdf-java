@@ -24,22 +24,22 @@ public class Odometer implements Iterator<Index> {
 
   // Mnemonic
 
-  static protected enum STATE {
+  protected static enum STATE {
     INITIAL, STARTED, DONE;
   }
 
   //////////////////////////////////////////////////
   // factories
 
-  static public Odometer factoryScalar() {
+  public static Odometer factoryScalar() {
     return new ScalarOdometer();
   }
 
-  static public Odometer factory(List<Slice> slices) throws DapException {
+  public static Odometer factory(List<Slice> slices) throws DapException {
     return factory(slices, null);
   }
 
-  static public Odometer factory(List<Slice> slices, List<DapDimension> dimset) throws DapException {
+  public static Odometer factory(List<Slice> slices, List<DapDimension> dimset) throws DapException {
     // check for scalar case
     if (dimset != null && dimset.size() == 0) {
       if (!DapUtil.isScalarSlices(slices))

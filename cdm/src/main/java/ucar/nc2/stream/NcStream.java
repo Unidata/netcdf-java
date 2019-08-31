@@ -51,21 +51,21 @@ import ucar.unidata.io.RandomAccessFile;
  */
 public class NcStream {
   // must start with this "CDFS"
-  static public final byte[] MAGIC_START = new byte[] {0x43, 0x44, 0x46, 0x53};
+  public static final byte[] MAGIC_START = new byte[] {0x43, 0x44, 0x46, 0x53};
 
-  static public final byte[] MAGIC_HEADER = new byte[] {(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
-  static public final byte[] MAGIC_DATA = new byte[] {(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
-  static public final byte[] MAGIC_DATA2 = new byte[] {(byte) 0xab, (byte) 0xeb, (byte) 0xbe, (byte) 0xba};
-  static public final byte[] MAGIC_VDATA = new byte[] {(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};
-  static public final byte[] MAGIC_VEND = new byte[] {(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
+  public static final byte[] MAGIC_HEADER = new byte[] {(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
+  public static final byte[] MAGIC_DATA = new byte[] {(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+  public static final byte[] MAGIC_DATA2 = new byte[] {(byte) 0xab, (byte) 0xeb, (byte) 0xbe, (byte) 0xba};
+  public static final byte[] MAGIC_VDATA = new byte[] {(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};
+  public static final byte[] MAGIC_VEND = new byte[] {(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
 
-  static public final byte[] MAGIC_HEADERCOV = new byte[] {(byte) 0xad, (byte) 0xed, (byte) 0xde, (byte) 0xda};
-  static public final byte[] MAGIC_DATACOV = new byte[] {(byte) 0xab, (byte) 0xed, (byte) 0xde, (byte) 0xba};
+  public static final byte[] MAGIC_HEADERCOV = new byte[] {(byte) 0xad, (byte) 0xed, (byte) 0xde, (byte) 0xda};
+  public static final byte[] MAGIC_DATACOV = new byte[] {(byte) 0xab, (byte) 0xed, (byte) 0xde, (byte) 0xba};
 
-  static public final byte[] MAGIC_ERR = new byte[] {(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
-  static public final byte[] MAGIC_END = new byte[] {(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
+  public static final byte[] MAGIC_ERR = new byte[] {(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
+  public static final byte[] MAGIC_END = new byte[] {(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
 
-  static public final int ncstream_data_version = 3;
+  public static final int ncstream_data_version = 3;
 
   static NcStreamProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     NcStreamProto.Group.Builder groupBuilder = NcStreamProto.Group.newBuilder();
@@ -94,7 +94,7 @@ public class NcStream {
   }
 
 
-  static public NcStreamProto.Attribute.Builder encodeAtt(Attribute att) {
+  public static NcStreamProto.Attribute.Builder encodeAtt(Attribute att) {
     NcStreamProto.Attribute.Builder attBuilder = NcStreamProto.Attribute.newBuilder();
     attBuilder.setName(att.getShortName());
     attBuilder.setDataType(convertDataType(att.getDataType()));
@@ -194,7 +194,7 @@ public class NcStream {
     return builder;
   }
 
-  static public NcStreamProto.Error encodeErrorMessage(String message) {
+  public static NcStreamProto.Error encodeErrorMessage(String message) {
     NcStreamProto.Error.Builder builder = NcStreamProto.Error.newBuilder();
     builder.setMessage(message);
     return builder.build();
@@ -216,7 +216,7 @@ public class NcStream {
     return builder.build();
   }
 
-  static public NcStreamProto.Data encodeDataProto(String varname, DataType datatype, Section section, boolean deflate,
+  public static NcStreamProto.Data encodeDataProto(String varname, DataType datatype, Section section, boolean deflate,
       int uncompressedLength) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(varname);
@@ -230,7 +230,7 @@ public class NcStream {
     return builder.build();
   }
 
-  static public NcStreamProto.Section encodeSection(Section section) {
+  public static NcStreamProto.Section encodeSection(Section section) {
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
     for (Range r : section.getRanges()) {
       NcStreamProto.Range.Builder rbuilder = NcStreamProto.Range.newBuilder();
@@ -273,11 +273,11 @@ public class NcStream {
     return length;
   }
 
-  static public int writeBytes(OutputStream out, byte[] b) throws IOException {
+  public static int writeBytes(OutputStream out, byte[] b) throws IOException {
     return writeBytes(out, b, 0, b.length);
   }
 
-  static public int writeVInt(OutputStream out, int value) throws IOException {
+  public static int writeVInt(OutputStream out, int value) throws IOException {
     int count = 0;
 
     // stolen from protobuf.CodedOutputStream.writeRawVarint32()
@@ -294,7 +294,7 @@ public class NcStream {
     return count + 1;
   }
 
-  static public int writeVInt(RandomAccessFile out, int value) throws IOException {
+  public static int writeVInt(RandomAccessFile out, int value) throws IOException {
     int count = 0;
 
     while (true) {
@@ -311,7 +311,7 @@ public class NcStream {
   }
 
 
-  static public int writeVInt(WritableByteChannel wbc, int value) throws IOException {
+  public static int writeVInt(WritableByteChannel wbc, int value) throws IOException {
     ByteBuffer bb = ByteBuffer.allocate(8);
 
     while (true) {
@@ -329,7 +329,7 @@ public class NcStream {
     return bb.limit();
   }
 
-  static public int writeVLong(OutputStream out, long i) throws IOException {
+  public static int writeVLong(OutputStream out, long i) throws IOException {
     int count = 0;
     while ((i & ~0x7F) != 0) {
       writeByte(out, (byte) ((i & 0x7f) | 0x80));
@@ -340,7 +340,7 @@ public class NcStream {
     return count + 1;
   }
 
-  static public int readVInt(InputStream is) throws IOException {
+  public static int readVInt(InputStream is) throws IOException {
     int ib = is.read();
     if (ib == -1)
       return -1;
@@ -357,7 +357,7 @@ public class NcStream {
     return i;
   }
 
-  static public int readVInt(RandomAccessFile raf) throws IOException {
+  public static int readVInt(RandomAccessFile raf) throws IOException {
     int ib = raf.read();
     if (ib == -1)
       return -1;
@@ -374,7 +374,7 @@ public class NcStream {
     return i;
   }
 
-  static public int readFully(InputStream is, byte[] b) throws IOException {
+  public static int readFully(InputStream is, byte[] b) throws IOException {
     int done = 0;
     int want = b.length;
     while (want > 0) {
@@ -387,7 +387,7 @@ public class NcStream {
     return done;
   }
 
-  static public boolean readAndTest(InputStream is, byte[] test) throws IOException {
+  public static boolean readAndTest(InputStream is, byte[] test) throws IOException {
     byte[] b = new byte[test.length];
     readFully(is, b);
 
@@ -399,7 +399,7 @@ public class NcStream {
     return true;
   }
 
-  static public boolean readAndTest(RandomAccessFile raf, byte[] test) throws IOException {
+  public static boolean readAndTest(RandomAccessFile raf, byte[] test) throws IOException {
     byte[] b = new byte[test.length];
     raf.readFully(b);
 
@@ -411,7 +411,7 @@ public class NcStream {
     return true;
   }
 
-  static public boolean test(byte[] b, byte[] test) {
+  public static boolean test(byte[] b, byte[] test) {
     if (b.length != test.length)
       return false;
     for (int i = 0; i < b.length; i++)
@@ -420,7 +420,7 @@ public class NcStream {
     return true;
   }
 
-  static public String decodeErrorMessage(NcStreamProto.Error err) {
+  public static String decodeErrorMessage(NcStreamProto.Error err) {
     return err.getMessage();
   }
 
@@ -465,7 +465,7 @@ public class NcStream {
     return new EnumTypedef(enumType.getName(), map);
   }
 
-  static public Attribute decodeAtt(NcStreamProto.Attribute attp) {
+  public static Attribute decodeAtt(NcStreamProto.Attribute attp) {
     // BARF LOOK
     DataType dtOld = decodeAttributeType(attp.getType());
     DataType dtNew = convertDataType(attp.getDataType());
@@ -576,7 +576,7 @@ public class NcStream {
   }
 
   @Nonnull
-  static public Section decodeSection(NcStreamProto.Section proto) {
+  public static Section decodeSection(NcStreamProto.Section proto) {
     Section section = new Section();
 
     for (ucar.nc2.stream.NcStreamProto.Range pr : proto.getRangeList()) {
@@ -644,7 +644,7 @@ public class NcStream {
 
   ////////////////////////////////////////////////////////////////
 
-  static public ucar.nc2.stream.NcStreamProto.DataType convertDataType(DataType dtype) {
+  public static ucar.nc2.stream.NcStreamProto.DataType convertDataType(DataType dtype) {
     switch (dtype) {
       case CHAR:
         return ucar.nc2.stream.NcStreamProto.DataType.CHAR;
@@ -686,7 +686,7 @@ public class NcStream {
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  static public DataType convertDataType(ucar.nc2.stream.NcStreamProto.DataType dtype) {
+  public static DataType convertDataType(ucar.nc2.stream.NcStreamProto.DataType dtype) {
     switch (dtype) {
       case CHAR:
         return DataType.CHAR;

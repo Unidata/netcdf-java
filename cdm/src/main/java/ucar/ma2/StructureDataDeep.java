@@ -26,7 +26,7 @@ public class StructureDataDeep extends StructureDataA {
    * @param members the StructureData members. a reference is kept to this object
    * @return StructureData with all data self contained
    */
-  static public StructureDataDeep copy(StructureData sdata, StructureMembers members) {
+  public static StructureDataDeep copy(StructureData sdata, StructureMembers members) {
     ArrayStructureBB abb = copyToArrayBB(sdata, members, ByteOrder.BIG_ENDIAN);
     return new StructureDataDeep(abb);
   }
@@ -39,7 +39,7 @@ public class StructureDataDeep extends StructureDataA {
    * @param canonical packing must be canonical
    * @return ArrayStructureBB with all data self contained
    */
-  static public ArrayStructureBB copyToArrayBB(ArrayStructure as, ByteOrder bo, boolean canonical) throws IOException {
+  public static ArrayStructureBB copyToArrayBB(ArrayStructure as, ByteOrder bo, boolean canonical) throws IOException {
     if (!canonical && as.getClass().equals(ArrayStructureBB.class)) { // no subclasses, LOOK detect already canonical
                                                                       // later
       ArrayStructureBB abb = (ArrayStructureBB) as;
@@ -73,7 +73,7 @@ public class StructureDataDeep extends StructureDataA {
    * @param bo what byte order to use ? (null for default)
    * @return ArrayStructureBB with all data self contained
    */
-  static public ArrayStructureBB copyToArrayBB(Structure s, ArrayStructure as, ByteOrder bo) throws IOException {
+  public static ArrayStructureBB copyToArrayBB(Structure s, ArrayStructure as, ByteOrder bo) throws IOException {
     StructureMembers sm = s.makeStructureMembers();
     ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
     ArrayStructureBB.setOffsets(sm);
@@ -96,7 +96,7 @@ public class StructureDataDeep extends StructureDataA {
    * @param sdata original ArrayStructure.
    * @return ArrayStructureBB with all data self contained
    */
-  static public ArrayStructureBB copyToArrayBB(StructureData sdata) {
+  public static ArrayStructureBB copyToArrayBB(StructureData sdata) {
     return copyToArrayBB(sdata, new StructureMembers(sdata.getStructureMembers()), ByteOrder.BIG_ENDIAN);
   }
 
@@ -108,7 +108,7 @@ public class StructureDataDeep extends StructureDataA {
    * @param bo Byte Order of the ByteBuffer
    * @return ArrayStructureBB with all data self contained
    */
-  static public ArrayStructureBB copyToArrayBB(StructureData sdata, StructureMembers sm, ByteOrder bo) {
+  public static ArrayStructureBB copyToArrayBB(StructureData sdata, StructureMembers sm, ByteOrder bo) {
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
     bb.order(bo);
@@ -125,7 +125,7 @@ public class StructureDataDeep extends StructureDataA {
    * @param abb copy data into this ArrayStructureBB, starting from wherever the ByteBuffer current position is
    * @return number of bytes copied
    */
-  static public int copyToArrayBB(StructureData sdata, ArrayStructureBB abb) {
+  public static int copyToArrayBB(StructureData sdata, ArrayStructureBB abb) {
     // StructureMembers sm = sdata.getStructureMembers();
     ByteBuffer bb = abb.getByteBuffer();
     int start = bb.limit();

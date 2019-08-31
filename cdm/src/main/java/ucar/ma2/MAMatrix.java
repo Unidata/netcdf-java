@@ -124,7 +124,7 @@ public class MAMatrix {
    * @return MAMatrix result: new matrix
    * @exception IllegalArgumentException if m1.getNcols() != m2.getNrows().
    */
-  static public MAMatrix multiply(MAMatrix m1, MAMatrix m2) {
+  public static MAMatrix multiply(MAMatrix m1, MAMatrix m2) {
 
     if (m1.getNcols() != m2.getNrows())
       throw new IllegalArgumentException("MAMatrix.multiply " + m1.getNcols() + " != " + m2.getNrows());

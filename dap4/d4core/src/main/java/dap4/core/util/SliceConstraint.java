@@ -85,7 +85,7 @@ public class SliceConstraint {
   //////////////////////////////////////////////////
   // Iterator subclass
 
-  static public class SliceCEIterator implements Iterator<List<Slice>> {
+  public static class SliceCEIterator implements Iterator<List<Slice>> {
 
     protected SliceConstraint sce;
     protected int rank;

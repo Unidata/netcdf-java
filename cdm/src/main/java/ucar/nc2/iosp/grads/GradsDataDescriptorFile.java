@@ -190,10 +190,10 @@ public class GradsDataDescriptorFile {
    */
   public static final int ENS_TIME_TEMPLATE = 3;
 
-  static private final KMPMatch matchDSET = new KMPMatch("DSET".getBytes(CDM.utf8Charset));
-  static private final KMPMatch matchdset = new KMPMatch("dset".getBytes(CDM.utf8Charset));
-  static private final KMPMatch matchENDVARS = new KMPMatch("ENDVARS".getBytes(CDM.utf8Charset));
-  static private final KMPMatch matchendvars = new KMPMatch("endvars".getBytes(CDM.utf8Charset));
+  private static final KMPMatch matchDSET = new KMPMatch("DSET".getBytes(CDM.utf8Charset));
+  private static final KMPMatch matchdset = new KMPMatch("dset".getBytes(CDM.utf8Charset));
+  private static final KMPMatch matchENDVARS = new KMPMatch("ENDVARS".getBytes(CDM.utf8Charset));
+  private static final KMPMatch matchendvars = new KMPMatch("endvars".getBytes(CDM.utf8Charset));
 
   public static boolean failFast(RandomAccessFile raf) throws IOException {
     raf.seek(0);

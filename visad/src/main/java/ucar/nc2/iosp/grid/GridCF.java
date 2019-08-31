@@ -103,7 +103,7 @@ public interface GridCF {
   enum VectorComponentFlag {
     easterlyNortherlyRelative, gridRelative;
 
-    static public String of(int val) {
+    public static String of(int val) {
       if (val == 0) {
         return easterlyNortherlyRelative.toString();
       } else {

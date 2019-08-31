@@ -27,11 +27,11 @@ import java.util.List;
  */
 public class CompareNetcdf {
 
-  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy) {
+  public static boolean compareFiles(NetcdfFile org, NetcdfFile copy) {
     return compareFiles(org, copy, false, false, false);
   }
 
-  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare,
+  public static boolean compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare,
       boolean _showEach) {
     CompareNetcdf tc = new CompareNetcdf(_showCompare, _showEach, _compareData);
     return tc.compare(org, copy, new Formatter(System.out));
@@ -223,7 +223,7 @@ public class CompareNetcdf {
   }
 
   // make sure each object in wantList is contained in container, using equals().
-  static public boolean checkContains(List container, List wantList, Formatter f) {
+  public static boolean checkContains(List container, List wantList, Formatter f) {
     boolean ok = true;
 
     for (Object want1 : wantList) {
@@ -293,7 +293,7 @@ public class CompareNetcdf {
     return ok;
   }
 
-  static private void compareVariableData(Variable var1, Variable var2, boolean showCompare, Formatter f)
+  private static void compareVariableData(Variable var1, Variable var2, boolean showCompare, Formatter f)
       throws IOException {
     Array data1 = var1.read();
     Array data2 = var2.read();
@@ -306,16 +306,16 @@ public class CompareNetcdf {
       f.format("   ok%n");
   }
 
-  static public void compareData(Array data1, Array data2) {
+  public static void compareData(Array data1, Array data2) {
     compareData(data1, data2, true);
   }
 
-  static public void compareData(Array data1, double[] data2) {
+  public static void compareData(Array data1, double[] data2) {
     Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
     compareData(data1, data2a, false);
   }
 
-  static private void compareData(Array data1, Array data2, boolean checkType) {
+  private static void compareData(Array data1, Array data2, boolean checkType) {
     Assert.assertEquals("data size", data1.getSize(), data2.getSize());
     Assert.assertEquals("data unsigned", data1.isUnsigned(), data2.isUnsigned());
     if (checkType)
@@ -370,7 +370,7 @@ public class CompareNetcdf {
     }
   }
 
-  static public void compareStructureData(StructureData sdata1, StructureData sdata2) {
+  public static void compareStructureData(StructureData sdata1, StructureData sdata2) {
     StructureMembers sm1 = sdata1.getStructureMembers();
     StructureMembers sm2 = sdata2.getStructureMembers();
     assert sm1.getMembers().size() == sm2.getMembers().size();

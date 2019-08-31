@@ -91,7 +91,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
   private String elevVarName;
 
 
-  static public boolean isValidFile(NetcdfDataset ds) {
+  public static boolean isValidFile(NetcdfDataset ds) {
     // Check that has a time dimension and a trajectory dimension.
     List list = ds.getRootGroup().getDimensions();
     if (list.size() != 2)

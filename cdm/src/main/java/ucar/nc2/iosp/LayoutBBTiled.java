@@ -153,7 +153,7 @@ public class LayoutBBTiled implements LayoutBB {
    * Everything is done in elements, not bytes.
    * Read nelems from src at srcPos, store in destination at destPos.
    */
-  static private class Chunk implements LayoutBB.Chunk {
+  private static class Chunk implements LayoutBB.Chunk {
     IndexChunker.Chunk delegate;
 
     private ByteBuffer bb;

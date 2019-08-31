@@ -27,7 +27,7 @@ public class Section {
    * @return a filled Section
    * @throws InvalidRangeException if shape and s and shape rank dont match, or if s has invalid range compared to shape
    */
-  static public Section fill(Section s, int[] shape) throws InvalidRangeException {
+  public static Section fill(Section s, int[] shape) throws InvalidRangeException {
     // want all
     if (s == null)
       return new Section(shape);
@@ -47,7 +47,7 @@ public class Section {
     return new Section(s.getRanges(), shape);
   }
 
-  static public Section make(List<RangeIterator> rangeIter) {
+  public static Section make(List<RangeIterator> rangeIter) {
     List<Range> ranges = new ArrayList<>();
     for (RangeIterator iter : rangeIter) {
       if (iter instanceof Range)
@@ -883,7 +883,7 @@ public class Section {
     return product;
   }
 
-  static public long computeSize(int[] shape) {
+  public static long computeSize(int[] shape) {
     long product = 1;
     for (int len : shape) {
       product *= len;

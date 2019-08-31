@@ -141,7 +141,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * Read some global data from SIGMET file. The SIGMET file consists of records with
    * fixed length=6144 bytes.
    */
-  static public java.util.Map<String, Number> readRecordsHdr(ucar.unidata.io.RandomAccessFile raf) {
+  public static java.util.Map<String, Number> readRecordsHdr(ucar.unidata.io.RandomAccessFile raf) {
     java.util.Map<String, Number> recHdr1 = new java.util.HashMap<>();
     try {
       int nparams = 0;

@@ -97,7 +97,7 @@ public class Cinrad2Record {
   /** Size of the entire message, if its a radar data message */
   private static int RADAR_DATA_SIZE = 2432;
 
-  static public String getDatatypeName(int datatype) {
+  public static String getDatatypeName(int datatype) {
     switch (datatype) {
       case REFLECTIVITY:
         return "Reflectivity";
@@ -111,7 +111,7 @@ public class Cinrad2Record {
     }
   }
 
-  static public String getDatatypeUnits(int datatype) {
+  public static String getDatatypeUnits(int datatype) {
     switch (datatype) {
       case REFLECTIVITY:
         return "dBz";
@@ -124,7 +124,7 @@ public class Cinrad2Record {
     throw new IllegalArgumentException();
   }
 
-  static public float getDatatypeScaleFactor(int datatype) {
+  public static float getDatatypeScaleFactor(int datatype) {
     switch (datatype) {
       case REFLECTIVITY:
         if (Cinrad2IOServiceProvider.isCC)
@@ -155,7 +155,7 @@ public class Cinrad2Record {
     }
   }
 
-  static public float getDatatypeAddOffset(int datatype) {
+  public static float getDatatypeAddOffset(int datatype) {
     switch (datatype) {
       case REFLECTIVITY:
         if (Cinrad2IOServiceProvider.isSC)
@@ -190,7 +190,7 @@ public class Cinrad2Record {
     }
   }
 
-  static public String getMessageTypeName(int code) {
+  public static String getMessageTypeName(int code) {
     switch (code) {
       case 1:
         return "digital radar data";
@@ -229,7 +229,7 @@ public class Cinrad2Record {
     }
   }
 
-  static public String getRadialStatusName(int code) {
+  public static String getRadialStatusName(int code) {
     switch (code) {
       case 0:
         return "start of new elevation";
@@ -246,7 +246,7 @@ public class Cinrad2Record {
     }
   }
 
-  static public String getVolumeCoveragePatternName(int code) {
+  public static String getVolumeCoveragePatternName(int code) {
     switch (code) {
       case 11:
         return "16 elevation scans every 5 mins";
@@ -265,12 +265,12 @@ public class Cinrad2Record {
     }
   }
 
-  static public java.util.Date getDate(int julianDays, int msecs) {
+  public static java.util.Date getDate(int julianDays, int msecs) {
     long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
     return new Date(total);
   }
 
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Cinrad2Record.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Cinrad2Record.class);
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

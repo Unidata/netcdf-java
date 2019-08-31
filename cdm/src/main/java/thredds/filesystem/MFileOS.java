@@ -52,7 +52,7 @@ public class MFileOS implements MFile {
    * @param filename name of the existing file.
    * @return MFileOS or null
    */
-  static public MFileOS getExistingFile(String filename) {
+  public static MFileOS getExistingFile(String filename) {
     if (filename == null)
       return null;
     File file = new File(filename);

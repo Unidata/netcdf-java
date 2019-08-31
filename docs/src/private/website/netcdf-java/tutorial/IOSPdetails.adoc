@@ -76,8 +76,8 @@ throw an IOException.
 [source,java]
 ----
 public class Nexrad2IOServiceProvider implements IOServiceProvider {
-  static public final String ARCHIVE2 = "ARCHIVE2";
-  static public final String AR2V0001 = "AR2V000";
+  public static final String ARCHIVE2 = "ARCHIVE2";
+  public static final String AR2V0001 = "AR2V000";
 
   public boolean isValidFile( RandomAccessFile raf) throws IOException { // <4>
     raf.seek(0); // <1>

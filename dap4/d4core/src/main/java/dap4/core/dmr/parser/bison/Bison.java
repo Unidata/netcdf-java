@@ -11,8 +11,8 @@ package dap4.core.dmr.parser.bison;
 
 import org.xml.sax.Locator;
 
-abstract public class Bison {
-  static public class Position {
+public abstract class Bison {
+  public static class Position {
     public Locator location;
 
     public Position(Locator loc) {
@@ -44,7 +44,7 @@ abstract public class Bison {
    * Locations represent a part of the input through the beginning
    * and ending positions.
    */
-  static public class Location {
+  public static class Location {
     /**
      * The first, inclusive, position in the range.
      */

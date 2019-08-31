@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
  * @see "http://www.unidata.ucar.edu/data/lightning.html"
  */
 public class Uspln extends AbstractLightningIOSP {
-  static private final Logger logger = LoggerFactory.getLogger(Uspln.class);
+  private static final Logger logger = LoggerFactory.getLogger(Uspln.class);
 
   /*
    * USPLN/NAPLN data format:

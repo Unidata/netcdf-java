@@ -27,18 +27,18 @@ import java.nio.*;
  */
 
 class Giniheader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Giniheader.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Giniheader.class);
 
-  static private final int GINI_PIB_LEN = 21; // gini product identification block
-  static private final int GINI_PDB_LEN = 512; // gini product description block
-  static private final int GINI_HED_LEN = GINI_PDB_LEN + GINI_PIB_LEN; // gini product header
-  static private final double DEG_TO_RAD = 0.017453292;
+  private static final int GINI_PIB_LEN = 21; // gini product identification block
+  private static final int GINI_PDB_LEN = 512; // gini product description block
+  private static final int GINI_HED_LEN = GINI_PDB_LEN + GINI_PIB_LEN; // gini product header
+  private static final double DEG_TO_RAD = 0.017453292;
 
   private boolean debug = false;
   int dataStart = 0; // where the data starts
   protected int Z_type = 0;
 
-  static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
+  public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     try {
       return validatePIB(raf);
     } catch (IOException e) {
@@ -46,7 +46,7 @@ class Giniheader {
     }
   }
 
-  static private int findWMOHeader(String pib) {
+  private static int findWMOHeader(String pib) {
     int pos = pib.indexOf("KNES");
     if (pos == -1)
       pos = pib.indexOf("CHIZ");

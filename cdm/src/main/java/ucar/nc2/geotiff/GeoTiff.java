@@ -28,8 +28,8 @@ import ucar.nc2.util.CompareNetcdf2;
  * @author Yuan Ho
  */
 public class GeoTiff implements Closeable {
-  static final private boolean showBytes = false, debugRead = false, debugReadGeoKey = false;
-  static final private boolean showHeaderBytes = false;
+  private static final boolean showBytes = false, debugRead = false, debugReadGeoKey = false;
+  private static final boolean showHeaderBytes = false;
 
   private String filename;
   private RandomAccessFile file;

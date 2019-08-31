@@ -64,7 +64,7 @@ public class CalendarDateUnit {
    * @return CalendarDateUnit
    * @throws IllegalArgumentException if udunitString is not paresable
    */
-  static public CalendarDateUnit of(String calendarName, String udunitString) {
+  public static CalendarDateUnit of(String calendarName, String udunitString) {
     Calendar calt = Calendar.get(calendarName);
     if (calt == null)
       calt = Calendar.getDefault();
@@ -79,7 +79,7 @@ public class CalendarDateUnit {
    * @return CalendarDateUnit
    * @throws IllegalArgumentException if udunitString is not paresable
    */
-  static public CalendarDateUnit withCalendar(Calendar calt, String udunitString) {
+  public static CalendarDateUnit withCalendar(Calendar calt, String udunitString) {
     if (calt == null)
       calt = Calendar.getDefault();
     return new CalendarDateUnit(calt, udunitString);
@@ -93,7 +93,7 @@ public class CalendarDateUnit {
    * @param baseDate "since baseDate"
    * @return CalendarDateUnit
    */
-  static public CalendarDateUnit of(Calendar calt, CalendarPeriod.Field periodField, CalendarDate baseDate) {
+  public static CalendarDateUnit of(Calendar calt, CalendarPeriod.Field periodField, CalendarDate baseDate) {
     if (calt == null)
       calt = Calendar.getDefault();
     return new CalendarDateUnit(calt, periodField, baseDate);

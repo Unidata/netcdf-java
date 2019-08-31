@@ -33,7 +33,7 @@ import java.util.Map;
  */
 
 public class CDMCompiler {
-  static public boolean DEBUG = false;
+  public static boolean DEBUG = false;
 
   //////////////////////////////////////////////////
   // Constants

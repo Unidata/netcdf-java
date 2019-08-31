@@ -28,7 +28,7 @@ import java.util.List;
  * common to client and server code
  */
 
-abstract public class CDMUtil {
+public abstract class CDMUtil {
 
   static final String hexchars = "0123456789abcdef";
 
@@ -39,7 +39,7 @@ abstract public class CDMUtil {
    * @param rangelist the set of ucar.ma2.Range
    * @result the equivalent list of Slice
    */
-  static public List<Slice> createSlices(List<Range> rangelist) throws dap4.core.util.DapException {
+  public static List<Slice> createSlices(List<Range> rangelist) throws dap4.core.util.DapException {
     List<Slice> slices = new ArrayList<Slice>(rangelist.size());
     for (int i = 0; i < rangelist.size(); i++) {
       Range r = rangelist.get(i);
@@ -66,7 +66,7 @@ abstract public class CDMUtil {
    * @result true if rangelist is whole; false otherwise.
    */
 
-  static public boolean isWhole(List<Range> rangelist, List<DapDimension> dimset, int start, int stop)
+  public static boolean isWhole(List<Range> rangelist, List<DapDimension> dimset, int start, int stop)
       throws dap4.core.util.DapException {
     int rsize = (rangelist == null ? 0 : rangelist.size());
     if (rsize != dimset.size())
@@ -94,7 +94,7 @@ abstract public class CDMUtil {
    * @param slices the set of slices
    * @result true if rangelist is whole wrt slices; false otherwise.
    */
-  static public boolean isWhole(List<Range> rangelist, List<Slice> slices) throws dap4.core.util.DapException {
+  public static boolean isWhole(List<Range> rangelist, List<Slice> slices) throws dap4.core.util.DapException {
     if (rangelist.size() != slices.size())
       return false;
     for (int i = 0; i < rangelist.size(); i++) {
@@ -115,7 +115,7 @@ abstract public class CDMUtil {
    * @param var the cdm var
    * @result true if rangelist is whole wrt slices; false otherwise.
    */
-  static public boolean isWhole(List<Range> rangelist, Variable var) throws dap4.core.util.DapException {
+  public static boolean isWhole(List<Range> rangelist, Variable var) throws dap4.core.util.DapException {
     List<Dimension> dimset = var.getDimensions();
     if (rangelist.size() != dimset.size())
       return false;
@@ -128,7 +128,7 @@ abstract public class CDMUtil {
     return true;
   }
 
-  static public List<ucar.ma2.Range> createCDMRanges(List<Slice> slices) throws DapException {
+  public static List<ucar.ma2.Range> createCDMRanges(List<Slice> slices) throws DapException {
     List<ucar.ma2.Range> cdmranges = new ArrayList<Range>();
     for (int i = 0; i < slices.size(); i++) {
       Slice r = slices.get(i);
@@ -152,7 +152,7 @@ abstract public class CDMUtil {
    * @param var possibly wrapped variable
    * @return the lowest level Variable instance
    */
-  static public Variable unwrap(Variable var) {
+  public static Variable unwrap(Variable var) {
     /*
      * for(;;) {
      * if(var instanceof VariableDS) {
@@ -185,7 +185,7 @@ abstract public class CDMUtil {
    * @param file NetcdfFile or NetcdfDataset
    * @return the lowest level NetcdfFile instance
    */
-  static public NetcdfFile unwrapfile(NetcdfFile file) {
+  public static NetcdfFile unwrapfile(NetcdfFile file) {
     for (;;) {
       if (file instanceof NetcdfDataset) {
         NetcdfDataset ds = (NetcdfDataset) file;
@@ -198,7 +198,7 @@ abstract public class CDMUtil {
     return file;
   }
 
-  static public boolean hasVLEN(List<Range> ranges) {
+  public static boolean hasVLEN(List<Range> ranges) {
     if (ranges == null || ranges.size() == 0)
       return false;
     return ranges.get(ranges.size() - 1) == Range.VLEN;
@@ -207,14 +207,14 @@ abstract public class CDMUtil {
   /**
    * Test if any dimension is variable length
    */
-  static public boolean hasVLEN(Variable v) {
+  public static boolean hasVLEN(Variable v) {
     return containsVLEN(v.getDimensions());
   }
 
   /**
    * Test if any dimension is variable length
    */
-  static public boolean containsVLEN(List<Dimension> dimset) {
+  public static boolean containsVLEN(List<Dimension> dimset) {
     if (dimset == null)
       return false;
     for (Dimension dim : dimset) {
@@ -232,7 +232,7 @@ abstract public class CDMUtil {
    * @param dimset from which to generate shape
    * @return
    */
-  static public int[] computeEffectiveShape(List<DapDimension> dimset) {
+  public static int[] computeEffectiveShape(List<DapDimension> dimset) {
     if (dimset == null || dimset.size() == 0)
       return new int[0];
     int effectiverank = dimset.size();
@@ -294,7 +294,7 @@ abstract public class CDMUtil {
    * @throws ForbiddenConversionException if cannot convert to long
    */
 
-  static public long extractLongValue(TypeSort atomtype, DataCursor dataset, Index index) throws DapException {
+  public static long extractLongValue(TypeSort atomtype, DataCursor dataset, Index index) throws DapException {
     Object result;
     result = dataset.read(index);
     long lvalue = CDMTypeFcns.extract(atomtype, result);
@@ -313,7 +313,7 @@ abstract public class CDMUtil {
    * @throws ForbiddenConversionException if cannot convert to double
    */
 
-  static public double extractDoubleValue(TypeSort atomtype, DataCursor dataset, Index index) throws DapException {
+  public static double extractDoubleValue(TypeSort atomtype, DataCursor dataset, Index index) throws DapException {
     Object result;
     result = dataset.read(index);
     double dvalue = 0.0;
@@ -363,7 +363,7 @@ abstract public class CDMUtil {
    * @return resulting array of converted values as an object
    */
 
-  static public Object convertVector(DapType dsttype, DapType srctype, Object src) {
+  public static Object convertVector(DapType dsttype, DapType srctype, Object src) {
     int i;
 
     TypeSort srcatomtype = srctype.getAtomicType();
@@ -443,7 +443,7 @@ abstract public class CDMUtil {
    * }
    * }
    */
-  static public String getChecksumString(byte[] checksum) {
+  public static String getChecksumString(byte[] checksum) {
     StringBuilder buf = new StringBuilder();
     for (int i = 0; i < checksum.length; i++) {
       byte b = checksum[i];
@@ -494,7 +494,7 @@ abstract public class CDMUtil {
    */
 
 
-  static public List<Range> dimsetToRanges(List<DapDimension> dimset) throws dap4.core.util.DapException {
+  public static List<Range> dimsetToRanges(List<DapDimension> dimset) throws dap4.core.util.DapException {
     if (dimset == null)
       return null;
     List<Range> ranges = new ArrayList<>();
@@ -510,7 +510,7 @@ abstract public class CDMUtil {
     return ranges;
   }
 
-  static public List<Slice> shapeToSlices(int[] shape) throws dap4.core.util.DapException {
+  public static List<Slice> shapeToSlices(int[] shape) throws dap4.core.util.DapException {
     if (shape == null)
       return null;
     List<Slice> slices = new ArrayList<>(shape.length);
@@ -521,7 +521,7 @@ abstract public class CDMUtil {
     return slices;
   }
 
-  static public dap4.core.util.Index cdmIndexToIndex(ucar.ma2.Index cdmidx) {
+  public static dap4.core.util.Index cdmIndexToIndex(ucar.ma2.Index cdmidx) {
     int rank = cdmidx.getRank();
     int[] shape = cdmidx.getShape();
     long[] indices = new long[shape.length];
@@ -532,7 +532,7 @@ abstract public class CDMUtil {
     return dapidx;
   }
 
-  static public ucar.ma2.Index indexToCcMIndex(dap4.core.util.Index d4) {
+  public static ucar.ma2.Index indexToCcMIndex(dap4.core.util.Index d4) {
     int rank = d4.getRank();
     int[] shape = new int[rank];
     int[] indices = new int[rank];

@@ -29,7 +29,7 @@ import java.util.ArrayList;
  * @since Jan 3, 2008
  */
 public class IospHelper {
-  static private boolean showLayoutTypes = false;
+  private static boolean showLayoutTypes = false;
 
   /**
    * Read data subset from RandomAccessFile, create primitive array of size Layout.getTotalNelems.
@@ -44,14 +44,14 @@ public class IospHelper {
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
+  public static Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
       int byteOrder) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType)
         : makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(raf, index, dataType, arr, byteOrder, true);
   }
 
-  static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
+  public static Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
       int byteOrder, boolean convertChar) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType)
         : makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
@@ -71,7 +71,7 @@ public class IospHelper {
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, int byteOrder,
+  public static Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, int byteOrder,
       boolean convertChar) throws java.io.IOException {
     if (showLayoutTypes)
       System.out.println("***RAF LayoutType=" + layout.getClass().getName());
@@ -166,7 +166,7 @@ public class IospHelper {
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readDataFill(PositioningDataInputStream is, Layout index, DataType dataType, Object fillValue)
+  public static Object readDataFill(PositioningDataInputStream is, Layout index, DataType dataType, Object fillValue)
       throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType)
         : makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
@@ -185,7 +185,7 @@ public class IospHelper {
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readData(PositioningDataInputStream raf, Layout index, DataType dataType, Object arr)
+  public static Object readData(PositioningDataInputStream raf, Layout index, DataType dataType, Object arr)
       throws java.io.IOException {
     if (showLayoutTypes)
       System.out.println("***PositioningDataInputStream LayoutType=" + index.getClass().getName());
@@ -265,7 +265,7 @@ public class IospHelper {
    *        none
    * @return primitive array with data read in
    */
-  static public Object readDataFill(LayoutBB layout, DataType dataType, Object fillValue) {
+  public static Object readDataFill(LayoutBB layout, DataType dataType, Object fillValue) {
     long size = layout.getTotalNelems();
     if (dataType == DataType.STRUCTURE)
       size *= layout.getElemSize();
@@ -283,7 +283,7 @@ public class IospHelper {
    * @param arr primitive array to read data into
    * @return the primitive array with data read in
    */
-  static public Object readData(LayoutBB layout, DataType dataType, Object arr) {
+  public static Object readData(LayoutBB layout, DataType dataType, Object arr) {
     if (showLayoutTypes)
       System.out.println("***BB LayoutType=" + layout.getClass().getName());
 
@@ -576,7 +576,7 @@ public class IospHelper {
   /**
    * @deprecated use StructureDataDeep.copyToArrayBB
    */
-  static public ArrayStructureBB makeArrayBB(ArrayStructure as) throws IOException {
+  public static ArrayStructureBB makeArrayBB(ArrayStructure as) throws IOException {
     if (as.getClass().equals(ArrayStructureBB.class)) // no subclasses
       return (ArrayStructureBB) as;
 
@@ -595,7 +595,7 @@ public class IospHelper {
   /**
    * @deprecated use StructureDataDeep.copyToArrayBB
    */
-  static public ArrayStructureBB copyToArrayBB(StructureData sdata) {
+  public static ArrayStructureBB copyToArrayBB(StructureData sdata) {
     StructureMembers sm = new StructureMembers(sdata.getStructureMembers());
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
@@ -612,7 +612,7 @@ public class IospHelper {
    * @param dataType dataType of the variable
    * @return primitive array with data read in
    */
-  static public Object makePrimitiveArray(int size, DataType dataType) {
+  public static Object makePrimitiveArray(int size, DataType dataType) {
     Object arr = null;
 
     if ((dataType.getPrimitiveClassType() == byte.class) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)
@@ -651,7 +651,7 @@ public class IospHelper {
    *        none
    * @return primitive array with data read in
    */
-  static public Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
+  public static Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
 
     if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR)) {
       byte[] pa = new byte[size];
@@ -728,14 +728,14 @@ public class IospHelper {
 
   // convert byte array to char array, assuming UTF-8 encoding
 
-  static public char[] convertByteToCharUTF(byte[] byteArray) {
+  public static char[] convertByteToCharUTF(byte[] byteArray) {
     Charset c = CDM.utf8Charset;
     CharBuffer output = c.decode(ByteBuffer.wrap(byteArray));
     return output.array();
   }
 
   // convert char array to byte array, assuming UTF-8 encoding
-  static public byte[] convertCharToByteUTF(char[] from) {
+  public static byte[] convertCharToByteUTF(char[] from) {
     Charset c = CDM.utf8Charset;
     ByteBuffer output = c.encode(CharBuffer.wrap(from));
     return output.array();
@@ -743,7 +743,7 @@ public class IospHelper {
 
   // convert byte array to char array
 
-  static public char[] convertByteToChar(byte[] byteArray) {
+  public static char[] convertByteToChar(byte[] byteArray) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
     for (int i = 0; i < size; i++)
@@ -753,7 +753,7 @@ public class IospHelper {
 
   // convert char array to byte array
 
-  static public byte[] convertCharToByte(char[] from) {
+  public static byte[] convertCharToByte(char[] from) {
     byte[] to = null;
     if (from != null) {
       int size = from.length;
@@ -764,7 +764,7 @@ public class IospHelper {
     return to;
   }
 
-  static public long transferData(Array result, WritableByteChannel channel) throws java.io.IOException {
+  public static long transferData(Array result, WritableByteChannel channel) throws java.io.IOException {
 
     // LOOK should we buffer ??
     try (DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel))) {
@@ -813,7 +813,7 @@ public class IospHelper {
 
   // section reading for member data
 
-  static public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
+  public static ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     Variable inner = null;
     List<Range> totalRanges = new ArrayList<>();
     ParsedSectionSpec current = cer;
@@ -835,7 +835,7 @@ public class IospHelper {
     return result;
   }
 
-  static private void extractSection(ParsedSectionSpec child, ArrayStructure outerData, IndexIterator to)
+  private static void extractSection(ParsedSectionSpec child, ArrayStructure outerData, IndexIterator to)
       throws IOException, InvalidRangeException {
     long wantNelems = child.section.computeSize();
 
@@ -861,7 +861,7 @@ public class IospHelper {
     }
   }
 
-  static private void extractSectionFromSequence(ParsedSectionSpec child, ArraySequence outerData, IndexIterator to)
+  private static void extractSectionFromSequence(ParsedSectionSpec child, ArraySequence outerData, IndexIterator to)
       throws IOException {
     try (StructureDataIterator sdataIter = outerData.getStructureDataIterator()) {
       while (sdataIter.hasNext()) {
@@ -875,7 +875,7 @@ public class IospHelper {
 
   // LOOK could be used in createView ??
 
-  static private ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData,
+  private static ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData,
       StructureMembers.Member m) {
     StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
     ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());

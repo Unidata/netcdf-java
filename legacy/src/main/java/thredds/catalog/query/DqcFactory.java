@@ -42,10 +42,10 @@ public class DqcFactory {
   public static boolean debugVersion = false;
   public static boolean showParsedXML = false;
 
-  static private DiskCache2 diskCache = null;
-  static private int buffer_size = 64000;
+  private static DiskCache2 diskCache = null;
+  private static int buffer_size = 64000;
 
-  static public void setPersistenceCache(DiskCache2 dc) {
+  public static void setPersistenceCache(DiskCache2 dc) {
     diskCache = dc;
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////

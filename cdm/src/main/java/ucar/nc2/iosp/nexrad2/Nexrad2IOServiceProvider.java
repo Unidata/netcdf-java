@@ -23,9 +23,9 @@ import java.util.Date;
  * @author caron
  */
 public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Nexrad2IOServiceProvider.class);
-  static private final int MISSING_INT = -9999;
-  static private final float MISSING_FLOAT = Float.NaN;
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Nexrad2IOServiceProvider.class);
+  private static final int MISSING_INT = -9999;
+  private static final float MISSING_FLOAT = Float.NaN;
 
 
   public boolean isValidFile(RandomAccessFile raf) {

@@ -31,8 +31,8 @@ import java.util.StringTokenizer;
  */
 public class NcmlConstructor {
   // static private final boolean validate = false;
-  static private final boolean debugConstruct = false;
-  static private final boolean showParsedXML = false;
+  private static final boolean debugConstruct = false;
+  private static final boolean showParsedXML = false;
 
   private Formatter errlog = new Formatter();
 

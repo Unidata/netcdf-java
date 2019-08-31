@@ -23,7 +23,7 @@ public class ArrayStructureBBsection extends ArrayStructureBB {
    * @param section of the whole
    * @return original, if section is empty or the same saze as the original, else a section of the original
    */
-  static public ArrayStructureBB factory(ArrayStructureBB org, Section section) {
+  public static ArrayStructureBB factory(ArrayStructureBB org, Section section) {
     if (section == null || section.computeSize() == org.getSize())
       return org;
     return new ArrayStructureBBsection(org.getStructureMembers(), org.getShape(), org.getByteBuffer(), section);

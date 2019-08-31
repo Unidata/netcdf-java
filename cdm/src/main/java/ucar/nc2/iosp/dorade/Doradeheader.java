@@ -21,7 +21,7 @@ public class Doradeheader {
   private ucar.nc2.NetcdfFile ncfile;
   private float[] lat_min, lat_max, lon_min, lon_max, hi_max, hi_min;
 
-  static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
+  public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     try {
       java.io.RandomAccessFile file = raf.getRandomAccessFile();
       if (file == null)

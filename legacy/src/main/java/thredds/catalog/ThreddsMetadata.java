@@ -723,7 +723,7 @@ public class ThreddsMetadata {
   /**
    * Implements Contributor type.
    */
-  static public class Contributor {
+  public static class Contributor {
     private String name;
     private String role;
 
@@ -753,7 +753,7 @@ public class ThreddsMetadata {
     }
 
     // for bean editing
-    static public String editableProperties() {
+    public static String editableProperties() {
       return "role name";
     }
 
@@ -787,7 +787,7 @@ public class ThreddsMetadata {
   /**
    * Implements Source type, used by publisher and creator elements.
    */
-  static public class Source {
+  public static class Source {
     private Vocab name, long_name;
     private String url, email;
 
@@ -882,11 +882,11 @@ public class ThreddsMetadata {
     private volatile int hashCode = 0; // Bloch, item 8
 
     // for bean editing
-    static public String hiddenProperties() {
+    public static String hiddenProperties() {
       return "nameVocab";
     }
 
-    static public String editableProperties() {
+    public static String editableProperties() {
       return "name email url vocabulary";
     }
   }
@@ -895,7 +895,7 @@ public class ThreddsMetadata {
   /**
    * Implements Vocab type, just text with an optional "vocabulary" attribute.
    */
-  static public class Vocab {
+  public static class Vocab {
     private String text;
     private String vocabulary;
 
@@ -926,7 +926,7 @@ public class ThreddsMetadata {
     }
 
     // for bean editing
-    static public String editableProperties() {
+    public static String editableProperties() {
       return "text vocabulary";
     }
 
@@ -971,11 +971,11 @@ public class ThreddsMetadata {
   /**
    * Implements GeospatialCoverage type.
    */
-  static public class GeospatialCoverage {
-    static private Range defaultEastwest = new Range(0.0, 0.0, Double.NaN, CDM.LON_UNITS);
-    static private Range defaultNorthsouth = new Range(0.0, 0.0, Double.NaN, CDM.LAT_UNITS);
-    static private Range defaultUpdown = new Range(0.0, 0.0, Double.NaN, "km");
-    static private GeospatialCoverage empty = new GeospatialCoverage();
+  public static class GeospatialCoverage {
+    private static Range defaultEastwest = new Range(0.0, 0.0, Double.NaN, CDM.LON_UNITS);
+    private static Range defaultNorthsouth = new Range(0.0, 0.0, Double.NaN, CDM.LAT_UNITS);
+    private static Range defaultUpdown = new Range(0.0, 0.0, Double.NaN, "km");
+    private static GeospatialCoverage empty = new GeospatialCoverage();
 
     private Range eastwest, northsouth, updown;
     private boolean isGlobal = false;
@@ -1402,7 +1402,7 @@ public class ThreddsMetadata {
   /**
    * Implements spatialRange type.
    */
-  static public class Range {
+  public static class Range {
     private double start, size, resolution;
     private String units;
 
@@ -1609,7 +1609,7 @@ public class ThreddsMetadata {
   /**
    * Implements Variable type.
    */
-  static public class Variable implements Comparable {
+  public static class Variable implements Comparable {
     private String name, desc, vocabulary_name, units, id;
 
     // no-arg constructor for beans
@@ -1718,11 +1718,11 @@ public class ThreddsMetadata {
     }
 
     // for bean editing
-    static public String hiddenProperties() {
+    public static String hiddenProperties() {
       return "nameVocab";
     }
 
-    static public String editableProperties() {
+    public static String editableProperties() {
       return "name description units vocabularyName";
     }
   }
@@ -1730,7 +1730,7 @@ public class ThreddsMetadata {
   /**
    * Implements Variables type.
    */
-  static public class Variables {
+  public static class Variables {
     private String vocabulary, vocabHref, mapHref;
     private URI vocabUri, mapUri;
     private List<Variable> variables = new ArrayList<Variable>();
@@ -2043,7 +2043,7 @@ public class ThreddsMetadata {
    * if (isValid) System.out.println("\nBack to XML=\n" + catFactory.writeXML( cat));
    * }
    */
-  static public void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException {
     GeospatialCoverage gc = new GeospatialCoverage();
     LatLonRect bb = new LatLonRect();
     gc.setBoundingBox(bb);

@@ -14,7 +14,7 @@ import java.io.*;
  */
 public class UnsynchronizedBufferedWriter extends Writer {
 
-  private final static int CAPACITY = 8192;
+  private static final int CAPACITY = 8192;
 
   private char[] buffer = new char[CAPACITY];
   private int position = 0;

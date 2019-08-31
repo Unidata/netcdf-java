@@ -26,7 +26,7 @@ public class Nc4Cursor extends AbstractCursor {
 
   //////////////////////////////////////////////////
 
-  static public boolean DEBUG = false;
+  public static boolean DEBUG = false;
 
   //////////////////////////////////////////////////
   // Instance variables
@@ -492,14 +492,14 @@ public class Nc4Cursor extends AbstractCursor {
     return DapUtil.sliceProduct(slices);
   }
 
-  static public void errcheck(Nc4prototypes nc4, int ret) throws DapException {
+  public static void errcheck(Nc4prototypes nc4, int ret) throws DapException {
     if (ret != 0) {
       String msg = String.format("Netcdf: errno=%d; %s", ret, nc4.nc_strerror(ret));
       throw new DapException(msg);
     }
   }
 
-  static public void readcheck(Nc4prototypes nc4, int ret) throws DapException {
+  public static void readcheck(Nc4prototypes nc4, int ret) throws DapException {
     try {
       errcheck(nc4, ret);
     } catch (DapException de) {

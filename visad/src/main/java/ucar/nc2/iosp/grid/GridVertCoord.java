@@ -19,7 +19,7 @@ import java.util.*;
  */
 public class GridVertCoord implements Comparable<GridVertCoord> {
 
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridVertCoord.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridVertCoord.class);
 
   /**
    * typical record for this vertical coordinate

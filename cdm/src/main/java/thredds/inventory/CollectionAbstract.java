@@ -56,16 +56,16 @@ import java.util.*;
  * @since 11/20/13
  */
 public abstract class CollectionAbstract implements MCollection {
-  static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
+  private static org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
-  static public final String CATALOG = "catalog:";
-  static public final String DIR = "directory:";
-  static public final String FILE = "file:";
-  static public final String LIST = "list:";
-  static public final String GLOB = "glob:";
+  public static final String CATALOG = "catalog:";
+  public static final String DIR = "directory:";
+  public static final String FILE = "file:";
+  public static final String LIST = "list:";
+  public static final String GLOB = "glob:";
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog)
+  public static MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog)
       throws IOException {
     if (collectionSpec.startsWith(CATALOG))
       return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan,
@@ -90,7 +90,7 @@ public abstract class CollectionAbstract implements MCollection {
       return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }
 
-  static public String cleanName(String name) {
+  public static String cleanName(String name) {
     if (name == null)
       return null;
     return StringUtil2.replace(name.trim(), ' ', "_"); // LOOK must be ok in URL - probably not sufficient here

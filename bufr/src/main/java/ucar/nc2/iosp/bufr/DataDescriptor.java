@@ -21,7 +21,7 @@ import java.util.List;
  * @since Apr 5, 2008
  */
 public class DataDescriptor {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataDescriptor.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataDescriptor.class);
 
   ////////////////////////////////
 
@@ -220,7 +220,7 @@ public class DataDescriptor {
    * @param fromList transfer from here
    * @param toList to here
    */
-  static public void transferInfo(List<DataDescriptor> fromList, List<DataDescriptor> toList) { // get info from proto
+  public static void transferInfo(List<DataDescriptor> fromList, List<DataDescriptor> toList) { // get info from proto
                                                                                                 // message
     if (fromList.size() != toList.size())
       throw new IllegalArgumentException("list sizes dont match " + fromList.size() + " != " + toList.size());

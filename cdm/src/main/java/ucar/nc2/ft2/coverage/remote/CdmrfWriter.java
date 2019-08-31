@@ -38,8 +38,8 @@ public class CdmrfWriter {
   // static private final Logger logger = LoggerFactory.getLogger(CdmrfWriter.class);
 
   // must start with this "CDFF"
-  static public final byte[] MAGIC_START = new byte[] {0x43, 0x44, 0x46, 0x46};
-  static public final int MAX_INLINE_NVALUES = 500;
+  public static final byte[] MAGIC_START = new byte[] {0x43, 0x44, 0x46, 0x46};
+  public static final int MAX_INLINE_NVALUES = 500;
   private static final boolean show = false;
 
   public long sendHeader(OutputStream out, CoverageCollection gridDataset, String location) throws IOException {
@@ -269,7 +269,7 @@ public class CdmrfWriter {
   }
 
 
-  static public CdmrFeatureProto.AxisType convertAxisType(AxisType dtype) {
+  public static CdmrFeatureProto.AxisType convertAxisType(AxisType dtype) {
     switch (dtype) {
       case RunTime:
         return CdmrFeatureProto.AxisType.RunTime;
@@ -306,7 +306,7 @@ public class CdmrfWriter {
   }
 
 
-  static public CdmrFeatureProto.Calendar convertCalendar(Calendar type) {
+  public static CdmrFeatureProto.Calendar convertCalendar(Calendar type) {
     switch (type) {
       case gregorian:
         return CdmrFeatureProto.Calendar.gregorian;
@@ -328,7 +328,7 @@ public class CdmrfWriter {
 
   // public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
-  static public CdmrFeatureProto.CoverageType convertCoverageType(FeatureType type) {
+  public static CdmrFeatureProto.CoverageType convertCoverageType(FeatureType type) {
     switch (type) {
       case COVERAGE:
         return CdmrFeatureProto.CoverageType.General;
@@ -344,7 +344,7 @@ public class CdmrfWriter {
     throw new IllegalStateException("illegal CoverageType " + type);
   }
 
-  static public CdmrFeatureProto.DependenceType convertDependenceType(CoverageCoordAxis.DependenceType type) {
+  public static CdmrFeatureProto.DependenceType convertDependenceType(CoverageCoordAxis.DependenceType type) {
     switch (type) {
       case independent:
         return CdmrFeatureProto.DependenceType.independent;
@@ -361,7 +361,7 @@ public class CdmrfWriter {
   }
 
 
-  static public CdmrFeatureProto.AxisSpacing convertSpacing(CoverageCoordAxis.Spacing type) {
+  public static CdmrFeatureProto.AxisSpacing convertSpacing(CoverageCoordAxis.Spacing type) {
     switch (type) {
       case regularPoint:
         return CdmrFeatureProto.AxisSpacing.regularPoint;

@@ -243,7 +243,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
     return sdata;
   }
 
-  abstract protected StructureData makeStructureData(ArrayStructure as, int recno);
+  protected abstract StructureData makeStructureData(ArrayStructure as, int recno);
 
   /**
    * Get the size of each StructureData object in bytes.

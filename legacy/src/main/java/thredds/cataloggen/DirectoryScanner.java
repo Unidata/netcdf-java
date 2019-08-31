@@ -30,7 +30,7 @@ import java.util.List;
  * @since 2004-12-10T15:33:32-0700
  */
 public class DirectoryScanner {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DirectoryScanner.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DirectoryScanner.class);
 
   private String serviceTitle;
   private File serviceBaseUrlDir;

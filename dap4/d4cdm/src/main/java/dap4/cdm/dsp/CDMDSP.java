@@ -37,18 +37,18 @@ public class CDMDSP extends AbstractDSP {
   //////////////////////////////////////////////////
   // Constants
 
-  static protected final boolean DEBUG = false;
-  static protected final boolean DUMPCDL = false;
+  protected static final boolean DEBUG = false;
+  protected static final boolean DUMPCDL = false;
 
   // NetcdfDataset enhancement to use: need only coord systems
-  static protected Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
+  protected static Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
-  static final protected String FILLVALUE = "_FillValue";
+  protected static final String FILLVALUE = "_FillValue";
 
   //////////////////////////////////////////////////
   // Class variables
 
-  static protected boolean nc4loaded = false;
+  protected static boolean nc4loaded = false;
 
   //////////////////////////////////////////////////
   // Class methods

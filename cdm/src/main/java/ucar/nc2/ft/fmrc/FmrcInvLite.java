@@ -18,8 +18,8 @@ import java.util.*;
  * @since Apr 14, 2010
  */
 public class FmrcInvLite implements java.io.Serializable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInvLite.class);
-  static private final String BEST = "Best";
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInvLite.class);
+  private static final String BEST = "Best";
 
   // public for debugging
   public String collectionName;

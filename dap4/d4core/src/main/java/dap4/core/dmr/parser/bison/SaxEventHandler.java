@@ -13,7 +13,7 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 
-abstract public class SaxEventHandler extends DefaultHandler {
+public abstract class SaxEventHandler extends DefaultHandler {
   //////////////////////////////////////////////////
   // Constants
 
@@ -51,7 +51,7 @@ abstract public class SaxEventHandler extends DefaultHandler {
   // Abstract method(s)
 
   // Send the lexeme to the the subclass to process
-  abstract public void yyevent(SaxEvent token) throws SAXException;
+  public abstract void yyevent(SaxEvent token) throws SAXException;
 
   //////////////////////////////////////////////////
   // Get/Set

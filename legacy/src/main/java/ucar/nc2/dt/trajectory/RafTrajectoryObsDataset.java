@@ -36,7 +36,7 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset implemen
   private String lonVarName;
   private String elevVarName;
 
-  static public boolean isValidFile(NetcdfDataset ds) {
+  public static boolean isValidFile(NetcdfDataset ds) {
     Attribute conventionsAtt = ds.findGlobalAttribute("Conventions");
     if (conventionsAtt == null)
       conventionsAtt = ds.findGlobalAttributeIgnoreCase("Conventions");

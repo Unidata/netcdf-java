@@ -21,7 +21,7 @@ import java.text.ParseException;
  * @since Nov 29, 2005 4:53:46 PM
  */
 public class DateFromString {
-  static private final Logger logger = LoggerFactory.getLogger(DateFromString.class);
+  private static final Logger logger = LoggerFactory.getLogger(DateFromString.class);
 
   /**
    * Parse the given date string (starting at the first numeric character)

@@ -45,8 +45,8 @@ import java.util.Formatter;
  */
 
 public class CoordinateAxis extends VariableDS {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
-  static public int axisSizeToCache = 100 * 1000; // bytes
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
+  public static int axisSizeToCache = 100 * 1000; // bytes
 
   protected NetcdfDataset ncd; // container dataset
   protected AxisType axisType = null;
@@ -61,7 +61,7 @@ public class CoordinateAxis extends VariableDS {
    * @param vds an existing Variable in dataset.
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
    */
-  static public CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
+  public static CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
     if ((vds.getRank() == 0) || (vds.getRank() == 1) || (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR)) {
       return new CoordinateAxis1D(ncd, vds);
     } else if (vds.getRank() == 2)
@@ -323,7 +323,7 @@ public class CoordinateAxis extends VariableDS {
   /**
    * Standard sort on Coordinate Axes
    */
-  static public class AxisComparator implements java.util.Comparator<CoordinateAxis> {
+  public static class AxisComparator implements java.util.Comparator<CoordinateAxis> {
     public int compare(CoordinateAxis c1, CoordinateAxis c2) {
 
       AxisType t1 = c1.getAxisType();

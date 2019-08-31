@@ -60,7 +60,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @ThreadSafe
 public class ListenerManager {
-  static private final Logger logger = org.slf4j.LoggerFactory.getLogger(ListenerManager.class);
+  private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ListenerManager.class);
 
   private final List<Object> listeners = new CopyOnWriteArrayList<>(); // cf
                                                                        // http://www.ibm.com/developerworks/java/library/j-jtp07265/index.html

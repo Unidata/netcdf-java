@@ -18,13 +18,13 @@ public class DSPRegistry {
   // Constants
 
   // MNemonics
-  static public final boolean LAST = true;
-  static public final boolean FIRST = false;
+  public static final boolean LAST = true;
+  public static final boolean FIRST = false;
 
   //////////////////////////////////////////////////
   // Type Decls
 
-  static protected class Registration {
+  protected static class Registration {
     Class<? extends DSP> dspclass;
     DSP matcher;
 
@@ -45,7 +45,7 @@ public class DSPRegistry {
 
   //////////////////////////////////////////////////
 
-  static protected ClassLoader loader = DSPRegistry.class.getClassLoader();
+  protected static ClassLoader loader = DSPRegistry.class.getClassLoader();
 
   //////////////////////////////////////////////////
   // Instance Variables
@@ -66,7 +66,7 @@ public class DSPRegistry {
   //////////////////////////////////////////////////
   // Accessors
 
-  static public void setLoader(ClassLoader ldr) {
+  public static void setLoader(ClassLoader ldr) {
     loader = ldr;
   }
 
@@ -81,7 +81,7 @@ public class DSPRegistry {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassNotFoundException if class not found.
    */
-  synchronized public void register(String className, boolean last) throws DapException {
+  public synchronized void register(String className, boolean last) throws DapException {
     try {
       Class<? extends DSP> klass = (Class<? extends DSP>) loader.loadClass(className);
       register(klass, last);
@@ -99,7 +99,7 @@ public class DSPRegistry {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException if class doesnt implement DSP interface.
    */
-  synchronized public void register(Class<? extends DSP> klass, boolean last) {
+  public synchronized void register(Class<? extends DSP> klass, boolean last) {
     // is this already defined?
     if (registered(klass))
       return;
@@ -115,7 +115,7 @@ public class DSPRegistry {
    * @param klass Class for which to search
    */
 
-  synchronized public boolean registered(Class<? extends DSP> klass) {
+  public synchronized boolean registered(Class<? extends DSP> klass) {
     for (Registration r : registry) {
       if (r.dspclass == klass)
         return true;
@@ -128,7 +128,7 @@ public class DSPRegistry {
    *
    * @param klass Class for which to search
    */
-  synchronized public void unregister(Class<? extends DSP> klass) {
+  public synchronized void unregister(Class<? extends DSP> klass) {
     for (int i = 0; i < registry.size(); i++) {
       if (registry.get(i).dspclass == klass) {
         registry.remove(i);
@@ -143,7 +143,7 @@ public class DSPRegistry {
    * @throws DapException
    */
 
-  synchronized public DSP findMatchingDSP(String path, DapContext cxt) throws DapException {
+  public synchronized DSP findMatchingDSP(String path, DapContext cxt) throws DapException {
     for (int i = 0; i < registry.size(); i++) {
       try {
         Registration tester = registry.get(i);

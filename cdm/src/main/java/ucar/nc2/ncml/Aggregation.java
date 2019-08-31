@@ -97,13 +97,13 @@ public abstract class Aggregation {
     FIRST, RANDOM, LATEST, PENULTIMATE
   }
 
-  static protected TypicalDataset typicalDatasetMode;
+  protected static TypicalDataset typicalDatasetMode;
 
-  static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
-  static protected DiskCache2 diskCache2 = null;
+  protected static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
+  protected static DiskCache2 diskCache2 = null;
 
   // this is where persist() reads/writes files
-  static public void setPersistenceCache(DiskCache2 dc) {
+  public static void setPersistenceCache(DiskCache2 dc) {
     diskCache2 = dc;
     if (diskCache2 != null)
       diskCache2.setAlwaysUseCache(true); // the persistence cache file has same name as the ncml - must put it into the
@@ -111,13 +111,13 @@ public abstract class Aggregation {
   }
 
   // experimental multithreading
-  static protected Executor executor;
+  protected static Executor executor;
 
-  static public void setExecutor(Executor exec) {
+  public static void setExecutor(Executor exec) {
     executor = exec;
   }
 
-  static public void setTypicalDatasetMode(String mode) {
+  public static void setTypicalDatasetMode(String mode) {
     if (mode.equalsIgnoreCase("random"))
       typicalDatasetMode = TypicalDataset.RANDOM;
     else if (mode.equalsIgnoreCase("latest"))
@@ -130,7 +130,7 @@ public abstract class Aggregation {
       logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
 
-  static protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
+  protected static boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
       debugRead = false, debugDateParse = false, debugConvert = false;
 
   //////////////////////////////////////////////////////////////////////////////////////////

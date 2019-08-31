@@ -22,9 +22,9 @@ import ucar.nc2.ft.PointFeature;
  * @since 6/20/2014
  */
 public class PointFeatureCopyFactory {
-  static private final int POINTER_SIZE = 8; // assume 64 bit pointers could do better with -XX:+UseCompressedOops
-  static private final int OBJECT_SIZE = 40; // overhead per object estimate
-  static private final int ARRAY_SIZE = 8; // assume 64 bit pointers
+  private static final int POINTER_SIZE = 8; // assume 64 bit pointers could do better with -XX:+UseCompressedOops
+  private static final int OBJECT_SIZE = 40; // overhead per object estimate
+  private static final int ARRAY_SIZE = 8; // assume 64 bit pointers
 
   private final StructureMembers sm;
   private final int sizeInBytes;

@@ -7,7 +7,7 @@ package dap4.core.ce.parser;
 
 import dap4.core.dmr.parser.ParseException;
 
-abstract public class CEActions {
+public abstract class CEActions {
   //////////////////////////////////////////////////
   // Constructors
 

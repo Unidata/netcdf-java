@@ -34,7 +34,7 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 
 public class CompositeStationCollectionFlattened extends PointCollectionImpl {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CompositeStationCollectionFlattened.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CompositeStationCollectionFlattened.class);
 
   private TimedCollection stnCollections;
   private LatLonRect bbSubset;

@@ -31,8 +31,8 @@ import java.util.List;
  * @since 5/26/2015
  */
 public class CoverageDatasetFactory {
-  static public final String NOT_GRIB_FILE = "Not a GRIB file";
-  static public final String NO_GRIB_CLASS = "GRIB module not loaded";
+  public static final String NOT_GRIB_FILE = "Not a GRIB file";
+  public static final String NO_GRIB_CLASS = "GRIB module not loaded";
 
   /**
    * @param endpoint cdmrFeature:url, local GRIB data or index file, or NetcdfDataset location
@@ -46,7 +46,7 @@ public class CoverageDatasetFactory {
    *        covDatasetCollection = opt.get();
    *        </pre>
    */
-  static public Optional<FeatureDatasetCoverage> openCoverageDataset(String endpoint) throws IOException {
+  public static Optional<FeatureDatasetCoverage> openCoverageDataset(String endpoint) throws IOException {
 
     // remote cdmrFeature datasets
     if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
@@ -87,7 +87,7 @@ public class CoverageDatasetFactory {
    * @param endpoint cdmrFeature:url, local GRIB data or index file, or NetcdfDataset location
    * @return FeatureDatasetCoverage or null on failure. use openCoverageDataset to get error message
    */
-  static public FeatureDatasetCoverage open(String endpoint) throws IOException {
+  public static FeatureDatasetCoverage open(String endpoint) throws IOException {
     Optional<FeatureDatasetCoverage> opt = openCoverageDataset(endpoint);
     return opt.isPresent() ? opt.get() : null;
   }
@@ -96,7 +96,7 @@ public class CoverageDatasetFactory {
    * @param endpoint local GRIB data or index file
    * @return FeatureDatasetCoverage or null on failure.
    */
-  static public Optional<FeatureDatasetCoverage> openGrib(String endpoint) {
+  public static Optional<FeatureDatasetCoverage> openGrib(String endpoint) {
 
     List<Object> notGribThrowables = Arrays.asList(IllegalAccessException.class, IllegalArgumentException.class,
         ClassNotFoundException.class, NoSuchMethodException.class, NoSuchMethodError.class);
@@ -125,7 +125,7 @@ public class CoverageDatasetFactory {
 
   }
 
-  static public Optional<FeatureDatasetCoverage> openNcmlString(String ncml) throws IOException {
+  public static Optional<FeatureDatasetCoverage> openNcmlString(String ncml) throws IOException {
     NetcdfDataset ncd = NcMLReader.readNcML(new StringReader(ncml), null);
 
     DtCoverageDataset gds = new DtCoverageDataset(ncd);

@@ -26,9 +26,9 @@ import javax.annotation.Nonnull;
  */
 public class StationFeatureCopyFactory {
 
-  static private final int POINTER_SIZE = 8; // assume 64 bit pointers could do better with -XX:+UseCompressedOops
-  static private final int OBJECT_SIZE = 40; // overhead per object estimate
-  static private final int ARRAY_SIZE = 8; // assume 64 bit pointers
+  private static final int POINTER_SIZE = 8; // assume 64 bit pointers could do better with -XX:+UseCompressedOops
+  private static final int OBJECT_SIZE = 40; // overhead per object estimate
+  private static final int ARRAY_SIZE = 8; // assume 64 bit pointers
 
   private final Map<String, StationFeatureImpl> stationMap;
   private final StructureMembers sm;

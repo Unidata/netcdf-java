@@ -75,13 +75,13 @@ import java.util.*;
 
 
 public class CoordSysBuilder implements CoordSysBuilderIF {
-  static public final String resourcesDir = "resources/nj22/coords/"; // resource path
-  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
+  public static final String resourcesDir = "resources/nj22/coords/"; // resource path
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
 
-  static private List<Convention> conventionList = new ArrayList<>();
-  static private Map<String, String> ncmlHash = new HashMap<>();
-  static private boolean useMaximalCoordSys = true;
-  static private boolean userMode;
+  private static List<Convention> conventionList = new ArrayList<>();
+  private static Map<String, String> ncmlHash = new HashMap<>();
+  private static boolean useMaximalCoordSys = true;
+  private static boolean userMode;
 
   /**
    * Allow plug-ins to determine if it owns a file based on the file's Convention attribute.
@@ -164,7 +164,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param ncmlLocation location of NcML file, may be local file or URL.
    * @see ucar.nc2.ncml.NcMLReader#wrapNcML
    */
-  static public void registerNcML(String conventionName, String ncmlLocation) {
+  public static void registerNcML(String conventionName, String ncmlLocation) {
     ncmlHash.put(conventionName, ncmlLocation);
   }
 
@@ -176,7 +176,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    *        Otherwise, you must implement the isMine() static method.
    * @param c implementation of CoordSysBuilderIF that parses those kinds of netcdf files.
    */
-  static public void registerConvention(String conventionName, Class c) {
+  public static void registerConvention(String conventionName, Class c) {
     registerConvention(conventionName, c, null);
   }
 
@@ -189,7 +189,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param match pass in your own matcher. if null, equalsIgnoreCase() will be used.
    * @param c implementation of CoordSysBuilderIF that parses those kinds of netcdf files.
    */
-  static public void registerConvention(String conventionName, Class c, ConventionNameOk match) {
+  public static void registerConvention(String conventionName, Class c, ConventionNameOk match) {
 
     if (!(CoordSysBuilderIF.class.isAssignableFrom(c)))
       throw new IllegalArgumentException(
@@ -212,7 +212,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       conventionList.add(new Convention(conventionName, c, match));
   }
 
-  static private Class matchConvention(String convName) {
+  private static Class matchConvention(String convName) {
     for (Convention c : conventionList) {
       if ((c.match == null) && c.convName.equalsIgnoreCase(convName))
         return c.convClass;
@@ -231,7 +231,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param className name of class that implements CoordSysBuilderIF.
    * @throws ClassNotFoundException if class could not be loaded
    */
-  static public void registerConvention(String conventionName, String className) throws ClassNotFoundException {
+  public static void registerConvention(String conventionName, String className) throws ClassNotFoundException {
     Class c = Class.forName(className);
     registerConvention(conventionName, c, null);
   }
@@ -243,7 +243,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param b true if if you want to guess at Coordinate Systems
    * @see #makeCoordinateSystemsMaximal
    */
-  static public void setUseMaximalCoordSys(boolean b) {
+  public static void setUseMaximalCoordSys(boolean b) {
     useMaximalCoordSys = b;
   }
 
@@ -252,7 +252,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    *
    * @return whether to make records into Structures.
    */
-  static public boolean getUseMaximalCoordSys() {
+  public static boolean getUseMaximalCoordSys() {
     return useMaximalCoordSys;
   }
 
@@ -262,7 +262,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param convAttValue original value of Convention attribute
    * @return list of Convention names
    */
-  static public List<String> breakupConventionNames(String convAttValue) {
+  public static List<String> breakupConventionNames(String convAttValue) {
     List<String> names = new ArrayList<>();
 
     if ((convAttValue.indexOf(',') > 0) || (convAttValue.indexOf(';') > 0)) {
@@ -294,7 +294,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param convAtts list of others, onbly use "extra" Conventions
    * @return comma separated list of Conventions
    */
-  static public String buildConventionAttribute(String mainConv, String... convAtts) {
+  public static String buildConventionAttribute(String mainConv, String... convAtts) {
     List<String> result = new ArrayList<>();
     result.add(mainConv);
     for (String convs : convAtts) {
@@ -328,7 +328,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @return the builder used
    * @throws java.io.IOException on io error
    */
-  static public @Nonnull CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  @Nonnull
+  public static CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
@@ -450,7 +451,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     return builder;
   }
 
-  static private class Convention {
+  private static class Convention {
     String convName;
     Class convClass;
     ConventionNameOk match;

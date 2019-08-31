@@ -26,9 +26,9 @@ import java.nio.channels.WritableByteChannel;
  */
 
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
-  static public final int defaultHTTPBufferSize = 20 * 1000; // 20K
-  static public final int maxHTTPBufferSize = 10 * 1000 * 1000; // 10 M
-  static private final boolean debug = false, debugDetails = false;
+  public static final int defaultHTTPBufferSize = 20 * 1000; // 20K
+  public static final int maxHTTPBufferSize = 10 * 1000 * 1000; // 10 M
+  private static final boolean debug = false, debugDetails = false;
 
   ///////////////////////////////////////////////////////////////////////////////////
 

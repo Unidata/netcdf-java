@@ -51,7 +51,7 @@ public class Level2VolumeScan {
   static final String AR2V0006 = "AR2V0006";
   static final String AR2V0007 = "AR2V0007";
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Level2VolumeScan.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Level2VolumeScan.class);
   ////////////////////////////////////////////////////////////////////////////////////
 
   // Data file

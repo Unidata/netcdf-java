@@ -407,7 +407,7 @@ public class UncompressInputStream extends FilterInputStream {
     return false;
   }
 
-  static public void uncompress(String fileInName, FileOutputStream out) throws IOException {
+  public static void uncompress(String fileInName, FileOutputStream out) throws IOException {
     long start = System.currentTimeMillis();
     int total = 0;
 

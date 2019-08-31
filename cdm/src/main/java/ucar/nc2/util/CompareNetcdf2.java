@@ -71,23 +71,23 @@ public class CompareNetcdf2 {
     }
   }
 
-  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f) {
+  public static boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f) {
     return compareFiles(org, copy, f, false, false, false);
   }
 
-  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f, boolean _compareData,
+  public static boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f, boolean _compareData,
       boolean _showCompare, boolean _showEach) {
     CompareNetcdf2 tc = new CompareNetcdf2(f, _showCompare, _showEach, _compareData);
     return tc.compare(org, copy);
   }
 
-  static public boolean compareLists(List org, List copy, Formatter f) {
+  public static boolean compareLists(List org, List copy, Formatter f) {
     boolean ok1 = checkContains("first", org, copy, f);
     boolean ok2 = checkContains("second", copy, org, f);
     return ok1 && ok2;
   }
 
-  static private boolean checkContains(String what, List container, List wantList, Formatter f) {
+  private static boolean checkContains(String what, List container, List wantList, Formatter f) {
     boolean ok = true;
 
     for (Object want1 : wantList) {

@@ -45,9 +45,9 @@ public class FileWriter {
     debugWrite = debugFlags.isSet("ncfileWriter/debugWrite");
   }
 
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
 
-  static private boolean debug = false, debugWrite = false;
+  private static boolean debug = false, debugWrite = false;
 
   /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.

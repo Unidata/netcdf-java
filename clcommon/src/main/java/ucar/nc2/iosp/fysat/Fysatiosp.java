@@ -25,8 +25,8 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   protected FysatHeader headerParser;
 
-  final static int Z_DEFLATED = 8;
-  final static int DEF_WBITS = 15;
+  static final int Z_DEFLATED = 8;
+  static final int DEF_WBITS = 15;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     FysatHeader localHeader = new FysatHeader();

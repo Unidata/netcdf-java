@@ -26,7 +26,7 @@ public class VTfromExistingData extends VerticalTransformImpl {
   /**
    * The name of the Parameter whose value is the variable that contains the 2D Height or Pressure field
    */
-  public final static String existingDataField = "existingDataField";
+  public static final String existingDataField = "existingDataField";
 
   /**
    * The variable that contains the 2D Height or Pressure field

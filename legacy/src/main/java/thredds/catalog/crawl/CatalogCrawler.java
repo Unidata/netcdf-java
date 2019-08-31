@@ -46,11 +46,11 @@ public class CatalogCrawler {
   }
 
   // old
-  static public final int USE_ALL = 0;
-  static public final int USE_ALL_DIRECT = 1;
-  static public final int USE_FIRST_DIRECT = 2;
-  static public final int USE_RANDOM_DIRECT = 3;
-  static public final int USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST = 4;
+  public static final int USE_ALL = 0;
+  public static final int USE_ALL_DIRECT = 1;
+  public static final int USE_FIRST_DIRECT = 2;
+  public static final int USE_RANDOM_DIRECT = 3;
+  public static final int USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST = 4;
 
   private Filter filter = null;
   private Type type = Type.all;
@@ -290,7 +290,7 @@ public class CatalogCrawler {
     return (InvDataset) datasets.get(index);
   }
 
-  static public interface Listener {
+  public static interface Listener {
     /**
      * Gets called for each dataset found.
      * 
@@ -309,7 +309,7 @@ public class CatalogCrawler {
     public boolean getCatalogRef(InvCatalogRef dd, Object context);
   }
 
-  static public interface Filter {
+  public static interface Filter {
     public boolean skipAll(InvDataset ds);
   }
 

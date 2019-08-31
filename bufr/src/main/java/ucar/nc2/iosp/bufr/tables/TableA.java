@@ -19,8 +19,8 @@ import java.util.Map;
  * @since 8/12/11
  */
 public class TableA {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableA.class);
-  static private final String TABLEA_FILENAME = "wmo/BUFR_25_0_0_TableA_en.xml";
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableA.class);
+  private static final String TABLEA_FILENAME = "wmo/BUFR_25_0_0_TableA_en.xml";
   private static Map<Integer, String> tableA = null;
 
   /*
@@ -38,7 +38,7 @@ public class TableA {
    * <Status>Operational</Status>
    * </Exp_BUFRTableA_E>
    */
-  static private void init() {
+  private static void init() {
     String filename = BufrTables.RESOURCE_PATH + TABLEA_FILENAME;
     try (InputStream is = CodeFlagTables.class.getResourceAsStream(filename)) {
 
@@ -74,7 +74,7 @@ public class TableA {
    * @param cat data category
    * @return category name, or null if not found
    */
-  static public String getDataCategory(int cat) {
+  public static String getDataCategory(int cat) {
     if (tableA == null)
       init();
     String result = tableA.get(cat);

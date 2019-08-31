@@ -29,9 +29,9 @@ import ucar.unidata.geoloc.*;
  */
 public class RotatedPole extends ProjectionImpl {
 
-  private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final static double RAD_PER_DEG = Math.PI / 180.;
+  private static final double RAD_PER_DEG = Math.PI / 180.;
   private static final double DEG_PER_RAD = 1. / RAD_PER_DEG;
 
   /* Coordinates of north pole for rotated pole. */

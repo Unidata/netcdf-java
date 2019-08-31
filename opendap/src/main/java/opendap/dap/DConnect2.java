@@ -71,12 +71,12 @@ import java.util.zip.InflaterInputStream;
  */
 public class DConnect2 implements Closeable {
 
-  static private boolean allowSessions = false;
-  static private boolean showCompress = false;
+  private static boolean allowSessions = false;
+  private static boolean showCompress = false;
 
   static final Charset UTF8 = Charset.forName("UTF-8");
 
-  static public synchronized void setAllowSessions(boolean b) {
+  public static synchronized void setAllowSessions(boolean b) {
     allowSessions = b;
   }
 
@@ -351,7 +351,7 @@ public class DConnect2 implements Closeable {
     }
   }
 
-  static public String captureStream(InputStream is) throws IOException {
+  public static String captureStream(InputStream is) throws IOException {
     ByteArrayOutputStream text = new ByteArrayOutputStream();
     int b;
     while ((b = is.read()) >= 0) {
@@ -365,7 +365,7 @@ public class DConnect2 implements Closeable {
   static final byte[] tag1 = "\nData:\n".getBytes(UTF8);
   static final byte[] tag2 = "\nData:\r\n".getBytes(UTF8);
 
-  static public String captureDataDDS(InputStream is) throws IOException {
+  public static String captureDataDDS(InputStream is) throws IOException {
     byte[] text = new byte[4096];
     int pos = 0;
     int len = text.length;
@@ -393,7 +393,7 @@ public class DConnect2 implements Closeable {
     return new String(text, 0, pos, UTF8);
   }
 
-  static private boolean endswith(byte[] tag, int pos, byte[] text) {
+  private static boolean endswith(byte[] tag, int pos, byte[] text) {
     int i, j;
     int taglen = tag.length;
 
@@ -407,7 +407,7 @@ public class DConnect2 implements Closeable {
     return true;
   }
 
-  static private byte[] need(int n, int pos, int len, byte[] text) {
+  private static byte[] need(int n, int pos, int len, byte[] text) {
     if (len - pos >= n)
       return text;
     int newlen = len * 2 + n;
@@ -524,7 +524,7 @@ public class DConnect2 implements Closeable {
     return command.das;
   }
 
-  static private class DASCommand implements Command {
+  private static class DASCommand implements Command {
     DAS das = new DAS();
 
     public void process(InputStream is) throws DAP2Exception, ParseException {
@@ -579,7 +579,7 @@ public class DConnect2 implements Closeable {
     return command.dds;
   }
 
-  static private class DDSCommand implements Command {
+  private static class DDSCommand implements Command {
     DDS dds = new DDS();
     String url = null;
 
@@ -730,7 +730,7 @@ public class DConnect2 implements Closeable {
     return command.dds;
   }
 
-  static private class DDXCommand implements Command {
+  private static class DDXCommand implements Command {
     DDS dds = new DDS();
 
     public void process(InputStream is) throws DAP2Exception, ParseException {
@@ -811,7 +811,7 @@ public class DConnect2 implements Closeable {
     return command.dds;
   }
 
-  static private class DataDDXCommand implements Command {
+  private static class DataDDXCommand implements Command {
     DataDDS dds;
 
     DataDDXCommand(BaseTypeFactory btf, ServerVersion ver) {
@@ -878,7 +878,7 @@ public class DConnect2 implements Closeable {
     return command.dds;
   }
 
-  static private class DataDDSCommand implements Command {
+  private static class DataDDSCommand implements Command {
     DataDDS dds = null;
     StatusUI statusUI;
     // Coverity[FB.URF_UNREAD_FIELD]

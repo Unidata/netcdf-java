@@ -42,7 +42,7 @@ public class IndexLong {
     offset = 0;
   }
 
-  static public long computeSize(int[] shape) {
+  public static long computeSize(int[] shape) {
     long product = 1;
     for (int ii = shape.length - 1; ii >= 0; ii--)
       product *= shape[ii];

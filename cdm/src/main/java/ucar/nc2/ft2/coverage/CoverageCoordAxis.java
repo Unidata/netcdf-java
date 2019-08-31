@@ -30,8 +30,8 @@ import java.util.List;
  * @author caron
  * @since 7/11/2015
  */
-abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis> {
-  static private final Logger logger = LoggerFactory.getLogger(CoverageCoordAxis.class);
+public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis> {
+  private static final Logger logger = LoggerFactory.getLogger(CoverageCoordAxis.class);
 
   public enum Spacing {
     regularPoint, // regularly spaced points (start, end, npts), start and end are pts, edges halfway between coords,
@@ -119,20 +119,20 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   }
 
   // create a copy of this axis
-  abstract public CoverageCoordAxis copy();
+  public abstract CoverageCoordAxis copy();
 
   // create a subset of this axis based on the SubsetParams. return copy if no subset requested, or params = null
-  abstract public Optional<CoverageCoordAxis> subset(SubsetParams params);
+  public abstract Optional<CoverageCoordAxis> subset(SubsetParams params);
 
   // called from HorizCoordSys
-  abstract public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride);
+  public abstract Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride);
 
   // called only on dependent axes. pass in independent axis
-  abstract public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn);
+  public abstract Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn);
 
-  abstract public Array getCoordsAsArray();
+  public abstract Array getCoordsAsArray();
 
-  abstract public Array getCoordBoundsAsArray();
+  public abstract Array getCoordBoundsAsArray();
 
   public String getName() {
     return name;

@@ -33,7 +33,7 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset impl
   private String lonVarName;
   private String elevVarName;
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     Attribute cdmDtAtt = ds.findGlobalAttributeIgnoreCase("cdm_data_type");
     if (cdmDtAtt == null)
       cdmDtAtt = ds.findGlobalAttributeIgnoreCase("cdm_datatype");

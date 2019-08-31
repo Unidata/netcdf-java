@@ -73,11 +73,11 @@ public abstract class Debug {
   }
 
   // Trace a SAX Token
-  static public String trace(SaxEvent token) {
+  public static String trace(SaxEvent token) {
     return trace(token, ParseUtil.DEFAULTFLAGS);
   }
 
-  static public String trace(SaxEvent token, int flags) {
+  public static String trace(SaxEvent token, int flags) {
     StringBuilder result = new StringBuilder();
     String name = "UNDEFINED";
     String value = "";

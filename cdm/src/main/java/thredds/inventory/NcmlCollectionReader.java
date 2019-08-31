@@ -32,9 +32,9 @@ public class NcmlCollectionReader {
   private static final boolean debugURL = false, debugXML = false, showParsedXML = false;
   // private static final boolean validate = false;
 
-  static private final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
-  static private final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
+  private static final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
+  private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
 
   private Namespace ncmlNS;
 
@@ -46,7 +46,7 @@ public class NcmlCollectionReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NcmlCollectionReader readNcML(String ncmlString, Formatter errlog) throws IOException {
+  public static NcmlCollectionReader readNcML(String ncmlString, Formatter errlog) throws IOException {
     StringReader reader = new StringReader(ncmlString);
 
     org.jdom2.Document doc;
@@ -72,7 +72,7 @@ public class NcmlCollectionReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NcmlCollectionReader open(String ncmlLocation, Formatter errlog) throws IOException {
+  public static NcmlCollectionReader open(String ncmlLocation, Formatter errlog) throws IOException {
     if (!ncmlLocation.startsWith("http:") && !ncmlLocation.startsWith("file:"))
       ncmlLocation = "file:" + ncmlLocation;
 
@@ -93,7 +93,7 @@ public class NcmlCollectionReader {
     return readXML(doc, errlog, ncmlLocation);
   }
 
-  static private NcmlCollectionReader readXML(org.jdom2.Document doc, Formatter errlog, String ncmlLocation) {
+  private static NcmlCollectionReader readXML(org.jdom2.Document doc, Formatter errlog, String ncmlLocation) {
     if (showParsedXML) {
       XMLOutputter xmlOut = new XMLOutputter();
       System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");

@@ -286,7 +286,7 @@ public class NCdumpW {
    * @return String result
    * @throws IOException on write error
    */
-  static public String printVariableData(VariableIF v, ucar.nc2.util.CancelTask ct) throws IOException {
+  public static String printVariableData(VariableIF v, ucar.nc2.util.CancelTask ct) throws IOException {
     Array data = v.read();
     /*
      * try {
@@ -312,7 +312,7 @@ public class NCdumpW {
    * @throws IOException on write error
    * @throws InvalidRangeException is specified section doesnt match variable shape
    */
-  static public String printVariableDataSection(Variable v, String sectionSpec, ucar.nc2.util.CancelTask ct)
+  public static String printVariableDataSection(Variable v, String sectionSpec, ucar.nc2.util.CancelTask ct)
       throws IOException, InvalidRangeException {
     Array data = v.read(sectionSpec);
 
@@ -322,19 +322,19 @@ public class NCdumpW {
   }
 
 
-  static public String toString(Array array, String name, CancelTask ct) {
+  public static String toString(Array array, String name, CancelTask ct) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     printArray(array, name, null, pw, new Indent(2), ct, true);
     return sw.toString();
   }
 
-  static private void printArray(Array array, String name, PrintWriter out, Indent indent, CancelTask ct) {
+  private static void printArray(Array array, String name, PrintWriter out, Indent indent, CancelTask ct) {
     printArray(array, name, null, out, indent, ct, true);
     out.flush();
   }
 
-  static private void printArray(Array array, String name, String units, PrintWriter out, Indent ilev, CancelTask ct,
+  private static void printArray(Array array, String name, String units, PrintWriter out, Indent ilev, CancelTask ct,
       boolean printSeq) { // throws IOException {
     if (ct != null && ct.isCancel())
       return;
@@ -384,7 +384,7 @@ public class NCdumpW {
     out.flush();
   }
 
-  static private void printArray(Array ma, PrintWriter out, Indent indent, CancelTask ct) {
+  private static void printArray(Array ma, PrintWriter out, Indent indent, CancelTask ct) {
     if (ct != null && ct.isCancel())
       return;
 
@@ -541,7 +541,7 @@ public class NCdumpW {
     out.print("\n" + indent + "}");
   }
 
-  static private void printStructureDataArray(PrintWriter out, ArrayStructure array, Indent indent,
+  private static void printStructureDataArray(PrintWriter out, ArrayStructure array, Indent indent,
       ucar.nc2.util.CancelTask ct) { // throws IOException {
     try (StructureDataIterator sdataIter = array.getStructureDataIterator()) {
       int count = 0;
@@ -560,7 +560,7 @@ public class NCdumpW {
     }
   }
 
-  static private void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) { // throws
+  private static void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) { // throws
                                                                                                              // IOException
                                                                                                              // {
     out.print("\n" + indent + "{");
@@ -579,7 +579,7 @@ public class NCdumpW {
     out.print("\n" + indent + "}");
   }
 
-  static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws
+  private static void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws
                                                                                                         // IOException {
     try (StructureDataIterator iter = seq.getStructureDataIterator()) {
       while (iter.hasNext()) {
@@ -601,12 +601,12 @@ public class NCdumpW {
    * @param out send output here.
    * @param sdata StructureData to print.
    */
-  static public void printStructureData(PrintWriter out, StructureData sdata) {
+  public static void printStructureData(PrintWriter out, StructureData sdata) {
     printStructureData(out, sdata, new Indent(2), null);
     out.flush();
   }
 
-  static private void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) { // throws
+  private static void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) { // throws
                                                                                                                // IOException
                                                                                                                // {
     indent.incr();
@@ -619,7 +619,7 @@ public class NCdumpW {
     indent.decr();
   }
 
-  static public String toString(StructureData sdata) {
+  public static String toString(StructureData sdata) {
     CharArrayWriter carray = new CharArrayWriter(1000);
     PrintWriter pw = new PrintWriter(carray);
     for (StructureMembers.Member m : sdata.getMembers()) {
@@ -639,7 +639,7 @@ public class NCdumpW {
    * @param ma any Array except ArrayStructure
    * @param out print to here
    */
-  static public void printArrayPlain(Array ma, PrintWriter out) {
+  public static void printArrayPlain(Array ma, PrintWriter out) {
     ma.resetLocalIterator();
     while (ma.hasNext()) {
       out.print(ma.next());
@@ -650,11 +650,11 @@ public class NCdumpW {
   /**
    * Print array to PrintWriter
    */
-  static public void printArray(Array array, PrintWriter pw) {
+  public static void printArray(Array array, PrintWriter pw) {
     printArray(array, null, null, pw, new Indent(2), null, true);
   }
 
-  static public String toString(Array ma) {
+  public static String toString(Array ma) {
     return toString(ma, "", null);
   }
 
@@ -672,7 +672,7 @@ public class NCdumpW {
    * @param url use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException on write error
    */
-  static public void writeNcML(NetcdfFile ncfile, Writer writer, WantValues showValues, String url) throws IOException {
+  public static void writeNcML(NetcdfFile ncfile, Writer writer, WantValues showValues, String url) throws IOException {
     Preconditions.checkNotNull(ncfile);
     Preconditions.checkNotNull(writer);
     Preconditions.checkNotNull(showValues);

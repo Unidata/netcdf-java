@@ -31,8 +31,8 @@ import java.util.*;
  */
 
 public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGrid.class);
-  static private final boolean debugArrayShape = false;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGrid.class);
+  private static final boolean debugArrayShape = false;
 
   private final GridDataset dataset;
   private final GridCoordSys gcs;

@@ -17,9 +17,9 @@ import java.nio.ByteOrder;
  * @since Feb 7, 2009
  */
 public class NcStreamWriter {
-  static private long maxChunk = 1000 * 1000; // 1 MByte
-  static private final int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
-  static private final int currentVersion = 1;
+  private static long maxChunk = 1000 * 1000; // 1 MByte
+  private static final int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
+  private static final int currentVersion = 1;
 
   private NetcdfFile ncfile;
   private NcStreamProto.Header header;

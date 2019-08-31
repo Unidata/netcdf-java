@@ -24,7 +24,7 @@ public class Parse {
    * @return the root element of the Document
    * @throws java.io.IOException on read error
    */
-  static public Element readRootElement(String location) throws IOException {
+  public static Element readRootElement(String location) throws IOException {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -42,7 +42,7 @@ public class Parse {
    * @param text check this
    * @return original text if ok, else with bad characters removed
    */
-  static public String cleanCharacterData(String text) {
+  public static String cleanCharacterData(String text) {
     if (text == null)
       return null;
 

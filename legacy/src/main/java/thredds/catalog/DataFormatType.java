@@ -14,35 +14,35 @@ package thredds.catalog;
 public final class DataFormatType {
   private static java.util.List<DataFormatType> members = new java.util.ArrayList<DataFormatType>(20);
 
-  public final static DataFormatType NONE = new DataFormatType("");
+  public static final DataFormatType NONE = new DataFormatType("");
 
-  public final static DataFormatType BUFR = new DataFormatType("BUFR");
-  public final static DataFormatType ESML = new DataFormatType("ESML");
-  public final static DataFormatType GEMPAK = new DataFormatType("GEMPAK");
-  public final static DataFormatType GINI = new DataFormatType("GINI");
-  public final static DataFormatType GRIB1 = new DataFormatType("GRIB-1");
-  public final static DataFormatType GRIB2 = new DataFormatType("GRIB-2");
-  public final static DataFormatType HDF4 = new DataFormatType("HDF4");
-  public final static DataFormatType HDF5 = new DataFormatType("HDF5");
-  public final static DataFormatType NETCDF = new DataFormatType("netCDF");
-  public final static DataFormatType NETCDF4 = new DataFormatType("netCDF-4");
-  public final static DataFormatType NEXRAD2 = new DataFormatType("NEXRAD-2");
-  public final static DataFormatType NCML = new DataFormatType("NcML");
-  public final static DataFormatType NIDS = new DataFormatType("NEXRAD-3");
-  public final static DataFormatType MCIDAS_AREA = new DataFormatType("McIDAS-AREA");
+  public static final DataFormatType BUFR = new DataFormatType("BUFR");
+  public static final DataFormatType ESML = new DataFormatType("ESML");
+  public static final DataFormatType GEMPAK = new DataFormatType("GEMPAK");
+  public static final DataFormatType GINI = new DataFormatType("GINI");
+  public static final DataFormatType GRIB1 = new DataFormatType("GRIB-1");
+  public static final DataFormatType GRIB2 = new DataFormatType("GRIB-2");
+  public static final DataFormatType HDF4 = new DataFormatType("HDF4");
+  public static final DataFormatType HDF5 = new DataFormatType("HDF5");
+  public static final DataFormatType NETCDF = new DataFormatType("netCDF");
+  public static final DataFormatType NETCDF4 = new DataFormatType("netCDF-4");
+  public static final DataFormatType NEXRAD2 = new DataFormatType("NEXRAD-2");
+  public static final DataFormatType NCML = new DataFormatType("NcML");
+  public static final DataFormatType NIDS = new DataFormatType("NEXRAD-3");
+  public static final DataFormatType MCIDAS_AREA = new DataFormatType("McIDAS-AREA");
 
-  public final static DataFormatType GIF = new DataFormatType("image/gif");
-  public final static DataFormatType JPEG = new DataFormatType("image/jpeg");
-  public final static DataFormatType TIFF = new DataFormatType("image/tiff");
+  public static final DataFormatType GIF = new DataFormatType("image/gif");
+  public static final DataFormatType JPEG = new DataFormatType("image/jpeg");
+  public static final DataFormatType TIFF = new DataFormatType("image/tiff");
 
-  public final static DataFormatType PLAIN = new DataFormatType("text/plain");
-  public final static DataFormatType TSV = new DataFormatType("text/tab-separated-values");
-  public final static DataFormatType XML = new DataFormatType("text/xml");
+  public static final DataFormatType PLAIN = new DataFormatType("text/plain");
+  public static final DataFormatType TSV = new DataFormatType("text/tab-separated-values");
+  public static final DataFormatType XML = new DataFormatType("text/xml");
 
-  public final static DataFormatType MPEG = new DataFormatType("video/mpeg");
-  public final static DataFormatType QUICKTIME = new DataFormatType("video/quicktime");
-  public final static DataFormatType REALTIME = new DataFormatType("video/realtime");
-  public final static DataFormatType OTHER_UNKNOWN = new DataFormatType("other/unknown");
+  public static final DataFormatType MPEG = new DataFormatType("video/mpeg");
+  public static final DataFormatType QUICKTIME = new DataFormatType("video/quicktime");
+  public static final DataFormatType REALTIME = new DataFormatType("video/realtime");
+  public static final DataFormatType OTHER_UNKNOWN = new DataFormatType("other/unknown");
 
   private String name;
 

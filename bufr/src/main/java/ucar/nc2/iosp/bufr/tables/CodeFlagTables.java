@@ -22,11 +22,11 @@ import java.io.IOException;
  * @since Jul 12, 2008
  */
 public class CodeFlagTables {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeFlagTables.class);
-  static private final String CodeFlagFilename = "wmo/BUFRCREX_25_0_0_CodeFlag_en.xml";
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeFlagTables.class);
+  private static final String CodeFlagFilename = "wmo/BUFRCREX_25_0_0_CodeFlag_en.xml";
   static Map<Short, CodeFlagTables> tableMap;
 
-  static public CodeFlagTables getTable(short id) {
+  public static CodeFlagTables getTable(short id) {
     if (tableMap == null)
       init();
 
@@ -44,7 +44,7 @@ public class CodeFlagTables {
     return tableMap.get(id);
   }
 
-  static private CodeFlagTables useCC(short fxy, int cc) {
+  private static CodeFlagTables useCC(short fxy, int cc) {
     CodeFlagTables cft = tableMap.get(fxy);
     if (cft == null) {
       CommonCodeTable cct = CommonCodeTable.getTable(cc);
@@ -54,19 +54,19 @@ public class CodeFlagTables {
     return cft;
   }
 
-  static public boolean hasTable(short id) {
+  public static boolean hasTable(short id) {
     if (tableMap == null)
       init();
     CodeFlagTables result = tableMap.get(id);
     return result != null;
   }
 
-  static private void init() {
+  private static void init() {
     tableMap = new HashMap<>(300);
     init(tableMap);
   }
 
-  static public Map<Short, CodeFlagTables> getTables() {
+  public static Map<Short, CodeFlagTables> getTables() {
     if (tableMap == null)
       init();
     return tableMap;

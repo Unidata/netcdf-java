@@ -22,11 +22,11 @@ import java.nio.ByteBuffer;
  * @since Jul 18, 2007
  */
 public class H4header extends NCheader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
-  static private final byte[] head = {0x0e, 0x03, 0x13, 0x01};
-  static private final String shead = new String(head, CDM.utf8Charset);
-  static private final long maxHeaderPos = 500000; // header's gotta be within this
+  private static final byte[] head = {0x0e, 0x03, 0x13, 0x01};
+  private static final String shead = new String(head, CDM.utf8Charset);
+  private static final long maxHeaderPos = 500000; // header's gotta be within this
 
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     return checkFileType(raf) == NC_FORMAT_HDF4;
@@ -149,7 +149,7 @@ public class H4header extends NCheader {
     HdfEos.getEosInfo(ncfile, ncfile.getRootGroup(), f);
   }
 
-  static private int tagid(short refno, short code) {
+  private static int tagid(short refno, short code) {
     int result = (code & 0x3FFF) << 16;
     int result2 = (refno & 0xffff);
     result = result + result2;

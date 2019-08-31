@@ -134,17 +134,17 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
   // Define an overall logger for everyone to use
   // Start with a default logger, but allow an application to change it later
-  static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractServlet.class);
+  public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractServlet.class);
 
-  static public void setLog(Class cl) {
+  public static void setLog(Class cl) {
     log = org.slf4j.LoggerFactory.getLogger(cl);
   }
 
-  static public void printDODSException(opendap.dap.DAP2Exception de) {
+  public static void printDODSException(opendap.dap.DAP2Exception de) {
     de.printStackTrace();
   }
 
-  static public void printThrowable(Throwable t) {
+  public static void printThrowable(Throwable t) {
     AbstractServlet.log.error(t.getMessage());
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
@@ -1775,7 +1775,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
   // debug
   private ArrayList prArr = null;
 
-  static private class RequestDebug {
+  private static class RequestDebug {
     long reqno;
     String threadDesc;
     boolean done = false;

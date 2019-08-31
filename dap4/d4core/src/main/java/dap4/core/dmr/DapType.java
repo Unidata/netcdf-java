@@ -28,26 +28,26 @@ public class DapType extends DapNode implements DapDecl {
    * during testing
    */
 
-  static public final DapType CHAR;
-  static public final DapType INT8;
-  static public final DapType UINT8;
-  static public final DapType INT16;
-  static public final DapType UINT16;
-  static public final DapType INT32;
-  static public final DapType UINT32;
-  static public final DapType INT64;
-  static public final DapType UINT64;
-  static public final DapType FLOAT32;
-  static public final DapType FLOAT64;
-  static public final DapType STRING;
-  static public final DapType URL;
-  static public final DapType OPAQUE;
+  public static final DapType CHAR;
+  public static final DapType INT8;
+  public static final DapType UINT8;
+  public static final DapType INT16;
+  public static final DapType UINT16;
+  public static final DapType INT32;
+  public static final DapType UINT32;
+  public static final DapType INT64;
+  public static final DapType UINT64;
+  public static final DapType FLOAT32;
+  public static final DapType FLOAT64;
+  public static final DapType STRING;
+  public static final DapType URL;
+  public static final DapType OPAQUE;
 
   // Non-primitives
-  static public final DapType STRUCTURE;
-  static public final DapType SEQUENCE;
+  public static final DapType STRUCTURE;
+  public static final DapType SEQUENCE;
 
-  static final protected DapDataset pseudoroot = new DapDataset("");
+  protected static final DapDataset pseudoroot = new DapDataset("");
 
   /**
    * Define a map from the Atomic Type Sort to the
@@ -104,7 +104,7 @@ public class DapType extends DapNode implements DapDecl {
   //////////////////////////////////////////////////
   // Static methods
 
-  static public DapType lookup(TypeSort atomic) {
+  public static DapType lookup(TypeSort atomic) {
     if (atomic == TypeSort.Enum)
       return null;// we need more info
     return typemap.get(atomic);

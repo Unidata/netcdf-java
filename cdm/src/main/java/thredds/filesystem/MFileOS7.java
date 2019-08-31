@@ -30,7 +30,7 @@ public class MFileOS7 implements MFile {
    * @param filename full path name
    * @return MFileOS or null
    */
-  static public MFileOS7 getExistingFile(String filename) throws IOException {
+  public static MFileOS7 getExistingFile(String filename) throws IOException {
     if (filename == null)
       return null;
     Path path = Paths.get(filename);

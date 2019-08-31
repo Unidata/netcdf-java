@@ -60,8 +60,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ThreadSafe
 public class FileCache implements FileCacheIF {
-  static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
-  static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
+  protected static final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
 
   // static private ScheduledExecutorService exec;
   static final boolean debug = false;
@@ -69,8 +69,8 @@ public class FileCache implements FileCacheIF {
   static final boolean debugCleanup = false;
 
   // Shared mutable data. Access to it is limited to the following 3 synchronized methods.
-  static private Timer timer;
-  static private Object lock = new Object();
+  private static Timer timer;
+  private static Object lock = new Object();
 
   /**
    * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.

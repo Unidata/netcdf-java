@@ -18,7 +18,7 @@ import java.util.Iterator;
  * @since Feb 11, 2009
  */
 public class StructureDataIteratorIndexed implements StructureDataIterator {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
 
   private Structure s;
   private List<Integer> index;

@@ -23,7 +23,7 @@ import java.util.Formatter;
  * @author caron
  */
 public abstract class AbstractTransformBuilder {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractTransformBuilder.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractTransformBuilder.class);
 
   /*
    * from CF: false_easting(false_northing):
@@ -32,12 +32,12 @@ public abstract class AbstractTransformBuilder {
    * Expressed in the unit of the coordinate variable identified by the standard name projection_x_coordinate
    * (projection_y_coordinate).
    */
-  static public double getFalseEastingScaleFactor(NetcdfDataset ds, AttributeContainer ctv) {
+  public static double getFalseEastingScaleFactor(NetcdfDataset ds, AttributeContainer ctv) {
     String units = getGeoCoordinateUnits(ds, ctv);
     return getFalseEastingScaleFactor(units);
   }
 
-  static public String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv) {
+  public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv) {
     String units = ctv.findAttValueIgnoreCase(CDM.UNITS, null);
     if (units == null) {
       List<CoordinateAxis> axes = ds.getCoordinateAxes();
@@ -52,7 +52,7 @@ public abstract class AbstractTransformBuilder {
     return units;
   }
 
-  static public double getFalseEastingScaleFactor(String geoCoordinateUnits) {
+  public static double getFalseEastingScaleFactor(String geoCoordinateUnits) {
     if (geoCoordinateUnits != null) {
       try {
         SimpleUnit unit = SimpleUnit.factoryWithExceptions(geoCoordinateUnits);

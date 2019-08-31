@@ -168,7 +168,7 @@ public class DeepCopyUtils {
     return resultAccess;
   }
 
-  static public InvService findServiceByName(String name, List<InvService> servicePool) {
+  public static InvService findServiceByName(String name, List<InvService> servicePool) {
     if (servicePool == null)
       return null;
 

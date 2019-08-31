@@ -47,7 +47,7 @@ import static dap4.core.data.DataCursor.Scheme;
    * To promote some clarity a eschew Array[|dimset|][|fields|]
    * in favor of FieldArrays[|dimset|].
    */
-  static protected class FieldArrays {
+  protected static class FieldArrays {
     public Array[] fields; // Make externally accessible
 
     FieldArrays(int nfields) {
@@ -473,7 +473,7 @@ import static dap4.core.data.DataCursor.Scheme;
     return fa;
   }
 
-  static protected int memberIndex(StructureMembers.Member m) {
+  protected static int memberIndex(StructureMembers.Member m) {
     return m.getDataParam();
   }
 

@@ -35,19 +35,19 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
   static boolean OLDGROUPCODE = false;
 
 
-  static public boolean debugCE = false;
-  static public boolean debugServerCall = false;
-  static public boolean debugOpenResult = false;
-  static public boolean debugDataResult = false;
-  static public boolean debugCharArray = false;
-  static public boolean debugConvertData = false;
-  static public boolean debugConstruct = false;
-  static public boolean debugPreload = false;
-  static public boolean debugTime = false;
-  static public boolean showNCfile = false;
-  static public boolean debugAttributes = false;
-  static public boolean debugCached = false;
-  static public boolean debugOpenTime = false;
+  public static boolean debugCE = false;
+  public static boolean debugServerCall = false;
+  public static boolean debugOpenResult = false;
+  public static boolean debugDataResult = false;
+  public static boolean debugCharArray = false;
+  public static boolean debugConvertData = false;
+  public static boolean debugConstruct = false;
+  public static boolean debugPreload = false;
+  public static boolean debugTime = false;
+  public static boolean showNCfile = false;
+  public static boolean debugAttributes = false;
+  public static boolean debugCached = false;
+  public static boolean debugOpenTime = false;
 
   // Define a utility class to decompse names
   private static class NamePieces {
@@ -62,11 +62,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    *
    * @param b true or false. default is false.
    */
-  static public void setAllowSessions(boolean b) {
+  public static void setAllowSessions(boolean b) {
     DConnect2.setAllowSessions(b);
   }
 
-  static private boolean accept_compress = false;
+  private static boolean accept_compress = false;
 
   /**
    * Set whether to allow messages to be compressed.
@@ -74,7 +74,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    * @param b true or false.
    * @deprecated use setAllowCompression
    */
-  static public void setAllowDeflate(boolean b) {
+  public static void setAllowDeflate(boolean b) {
     accept_compress = b;
   }
 
@@ -83,7 +83,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    *
    * @param b true or false.
    */
-  static public void setAllowCompression(boolean b) {
+  public static void setAllowCompression(boolean b) {
     accept_compress = b;
   }
 
@@ -92,7 +92,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    *
    * @param debugFlag set of debug flags.
    */
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugCE = debugFlag.isSet("DODS/constraintExpression");
     debugServerCall = debugFlag.isSet("DODS/serverCall");
     debugOpenResult = debugFlag.isSet("DODS/debugOpenResult");
@@ -106,16 +106,16 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
     debugCached = debugFlag.isSet("DODS/cache");
   }
 
-  static private boolean preload = true;
-  static private boolean useGroups = false;
-  static private int preloadCoordVarSize = 50000; // default 50K
+  private static boolean preload = true;
+  private static boolean useGroups = false;
+  private static int preloadCoordVarSize = 50000; // default 50K
 
   /**
    * Set whether small variables are preloaded; only turn off for debugging.
    *
    * @param b true if small variables are preloaded (default true)
    */
-  static public void setPreload(boolean b) {
+  public static void setPreload(boolean b) {
     preload = b;
   }
 
@@ -124,7 +124,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    *
    * @param size maximum size of coordinate variables to be preloaded.
    */
-  static public void setCoordinateVariablePreloadSize(int size) {
+  public static void setCoordinateVariablePreloadSize(int size) {
     preloadCoordVarSize = size;
   }
 
@@ -144,7 +144,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
     return urlName;
   }
 
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
 
   //////////////////////////////////////////////////////////////////////////////////
   private ConvertD2N convertD2N = new ConvertD2N();
@@ -1298,7 +1298,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    * @param var The variable whose name will appear in the CE
    * @return The name in a form suitable for use in a cE
    */
-  static public String getDODSConstraintName(Variable var) {
+  public static String getDODSConstraintName(Variable var) {
     String vname = var.getDODSName();
     // The vname is backslash escaped, so we need to
     // modify to use DAP %xx escapes.
@@ -1356,7 +1356,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    * @param dataType Netcdf data type.
    * @return the corresponding DODS type enum, from opendap.dap.Attribute.XXXX.
    */
-  static public int convertToDODSType(DataType dataType) {
+  public static int convertToDODSType(DataType dataType) {
     if (dataType == DataType.STRING)
       return opendap.dap.Attribute.STRING;
     if (dataType == DataType.BYTE)
@@ -1390,7 +1390,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    * @return the corresponding netcdf DataType.
    * @see #isUnsigned
    */
-  static public DataType convertToNCType(int dodsDataType, boolean isUnsigned) {
+  public static DataType convertToNCType(int dodsDataType, boolean isUnsigned) {
     switch (dodsDataType) {
       case opendap.dap.Attribute.BYTE:
         return isUnsigned ? DataType.UBYTE : DataType.BYTE;
@@ -1419,7 +1419,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    * @return the corresponding netcdf DataType.
    * @see #isUnsigned
    */
-  static public DataType convertToNCType(opendap.dap.BaseType dtype, boolean isUnsigned) {
+  public static DataType convertToNCType(opendap.dap.BaseType dtype, boolean isUnsigned) {
 
     if (dtype instanceof DString)
       return DataType.STRING;
@@ -1449,7 +1449,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    * @param dtype DODS BaseType.
    * @return true if unsigned
    */
-  static public boolean isUnsigned(opendap.dap.BaseType dtype) {
+  public static boolean isUnsigned(opendap.dap.BaseType dtype) {
     return (dtype instanceof DByte) || (dtype instanceof DUInt16) || (dtype instanceof DUInt32);
   }
 

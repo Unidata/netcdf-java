@@ -22,13 +22,13 @@ public class DapXML {
   //////////////////////////////////////////////////
   // Types
 
-  static public class XMLList extends ArrayList<DapXML> {
+  public static class XMLList extends ArrayList<DapXML> {
   }
 
   // This corresponds to a subset of the org.w3c.dom.Node
   // nodetype codes.
 
-  static public enum NodeType {
+  public static enum NodeType {
     ELEMENT(Node.ELEMENT_NODE), ATTRIBUTE(Node.ATTRIBUTE_NODE), TEXT(Node.TEXT_NODE), CDATA(
         Node.CDATA_SECTION_NODE), COMMENT(
             Node.COMMENT_NODE), DOCUMENT(Node.DOCUMENT_NODE), DOCTYPE(Node.DOCUMENT_TYPE_NODE);

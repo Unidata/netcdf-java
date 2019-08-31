@@ -32,7 +32,7 @@ public class DateUnit { // extends SimpleUnit {
    * 
    * @return Date or null if not date unit.
    */
-  static public Date getStandardDate(String text) {
+  public static Date getStandardDate(String text) {
     double value;
     String udunitString;
 
@@ -65,7 +65,7 @@ public class DateUnit { // extends SimpleUnit {
    * @see #getStandardDate
    * @see DateFormatter#getISODate
    */
-  static public Date getStandardOrISO(String text) {
+  public static Date getStandardOrISO(String text) {
     Date result = getStandardDate(text);
     if (result == null) {
       DateFormatter formatter = new DateFormatter();
@@ -74,7 +74,7 @@ public class DateUnit { // extends SimpleUnit {
     return result;
   }
 
-  static public CalendarDate parseCalendarDate(String text) {
+  public static CalendarDate parseCalendarDate(String text) {
     Date result = getStandardDate(text);
     if (result == null) {
       DateFormatter formatter = new DateFormatter();
@@ -89,7 +89,7 @@ public class DateUnit { // extends SimpleUnit {
   private TimeUnit timeUnit;
   private Unit uu;
 
-  static public DateUnit getUnixDateUnit() {
+  public static DateUnit getUnixDateUnit() {
     try {
       return new DateUnit("s since 1970-01-01 00:00:00");
     } catch (Exception e) {

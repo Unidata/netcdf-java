@@ -33,7 +33,7 @@ import java.util.List;
 public class DirectoryBuilder {
 
   // returns a DirectoryPartition or DirectoryCollection
-  static public MCollection factory(FeatureCollectionConfig config, Path topDir, boolean isTop, IndexReader indexReader,
+  public static MCollection factory(FeatureCollectionConfig config, Path topDir, boolean isTop, IndexReader indexReader,
       String suffix, org.slf4j.Logger logger) throws IOException {
     DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir.toString(), suffix);
 

@@ -20,7 +20,7 @@ import java.util.Map;
  * @since 9/14/13
  */
 public class MetadataExtractorAcdd {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MetadataExtractorAcdd.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MetadataExtractorAcdd.class);
   private Map<String, Attribute> ncfile;
   private InvDatasetImpl ds;
   private ThreddsMetadata tmi;

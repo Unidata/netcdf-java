@@ -27,7 +27,7 @@ package dap4.core.util;
 
 public class PowerSet {
 
-  static protected boolean DEBUG = false;
+  protected static boolean DEBUG = false;
 
 
   protected long[][] powerset;
@@ -91,7 +91,7 @@ public class PowerSet {
   static final long[] l0 = new long[] {2, 2};
   static final long[] l1 = new long[] {2, 2, 3};
 
-  static public void main(String[] argv) {
+  public static void main(String[] argv) {
     new PowerSet(l1);
   }
 

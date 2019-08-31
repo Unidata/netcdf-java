@@ -144,10 +144,10 @@ import ucar.nc2.util.IO;
  */
 
 public class XMLEntityResolver implements org.xml.sax.EntityResolver {
-  static private final Logger logger = LoggerFactory.getLogger(XMLEntityResolver.class);
+  private static final Logger logger = LoggerFactory.getLogger(XMLEntityResolver.class);
 
   // static private boolean debugEntityResolution = false; //, debugFactory = false, debugMessages = false;
-  static private Map<String, String> entityHash = new HashMap<>();
+  private static Map<String, String> entityHash = new HashMap<>();
 
   // schema validation
   // static private boolean schemaValidationOk = true;
@@ -157,23 +157,23 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
   // catalog namespaces
   // static public final String CATALOG_NAMESPACE_06 = "http://www.unidata.ucar.edu/thredds";
-  static public final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
+  public static final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
 
   // dqc namespaces (still referenced in legacy)
   // static public final String DQC_NAMESPACE_02 = "http://www.unidata.ucar.edu/schemas/thredds/queryCapability";
   // static public final String DQC_NAMESPACE_03 =
   // "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3";
-  static public final String DQC_NAMESPACE_04 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.4";
+  public static final String DQC_NAMESPACE_04 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.4";
 
   // nj22 namespaces
-  static public final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
-  static public final Namespace ncmlNS = Namespace.getNamespace("xlink", NJ22_NAMESPACE);
+  public static final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
+  public static final Namespace ncmlNS = Namespace.getNamespace("xlink", NJ22_NAMESPACE);
 
   // other namespaces
-  static public final String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
-  static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
+  public static final String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
+  public static final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
 
-  static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+  public static final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
 
   static {
@@ -250,11 +250,11 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
   }
 
-  static private boolean hasXerces = true;
+  private static boolean hasXerces = true;
 
-  static private String externalSchemas;
+  private static String externalSchemas;
 
-  static public String getExternalSchemas() {
+  public static String getExternalSchemas() {
     if (externalSchemas == null) {
       externalSchemas = XMLEntityResolver.CATALOG_NAMESPACE_10 + " "
           + "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd" + " " + XMLEntityResolver.NJ22_NAMESPACE
@@ -279,7 +279,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
    * @param resourceName resolve using this Resource, found on the class path
    * @param urlName resolve using this Resource, found on the class path
    */
-  static public void initEntity(String entityName, String resourceName, String urlName) {
+  public static void initEntity(String entityName, String resourceName, String urlName) {
     String entity = null;
 
     try (InputStream is = ucar.nc2.util.IO.getFileResource(resourceName)) { // try to read from local file resource, eg
@@ -305,7 +305,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
     entityHash.put(urlName, entity); // also map it to the remote URL
   }
 
-  static public String getDocumentBuilderFactoryVersion() {
+  public static String getDocumentBuilderFactoryVersion() {
     try {
       Class version = Class.forName("org.apache.xerces.impl.Version");
       Method m = version.getMethod("getVersion", (Class[]) null);
@@ -315,7 +315,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
     }
   }
 
-  static private void showFactoryInfo(DocumentBuilderFactory factory) {
+  private static void showFactoryInfo(DocumentBuilderFactory factory) {
     System.out.println("------------------------");
     System.out.println("DocumentBuilderFactory class= " + factory.getClass().getName());
     try {
@@ -340,7 +340,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
   }
 
-  static private void showBuilderInfo(DocumentBuilder builder) {
+  private static void showBuilderInfo(DocumentBuilder builder) {
     System.out.println("-----------------------");
     System.out.println(" builder.isValidating()=" + builder.isValidating());
     System.out.println(" builder.isNamespaceAware()=" + builder.isNamespaceAware());

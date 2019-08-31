@@ -55,9 +55,9 @@ import ucar.unidata.geoloc.LatLonRect;
  * @since 8/14/13
  */
 public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
-  static private CalendarDateUnit bufrDateUnits = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
-  static private String bufrAltUnits = "m"; // LOOK fake
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
+  private static CalendarDateUnit bufrDateUnits = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
+  private static String bufrAltUnits = "m"; // LOOK fake
 
 
   @Override

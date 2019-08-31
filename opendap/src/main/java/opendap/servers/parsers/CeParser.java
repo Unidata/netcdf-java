@@ -1395,7 +1395,7 @@ public class CeParser extends Ceparse {
   /* "ce.y":20 */ /* lalr1.java:1066 */
 
 
-  static public boolean DEBUG = false;
+  public static boolean DEBUG = false;
 
   /**
    * Instantiates the Bison-generated parser.
@@ -1426,7 +1426,7 @@ public class CeParser extends Ceparse {
   // Static entry point to be called by CEEvaluator
   // This parses, then fills in the evaluator from the AST
 
-  static public boolean constraint_expression(CEEvaluator ceEval, BaseTypeFactory factory, ClauseFactory clauseFactory,
+  public static boolean constraint_expression(CEEvaluator ceEval, BaseTypeFactory factory, ClauseFactory clauseFactory,
       String constraint, String url // for error reporting
   ) throws DAP2Exception, ParseException {
     CeParser parser = new CeParser(factory);

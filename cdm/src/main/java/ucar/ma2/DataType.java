@@ -209,7 +209,7 @@ public enum DataType {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  static public DataType enumTypeize(DataType dt) {
+  public static DataType enumTypeize(DataType dt) {
     switch (dt) {
       case BYTE:
       case UBYTE:

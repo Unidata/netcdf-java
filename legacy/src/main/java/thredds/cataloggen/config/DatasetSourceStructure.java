@@ -15,8 +15,8 @@ package thredds.cataloggen.config;
 public final class DatasetSourceStructure {
   private static java.util.HashMap hash = new java.util.HashMap(20);
 
-  public final static DatasetSourceStructure FLAT = new DatasetSourceStructure("Flat");
-  public final static DatasetSourceStructure DIRECTORY_TREE = new DatasetSourceStructure("DirTree");
+  public static final DatasetSourceStructure FLAT = new DatasetSourceStructure("Flat");
+  public static final DatasetSourceStructure DIRECTORY_TREE = new DatasetSourceStructure("DirTree");
 
   private String structureName;
 

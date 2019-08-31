@@ -50,14 +50,14 @@ public class PointStream {
     Start, Header, Data, End, Error, Eos, StationList, PointFeatureCollection, PointFeature
   }
 
-  static private final byte[] MAGIC_StationList = new byte[] {(byte) 0xfe, (byte) 0xfe, (byte) 0xef, (byte) 0xef};
-  static private final byte[] MAGIC_PointFeatureCollection =
+  private static final byte[] MAGIC_StationList = new byte[] {(byte) 0xfe, (byte) 0xfe, (byte) 0xef, (byte) 0xef};
+  private static final byte[] MAGIC_PointFeatureCollection =
       new byte[] {(byte) 0xfa, (byte) 0xfa, (byte) 0xaf, (byte) 0xaf};
-  static private final byte[] MAGIC_PointFeature = new byte[] {(byte) 0xf0, (byte) 0xf0, (byte) 0x0f, (byte) 0x0f};
+  private static final byte[] MAGIC_PointFeature = new byte[] {(byte) 0xf0, (byte) 0xf0, (byte) 0x0f, (byte) 0x0f};
 
-  static private final boolean debug = false;
+  private static final boolean debug = false;
 
-  static public MessageType readMagic(InputStream is) throws IOException {
+  public static MessageType readMagic(InputStream is) throws IOException {
     byte[] b = new byte[4];
     int done = NcStream.readFully(is, b);
     if (done != 4)
@@ -82,7 +82,7 @@ public class PointStream {
     return null;
   }
 
-  static public int writeMagic(OutputStream out, MessageType type) throws IOException {
+  public static int writeMagic(OutputStream out, MessageType type) throws IOException {
     switch (type) {
       case PointFeature:
         return NcStream.writeBytes(out, PointStream.MAGIC_PointFeature);
@@ -109,7 +109,7 @@ public class PointStream {
     return true;
   }
 
-  static public PointStreamProto.PointFeatureCollection encodePointFeatureCollection(String name, String timeUnitString,
+  public static PointStreamProto.PointFeatureCollection encodePointFeatureCollection(String name, String timeUnitString,
       String altUnits, PointFeature pf) throws IOException {
     PointStreamProto.PointFeatureCollection.Builder builder = PointStreamProto.PointFeatureCollection.newBuilder();
     builder.setName(name);
@@ -136,7 +136,7 @@ public class PointStream {
     return builder.build();
   }
 
-  static public PointStreamProto.PointFeature encodePointFeature(PointFeature pf) throws IOException {
+  public static PointStreamProto.PointFeature encodePointFeature(PointFeature pf) throws IOException {
     PointStreamProto.Location.Builder locBuilder = PointStreamProto.Location.newBuilder();
     locBuilder.setTime(pf.getObservationTime());
     locBuilder.setNomTime(pf.getNominalTime());
@@ -172,7 +172,7 @@ public class PointStream {
     return builder.build();
   }
 
-  static public PointStreamProto.StationList encodeStations(List<Station> stnList) {
+  public static PointStreamProto.StationList encodeStations(List<Station> stnList) {
     PointStreamProto.StationList.Builder stnBuilder = PointStreamProto.StationList.newBuilder();
     for (Station loc : stnList) {
       PointStreamProto.Station.Builder locBuilder = PointStreamProto.Station.newBuilder();

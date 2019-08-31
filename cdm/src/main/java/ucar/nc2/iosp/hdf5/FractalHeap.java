@@ -19,7 +19,7 @@ import java.util.List;
  * @since 6/27/12
  */
 public class FractalHeap {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FractalHeap.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FractalHeap.class);
 
   // level 1E "Fractal Heap" used for both Global and Local heaps in 1.8.0+
   /*

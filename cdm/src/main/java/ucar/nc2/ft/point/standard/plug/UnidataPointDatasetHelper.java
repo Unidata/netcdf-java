@@ -24,15 +24,15 @@ import java.util.List;
  */
 public class UnidataPointDatasetHelper {
 
-  static public CalendarDate getStartDate(NetcdfDataset ds, CalendarDateUnit timeUnit) {
+  public static CalendarDate getStartDate(NetcdfDataset ds, CalendarDateUnit timeUnit) {
     return getDate(ds, timeUnit, "time_coverage_start");
   }
 
-  static public CalendarDate getEndDate(NetcdfDataset ds, CalendarDateUnit timeUnit) {
+  public static CalendarDate getEndDate(NetcdfDataset ds, CalendarDateUnit timeUnit) {
     return getDate(ds, timeUnit, "time_coverage_end");
   }
 
-  static private CalendarDate getDate(NetcdfDataset ds, CalendarDateUnit timeUnit, String attName) {
+  private static CalendarDate getDate(NetcdfDataset ds, CalendarDateUnit timeUnit, String attName) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attName);
     if (null == att)
       throw new IllegalArgumentException("Must have a global attribute named " + attName);
@@ -55,7 +55,7 @@ public class UnidataPointDatasetHelper {
     return result;
   }
 
-  static public LatLonRect getBoundingBox(NetcdfDataset ds) {
+  public static LatLonRect getBoundingBox(NetcdfDataset ds) {
     double lat_max = getAttAsDouble(ds, "geospatial_lat_max");
     double lat_min = getAttAsDouble(ds, "geospatial_lat_min");
     double lon_max = getAttAsDouble(ds, "geospatial_lon_max");
@@ -64,7 +64,7 @@ public class UnidataPointDatasetHelper {
     return new LatLonRect(new LatLonPointImpl(lat_min, lon_min), lat_max - lat_min, lon_max - lon_min);
   }
 
-  static private double getAttAsDouble(NetcdfDataset ds, String attname) {
+  private static double getAttAsDouble(NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
     if (null == att)
       throw new IllegalArgumentException("Must have a " + attname + " global attribute");
@@ -83,7 +83,7 @@ public class UnidataPointDatasetHelper {
    * @param a AxisType.LAT, LON, HEIGHT, or TIME
    * @return coordinate variable, or null if not found.
    */
-  static public String getCoordinateName(NetcdfDataset ds, AxisType a) {
+  public static String getCoordinateName(NetcdfDataset ds, AxisType a) {
     List<Variable> varList = ds.getVariables();
     for (Variable v : varList) {
       if (v instanceof Structure) {
@@ -130,7 +130,7 @@ public class UnidataPointDatasetHelper {
    * @param dim must use this dimension
    * @return coordinate variable, or null if not found.
    */
-  static public String getCoordinateName(NetcdfDataset ds, AxisType a, Dimension dim) {
+  public static String getCoordinateName(NetcdfDataset ds, AxisType a, Dimension dim) {
     String name = getCoordinateName(ds, a);
     if (name == null)
       return null;
@@ -154,7 +154,7 @@ public class UnidataPointDatasetHelper {
    * @param a AxisType.LAT, LON, HEIGHT, or TIME
    * @return coordinate variable, or null if not found.
    */
-  static public Variable getCoordinate(NetcdfDataset ds, AxisType a) {
+  public static Variable getCoordinate(NetcdfDataset ds, AxisType a) {
     List<Variable> varList = ds.getVariables();
     for (Variable v : varList) {
       if (v instanceof Structure) {
@@ -191,12 +191,12 @@ public class UnidataPointDatasetHelper {
     return null;
   }
 
-  static public String findVariableName(NetcdfFile ds, String name) {
+  public static String findVariableName(NetcdfFile ds, String name) {
     Variable result = findVariable(ds, name);
     return result == null ? null : result.getShortName();
   }
 
-  static public Variable findVariable(NetcdfFile ds, String name) {
+  public static Variable findVariable(NetcdfFile ds, String name) {
     Variable result = ds.findVariable(name);
     if (result == null) {
       String aname = ds.findAttValueIgnoreCase(null, name + "_coordinate", null);
@@ -212,7 +212,7 @@ public class UnidataPointDatasetHelper {
   }
 
 
-  static public Dimension findDimension(NetcdfFile ds, String name) {
+  public static Dimension findDimension(NetcdfFile ds, String name) {
     Dimension result = ds.findDimension(name); // LOOK use group
     if (result == null) {
       String aname = ds.findAttValueIgnoreCase(null, name + "Dimension", null);
@@ -222,7 +222,7 @@ public class UnidataPointDatasetHelper {
     return result;
   }
 
-  static public Dimension findObsDimension(NetcdfFile ds) {
+  public static Dimension findObsDimension(NetcdfFile ds) {
     Dimension result = null;
     String aname = ds.findAttValueIgnoreCase(null, "observationDimension", null);
     if (aname != null)

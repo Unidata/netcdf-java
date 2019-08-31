@@ -49,11 +49,11 @@ import java.util.Formatter;
  * @since Oct 8, 2009
  */
 public class AlbersEqualAreaEllipse extends ProjectionImpl {
-  private final static double EPS10 = 1.e-10;
-  private final static double TOL7 = 1.e-7;
-  private final static int N_ITER = 15;
-  private final static double EPSILON = 1.0e-7;
-  private final static double TOL = 1.0e-10;
+  private static final double EPS10 = 1.e-10;
+  private static final double TOL7 = 1.e-7;
+  private static final int N_ITER = 15;
+  private static final double EPSILON = 1.0e-7;
+  private static final double TOL = 1.0e-10;
 
   // projection parameters
   private double lat0deg, lon0deg; // projection origin, degrees

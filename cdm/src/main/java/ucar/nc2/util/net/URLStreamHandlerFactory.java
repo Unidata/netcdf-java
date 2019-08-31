@@ -14,13 +14,13 @@ import java.util.Map;
 
 public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory {
 
-  static public org.slf4j.Logger log = ucar.httpservices.HTTPSession.log;
+  public static org.slf4j.Logger log = ucar.httpservices.HTTPSession.log;
 
   //////////////////////////////////////////////////////////////////////////
-  static private Map<String, URLStreamHandler> map = new java.util.HashMap<>();
-  static private boolean installed = false;
+  private static Map<String, URLStreamHandler> map = new java.util.HashMap<>();
+  private static boolean installed = false;
 
-  static public void install() {
+  public static void install() {
     try {
       if (!installed) {
         java.net.URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory());
@@ -31,15 +31,15 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
     }
   }
 
-  static public void register(String protocol, URLStreamHandler sh) {
+  public static void register(String protocol, URLStreamHandler sh) {
     map.put(protocol.toLowerCase(), sh);
   }
 
-  static public URL makeURL(String urlString) throws MalformedURLException {
+  public static URL makeURL(String urlString) throws MalformedURLException {
     return installed ? new URL(urlString) : makeURL(null, urlString);
   }
 
-  static public URL makeURL(URL parent, String urlString) throws MalformedURLException {
+  public static URL makeURL(URL parent, String urlString) throws MalformedURLException {
     if (installed)
       return new URL(parent, urlString);
 

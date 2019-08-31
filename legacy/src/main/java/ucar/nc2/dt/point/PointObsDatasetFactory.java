@@ -21,24 +21,24 @@ import thredds.catalog.InvAccess;
  */
 public class PointObsDatasetFactory {
 
-  static public PointObsDataset open(InvAccess access, StringBuffer logMessages) throws java.io.IOException {
+  public static PointObsDataset open(InvAccess access, StringBuffer logMessages) throws java.io.IOException {
     return open(access, null, logMessages);
   }
 
-  static public PointObsDataset open(InvAccess access, ucar.nc2.util.CancelTask task, StringBuffer logMessages)
+  public static PointObsDataset open(InvAccess access, ucar.nc2.util.CancelTask task, StringBuffer logMessages)
       throws java.io.IOException {
     return open(access.getStandardUrlName(), task, logMessages);
   }
 
-  static public PointObsDataset open(String location) throws java.io.IOException {
+  public static PointObsDataset open(String location) throws java.io.IOException {
     return open(location, null, null);
   }
 
-  static public PointObsDataset open(String location, StringBuffer log) throws java.io.IOException {
+  public static PointObsDataset open(String location, StringBuffer log) throws java.io.IOException {
     return open(location, null, log);
   }
 
-  static public PointObsDataset open(String location, ucar.nc2.util.CancelTask task, StringBuffer log)
+  public static PointObsDataset open(String location, ucar.nc2.util.CancelTask task, StringBuffer log)
       throws java.io.IOException {
 
     // otherwise open as netcdf and have a look. use NetcdfDataset in order to deal with scale/enhance, etc.
